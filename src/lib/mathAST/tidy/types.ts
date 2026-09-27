@@ -63,4 +63,11 @@ export type TidyTerm = {
 	readonly verbatim: boolean;
 	readonly quantity: TidyQuantity | null;
 	readonly decimal: boolean;
+	/**
+	 * L'unité « écrite » d'une grandeur, pour `unitChoice: 'written'` : chaque
+	 * dimension de base y prend la première unité écrite (`7[mm]·5[cm]` → `mm^2`,
+	 * `120[km]/2[h]` → `km/h`). Dans une somme, c'est celle du premier terme du
+	 * groupe. `null` hors de ce mode, ou si aucune écriture ne s'en déduit.
+	 */
+	readonly written: Unit | null;
 };

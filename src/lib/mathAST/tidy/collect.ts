@@ -21,7 +21,7 @@ import type { FunctionNode, MathNode, RelationNode, SuperscriptNode, UnitNode } 
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
-import type { TidyOptions, TidyRule } from './step-recorder';
+import type { TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { getChildren } from '../transforms';
@@ -85,6 +85,8 @@ type Accumulator = {
 	coefficient: Rational;
 	readonly factors: Map<string, MutableFactor>;
 	readonly unitSymbols: Map<string, number>;
+	/** Le choix d'unité demandé, transmis aux sous-expressions (`tidyAtom`). */
+	readonly unitChoice: UnitChoice;
 	/** Le carnet de la narration. `undefined` : personne n'écoute. */
 	readonly watch: FamilyWatch;
 	/**
@@ -289,6 +291,57 @@ function composeUnit(symbols: ReadonlyMap<string, number>): Unit | null {
 function baseUnitOf(components: ReadonlyMap<string, number>): Unit | null {
 	const label = unitLabel(components);
 	return label === null ? null : parseUnit(label);
+}
+
+/**
+ * Le rapport exact d'une unité composée **sans dimension** (`h/min` vaut 60),
+ * ou `null` si l'unité garde une dimension.
+ *
+ * ⚠️ Seules s'annulent des unités qui ont chacune une dimension : `3[h]/1[min]`
+ * vaut 180, mais `2[rad]` ou `3[%]` écrits seuls gardent leur unité — c'est
+ * une écriture, pas une simplification.
+ */
+function dimensionlessRatio(symbols: ReadonlyMap<string, number>, unit: Unit): Rational | null {
+	if (isAffineUnit(unit)) return null;
+	const conversion = exactConversion(unitWriting(unit));
+	if (conversion === null || conversion.offset !== null || conversion.piPower !== 0) return null;
+	if (conversion.components.size !== 0) return null;
+	for (const symbol of symbols.keys()) {
+		const own = exactConversion(symbol);
+		if (own === null || own.components.size === 0) return null;
+	}
+	return conversion.coefficient;
+}
+
+/**
+ * L'unité « écrite » d'une grandeur (`unitChoice: 'written'`) : chaque
+ * dimension de base prend la **première** unité simple écrite qui la porte.
+ * `7[mm]·5[cm]` → `mm^2`, `120[km]/2[h]` → `km/h`.
+ *
+ * `symbols` garde l'ordre d'écriture (ordre d'insertion de la `Map`). Une unité
+ * dérivée (N, J) ne porte pas une dimension seule : elle ne compte pas. `null`
+ * si une dimension n'a pas d'unité écrite qui s'y ramène.
+ */
+function writtenUnitOf(symbols: ReadonlyMap<string, number>, unit: Unit): Unit | null {
+	const total = exactConversion(unitWriting(unit));
+	if (total === null) return null;
+
+	const firstBySymbol = new Map<string, { symbol: string; power: number }>();
+	for (const symbol of symbols.keys()) {
+		const own = exactConversion(symbol);
+		if (own === null || own.offset !== null || own.piPower !== 0) continue;
+		if (own.components.size !== 1) continue;
+		const [[base, power]] = own.components;
+		if (!firstBySymbol.has(base)) firstBySymbol.set(base, { symbol, power });
+	}
+
+	const parts = new Map<string, number>();
+	for (const [base, exponent] of total.components) {
+		const first = firstBySymbol.get(base);
+		if (first === undefined || exponent % first.power !== 0) return null;
+		parts.set(first.symbol, (parts.get(first.symbol) ?? 0) + exponent / first.power);
+	}
+	return composeUnit(parts);
 }
 
 /**
@@ -587,7 +640,7 @@ function absorbFactor(
 	// Finding C1 : la base est mise au propre AVANT d'être absorbée. Si la mise
 	// au propre l'a changée (`3−1` devient `2`), on la ré-absorbe pour que le
 	// nombre rejoigne le coefficient au lieu de rester un facteur.
-	const cleaned = tidyAtom(node);
+	const cleaned = tidyAtom(node, acc.unitChoice);
 	if (hashMathNode(cleaned) === hashMathNode(node)) {
 		addFactor(acc, cleaned, exponent);
 		return;
@@ -603,11 +656,17 @@ function absorbFactor(
 // Un terme, une somme
 // =============================================================================
 
-function toTerm(node: MathNode, watch: FamilyWatch, carriedSigns = 0): TidyTerm {
+function toTerm(
+	node: MathNode,
+	watch: FamilyWatch,
+	unitChoice: UnitChoice,
+	carriedSigns = 0
+): TidyTerm {
 	const acc: Accumulator = {
 		coefficient: ONE,
 		factors: new Map<string, MutableFactor>(),
 		unitSymbols: new Map<string, number>(),
+		unitChoice,
 		watch,
 		// ⚠️ Le `−` de tête est consommé par `flattenSumShallow`, donc il n'atteint
 		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
@@ -630,15 +689,23 @@ function toTerm(node: MathNode, watch: FamilyWatch, carriedSigns = 0): TidyTerm 
 		key
 	}));
 
-	const unit = composeUnit(acc.unitSymbols);
+	const composed = composeUnit(acc.unitSymbols);
+	// Un quotient de grandeurs de même dimension est un nombre : `3[h]/1[min]`
+	// vaut 180, pas « 3 h/min ». Le rapport exact des unités rejoint le coefficient.
+	const ratio = composed === null ? null : dimensionlessRatio(acc.unitSymbols, composed);
+	const coefficient = ratio === null ? acc.coefficient : mulRational(acc.coefficient, ratio);
+	const unit = ratio === null ? composed : null;
+	const quantity = unit === null ? null : quantityOf(unit);
 
 	return {
-		coefficient: acc.coefficient,
+		coefficient,
 		factors: sortFactors(factors),
 		unit,
 		verbatim: false,
-		quantity: unit === null ? null : quantityOf(unit),
-		decimal: false
+		quantity,
+		decimal: false,
+		written:
+			unitChoice === 'written' && quantity !== null ? writtenUnitOf(acc.unitSymbols, unit) : null
 	};
 }
 
@@ -650,7 +717,8 @@ function verbatimTerm(node: MathNode, negative: boolean): TidyTerm {
 		unit: null,
 		verbatim: true,
 		quantity: null,
-		decimal: false
+		decimal: false,
+		written: null
 	};
 }
 
@@ -683,7 +751,7 @@ function expandableSum(term: TidyTerm): MathNode | null {
  * (`(a+b)+c → a+b+c`) ; précédé d'un `-` il reste opaque, sinon `tidy`
  * distribuerait le signe — ce que le contrat interdit (`-(x+2)` inchangé).
  */
-function toSumTerms(node: MathNode, watch: FamilyWatch): TidyTerm[] {
+function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice): TidyTerm[] {
 	const terms: TidyTerm[] = [];
 
 	for (const { sign, term } of flattenSumShallow(node)) {
@@ -692,15 +760,15 @@ function toSumTerms(node: MathNode, watch: FamilyWatch): TidyTerm[] {
 			continue;
 		}
 		if (sign === '+' && isDelimiter(term) && isSumNode(term.content)) {
-			terms.push(...toSumTerms(term.content, watch));
+			terms.push(...toSumTerms(term.content, watch, unitChoice));
 			continue;
 		}
 
-		const collected = toTerm(term, watch, sign === '-' ? 1 : 0);
+		const collected = toTerm(term, watch, unitChoice, sign === '-' ? 1 : 0);
 		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
 		const inner = sign === '+' ? expandableSum(collected) : null;
 		if (inner !== null) {
-			terms.push(...toSumTerms(inner, watch));
+			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
 		terms.push(sign === '-' ? negateTerm(collected) : collected);
@@ -821,7 +889,7 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
  * `imposed` est l'unité qu'un terme symbolique de la même dimension impose à
  * toute la somme (finding I5) : `x[km]+500[m]` s'écrit `x[km]+0,5[km]`.
  */
-function chooseUnit(term: TidyTerm, imposed: Unit | null): TidyTerm {
+function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice): TidyTerm {
 	const quantity = term.quantity;
 	if (quantity === null || term.verbatim || term.factors.length > 0) return term;
 
@@ -844,6 +912,12 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null): TidyTerm {
 
 	if (imposed !== null) {
 		const chosen = rewritten(imposed);
+		if (chosen !== null) return chosen;
+	}
+
+	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste.
+	if (unitChoice === 'written' && term.written !== null) {
+		const chosen = rewritten(term.written);
 		if (chosen !== null) return chosen;
 	}
 
@@ -879,7 +953,7 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null): TidyTerm {
  * Finding I5 — une somme garde **une seule unité par dimension**. Un terme
  * symbolique impose son unité : `x[m]+2000[m]` ne devient pas `x[m]+2[km]`.
  */
-function chooseUnits(terms: readonly TidyTerm[]): TidyTerm[] {
+function chooseUnits(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTerm[] {
 	const imposed = new Map<string, Unit>();
 	for (const term of terms) {
 		if (term.quantity === null || term.unit === null) continue;
@@ -888,7 +962,11 @@ function chooseUnits(terms: readonly TidyTerm[]): TidyTerm[] {
 	}
 
 	return terms.map((term) =>
-		chooseUnit(term, term.quantity === null ? null : (imposed.get(term.quantity.dimension) ?? null))
+		chooseUnit(
+			term,
+			term.quantity === null ? null : (imposed.get(term.quantity.dimension) ?? null),
+			unitChoice
+		)
 	);
 }
 
@@ -897,16 +975,17 @@ function chooseUnits(terms: readonly TidyTerm[]): TidyTerm[] {
 // =============================================================================
 
 /** Étape 9 — les arguments d'une fonction sont mis au propre. */
-function tidyFunction(node: FunctionNode): MathNode {
+function tidyFunction(node: FunctionNode, unitChoice: UnitChoice): MathNode {
+	const options = unitOptions(unitChoice);
 	// ⚠️ Jamais `.map(tidyExpression)` : `map` passe l'INDEX en second argument,
 	// qui atterrirait dans `options`. Et la narration reste au niveau de tête —
 	// on ne raconte pas la mise au propre des arguments d'une fonction.
 	return func(
 		node.name,
-		node.args.map((arg) => tidyExpression(arg)),
+		node.args.map((arg) => tidyExpression(arg, options)),
 		{
-			...(node.power !== undefined && { power: tidyExpression(node.power) }),
-			...(node.base !== undefined && { base: tidyExpression(node.base) }),
+			...(node.power !== undefined && { power: tidyExpression(node.power, options) }),
+			...(node.base !== undefined && { base: tidyExpression(node.base, options) }),
 			...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
 			...(node.isInverse === true && { isInverse: node.isInverse })
 		}
@@ -918,21 +997,25 @@ function tidyFunction(node: FunctionNode): MathNode {
  * enfants mis au propre (§E du contrat). Les nœuds opaques (infini, zéro
  * signé) ne sont pas touchés.
  */
-function tidyAtom(node: MathNode): MathNode {
+function tidyAtom(node: MathNode, unitChoice: UnitChoice): MathNode {
 	if (containsOpaqueNode(node)) return node;
+	const options = unitOptions(unitChoice);
 
 	switch (node.type) {
 		case 'function':
-			return tidyFunction(node);
+			return tidyFunction(node, unitChoice);
 		case 'addition':
 		case 'subtraction':
-			return tidyExpression(node);
+			return tidyExpression(node, options);
 		case 'unit':
-			return withUnit(tidyExpression(node.expression), node.unit);
+			return withUnit(tidyExpression(node.expression, options), node.unit);
 		case 'superscript':
-			return superscript(tidyExpression(node.base), tidyExpression(node.superscript));
+			return superscript(
+				tidyExpression(node.base, options),
+				tidyExpression(node.superscript, options)
+			);
 		case 'subscript':
-			return subscript(tidyExpression(node.base), node.subscript);
+			return subscript(tidyExpression(node.base, options), node.subscript);
 		case 'relation':
 		case 'matrix':
 		case 'piecewise':
@@ -941,15 +1024,24 @@ function tidyAtom(node: MathNode): MathNode {
 		case 'logical-not':
 		case 'complex':
 		case 'composition':
-			return tidyStructure(node);
+			return tidyStructure(node, unitChoice);
 		default:
 			return node;
 	}
 }
 
+/**
+ * Les options à transmettre à une sous-expression. Le mode par défaut ne
+ * transmet rien : le chemin `'school'` reste exactement celui d'avant l'option.
+ */
+function unitOptions(unitChoice: UnitChoice): TidyOptions | undefined {
+	return unitChoice === 'school' ? undefined : { unitChoice };
+}
+
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
 export function tidyExpression(node: MathNode, options?: TidyOptions, source?: MathNode): MathNode {
 	const recorder = options?.recorder;
+	const unitChoice = options?.unitChoice ?? 'school';
 	const written = source ?? node;
 
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
@@ -971,14 +1063,14 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 	// Invariant 2 — narration gratuite : sans enregistreur il n'y a pas de
 	// carnet, donc pas un `Set` de plus ni une décomposition de plus.
 	const families: FamilyWatch = recorder === undefined ? undefined : new Set<TidyFamily>();
-	const terms = toSumTerms(node, families);
+	const terms = toSumTerms(node, families, unitChoice);
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms))));
+		return buildSum(sortTerms(chooseUnits(collectLikeTerms(terms), unitChoice)));
 	}
 
-	return narrateSum(written, terms, families, recorder);
+	return narrateSum(written, terms, families, recorder, unitChoice);
 }
 
 /** Enregistre un geste d'un seul tenant, quand il n'y a pas de stage à couper. */
@@ -1078,9 +1170,9 @@ function mergesFractions(terms: readonly TidyTerm[], collected: readonly TidyTer
  * `chooseUnit` seul), et `x×0` s'affichait `0x` parce que c'est
  * `collectLikeTerms` qui jette les coefficients nuls.
  */
-function materialise(terms: readonly TidyTerm[]): MathNode {
+function materialise(terms: readonly TidyTerm[], unitChoice: UnitChoice): MathNode {
 	const written = terms.filter((term) => term.verbatim || !isZeroRational(term.coefficient));
-	return buildSum(chooseUnits(written));
+	return buildSum(chooseUnits(written, unitChoice));
 }
 
 /**
@@ -1098,7 +1190,8 @@ function narrateSum(
 	source: MathNode,
 	terms: readonly TidyTerm[],
 	families: ReadonlySet<TidyFamily>,
-	recorder: TidyStepRecorder
+	recorder: TidyStepRecorder,
+	unitChoice: UnitChoice
 ): MathNode {
 	let previous = source;
 
@@ -1110,9 +1203,9 @@ function narrateSum(
 		return after;
 	};
 
-	const united = chooseUnits(terms);
+	const united = chooseUnits(terms, unitChoice);
 	const collected = collectLikeTerms(terms);
-	const unitedCollected = chooseUnits(collected);
+	const unitedCollected = chooseUnits(collected, unitChoice);
 
 	// Le travail fait terme par terme pendant la décomposition. Une seule
 	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
@@ -1122,7 +1215,7 @@ function narrateSum(
 		unitWritings(terms) !== unitWritings(united)
 			? 'tidy-choose-unit'
 			: (soleFamilyRule(families) ?? 'tidy-terms');
-	step(perTerm, materialise(terms));
+	step(perTerm, materialise(terms, unitChoice));
 
 	const grouping: TidyRule =
 		unitWritings(united) !== unitWritings(unitedCollected)
@@ -1130,7 +1223,7 @@ function narrateSum(
 			: mergesFractions(terms, collected)
 				? 'tidy-add-fractions'
 				: 'tidy-collect-like-terms';
-	step(grouping, materialise(collected));
+	step(grouping, materialise(collected, unitChoice));
 
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
 }
@@ -1148,8 +1241,9 @@ function tidyRelation(
 	written: MathNode
 ): MathNode {
 	const recorder = options?.recorder;
+	const inner = unitOptions(options?.unitChoice ?? 'school');
 	if (recorder === undefined) {
-		return { ...node, left: tidyNode(node.left), right: tidyNode(node.right) };
+		return { ...node, left: tidyNode(node.left, inner), right: tidyNode(node.right, inner) };
 	}
 
 	let previous = written;
@@ -1159,7 +1253,7 @@ function tidyRelation(
 	const replay = (side: 'left' | 'right'): void => {
 		const own = new TidyStepRecorder();
 		const member = side === 'left' ? node.left : node.right;
-		const tidied = tidyNode(member, { recorder: own }, member);
+		const tidied = tidyNode(member, { ...inner, recorder: own }, member);
 		for (const recorded of own.getSteps()) {
 			const after: MathNode =
 				side === 'left'
@@ -1182,35 +1276,44 @@ function tidyRelation(
  * §E — relation, matrice, morceau, limite : le nœud est conservé, ses enfants
  * mis au propre.
  */
-function tidyStructure(node: MathNode): MathNode {
+function tidyStructure(node: MathNode, unitChoice: UnitChoice): MathNode {
+	const options = unitOptions(unitChoice);
 	switch (node.type) {
 		case 'relation':
-			return { ...node, left: tidyNode(node.left), right: tidyNode(node.right) };
+			return { ...node, left: tidyNode(node.left, options), right: tidyNode(node.right, options) };
 		case 'matrix':
-			return { ...node, rows: node.rows.map((row) => row.map((cell) => tidyNode(cell))) };
+			return { ...node, rows: node.rows.map((row) => row.map((cell) => tidyNode(cell, options))) };
 		case 'piecewise':
 			return {
 				...node,
 				pieces: node.pieces.map((piece) => ({
-					condition: tidyNode(piece.condition),
-					value: tidyNode(piece.value)
+					condition: tidyNode(piece.condition, options),
+					value: tidyNode(piece.value, options)
 				})),
-				...(node.otherwise !== undefined && { otherwise: tidyNode(node.otherwise) })
+				...(node.otherwise !== undefined && { otherwise: tidyNode(node.otherwise, options) })
 			};
 		case 'limit':
 			return {
 				...node,
-				expression: tidyNode(node.expression),
-				approach: tidyNode(node.approach)
+				expression: tidyNode(node.expression, options),
+				approach: tidyNode(node.approach, options)
 			};
 		case 'logical':
-			return { ...node, left: tidyNode(node.left), right: tidyNode(node.right) };
+			return { ...node, left: tidyNode(node.left, options), right: tidyNode(node.right, options) };
 		case 'logical-not':
-			return { ...node, operand: tidyNode(node.operand) };
+			return { ...node, operand: tidyNode(node.operand, options) };
 		case 'complex':
-			return { ...node, real: tidyNode(node.real), imaginary: tidyNode(node.imaginary) };
+			return {
+				...node,
+				real: tidyNode(node.real, options),
+				imaginary: tidyNode(node.imaginary, options)
+			};
 		case 'composition':
-			return { ...node, outer: tidyNode(node.outer), inner: tidyNode(node.inner) };
+			return {
+				...node,
+				outer: tidyNode(node.outer, options),
+				inner: tidyNode(node.inner, options)
+			};
 		default:
 			return node;
 	}
@@ -1228,7 +1331,7 @@ export function tidyNode(node: MathNode, options?: TidyOptions, source?: MathNod
 		case 'logical-not':
 		case 'complex':
 		case 'composition':
-			return tidyStructure(node);
+			return tidyStructure(node, options?.unitChoice ?? 'school');
 		case 'boolean':
 		case 'infinity':
 		case 'signed-zero':
