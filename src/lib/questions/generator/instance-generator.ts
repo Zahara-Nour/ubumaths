@@ -328,6 +328,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// - Text blanks: only resolve if already contains {{...}}.
 				//   Bare words like "pair", "entier" are literal text, not variable refs.
 				const rawExpected = blank.expectedAnswer;
+				// `;hms` écrit une juxtaposition, lue comme un PRODUIT : jamais une réponse attendue
+				if (/;[^{}]*\bhms\b/.test(rawExpected)) {
+					throw new Error(
+						`;hms sert à l'affichage d'une durée, pas à une réponse attendue : ${rawExpected} (écrire la durée dans une seule unité, ex. ;[min])`
+					);
+				}
 				const isMathBlank = blankResult.blankTypes[i] === 'math';
 				const normalized = isMathBlank ? normalizeExpression(rawExpected) : rawExpected;
 				const expectedAnswer = normalized.includes('{{')

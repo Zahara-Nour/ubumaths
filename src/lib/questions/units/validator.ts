@@ -96,7 +96,12 @@ const HOUSE_QUANTITY_REGEX = /^(-?\d+(?:\.\d+)?)\[([^[\]]+)\]$/;
  * Toute autre écriture est rendue telle quelle.
  */
 function houseQuantityToLatex(expected: string): string {
-	const match = HOUSE_QUANTITY_REGEX.exec(expected.trim());
+	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur
+	const bare = expected
+		.trim()
+		.replace(/^\((.*)\)$/, '$1')
+		.replace(/^\+/, '');
+	const match = HOUSE_QUANTITY_REGEX.exec(bare);
 	return match ? `${match[1]}\\unit{${match[2]}}` : expected;
 }
 

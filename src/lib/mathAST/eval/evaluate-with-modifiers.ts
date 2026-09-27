@@ -28,6 +28,8 @@ import { divRational, negRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
+import { format as formatUnit } from '../units';
+import { analyzeDimensions } from '../dimensional/analyzer';
 
 // =============================================================================
 // Helper Functions
@@ -296,10 +298,38 @@ function isDuration(node: MathNode): boolean {
 function multipliesDurations(ast: MathNode): boolean {
 	let found = false;
 	mapNode(ast, (n) => {
-		if (n.type === 'multiplication' && isDuration(n.left) && isDuration(n.right)) found = true;
+		if (n.type === 'multiplication' && productFactors(n).filter(isDuration).length >= 2) {
+			found = true;
+		}
 		return n;
 	});
 	return found;
+}
+
+/** Les facteurs d'un produit, parenthèses et produits imbriqués aplatis : `2[h]*(3*15[min])` */
+function productFactors(node: MathNode): MathNode[] {
+	if (node.type === 'multiplication') {
+		return [...productFactors(node.left), ...productFactors(node.right)];
+	}
+	if (node.type === 'delimiter' && node.content.type === 'multiplication') {
+		return productFactors(node.content);
+	}
+	return [node];
+}
+
+/**
+ * Un calcul avec des grandeurs qui vaut 0 (`3[m]-3[m]`, `3[h]*0`) : `tidy` rend `0`, sans
+ * unité. L'analyse dimensionnelle la retrouve — pour une valeur nulle, `0[m^2]` et
+ * `0[mm^2]` sont la même grandeur. `null` si le résultat est un nombre (`0[h]/1[min]`).
+ */
+function zeroQuantityUnit(ast: MathNode): string | null {
+	const analysis = analyzeDimensions(ast, {
+		variables: new Map(),
+		options: { strictMode: true, allowDimensionlessMix: false, allowFractionalExponents: true }
+	});
+	if (!analysis.valid || analysis.resultUnit === null) return null;
+	if (analysis.resultUnit.components.size === 0) return null;
+	return formatUnit(analysis.resultUnit, 'original');
 }
 
 /**
@@ -316,7 +346,12 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 	if (modifiers.unit !== undefined)
 		return withSignModifiers(expressedIn(ast, modifiers.unit), modifiers);
 	const reduced = tidy(ast, { unitChoice: 'written' });
-	if (!hasQuantity(reduced)) return evaluateAstWithModifiers(reduced, modifiers);
+	if (!hasQuantity(reduced)) {
+		const value = rationalOf(reduced);
+		const zeroUnit = value !== null && value.n === 0n ? zeroQuantityUnit(ast) : null;
+		if (zeroUnit !== null) return `0[${zeroUnit}]`;
+		return evaluateAstWithModifiers(reduced, modifiers);
+	}
 	return withSignModifiers(quantityWriting(reduced, ast), modifiers);
 }
 

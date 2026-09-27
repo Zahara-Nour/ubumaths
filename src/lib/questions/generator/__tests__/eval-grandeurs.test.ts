@@ -181,3 +181,53 @@ describe('garde-fou : pas de produit de deux durées', () => {
 		expect(evalOf('2*15[min]')).toBe('30[min]');
 	});
 });
+
+// Relecture de code de #484
+describe('relecture : un résultat nul garde son unité', () => {
+	it.each([
+		['3[m]-3[m]', '0[m]'],
+		['a-a', '0[mm]'],
+		['3[h]*0', '0[h]']
+	])('{{eval:%s}} → %s', (expression, expected) => {
+		expect(evalOf(expression)).toBe(expected);
+	});
+
+	it('un quotient nul de même dimension reste un nombre : 0[h]/1[min] → 0', () => {
+		expect(evalOf('0[h]/1[min]')).toBe('0');
+	});
+
+	it('attendu 0 m : « 0 m » est juste', () => {
+		const instance = instanceOf('Calcule.', '{{eval:3[m]-3[m]}}');
+		expect(validateAnswer(['0\\unit{m}'], instance).isCorrect).toBe(true);
+	});
+});
+
+describe('relecture : attendu signé (;+ et ;()) lu par le correcteur', () => {
+	it('attendu {{eval:2[m]-5[m];()}} : « -3 m » juste, « 3 m » faux', () => {
+		const instance = instanceOf('Calcule.', '{{eval:2[m]-5[m];()}}');
+		expect(validateAnswer(['-3\\unit{m}'], instance).isCorrect).toBe(true);
+		expect(validateAnswer(['3\\unit{m}'], instance).isCorrect).toBe(false);
+	});
+
+	it('attendu {{eval:3[m];+}} : « 3 m » juste', () => {
+		const instance = instanceOf('Calcule.', '{{eval:3[m];+}}');
+		expect(validateAnswer(['3\\unit{m}'], instance).isCorrect).toBe(true);
+	});
+});
+
+describe('relecture : ;hms interdit dans une réponse attendue', () => {
+	it('la génération échoue, avec un message', () => {
+		const result = generateInstance(templateOf('Calcule.', '{{eval:135[min];hms}}'), 1);
+		expect(result.success).toBe(false);
+		if (!result.success) expect(result.errors.join(' ')).toMatch(/hms/);
+	});
+});
+
+describe('relecture : produit de durées, facteurs imbriqués', () => {
+	it.each(['2[h]*(3*15[min])', '(2*2[h])*15[min]', '2*(3[h]*15[min])'])(
+		'{{eval:%s}} → erreur',
+		(expression) => {
+			expect(() => evalOf(expression)).toThrow(/produit de durées/i);
+		}
+	);
+});
