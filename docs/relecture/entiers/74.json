@@ -1,6 +1,6 @@
 {
 	"globalIndex": 74,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Trouver le double",
@@ -18,7 +18,10 @@
 					{
 						"expectedAnswer": "{{eval:2*a}}"
 					}
-				]
+				],
+				"correction": {
+					"steps": ["Le double de ${{a}}$ est ${{eval:2*a}}$ car ${{a}} + {{a}} = {{eval:2*a}}$."]
+				}
 			}
 		],
 		"grades": ["CP"],
@@ -63,5 +66,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Correction « a + a » ajoutée (domaine Additionner ; la copie #136 du domaine Multiplier a la correction multiplicative) — décision de David."
 }

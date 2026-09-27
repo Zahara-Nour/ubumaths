@@ -1,6 +1,71 @@
 {
 	"globalIndex": 146,
-	"verdict": "rejected",
+	"verdict": "corrected",
 	"reviewer": "claude",
-	"reason": "doublon de #84 (identique en tout)"
+	"editNotes": "Même question que #84 (rangée par TinyMath dans « Multiplier ») : reprend la version relue de #84, avec la correction multiplicative « 3 × a » — décision de David (une copie par domaine).",
+	"template": {
+		"title": "Trouver le triple",
+		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"variations": [
+			{
+				"statement": "Quel est le triple de ${{a}}$ ?\n\nLe triple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*a}}"
+					}
+				],
+				"correction": {
+					"steps": ["Le triple de ${{a}}$ est ${{eval:3*a}}$ car $3 \\times {{a}} = {{eval:3*a}}$."]
+				}
+			}
+		],
+		"grades": ["CE2"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Triple et tiers",
+		"level": 4,
+		"status": "draft",
+		"delay": 15,
+		"testSpecs": [
+			{
+				"description": "triple de 12 → 36",
+				"variationIndex": 0,
+				"variables": {
+					"a": "12"
+				},
+				"answers": ["36"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 100 → 300",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100"
+				},
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 25 : 50 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "25"
+				},
+				"answers": ["50"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
 }

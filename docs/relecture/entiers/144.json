@@ -1,6 +1,85 @@
 {
 	"globalIndex": 144,
-	"verdict": "rejected",
+	"verdict": "corrected",
 	"reviewer": "claude",
-	"reason": "doublon de #82 (identique en tout)"
+	"editNotes": "Même question que #82 (rangée par TinyMath dans « Multiplier ») : reprend la version relue de #82, avec la correction multiplicative « 3 × a » — décision de David (une copie par domaine).",
+	"template": {
+		"title": "Trouver le triple",
+		"description": "Dizaines entières (jusqu'à $50$)",
+		"variations": [
+			{
+				"statement": "Quel est le triple de ${{b}}$ ?\n\nLe triple de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:3*b}}"
+					}
+				],
+				"correction": {
+					"steps": ["Le triple de ${{b}}$ est ${{eval:3*b}}$ car $3 \\times {{b}} = {{eval:3*b}}$."]
+				}
+			}
+		],
+		"grades": ["CE1"],
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Triple et tiers",
+		"level": 2,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "triple de 40 → 120",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "4",
+					"a": "40",
+					"b": "40"
+				},
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 50 → 150",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "5",
+					"a": "50",
+					"b": "50"
+				},
+				"answers": ["150"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "triple de 40 : double 80 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a1": "4",
+					"a": "40",
+					"b": "40"
+				},
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
 }

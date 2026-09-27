@@ -2,7 +2,7 @@
 	"globalIndex": 85,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Tirage « 1..10|11..15|15..20 » (héritage TinyMath, 15 tiré deux fois plus souvent) remplacé par « 1..20 », conforme à la description. Specs : triple juste aux bornes, double refusé.",
+	"editNotes": "Tirage « 1..10|11..15|15..20 » (héritage TinyMath, 15 tiré deux fois plus souvent) remplacé par « 1..20 », conforme à la description. Specs : triple juste aux bornes, double refusé. Correction « a + a + a » ajoutée (domaine Additionner ; la copie #147 du domaine Multiplier a la correction multiplicative) — décision de David.",
 	"template": {
 		"title": "Trouver le triple",
 		"description": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
@@ -19,7 +19,12 @@
 					{
 						"expectedAnswer": "{{eval:3*a}}"
 					}
-				]
+				],
+				"correction": {
+					"steps": [
+						"Le triple de ${{a}}$ est ${{eval:3*a}}$ car ${{a}} + {{a}} + {{a}} = {{eval:3*a}}$."
+					]
+				}
 			}
 		],
 		"grades": ["CE2"],

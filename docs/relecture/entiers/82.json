@@ -1,6 +1,6 @@
 {
 	"globalIndex": 82,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Trouver le triple",
@@ -26,7 +26,12 @@
 					{
 						"expectedAnswer": "{{eval:3*b}}"
 					}
-				]
+				],
+				"correction": {
+					"steps": [
+						"Le triple de ${{b}}$ est ${{eval:3*b}}$ car ${{b}} + {{b}} + {{b}} = {{eval:3*b}}$."
+					]
+				}
 			}
 		],
 		"grades": ["CE1"],
@@ -77,5 +82,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Correction « a + a + a » ajoutée (domaine Additionner ; la copie #144 du domaine Multiplier a la correction multiplicative) — décision de David."
 }

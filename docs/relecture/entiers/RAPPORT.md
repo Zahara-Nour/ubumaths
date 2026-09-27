@@ -9,12 +9,12 @@ Entiers sont celles de David (`docs/relecture/david/`).
 
 ## Bilan
 
-| Verdict                                     | Nombre |
-| ------------------------------------------- | ------ |
-| Approuvée telle que transformée             | 132    |
-| Corrigée puis approuvée                     | 48     |
-| Rejetée (copie dans un autre domaine, voir) | 7      |
-| À arbitrer                                  | 0      |
+| Verdict                         | Nombre |
+| ------------------------------- | ------ |
+| Approuvée telle que transformée | 125    |
+| Corrigée puis approuvée         | 62     |
+| Rejetée                         | 0      |
+| À arbitrer                      | 0      |
 
 Vérification indépendante (`pnpm question:specs --lot docs/relecture/entiers`) : **187 analysés,
 0 non importable**, 778 specs vertes, 50 tirages par variation sans échec.
@@ -47,13 +47,11 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
 ## À décider par David
 
-1. **« Doublons » #136–#147** : TinyMath range la même question dans deux domaines, « Additionner »
-   (#74–#85) et « Multiplier » (#136–#147), à la même place de chaque progression (Double et moitié,
-   Triple et tiers). Les rejeter laisse des trous dans la progression « Multiplier ».
-   (a) garder une copie par domaine (étendre la signature distincte à ces 9 paires, petit
-   changement de code ; #141 et #147 reprendraient les corrections de #79 et #85) ; (b) une seule
-   copie. Recommandé : (a). #140/#142 (correction multiplicative) sont approuvées, comme #78/#80
-   (correction additive). Même question pour #629/#630 (Suites), qui ne diffèrent que par le niveau.
+1. ✅ **Copies #136–#147 — tranché par David (2026-09-27)** : TinyMath range la même question
+   dans « Additionner » (#74–#85) et « Multiplier » (#136–#147). On garde **une copie par domaine** :
+   correction additive d'un côté (« 9 + 9 = 18 »), multiplicative de l'autre (« 2 × 9 = 18 »),
+   écrite pour les 7 paires qui n'en avaient pas (#78/#140 et #80/#142 l'avaient déjà). Signatures
+   distinctes : #476. Même décision pour #629/#630 (Suites).
 2. **#226, #227 « le quotient de… »** : seule l'écriture `a : b` est acceptée ; la fraction
    `\frac{a}{b}` (attendue par TinyMath pour #226) est refusée. Faut-il accepter les deux ?
 3. **#227** : `b` passe de 2..9 à 4..9 pour éviter un tirage vide (b = 3 exclu aussi).
