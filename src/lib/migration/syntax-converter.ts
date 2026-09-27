@@ -10,6 +10,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from 'zod';
 import { numberToLetterName } from './question-transformer';
+import { rewriteTinyMathQuantities } from './quantity-converter';
 
 /**
  * Result of a syntax conversion operation
@@ -792,7 +793,8 @@ export class TinyCASConverter {
  */
 export function convertTinyCASToNew(oldSyntax: string): ConversionResult {
 	const converter = new TinyCASConverter();
-	return converter.convert(oldSyntax);
+	// Grandeurs TinyMath (`[_4*&1_mm_]`, `&1 h` dans un calcul, `[°&1 cm°]`) d'abord
+	return converter.convert(rewriteTinyMathQuantities(oldSyntax));
 }
 
 /**
