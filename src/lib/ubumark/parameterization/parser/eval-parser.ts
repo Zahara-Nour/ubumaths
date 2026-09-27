@@ -10,6 +10,8 @@
  * - +/positive: Add + sign for positive results
  * - ()/bracket: Wrap negative results in parentheses
  * - '/derivative: Take derivative before evaluating
+ * - [unité]: grandeur exprimée dans cette unité (`{{eval:3[h];[min]}}` → 180[min])
+ * - hms: durée écrite en h, min, s (`{{eval:135[min];hms}}` → 2 h 15 min)
  *
  * @module ubumark/parameterization/parser/eval-parser
  */
@@ -19,7 +21,7 @@ import type { EvalModifiers, ParsedEvalExpression } from '../../types';
 /**
  * Modifier aliases mapping short/long forms to property names
  */
-const MODIFIER_ALIASES: Record<string, keyof EvalModifiers> = {
+const MODIFIER_ALIASES: Record<string, FlagModifier> = {
 	d: 'decimal',
 	decimal: 'decimal',
 	'+': 'addPositive',
@@ -27,8 +29,15 @@ const MODIFIER_ALIASES: Record<string, keyof EvalModifiers> = {
 	'()': 'bracketNegative',
 	bracket: 'bracketNegative',
 	"'": 'derivative',
-	derivative: 'derivative'
+	derivative: 'derivative',
+	hms: 'hms'
 };
+
+/** Modificateurs booléens (tous sauf l'unité imposée `;[unité]`) */
+type FlagModifier = Exclude<keyof EvalModifiers, 'unit'>;
+
+/** `[min]`, `[mm^2]`, `[km/h]` : l'unité dans laquelle exprimer une grandeur */
+const UNIT_MODIFIER_REGEX = /^\[([^[\]]+)\]$/;
 
 /**
  * Parse an eval expression token (backward compatible)
@@ -152,7 +161,14 @@ function isValidModifierString(str: string): boolean {
 	// Valid: d,+,(),',decimal,positive,bracket,derivative and commas/spaces
 	// Must not contain characters that would appear in math expressions
 	// like digits, operators (except +), letters beyond modifier names
-	return /^[d+(),'a-z\s]+$/i.test(str) && !/\d/.test(str);
+	// `;[unité]` peut contenir des chiffres (`[mm^2]`) : chaque segment est lu à part
+	return str
+		.split(',')
+		.every(
+			(segment) =>
+				UNIT_MODIFIER_REGEX.test(segment.trim()) ||
+				(/^[d+(),'a-z\s]+$/i.test(segment) && !/\d/.test(segment))
+		);
 }
 
 /**
@@ -165,6 +181,11 @@ function parseModifiers(modifierString: string): EvalModifiers {
 	const modifiers: EvalModifiers = {};
 
 	for (const mod of modifierString.split(',')) {
+		const unit = UNIT_MODIFIER_REGEX.exec(mod.trim());
+		if (unit) {
+			modifiers.unit = unit[1].trim();
+			continue;
+		}
 		const trimmed = mod.trim().toLowerCase();
 		if (trimmed) {
 			const key = MODIFIER_ALIASES[trimmed];

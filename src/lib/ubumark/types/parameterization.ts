@@ -258,6 +258,10 @@ export interface EvalModifiers {
 	bracketNegative?: boolean;
 	/** Take derivative before evaluating */
 	derivative?: boolean;
+	/** `;[min]` : grandeur exprimée dans cette unité (écriture maison, sans crochets) */
+	unit?: string;
+	/** `;hms` : durée écrite en heures, minutes, secondes (`135[min]` → 2 h 15 min) */
+	hms?: boolean;
 }
 
 /**

@@ -87,6 +87,24 @@ function precisionToTolerance(precision?: PrecisionType): Tolerance | undefined 
 // MAIN VALIDATION FUNCTION
 // ============================================================================
 
+/** Grandeur en syntaxe maison : `28[mm]`, `-5.003[km]`, `35[mm^2]` */
+const HOUSE_QUANTITY_REGEX = /^(-?\d+(?:\.\d+)?)\[([^[\]]+)\]$/;
+
+/**
+ * Réponse attendue écrite en syntaxe maison (valeur d'une variable `7[mm]`, résultat
+ * d'un `{{eval:4*a}}`) → `28\unit{mm}`, la forme que lit `parseLatexQuantity`.
+ * Toute autre écriture est rendue telle quelle.
+ */
+function houseQuantityToLatex(expected: string): string {
+	// Écriture de `;()` (`(-3[m])`) et de `;+` (`+3[m]`) : même grandeur
+	const bare = expected
+		.trim()
+		.replace(/^\((.*)\)$/, '$1')
+		.replace(/^\+/, '');
+	const match = HOUSE_QUANTITY_REGEX.exec(bare);
+	return match ? `${match[1]}\\unit{${match[2]}}` : expected;
+}
+
 /**
  * Validate a quantity answer against an expected answer
  *
@@ -113,12 +131,13 @@ export function validateQuantityAnswer(
 	requiredUnit?: string
 ): ValidationResult {
 	// Saisie MathLive de l'élève (`5\operatorname{\mathrm{km}}`, `\frac{90km}{h}`…)
-	// ramenée à `valeur\unit{écriture}` ; la réponse attendue n'est pas touchée.
+	// ramenée à `valeur\unit{écriture}` ; l'attendue en syntaxe maison (`28[mm]`) aussi.
 	const normalizedUser = normalizeStudentQuantity(userAnswer);
 
 	// Parse both answers
 	const userQuantity = parseLatexQuantity(normalizedUser);
-	const expectedQuantity = parseLatexQuantity(expectedAnswer);
+	const expectedLatex = houseQuantityToLatex(expectedAnswer);
+	const expectedQuantity = parseLatexQuantity(expectedLatex);
 
 	// Check for parse failures
 	if (!userQuantity) {
@@ -202,7 +221,7 @@ export function validateQuantityAnswer(
 	const tolerance = precisionToTolerance(precision);
 
 	// Use compareQuantities for value comparison with unit conversion
-	const comparisonResult = compareQuantities(normalizedUser, expectedAnswer, tolerance);
+	const comparisonResult = compareQuantities(normalizedUser, expectedLatex, tolerance);
 
 	// Build parsed details from comparison result
 	const parsed = {

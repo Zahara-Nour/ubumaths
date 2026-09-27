@@ -21,6 +21,15 @@ import { toCustom } from '../custom-generator';
 import { tidy } from '../tidy';
 import { parseCustom } from '../parser/custom';
 import type { EvalValue, ComplexValueResult } from './types';
+import type { Rational } from '../normal/types';
+import { divide, number, withUnit } from '../factory';
+import { extractRational } from '../common/numeric';
+import { divRational, negRational } from '../normal/rational';
+import { decimalString } from '../tidy/decimal';
+import { parse as parseUnit, parseUnitTerms } from '../units/parser';
+import { exactConversion } from '../units/exact';
+import { format as formatUnit } from '../units';
+import { analyzeDimensions } from '../dimensional/analyzer';
 
 // =============================================================================
 // Helper Functions
@@ -153,6 +162,200 @@ function formatExact(ast: MathNode, numValue: number): string {
 }
 
 // =============================================================================
+// Grandeurs (lot 2 du chantier Grandeurs, docs/wip/grandeurs-eval-progress.md)
+// =============================================================================
+
+/** Le calcul contient une grandeur (`7[mm]`, `3[h]`) */
+function hasQuantity(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'unit') found = true;
+		return n;
+	});
+	return found;
+}
+
+/** Valeur exacte d'un nombre, d'un opposé ou d'un quotient de nombres ; `null` sinon */
+function rationalOf(node: MathNode): Rational | null {
+	if (node.type === 'opposite') {
+		const inner = rationalOf(node.operand);
+		return inner === null ? null : negRational(inner);
+	}
+	if (node.type === 'division') {
+		const n = rationalOf(node.numerator);
+		const d = rationalOf(node.denominator);
+		return n === null || d === null || d.n === 0n ? null : divRational(n, d);
+	}
+	return extractRational(node);
+}
+
+/** `x` exprimé en `unit` : un nombre (quotient par `1[unit]`), ou `null` si la dimension diffère */
+function valueIn(ast: MathNode, unit: string): Rational | null {
+	const parsed = parseUnit(unit);
+	if (parsed === null) throw new Error(`Unité inconnue : [${unit}]`);
+	const ratio = tidy(divide(ast, withUnit(number(1), parsed), 'fraction'), {
+		unitChoice: 'written'
+	});
+	return hasQuantity(ratio) ? null : rationalOf(ratio);
+}
+
+/** Écriture décimale exacte d'un rationnel signé, ou `null` si elle est infinie */
+function signedDecimal(r: Rational): string | null {
+	const text = decimalString(r);
+	if (text === null) return null;
+	return r.n < 0n ? `-${text}` : text;
+}
+
+/** Une unité qui écrit deux fois la même dimension (`min.km/h`) : incohérente */
+function repeatsDimension(unitWriting: string): boolean {
+	const terms = parseUnitTerms(unitWriting);
+	if (terms === null) return true;
+	const bases = new Set<string>();
+	for (const { symbol } of terms) {
+		const own = exactConversion(symbol);
+		if (own === null || own.components.size !== 1) continue;
+		const [[base]] = own.components;
+		if (bases.has(base)) return true;
+		bases.add(base);
+	}
+	return false;
+}
+
+/**
+ * Le résultat mis au propre doit être UNE grandeur à écriture décimale finie :
+ * `28[mm]`, `-2[m]`. Sinon erreur visible (jamais d'unité jetée en silence).
+ */
+function quantityWriting(reduced: MathNode, source: MathNode): string {
+	const quantity = reduced.type === 'opposite' ? reduced.operand : reduced;
+	if (quantity.type !== 'unit') {
+		throw new Error(
+			`Le calcul ne donne pas une seule grandeur (dimensions incompatibles ?) : ${toCustom(source)} → ${toCustom(reduced)}`
+		);
+	}
+	if (quantity.expression.type !== 'number') {
+		throw new Error(
+			`Grandeur sans écriture décimale finie : ${toCustom(source)} → ${toCustom(reduced)} (imposer une unité avec ;[unité], ou réécrire la question)`
+		);
+	}
+	const writing = quantity.unit.original ?? '';
+	if (repeatsDimension(writing)) {
+		throw new Error(`Unité incohérente dans le résultat : ${toCustom(reduced)}`);
+	}
+	return toCustom(reduced);
+}
+
+/** `;[unité]` — la grandeur exprimée dans l'unité imposée */
+function expressedIn(ast: MathNode, unit: string): string {
+	const value = valueIn(ast, unit);
+	if (value === null) {
+		throw new Error(`Unité incompatible : ${toCustom(ast)} ne s'exprime pas en [${unit}]`);
+	}
+	const text = signedDecimal(value);
+	if (text === null) {
+		throw new Error(`Pas d'écriture décimale finie de ${toCustom(ast)} en [${unit}]`);
+	}
+	return `${text}[${unit}]`;
+}
+
+/**
+ * `;hms` — une durée en heures, minutes, secondes : `135[min]` → `{2[h]}{15[min]}`,
+ * affiché « 2 h 15 min » en LaTeX comme en syntaxe maison ; `60[min]` → `1[h]`.
+ *
+ * ⚠️ L'écriture est une JUXTAPOSITION, que le parseur lit comme un produit : elle sert à
+ * l'affichage, pas à un autre calcul ni à une réponse attendue.
+ */
+function hmsWriting(ast: MathNode): string {
+	const seconds = valueIn(ast, 's');
+	if (seconds === null) throw new Error(`;hms : ${toCustom(ast)} n'est pas une durée`);
+	if (seconds.d !== 1n || seconds.n < 0n) {
+		throw new Error(`;hms : ${toCustom(ast)} n'est pas un nombre entier de secondes positif`);
+	}
+	const total = seconds.n;
+	const parts: Array<[bigint, string]> = [
+		[total / 3600n, 'h'],
+		[(total % 3600n) / 60n, 'min'],
+		[total % 60n, 's']
+	];
+	const written = parts.filter(([value]) => value !== 0n).map(([v, u]) => `${v}[${u}]`);
+	if (written.length === 0) return '0[s]';
+	return written.length === 1 ? written[0] : written.map((part) => `{${part}}`).join('');
+}
+
+/** Une grandeur de durée (`15[min]`, `{2[h]}`) */
+function isDuration(node: MathNode): boolean {
+	const inner = node.type === 'delimiter' ? node.content : node;
+	if (inner.type !== 'unit') return false;
+	const conversion = exactConversion(inner.unit.original ?? '');
+	return (
+		conversion !== null && conversion.components.size === 1 && conversion.components.get('s') === 1
+	);
+}
+
+/**
+ * Un produit de deux durées (`2[h]*15[min]`, ou `{2[h]}{15[min]}` écrit par `;hms`) : aucun
+ * exercice ne le calcule, et c'est la lecture d'une durée composée réutilisée — refusé.
+ */
+function multipliesDurations(ast: MathNode): boolean {
+	let found = false;
+	mapNode(ast, (n) => {
+		if (n.type === 'multiplication' && productFactors(n).filter(isDuration).length >= 2) {
+			found = true;
+		}
+		return n;
+	});
+	return found;
+}
+
+/** Les facteurs d'un produit, parenthèses et produits imbriqués aplatis : `2[h]*(3*15[min])` */
+function productFactors(node: MathNode): MathNode[] {
+	if (node.type === 'multiplication') {
+		return [...productFactors(node.left), ...productFactors(node.right)];
+	}
+	if (node.type === 'delimiter' && node.content.type === 'multiplication') {
+		return productFactors(node.content);
+	}
+	return [node];
+}
+
+/**
+ * Un calcul avec des grandeurs qui vaut 0 (`3[m]-3[m]`, `3[h]*0`) : `tidy` rend `0`, sans
+ * unité. L'analyse dimensionnelle la retrouve — pour une valeur nulle, `0[m^2]` et
+ * `0[mm^2]` sont la même grandeur. `null` si le résultat est un nombre (`0[h]/1[min]`).
+ */
+function zeroQuantityUnit(ast: MathNode): string | null {
+	const analysis = analyzeDimensions(ast, {
+		variables: new Map(),
+		options: { strictMode: true, allowDimensionlessMix: false, allowFractionalExponents: true }
+	});
+	if (!analysis.valid || analysis.resultUnit === null) return null;
+	if (analysis.resultUnit.components.size === 0) return null;
+	return formatUnit(analysis.resultUnit, 'original');
+}
+
+/**
+ * Un calcul avec des grandeurs : `tidy` (unité écrite d'abord) garde l'unité ; un
+ * quotient de même dimension redevient un nombre (`3[h]/1[min]` → 180).
+ */
+function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
+	if (multipliesDurations(ast)) {
+		throw new Error(
+			`Produit de durées : ${toCustom(ast)} (une durée écrite par ;hms ne se réutilise pas dans un calcul)`
+		);
+	}
+	if (modifiers.hms) return hmsWriting(ast);
+	if (modifiers.unit !== undefined)
+		return withSignModifiers(expressedIn(ast, modifiers.unit), modifiers);
+	const reduced = tidy(ast, { unitChoice: 'written' });
+	if (!hasQuantity(reduced)) {
+		const value = rationalOf(reduced);
+		const zeroUnit = value !== null && value.n === 0n ? zeroQuantityUnit(ast) : null;
+		if (zeroUnit !== null) return `0[${zeroUnit}]`;
+		return evaluateAstWithModifiers(reduced, modifiers);
+	}
+	return withSignModifiers(quantityWriting(reduced, ast), modifiers);
+}
+
+// =============================================================================
 // Main Export
 // =============================================================================
 
@@ -221,6 +424,13 @@ export function evaluateAstWithModifiers(
 	modifiers: EvalModifiers = {},
 	literalLetters: ReadonlySet<string> = new Set()
 ): string {
+	// Grandeurs : `evaluate` ignore l'unité par construction — le calcul passe par `tidy`.
+	// Un calcul littéral (lettres tirées) garde son chemin ci-dessous.
+	const quantityRequested = modifiers.hms === true || modifiers.unit !== undefined;
+	if (quantityRequested || (hasQuantity(ast) && getVariables(ast).size === 0)) {
+		return evaluateQuantity(ast, modifiers);
+	}
+
 	// Valeur numérique d'abord (signe des modificateurs, garde-fou de formatExact)
 	const result = evaluate(ast, { mode: 'decimal' });
 
