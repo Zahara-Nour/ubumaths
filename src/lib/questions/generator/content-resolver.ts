@@ -134,11 +134,17 @@ const HMS_REGEX = new RegExp(
 	'g'
 );
 
-/** Une grandeur isolée, pas collée à un mot ni à un autre nombre */
-const QUANTITY_REGEX = /(?<![\w.\]])(-?\d+(?:\.\d+)?)\[([^[\]\s]+)\]/g;
+/**
+ * Une grandeur isolée, pas collée à un mot ni à un autre nombre : ni la fin d'un décimal à
+ * virgule (`1,5[m]`), ni celle d'un nombre groupé par `{}` (`12{}345[m]`)
+ */
+const QUANTITY_REGEX = /(?<![\w.,}\]])(-?\d+(?:\.\d+)?)\[([^[\]\s]+)\]/g;
 
-/** Zones d'une ligne : formules `$$…$$`/`$…$`, zones maison `~~…~~`/`~…~`, le reste est du texte */
-const ZONE_REGEX = /\$\$[\s\S]+?\$\$|\$[^$\n]+\$|~~[\s\S]+?~~|~[^~\n]+~/g;
+/**
+ * Zones d'un contenu : code (```…```, `…`) et zones maison (`~~…~~`, `~…~`) laissés tels quels,
+ * formules `$$…$$`/`$…$` ; le reste est du texte
+ */
+const ZONE_REGEX = /```[\s\S]*?```|`[^`\n]*`|\$\$[\s\S]+?\$\$|\$[^$\n]+\$|~~[\s\S]+?~~|~[^~\n]+~/g;
 
 /** `28[mm]` → `28~\unit{mm}`, seulement si l'unité existe (un crochet de calcul reste tel quel) */
 function quantityToLatex(quantity: string): string {

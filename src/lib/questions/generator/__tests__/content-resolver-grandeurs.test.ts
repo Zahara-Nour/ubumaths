@@ -65,3 +65,15 @@ describe('non-régression', () => {
 		expect(resolve(content)).toBe(content);
 	});
 });
+
+// Relecture de #486
+describe('relecture : ce qui ne doit pas être coupé ni converti', () => {
+	it.each([
+		['la corde mesure 1,5[m] environ', 'décimal à virgule d’auteur'],
+		['nombre groupé 12{}345[m] ici', 'valeur groupée par removeSpaces'],
+		['du code `x = 28[mm]` ici', 'code en ligne'],
+		['```\nx = 28[mm]\n```', 'bloc de code']
+	])('%s (%s) : inchangé', (content) => {
+		expect(resolve(content)).toBe(content);
+	});
+});
