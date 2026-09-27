@@ -21,7 +21,9 @@ import type {
 	QuestionVariable,
 	SharedVariationDefaults,
 	ResolvedCorrection,
-	InstanceBlank
+	InstanceBlank,
+	RequiredForm,
+	ResolvedVariable
 } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
@@ -127,6 +129,27 @@ function resolveVariationWithShared(
 		answerFormats: variation.answerFormats ?? shared.answerFormats
 	};
 }
+
+/** Forme exigée par motif : variables tirées remplacées par leur valeur */
+function resolveRequiredForm(
+	requiredForm: RequiredForm | undefined,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): RequiredForm | undefined {
+	if (!requiredForm || typeof requiredForm === 'string' || !requiredForm.pattern.includes('{{')) {
+		return requiredForm;
+	}
+	// Chaque marqueur remplacé par sa valeur ; tout ce qui n'est pas un nombre positif est
+	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
+	const pattern = requiredForm.pattern.replace(MARKER_REGEX, (marker) => {
+		const value = resolveExpression(marker, resolvedVariables, seed).trim();
+		return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
+	});
+	return { pattern };
+}
+
+/** Un marqueur `{{…}}`, imbrications comprises (`{{eval:{{a}}*2}}`) */
+const MARKER_REGEX = /\{\{(?:[^{}]|\{\{[^{}]*\}\})*\}\}/g;
 
 /**
  * Generate a question instance from a template
@@ -320,10 +343,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					precision: blank.precision ?? resolvedVariation.blankDefaults?.precision,
 					// Même héritage que le reste : case > blankDefaults > variation/shared
 					// (resolvedVariation.requiredForm = variation ?? shared).
-					requiredForm:
+					// Un motif peut nommer les nombres tirés (`{{a}} / {{b}}` → `9 / 3`)
+					requiredForm: resolveRequiredForm(
 						blank.requiredForm ??
-						resolvedVariation.blankDefaults?.requiredForm ??
-						resolvedVariation.requiredForm,
+							resolvedVariation.blankDefaults?.requiredForm ??
+							resolvedVariation.requiredForm,
+						resolvedVariables,
+						seed
+					),
 					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
 					...((blank.rulesSuffice ?? resolvedVariation.blankDefaults?.rulesSuffice) && {
