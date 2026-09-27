@@ -2,7 +2,7 @@
 	"globalIndex": 226,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Variation « quotient » : réponse attendue \\dfrac{a}{b} → a:b. Avec la fraction, « 3 » était accepté pour « le quotient de 9 par 3 » (valeur au lieu d'expression) et la fraction 9/3 elle-même était jugée non réduite. Notation « : » alignée sur #227.",
+	"editNotes": "Variation « quotient » : réponse attendue \\dfrac{a}{b} → a:b. Avec la fraction, « 3 » était accepté pour « le quotient de 9 par 3 » (valeur au lieu d'expression) et la fraction 9/3 elle-même était jugée non réduite. Notation « : » alignée sur #227. Quotient : « : », « ÷ » et la fraction acceptés (forme exigée par motif avec les nombres tirés, décision de David) ; « fraction simplifiable » désactivée.",
 	"template": {
 		"title": "Traduire une phrase en expression mathématique",
 		"shared": {
@@ -46,7 +46,10 @@
 				"statement": "Traduis cette phrase par une expression mathématique : le quotient de ${{a}}$ par ${{b}}$\n\nL'expression est $?$.",
 				"blanks": [
 					{
-						"expectedAnswer": "{{a}}:{{b}}"
+						"expectedAnswer": "{{a}}:{{b}}",
+						"requiredForm": {
+							"pattern": "{{a}} / {{b}}"
+						}
 					}
 				]
 			}
@@ -192,7 +195,62 @@
 				"expected": {
 					"status": "correct"
 				}
+			},
+			{
+				"description": "quotient écrit en fraction",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["\\frac{9}{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "quotient avec la touche ÷",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["9\\div 3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "résultat calculé au lieu de l'expression",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "autre fraction de même valeur",
+				"variationIndex": 3,
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"answers": ["\\frac{6}{2}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
 			}
-		]
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		}
 	}
 }

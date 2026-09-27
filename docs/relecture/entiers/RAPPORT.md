@@ -11,8 +11,8 @@ Entiers sont celles de David (`docs/relecture/david/`).
 
 | Verdict                         | Nombre |
 | ------------------------------- | ------ |
-| Approuvée telle que transformée | 127    |
-| Corrigée puis approuvée         | 60     |
+| Approuvée telle que transformée | 115    |
+| Corrigée puis approuvée         | 72     |
 | Rejetée                         | 0      |
 | À arbitrer                      | 0      |
 
@@ -52,13 +52,13 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
    correction additive d'un côté (« 9 + 9 = 18 »), multiplicative de l'autre (« 2 × 9 = 18 »),
    écrite pour les 7 paires qui n'en avaient pas (#78/#140 et #80/#142 l'avaient déjà). Signatures
    distinctes : #476. Même décision pour #629/#630 (Suites).
-2. **#226, #227 « le quotient de… »** : seule l'écriture `a : b` est acceptée ; la fraction
-   `\frac{a}{b}` (attendue par TinyMath pour #226) est refusée. Faut-il accepter les deux ?
-3. **#227** : `b` passe de 2..9 à 4..9 pour éviter un tirage vide (b = 3 exclu aussi).
-4. **#24 « Jusqu'au million »** : les nombres tirés vont jusqu'à 9 999 999 (renommer, ou limiter).
-5. **Classes** : additions à retenue #48 (CM1), #49–#50 (CM2) ; paraissent tardives.
-6. **#183–#188** (distributivité) : `a` tiré dans 0..9 (12 × 0, 19 × 1 triviaux).
-7. **#139** : « Nombres de 1 à 15 », mais 10 n'est jamais tiré (comme TinyMath).
+2. ✅ **#226, #227 « le quotient de… »** : `a : b`, `a ÷ b` et la fraction sont acceptés ; le
+   résultat ou d'autres nombres sont refusés (forme exigée par motif avec les nombres tirés, #477).
+3. ✅ **#227** : `b` tiré de 4 à 9 (tirage vide sinon) — validé.
+4. ✅ **#24** : tirage limité à 6 chiffres (jusqu'à 999 999, programme de CM1).
+5. ✅ **Classes** : #48 (2 chiffres avec retenue) en CE2, #49–#50 (3 chiffres) en CM1.
+6. ✅ **#183–#188** : facteur à un chiffre tiré de 2 à 9.
+7. ✅ **#139, #77** : description « Nombres de 1 à 15 (sauf 10)… » (le 10 n'est pas tiré).
 
 ## Défauts de conversion restants (corrigés à la main dans ce lot)
 

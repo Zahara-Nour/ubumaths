@@ -1,6 +1,6 @@
 {
 	"globalIndex": 49,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Calculer une somme",
@@ -45,7 +45,7 @@
 				]
 			}
 		],
-		"grades": ["CM2"],
+		"grades": ["CM1"],
 		"theme": "Entiers",
 		"domain": "Additionner",
 		"subdomain": "Somme",
@@ -86,5 +86,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Classe CM2 → CM1 (progression : 2 chiffres avec retenue au CE2, 3 chiffres au CM1) — décision de David."
 }

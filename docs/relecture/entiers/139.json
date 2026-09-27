@@ -1,10 +1,10 @@
 {
 	"globalIndex": 139,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Trouver le double",
-		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"description": "Nombres de $1$ à $15$ (sauf $10$), $25$, $30$, $40$, $50$ et $100$",
 		"shared": {
 			"variables": [
 				{
@@ -95,5 +95,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Description : « sauf 10 » (10 n'est pas tiré, comme dans TinyMath) — décision de David."
 }

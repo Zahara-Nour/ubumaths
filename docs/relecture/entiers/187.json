@@ -1,6 +1,6 @@
 {
 	"globalIndex": 187,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Utiliser la distributivité",
@@ -11,7 +11,7 @@
 				"variables": [
 					{
 						"name": "a",
-						"expression": "0..9"
+						"expression": "2..9"
 					},
 					{
 						"name": "expression1",
@@ -50,17 +50,6 @@
 				}
 			},
 			{
-				"description": "Borne : 19 × 0 = 0",
-				"variationIndex": 0,
-				"variables": {
-					"a": "0"
-				},
-				"answers": ["0"],
-				"expected": {
-					"status": "correct"
-				}
-			},
-			{
 				"description": "Borne : 19 × 9 = 171",
 				"variationIndex": 0,
 				"variables": {
@@ -83,5 +72,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Facteur à un chiffre tiré de 2 à 9 (12 × 0 ou 19 × 1 sans intérêt pour la distributivité) — décision de David."
 }
