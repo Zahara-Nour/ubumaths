@@ -67,8 +67,9 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		errors.push('level must be a non-negative integer');
 	}
 
-	// Validate delay (if present)
-	if (template.delay !== undefined && template.delay <= 0) {
+	// Délai (s'il est présent) : une ligne lue en base porte `null` pour
+	// « pas de délai », et `null <= 0` vaut `true` → `!= null` écarte les deux
+	if (template.delay != null && template.delay <= 0) {
 		errors.push('delay must be positive');
 	}
 
