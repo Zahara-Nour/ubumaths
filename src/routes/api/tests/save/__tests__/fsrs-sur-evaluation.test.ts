@@ -40,14 +40,14 @@ let cartesDeCours: string[];
 /** La ligne insérée dans `test_sessions`. */
 let sessionInseree: Record<string, unknown> | null;
 
-/** Simule un refus RLS : l'INSERT ne rend aucune ligne, et aucune erreur. */
+/** Garde de principe : l'INSERT ne rend aucune ligne, sans erreur (un refus RLS lève normalement 42501). */
 let refusRlsSilencieux = false;
 /** Nombre de lectures de `question_templates` qui échouent avant de réussir. */
 let lecturesModelesEnPanne = 0;
 /** Nombre de lectures de `question_templates` tentées. */
 let lecturesModeles = 0;
 
-/** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si refus RLS). */
+/** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si `refusRlsSilencieux`). */
 function insertAvecSelect(onRows: (rows: Record<string, unknown>[]) => void = () => {}) {
 	return (rows: Record<string, unknown>[] | Record<string, unknown>) => {
 		const list = Array.isArray(rows) ? rows : [rows];
@@ -319,7 +319,7 @@ describe('enregistrement d’une évaluation', () => {
 		expect(sessionInseree).toMatchObject({ score: 10, total_questions: 2 });
 	});
 
-	it('signale un refus RLS silencieux sur skill_attempts (0 ligne, aucune erreur)', async () => {
+	it('signale un INSERT skill_attempts qui ne rend aucune ligne', async () => {
 		const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 		refusRlsSilencieux = true;
 

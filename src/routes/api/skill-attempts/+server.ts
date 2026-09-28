@@ -120,8 +120,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ----- INSERT skill_attempts (per-template) -----
 	// 1 row par attempt. Le trigger boucle ensuite sur question_template_points
 	// pour recalculer chaque student_point_state impactée.
-	// `.select()` : un refus RLS rend 0 ligne SANS erreur — sans lui, l'échec
-	// passait pour un succès (200) alors que rien n'était écrit.
+	// `.select()` : garde de principe — un INSERT refusé par la RLS lève une
+	// erreur (42501), mais on vérifie quand même qu'une ligne a été écrite.
 	const { data: insertedRows, error: insertError } = await locals.supabase
 		.from('skill_attempts')
 		.insert({
@@ -142,7 +142,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (!insertedRows || insertedRows.length !== 1) {
-		console.error('[skill-attempts] INSERT sans ligne écrite (refus RLS ?)', {
+		console.error('[skill-attempts] INSERT sans ligne écrite', {
 			userId: user.id,
 			templateId: template_id,
 			written: insertedRows?.length ?? 0

@@ -171,8 +171,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 				)
 				.eq('user_id', userId)
 				.order('created_at', { ascending: false })
-				.limit(2000)
+				.limit(1000)
 		]);
+
+		// Un export RGPD qui annonce « aucune session » sur une panne de lecture
+		// serait faux : on échoue plutôt (500, l'élève peut réessayer).
+		if (testSessionsResult.error) {
+			throw new Error(`test_sessions illisible : ${testSessionsResult.error.message}`);
+		}
 
 		// Step 4: Build export object
 		const profile = profileResult.data;

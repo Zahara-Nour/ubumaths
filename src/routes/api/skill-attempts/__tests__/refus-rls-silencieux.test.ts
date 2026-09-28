@@ -1,5 +1,9 @@
 /**
- * `/api/skill-attempts` : un INSERT refusé par la RLS rend 0 ligne SANS erreur.
+ * `/api/skill-attempts` : un INSERT qui ne rend aucune ligne n'est pas un succès.
+ *
+ * Garde de principe : un INSERT refusé par la RLS lève normalement une erreur
+ * (42501) ; ce cas « 0 ligne, pas d'erreur » ne devrait pas se produire, mais
+ * la route ne doit pas répondre 200 s'il se produit.
  *
  * Avant : l'INSERT n'avait pas de `.select()`, la route répondait 200
  * `{ inserted: 1 }` alors que rien n'était écrit — et la fiche FSRS, elle,
@@ -22,7 +26,7 @@ import { POST } from '../+server';
 const STUDENT_ID = '11111111-1111-4111-8111-111111111111';
 const TEMPLATE_ID = '22222222-2222-4222-8222-222222222222';
 
-/** Lignes rendues par l'INSERT … `.select()` ; [] = refus RLS silencieux */
+/** Lignes rendues par l'INSERT … `.select()` ; [] = aucune ligne écrite */
 let insertedRows: { id: string }[];
 
 function fakeSupabase() {

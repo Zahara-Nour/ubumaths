@@ -106,7 +106,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			attempts: answer.attempts || 1
 		}));
 
-		// `.select()` : un refus RLS rend 0 ligne SANS erreur
+		// `.select()` : vérifie que toutes les lignes ont été écrites
 		const { data: answersRows, error: answersError } = await supabase
 			.from('test_answers')
 			.insert(answersToInsert)
@@ -209,7 +209,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		if (attemptsToInsert.length > 0) {
-			// `.select()` : un refus RLS rend 0 ligne sans erreur
+			// `.select()` : vérifie que toutes les lignes ont été écrites
 			const { data: attemptsRows, error: attemptsError } = await supabase
 				.from('skill_attempts')
 				.insert(attemptsToInsert)
