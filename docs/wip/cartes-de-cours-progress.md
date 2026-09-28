@@ -27,8 +27,11 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 9. **Indicateurs : l'auto-évaluation n'y compte pas** (option b) — badges de capacité
    (`update_student_point_state`), vue de classe (`class-knowledge.ts`, carte d'activité), anti-fraude
    (`anti-fraud/runner.ts`). Mesure prod le 2026-09-28 : `skill_attempts` est VIDE → aucun badge ni
-   aucune statistique existante ne change. Périmètre exact (révisions SRS d'une carte, activité de la
-   carte de chaleur) : phase 0 en attente de David.
+   aucune statistique existante ne change. **A1** : exclue aussi quand la carte est révisée dans un
+   paquet (`srs`), par le type du modèle. **B1** : la carte d'activité la compte comme activité (pas
+   d'alerte d'inactivité), hors taux de réussite. Livré par #498 (migration appliquée) ; anti-fraude
+   éteint → consigne laissée dans `anti-fraud/runner.ts`. Au passage, #499 : le recalcul d'un badge
+   n'est plus appelable par un utilisateur connecté (seul le trigger et le service).
 
 (Décisions 5 à 9 : David, 2026-09-28.)
 
