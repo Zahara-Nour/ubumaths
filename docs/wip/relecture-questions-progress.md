@@ -224,7 +224,12 @@ Après relecture (`code-reviewer`) :
   forme canonique (#609 importée, 38/39 Fonctions en base).
 - Base : 581 templates, tous brouillons.
 
+## Lot Puissances — 21/21 IMPORTÉES (2026-09-28)
+
+- `docs/relecture/puissances/RAPPORT.md` : 3 approuvées, 18 corrigées ; choix des relecteurs validés.
+- Base : 602 templates, tous brouillons.
+
 ## Prochaine étape
 
 Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
-48 questions : Puissances 21, Suites 15 (#629/#630), Racines 10, Probabilités 2.
+27 questions : Suites 15 (#629/#630), Racines 10, Probabilités 2.

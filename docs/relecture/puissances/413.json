@@ -1,0 +1,99 @@
+{
+	"globalIndex": 413,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : {{solution}} ne rendait que l'exposant (« = 16 ») → 10^{b+c} ; tabulations et align retirés (aligned).",
+	"template": {
+		"title": "Multiplier $2$ puissances de $10$.",
+		"description": "Exposants positifs",
+		"variations": [
+			{
+				"statement": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "10^b*10^c"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{aligned} 10^{{{b}}} \\times 10^{{{c}}} &= 10^{{{b}}+{{c}}} \\\\ &= 10^{{{eval:b+c}}} \\end{aligned}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b+c}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Multiplier",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "10^7×10^9 : exposant 16",
+				"variationIndex": 0,
+				"variables": {
+					"b": "7",
+					"c": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposant 9 fois 1",
+				"variationIndex": 0,
+				"variables": {
+					"b": "9",
+					"c": "1"
+				},
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants multipliés",
+				"variationIndex": 0,
+				"variables": {
+					"b": "7",
+					"c": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "puissance entière tapée dans la case exposant",
+				"variationIndex": 0,
+				"variables": {
+					"b": "7",
+					"c": "9"
+				},
+				"answers": ["10^{16}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

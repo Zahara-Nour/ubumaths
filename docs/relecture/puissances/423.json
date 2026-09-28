@@ -1,0 +1,146 @@
+{
+	"globalIndex": 423,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = 10^{-15} ».",
+	"template": {
+		"title": "Puissance d'une puissance de $10$",
+		"description": "Exposants relatifs",
+		"shared": {
+			"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+			"answerFormats": {
+				"expression1": "10^?"
+			}
+		},
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times {{b}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^{a})^{b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{{a}}}\\right)^{{{b}}} &= 10^{{{a}} \\times ({{b}})} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*(b)}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(10^-5)^3 : -15",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"answers": ["-15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(10^5)^-2 : -10",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5",
+					"b": "-2"
+				},
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(10^-9)^-9 : 81",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-9",
+					"b": "-9"
+				},
+				"answers": ["-81"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

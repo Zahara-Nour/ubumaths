@@ -1,0 +1,112 @@
+{
+	"globalIndex": 418,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = 6^{2} ». Format « &1^? » (marqueur brut) → « {{a}}^? ».",
+	"template": {
+		"title": "Diviser $2$ puissances d'un même nombre.",
+		"description": "Exposants positifs",
+		"variations": [
+			{
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "4..10"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:b-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a^b}/{a^c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{{{a}}^{{{b}}}}{{{a}}^{{{c}}}} &= {{a}}^{{{b}}{{eval:-c;+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b-c}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "{{a}}^?"
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["3"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Diviser",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "6^10/6^8 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "10",
+					"c": "8"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "x^9/x^3 : 6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "x|x",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "10",
+					"c": "8"
+				},
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "exposants divisés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "x|x",
+					"b": "9",
+					"c": "3"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

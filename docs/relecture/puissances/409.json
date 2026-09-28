@@ -1,0 +1,104 @@
+{
+	"globalIndex": 409,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accents : « Ecris » → « Écris », titre « Ecrire » → « Écrire ».",
+	"template": {
+		"title": "Écrire un nombre entier à l'aide d'une puissance de $10$",
+		"description": "de la forme avec puissances de $10$ à la forme décimale.",
+		"variations": [
+			{
+				"statement": "Écris ce nombre sous la forme d'un seul nombre entier.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "b*10^{a}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Puissances de 10",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "9×10^5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["900\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposant 0",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["900000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "un zéro de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["9\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "10^0 lu comme 10",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0",
+					"b": "2"
+				},
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

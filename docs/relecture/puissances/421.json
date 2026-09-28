@@ -1,0 +1,92 @@
+{
+	"globalIndex": 421,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = 10^{63} ».",
+	"template": {
+		"title": "Puissance d'une puissance de $10$",
+		"description": "Exposants positifs",
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(10^a)^b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left(10^{{a}}\\right)^{{b}} &= 10^{{{a}} \\times {{b}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(10^7)^9 : 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes (10^2)^2 : 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

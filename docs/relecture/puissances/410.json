@@ -1,0 +1,110 @@
+{
+	"globalIndex": 410,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"template": {
+		"title": "Écrire un nombre entier à l'aide d'une puissance de $10$",
+		"description": "De la forme décimale à la forme avec puissances de $10$.",
+		"variations": [
+			{
+				"statement": "Écris ce nombre à l'aide d'une puissance de $10$.\n\nExemple : $400 = 4* 10^2$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b*10^{a}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}*10^{{{a}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Puissances de 10",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "90 000 = 9×10^4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["9\\times10^4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "200 = 2×10^2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["2\\times10^{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "recopie du nombre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["90\\,000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "90×10^3 : pas la forme de l'exemple",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["90\\times10^3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "exposant = nombre de chiffres",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"answers": ["9\\times10^5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	},
+	"editNotes": "Accents (« Écris », titre « Écrire »). options.constraints.products passé à « off » : sans ce réglage, la bonne réponse 9\\times10^4 sortait perfectible [products] ; la forme reste exigée (90 000 et 90\\times10^3 refusés en bad_form)."
+}

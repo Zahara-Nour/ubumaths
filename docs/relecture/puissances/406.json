@@ -1,0 +1,229 @@
+{
+	"globalIndex": 406,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Traduire une puissance en produit",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a^2"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a^3"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a^4"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a^5"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a^6"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a^7"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "produit de 2 facteurs 5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit de 3 facteurs 5",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit de 4 facteurs 5",
+				"variationIndex": 2,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit de 5 facteurs 5",
+				"variationIndex": 3,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit de 6 facteurs 5",
+				"variationIndex": 4,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit de 7 facteurs 5",
+				"variationIndex": 5,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times5\\times5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "lettre : x×x×x",
+				"variationIndex": 1,
+				"variables": {
+					"a": "x|x"
+				},
+				"answers": ["x\\times x\\times x"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "valeur 125 : forme refusée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["125"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "recopie 5^3",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5^3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "5×25 : pas la définition",
+				"variationIndex": 1,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["5\\times25"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

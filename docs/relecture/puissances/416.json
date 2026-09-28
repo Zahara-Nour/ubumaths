@@ -1,0 +1,113 @@
+{
+	"globalIndex": 416,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = c^{-3} ». Format de réponse « &1^? » (marqueur brut affiché) → « {{a}}^? ».",
+	"template": {
+		"title": "Multiplier $2$ puissances d'un même nombre.",
+		"description": "Exposants relatifs",
+		"variations": [
+			{
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..5;±!{{eval:-(b)}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^{b}*a^{c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} {{a}}^{{{b}}} \\times {{a}}^{{{c}}} &= {{a}}^{{{b}}{{eval:c;+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"conditions": ["abs(b+(c))>1"],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b+(c)}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "{{a}}^?"
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Multiplier",
+		"level": 4,
+		"status": "draft",
+		"delay": 60,
+		"testSpecs": [
+			{
+				"description": "c^-5 × c^2 : -3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10^5 × 10^3 : 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants multipliés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"answers": ["-10"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "erreur de signe refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "c|c",
+					"b": "-5",
+					"c": "2"
+				},
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

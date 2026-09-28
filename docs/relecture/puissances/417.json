@@ -1,0 +1,99 @@
+{
+	"globalIndex": 417,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = 10^{2} ».",
+	"template": {
+		"title": "Diviser $2$ puissances de $10$.",
+		"description": "Exposants positifs",
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..10"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^a}/{10^b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{a}}}}{10^{{{b}}}} &= 10^{{{a}}{{eval:-b;+}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a-b}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			}
+		],
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Diviser",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "10^8/10^6 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 10/8 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "8"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "6"
+				},
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "exposants divisés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "2"
+				},
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,108 @@
+{
+	"globalIndex": 407,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Accent : « Ecris » → « Écris ».",
+	"template": {
+		"title": "Définition d'une puissance à exposant négatif",
+		"variations": [
+			{
+				"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^{-b}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 3,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "1/6^3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{6^3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "lettre b avec exposant 4",
+				"variationIndex": 0,
+				"variables": {
+					"a": "b|b",
+					"b": "4"
+				},
+				"answers": ["\\frac{1}{b^4}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "valeur 1/216 : forme refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{216}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "signe : -6^3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"answers": ["-6^3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1/6^{-3}",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{6^{-3}}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

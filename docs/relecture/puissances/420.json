@@ -1,0 +1,113 @@
+{
+	"globalIndex": 420,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = c^{-6} ». Format « &1^? » (marqueur brut) → « {{a}}^? ».",
+	"template": {
+		"title": "Diviser $2$ puissances d'un même nombre.",
+		"description": "Exposants relatifs",
+		"variations": [
+			{
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a^{b}}/{a^{c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{{{a}}^{{{b}}}}{{{a}}^{{{c}}}} &= {{a}}^{{{b}}{{eval:-(c);+}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"conditions": ["abs(b-(c))>1"],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b-(c)}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "{{a}}^?"
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["3"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Diviser",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "c^-4/c^2 : -6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "c|c",
+					"b": "-4",
+					"c": "2"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3^5/3^-3 : 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "-3"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "c|c",
+					"b": "-4",
+					"c": "2"
+				},
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "signe refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5",
+					"c": "-3"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

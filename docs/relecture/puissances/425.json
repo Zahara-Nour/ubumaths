@@ -1,0 +1,146 @@
+{
+	"globalIndex": 425,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = 10^{2} ». Format de réponse « 10^? » perdu à la conversion (2 expressions) : la case seule attendait l'exposant sans afficher le 10 → answerFormats rétabli par variation.",
+	"template": {
+		"title": "Multiplier et diviser des puissances de $10$.",
+		"description": "Exposants positifs",
+		"variations": [
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:a+b-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^a*10^b}/{10^c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{a}}}\\times 10^{{{b}}}}{10^{{{c}}}} &= 10^{{{a}}+{{b}}-{{c}}} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b-c}}"
+					}
+				],
+				"answerFormats": {
+					"expression1": "10^?"
+				}
+			},
+			{
+				"statement": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+b+2}}..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{10^c}/{10^a*10^b}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\frac{10^{{{c}}}}{10^{{{a}}} \\times 10^{{{b}}}} &= 10^{{{c}}-({{a}}+{{b}})} \\\\ &= 10^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c-a-b}}"
+					}
+				],
+				"answerFormats": {
+					"expression2": "10^?"
+				}
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Mixer tout ça",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "10^7×10^9/10^14 : 2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "14"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10^9/(10^4×10^3) : 2",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "3",
+					"c": "9"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de soustraire refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "14"
+				},
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "addition des 3 exposants refusée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "3",
+					"c": "9"
+				},
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

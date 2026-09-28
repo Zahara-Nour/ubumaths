@@ -1,0 +1,159 @@
+{
+	"globalIndex": 424,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : la dernière ligne affichait l'exposant seul (« = 8 ») au lieu de la puissance → « = x^{-21} ». Format de réponse « 10^? » (erreur de l'original TinyMath : la base est la lettre/le nombre tiré) → « {{a}}^? ».",
+	"template": {
+		"title": "Puissance d'une puissance",
+		"description": "Exposants relatifs",
+		"shared": {
+			"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+			"answerFormats": {
+				"expression1": "{{a}}^?"
+			}
+		},
+		"variations": [
+			{
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^{b})^{c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left({{a}}^{{{b}}}\\right)^{{{c}}} &= {{a}}^{{{b}} \\times {{c}}} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*(c)}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..-2"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^{b})^{c}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\left({{a}}^{{{b}}}\\right)^{{{c}}} &= {{a}}^{{{b}} \\times ({{c}})} \\\\ &= {{a}}^{{{solution}}}  \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*(c)}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"grades": ["3"],
+		"theme": "Puissances",
+		"domain": "Calculer",
+		"subdomain": "Puissance de puissance",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(x^-7)^3 : -21",
+				"variationIndex": 0,
+				"variables": {
+					"a": "x|x",
+					"b": "-7",
+					"c": "3"
+				},
+				"answers": ["-21"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(10^-3)^-4 : 12",
+				"variationIndex": 1,
+				"variables": {
+					"a": "10",
+					"b": "-3",
+					"c": "-4"
+				},
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(b^5)^-2 : -10",
+				"variationIndex": 1,
+				"variables": {
+					"a": "b|b",
+					"b": "5",
+					"c": "-2"
+				},
+				"answers": ["-10"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "10",
+					"b": "-3",
+					"c": "-4"
+				},
+				"answers": ["-12"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "exposants additionnés refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "x|x",
+					"b": "-7",
+					"c": "3"
+				},
+				"answers": ["-4"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

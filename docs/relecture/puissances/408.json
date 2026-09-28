@@ -1,0 +1,116 @@
+{
+	"globalIndex": 408,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Puissances de 10",
+		"variations": [
+			{
+				"statement": "Calcule en écrivant le résultat sous forme décimale.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "10^{a}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"subdomain": "Puissances de 10",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "10^5 = 100 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["100\\,000"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10^-5 = 0,000 01",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5"
+				},
+				"answers": ["0{,}000\\,01"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "10^0 = 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "0"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sans espace des milliers",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["100000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				}
+			},
+			{
+				"description": "recopie 10^5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5"
+				},
+				"answers": ["10^5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "10^-5 lu comme -100 000",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5"
+				},
+				"answers": ["-100\\,000"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "un zéro de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-5"
+				},
+				"answers": ["0{,}0001"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
