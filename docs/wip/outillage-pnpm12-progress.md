@@ -21,8 +21,10 @@ Sur le Mac mini, un `corepack use pnpm@12.6.0` lancé dans le projet a réécrit
      transforme les scripts bloqués en **erreur** (`ERR_PNPM_IGNORED_BUILDS` :
      core-js, trois esbuild), plus en simple avertissement.
 
-   Le Mac mini doit être remis sur pnpm 10.23.0 pour la migration (prompt
-   donné le 2026-09-29 ; retour à confirmer).
+   Le Mac mini a été remis sur pnpm 10.23.0 le 2026-09-29 (vérifié :
+   `esbuild@0.28.2` seul dans `node_modules`, `check:incremental` à 0 erreur).
+   La machine garde pnpm 12.6.0 par défaut hors des projets
+   (`corepack install -g`).
 
 2. **La CLI Supabase récente déprécie `[inbucket]`** dans `supabase/config.toml`
    (`WARN: config section [inbucket] is deprecated. Please use [local_smtp]
