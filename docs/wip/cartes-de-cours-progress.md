@@ -44,5 +44,7 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 
 - [x] Phase 0 validée (2026-09-28)
 - [ ] PR migration
-- [ ] PR code
+- [ ] PR code — implémentée sur `feat/cartes-de-cours` (2026-09-28), non poussée ; attend la PR migration
+      (`db:types` n'est pas requis : `type` est un `string` dans `database.ts`, mais l'écriture de
+      `course_card` échoue au CHECK tant que la migration n'est pas en prod)
 - [ ] #617 importée
