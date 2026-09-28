@@ -614,3 +614,41 @@ describe('LatexGenerator - Relation Chains', () => {
 		expect(toLatex(chain)).toBe('a = b < c');
 	});
 });
+
+// Base de puissance négative ou fractionnaire construite en interne (tidy retire le
+// délimiteur de `(-2)^x`) : sans parenthèses, `-2^x` se relit -(2^x), une AUTRE valeur.
+describe('LatexGenerator - base de puissance à parenthéser', () => {
+	it('(-2)^x garde ses parenthèses', () => {
+		const expr = MathAST.power(MathAST.opposite(MathAST.number('2')), MathAST.variable('x'));
+		expect(toLatex(expr)).toBe('\\left( -2 \\right)^x');
+	});
+
+	it('-(2^x) reste -2^x : les deux écritures diffèrent', () => {
+		const expr = MathAST.opposite(MathAST.power(MathAST.number('2'), MathAST.variable('x')));
+		expect(toLatex(expr)).toBe('-2^x');
+	});
+
+	it('(-1/4)^n garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.fraction(MathAST.number('1'), MathAST.number('4'))),
+			MathAST.variable('n')
+		);
+		expect(toLatex(expr)).toBe('\\left( -\\dfrac{1}{4} \\right)^n');
+	});
+
+	it('(1/4)^n : une fraction en base est parenthésée', () => {
+		const expr = MathAST.power(
+			MathAST.fraction(MathAST.number('1'), MathAST.number('4')),
+			MathAST.variable('n')
+		);
+		expect(toLatex(expr)).toBe('\\left( \\dfrac{1}{4} \\right)^n');
+	});
+
+	it('(-2)^{n+1} : exposant composé', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.number('2')),
+			MathAST.add(MathAST.variable('n'), MathAST.number('1'))
+		);
+		expect(toLatex(expr)).toBe('\\left( -2 \\right)^{n + 1}');
+	});
+});

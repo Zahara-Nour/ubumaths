@@ -38,7 +38,11 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { needsParenthesesUnderPercent, needsParenthesesUnderSign } from './common/sign-parentheses';
+import {
+	needsParenthesesAsPowerBase,
+	needsParenthesesUnderPercent,
+	needsParenthesesUnderSign
+} from './common/sign-parentheses';
 
 // =============================================================================
 // Types
@@ -386,10 +390,10 @@ export class LatexGenerator {
 				break;
 
 			case 'superscript':
-				// Grandeur élevée à une puissance : parenthèses (voir generateSuperscript)
-				if (node.base.type === 'unit') this.emit('\\left( ', node.metadata);
+				// Base à parenthéser (somme, opposé, quotient, grandeur) : voir generateSuperscript
+				if (needsParenthesesAsPowerBase(node.base)) this.emit('\\left( ', node.metadata);
 				this.visitWithSpans(node.base);
-				if (node.base.type === 'unit') this.emit(' \\right)', node.metadata);
+				if (needsParenthesesAsPowerBase(node.base)) this.emit(' \\right)', node.metadata);
 				this.emit('^', node.metadata);
 				this.emit('{', node.metadata);
 				this.visitWithSpans(node.superscript);
@@ -1329,12 +1333,10 @@ export class LatexGenerator {
 		// `x + 1^{2/3}`, qui se relit `x + (1^{2/3})`, soit `x + 1`. Une
 		// expression montrée à l'élève sous une forme qui ne se relit pas comme
 		// elle-même.
-		// Une grandeur aussi : `3~\unit{m^2}^2` empilerait deux exposants
-		const baseNeedsParentheses =
-			node.base.type === 'addition' ||
-			node.base.type === 'subtraction' ||
-			node.base.type === 'unit';
-		const wrappedBase = baseNeedsParentheses ? `\\left( ${base} \\right)` : base;
+		// Une grandeur aussi : `3~\unit{m^2}^2` empilerait deux exposants.
+		// Un opposé ou un quotient aussi : `-2^x` se relit −(2^x), pas (−2)^x
+		// (voir common/sign-parentheses.ts)
+		const wrappedBase = needsParenthesesAsPowerBase(node.base) ? `\\left( ${base} \\right)` : base;
 
 		return `${wrappedBase}^${wrappedSuperscript}`;
 	}

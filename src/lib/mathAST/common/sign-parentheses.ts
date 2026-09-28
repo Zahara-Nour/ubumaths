@@ -49,3 +49,26 @@ export function needsParenthesesUnderPercent(node: MathNode): boolean {
 			return true;
 	}
 }
+
+/**
+ * Cette expression doit-elle être parenthésée en BASE d'une puissance ?
+ *
+ * ⚠️ **Mesuré en production** : `{{eval:a*(b)^n}}` avec b = −2 affichait
+ * `3 × (−2^n)`. tidy retire le délimiteur de `(−2)` et garde le nœud juste,
+ * `superscript(opposite(2), n)`, mais écrit sans parenthèses il se relit
+ * −(2ⁿ) : une AUTRE valeur (n pair). De même `1/4^n` se relit 1/(4ⁿ).
+ *
+ * Une somme, une différence, un opposé, un quotient ou une grandeur : oui.
+ */
+export function needsParenthesesAsPowerBase(node: MathNode): boolean {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'opposite':
+		case 'division':
+		case 'unit':
+			return true;
+		default:
+			return false;
+	}
+}

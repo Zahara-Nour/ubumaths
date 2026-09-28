@@ -770,3 +770,33 @@ describe('CustomGenerator - Composition', () => {
 		expect(toCustom(expr, { renderMetadata: true })).toBe('f@red{@}g');
 	});
 });
+
+// Base de puissance négative ou fractionnaire construite en interne : `-2^x` se relit
+// -(2^x) et `1/4^n` se relit 1/(4^n) — des valeurs FAUSSES, pas seulement un affichage.
+describe('CustomGenerator - base de puissance à parenthéser', () => {
+	it('(-2)^x garde ses parenthèses', () => {
+		const expr = MathAST.power(MathAST.opposite(MathAST.number('2')), MathAST.variable('x'));
+		expect(toCustom(expr)).toBe('(-2)^x');
+	});
+
+	it('-(2^x) reste -2^x', () => {
+		const expr = MathAST.opposite(MathAST.power(MathAST.number('2'), MathAST.variable('x')));
+		expect(toCustom(expr)).toBe('-2^x');
+	});
+
+	it('(1/4)^n : une fraction en base est parenthésée', () => {
+		const expr = MathAST.power(
+			MathAST.fraction(MathAST.number('1'), MathAST.number('4')),
+			MathAST.variable('n')
+		);
+		expect(toCustom(expr)).toBe('(1/4)^n');
+	});
+
+	it('(-1/4)^n garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.fraction(MathAST.number('1'), MathAST.number('4'))),
+			MathAST.variable('n')
+		);
+		expect(toCustom(expr)).toBe('(-1/4)^n');
+	});
+});
