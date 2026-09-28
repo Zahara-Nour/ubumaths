@@ -61,17 +61,18 @@ en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de
 
 ## Les questions
 
-| Terme                  | Sens                                                                                                            | Code                                                                            |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Modèle de question** | Ce que le prof rédige : énoncé paramétré, cases, correction.                                                    | `question_templates`                                                            |
-| **Variation**          | Paramétrage alternatif d'un **même cas pédagogique** ; tirée **par élève** → difficulté équivalente exigée.     | `question_templates.variations[]`                                               |
-| **Instance**           | La question générée qu'un élève voit (seed déterministe).                                                       |                                                                                 |
-| **Case**               | Zone de réponse d'une question (MathLive).                                                                      | `blanks[]`                                                                      |
-| **QCM**                | Question à choix.                                                                                               | type `multiple_choice`                                                          |
-| **Carte de cours**     | Question sans case ni choix : recto (énoncé) / verso (correction), auto-évaluée. Exclue des évaluations notées. | type `course_card` → [ADR 0009](docs/adr/0009-carte-de-cours-type-explicite.md) |
-| **Correction**         | Le texte / les étapes montrés après réponse.                                                                    | `correction.steps`                                                              |
-| **Motif de forme**     | Contrainte sur l'**écriture** attendue (ex. « forme réduite »), au-delà de l'équivalence.                       | `mathAST/pattern/`, `requiredForm`                                              |
-| **Relecture**          | Revue des 633 questions TinyMath importées, lot par lot.                                                        | `docs/relecture/`                                                               |
+| Terme                  | Sens                                                                                                                                  | Code                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Modèle de question** | Ce que le prof rédige : énoncé paramétré, cases, correction.                                                                          | `question_templates`                                                            |
+| **Variation**          | Paramétrage alternatif d'un **même cas pédagogique** ; tirée **par élève** → difficulté équivalente exigée.                           | `question_templates.variations[]`                                               |
+| **Instance**           | La question générée qu'un élève voit (seed déterministe).                                                                             |                                                                                 |
+| **Case**               | Zone de réponse d'une question (MathLive).                                                                                            | `blanks[]`                                                                      |
+| **QCM**                | Question à choix.                                                                                                                     | type `multiple_choice`                                                          |
+| **Carte de cours**     | Question sans case ni choix : recto (énoncé) / verso (correction), auto-évaluée. Exclue des évaluations notées.                       | type `course_card` → [ADR 0009](docs/adr/0009-carte-de-cours-type-explicite.md) |
+| **Correction**         | Le texte / les étapes montrés après réponse.                                                                                          | `correction.steps`                                                              |
+| **Motif de forme**     | Contrainte sur l'**écriture** attendue (ex. « forme réduite »), au-delà de l'équivalence.                                             | `mathAST/pattern/`, `requiredForm`                                              |
+| **Série**              | Exercice d'une fiche qui regroupe plusieurs instances figées (graine fixe) de modèles de questions ; même copie pour toute la classe. | → [ADR 0011](docs/adr/0011-fiche-d-automatismes-figee-par-graine.md)            |
+| **Relecture**          | Revue des 633 questions TinyMath importées, lot par lot.                                                                              | `docs/relecture/`                                                               |
 
 Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_rounded`,
 `algebraic_transform`, `fill_in_blanks`, `multiple_choice`, plus `course_card`.

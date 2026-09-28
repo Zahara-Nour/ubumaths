@@ -19,6 +19,7 @@ contourner en silence.
 | 0008 | [Référentiel famille A abandonné](0008-referentiel-famille-a-abandonne.md)                                      | 2026-09-06 |
 | 0009 | [Carte de cours : type explicite `course_card`](0009-carte-de-cours-type-explicite.md)                          | 2026-09-28 |
 | 0010 | [Pas de re-vérification serveur du Python](0010-pas-de-reverification-serveur-python.md)                        | 2026-08-27 |
+| 0011 | [Fiche d'automatismes : instances figées par une graine](0011-fiche-d-automatismes-figee-par-graine.md)         | 2026-09-28 |
 
 ## Écrire un ADR
 
