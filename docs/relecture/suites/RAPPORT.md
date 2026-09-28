@@ -4,7 +4,8 @@
 suivant, conjecturer le terme général, limites, suites arithmétiques. Relecture le 2026-09-28
 (Claude, deux relecteurs puis contrôle d'ensemble).
 
-> ⏳ **En attente du feu vert de David** pour l'import en BROUILLON.
+> ✅ **Feu vert de David le 2026-09-28 : les 15 questions sont importées en BROUILLON** (vérifié en
+> base : reliées au suivi, statut draft, 15 emplacements distincts). David les publie lui-même.
 
 ## Bilan
 

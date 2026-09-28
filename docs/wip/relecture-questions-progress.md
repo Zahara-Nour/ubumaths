@@ -229,14 +229,15 @@ Après relecture (`code-reviewer`) :
 - `docs/relecture/puissances/RAPPORT.md` : 3 approuvées, 18 corrigées ; choix des relecteurs validés.
 - Base : 602 templates, tous brouillons.
 
-## Lot Suites — RELU, en attente du feu vert (2026-09-28)
+## Lot Suites — 15/15 IMPORTÉES (2026-09-28)
 
 - `docs/relecture/suites/RAPPORT.md` : 2 approuvées, 13 corrigées, 0 à arbitrer ; 3 choix à valider
-  (#621 formes, #625 niveau, #629/#630).
+  (#621 formes, #625 niveau, #629/#630) validés par David. Base : 621 templates, tous brouillons.
 - Défauts du moteur vérifiés : `{{eval:a*(b)^x}}` perd les parenthèses d'une base négative (faux sans
-  erreur) ; `brackets` juge inutiles les parenthèses de `\left(\frac{1}{5}\right)^n`.
+  erreur) ; `brackets` juge inutiles les parenthèses de `\left(\frac{1}{5}\right)^n`. Correction
+  demandée par David (2026-09-28).
 
 ## Prochaine étape
 
 Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
-27 questions : Suites 15 (#629/#630), Racines 10, Probabilités 2.
+12 questions : Racines 10 (#471–#480), Probabilités 2 (#481–#482).
