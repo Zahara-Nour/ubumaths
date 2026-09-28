@@ -1,0 +1,329 @@
+{
+	"globalIndex": 481,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncés à l'impératif avec un dé ÉQUILIBRÉ à faces numérotées de 1 à n (hypothèse d'équiprobabilité absente) ; « fréquence d'apparition » remplacé par « probabilité » dans la case (confusion de notions) ; solution hors mode math dans la correction ($\\dfrac…$ brut) ; corrections reformulées avec issue/équiprobable/événement impossible. Choix : fraction non réduite juste (intention TinyMath no-penalty, conservée), décimal exact accepté (acceptDecimal), valeurs hors [0;1] refusées.",
+	"template": {
+		"title": "probabilité simple",
+		"variations": [
+			{
+				"statement": "On lance un dé équilibré à ${{a}}$ faces, numérotées de $1$ à ${{a}}$. Donne la probabilité d'obtenir le nombre ${{b}}$.\n\nLa probabilité est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "6|8|10|12|20"
+					},
+					{
+						"name": "b",
+						"expression": "1..a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le dé est équilibré : les ${{a}}$ issues sont équiprobables, et une seule donne le nombre ${{b}}$. La probabilité est donc ${{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{{{a}}}"
+					}
+				]
+			},
+			{
+				"statement": "On lance un dé équilibré à ${{a}}$ faces, numérotées de $1$ à ${{a}}$. Donne la probabilité d'obtenir le nombre ${{b}}$.\n\nLa probabilité est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "6|8|10|12|20"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..{{eval:a+3}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Aucune face du dé ne porte le nombre ${{b}}$ : c'est un événement impossible. La probabilité est donc ${{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				]
+			},
+			{
+				"statement": "On lance un dé équilibré à ${{a}}$ faces, numérotées de $1$ à ${{a}}$. Donne la probabilité d'obtenir un nombre pair.\n\nLa probabilité est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "6|8|10|12|20"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les ${{a}}$ issues sont équiprobables, et ${{eval:a/2}}$ d'entre elles sont des nombres pairs. La probabilité est donc $\\frac{{{eval:a/2}}}{{{a}}}={{solution:0}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{2}"
+					}
+				]
+			},
+			{
+				"statement": "On lance un dé équilibré à ${{a}}$ faces, numérotées de $1$ à ${{a}}$. Donne la probabilité d'obtenir un multiple de ${{b}}$.\n\nLa probabilité est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "6|8|10|12|20"
+					},
+					{
+						"name": "b",
+						"expression": "3|4|5"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(a-mod(a, b))/b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Les ${{a}}$ issues sont équiprobables, et {{if:{{c}}=1|une seule d'entre elles est un multiple de ${{b}}$|${{c}}$ d'entre elles sont des multiples de ${{b}}$}}.",
+						"{{if:gcd({{c}}, {{a}})=1|La probabilité est donc ${{solution:0}}$.|La probabilité est donc $\\frac{{{c}}}{{{a}}}={{solution:0}}$.}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:((a-mod(a, b))/b)/a}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Probabilités",
+		"domain": "apprivoiser",
+		"subdomain": "fréquences",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"shared": {
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "1 chance sur 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "3"
+				},
+				"answers": ["\\frac{1}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décimal exact 0,125 accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "3"
+				},
+				"answers": ["0{,}125"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne b=a=20",
+				"variationIndex": 0,
+				"variables": {
+					"a": "20",
+					"b": "20"
+				},
+				"answers": ["\\frac{1}{20}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "confusion avec le numéro tiré 3/8 refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "3"
+				},
+				"answers": ["\\frac{3}{8}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8 (>1) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "3"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "événement impossible : 0",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1/8 pour un nombre absent refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "8",
+					"b": "9"
+				},
+				"answers": ["\\frac{1}{8}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "pair : 1/2",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pair : 3/6 non réduite acceptée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["\\frac{3}{6}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pair : 0,5 accepté",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["0{,}5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pair : effectif 3 au lieu de la probabilité refusé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "6"
+				},
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "multiples de 5 sur 12 faces : 1/6",
+				"variationIndex": 3,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["\\frac{1}{6}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2/12 non réduite acceptée",
+				"variationIndex": 3,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["\\frac{2}{12}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "fraction renversée 12/2 (>1) refusée",
+				"variationIndex": 3,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["\\frac{12}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1/b (confusion) refusé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["\\frac{1}{5}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "arrondi 0,17 refusé",
+				"variationIndex": 3,
+				"variables": {
+					"a": "12",
+					"b": "5",
+					"c": "2"
+				},
+				"answers": ["0{,}17"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne c=1 : multiples de 4 sur 6 faces",
+				"variationIndex": 3,
+				"variables": {
+					"a": "6",
+					"b": "4",
+					"c": "1"
+				},
+				"answers": ["\\frac{1}{6}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

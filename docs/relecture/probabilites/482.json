@@ -1,0 +1,276 @@
+{
+	"globalIndex": 482,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncés à l'impératif (« Calcule la fréquence… ») sans question redondante avec la case ; correction : solution hors mode math ($\\dfrac…$ brut) et numéro du dé hors $…$ ; « face? »/« pile? » sans espace. Choix : fraction non réduite juste (option TinyMath no-penalty conservée), décimal exact accepté (acceptDecimal), valeurs > 1 refusées.",
+	"template": {
+		"title": "fréquence",
+		"variations": [
+			{
+				"statement": "Je lance ${{a}}$ fois un dé à ${{b}}$ faces. J'obtiens ${{c}}$ fois le nombre ${{d}}$.\n\nCalcule la fréquence d'apparition du nombre ${{d}}$.\n\nLa fréquence d'apparition est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "6|8|10|12|20"
+					},
+					{
+						"name": "c",
+						"expression": "1..a"
+					},
+					{
+						"name": "d",
+						"expression": "1..b"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:gcd({{c}}, {{a}})=1|Le nombre ${{d}}$ apparaît ${{c}}$ fois sur ${{a}}$ lancers : sa fréquence d'apparition est ${{solution:0}}$.|Le nombre ${{d}}$ apparaît ${{c}}$ fois sur ${{a}}$ lancers : sa fréquence d'apparition est $\\frac{{{c}}}{{{a}}}={{solution:0}}$.}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Je lance ${{a}}$ fois une pièce de monnaie. J'obtiens ${{b}}$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:gcd({{b}}, {{a}})=1|Le côté face apparaît ${{b}}$ fois sur ${{a}}$ lancers : sa fréquence d'apparition est ${{solution:0}}$.|Le côté face apparaît ${{b}}$ fois sur ${{a}}$ lancers : sa fréquence d'apparition est $\\frac{{{b}}}{{{a}}}={{solution:0}}$.}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				]
+			},
+			{
+				"statement": "Je lance ${{a}}$ fois une pièce de monnaie. J'obtiens ${{b}}$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le côté pile apparaît ${{a}}-{{b}}={{eval:a-b}}$ fois sur ${{a}}$ lancers.",
+						"{{if:gcd({{a}}-{{b}}, {{a}})=1|Sa fréquence d'apparition est donc ${{solution:0}}$.|Sa fréquence d'apparition est donc $\\frac{{{eval:a-b}}}{{{a}}}={{solution:0}}$.}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a-b)/a}}"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Probabilités",
+		"domain": "apprivoiser",
+		"subdomain": "fréquences",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"shared": {
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"testSpecs": [
+			{
+				"description": "2 fois sur 5 : 2/5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["\\frac{2}{5}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "décimal exact 0,4 accepté",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["0{,}4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4/10 non réduite acceptée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["\\frac{4}{10}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "division par le nombre de faces 2/6 refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["\\frac{2}{6}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction renversée 5/2 (>1) refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "2",
+					"d": "3"
+				},
+				"answers": ["\\frac{5}{2}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne c=a : fréquence 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "20",
+					"c": "8",
+					"d": "13"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "face 2 fois sur 9",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"answers": ["\\frac{2}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "face : fréquence de pile 7/9 refusée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "face : arrondi 0,22 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"answers": ["0{,}22"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "pile : 7/9",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pile : fréquence de face 2/9 refusée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"answers": ["\\frac{2}{9}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "pile borne b=a-1 : 1/8 ou 0,125",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "7"
+				},
+				"answers": ["0{,}125"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "pile : 6/8 non réduite acceptée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "8",
+					"b": "2"
+				},
+				"answers": ["\\frac{6}{8}"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

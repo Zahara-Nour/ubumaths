@@ -245,6 +245,11 @@ Après relecture (`code-reviewer`) :
 - `docs/relecture/racines/RAPPORT.md` : 10 corrigées ; décisions de David : thème « Racines carrées »,
   #471 gardée en 5e, #478 b sans facteur carré. Base : 631 templates, tous brouillons.
 
+## Lot Probabilités — RELU, en attente du feu vert (2026-09-28)
+
+- `docs/relecture/probabilites/RAPPORT.md` : 2 corrigées ; 3 points à trancher (classe, rangement de
+  #481, casse).
+
 ## Prochaine étape
 
 Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
