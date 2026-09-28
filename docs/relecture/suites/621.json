@@ -2,7 +2,7 @@
 	"globalIndex": 621,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Validation testAnswers reconstruite : réponse attendue = expression de u_{n+1} (une case par variation). Énoncé réécrit à l'impératif ; fraction TinyMath brute {n+a}/{n+b} remplacée par \\dfrac ; cadres \\enclose retirés de la correction. Forme : v1 attend 3(n+1)^2 (développé = perfectible), v2 attend 4n+4 (4(n+1) = perfectible).",
+	"editNotes": "Validation testAnswers reconstruite : réponse attendue = expression de u_{n+1} (une case par variation). Énoncé réécrit à l'impératif ; fraction TinyMath brute {n+a}/{n+b} remplacée par \\dfrac ; cadres \\enclose retirés de la correction. Forme : v1 attend 3(n+1)^2 (développé = perfectible), v2 attend 4n+4 (4(n+1) = perfectible). Décision de David (2026-09-28) : forme développée et forme factorisée toutes deux justes en variations 1 et 2 (forme libre, motif « u » : le moteur ne sait pas déclarer deux formes justes ; contrepartie, une somme non réduite 3n^2+6n+1+2 est aussi jugée juste) — l'objectif est de remplacer n par n+1, pas de choisir une forme.",
 	"template": {
 		"title": "Exprimer le terme suivant",
 		"shared": {
@@ -27,8 +27,7 @@
 					{
 						"expectedAnswer": "{{a}}(n+1)^2",
 						"requiredForm": {
-							"pattern": "u*(n+v)^2",
-							"acceptable": "u*n^2+v*n+w"
+							"pattern": "u"
 						}
 					}
 				]
@@ -42,8 +41,7 @@
 					{
 						"expectedAnswer": "{{a}}n+{{a}}",
 						"requiredForm": {
-							"pattern": "u*n+v",
-							"acceptable": "u*(n+v)"
+							"pattern": "u"
 						}
 					}
 				]
@@ -229,7 +227,7 @@
 				}
 			},
 			{
-				"description": "forme développée : perfectible",
+				"description": "forme développée : perfectible — autre forme, juste (décision de David)",
 				"variationIndex": 0,
 				"variables": {
 					"a": "3",
@@ -237,12 +235,11 @@
 				},
 				"answers": ["3n^2+6n+3"],
 				"expected": {
-					"status": "unoptimal_form",
-					"constraintViolations": ["form"]
+					"status": "correct"
 				}
 			},
 			{
-				"description": "forme factorisée 4(n+1) : perfectible",
+				"description": "forme factorisée 4(n+1) : perfectible — autre forme, juste (décision de David)",
 				"variationIndex": 1,
 				"variables": {
 					"a": "4",
@@ -250,8 +247,19 @@
 				},
 				"answers": ["4(n+1)"],
 				"expected": {
-					"status": "unoptimal_form",
-					"constraintViolations": ["form"]
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 : 3(n+1)(n+1), autre écriture juste",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["3(n+1)(n+1)"],
+				"expected": {
+					"status": "correct"
 				}
 			}
 		]

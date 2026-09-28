@@ -43,14 +43,13 @@ Avant relecture, **7 questions sur 15 ne généraient pas** (#621, #623, #627, #
 
 Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
-## Choix des relecteurs — à valider
+## Choix validés par David (2026-09-28)
 
-1. **#621, formes** : variation 1, la forme développée est perfectible (forme factorisée attendue) ;
-   variation 2, `4(n+1)` est perfectible (forme développée attendue). Veux-tu les deux formes justes ?
-2. **#625** est classée 1re spé alors que les limites de suites relèvent de la terminale (#626 y est
-   déjà). La déplacer en T_SPE ?
-3. **#629 / #630** : identiques après conversion, seul le niveau change (3 et 4) — gardées toutes les
-   deux (ta décision du lot Entiers).
+1. **#621, formes** : forme développée ET forme factorisée justes en variations 1 et 2 (l'objectif
+   est de remplacer n par n+1). Le moteur ne sait pas déclarer deux formes justes : forme libre
+   (motif `u`) ; contrepartie, une somme non réduite (`3n^2+6n+1+2`) est aussi jugée juste.
+2. **#625** reste en 1re spé (approche intuitive des limites sur les suites de référence).
+3. **#629 / #630** : gardées toutes les deux (décision du lot Entiers).
 
 ## Limites du correcteur relevées (non bloquantes pour ce lot)
 
