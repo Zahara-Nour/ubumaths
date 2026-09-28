@@ -614,3 +614,80 @@ describe('LatexGenerator - Relation Chains', () => {
 		expect(toLatex(chain)).toBe('a = b < c');
 	});
 });
+
+// Base de puissance négative ou fractionnaire construite en interne (tidy retire le
+// délimiteur de `(-2)^x`) : sans parenthèses, `-2^x` se relit -(2^x), une AUTRE valeur.
+describe('LatexGenerator - base de puissance à parenthéser', () => {
+	it('(-2)^x garde ses parenthèses', () => {
+		const expr = MathAST.power(MathAST.opposite(MathAST.number('2')), MathAST.variable('x'));
+		expect(toLatex(expr)).toBe('\\left( -2 \\right)^x');
+	});
+
+	it('-(2^x) reste -2^x : les deux écritures diffèrent', () => {
+		const expr = MathAST.opposite(MathAST.power(MathAST.number('2'), MathAST.variable('x')));
+		expect(toLatex(expr)).toBe('-2^x');
+	});
+
+	it('(-1/4)^n garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.fraction(MathAST.number('1'), MathAST.number('4'))),
+			MathAST.variable('n')
+		);
+		expect(toLatex(expr)).toBe('\\left( -\\dfrac{1}{4} \\right)^n');
+	});
+
+	it('(1/4)^n : une fraction en base est parenthésée', () => {
+		const expr = MathAST.power(
+			MathAST.fraction(MathAST.number('1'), MathAST.number('4')),
+			MathAST.variable('n')
+		);
+		expect(toLatex(expr)).toBe('\\left( \\dfrac{1}{4} \\right)^n');
+	});
+
+	it('(-2)^{n+1} : exposant composé', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.number('2')),
+			MathAST.add(MathAST.variable('n'), MathAST.number('1'))
+		);
+		expect(toLatex(expr)).toBe('\\left( -2 \\right)^{n + 1}');
+	});
+});
+
+// Même classe : une base puissance ou produit construite sans délimiteur.
+// `e^x^2` se relit e^{x²} (et KaTeX refuse le double exposant), `2x^2` se relit 2·x².
+describe('LatexGenerator - base de puissance : puissance ou produit', () => {
+	it('(e^x)^2 garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.power(MathAST.variable('e'), MathAST.variable('x')),
+			MathAST.number('2')
+		);
+		expect(toLatex(expr)).toBe('\\left( e^x \\right)^2');
+	});
+
+	it('((1/2)^n)^2 garde ses deux paires de parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.power(
+				MathAST.fraction(MathAST.number('1'), MathAST.number('2')),
+				MathAST.variable('n')
+			),
+			MathAST.number('2')
+		);
+		expect(toLatex(expr)).toBe('\\left( \\left( \\dfrac{1}{2} \\right)^n \\right)^2');
+	});
+
+	it('(2x)^2 : un produit implicite en base est parenthésé', () => {
+		const expr = MathAST.power(
+			MathAST.implicitMultiply(MathAST.number('2'), MathAST.variable('x')),
+			MathAST.number('2')
+		);
+		expect(toLatex(expr)).toBe('\\left( 2 x \\right)^2');
+	});
+
+	it('2x^2 (produit dont un facteur est une puissance) reste 2 x^2', () => {
+		const expr = MathAST.implicitMultiply(
+			MathAST.number('2'),
+			MathAST.power(MathAST.variable('x'), MathAST.number('2'))
+		);
+		expect(toLatex(expr)).toBe('2 x^2');
+	});
+});

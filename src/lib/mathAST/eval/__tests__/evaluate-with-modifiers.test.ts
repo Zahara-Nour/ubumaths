@@ -9,6 +9,8 @@ import { describe, it, expect } from 'vitest';
 import { evaluateWithModifiers, evaluateAstWithModifiers } from '../evaluate-with-modifiers';
 import { parseLatex } from '$lib/mathAST/parser';
 import { parseCustom } from '$lib/mathAST/parser/custom';
+import { evaluate } from '../evaluate';
+import { substitute } from '../substitute';
 
 // =============================================================================
 // Basic Evaluation Tests
@@ -358,5 +360,39 @@ describe('evaluateAstWithModifiers - expression avec des lettres : réduite par 
 
 	it('un calcul numérique ne change pas', () => {
 		expect(evalCustom('90/70')).toBe('\\dfrac{9}{7}');
+	});
+});
+
+// `a*(b)^n` avec b = -2 et n lettre libre : tidy retire le délimiteur, et l'écriture
+// rendue doit rester (-2)^n — pas -2^n, qui se relit -(2^n) (valeur fausse pour n pair).
+describe('evaluateAstWithModifiers - base négative et exposant littéral', () => {
+	const letters = new Set(['n', 'x']);
+	const evalCustom = (expr: string) => evaluateAstWithModifiers(parseCustom(expr), {}, letters);
+	/** Valeur de l'écriture rendue, relue, pour n = 2 */
+	const valueAtTwo = (written: string) => {
+		const ast = written.includes('\\') ? parseLatex(written) : parseCustom(written);
+		const result = evaluate(substitute(ast, { n: 2, x: 2 }), { mode: 'decimal' });
+		return result.status === 'value' ? Number(result.value) : NaN;
+	};
+
+	it.each([
+		['3*{-2}^x', 12],
+		['{-2}^n', 4],
+		['-3*{-2}^n', -12],
+		['{-2}^{n+1}', -8],
+		['{-0.5}^n', 0.25],
+		['{-1/4}^n', 0.0625],
+		['{1/4}^n', 0.0625],
+		['-{2}^n', -4]
+	])('%s relu vaut %s pour n = 2', (expr, expected) => {
+		expect(valueAtTwo(evalCustom(expr))).toBeCloseTo(expected, 10);
+	});
+
+	it('3*{-2}^x s’écrit avec la base entre parenthèses', () => {
+		expect(evalCustom('3*{-2}^x')).toContain('(-2)^x');
+	});
+
+	it('-{2}^n reste -2^n', () => {
+		expect(evalCustom('-{2}^n')).toBe('-2^n');
 	});
 });

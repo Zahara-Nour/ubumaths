@@ -255,7 +255,14 @@ describe('panel de référence — docs/ref/panel-simplifications.md', () => {
 			['x^{2}x^{3}', 'x^5', 'x^5', 'x^5', 'x^5', 'x^2 x^3'],
 			['(x^{2})^{3}', 'x^6', 'x^6', 'x^6', 'x^6', 'x^6'],
 			['e^{x}e^{2x}', 'e^x e^{2 x}', 'e^{3 x}', 'e^{3 x}', 'e^{2 x} e^x', 'e^x e^{2 x}'],
-			['(e^{x})^{3}', 'e^x^3', 'e^{3 x}', 'e^{3 x}', 'e^x^3', 'e^x^3'],
+			[
+				'(e^{x})^{3}',
+				'\\left( e^x \\right)^3',
+				'e^{3 x}',
+				'e^{3 x}',
+				'\\left( e^x \\right)^3',
+				'\\left( e^x \\right)^3'
+			],
 			['x^{a}x^{b}', 'x^a x^b', 'x^{a + b}', 'x^{a + b}', 'x^a x^b', 'x^a x^b']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
 			expect(parSimplify(entree)).toBe(attenduSimplify);

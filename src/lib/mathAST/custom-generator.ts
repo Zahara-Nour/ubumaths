@@ -51,7 +51,11 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
-import { needsParenthesesUnderPercent, needsParenthesesUnderSign } from './common/sign-parentheses';
+import {
+	needsParenthesesAsPowerBase,
+	needsParenthesesUnderPercent,
+	needsParenthesesUnderSign
+} from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
 
 // =============================================================================
@@ -905,8 +909,8 @@ export class CustomGenerator {
 	 * Emits spans for a superscript node with proper bracing.
 	 */
 	private visitSuperscriptSpans(node: SuperscriptNode): void {
-		// Grandeur élevée à une puissance : parenthèses (voir generateSuperscript)
-		const wrapBase = node.base.type === 'unit';
+		// Base à parenthéser (somme, opposé, quotient, grandeur) : voir generateSuperscript
+		const wrapBase = needsParenthesesAsPowerBase(node.base);
 		if (wrapBase) this.emit('(', node.metadata);
 		this.visitWithSpans(node.base);
 		if (wrapBase) this.emit(')', node.metadata);
@@ -1426,8 +1430,10 @@ export class CustomGenerator {
 		// avaient divergé, et `(x+1)^2` s'écrivait `x+1^2`.
 		// Une grandeur élevée à une puissance aussi : `3[m]^2` est refusé par le
 		// parseur (on y lisait 9 m² quand l'auteur voulait 3 m²)
-		const base =
-			node.base.type === 'unit' ? `(${this.generateNode(node.base)})` : this.groupIfSum(node.base);
+		// Un opposé ou un quotient aussi : `-2^x` se relit −(2^x) et `1/4^n` 1/(4^n)
+		// (voir common/sign-parentheses.ts)
+		const rendered = this.generateNode(node.base);
+		const base = needsParenthesesAsPowerBase(node.base) ? `(${rendered})` : rendered;
 		const superscript = this.generateNode(node.superscript);
 		const needsBraces = needsBracesForPower(node.superscript);
 		const wrappedSuperscript = needsBraces ? `{${superscript}}` : superscript;

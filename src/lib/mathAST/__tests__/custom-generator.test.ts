@@ -770,3 +770,60 @@ describe('CustomGenerator - Composition', () => {
 		expect(toCustom(expr, { renderMetadata: true })).toBe('f@red{@}g');
 	});
 });
+
+// Base de puissance négative ou fractionnaire construite en interne : `-2^x` se relit
+// -(2^x) et `1/4^n` se relit 1/(4^n) — des valeurs FAUSSES, pas seulement un affichage.
+describe('CustomGenerator - base de puissance à parenthéser', () => {
+	it('(-2)^x garde ses parenthèses', () => {
+		const expr = MathAST.power(MathAST.opposite(MathAST.number('2')), MathAST.variable('x'));
+		expect(toCustom(expr)).toBe('(-2)^x');
+	});
+
+	it('-(2^x) reste -2^x', () => {
+		const expr = MathAST.opposite(MathAST.power(MathAST.number('2'), MathAST.variable('x')));
+		expect(toCustom(expr)).toBe('-2^x');
+	});
+
+	it('(1/4)^n : une fraction en base est parenthésée', () => {
+		const expr = MathAST.power(
+			MathAST.fraction(MathAST.number('1'), MathAST.number('4')),
+			MathAST.variable('n')
+		);
+		expect(toCustom(expr)).toBe('(1/4)^n');
+	});
+
+	it('(-1/4)^n garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.opposite(MathAST.fraction(MathAST.number('1'), MathAST.number('4'))),
+			MathAST.variable('n')
+		);
+		expect(toCustom(expr)).toBe('(-1/4)^n');
+	});
+});
+
+// Même classe : une base puissance ou produit construite sans délimiteur.
+describe('CustomGenerator - base de puissance : puissance ou produit', () => {
+	it('(x^2)^3 garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.power(MathAST.variable('x'), MathAST.number('2')),
+			MathAST.number('3')
+		);
+		expect(toCustom(expr)).toBe('(x^2)^3');
+	});
+
+	it('(2x)^2 : un produit implicite en base est parenthésé', () => {
+		const expr = MathAST.power(
+			MathAST.implicitMultiply(MathAST.number('2'), MathAST.variable('x')),
+			MathAST.number('2')
+		);
+		expect(toCustom(expr)).toBe('(2x)^2');
+	});
+
+	it('(2*3)^2 : un produit en croix en base est parenthésé', () => {
+		const expr = MathAST.power(
+			MathAST.multiply(MathAST.number('2'), MathAST.number('3'), 'cross'),
+			MathAST.number('2')
+		);
+		expect(toCustom(expr)).toBe('(2*3)^2');
+	});
+});
