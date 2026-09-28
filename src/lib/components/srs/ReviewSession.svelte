@@ -108,6 +108,15 @@
 			const data = await response.json();
 			cards = data.cards || [];
 
+			// Cartes que le serveur n'a pas pu générer : le dire plutôt que
+			// raccourcir la session en silence
+			const skippedCount = Array.isArray(data.skipped) ? data.skipped.length : 0;
+			if (skippedCount > 0) {
+				toaster.warning(
+					`${skippedCount} carte(s) n'ont pas pu être générées et ont été mises de côté.`
+				);
+			}
+
 			if (cards.length === 0) {
 				sessionComplete = true;
 			} else {
