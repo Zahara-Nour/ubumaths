@@ -1,6 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { toQuestionTemplate } from '$lib/types/question-template';
+import { excludeCourseCards } from '$lib/questions/course-card';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -40,6 +41,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		templates: (templates ?? []).map(toQuestionTemplate)
+		// Évaluation notée : jamais de carte de cours (auto-évaluée, sans réponse)
+		templates: excludeCourseCards((templates ?? []).map(toQuestionTemplate))
 	};
 };

@@ -249,6 +249,11 @@
 												</li>
 											{/each}
 										</ul>
+									{:else if getQuestionType(answerResult.instance) === 'course_card'}
+										<!-- Carte de cours : la « réponse » est une auto-évaluation -->
+										<p class="font-medium">
+											Auto-évaluation : {answerResult.isCorrect ? 'je savais' : 'je ne savais pas'}
+										</p>
 									{:else if getQuestionType(answerResult.instance) === 'multiple_choice'}
 										<ul class="space-y-1">
 											{#if Array.isArray(answerResult.userAnswer.value)}

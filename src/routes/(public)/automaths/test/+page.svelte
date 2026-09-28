@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import { excludeCourseCards } from '$lib/questions/course-card';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
@@ -76,7 +77,10 @@
 				const timeLimit = assessment.settings.time_limit;
 
 				// Generate instances from assessment categories
-				const instances = await generateInstancesFromCategories(categories);
+				// Évaluation notée : les cartes de cours (auto-évaluées) sont exclues
+				const instances = await generateInstancesFromCategories(categories, {
+					excludeCourseCards: true
+				});
 
 				testSession = {
 					mode,
@@ -114,7 +118,10 @@
 			const timeLimit = timeParam ? parseInt(timeParam, 10) : undefined;
 
 			// Generate instances
-			const instances = await generateInstancesFromCategories(categories);
+			// Course aux nombres : pas de carte de cours (décision 2026-09-28)
+			const instances = await generateInstancesFromCategories(categories, {
+				excludeCourseCards: mode === 'course'
+			});
 
 			// Create test session
 			testSession = {
@@ -140,7 +147,8 @@
 	 * Generate instances from categories
 	 */
 	async function generateInstancesFromCategories(
-		categories: CartItem[]
+		categories: CartItem[],
+		options: { excludeCourseCards?: boolean } = {}
 	): Promise<QuestionInstance[]> {
 		const instances: QuestionInstance[] = [];
 
@@ -156,13 +164,16 @@
 				);
 			}
 
-			const matchingTemplates = templates.filter(
+			const inCategory = templates.filter(
 				(t) =>
 					t.theme === cartItem.category.theme &&
 					t.domain === cartItem.category.domain &&
 					(t.subdomain || null) === cartItem.category.subdomain &&
 					t.level === cartItem.category.level
 			);
+			const matchingTemplates = options.excludeCourseCards
+				? excludeCourseCards(inCategory)
+				: inCategory;
 
 			if (matchingTemplates.length === 0) {
 				console.warn(

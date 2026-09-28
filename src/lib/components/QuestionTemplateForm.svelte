@@ -120,7 +120,8 @@
 		initialTemplate
 			? getQuestionType({
 					choices: initialTemplate.variations?.[0]?.choices,
-					shared: initialTemplate.shared
+					shared: initialTemplate.shared,
+					options: initialTemplate.options
 				})
 			: 'fill_in_blanks'
 	);
@@ -488,7 +489,8 @@
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 		{ value: 'fill_in_blanks', label: 'Texte à trous' },
-		{ value: 'multiple_choice', label: 'QCM' }
+		{ value: 'multiple_choice', label: 'QCM' },
+		{ value: 'course_card', label: 'Carte de cours' }
 	];
 
 	// Handle grade toggle
@@ -787,6 +789,8 @@
 		}
 		if (optAllowBracketsInFirstNegativeTerm) constraints.allowBracketsInFirstNegativeTerm = true;
 		if (Object.keys(constraints).length > 0) options.constraints = constraints;
+		// Carte de cours : marqueur explicite, lu par getQuestionType()
+		if (questionType === 'course_card') options.courseCard = true;
 		const finalOptions = Object.keys(options).length > 0 ? options : undefined;
 
 		const base = {
@@ -804,7 +808,8 @@
 			level,
 			status,
 			delay,
-			testSpecs: testSpecs.length > 0 ? testSpecs : undefined
+			// Une carte de cours n'a pas de réponse, donc pas de spec
+			testSpecs: questionType !== 'course_card' && testSpecs.length > 0 ? testSpecs : undefined
 		};
 
 		// Add type-specific shared fields
@@ -833,7 +838,11 @@
 		multipleAnswers = t.multipleAnswers;
 
 		// Type
-		questionType = getQuestionType({ choices: t.variations?.[0]?.choices, shared: t.shared });
+		questionType = getQuestionType({
+			choices: t.variations?.[0]?.choices,
+			shared: t.shared,
+			options: t.options
+		});
 
 		// Display options
 		displayShuffleTerms = t.defaultDisplayOptions?.shuffleTerms ?? false;
@@ -1154,7 +1163,10 @@
 				testSpecMode = !testSpecMode;
 				if (testSpecMode) jsonMode = false;
 			}}
-			disabled={isSubmitting}
+			disabled={isSubmitting || questionType === 'course_card'}
+			title={questionType === 'course_card'
+				? 'Une carte de cours n’a pas de réponse à tester'
+				: undefined}
 		>
 			<FlaskConical class="mr-2 h-4 w-4" />
 			{#if testSpecMode}
@@ -1584,7 +1596,8 @@
 											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 										>
 											<Card.Title class="flex items-center gap-2">
-												Énoncé <span class="text-destructive">*</span>
+												{questionType === 'course_card' ? 'Recto' : 'Énoncé'}
+												<span class="text-destructive">*</span>
 												<button
 													type="button"
 													onclick={(e) => {
@@ -1657,47 +1670,49 @@
 								</Card.Header>
 							</Card.Root>
 
-							<!-- Answer -->
-							<Card.Root>
-								<Card.Header>
-									<Collapsible.Root bind:open={answerSectionOpen}>
-										<Collapsible.Trigger
-											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
-										>
-											<Card.Title class="flex items-center gap-2">
-												Réponse <span class="text-destructive">*</span>
-												<button
-													type="button"
-													onclick={(e) => {
-														e.stopPropagation();
-														answerHelpOpen = true;
-													}}
-													class="text-muted-foreground transition-colors hover:text-foreground"
-													aria-label="Aide sur la réponse"
-												>
-													<CircleQuestionMark class="h-5 w-5" />
-												</button>
-											</Card.Title>
-											<ChevronDown
-												class="h-4 w-4 transition-transform duration-200 {answerSectionOpen
-													? 'rotate-180'
-													: ''}"
-											/>
-										</Collapsible.Trigger>
-										<Collapsible.Content>
-											<Card.Content>
-												<AnswerEditor
-													{questionType}
-													bind:answer={variation.correctChoiceIndex}
-													bind:blanks={variation.blanks}
-													bind:choices={variation.choices}
-													{multipleAnswers}
+							<!-- Answer (une carte de cours n'en a pas : recto = énoncé, verso = correction) -->
+							{#if questionType !== 'course_card'}
+								<Card.Root>
+									<Card.Header>
+										<Collapsible.Root bind:open={answerSectionOpen}>
+											<Collapsible.Trigger
+												class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+											>
+												<Card.Title class="flex items-center gap-2">
+													Réponse <span class="text-destructive">*</span>
+													<button
+														type="button"
+														onclick={(e) => {
+															e.stopPropagation();
+															answerHelpOpen = true;
+														}}
+														class="text-muted-foreground transition-colors hover:text-foreground"
+														aria-label="Aide sur la réponse"
+													>
+														<CircleQuestionMark class="h-5 w-5" />
+													</button>
+												</Card.Title>
+												<ChevronDown
+													class="h-4 w-4 transition-transform duration-200 {answerSectionOpen
+														? 'rotate-180'
+														: ''}"
 												/>
-											</Card.Content>
-										</Collapsible.Content>
-									</Collapsible.Root>
-								</Card.Header>
-							</Card.Root>
+											</Collapsible.Trigger>
+											<Collapsible.Content>
+												<Card.Content>
+													<AnswerEditor
+														{questionType}
+														bind:answer={variation.correctChoiceIndex}
+														bind:blanks={variation.blanks}
+														bind:choices={variation.choices}
+														{multipleAnswers}
+													/>
+												</Card.Content>
+											</Collapsible.Content>
+										</Collapsible.Root>
+									</Card.Header>
+								</Card.Root>
+							{/if}
 
 							<!-- Correction (optional) -->
 							<Card.Root>
@@ -1707,7 +1722,11 @@
 											class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 										>
 											<Card.Title class="flex items-center gap-2">
-												Correction (optionnel)
+												{#if questionType === 'course_card'}
+													Verso <span class="text-destructive">*</span>
+												{:else}
+													Correction (optionnel)
+												{/if}
 												<button
 													type="button"
 													onclick={(e) => {
@@ -1732,7 +1751,9 @@
 													bind:value={variationExtras[index].correctionString}
 													showParameterization={true}
 													variables={variation.variables}
-													placeholder="Explication de la solution (optionnel)..."
+													placeholder={questionType === 'course_card'
+														? 'Verso de la carte : ce que l’élève doit savoir...'
+														: 'Explication de la solution (optionnel)...'}
 													rows={6}
 												/>
 											</Card.Content>

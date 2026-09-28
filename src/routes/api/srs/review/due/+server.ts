@@ -152,6 +152,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Process each card to prepare ReviewCard objects
 		const reviewCards: ReviewCard[] = [];
+		// Cartes écartées de la session : tracées (log serveur détaillé + nombre
+		// rendu au client), plus jamais en silence — l'élève doit savoir que sa
+		// session est incomplète.
+		const skipped: { cardId: string; templateId: string | null; reason: string }[] = [];
 
 		console.log('[SRS] Processing due cards...');
 		for (const dueCard of dueCards) {
@@ -175,6 +179,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							`[SRS] Template ${dueCard.template_id} not found for card ${dueCard.card_id}:`,
 							templateError
 						);
+						skipped.push({
+							cardId: dueCard.card_id,
+							templateId: dueCard.template_id,
+							reason: 'template introuvable'
+						});
 						continue;
 					}
 
@@ -187,6 +196,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 							`[SRS] Failed to generate instance for template ${dueCard.template_id}:`,
 							result.errors // TypeScript now knows result.errors exists when success is false
 						);
+						skipped.push({
+							cardId: dueCard.card_id,
+							templateId: dueCard.template_id,
+							reason: result.errors.join('; ')
+						});
 						continue;
 					}
 
@@ -238,13 +252,22 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				}
 			} catch (error) {
 				console.error(`Error processing card ${dueCard.card_id}:`, error);
-				// Skip this card and continue with others
+				// Carte écartée, tracée ; les autres continuent
+				skipped.push({
+					cardId: dueCard.card_id,
+					templateId: dueCard.template_id ?? null,
+					reason: error instanceof Error ? error.message : String(error)
+				});
 				continue;
 			}
 		}
 
 		console.log(`[SRS] Returning ${reviewCards.length} review cards to client`);
-		return json({ cards: reviewCards });
+		if (skipped.length > 0) {
+			console.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
+		}
+		// Au client : le seul NOMBRE de cartes écartées (le détail reste dans les logs)
+		return json({ cards: reviewCards, skipped: skipped.length });
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/review/due:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

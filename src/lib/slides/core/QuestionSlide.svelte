@@ -187,7 +187,8 @@
 				{/if}
 
 				<!-- Submit Button -->
-				{#if !isSubmitted && getQuestionType(instance) !== 'multiple_choice'}
+				<!-- Carte de cours : rien à valider (pas de bouton) -->
+				{#if !isSubmitted && getQuestionType(instance) === 'fill_in_blanks'}
 					<button class="submit-button" onclick={handleSubmit} disabled={!canSubmit}>
 						Valider
 					</button>

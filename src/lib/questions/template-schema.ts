@@ -326,7 +326,9 @@ export const constraintsSchema = z.object({
 export const optionsSchema = z.object({
 	orderIndependent: z.boolean().optional(),
 	constraints: constraintsSchema.optional(),
-	shuffleChoices: z.boolean().optional()
+	shuffleChoices: z.boolean().optional(),
+	// Carte de cours (#617) : recto = énoncé, verso = correction
+	courseCard: z.boolean().optional()
 });
 
 // ============================================================================
@@ -548,7 +550,8 @@ const optionsStrictZ = z
 	.object({
 		orderIndependent: z.boolean().optional(),
 		constraints: constraintsStrictZ.optional(),
-		shuffleChoices: z.boolean().optional()
+		shuffleChoices: z.boolean().optional(),
+		courseCard: z.boolean().optional()
 	})
 	.strict();
 

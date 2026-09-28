@@ -12,7 +12,7 @@ import type { QuestionTemplate, TestSpec, ValidationStatus, ConstraintId } from 
 import type { ValidationResult } from '$lib/types/question-display';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
 import { validateAnswer } from '$lib/utils/answer-validator';
-import { getQuestionType } from './types';
+import { getQuestionType, isCourseCard } from './types';
 
 export interface TestSpecResult {
 	spec: TestSpec;
@@ -34,6 +34,11 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 		actual: { status: 'incorrect', constraintViolations: [] },
 		error: msg
 	});
+
+	// Carte de cours : aucune réponse à valider, donc rien à spécifier
+	if (isCourseCard(template)) {
+		return makeError('Une carte de cours n’a pas de réponse à tester : retirer cette spec');
+	}
 
 	// 1. Generate instance with fixed variables
 	const genResult = generateInstanceWithFixedVariables(
@@ -58,8 +63,7 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 			}
 			// answers are LaTeX (same value for text and LaTeX, like the real MathField flow)
 			validationResult = validateAnswer(spec.answers, instance, spec.answers);
-		} else {
-			// Multiple choice
+		} else if (questionType === 'multiple_choice') {
 			if (!spec.selectedChoices || spec.selectedChoices.length === 0) {
 				return makeError('Test spec for multiple choice must provide selectedChoices[]');
 			}
@@ -70,6 +74,8 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 				spec.selectedChoices.length === 1 ? spec.selectedChoices[0] : spec.selectedChoices,
 				instance
 			);
+		} else {
+			return makeError(`Type de question sans réponse à tester : ${questionType}`);
 		}
 	} catch (err) {
 		return makeError(`Validation error: ${err instanceof Error ? err.message : String(err)}`);

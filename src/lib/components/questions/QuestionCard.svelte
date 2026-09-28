@@ -34,6 +34,7 @@
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
+	import CourseCardView from './CourseCardView.svelte';
 
 	// Props
 	interface Props {
@@ -190,6 +191,24 @@
 		onAnswerSubmit?.(answerData);
 	}
 
+	/**
+	 * Carte de cours : l'auto-évaluation tient lieu de réponse (« Je savais » =
+	 * réussite). L'enregistrement (source `student_self`) est fait par
+	 * `/api/tests/save`, qui lit la nature « carte » en base.
+	 */
+	function handleSelfAssess(knew: boolean) {
+		if (isSubmitted) return;
+		attempts += 1;
+		isSubmitted = true;
+		onAnswerSubmit?.({
+			value: knew ? 'knew' : 'did_not_know',
+			isCorrect: knew,
+			timeSpent: getTimeSpent(),
+			attempts,
+			submittedAt: new Date().toISOString()
+		});
+	}
+
 	// ============================================================================
 	// SIZE CLASSES
 	// ============================================================================
@@ -207,61 +226,73 @@
 		<Card.Header>
 			<div class="flex items-center justify-between">
 				<Card.Title>Question</Card.Title>
-				<Badge variant="outline">{getQuestionType(instance)}</Badge>
+				{#if getQuestionType(instance) !== 'course_card'}
+					<Badge variant="outline">{getQuestionType(instance)}</Badge>
+				{/if}
 			</div>
 		</Card.Header>
 
 		<Card.Content class="space-y-6">
-			{#if instance.exerciseInstruction}
-				<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>
-			{/if}
-			<!-- Question Statement -->
-			<div class="statement-section">
-				<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
-				<div class="statement-content rounded-lg border bg-card p-4">
-					<MarkdownRenderer content={statementMarkdown} />
+			{#if getQuestionType(instance) === 'course_card'}
+				<!-- Carte de cours : recto → « Voir la réponse » → verso → auto-évaluation -->
+				<CourseCardView
+					{instance}
+					{interactive}
+					{size}
+					onSelfAssess={interactive ? handleSelfAssess : undefined}
+				/>
+			{:else}
+				{#if instance.exerciseInstruction}
+					<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>
+				{/if}
+				<!-- Question Statement -->
+				<div class="statement-section">
+					<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
+					<div class="statement-content rounded-lg border bg-card p-4">
+						<MarkdownRenderer content={statementMarkdown} />
+					</div>
 				</div>
-			</div>
 
-			<!-- Answer Input (Interactive Mode Only) -->
-			{#if interactive}
-				<div class="answer-section">
-					<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
+				<!-- Answer Input (Interactive Mode Only) -->
+				{#if interactive}
+					<div class="answer-section">
+						<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 
-					<!-- Type-specific inputs -->
-					{#if getQuestionType(instance) === 'fill_in_blanks'}
-						<FillBlanksInput
-							statement={instance.statement}
-							blanks={instance.blanks || []}
-							expressions={instance.expressions}
-							bind:values={fillBlankValues}
-							bind:valuesLatex={fillBlankValuesLatex}
-							disabled={isInputDisabled}
-							validationResults={[]}
-							onSubmit={handleSubmit}
-							mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
-								? '\\,'
-								: undefined}
-						/>
-					{:else if getQuestionType(instance) === 'multiple_choice'}
-						<MultipleChoiceInput
-							choices={instance.shuffledChoices || []}
-							bind:selectedIndexes={selectedChoices}
-							multipleAnswers={instance.multipleAnswers}
-							disabled={isInputDisabled}
-							showValidation={false}
-						/>
-					{/if}
+						<!-- Type-specific inputs -->
+						{#if getQuestionType(instance) === 'fill_in_blanks'}
+							<FillBlanksInput
+								statement={instance.statement}
+								blanks={instance.blanks || []}
+								expressions={instance.expressions}
+								bind:values={fillBlankValues}
+								bind:valuesLatex={fillBlankValuesLatex}
+								disabled={isInputDisabled}
+								validationResults={[]}
+								onSubmit={handleSubmit}
+								mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
+									? '\\,'
+									: undefined}
+							/>
+						{:else if getQuestionType(instance) === 'multiple_choice'}
+							<MultipleChoiceInput
+								choices={instance.shuffledChoices || []}
+								bind:selectedIndexes={selectedChoices}
+								multipleAnswers={instance.multipleAnswers}
+								disabled={isInputDisabled}
+								showValidation={false}
+							/>
+						{/if}
 
-					<!-- Submit Button -->
-					{#if !isSubmitted}
-						<div class="mt-4 flex justify-center">
-							<Button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} size="lg">
-								{isSubmitting ? 'Validation...' : 'Valider'}
-							</Button>
-						</div>
-					{/if}
-				</div>
+						<!-- Submit Button -->
+						{#if !isSubmitted}
+							<div class="mt-4 flex justify-center">
+								<Button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} size="lg">
+									{isSubmitting ? 'Validation...' : 'Valider'}
+								</Button>
+							</div>
+						{/if}
+					</div>
+				{/if}
 			{/if}
 		</Card.Content>
 	</Card.Root>

@@ -1138,6 +1138,92 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 		// ~3s) which can exceed the 5s default under full-zone load.
 	}, 20000);
 
+	/**
+	 * Une carte dont la génération échoue (ici : carte de cours sans verso) était
+	 * sautée EN SILENCE — l'élève voyait une session plus courte sans savoir
+	 * pourquoi. Elle est désormais tracée dans `skipped`.
+	 */
+	it('trace (skipped) une carte dont la génération échoue', async () => {
+		const { GET } = await import('../review/due/+server');
+		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, (table) => {
+			if (table === 'srs_decks') {
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({
+									data: { id: TEST_IDS.deck1, owner_id: TEST_IDS.user1 },
+									error: null
+								})
+							})
+						})
+					})
+				};
+			}
+			if (table === 'question_templates') {
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: {
+									id: TEST_IDS.template1,
+									title: 'Carte sans verso',
+									status: 'published',
+									options: { courseCard: true },
+									variations: [{ statement: 'Recto' }],
+									grades: ['2'],
+									theme: 'Fonctions',
+									domain: 'Généralités',
+									level: 1
+								},
+								error: null
+							})
+						})
+					})
+				};
+			}
+			if (table === 'srs_card_stats') {
+				return {
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							in: vi.fn().mockResolvedValue({ data: [], error: null })
+						})
+					})
+				};
+			}
+			return {};
+		});
+		mockSupabase.rpc.mockResolvedValue({
+			data: [
+				{
+					card_id: TEST_IDS.card1,
+					card_type: 'template',
+					template_id: TEST_IDS.template1,
+					state: 'review',
+					difficulty: 5,
+					stability: 1,
+					next_review: new Date().toISOString()
+				}
+			],
+			error: null
+		});
+
+		// @ts-expect-error - Test mock has partial RequestEvent
+		const response = await GET({
+			url: new URL(`http://localhost?deck_id=${TEST_IDS.deck1}`),
+			locals: authedLocals(mockSupabase)
+		} as unknown as RequestEvent);
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(data.cards).toEqual([]);
+		// Le client n'a besoin que du NOMBRE ; le détail (messages du générateur,
+		// exceptions) reste dans les logs serveur, jamais dans le navigateur.
+		expect(data.skipped).toBe(1);
+		expect(JSON.stringify(data)).not.toContain('course_card requires');
+	});
+
 	it('should require deck_id parameter', async () => {
 		const { GET } = await import('../review/due/+server');
 

@@ -24,7 +24,8 @@ const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
-vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest: vi.fn(async () => null) }));
+const addBuddyXpFromTest = vi.hoisted(() => vi.fn(async () => null));
+vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
 
 import { POST } from '../+server';
 
@@ -34,15 +35,22 @@ const MODELE_B = '33333333-3333-4333-8333-333333333333';
 
 /** Les lignes réellement insérées dans `skill_attempts`. */
 let attemptsInseres: Record<string, unknown>[];
+/** Modèles marqués « carte de cours » en base (`options.courseCard`). */
+let cartesDeCours: string[];
+/** La ligne insérée dans `test_sessions`. */
+let sessionInseree: Record<string, unknown> | null;
 
 function fauxSupabase() {
 	return {
 		from(table: string) {
 			if (table === 'test_sessions') {
 				return {
-					insert: () => ({
-						select: () => ({ single: async () => ({ data: { id: 'session-1' }, error: null }) })
-					})
+					insert: (row: Record<string, unknown>) => {
+						sessionInseree = row;
+						return {
+							select: () => ({ single: async () => ({ data: { id: 'session-1' }, error: null }) })
+						};
+					}
 				};
 			}
 			if (table === 'question_template_points') {
@@ -53,11 +61,26 @@ function fauxSupabase() {
 					})
 				};
 			}
+			if (table === 'question_templates') {
+				return {
+					select: () => ({
+						in: async (_col: string, ids: string[]) => ({
+							data: ids.map((id) => ({
+								id,
+								options: cartesDeCours.includes(id) ? { courseCard: true } : null
+							})),
+							error: null
+						})
+					})
+				};
+			}
 			if (table === 'skill_attempts') {
 				return {
-					insert: async (rows: Record<string, unknown>[]) => {
+					insert: (rows: Record<string, unknown>[]) => {
 						attemptsInseres.push(...rows);
-						return { error: null };
+						return {
+							select: async () => ({ data: rows.map((_, i) => ({ id: `a${i}` })), error: null })
+						};
 					}
 				};
 			}
@@ -127,6 +150,9 @@ async function enregistrer(answers: ReturnType<typeof reponse>[]) {
 describe('enregistrement d’une évaluation', () => {
 	beforeEach(() => {
 		attemptsInseres = [];
+		cartesDeCours = [];
+		sessionInseree = null;
+		addBuddyXpFromTest.mockClear();
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -185,5 +211,87 @@ describe('enregistrement d’une évaluation', () => {
 
 		expect(ensureProgrammeDeckCard).toHaveBeenCalledTimes(1);
 		expect(ensureProgrammeDeckCard.mock.calls[0].slice(1)).toEqual([ELEVE, MODELE_A]);
+	});
+
+	/**
+	 * Carte de cours (#617) : l'élève s'auto-évalue (« Je savais / Je ne savais
+	 * pas »). La tentative est enregistrée, mais avec la source `student_self`,
+	 * lue en BASE (le marqueur de l'instance vient du client).
+	 */
+	it('enregistre l’auto-évaluation d’une carte de cours en source student_self', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)]);
+
+		expect(attemptsInseres).toHaveLength(2);
+		expect(attemptsInseres[0]).toMatchObject({ template_id: MODELE_A, source: 'auto' });
+		expect(attemptsInseres[1]).toMatchObject({
+			template_id: MODELE_B,
+			success: false,
+			grade: Grade.AGAIN,
+			source: 'student_self'
+		});
+	});
+
+	// ------------------------------------------------------------------------
+	// Décisions de David (2026-09-28) pour l'auto-évaluation d'une carte
+	// ------------------------------------------------------------------------
+
+	it('chaque utilisation laisse une trace : 2 clics le même jour → 2 lignes', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_B, true, 0), reponse(MODELE_B, false, 1)]);
+
+		expect(attemptsInseres.map((a) => [a.template_id, a.source, a.success])).toEqual([
+			[MODELE_B, 'student_self', true],
+			[MODELE_B, 'student_self', false]
+		]);
+	});
+
+	it('carte : fiche FSRS mise à jour au plus une fois par jour, écriture vérifiée', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
+
+		// Question ordinaire : appel inchangé (aucune option)
+		expect(applyFsrsReview.mock.calls[0]).toHaveLength(6);
+		// Carte : Good, garde-fou journalier + écriture vérifiée
+		const appelCarte = applyFsrsReview.mock.calls[1];
+		expect(appelCarte.slice(2, 6)).toEqual([ELEVE, 'template', MODELE_B, Grade.GOOD]);
+		const options = appelCarte[7] as {
+			skipIf: (s: { lastReview: string | null }) => boolean;
+			verifyWrite: boolean;
+		};
+		expect(options.verifyWrite).toBe(true);
+		expect(options.skipIf({ lastReview: new Date().toISOString() })).toBe(true);
+		expect(options.skipIf({ lastReview: null })).toBe(false);
+	});
+
+	it('garde-fou déclenché (fiche déjà mise à jour aujourd’hui) : la trace est QUAND MÊME enregistrée', async () => {
+		cartesDeCours = [MODELE_B];
+		applyFsrsReview.mockResolvedValue(null);
+		await enregistrer([reponse(MODELE_B, true, 0)]);
+		expect(attemptsInseres).toHaveLength(1);
+	});
+
+	it('carte : jamais ajoutée à un paquet (pas de deck Programme), même taguée', async () => {
+		cartesDeCours = [MODELE_A]; // A est tagué à un point de programme
+		await enregistrer([reponse(MODELE_A, true, 0)]);
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	it('carte : pas d’XP du compagnon', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
+		const answers = addBuddyXpFromTest.mock.calls[0][2] as unknown[];
+		expect(answers).toHaveLength(1);
+	});
+
+	it('carte : hors du score de la session (ni juste ni fausse)', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, false, 0), reponse(MODELE_B, true, 1)]);
+		expect(sessionInseree).toMatchObject({ score: 0, total_questions: 1 });
+	});
+
+	it('sans carte : score et total inchangés (ceux du client)', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)]);
+		expect(sessionInseree).toMatchObject({ score: 10, total_questions: 2 });
 	});
 });

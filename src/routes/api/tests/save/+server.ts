@@ -6,6 +6,9 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { fetchCourseCardTemplateIds, reviewedToday } from '$lib/server/course-card-attempts';
+import { computeTestScore } from '$lib/utils/test-score';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * API route to save test results to database
@@ -34,6 +37,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { result, categories, assignmentId } = validation.data;
 
+		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
+		const templateIds = [
+			...new Set(reponsesAvecTemplate.map((answer) => answer.instance.templateId as string))
+		];
+
+		// Cartes de cours (#617) : la « réponse » est une auto-évaluation de
+		// l'élève. Lu en BASE, jamais dans l'instance envoyée par le client.
+		// Décisions de David (2026-09-28) : trace `student_self` à chaque
+		// utilisation, fiche FSRS au plus une fois par jour, hors score, sans XP,
+		// jamais ajoutée à un paquet.
+		const courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+		const isCardAnswer = (answer: { instance: { templateId?: string | null } }) =>
+			!!answer.instance.templateId && courseCardIds.has(answer.instance.templateId);
+
+		// Score : recalculé côté serveur hors cartes dès qu'il y en a ; sinon celui
+		// du client, inchangé.
+		const sessionScore =
+			courseCardIds.size > 0
+				? computeTestScore(result.answers, isCardAnswer)
+				: { score: result.score, gradedQuestions: result.totalQuestions };
+
 		// Insert test session
 		const { data: testSession, error: sessionError } = await supabase
 			.from('test_sessions')
@@ -41,8 +65,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				user_id: user.id,
 				mode: result.mode,
 				categories: categories,
-				score: result.score,
-				total_questions: result.totalQuestions,
+				score: sessionScore.score,
+				total_questions: sessionScore.gradedQuestions,
 				time_spent: result.timeSpent,
 				time_limit: null, // Will be set from categories if needed
 				completed_at: result.completedAt,
@@ -60,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const answersToInsert = result.answers.map((answer) => ({
 			test_session_id: testSession.id,
 			template_id: answer.instance.templateId || null,
-			question_instance: answer.instance,
+			question_instance: toJson(answer.instance),
 			user_answer: answer.userAnswer || null,
 			is_correct: answer.isCorrect,
 			time_spent: answer.timeSpent || null,
@@ -96,11 +120,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// L'invariant est tenu PAR RÉPONSE : pas de FSRS, pas d'attempt. Une carte
 		// qui échoue n'empêche pas les autres — la session est déjà enregistrée et
 		// l'élève ne doit pas perdre son travail pour une réponse.
-		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
-		const templateIds = [
-			...new Set(reponsesAvecTemplate.map((answer) => answer.instance.templateId as string))
-		];
-
 		// Quels modèles sont tagués à un point de programme ? Une requête pour tout
 		// le lot, là où la route en fait une par réponse.
 		const templatesTagues = new Set<string>();
@@ -117,13 +136,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
+		const now = new Date();
 		const fsrs = new FSRS();
 		const attemptsToInsert: {
 			student_id: string;
 			template_id: string;
 			success: boolean;
 			grade: Grade;
-			source: 'auto';
+			source: 'auto' | 'student_self';
 			with_help: boolean;
 		}[] = [];
 
@@ -132,7 +152,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const grade: Grade = answer.isCorrect ? Grade.GOOD : Grade.AGAIN;
 
 			try {
-				await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade);
+				if (courseCardIds.has(templateId)) {
+					// Carte : « Je savais » = Good, « Je ne savais pas » = Again. La fiche
+					// (clé template_id, partagée avec tout paquet qui l'ajouterait plus
+					// tard) n'est mise à jour qu'une fois par jour ; la trace, toujours.
+					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade, undefined, {
+						skipIf: (stats) => reviewedToday(stats.lastReview, now),
+						verifyWrite: true
+					});
+				} else {
+					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade);
+				}
 			} catch (fsrsErr) {
 				console.error('[tests/save] FSRS update failed, attempt non inséré :', {
 					userId: user.id,
@@ -149,24 +179,33 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				success: answer.isCorrect,
 				// `grade` manquait aussi : la route l'enregistre, cette insertion non.
 				grade,
-				source: 'auto' as const,
+				source: courseCardIds.has(templateId) ? 'student_self' : 'auto',
 				with_help: false
 			});
 		}
 
 		if (attemptsToInsert.length > 0) {
-			const { error: attemptsError } = await supabase
+			// `.select()` : un refus RLS rend 0 ligne sans erreur
+			const { data: attemptsRows, error: attemptsError } = await supabase
 				.from('skill_attempts')
-				.insert(attemptsToInsert);
+				.insert(attemptsToInsert)
+				.select('id');
 
 			if (attemptsError) {
 				console.error('[tests/save] skill_attempts INSERT failed:', attemptsError);
+			} else if ((attemptsRows?.length ?? 0) !== attemptsToInsert.length) {
+				console.error('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées', {
+					sent: attemptsToInsert.length,
+					written: attemptsRows?.length ?? 0
+				});
 			}
 		}
 
 		// Auto-ajout au deck Programme, comme la route le fait après l'insertion.
 		// Non bloquant : les attempts sont déjà enregistrés.
+		// Une carte de cours n'est JAMAIS ajoutée à un paquet (décision 2026-09-28).
 		for (const templateId of templatesTagues) {
+			if (courseCardIds.has(templateId)) continue;
 			try {
 				await ensureProgrammeDeckCard(supabase, user.id, templateId);
 			} catch (progErr) {
@@ -177,12 +216,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Award buddy XP for each answer
 		let buddyXp = null;
 		try {
-			const answers = result.answers.map(
-				(answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
+			// Pas d'XP pour une carte de cours (décision 2026-09-28)
+			const answers = result.answers
+				.filter((answer) => !isCardAnswer(answer))
+				.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
 					isCorrect: answer.isCorrect,
 					theme: undefined as string | undefined // TODO: extract theme from categories if available
-				})
-			);
+				}));
 			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
 		} catch (buddyError) {
 			// Non-critical: buddy XP failure should not fail the test save

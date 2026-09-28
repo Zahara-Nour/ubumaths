@@ -19,6 +19,7 @@
 -->
 
 <script lang="ts">
+	import { computeTestScore } from '$lib/utils/test-score';
 	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
 	import type { AnswerData } from '$lib/types/question-display';
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
@@ -133,10 +134,14 @@
 		});
 
 		// Calculate score
-		const correctAnswers = answerResults.filter((r) => r.isCorrect).length;
+		// Les cartes de cours (auto-évaluées) sont hors score (décision 2026-09-28)
+		const {
+			correctAnswers,
+			reviewedCards,
+			score: scoreOn10,
+			scorePercentage
+		} = computeTestScore(answerResults);
 		const totalQuestions = session.instances.length;
-		const scorePercentage = (correctAnswers / totalQuestions) * 100;
-		const scoreOn10 = Math.round((correctAnswers / totalQuestions) * 10 * 10) / 10;
 		const averageTime = timeSpent / totalQuestions;
 
 		// Build result
@@ -146,6 +151,7 @@
 			scorePercentage,
 			totalQuestions,
 			correctAnswers,
+			reviewedCards,
 			timeSpent,
 			averageTime,
 			answers: answerResults,

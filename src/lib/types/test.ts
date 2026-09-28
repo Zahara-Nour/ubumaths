@@ -65,7 +65,8 @@ export interface TestResult {
 	score: number; // Score on 10 scale (e.g., 7.5)
 	scorePercentage: number; // Percentage (e.g., 75)
 	totalQuestions: number;
-	correctAnswers: number;
+	correctAnswers: number; // Parmi les questions notées (hors cartes de cours)
+	reviewedCards?: number; // Cartes de cours révisées, hors score (#617)
 	timeSpent: number; // Total time in seconds
 	averageTime: number; // Average time per question in seconds
 	answers: TestAnswerResult[];

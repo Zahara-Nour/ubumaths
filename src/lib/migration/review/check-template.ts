@@ -5,6 +5,7 @@
  * Un template n'est importable que si TOUT passe :
  * - `validateTemplate` (structure) et le schéma Zod strict (clés mal orthographiées) ;
  * - au moins une spec de test, et toutes vertes (même validateur que l'élève) ;
+ *   sauf carte de cours : aucune spec, mais recto et verso non vides à chaque tirage ;
  * - chaque variation génère une instance sur `instances` tirages (0 échec).
  *
  * « 0 problème » n'est une preuve que si on sait combien d'éléments ont été
@@ -16,6 +17,11 @@ import { validateTemplate } from '$lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '$lib/questions/template-schema';
 import { runAllTestSpecs, type TestSpecResult } from '$lib/questions/test-spec-runner';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
+import {
+	courseCardFront,
+	hasCourseCardBackContent,
+	isCourseCard
+} from '$lib/questions/course-card';
 
 // ============================================================================
 // TYPES
@@ -70,7 +76,15 @@ function checkGeneration(
 		for (let seed = 1; seed <= instances; seed++) {
 			attempts++;
 			const result = generateInstance(single, seed);
-			if (!result.success) failures.push({ variationIndex, seed, errors: result.errors });
+			if (!result.success) {
+				failures.push({ variationIndex, seed, errors: result.errors });
+			} else if (isCourseCard(template)) {
+				// Carte de cours : recto et verso doivent être non vides APRÈS résolution
+				const errors: string[] = [];
+				if (courseCardFront(result.instance).trim() === '') errors.push('recto vide');
+				if (!hasCourseCardBackContent(result.instance)) errors.push('verso vide');
+				if (errors.length > 0) failures.push({ variationIndex, seed, errors });
+			}
 		}
 	});
 
@@ -99,7 +113,10 @@ export function checkTemplate(
 		reasons.push(`niveau ${template.level} : la base exige un niveau ≥ 1`);
 	if (templateErrors.length > 0) reasons.push(`${templateErrors.length} erreur(s) de structure`);
 	if (schemaErrors.length > 0) reasons.push(`${schemaErrors.length} erreur(s) de schéma`);
-	if (specs.length === 0) reasons.push('aucune spec de test');
+	// Une carte de cours n'a pas de réponse : pas de spec exigée (ni tolérée)
+	const courseCard = isCourseCard(template);
+	if (courseCard && specs.length > 0) reasons.push('une carte de cours ne porte pas de spec');
+	if (!courseCard && specs.length === 0) reasons.push('aucune spec de test');
 	// Chaque variation doit prouver qu'une bonne réponse est acceptée
 	const uncovered = template.variations
 		.map((_, index) => index)
@@ -109,7 +126,7 @@ export function checkTemplate(
 					(spec) => (spec.variationIndex ?? 0) === index && spec.expected.status === 'correct'
 				)
 		);
-	if (specs.length > 0 && uncovered.length > 0) {
+	if (!courseCard && specs.length > 0 && uncovered.length > 0) {
 		reasons.push(
 			`variation(s) sans spec « correct » : ${uncovered.map((index) => index + 1).join(', ')}`
 		);

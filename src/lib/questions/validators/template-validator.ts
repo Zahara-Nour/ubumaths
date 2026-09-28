@@ -9,6 +9,7 @@
 
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
+import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 
 /**
@@ -43,7 +44,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 	// Infer question type from first variation (or shared) for type-specific checks
 	const firstVariation = template.variations[0];
 	const inferredType = getQuestionType({
-		choices: firstVariation.choices ?? template.shared?.choices
+		choices: firstVariation.choices ?? template.shared?.choices,
+		options: template.options
 	});
 
 	// Validate each variation (pass shared defaults for merged field checks)
@@ -164,6 +166,23 @@ function validateVariation(
 				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
 			}
 			break;
+
+		case 'course_card': {
+			// Carte de cours : ni case ni choix ; le verso (correction) est obligatoire
+			if ((variation.blanks?.length ?? 0) > 0) {
+				errors.push(`${prefix} course_card cannot have blanks[]`);
+			}
+			if ((variation.choices ?? shared?.choices ?? []).length > 0) {
+				errors.push(`${prefix} course_card cannot have choices[]`);
+			}
+			const correction = variation.correction ?? shared?.correction;
+			if (!hasCourseCardBackSource(correction)) {
+				errors.push(
+					`${prefix} course_card requires a correction (verso): non-empty steps or generatedSteps`
+				);
+			}
+			break;
+		}
 
 		case 'multiple_choice': {
 			// Use merged choices (variation overrides shared)

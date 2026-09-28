@@ -84,30 +84,59 @@ export async function loadOrInitCardStats(
 	};
 }
 
+/** Options du pipeline (cartes de cours, #617). */
+export interface ApplyFsrsOptions {
+	/** Si vrai sur la fiche existante (ou initialisée) : pas de mise à jour, rend `null`. */
+	skipIf?: (stats: CardStats) => boolean;
+	/**
+	 * Vérifie que l'écriture a bien touché une ligne (`.select()`) : la RLS
+	 * échoue en SILENCE (0 ligne, sans erreur), cf. docs/ref/rls-echecs-silencieux.md.
+	 */
+	verifyWrite?: boolean;
+}
+
 /**
  * UPSERT d'une row `srs_card_stats`. Conflict resolution via la contrainte
  * UNIQUE `(user_id, card_reference_type, card_reference_id)`.
  *
- * Throws si l'UPSERT échoue (caller décide du fail-loud ou fail-silent).
+ * Throws si l'UPSERT échoue (caller décide du fail-loud ou fail-silent), ou,
+ * avec `verifyWrite`, si aucune ligne n'a été écrite.
  */
-export async function upsertCardStats(supabase: SB, stats: CardStats): Promise<void> {
-	const { error: upsertErr } = await supabase.from('srs_card_stats').upsert(
-		{
-			id: stats.id,
-			user_id: stats.userId,
-			card_reference_type: stats.cardReferenceType,
-			card_reference_id: stats.cardReferenceId,
-			difficulty: stats.difficulty,
-			stability: stats.stability,
-			state: stats.state,
-			last_review: stats.lastReview,
-			next_review: stats.nextReview,
-			total_reviews: stats.totalReviews,
-			// ReviewHistoryEntry[] (interface) → JSONB column: bridge to Json
-			review_history: stats.reviewHistory as unknown as Json
-		},
-		{ onConflict: UPSERT_CONFLICT_KEY }
-	);
+export async function upsertCardStats(
+	supabase: SB,
+	stats: CardStats,
+	options: { verifyWrite?: boolean } = {}
+): Promise<void> {
+	const row = {
+		id: stats.id,
+		user_id: stats.userId,
+		card_reference_type: stats.cardReferenceType,
+		card_reference_id: stats.cardReferenceId,
+		difficulty: stats.difficulty,
+		stability: stats.stability,
+		state: stats.state,
+		last_review: stats.lastReview,
+		next_review: stats.nextReview,
+		total_reviews: stats.totalReviews,
+		// ReviewHistoryEntry[] (interface) → JSONB column: bridge to Json
+		review_history: stats.reviewHistory as unknown as Json
+	};
+
+	if (options.verifyWrite) {
+		const { data, error } = await supabase
+			.from('srs_card_stats')
+			.upsert(row, { onConflict: UPSERT_CONFLICT_KEY })
+			.select('id');
+		if (error) throw error;
+		if (!data || data.length !== 1) {
+			throw new Error('[srs] UPSERT srs_card_stats : aucune ligne écrite (RLS ?)');
+		}
+		return;
+	}
+
+	const { error: upsertErr } = await supabase
+		.from('srs_card_stats')
+		.upsert(row, { onConflict: UPSERT_CONFLICT_KEY });
 
 	if (upsertErr) throw upsertErr;
 }
@@ -115,6 +144,9 @@ export async function upsertCardStats(supabase: SB, stats: CardStats): Promise<v
 /**
  * Pipeline complet : load (ou init) → fsrs.reviewCard(grade, timeSpent?) →
  * upsert. Retourne la `CardStats` mise à jour.
+ *
+ * Avec `options.skipIf` : rend `null` sans rien écrire si la fiche remplit la
+ * condition (garde-fou « une mise à jour par jour » des cartes de cours).
  *
  * Throws sur erreur UPSERT (cf. stratégie fail-loud des endpoints).
  */
@@ -126,7 +158,27 @@ export async function applyFsrsReview(
 	cardReferenceId: string,
 	grade: Grade,
 	timeSpent?: number
-): Promise<CardStats> {
+): Promise<CardStats>;
+export async function applyFsrsReview(
+	supabase: SB,
+	fsrs: FSRS,
+	userId: string,
+	cardReferenceType: 'template' | 'custom',
+	cardReferenceId: string,
+	grade: Grade,
+	timeSpent: number | undefined,
+	options: ApplyFsrsOptions
+): Promise<CardStats | null>;
+export async function applyFsrsReview(
+	supabase: SB,
+	fsrs: FSRS,
+	userId: string,
+	cardReferenceType: 'template' | 'custom',
+	cardReferenceId: string,
+	grade: Grade,
+	timeSpent?: number,
+	options: ApplyFsrsOptions = {}
+): Promise<CardStats | null> {
 	const stats = await loadOrInitCardStats(
 		supabase,
 		fsrs,
@@ -134,6 +186,8 @@ export async function applyFsrsReview(
 		cardReferenceType,
 		cardReferenceId
 	);
+
+	if (options.skipIf?.(stats)) return null;
 
 	const updated = fsrs.reviewCard(stats, grade, timeSpent);
 
@@ -144,6 +198,6 @@ export async function applyFsrsReview(
 		...updated
 	};
 
-	await upsertCardStats(supabase, newStats);
+	await upsertCardStats(supabase, newStats, { verifyWrite: options.verifyWrite });
 	return newStats;
 }
