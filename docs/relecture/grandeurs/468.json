@@ -1,0 +1,173 @@
+{
+	"globalIndex": 468,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Double espace retirée ; feedback « épisode » → « film » ; heures de début/fin écrites via variables q, r et \\unit (le ;hms en ligne rend « 4~\\unit{h} 12~\\unit{min} », sans espace insécable entre h et 12) ; correction : durée en h min (au lieu de « 1.5 h »), unités en \\unit, phrase de conclusion.",
+	"template": {
+		"title": "Soustraire des durées (2)",
+		"description": "en HMS",
+		"variations": [
+			{
+				"statement": "J'ai commencé à regarder un film à ${{a}}~\\unit{h}~{{c}}~\\unit{min}$, et je l'ai terminé à ${{q}}~\\unit{h}~{{r}}~\\unit{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "d",
+						"expression": "1..59!{{eval:60-c}}"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a+b+floor((c+d)/60)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:c+d-60*floor((c+d)/60)"
+					}
+				],
+				"correction": {
+					"feedback": {
+						"correct": "La durée du film est de {{answer}}."
+					},
+					"steps": [
+						"{{if:{{c}}+{{d}}<60|${{a}}~\\unit{h}~{{c}}~\\unit{min} + {{b}}~\\unit{h}~{{d}}~\\unit{min} = {{q}}~\\unit{h}~{{r}}~\\unit{min}$|$$\\begin{align}{{q}}~\\unit{h}~{{r}}~\\unit{min} &= {{a}}~\\unit{h}~{{c}}~\\unit{min} + {{eval:60-c}}~\\unit{min} + {{b}}~\\unit{h} + {{eval:c+d-60}}~\\unit{min}\\\\ &= {{a}}~\\unit{h}~{{c}}~\\unit{min} + {{b}}~\\unit{h}~{{d}}~\\unit{min}\\end{align}$$}}",
+						"Le film a duré ${{b}}~\\unit{h}~{{d}}~\\unit{min}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b[h]+d[min]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"unit": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 8,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "2 h 38 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["2\\,h\\,38\\,\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "158 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["158\\unit{min}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1 h 98 min non normalisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["1\\,h\\,98\\,\\min"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["158"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "heure de trop",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["3\\,h\\,38\\,\\min"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "mn au lieu de min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "59",
+					"d": "38"
+				},
+				"answers": ["2\\,h\\,38\\,mn"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "sans retenue : 1 h 30 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "1",
+					"c": "12",
+					"d": "30"
+				},
+				"answers": ["1\\,h\\,30\\,\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

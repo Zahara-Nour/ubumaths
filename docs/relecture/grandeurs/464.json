@@ -1,0 +1,146 @@
+{
+	"globalIndex": 464,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Même défaut que #462 (expression brute, variable d1 superflue) : énoncé en \\unit + case, attendu {{eval:a[h]+b[h]+(c*10)[min]+(d*10)[min]}} en case à unité ; consigne complétée « écris la réponse sous la forme que tu veux » (sous-description : l'élève choisit l'unité) ; correction réécrite.",
+	"template": {
+		"title": "Ajouter des durées (2)",
+		"description": "L'utilisateur choisit l'unité.",
+		"variations": [
+			{
+				"statement": "Calcule et écris la réponse sous la forme que tu veux.\n\n${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = ?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "1..5!{{eval:6-c}}"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{c}}+{{d}}>=6|$$\\begin{align}{{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} &= {{a}}~\\unit{h} + {{b}}~\\unit{h} + {{eval:c*10}}~\\unit{min} + {{eval:d*10}}~\\unit{min}\\\\ &= {{eval:a+b}}~\\unit{h} + 60~\\unit{min} + {{eval:c*10+d*10-60}}~\\unit{min}\\\\ &= {{eval:a+b}}~\\unit{h} + 1~\\unit{h} + {{eval:c*10+d*10-60}}~\\unit{min}\\\\ &= {{eval:a[h]+b[h]+(c*10)[min]+(d*10)[min];hms}}\\end{align}$$|${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = {{eval:a[h]+b[h]+(c*10)[min]+(d*10)[min];hms}}$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a[h]+b[h]+(c*10)[min]+(d*10)[min]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"unit": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "8 h 30 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["8\\,h\\,30\\,\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "8,5 h",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["8{,}5\\unit{h}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "7 h 90 min non normalisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["7\\,h\\,90\\,\\min"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["7\\,h\\,30\\,\\min"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "8,3 h (confusion h/min décimales)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"answers": ["8{,}3\\unit{h}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans retenue : 5 h 40 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "4",
+					"b": "1",
+					"c": "1",
+					"d": "3"
+				},
+				"answers": ["5\\,h\\,40\\,\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

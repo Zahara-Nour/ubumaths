@@ -1,0 +1,204 @@
+{
+	"globalIndex": 462,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Expression brute « a h b min + c min » (non générable) remplacée : énoncé en \\unit avec case, réponse attendue {{eval:a[h]+b[min]+c[min]}} en case à unité (toute forme acceptée, dont « h min ») ; correction réécrite (retenue en 3 lignes, résultat en ;hms).",
+	"template": {
+		"title": "Ajouter des durées",
+		"description": "unité choisie par l'utilisateur",
+		"variations": [
+			{
+				"statement": "Calcule et écris la réponse sous la forme que tu veux.\n\n${{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} = ?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{b}}+{{c}}>=60|$$\\begin{align}{{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} &= {{a}}~\\unit{h} + {{eval:b+c}}~\\unit{min}\\\\ &= {{a}}~\\unit{h} + 60~\\unit{min} + {{eval:b+c-60}}~\\unit{min}\\\\ &= {{a}}~\\unit{h} + 1~\\unit{h} + {{eval:b+c-60}}~\\unit{min}\\\\ &= {{eval:a[h]+b[min]+c[min];hms}}\\end{align}$$|${{a}}~\\unit{h}~{{b}}~\\unit{min} + {{c}}~\\unit{min} = {{eval:a[h]+b[min]+c[min];hms}}$}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a[h]+b[min]+c[min]}}",
+						"unit": {
+							"expected": true
+						}
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"zeros": "off",
+				"unit": "off"
+			}
+		},
+		"grades": ["6"],
+		"theme": "Grandeurs",
+		"domain": "Durées",
+		"subdomain": "Calculer",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "3 h 15 min (espaces)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["3\\,h\\,15\\,\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3h15min collé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["3h15\\min"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "195 min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["195\\unit{min}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "3,25 h",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["3{,}25\\unit{h}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "2 h 75 min non normalisé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["2\\,h\\,75\\,\\min"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "3 h 15 sans unité finale",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["3\\,h\\,15"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "mn au lieu de min",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["3\\,h\\,15\\,mn"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "unités dans le désordre",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["15\\,\\min\\,3\\,h"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "retenue oubliée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["2\\,h\\,15\\,\\min"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "sans unité",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "40",
+					"c": "35"
+				},
+				"answers": ["195"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "borne : 2 h 1 min + 59 min = 3 h",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "59"
+				},
+				"answers": ["3\\,h"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

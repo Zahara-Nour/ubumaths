@@ -8,6 +8,24 @@ encore acceptée par le correcteur (lot 3 du chantier Grandeurs).
 > ✅ **Feu vert de David le 2026-09-27 : les 41 questions sont importées en BROUILLON** (vérifié en
 > base : reliées au suivi, statut draft, 41 emplacements distincts). David les publie lui-même.
 
+## Les 4 dernières (#462, #464, #466, #468) — relues le 2026-09-28, en attente du feu vert
+
+Débloquées par #502 (réponse en durée composée, mesurée au vrai clavier). Toutes corrigées,
+importables (specs vertes, 50 tirages sur 50).
+
+- **#462, #464, #466** (ajouter des durées) ne généraient pas : l'expression TinyMath `&1 h &2 min`
+  était recopiée brute → énoncé avec une case à unité, attendu `{{eval:a[h]+b[min]+…}}`, correction
+  qui montre la retenue puis le résultat en « h min ». Consigne complétée « sous la forme que tu
+  veux » (la sous-description TinyMath laisse l'unité au choix).
+- **#468** (soustraire des durées) : la correction affichait « 1.5 h » → « 1 h 30 min » ; unités en
+  `\unit`, « épisode » → « film » dans le retour, phrase de conclusion.
+- Specs (ex. 2 h 40 min + 35 min = 3 h 15 min) : `3 h 15 min`, `3h15min`, `195 min`, `3,25 h` justes ;
+  `2 h 75 min` et `3 h 15` perfectibles ; `3 h 15 mn`, `15 min 3 h` mauvaise forme ; retenue oubliée
+  (`2 h 15 min`), `195` sans unité, `8,3 h` pour 8 h 30 min : faux.
+- Retenues : attendus calculés exactement, bornes vérifiées (4 h 59 + 4 h 59 = 9 h 58).
+- Défaut d'affichage trouvé : `;hms` en ligne affiche « 3 h56 min » (espace perdue) — touche aussi
+  **#467 déjà importée** ; correctif en cours (`fix/hms-espace-entre-unites`).
+
 ## Bilan
 
 | Verdict                         | Nombre |
