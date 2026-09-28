@@ -153,12 +153,8 @@ const unitRow = {
 const courseCardRow = {
 	id: '03b3d9b3-2d38-4062-a70b-c9b31839444b',
 	type: 'course_card',
-	// ⚠️ En production : `delay: null` sur les 4 cartes. `validateTemplate` teste
-	// `delay !== undefined && delay <= 0`, et `null <= 0` vaut true : la ligne
-	// réelle NE SE GÉNÈRE PAS (« delay must be positive »), la carte serait
-	// sautée en silence par automaths. Défaut hors de ce correctif, signalé ;
-	// 20 ici pour tester la validation de la sauvegarde.
-	delay: 20,
+	// Comme en production : les 4 cartes n'ont pas de délai (généré depuis #495)
+	delay: null,
 	level: 3,
 	theme: 'Fonctions',
 	title: 'Étude de fonction : ce que donne la dérivée',
