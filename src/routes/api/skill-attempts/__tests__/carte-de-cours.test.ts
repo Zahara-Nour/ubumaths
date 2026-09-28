@@ -9,11 +9,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
+const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
+vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE } })
+}));
+// Le serveur lit la nature du modèle avec ses propres droits : il voit aussi
+// les brouillons, que la RLS cache à l'élève.
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({
+		from: () => ({
+			select: () => ({
+				eq: () => ({
+					maybeSingle: async () => ({
+						data: {
+							id: MODELE,
+							options: optionsDuModele,
+							status: modeleEnBrouillon ? 'draft' : 'published',
+							question_template_points: pointsDuModele
+						},
+						error: null
+					})
+				})
+			})
+		})
+	})
 }));
 
 import { POST } from '../+server';
@@ -23,6 +45,10 @@ const MODELE = '22222222-2222-4222-8222-222222222222';
 
 let attemptsInseres: Record<string, unknown>[];
 let optionsDuModele: unknown;
+/** Modèle repassé en brouillon : la RLS le cache à l'élève (0 ligne, sans erreur). */
+let modeleEnBrouillon = false;
+/** Points de programme tagués sur le modèle. */
+let pointsDuModele: { point_id: string }[] = [];
 
 function fauxSupabase() {
 	return {
@@ -32,7 +58,9 @@ function fauxSupabase() {
 					select: () => ({
 						eq: () => ({
 							maybeSingle: async () => ({
-								data: { id: MODELE, options: optionsDuModele, question_template_points: [] },
+								data: modeleEnBrouillon
+									? null
+									: { id: MODELE, options: optionsDuModele, question_template_points: [] },
 								error: null
 							})
 						})
@@ -66,6 +94,9 @@ describe('POST /api/skill-attempts — source', () => {
 	beforeEach(() => {
 		attemptsInseres = [];
 		optionsDuModele = null;
+		modeleEnBrouillon = false;
+		pointsDuModele = [];
+		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 	});
 
@@ -82,5 +113,30 @@ describe('POST /api/skill-attempts — source', () => {
 			success: false,
 			grade: 1
 		});
+	});
+
+	// Carte repassée en brouillon pendant la série (décision de David, 2026-09-28) :
+	// la trace est gardée, en auto-évaluation, au lieu d'un refus 404.
+	it('carte repassée en brouillon : trace gardée, source student_self', async () => {
+		optionsDuModele = { courseCard: true };
+		modeleEnBrouillon = true;
+		await poster({ template_id: MODELE, success: true });
+		expect(attemptsInseres[0]).toMatchObject({ source: 'student_self', success: true });
+	});
+
+	// Relevé par security-auditor : un brouillon ajouté au paquet Programme y serait
+	// une carte fantôme (la révision le relit avec les droits de l'élève).
+	it('question repassée en brouillon : trace gardée, mais pas ajoutée au paquet Programme', async () => {
+		modeleEnBrouillon = true;
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true });
+		expect(attemptsInseres[0]).toMatchObject({ source: 'auto' });
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	it('question publiée taguée : ajoutée au paquet Programme (inchangé)', async () => {
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true });
+		expect(ensureProgrammeDeckCard).toHaveBeenCalledTimes(1);
 	});
 });

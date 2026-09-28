@@ -43,6 +43,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/errors/cleanup',
 	// GDPR account deletion (requires auth.admin.deleteUser)
 	'/api/account/delete',
+	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
+	'/api/skill-attempts',
+	'/api/tests/save',
 	// Game milestone awards (student_achievements RLS only allows service_role inserts)
 	'/api/games/2048/scores',
 	'/api/games/mathemo/scores'

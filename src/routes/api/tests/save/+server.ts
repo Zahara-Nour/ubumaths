@@ -13,6 +13,7 @@ import {
 } from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
  * API route to save test results to database
@@ -55,7 +56,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// passagère coûte une session, jamais un score faux.
 		let courseCardIds: Set<string>;
 		try {
-			courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+			// Droits du SERVEUR : la RLS cache à l'élève une carte repassée en brouillon
+			// pendant sa série — elle serait comptée comme une question (décision de
+			// David, 2026-09-28). Seuls id et options sont lus.
+			courseCardIds = await fetchCourseCardTemplateIds(createServiceRoleClient(), templateIds);
 		} catch (lookupError) {
 			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
 			return json(
