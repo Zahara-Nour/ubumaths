@@ -817,6 +817,57 @@ describe('validateTemplate - Edge Cases', () => {
 		expect(errors).toEqual([]);
 	});
 
+	// Automaths passe la ligne de `question_templates` telle quelle
+	// (`template as QuestionTemplate`) : une colonne `delay` vide y arrive en
+	// `null`, et `null <= 0` vaut `true` en JavaScript. Les 4 cartes de cours
+	// de #617 (sans délai) étaient ainsi refusées, et automaths les sautait.
+	it('accepte un délai absent lu en base (null)', () => {
+		const row = {
+			id: 'test',
+			title: 'Carte',
+			status: 'draft',
+			variations: [{ statement: templateMarkdown('Question'), correction: { steps: ['Réponse'] } }],
+			options: { courseCard: true },
+			grades: ['1_SPE'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			delay: null,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		expect(validateTemplate(row as unknown as QuestionTemplate)).not.toContain(
+			'delay must be positive'
+		);
+	});
+
+	it('refuse toujours un délai nul ou négatif', () => {
+		const template: QuestionTemplate = {
+			id: 'test',
+			title: 'Test Template',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Question'),
+					variables: [],
+					blanks: [{ expectedAnswer: '5' }]
+				}
+			],
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			delay: 0,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		expect(validateTemplate(template)).toContain('delay must be positive');
+	});
+
 	it('should validate template with optional correction in variation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
