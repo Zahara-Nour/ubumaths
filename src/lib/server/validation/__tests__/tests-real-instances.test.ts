@@ -205,10 +205,7 @@ describe('validateSaveTest — carte de cours (#617)', () => {
 		return buildPayload(
 			[realInstance(REAL_TEMPLATES.singleBlank), realInstance(REAL_TEMPLATES.courseCard)],
 			// L'élève rate la question, puis « Je savais » sur la carte
-			[
-				{ value: ['3'], isCorrect: false },
-				{ isCorrect: true }
-			]
+			[{ value: ['3'], isCorrect: false }, { isCorrect: true }]
 		);
 	}
 
