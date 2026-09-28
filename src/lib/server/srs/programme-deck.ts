@@ -106,6 +106,10 @@ export async function ensureProgrammeDeckCard(
 ): Promise<void> {
 	const deckId = await ensureProgrammeDeck(supabase, userId);
 
+	// ⚠️ Écrit avec le client de l'ÉLÈVE dans un paquet `is_auto_managed` : seule la
+	// policy large « Users can create cards in decks » l'autorise (la stricte exclut
+	// ces paquets). Ne pas la retirer sans faire écrire ce code avec les droits du
+	// serveur — cf. docs/ref/rls-echecs-silencieux.md (cas `srs_cards`).
 	const { error: insertErr } = await supabase.from('srs_cards').insert({
 		deck_id: deckId,
 		card_type: 'template',
