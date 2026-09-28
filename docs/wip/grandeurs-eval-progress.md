@@ -101,7 +101,9 @@ dans cet environnement ; le test de mesure non suivi a été supprimé (accord d
 2. « 2h15min » (sans espaces) : **juste**, comme avec espaces ;
 3. « 2 h 15 mn » : **mauvaise forme**, message « L'abréviation de minute est min. » ;
 4. unités dans le désordre (« 15 min 2 h ») : **mauvaise forme**.
-   Branche : `feat/durees-composees` (worktree `ubumaths-wt-durees`).
+   Livré par #502 (2026-09-28) ; espace visible entre les unités de `;hms` par #503. Libellés validés par
+   David : « Écris plutôt 3 h 15 min. » (forme non normalisée) et « Écris les unités de la plus grande à
+   la plus petite, une seule fois chacune. » (désordre, répétition).
 
 ## Avancement
 
