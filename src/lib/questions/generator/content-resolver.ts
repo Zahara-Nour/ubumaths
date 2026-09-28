@@ -136,9 +136,11 @@ const HMS_REGEX = new RegExp(
 
 /**
  * Une grandeur isolée, pas collée à un mot ni à un autre nombre : ni la fin d'un décimal à
- * virgule (`1,5[m]`), ni celle d'un nombre groupé par `{}` (`12{}345[m]`)
+ * virgule (`1,5[m]`), ni celle d'un nombre groupé par `{}` (`12{}345[m]`). L'accolade qui
+ * ferme `\begin{align}` n'en est pas une : `\begin{align}4[h] &= …` (relecture #467).
  */
-const QUANTITY_REGEX = /(?<![\w.,}\]])(-?\d+(?:\.\d+)?)\[([^[\]\s]+)\]/g;
+const QUANTITY_REGEX =
+	/(?:(?<![\w.,}\]])|(?<=\\begin\{[a-zA-Z*]+\}))(-?\d+(?:\.\d+)?)\[([^[\]\s]+)\]/g;
 
 /**
  * Zones d'un contenu : code (```…```, `…`) et zones maison (`~~…~~`, `~…~`) laissés tels quels,

@@ -38,6 +38,7 @@ import type {
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
+import { isMultiplication, isUnit } from './guards';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesUnderPercent,
@@ -493,7 +494,7 @@ export class LatexGenerator {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'implicit':
-				this.emit(' ', opMeta);
+				this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
 				break;
 			case 'dot':
 				this.emit(' \\cdot ', opMeta);
@@ -1123,7 +1124,7 @@ export class LatexGenerator {
 
 		switch (node.displayStyle) {
 			case 'implicit':
-				return `${left} ${right}`;
+				return juxtaposesQuantities(node) ? `${left}~${right}` : `${left} ${right}`;
 			case 'dot':
 				return `${left} \\cdot ${right}`;
 			case 'cross':
@@ -1527,6 +1528,17 @@ export class LatexGenerator {
 // =============================================================================
 // Convenience Function
 // =============================================================================
+
+/**
+ * Deux grandeurs juxtaposées : la durée composée de `;hms` (`{3[h]}{56[min]}`, lue comme un
+ * produit implicite). Une espace ORDINAIRE entre `\unit{h}` et `56` est ignorée en mode
+ * math (« 3 h56 min ») : l'espace doit être insécable, `~`, comme entre valeur et unité.
+ */
+function juxtaposesQuantities(node: MultiplicationNode): boolean {
+	let left: MathNode = node.left;
+	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
+	return isUnit(left) && isUnit(node.right);
+}
 
 export function toLatex(node: MathNode, options?: LatexGeneratorOptions): string {
 	return new LatexGenerator(options).generate(node);
