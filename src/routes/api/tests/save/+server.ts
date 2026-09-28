@@ -8,6 +8,7 @@ import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { fetchCourseCardTemplateIds, reviewedToday } from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
+import { toJson } from '$lib/types/database-helpers';
 
 /**
  * API route to save test results to database
@@ -83,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const answersToInsert = result.answers.map((answer) => ({
 			test_session_id: testSession.id,
 			template_id: answer.instance.templateId || null,
-			question_instance: answer.instance,
+			question_instance: toJson(answer.instance),
 			user_answer: answer.userAnswer || null,
 			is_correct: answer.isCorrect,
 			time_spent: answer.timeSpent || null,
