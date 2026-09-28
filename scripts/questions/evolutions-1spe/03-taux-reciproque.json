@@ -1,0 +1,315 @@
+{
+	"title": "Trouver le taux d'évolution réciproque",
+	"description": "Évolution qui ramène à la valeur initiale",
+	"grades": ["1_SPE"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 9,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une grandeur subit une hausse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "25|60|100|150|300|400|900"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-100*t/(100+t);d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur de la hausse est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Le coefficient multiplicateur réciproque est son inverse : $\\dfrac{1}{ {{eval:1+t/100;d}} }={{eval:100/(100+t);d}}$.",
+					"Or ${{eval:100/(100+t);d}}=1-{{eval:t/(100+t);d}}$, donc le taux d'évolution réciproque est ${{eval:-100*t/(100+t);d}}\\,\\%$ (une baisse de ${{eval:100*t/(100+t);d}}\\,\\%$)."
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur subit une baisse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "20|50|60|75|80|90"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:100*t/(100-t);d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur de la baisse est $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Le coefficient multiplicateur réciproque est son inverse : $\\dfrac{1}{ {{eval:1-t/100;d}} }={{eval:100/(100-t);d}}$.",
+					"Or ${{eval:100/(100-t);d}}=1+{{eval:t/(100-t);d}}$, donc le taux d'évolution réciproque est $+{{eval:100*t/(100-t);d}}\\,\\%$ (une hausse de ${{eval:100*t/(100-t);d}}\\,\\%$)."
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur subit une hausse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "10|15|30|35|40|45|70|80"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(-1000*t/(100+t))/10;d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur de la hausse est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Le coefficient multiplicateur réciproque est son inverse : $\\dfrac{1}{ {{eval:1+t/100;d}} }\\approx{{eval:round(1000000/(100+t))/10000;d}}$.",
+					"Le taux d'évolution réciproque est donc $\\dfrac{1}{ {{eval:1+t/100;d}} }-1\\approx{{eval:round(-10000*t/(100+t))/10000;d}}$, soit environ ${{eval:round(-1000*t/(100+t))/10;d}}\\,\\%$ (arrondi à $0{,}1\\,\\%$ près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "hausse de 25 % → −20 %",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["-20\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse de 25 % → −20 % avec espace fine",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["-20\\,\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse de 60 % → −37,5 % (virgule)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "60"
+			},
+			"answers": ["-37{,}5\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse de 60 % → −37.5 % (point)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "60"
+			},
+			"answers": ["-37.5\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse de 900 % → −90 %",
+			"variationIndex": 0,
+			"variables": {
+				"t": "900"
+			},
+			"answers": ["-90\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : +20 % (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["20\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : +20 % écrit avec le signe",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["+20\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : −25 % (opposé du taux)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["-25\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "oubli du symbole %",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["-20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "écriture décimale −0,2 : perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"t": "25"
+			},
+			"answers": ["-0{,}2"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["percent"]
+			}
+		},
+		{
+			"description": "baisse de 20 % → 25 %",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["25\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "baisse de 20 % → +25 % (signe explicite accepté)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["+25\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "baisse de 50 % → +100 %",
+			"variationIndex": 1,
+			"variables": {
+				"t": "50"
+			},
+			"answers": ["100\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "baisse de 75 % → +300 %",
+			"variationIndex": 1,
+			"variables": {
+				"t": "75"
+			},
+			"answers": ["+300\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : +20 % (même taux)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["20\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : −25 % (mauvais signe)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20"
+			},
+			"answers": ["-25\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arrondi : hausse de 10 % → −9,1 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["-9{,}1\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "arrondi : hausse de 80 % → −44,4 % (point)",
+			"variationIndex": 2,
+			"variables": {
+				"t": "80"
+			},
+			"answers": ["-44.4\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "arrondi : troncature fausse −9 %",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["-9\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arrondi : −10 % (opposé du taux)",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["-10\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arrondi : valeur non arrondie au dixième −9,09 % refusée",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"answers": ["-9{,}09\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"signs": "off"
+		}
+	}
+}

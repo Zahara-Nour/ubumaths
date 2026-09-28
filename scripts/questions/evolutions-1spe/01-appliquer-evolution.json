@@ -1,0 +1,201 @@
+{
+	"title": "Appliquer une évolution en pourcentage",
+	"description": "Nouvelle valeur après une hausse ou une baisse",
+	"grades": ["1_SPE"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 7,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un prix de ${{v}}$ € augmente de ${{t}}\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $?$ €.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..30"
+				},
+				{
+					"name": "v",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|15|20|25|30|40|50|60|75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*(1+t/100);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur associé à une hausse de ${{t}}\\,\\%$ est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Le nouveau prix est ${{v}}\\times{{eval:1+t/100;d}}={{eval:v*(1+t/100);d}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Un prix de ${{v}}$ € baisse de ${{t}}\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $?$ €.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..30"
+				},
+				{
+					"name": "v",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|15|20|25|30|40|50|60|75"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*(1-t/100);d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur associé à une baisse de ${{t}}\\,\\%$ est $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Le nouveau prix est ${{v}}\\times{{eval:1-t/100;d}}={{eval:v*(1-t/100);d}}$ €."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "80 € + 15 % = 92 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15"
+			},
+			"answers": ["92"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "20 € + 75 % = 35 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"v": "20",
+				"t": "75"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "30 € + 15 % = 34,5 € saisi avec la virgule",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"v": "30",
+				"t": "15"
+			},
+			"answers": ["34{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "30 € + 15 % = 34,5 € saisi avec le point",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"v": "30",
+				"t": "15"
+			},
+			"answers": ["34.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "donne l'augmentation (12) au lieu du nouveau prix",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "donne le taux (15) au lieu du prix",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "80 € - 20 % = 64 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "30 € - 15 % = 25,5 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"v": "30",
+				"t": "15"
+			},
+			"answers": ["25{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse au lieu de baisse (96)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20"
+			},
+			"answers": ["96"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "donne la baisse (16) au lieu du prix",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

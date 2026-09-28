@@ -1,0 +1,249 @@
+{
+	"title": "Coefficient multiplicateur d'une évolution répétée",
+	"description": "Même taux appliqué plusieurs années de suite",
+	"grades": ["1_SPE"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 11,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Une grandeur augmente de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1|2|3|4|5|10"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1+t/100;d}}^{ {{n}} }",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la grandeur est multipliée par $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1+t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1+t/100;d}}^{ {{n}} }$ (c'est le terme d'une suite géométrique de raison ${{eval:1+t/100;d}}$).",
+					"Attention : ce n'est pas $1+\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1+n*t/100;d}}$, les taux ne s'additionnent pas."
+				]
+			}
+		},
+		{
+			"statement": "Une grandeur diminue de ${{t}}\\,\\%$ par an pendant ${{n}}$ ans. Donne le coefficient multiplicateur global.\n\nLe coefficient multiplicateur global est $?$.",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1|2|3|4|5|10|20"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-t/100;d}}^{ {{n}} }",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque année, la grandeur est multipliée par $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Au bout de ${{n}}$ ans, elle est multipliée ${{n}}$ fois par ${{eval:1-t/100;d}}$ : le coefficient multiplicateur global est ${{eval:1-t/100;d}}^{ {{n}} }$ (c'est le terme d'une suite géométrique de raison ${{eval:1-t/100;d}}$).",
+					"Attention : ce n'est pas $1-\\dfrac{ {{n}}\\times{{t}} }{100}={{eval:1-n*t/100;d}}$, les taux ne s'additionnent pas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+3 % pendant 5 ans : 1,03^5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}03^5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+3 % pendant 5 ans : 1.03^5 saisi au point",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1.03^{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "valeur décimale exacte avec espaces fines : 1,159 274 074 3",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}159\\,274\\,074\\,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "valeur décimale exacte sans espaces : juste mais perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}1592740743"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "+10 % pendant 3 ans : décimal exact 1,331",
+			"variationIndex": 0,
+			"variables": {
+				"t": "10",
+				"n": "3"
+			},
+			"answers": ["1{,}331"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "valeur approchée 1,159 refusée (valeur exacte demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}159"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : taux additionnés 1,15",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : 1,03 × 5",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["1{,}03\\times5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : 0,03^5 (taux au lieu du coefficient)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["0{,}03^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−2 % pendant 10 ans : 0,98^10",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"n": "10"
+			},
+			"answers": ["0{,}98^{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−20 % pendant 2 ans : décimal exact 0,64",
+			"variationIndex": 1,
+			"variables": {
+				"t": "20",
+				"n": "2"
+			},
+			"answers": ["0{,}64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur : mauvais exposant 0,98^9",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"n": "10"
+			},
+			"answers": ["0{,}98^{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : taux additionnés 0,8",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"n": "10"
+			},
+			"answers": ["0{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : 1,02^10 (hausse au lieu de baisse)",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"n": "10"
+			},
+			"answers": ["1{,}02^{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué (1+0,03)^5 : mauvaise forme (convention « calcul non effectué »)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n": "5"
+			},
+			"answers": ["\\left(1+0{,}03\\right)^5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

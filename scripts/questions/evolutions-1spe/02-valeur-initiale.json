@@ -1,0 +1,222 @@
+{
+	"title": "Retrouver la valeur initiale avant une évolution",
+	"description": "Prix avant une hausse ou une baisse en pourcentage",
+	"grades": ["1_SPE"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 8,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Après une hausse de ${{t}}\\,\\%$, un article coûte ${{eval:v*(1+t/100);d}}$ €. Donne le prix initial.\n\nLe prix initial est $?$ €.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..30"
+				},
+				{
+					"name": "v",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|15|20|25|30|40|50|60|75"
+				},
+				{
+					"name": "p",
+					"expression": "eval:v*(1+t/100)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur associé à une hausse de ${{t}}\\,\\%$ est $1+\\dfrac{ {{t}} }{100}={{eval:1+t/100;d}}$.",
+					"Prix initial $\\times {{eval:1+t/100;d}} = {{eval:v*(1+t/100);d}}$ : pour retrouver le prix initial, on divise par le coefficient multiplicateur.",
+					"Le prix initial est $\\dfrac{ {{eval:v*(1+t/100);d}} }{ {{eval:1+t/100;d}} }={{v}}$ €."
+				]
+			}
+		},
+		{
+			"statement": "Après une baisse de ${{t}}\\,\\%$, un article coûte ${{eval:v*(1-t/100);d}}$ €. Donne le prix initial.\n\nLe prix initial est $?$ €.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..30"
+				},
+				{
+					"name": "v",
+					"expression": "eval:10*k"
+				},
+				{
+					"name": "t",
+					"expression": "5|10|15|20|25|30|40|50|60|75"
+				},
+				{
+					"name": "p",
+					"expression": "eval:v*(1-t/100)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{v}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient multiplicateur associé à une baisse de ${{t}}\\,\\%$ est $1-\\dfrac{ {{t}} }{100}={{eval:1-t/100;d}}$.",
+					"Prix initial $\\times {{eval:1-t/100;d}} = {{eval:v*(1-t/100);d}}$ : pour retrouver le prix initial, on divise par le coefficient multiplicateur.",
+					"Le prix initial est $\\dfrac{ {{eval:v*(1-t/100);d}} }{ {{eval:1-t/100;d}} }={{v}}$ €."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "baisse de 20 %, 64 € → 80 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20",
+				"p": "64"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "baisse de 25 %, 22,5 € → 30 €",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"v": "30",
+				"t": "25",
+				"p": "22.5"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : 64 × 1,2 = 76,8",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20",
+				"p": "64"
+			},
+			"answers": ["76{,}8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : 64 + 20 % … saisi au point 76.8",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20",
+				"p": "64"
+			},
+			"answers": ["76.8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur : prix final recopié",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "20",
+				"p": "64"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hausse de 15 %, 92 € → 80 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15",
+				"p": "92"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "hausse de 25 %, 250 € → 200 €",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20",
+				"v": "200",
+				"t": "25",
+				"p": "250"
+			},
+			"answers": ["200"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "quotient 92/1,15 non calculé : juste mais perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15",
+				"p": "92"
+			},
+			"answers": ["\\frac{92}{1{,}15}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "erreur typique : 250 × 0,75 = 187,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20",
+				"v": "200",
+				"t": "25",
+				"p": "250"
+			},
+			"answers": ["187{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : 92 − 15 % = 78,2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"v": "80",
+				"t": "15",
+				"p": "92"
+			},
+			"answers": ["78{,}2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

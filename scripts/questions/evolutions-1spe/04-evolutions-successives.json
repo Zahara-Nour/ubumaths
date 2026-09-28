@@ -1,0 +1,275 @@
+{
+	"title": "Composer deux évolutions successives",
+	"description": "Coefficient multiplicateur et taux d'évolution globaux",
+	"grades": ["1_SPE"],
+	"theme": "Proportionnalité",
+	"domain": "Pourcentages",
+	"subdomain": "Variations",
+	"level": 10,
+	"delay": 45,
+	"status": "draft",
+	"options": {
+		"constraints": {
+			"signs": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une grandeur augmente de ${{a}}\\,\\%$ puis diminue de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5|10|15|20|25|30|40|50"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|15|20|25|30|40|50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+a/100)*(1-b/100);d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(100+a)*(100-b)/100-100;d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coefficients multiplicateurs sont $1+\\dfrac{ {{a}} }{100}={{eval:1+a/100;d}}$ et $1-\\dfrac{ {{b}} }{100}={{eval:1-b/100;d}}$.",
+					"Le coefficient multiplicateur global est leur produit : ${{eval:1+a/100;d}}\\times{{eval:1-b/100;d}}={{eval:(1+a/100)*(1-b/100);d}}$.",
+					"${{eval:(1+a/100)*(1-b/100);d}}-1={{eval:(100+a)*(100-b)/10000-1;d}}$, donc le taux d'évolution global est ${{eval:(100+a)*(100-b)/100-100;d,+}}\\,\\%$ (et non ${{eval:a-b;+}}\\,\\%$ : les taux ne s'additionnent pas)."
+				]
+			},
+			"conditions": ["(100+a)*(100-b)!=10000", "mod(a*b,10)!=5"]
+		},
+		{
+			"statement": "Une grandeur diminue de ${{a}}\\,\\%$ puis augmente de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5|10|15|20|25|30|40|50"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|15|20|25|30|40|50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1-a/100)*(1+b/100);d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(100-a)*(100+b)/100-100;d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coefficients multiplicateurs sont $1-\\dfrac{ {{a}} }{100}={{eval:1-a/100;d}}$ et $1+\\dfrac{ {{b}} }{100}={{eval:1+b/100;d}}$.",
+					"Le coefficient multiplicateur global est leur produit : ${{eval:1-a/100;d}}\\times{{eval:1+b/100;d}}={{eval:(1-a/100)*(1+b/100);d}}$.",
+					"${{eval:(1-a/100)*(1+b/100);d}}-1={{eval:(100-a)*(100+b)/10000-1;d}}$, donc le taux d'évolution global est ${{eval:(100-a)*(100+b)/100-100;d,+}}\\,\\%$ (et non ${{eval:-a+b;+}}\\,\\%$ : les taux ne s'additionnent pas)."
+				]
+			},
+			"conditions": ["(100-a)*(100+b)!=10000", "mod(a*b,10)!=5"]
+		},
+		{
+			"statement": "Une grandeur augmente de ${{a}}\\,\\%$ puis encore de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5|10|15|20|25|30|40|50"
+				},
+				{
+					"name": "b",
+					"expression": "5|10|15|20|25|30|40|50"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(1+a/100)*(1+b/100);d}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(100+a)*(100+b)/100-100;d}}%"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les coefficients multiplicateurs sont $1+\\dfrac{ {{a}} }{100}={{eval:1+a/100;d}}$ et $1+\\dfrac{ {{b}} }{100}={{eval:1+b/100;d}}$.",
+					"Le coefficient multiplicateur global est leur produit : ${{eval:1+a/100;d}}\\times{{eval:1+b/100;d}}={{eval:(1+a/100)*(1+b/100);d}}$.",
+					"${{eval:(1+a/100)*(1+b/100);d}}-1={{eval:(100+a)*(100+b)/10000-1;d}}$, donc le taux d'évolution global est ${{eval:(100+a)*(100+b)/100-100;d,+}}\\,\\%$ (et non ${{eval:a+b;+}}\\,\\%$ : les taux ne s'additionnent pas)."
+				]
+			},
+			"conditions": ["mod(a*b,10)!=5"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "+10 % puis −20 % : 0,88 et −12 %",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["0{,}88", "-12\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+10 % puis −20 % : saisie au point",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["0.88", "-12\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+20 % puis −20 % : 0,96 et −4 %",
+			"variationIndex": 0,
+			"variables": {
+				"a": "20",
+				"b": "20"
+			},
+			"answers": ["0{,}96", "-4\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+10 % puis −5 % : 1,045 et +4,5 % (signe explicite)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "5"
+			},
+			"answers": ["1{,}045", "+4{,}5\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : taux additionnés −10 %",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["0{,}88", "-10\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur typique : coefficients additionnés 0,9",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["0{,}9", "-10\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur : taux sans signe 12 %",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["0{,}88", "12\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur : taux global donné comme coefficient −0,12 dans la case coefficient",
+			"variationIndex": 0,
+			"variables": {
+				"a": "10",
+				"b": "20"
+			},
+			"answers": ["-0{,}12", "-12\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−50 % puis +40 % : 0,7 et −30 %",
+			"variationIndex": 1,
+			"variables": {
+				"a": "50",
+				"b": "40"
+			},
+			"answers": ["0{,}7", "-30\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−30 % puis +50 % : 1,05 et 5 %",
+			"variationIndex": 1,
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"answers": ["1{,}05", "5\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : −30 % puis +50 % → +20 %",
+			"variationIndex": 1,
+			"variables": {
+				"a": "30",
+				"b": "50"
+			},
+			"answers": ["1{,}05", "20\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "+50 % puis +10 % : 1,65 et 65 %",
+			"variationIndex": 2,
+			"variables": {
+				"a": "50",
+				"b": "10"
+			},
+			"answers": ["1{,}65", "65\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "+10 % puis +10 % : 1,21 et +21 %",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "10"
+			},
+			"answers": ["1{,}21", "+21\\%"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur typique : +10 % puis +10 % → 20 %",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "10"
+			},
+			"answers": ["1{,}21", "20\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
