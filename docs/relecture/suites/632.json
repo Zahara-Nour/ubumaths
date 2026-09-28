@@ -1,0 +1,111 @@
+{
+	"globalIndex": 632,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Case réponse absente de l'énoncé (Blank count mismatch) → « La raison est $?$. » ; consigne à l'impératif ; correction : fraction réécrite sans triples accolades et « $=…$ » à cheval sur le mode math → formule unique ; « A partir » → « À partir ».",
+	"template": {
+		"title": "Déterminer la raison d'une suite arithmétique",
+		"description": "À partir de deux termes",
+		"variations": [
+			{
+				"statement": "Détermine la raison de cette suite arithmétique.\n\n$u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(b-a)*(d)}}$\n\nLa raison est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+2}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"feedback": {
+						"correct": "La raison est {{answer}}."
+					},
+					"steps": [
+						"Si $u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(b-a)*(d)}}$, alors la raison est $r = \\dfrac{u_{{b}}-u_{{a}}}{ {{b}}-{{a}} } = \\dfrac{ {{eval:c+(b-a)*(d)}}-{{eval:c;()}} }{ {{eval:b-a}} }={{solution}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Suites arithmétiques",
+		"subdomain": "Determiner la raison",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "u_2=5, u_5=26 → 7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "u_1=-3, u_4=-18 → -5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"c": "-3",
+					"d": "-5"
+				},
+				"answers": ["-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli de diviser par l'écart des rangs",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "5",
+					"d": "7"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "signe inversé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1",
+					"b": "4",
+					"c": "-3",
+					"d": "-5"
+				},
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

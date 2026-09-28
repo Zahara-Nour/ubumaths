@@ -1,0 +1,790 @@
+{
+	"globalIndex": 626,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Les 42 énoncés contenaient les jetons TinyMath infplus/infmoins/0plus/0moins, rendus lettre à lettre (« i n f p l u s », avec \\imaginaryI) → réécrits en LaTeX (+∞, −∞, 0⁺, 0⁻, \\dfrac, ×). Choix « \\infin » → « \\infty ». Consigne à l'impératif. Les 42 réponses attendues vérifiées une à une (4 formes indéterminées ∞/∞, 2 ∞×0, 4 ∞−∞ ; règles des signes pour les quotients par 0⁺/0⁻).",
+	"template": {
+		"title": "Déterminer la limite d'une suite",
+		"description": "En utilisant les règles de calcul sur les limites",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "$$+\\infty$$"
+				},
+				{
+					"content": "$$-\\infty$$"
+				},
+				{
+					"content": "$$0$$"
+				},
+				{
+					"content": "Forme indéterminée"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["T_SPE"],
+		"theme": "Suites",
+		"domain": "Limites",
+		"subdomain": "Determiner une limite",
+		"level": 2,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 3,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v4 \\dfrac{0}{+\\infty} → 0",
+				"variationIndex": 4,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v5 \\dfrac{0}{-\\infty} → 0",
+				"variationIndex": 5,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
+				"variationIndex": 6,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
+				"variationIndex": 7,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
+				"variationIndex": 8,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
+				"variationIndex": 9,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
+				"variationIndex": 10,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
+				"variationIndex": 11,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
+				"variationIndex": 12,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
+				"variationIndex": 13,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
+				"variationIndex": 14,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
+				"variationIndex": 15,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
+				"variationIndex": 16,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
+				"variationIndex": 17,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 18,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 19,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
+				"variationIndex": 20,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
+				"variationIndex": 21,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
+				"variationIndex": 22,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
+				"variationIndex": 23,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v24 {{a}}\\times(+\\infty) → +∞",
+				"variationIndex": 24,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
+				"variationIndex": 25,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v26 {{a}}\\times(-\\infty) → −∞",
+				"variationIndex": 26,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
+				"variationIndex": 27,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v28 (+\\infty)+(+\\infty) → +∞",
+				"variationIndex": 28,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
+				"variationIndex": 29,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v30 (-\\infty)+(-\\infty) → −∞",
+				"variationIndex": 30,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
+				"variationIndex": 31,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
+				"variationIndex": 32,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v33 (+\\infty)-(-\\infty) → +∞",
+				"variationIndex": 33,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
+				"variationIndex": 34,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v35 (-\\infty)-(+\\infty) → −∞",
+				"variationIndex": 35,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v36 +\\infty+{{a}} → +∞",
+				"variationIndex": 36,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v37 -\\infty+{{a}} → −∞",
+				"variationIndex": 37,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
+				"variationIndex": 38,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
+				"variationIndex": 39,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
+				"variationIndex": 40,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
+				"variationIndex": 41,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v18 erreur : ∞×0 : FI, pas 0",
+				"variationIndex": 18,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v29 erreur : ∞-∞ : FI, pas 0",
+				"variationIndex": 29,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
+				"variationIndex": 32,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
+				"variationIndex": 33,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v9 erreur : -∞/0- : règle des signes",
+				"variationIndex": 9,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v41 erreur : -a/0- : règle des signes",
+				"variationIndex": 41,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v4 erreur : 0/∞ = 0, pas FI",
+				"variationIndex": 4,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v38 erreur : a/0+ = +∞, pas FI",
+				"variationIndex": 38,
+				"variables": {
+					"a": "3"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,124 @@
+{
+	"globalIndex": 622,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Énoncé à l'impératif, u_0 précisé comme premier terme ; résultat de la correction remis dans la formule.",
+	"template": {
+		"title": "Deviner le terme général à partir d'une liste des premiers termes",
+		"description": "Suite arithmétique",
+		"variations": [
+			{
+				"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n$${{c}} \\quad {{d}} \\quad {{f}} \\quad {{g}} \\quad {{h}}$$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+(b)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+(b)*2"
+					},
+					{
+						"name": "g",
+						"expression": "eval:a+(b)*3"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a+(b)*4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"{{if:{{b}}>=0|Le premier terme de la suite est $u_0={{c}}$ et on ajoute ${{b}}$ entre chaque terme, donc $u_n={{solution}}$.|Le premier terme de la suite est $u_0={{c}}$ et on enlève ${{eval:-(b)}}$ entre chaque terme, donc $u_n={{solution}}$.}}"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}{{eval:b;+}}n"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Deviner le terme général",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "9, 2, -5… : 9-7n",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["9-7n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé -7n+9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["-7n+9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "raison de mauvais signe 9+7n",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["9+7n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "u_1 pris comme premier terme : 2-7n",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "-7"
+				},
+				"answers": ["2-7n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "5, 14, 23… : 9n+5",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"answers": ["9n+5"],
+				"expected": {
+					"status": "correct"
+				}
+			}
+		]
+	}
+}

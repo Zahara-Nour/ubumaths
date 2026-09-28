@@ -1,0 +1,259 @@
+{
+	"globalIndex": 621,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Validation testAnswers reconstruite : réponse attendue = expression de u_{n+1} (une case par variation). Énoncé réécrit à l'impératif ; fraction TinyMath brute {n+a}/{n+b} remplacée par \\dfrac ; cadres \\enclose retirés de la correction. Forme : v1 attend 3(n+1)^2 (développé = perfectible), v2 attend 4n+4 (4(n+1) = perfectible).",
+	"template": {
+		"title": "Exprimer le terme suivant",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n^2$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+				"correction": {
+					"steps": ["On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)^2$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}(n+1)^2",
+						"requiredForm": {
+							"pattern": "u*(n+v)^2",
+							"acceptable": "u*n^2+v*n+w"
+						}
+					}
+				]
+			},
+			{
+				"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+				"correction": {
+					"steps": ["On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)={{a}}n+{{a}}$"]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}n+{{a}}",
+						"requiredForm": {
+							"pattern": "u*n+v",
+							"acceptable": "u*(n+v)"
+						}
+					}
+				]
+			},
+			{
+				"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n=\\dfrac{n+{{a}}}{n+{{b}}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+				"correction": {
+					"steps": [
+						"On remplace $n$ par $n+1$ : $u_{n+1}=\\dfrac{n+1+{{a}}}{n+1+{{b}}}=\\dfrac{n+{{eval:a+1}}}{n+{{eval:b+1}}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{n+{{eval:a+1}}}{n+{{eval:b+1}}}"
+					}
+				]
+			},
+			{
+				"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n+{{b}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+				"correction": {
+					"steps": [
+						"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)+{{b}}={{a}}n+{{a}}+{{b}}={{a}}n+{{eval:a+b}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}n+{{eval:a+b}}"
+					}
+				]
+			},
+			{
+				"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n-{{b}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+				"correction": {
+					"steps": [
+						"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)-{{b}}={{a}}n+{{a}}-{{b}}={{a}}n{{eval:a-b;+}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}n{{eval:a-b;+}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Ecriture des termes",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "forme remplacée 3(n+1)^2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["3(n+1)^2"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "u_n+1 au lieu de u_{n+1}",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["3n^2+1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "4n+4",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["4n+4"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "4n+1 (u_n+1)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["4n+1"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction décalée",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["\\frac{n+4}{n+6}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "seul le numérateur décalé",
+				"variationIndex": 2,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["\\frac{n+4}{n+5}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2n+2+7 → 2n+9",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2",
+					"b": "7"
+				},
+				"answers": ["2n+9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "ordre inversé 9+2n",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2",
+					"b": "7"
+				},
+				"answers": ["9+2n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "u_n + 1",
+				"variationIndex": 3,
+				"variables": {
+					"a": "2",
+					"b": "7"
+				},
+				"answers": ["2n+8"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "2n+2-7 → 2n-5",
+				"variationIndex": 4,
+				"variables": {
+					"a": "2",
+					"b": "7"
+				},
+				"answers": ["2n-5"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe : 2n+5",
+				"variationIndex": 4,
+				"variables": {
+					"a": "2",
+					"b": "7"
+				},
+				"answers": ["2n+5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "forme développée : perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["3n^2+6n+3"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "forme factorisée 4(n+1) : perfectible",
+				"variationIndex": 1,
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"answers": ["4(n+1)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,146 @@
+{
+	"globalIndex": 624,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue réécrite {{a}}\\times\\left({{c}}\\right)^n (l'astérisque apparaissait dans la correction : 5*(-\\dfrac{1}{4})^n). Énoncé à l'impératif, u_0 précisé ; résultat de la correction remis dans la formule. Contrainte brackets coupée : elle déclarait « parenthèses inutiles » dans 6\\times\\left(\\frac{1}{5}\\right)^n, où elles sont indispensables (défaut du correcteur).",
+	"template": {
+		"title": "Deviner le terme général à partir d'une liste des premiers termes",
+		"description": "Suite géométrique - raison fractionnaire",
+		"variations": [
+			{
+				"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n${{d}}$ ; ${{f}}$ ; ${{g}}$ ; ${{h}}$ ; ${{j}}$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:1/(b)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*(c)"
+					},
+					{
+						"name": "g",
+						"expression": "eval:a*(c)^2"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a*(c)^3"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*(c)^4"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Le premier terme de la suite est $u_0={{d}}$ et on multiplie par ${{c}}$ entre chaque terme, donc $u_n={{solution}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}\\times\\left({{c}}\\right)^n"
+					}
+				]
+			}
+		],
+		"options": {
+			"constraints": {
+				"products": "off",
+				"brackets": "off"
+			}
+		},
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Deviner le terme général",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "5, -5/4… : 5×(-1/4)^n",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"answers": ["5\\times\\left(-\\frac{1}{4}\\right)^n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "produit implicite",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"answers": ["5(-\\frac{1}{4})^n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "signe de la raison oublié",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"answers": ["5\\times(\\frac{1}{4})^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "raison inversée (-4)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-4"
+				},
+				"answers": ["5\\times(-4)^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "raison positive : 6×(1/5)^n, parenthèses nécessaires",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "5"
+				},
+				"answers": ["6\\times\\left(\\frac{1}{5}\\right)^n"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "u_1 pris comme premier terme",
+				"variationIndex": 0,
+				"variables": {
+					"a": "6",
+					"b": "5"
+				},
+				"answers": ["\\frac{6}{5}\\times\\left(\\frac{1}{5}\\right)^n"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

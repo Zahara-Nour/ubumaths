@@ -1,0 +1,99 @@
+{
+	"globalIndex": 629,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Calculer un terme d'une suite arithmétique",
+		"description": "Calculer un terme à partir d'un autre",
+		"variations": [
+			{
+				"statement": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{c}}$, et $u_{{a}}={{eval:a*(c)}}$.\n\n$u_{{b}}=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Si la raison est $\\textcolor{{{color:primary.0}}}{{{c}}}$ et $u_{{a}}={{eval:a*(c)}}$, alors $u_{{b}}=u_{{a}}\\textcolor{{{color:primary.0}}}{{{eval:c;+}}} \\times {{eval:b-a}}=u_{{a}}{{eval:(b-a)*(c);+}}={{solution}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*(c)}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Suites arithmétiques",
+		"subdomain": "Calculer un terme",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "u_2=6, r=3 → u_5=15",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "u_8=-48, r=-6 → u_9=-54",
+				"variationIndex": 0,
+				"variables": {
+					"a": "8",
+					"b": "9",
+					"c": "-6"
+				},
+				"answers": ["-54"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "une seule raison ajoutée (u_2+3)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "rang b au lieu de b-a (6+5×3)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "3"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

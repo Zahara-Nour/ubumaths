@@ -1,0 +1,95 @@
+{
+	"globalIndex": 627,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Case réponse absente de l'énoncé (Blank count mismatch) → « Le terme suivant est $?$. » ; énoncé reformulé (« quel est le terme suivant 5 ? » → un terme vaut b, calcule le terme suivant) ; correction entièrement en mode math.",
+	"template": {
+		"title": "Calculer un terme d'une suite arithmétique",
+		"description": "Calculer le terme suivant",
+		"variations": [
+			{
+				"statement": "Une suite arithmétique a pour raison ${{a}}$. L'un de ses termes vaut ${{b}}$ : calcule le terme suivant.\n\nLe terme suivant est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"correction": {
+					"feedback": {
+						"correct": "Le terme suivant est {{answer}}."
+					},
+					"steps": [
+						"Si la raison est ${{a}}$, le terme suivant est ${{b}}{{eval:a;+}}={{solution}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+(b)}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Suites arithmétiques",
+		"subdomain": "Calculer un terme",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "raison 3, terme 5 → 8",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "raison -4, terme -2 → -6",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-4",
+					"b": "-2"
+				},
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "terme précédent donné (5-3) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "erreur de signe avec raison négative",
+				"variationIndex": 0,
+				"variables": {
+					"a": "-4",
+					"b": "-2"
+				},
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

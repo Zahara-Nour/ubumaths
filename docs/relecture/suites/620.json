@@ -1,0 +1,104 @@
+{
+	"globalIndex": 620,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : le résultat final était rendu hors formule (« =$-38 ») ; il est remis dans la formule.",
+	"template": {
+		"title": "Calculer un terme",
+		"description": "A l'aide d'une formule de récurrence, deuxième terme",
+		"variations": [
+			{
+				"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c;+}}$\n\n$u_2=?$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*(a)+(c)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:b*(d)+(c)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c;+}}$",
+						"$$u_1={{b}}u_0{{eval:c;+}}= {{b}} \\times {{eval:a;()}} {{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{d}}}$$",
+						"$u_2={{b}}u_1{{eval:c;+}}= {{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:d;()}}} {{eval:c;+}}={{solution}}$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{f}}"
+					}
+				]
+			}
+		],
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Apprivoiser",
+		"subdomain": "Calculer un terme",
+		"level": 3,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "u_2 avec u_0=5, u_{n+1}=-3u_n-2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-3",
+					"c": "-2",
+					"d": "-17",
+					"f": "49"
+				},
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "s'arrête à u_1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-3",
+					"c": "-2",
+					"d": "-17",
+					"f": "49"
+				},
+				"answers": ["-17"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "calcul non terminé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "-3",
+					"c": "-2",
+					"d": "-17",
+					"f": "49"
+				},
+				"answers": ["51-2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

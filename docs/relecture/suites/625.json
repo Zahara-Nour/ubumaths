@@ -1,0 +1,486 @@
+{
+	"globalIndex": 625,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Variation u_n=n : la variable expression3 valait « n », pris pour une référence de variable (« Variable \"n\" not found ») → n écrit en dur dans l'énoncé. Choix « \\infin » (commande inexistante) → « \\infty ». Consigne à l'impératif. Corrections u_n=(-1)^n et u_n=a : terme général brut hors mode math et réponse en $$…$$ au milieu de la phrase → réécrites.",
+	"template": {
+		"title": "Déterminer la limite d'une suite",
+		"description": "Suites usuelles",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "digits:0.1"
+				},
+				{
+					"name": "d",
+					"expression": "2..9"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["4"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-1)^n"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La suite de terme général $u_n=(-1)^n$ prend alternativement les valeurs $1$ et $-1$ : elle n'a pas de limite."
+					]
+				},
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$-1$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["2"],
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La suite de terme général $u_n={{a}}$ est constante, donc sa limite est ${{a}}$."
+					]
+				},
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$${{a}}$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$$n$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression4}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "n^d"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression5}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "sqrt(n)"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression6}}$$",
+				"correctChoiceIndex": ["3"],
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "1/n"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression7}}$$",
+				"correctChoiceIndex": ["3"],
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "1/n^d"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression8}}$$",
+				"correctChoiceIndex": ["{{if:b>0|0|4}}"],
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "{{eval:b;()}}^n"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression9}}$$",
+				"correctChoiceIndex": ["3"],
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "({{eval:1/(b)}})^n"
+					}
+				],
+				"correction": {
+					"steps": ["$-1<{{eval:1/(b)}}<1$ donc la limite est $0$."]
+				},
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			},
+			{
+				"statement": "Détermine la limite de la suite dont le terme général est :\n\n$${{expression10}}$$",
+				"correctChoiceIndex": ["3"],
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "c^n"
+					}
+				],
+				"choices": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$1$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Cette suite n'a pas de limite"
+					}
+				]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["1_SPE"],
+		"theme": "Suites",
+		"domain": "Limites",
+		"subdomain": "Determiner une limite",
+		"level": 1,
+		"status": "draft",
+		"delay": 30,
+		"testSpecs": [
+			{
+				"description": "(-1)^n : pas de limite",
+				"variationIndex": 0,
+				"variables": {},
+				"selectedChoices": [4],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-1)^n : 1 refusé",
+				"variationIndex": 0,
+				"variables": {},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "constante -6 → -6",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-6"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "constante : 0 refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "-6"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "n → +∞",
+				"variationIndex": 2,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "n^d → +∞",
+				"variationIndex": 3,
+				"variables": {
+					"d": "5"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "sqrt(n) → +∞",
+				"variationIndex": 4,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1/n → 0",
+				"variationIndex": 5,
+				"variables": {},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "1/n → +∞ refusé",
+				"variationIndex": 5,
+				"variables": {},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "1/n^d → 0",
+				"variationIndex": 6,
+				"variables": {
+					"d": "2"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "9^n → +∞",
+				"variationIndex": 7,
+				"variables": {
+					"b": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-2)^n → pas de limite",
+				"variationIndex": 7,
+				"variables": {
+					"b": "-2"
+				},
+				"selectedChoices": [4],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(-2)^n : -∞ refusé",
+				"variationIndex": 7,
+				"variables": {
+					"b": "-2"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "(-1/7)^n → 0",
+				"variationIndex": 8,
+				"variables": {
+					"b": "-7"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,1^n → 0",
+				"variationIndex": 9,
+				"variables": {
+					"c": "0.1"
+				},
+				"selectedChoices": [3],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "0,9^n : 1 refusé",
+				"variationIndex": 9,
+				"variables": {
+					"c": "0.9"
+				},
+				"selectedChoices": [2],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}
