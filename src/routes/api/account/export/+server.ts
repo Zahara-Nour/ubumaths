@@ -57,7 +57,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			notificationsResult,
 			gamePlayerResult,
 			rewardEventsResult,
-			classMembershipsResult
+			classMembershipsResult,
+			testSessionsResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
@@ -160,7 +161,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(1000),
 
 			// Class memberships
-			supabase.from('class_members').select('class_id, status, joined_at').eq('student_id', userId)
+			supabase.from('class_members').select('class_id, status, joined_at').eq('student_id', userId),
+
+			// Activité — sessions automaths et détail des réponses (décision du 2026-09-28)
+			supabase
+				.from('test_sessions')
+				.select(
+					'id, mode, categories, score, total_questions, time_spent, completed_at, assignment_id, created_at, test_answers(template_id, question_instance, user_answer, is_correct, time_spent, attempts, created_at)'
+				)
+				.eq('user_id', userId)
+				.order('created_at', { ascending: false })
+				.limit(2000)
 		]);
 
 		// Step 4: Build export object
@@ -190,7 +201,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			_metadata: {
 				exported_at: new Date().toISOString(),
 				user_id: userId,
-				format_version: '1.2',
+				format_version: '1.3',
 				gdpr_article: 'Article 20 - Droit a la portabilite',
 				categories: [
 					'profile',
@@ -219,7 +230,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			activite: {
 				completions: completionsResult.data || [],
 				mastery: masteryResult.data || [],
-				flashcard_decks: flashcardDecksResult.data || []
+				flashcard_decks: flashcardDecksResult.data || [],
+				automaths_sessions: testSessionsResult.data || []
 			},
 
 			// Communications

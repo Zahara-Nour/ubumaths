@@ -86,6 +86,23 @@ const mockCompletions = [
 	}
 ];
 
+// Session automaths et ses réponses (jointure `test_answers(...)`)
+const mockTestSessions = [
+	{
+		id: 'session-1',
+		mode: 'interactive',
+		score: 7,
+		total_questions: 2,
+		test_answers: [
+			{
+				question_instance: { statement: 'Combien font 2 + 2 ?' },
+				user_answer: { blanks: ['4'] },
+				is_correct: true
+			}
+		]
+	}
+];
+
 // ============================================================================
 // HELPERS
 // ============================================================================
@@ -124,6 +141,8 @@ function setupMockSupabase() {
 						return mockProfile;
 					case 'exercise_completions':
 						return mockCompletions;
+					case 'test_sessions':
+						return mockTestSessions;
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -266,7 +285,7 @@ describe('GET /api/account/export', () => {
 			expect(data._metadata).toBeDefined();
 			expect(data._metadata.exported_at).toBeDefined();
 			expect(data._metadata.user_id).toBe(TEST_USER.id);
-			expect(data._metadata.format_version).toBe('1.2');
+			expect(data._metadata.format_version).toBe('1.3');
 			expect(data._metadata.gdpr_article).toContain('Article 20');
 		});
 
@@ -319,6 +338,21 @@ describe('GET /api/account/export', () => {
 			expect(data.activite.completions).toBeDefined();
 			expect(data.activite.mastery).toBeDefined();
 			expect(data.activite.flashcard_decks).toBeDefined();
+		});
+
+		// Décision de David (2026-09-28) : l'export contient tout ce qu'on garde
+		// sur l'élève, y compris ses sessions automaths et le détail des réponses.
+		test('contient les sessions automaths avec leurs réponses', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.activite.automaths_sessions).toEqual(mockTestSessions);
+
+			const call = mockSupabase.from.mock.results.find(
+				(_r, i) => mockSupabase.from.mock.calls[i][0] === 'test_sessions'
+			);
+			const selectArg = call?.value.select.mock.calls[0][0] as string;
+			expect(selectArg).toMatch(/test_answers\(/);
 		});
 
 		test('communications section has correct structure', async () => {
