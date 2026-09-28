@@ -18,9 +18,13 @@
 -- ⚠️ PUBLIC révoqué aussi (anon ∈ PUBLIC), puis service_role ré-autorisé
 -- (même schéma que 20260902090000).
 --
--- Rollback :
+-- ACL en prod avant la migration (mesurée le 2026-09-28) :
+--   {postgres=X, authenticated=X, service_role=X} — ni PUBLIC ni anon.
+-- Propriétaire des deux fonctions (recalcul et trigger) : postgres.
+--
+-- Rollback (rend exactement l'ACL d'avant) :
 --   GRANT EXECUTE ON FUNCTION public.update_student_point_state(uuid, uuid)
---     TO PUBLIC, anon, authenticated;
+--     TO authenticated;
 
 REVOKE EXECUTE ON FUNCTION public.update_student_point_state(uuid, uuid)
 	FROM PUBLIC, anon, authenticated;
