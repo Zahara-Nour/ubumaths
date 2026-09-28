@@ -17,6 +17,21 @@ const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
+// Le serveur lit le modèle avec ses propres droits (brouillons compris)
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({
+		from: () => ({
+			select: () => ({
+				eq: () => ({
+					maybeSingle: async () => ({
+						data: { id: TEMPLATE_ID, options: null, question_template_points: [] },
+						error: null
+					})
+				})
+			})
+		})
+	})
+}));
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: STUDENT_ID } })
 }));

@@ -15,6 +15,22 @@ vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.f
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE } })
 }));
+// Le serveur lit la nature du modèle avec ses propres droits : il voit aussi
+// les brouillons, que la RLS cache à l'élève.
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({
+		from: () => ({
+			select: () => ({
+				eq: () => ({
+					maybeSingle: async () => ({
+						data: { id: MODELE, options: optionsDuModele, question_template_points: [] },
+						error: null
+					})
+				})
+			})
+		})
+	})
+}));
 
 import { POST } from '../+server';
 
@@ -23,6 +39,8 @@ const MODELE = '22222222-2222-4222-8222-222222222222';
 
 let attemptsInseres: Record<string, unknown>[];
 let optionsDuModele: unknown;
+/** Modèle repassé en brouillon : la RLS le cache à l'élève (0 ligne, sans erreur). */
+let modeleEnBrouillon = false;
 
 function fauxSupabase() {
 	return {
@@ -32,7 +50,9 @@ function fauxSupabase() {
 					select: () => ({
 						eq: () => ({
 							maybeSingle: async () => ({
-								data: { id: MODELE, options: optionsDuModele, question_template_points: [] },
+								data: modeleEnBrouillon
+									? null
+									: { id: MODELE, options: optionsDuModele, question_template_points: [] },
 								error: null
 							})
 						})
@@ -66,6 +86,7 @@ describe('POST /api/skill-attempts — source', () => {
 	beforeEach(() => {
 		attemptsInseres = [];
 		optionsDuModele = null;
+		modeleEnBrouillon = false;
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 	});
 
@@ -82,5 +103,14 @@ describe('POST /api/skill-attempts — source', () => {
 			success: false,
 			grade: 1
 		});
+	});
+
+	// Carte repassée en brouillon pendant la série (décision de David, 2026-09-28) :
+	// la trace est gardée, en auto-évaluation, au lieu d'un refus 404.
+	it('carte repassée en brouillon : trace gardée, source student_self', async () => {
+		optionsDuModele = { courseCard: true };
+		modeleEnBrouillon = true;
+		await poster({ template_id: MODELE, success: true });
+		expect(attemptsInseres[0]).toMatchObject({ source: 'student_self', success: true });
 	});
 });

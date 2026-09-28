@@ -26,6 +26,11 @@ vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
 const addBuddyXpFromTest = vi.hoisted(() => vi.fn(async () => null));
 vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromTest }));
+// Le serveur lit la nature des modèles avec ses propres droits (brouillons
+// compris) ; `lectureModeles` compte ses lectures.
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ from: () => ({ select: () => ({ in: lireModeles(true) }) }) })
+}));
 
 import { POST } from '../+server';
 
@@ -46,6 +51,27 @@ let refusRlsSilencieux = false;
 let lecturesModelesEnPanne = 0;
 /** Nombre de lectures de `question_templates` tentées. */
 let lecturesModeles = 0;
+/** Modèles repassés en brouillon : la RLS les cache à l'élève (0 ligne, sans erreur). */
+let modelesEnBrouillon: string[];
+
+/** Lecture de `question_templates` ; `voitBrouillons` : droits du serveur. */
+function lireModeles(voitBrouillons: boolean) {
+	return async (_col: string, ids: string[]) => {
+		lecturesModeles += 1;
+		if (lecturesModeles <= lecturesModelesEnPanne) {
+			return { data: null, error: { message: 'connexion perdue' } };
+		}
+		return {
+			data: ids
+				.filter((id) => voitBrouillons || !modelesEnBrouillon.includes(id))
+				.map((id) => ({
+					id,
+					options: cartesDeCours.includes(id) ? { courseCard: true } : null
+				})),
+			error: null
+		};
+	};
+}
 
 /** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si `refusRlsSilencieux`). */
 function insertAvecSelect(onRows: (rows: Record<string, unknown>[]) => void = () => {}) {
@@ -83,23 +109,8 @@ function fauxSupabase() {
 				};
 			}
 			if (table === 'question_templates') {
-				return {
-					select: () => ({
-						in: async (_col: string, ids: string[]) => {
-							lecturesModeles += 1;
-							if (lecturesModeles <= lecturesModelesEnPanne) {
-								return { data: null, error: { message: 'connexion perdue' } };
-							}
-							return {
-								data: ids.map((id) => ({
-									id,
-									options: cartesDeCours.includes(id) ? { courseCard: true } : null
-								})),
-								error: null
-							};
-						}
-					})
-				};
+				// Droits de l'élève : les brouillons sont invisibles
+				return { select: () => ({ in: lireModeles(false) }) };
 			}
 			if (table === 'skill_attempts') {
 				return { insert: insertAvecSelect((rows) => attemptsInseres.push(...rows)) };
@@ -177,6 +188,7 @@ describe('enregistrement d’une évaluation', () => {
 		refusRlsSilencieux = false;
 		lecturesModelesEnPanne = 0;
 		lecturesModeles = 0;
+		modelesEnBrouillon = [];
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -352,5 +364,20 @@ describe('enregistrement d’une évaluation', () => {
 		expect(attemptsInseres).toEqual([]);
 		expect(applyFsrsReview).not.toHaveBeenCalled();
 		expect(addBuddyXpFromTest).not.toHaveBeenCalled();
+	});
+
+	// Carte repassée en brouillon pendant la série (décision de David, 2026-09-28) :
+	// la RLS la cache à l'élève ; lue par le serveur, elle reste une carte.
+	it('carte repassée en brouillon : toujours hors score, sans XP, en auto-évaluation', async () => {
+		cartesDeCours = [MODELE_B];
+		modelesEnBrouillon = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
+
+		expect(attemptsInseres.find((a) => a.template_id === MODELE_B)).toMatchObject({
+			source: 'student_self'
+		});
+		expect(sessionInseree).toMatchObject({ total_questions: 1 });
+		// XP : seule la question A (la carte en est exclue)
+		expect(addBuddyXpFromTest.mock.calls[0]?.[2]).toHaveLength(1);
 	});
 });
