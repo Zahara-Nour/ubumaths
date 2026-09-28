@@ -9,6 +9,7 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 - Application éducative de mathématiques, élèves francophones. **UI en français. Identifiants et noms de symboles en anglais ; commentaires en français** — `const targetClasses`, mais le commentaire au-dessus reste en français. (Tranché le 2026-09-12 : le dépôt compte ~4700 lignes de commentaires français dans 713 fichiers.)
 - ⚠️ **PRODUCTION LIVE** : `main` est déployé en prod (Vercel). Vraies données d'**élèves mineurs** → **RGPD, prudence maximale** sur tout ce qui touche données / auth / social.
 - **Modèle mono-professeur** : un seul prof (+ admin), des élèves dans ses classes ou hors-classe. L'**école = frontière sociale / safeguarding** ; la classe = sous-groupe d'organisation.
+- **Vocabulaire du domaine : [CONTEXT.md](CONTEXT.md)** (un terme, un sens ; termes bannis). **Décisions figées : [docs/adr/](docs/adr/)** — les lire avant de proposer une architecture ; une décision listée ne se re-propose pas sans le dire.
 - **Stack** : Svelte 5 (runes) · TypeScript (strict) · Tailwind 4 · Shadcn-svelte · MathLive · Supabase (Postgres + Auth + RLS, **EU / eu-west-3**) · Vercel · pnpm.
 
 ---
@@ -223,6 +224,8 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 
 | Doc                                                                     | Contenu                                            |
 | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| [CONTEXT.md](CONTEXT.md)                                                | **Glossaire du domaine**                           |
+| [docs/adr/](docs/adr/)                                                  | **Décisions d'architecture figées**                |
 | [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**                       |
 | [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés          |
 | [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                           |
