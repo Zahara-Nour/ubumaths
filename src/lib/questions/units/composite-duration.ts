@@ -58,7 +58,12 @@ export type CompositeDurationReading =
 			issue: DurationFormIssue | null;
 	  }
 	/** Un terme porte une vraie unité qui n'est pas une durée (« 2 h 15 kg ») */
-	| { kind: 'foreign-unit' };
+	| { kind: 'foreign-unit' }
+	/**
+	 * Virgule ailleurs qu'au dernier terme (« 2,5 h 15 min ») : écriture refusée,
+	 * avec un message sur la virgule plutôt que « Unité inconnue »
+	 */
+	| { kind: 'decimal-inside'; feedback: string };
 
 // ============================================================================
 // CONSTANTES
@@ -154,8 +159,9 @@ function formIssue(parts: DurationPart[], totalSeconds: number): DurationFormIss
  * Lit une saisie d'élève comme durée composée.
  *
  * Null quand ce n'en est pas une : durée simple (`3\,h`, `2,5\,h` : le chemin
- * ordinaire la lit déjà), nombre seul, lettres inconnues, nombre décimal
- * ailleurs qu'au dernier terme, nombre sans unité ailleurs qu'à la fin.
+ * ordinaire la lit déjà), nombre seul, lettres inconnues, nombre sans unité
+ * ailleurs qu'à la fin. Un nombre décimal ailleurs qu'au dernier terme rend
+ * `decimal-inside` (refus, avec la bonne écriture).
  * `15\,mn` seul est lu (pour le message sur l'abréviation).
  */
 export function readCompositeDuration(latex: string): CompositeDurationReading | null {
@@ -164,10 +170,12 @@ export function readCompositeDuration(latex: string): CompositeDurationReading |
 	if (!terms || terms.length === 0) return null;
 
 	const parts: DurationPart[] = [];
+	// Décimal seulement au dernier terme (« 1 min 7,5 s ») ; ailleurs, la lecture
+	// continue pour proposer la bonne écriture (« 2,5 h 15 min » → 2 h 45 min)
+	let decimalInside = false;
 	for (const [index, term] of terms.entries()) {
 		const isLast = index === terms.length - 1;
-		// Décimal seulement au dernier terme (« 1 min 7,5 s »)
-		if (!isLast && /[.,]/.test(term.written)) return null;
+		if (!isLast && /[.,]/.test(term.written)) decimalInside = true;
 		const value = Number(term.written.replace(',', '.'));
 
 		if (term.letters === '') {
@@ -192,6 +200,19 @@ export function readCompositeDuration(latex: string): CompositeDurationReading |
 	if (parts.length === 1 && parts[0].writtenUnit !== 'mn') return null;
 
 	const totalSeconds = parts.reduce((sum, part) => sum + part.value * SECONDS[part.unit], 0);
+	if (decimalInside) {
+		// Unités dans le désordre ou répétées : c'est ce défaut-là qu'il faut dire
+		// (la forme normalisée n'a pas de sens : « 2,5 min 1 h » donnerait « 0 h »)
+		const ranks = parts.map((part) => UNIT_ORDER.indexOf(part.unit));
+		if (ranks.some((rank, index) => index > 0 && rank <= ranks[index - 1])) {
+			return { kind: 'decimal-inside', feedback: DURATION_FEEDBACK.order };
+		}
+		const writing = normalizedWriting(totalSeconds, parts[0].unit, parts[parts.length - 1].unit);
+		return {
+			kind: 'decimal-inside',
+			feedback: `Seule la dernière unité peut avoir une virgule : écris ${writing}.`
+		};
+	}
 	const smallest = parts.reduce<DurationUnit>(
 		(unit, part) => (SECONDS[part.unit] < SECONDS[unit] ? part.unit : unit),
 		parts[0].unit
