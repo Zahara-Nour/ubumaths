@@ -84,7 +84,10 @@ describe('ce qui marchait continue de marcher', () => {
 		['1/2x', '{1/2}x'],
 		['x/2y', '{x/2}y'],
 		['x^2', 'x^2'],
-		['x^2^3', 'x^2^3'],
+		// Le parseur lit `x^2^3` comme (x²)³ ; depuis le 2026-09-28 la sortie le
+		// dit (base puissance parenthésée) au lieu de `x^2^3`, qui se relisait
+		// autrement en LaTeX (x^{2^3}) — lecture elle-même inchangée.
+		['x^2^3', '(x^2)^3'],
 		['2^3', '2^3'],
 		['sqrt(2)/2', 'sqrt(2)/2'],
 		['(a+b)/2', '(a+b)/2'],
