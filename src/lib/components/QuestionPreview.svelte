@@ -310,7 +310,11 @@
 				<div class="space-y-2">
 					<div class="flex items-center gap-2">
 						<Badge variant="outline">Énoncé</Badge>
-						<Badge>{getQuestionType(template)}</Badge>
+						<Badge
+							>{getQuestionType(template) === 'course_card'
+								? 'Carte de cours'
+								: getQuestionType(template)}</Badge
+						>
 					</div>
 					<div class="rounded-lg border bg-card p-4" use:renderLatex>
 						<MarkdownRenderer content={instance.statement} />

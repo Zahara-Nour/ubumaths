@@ -237,7 +237,11 @@
 				<MarkdownRenderer content={instance.title || 'Question sans titre'} />
 			</Card.Title>
 			<div class="flex flex-shrink-0 items-center gap-2">
-				<Badge variant="secondary" class="text-xs">{getQuestionType(instance)}</Badge>
+				<Badge variant="secondary" class="text-xs"
+					>{getQuestionType(instance) === 'course_card'
+						? 'Carte de cours'
+						: getQuestionType(instance)}</Badge
+				>
 				<Badge variant="default" class="text-xs">{instance.level}</Badge>
 			</div>
 		</div>
