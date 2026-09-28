@@ -42,6 +42,10 @@ let sessionInseree: Record<string, unknown> | null;
 
 /** Simule un refus RLS : l'INSERT ne rend aucune ligne, et aucune erreur. */
 let refusRlsSilencieux = false;
+/** Nombre de lectures de `question_templates` qui échouent avant de réussir. */
+let lecturesModelesEnPanne = 0;
+/** Nombre de lectures de `question_templates` tentées. */
+let lecturesModeles = 0;
 
 /** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si refus RLS). */
 function insertAvecSelect(onRows: (rows: Record<string, unknown>[]) => void = () => {}) {
@@ -81,13 +85,19 @@ function fauxSupabase() {
 			if (table === 'question_templates') {
 				return {
 					select: () => ({
-						in: async (_col: string, ids: string[]) => ({
-							data: ids.map((id) => ({
-								id,
-								options: cartesDeCours.includes(id) ? { courseCard: true } : null
-							})),
-							error: null
-						})
+						in: async (_col: string, ids: string[]) => {
+							lecturesModeles += 1;
+							if (lecturesModeles <= lecturesModelesEnPanne) {
+								return { data: null, error: { message: 'connexion perdue' } };
+							}
+							return {
+								data: ids.map((id) => ({
+									id,
+									options: cartesDeCours.includes(id) ? { courseCard: true } : null
+								})),
+								error: null
+							};
+						}
 					})
 				};
 			}
@@ -116,7 +126,7 @@ function reponse(templateId: string, isCorrect: boolean, index = 0) {
 	};
 }
 
-async function enregistrer(answers: ReturnType<typeof reponse>[]) {
+async function enregistrer(answers: ReturnType<typeof reponse>[], statutAttendu = 201) {
 	const request = new Request('http://localhost/api/tests/save', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -154,7 +164,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[]) {
 
 	// ⚠️ Sans ce garde, un corps rejeté par Zod rendrait 400 et TOUS les cas
 	// seraient rouges pour une raison étrangère au correctif.
-	expect(reponseHttp.status, 'la route doit accepter la requête').toBe(201);
+	expect(reponseHttp.status, 'statut de la route').toBe(statutAttendu);
 	return reponseHttp;
 }
 
@@ -165,6 +175,8 @@ describe('enregistrement d’une évaluation', () => {
 		sessionInseree = null;
 		addBuddyXpFromTest.mockClear();
 		refusRlsSilencieux = false;
+		lecturesModelesEnPanne = 0;
+		lecturesModeles = 0;
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -317,5 +329,28 @@ describe('enregistrement d’une évaluation', () => {
 		expect(messages).toContain('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées');
 		expect(messages).toContain('[tests/save] test_answers : lignes écrites ≠ lignes envoyées');
 		consoleError.mockRestore();
+	});
+	// R2 (David, 2026-09-28) : la nature « carte » décide du score, de l'XP et
+	// du paquet. Sans elle, mieux vaut perdre la session qu'écrire un score faux.
+	it('base momentanément illisible : réessaie, puis enregistre normalement', async () => {
+		lecturesModelesEnPanne = 2;
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
+
+		expect(lecturesModeles).toBe(3);
+		expect(attemptsInseres.find((a) => a.template_id === MODELE_B)).toMatchObject({
+			source: 'student_self'
+		});
+	});
+
+	it('base illisible après 3 tentatives : 503 et RIEN n’est écrit', async () => {
+		lecturesModelesEnPanne = 99;
+		await enregistrer([reponse(MODELE_A, true, 0)], 503);
+
+		expect(lecturesModeles).toBe(3);
+		expect(sessionInseree).toBeNull();
+		expect(attemptsInseres).toEqual([]);
+		expect(applyFsrsReview).not.toHaveBeenCalled();
+		expect(addBuddyXpFromTest).not.toHaveBeenCalled();
 	});
 });

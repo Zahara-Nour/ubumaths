@@ -5,6 +5,7 @@
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import { excludeCourseCards } from '$lib/questions/course-card';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
@@ -248,9 +249,14 @@
 					result.sessionId = data.sessionId;
 				} else {
 					console.error('Failed to save test results:', await response.text());
+					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
+					if (response.status !== 401) {
+						toaster.error("Tes résultats n'ont pas pu être enregistrés.");
+					}
 				}
 			} catch (error) {
 				console.error('Error saving test results:', error);
+				toaster.error("Tes résultats n'ont pas pu être enregistrés.");
 			}
 		}
 	}

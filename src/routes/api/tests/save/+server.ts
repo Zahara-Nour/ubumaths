@@ -6,7 +6,11 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { fetchCourseCardTemplateIds, reviewedToday } from '$lib/server/course-card-attempts';
+import {
+	CourseCardLookupError,
+	fetchCourseCardTemplateIds,
+	reviewedToday
+} from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
 
@@ -47,7 +51,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Décisions de David (2026-09-28) : trace `student_self` à chaque
 		// utilisation, fiche FSRS au plus une fois par jour, hors score, sans XP,
 		// jamais ajoutée à un paquet.
-		const courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+		// Illisible après 3 tentatives → 503 AVANT toute écriture (R2) : une panne
+		// passagère coûte une session, jamais un score faux.
+		let courseCardIds: Set<string>;
+		try {
+			courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+		} catch (lookupError) {
+			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
+			return json(
+				{ error: 'Enregistrement momentanément impossible, réessaie dans un instant.' },
+				{ status: 503 }
+			);
+		}
 		const isCardAnswer = (answer: { instance: { templateId?: string | null } }) =>
 			!!answer.instance.templateId && courseCardIds.has(answer.instance.templateId);
 
