@@ -22,7 +22,7 @@
 
 <script lang="ts">
 	import type { QuestionTemplate } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -47,6 +47,8 @@
 				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
 			case 'multiple_choice':
 				return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+			case 'course_card':
+				return 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200';
 			default:
 				return 'bg-muted text-muted-foreground';
 		}
@@ -56,10 +58,7 @@
 	 * Get display label for question type
 	 */
 	function getTypeLabel(type: string): string {
-		const types: Record<string, string> = {
-			fill_in_blanks: 'À trous',
-			multiple_choice: 'QCM'
-		};
+		const types: Record<string, string> = QUESTION_TYPE_LABELS;
 		return types[type] || type;
 	}
 
