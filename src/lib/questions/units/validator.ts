@@ -20,8 +20,9 @@ import {
 	unknownUnitMessage
 } from './feedback';
 import { normalizeStudentQuantity } from './student-input';
+import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
 import { compareQuantities, type Tolerance } from './ce-integration';
-import { unitsAreCompatible } from './operations';
+import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
 
 // ============================================================================
@@ -41,6 +42,11 @@ export interface ValidationResult {
 	 * `feedback` porte alors un message destiné à l'élève (`./feedback`).
 	 */
 	unitAtFault?: boolean;
+	/**
+	 * Durée composée lue (« 2 h 15 min ») : défaut de FORME à signaler si la
+	 * valeur est juste (perfectible ou mauvaise forme, cf. `./composite-duration`).
+	 */
+	durationFormIssue?: DurationFormIssue;
 	parsed: {
 		value: number | null;
 		unit: string | null;
@@ -130,14 +136,49 @@ export function validateQuantityAnswer(
 	precision?: PrecisionType,
 	requiredUnit?: string
 ): ValidationResult {
-	// Saisie MathLive de l'élève (`5\operatorname{\mathrm{km}}`, `\frac{90km}{h}`…)
-	// ramenée à `valeur\unit{écriture}` ; l'attendue en syntaxe maison (`28[mm]`) aussi.
-	const normalizedUser = normalizeStudentQuantity(userAnswer);
-
-	// Parse both answers
-	const userQuantity = parseLatexQuantity(normalizedUser);
 	const expectedLatex = houseQuantityToLatex(expectedAnswer);
 	const expectedQuantity = parseLatexQuantity(expectedLatex);
+
+	// Durée attendue : l'élève peut écrire une durée composée (« 2 h 15 min »),
+	// lue ici en valeur dans sa plus petite unité (`135\unit{min}`)
+	const duration =
+		expectedQuantity && isDuration(expectedQuantity.unit)
+			? readCompositeDuration(userAnswer)
+			: null;
+	const expectedDisplay = expectedQuantity
+		? {
+				value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+				unit: formatUnitForDisplay(expectedQuantity.unit.components)
+			}
+		: null;
+	// « 2 h 15 kg » : un terme d'une autre grandeur
+	if (duration?.kind === 'foreign-unit') {
+		return {
+			isCorrect: false,
+			feedback: UNIT_FEEDBACK.wrongMagnitude,
+			errorType: 'incompatible_units',
+			unitAtFault: true,
+			parsed: null,
+			expected: expectedDisplay
+		};
+	}
+	// Unité imposée : une durée composée n'est pas écrite dans cette unité
+	if (duration?.kind === 'duration' && duration.multiPart && requiredUnit) {
+		return {
+			isCorrect: false,
+			feedback: requiredUnitMessage(requiredUnit),
+			errorType: 'wrong_unit',
+			unitAtFault: true,
+			parsed: null,
+			expected: expectedDisplay
+		};
+	}
+
+	// Saisie MathLive de l'élève (`5\operatorname{\mathrm{km}}`, `\frac{90km}{h}`…)
+	// ramenée à `valeur\unit{écriture}` ; l'attendue en syntaxe maison (`28[mm]`) aussi.
+	const normalizedUser =
+		duration?.kind === 'duration' ? duration.latex : normalizeStudentQuantity(userAnswer);
+	const userQuantity = parseLatexQuantity(normalizedUser);
 
 	// Check for parse failures
 	if (!userQuantity) {
@@ -249,6 +290,9 @@ export function validateQuantityAnswer(
 		return {
 			isCorrect: true,
 			feedback: null,
+			...(duration?.kind === 'duration' && duration.issue
+				? { durationFormIssue: duration.issue }
+				: {}),
 			parsed,
 			expected
 		};
