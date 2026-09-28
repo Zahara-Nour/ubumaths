@@ -53,14 +53,14 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 ## Décisions de David (2026-09-28) — tout validé
 
 1. **#485, #486** : précision ajoutée « pour passer de la première ligne à la deuxième ? » — sans elle,
-   le coefficient entre colonnes est aussi une bonne réponse, refusée. Garder ?
+   le coefficient entre colonnes est aussi une bonne réponse, refusée. → Gardée.
 2. **#491** (« fraction de dénominateur 100 ») : `1/2` est jugé juste pour 50 % (fractions non
    réduites acceptées dans la source). → **Perfectible** (forme exigée `u/100`, acceptable `u/v`).
 3. **#493** (fraction simplifiée d'un pourcentage) : pour 100, 200, 300, 400 %, la réponse est un
-   entier. Garder ces tirages ?
-4. **#503, #505** : diminution de 100 % (coefficient multiplicateur 0) gardée, comme TinyMath. Garder ?
-5. **#502** : `3/2` refusé (mauvaise forme) quand le coefficient décimal `1,5` est attendu. D'accord ?
-6. **#509** : toute unité équivalente acceptée (`900 cm` pour 9 m). D'accord ?
+   entier. → Tirages gardés.
+4. **#503, #505** : diminution de 100 % (coefficient multiplicateur 0) gardée, comme TinyMath. → Gardée.
+5. **#502** : `3/2` refusé (mauvaise forme) quand le coefficient décimal `1,5` est attendu. → Validé.
+6. **#509** : toute unité équivalente acceptée (`900 cm` pour 9 m). → Validé.
 7. **#490** : « 5 fois plus que » (source) gardé.
 
 ## Défauts de conversion restants (corrigés à la main dans ce lot)
