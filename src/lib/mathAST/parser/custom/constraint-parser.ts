@@ -693,6 +693,13 @@ class ConstraintParser {
 	private parseComparisonConstraint(
 		operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne'
 	): PatternConstraint {
+		// Un nom de joker : comparaison avec la valeur liée à ce joker (`lt(q)`)
+		if (this.currentToken.type === 'IDENT') {
+			const other = this.advance().value;
+			this.expect('RPAREN', `Expected ')' after ${operator} constraint`);
+			return { kind: 'wildcardComparison', operator, other } as const;
+		}
+
 		// Expect a number
 		if (this.currentToken.type !== 'NUMBER') {
 			throw new Error(

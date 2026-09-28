@@ -202,6 +202,17 @@ export interface NumericTypeConstraint {
 }
 
 /**
+ * Comparaison avec la valeur liée à UN AUTRE joker : `p:integer & lt(q)` (p < q).
+ * Vérifiée quand les deux jokers sont liés : le parseur pose la contrainte miroir sur
+ * l'autre joker (`q … & gt(p)`), si bien que le second lié fait la comparaison.
+ */
+export interface WildcardComparisonConstraint {
+	readonly kind: 'wildcardComparison';
+	readonly operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne';
+	readonly other: string;
+}
+
+/**
  * Union of all constraint types
  */
 export type PatternConstraint =
@@ -213,6 +224,7 @@ export type PatternConstraint =
 	| NonzeroConstraint
 	| NononeConstraint
 	| ComparisonConstraint
+	| WildcardComparisonConstraint
 	| IntervalConstraint
 	| IntegerConstraint
 	| EvenConstraint

@@ -204,8 +204,17 @@ describe('Constraint Expression Parser', () => {
 				expect(() => parseConstraintExpr('gt()')).toThrow('Expected number');
 			});
 
-			it('throws error for non-number argument', () => {
-				expect(() => parseConstraintExpr('gt(x)')).toThrow('Expected number');
+			// Un nom est désormais un joker comparé (`lt(q)`, #349–#351) ; le reste est refusé
+			it('parses a wildcard name as comparison with that wildcard', () => {
+				expect(parseConstraintExpr('gt(x)')).toEqual({
+					kind: 'wildcardComparison',
+					operator: 'gt',
+					other: 'x'
+				});
+			});
+
+			it('throws error for argument that is neither number nor name', () => {
+				expect(() => parseConstraintExpr('gt(&)')).toThrow('Expected number');
 			});
 		});
 

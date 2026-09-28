@@ -5,7 +5,8 @@
  * they satisfy the pattern requirements.
  */
 
-import type { PatternConstraint } from './types';
+import type { MatchBindings, PatternConstraint } from './types';
+import { isMathNodeBinding } from './types';
 import type { MathNode, MathNodeType } from '../types';
 import type { TypeContext } from '../numtype/types';
 import { isNumber, isVariable } from '../guards';
@@ -63,7 +64,8 @@ function isFreeOfVariables(node: MathNode, variables: readonly string[]): boolea
 export function checkConstraint(
 	constraint: PatternConstraint,
 	node: MathNode,
-	ctx?: TypeContext
+	ctx?: TypeContext,
+	bindings?: MatchBindings
 ): boolean {
 	switch (constraint.kind) {
 		case 'type': {
@@ -137,6 +139,17 @@ export function checkConstraint(
 			}
 		}
 
+		case 'wildcardComparison': {
+			const other = bindings?.get(constraint.other);
+			// Autre joker pas encore lié : sa contrainte miroir fera la comparaison
+			if (other === undefined) return true;
+			if (!isMathNodeBinding(other)) return false;
+			const a = parseNumberValue(node);
+			const b = parseNumberValue(other);
+			if (a === undefined || b === undefined) return false;
+			return compareNumbers(a, constraint.operator, b);
+		}
+
 		case 'interval': {
 			// First check that the node is a literal numeric value (not a variable or symbolic expression).
 			// Accept both number('N') and opposite(number('N')) (canonical for negatives).
@@ -188,13 +201,13 @@ export function checkConstraint(
 			return isFreeOfVariables(node, constraint.variables);
 
 		case 'and':
-			return constraint.constraints.every((c) => checkConstraint(c, node, ctx));
+			return constraint.constraints.every((c) => checkConstraint(c, node, ctx, bindings));
 
 		case 'or':
-			return constraint.constraints.some((c) => checkConstraint(c, node, ctx));
+			return constraint.constraints.some((c) => checkConstraint(c, node, ctx, bindings));
 
 		case 'not':
-			return !checkConstraint(constraint.constraint, node, ctx);
+			return !checkConstraint(constraint.constraint, node, ctx, bindings);
 
 		case 'custom':
 			return constraint.predicate(node);
@@ -214,6 +227,28 @@ export function checkConstraint(
 			const _exhaustive: never = constraint;
 			return _exhaustive;
 		}
+	}
+}
+
+/** `a op b` pour les opérateurs de comparaison des contraintes */
+function compareNumbers(
+	a: number,
+	operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'ne',
+	b: number
+): boolean {
+	switch (operator) {
+		case 'gt':
+			return a > b;
+		case 'lt':
+			return a < b;
+		case 'gte':
+			return a >= b;
+		case 'lte':
+			return a <= b;
+		case 'eq':
+			return a === b;
+		case 'ne':
+			return a !== b;
 	}
 }
 
