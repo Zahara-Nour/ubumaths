@@ -93,7 +93,15 @@ perfectible. Mesurer d'abord ce que MathLive produit au **vrai clavier**.
 Constats : « min » devient TOUJOURS l'opérateur `\min` (« mn » reste en lettres) ; l'espace tapée
 devient `\,` ; les durées simples passent déjà, toutes les composées échouent (`normalizeStudentQuantity`
 rend `2\unit{h 15 min}`, que `parseLatexQuantity` ne lit pas). Le test navigateur vitest ne démarre pas
-dans cet environnement ; `ubumaths-wt-du` porte un test de mesure non suivi, devenu inutile.
+dans cet environnement ; le test de mesure non suivi a été supprimé (accord de David).
+
+**Décisions de David après la mesure (2026-09-28)** :
+
+1. « 2 h 15 » (sans unité finale) : **perfectible**, message « Précise l'unité : 2 h 15 min. » ;
+2. « 2h15min » (sans espaces) : **juste**, comme avec espaces ;
+3. « 2 h 15 mn » : **mauvaise forme**, message « L'abréviation de minute est min. » ;
+4. unités dans le désordre (« 15 min 2 h ») : **mauvaise forme**.
+   Branche : `feat/durees-composees` (worktree `ubumaths-wt-durees`).
 
 ## Avancement
 
