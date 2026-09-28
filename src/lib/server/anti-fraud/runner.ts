@@ -166,6 +166,11 @@ async function listScanPairs(
 
 /**
  * Load skill_attempts SRS vs Monde 1 pour une paire (student, capacity).
+ *
+ * ⚠️ À la remise en service du module : exclure les cartes de cours
+ * (`question_templates.type = 'course_card'`), ici ET dans `listScanPairs`
+ * (leurs fiches FSRS portent des auto-évaluations). Décision A1 de David,
+ * 2026-09-28 : une carte de cours ne compte dans aucun indicateur.
  */
 async function loadAttempts(
 	supabase: SBClient,

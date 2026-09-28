@@ -484,6 +484,83 @@ describe('getClassActivityHeatmap', () => {
 		expect(heatmap.cells[0].review_count).toBe(2);
 		expect(heatmap.cells[0].success_pct).toBe(50);
 	});
+
+	// Décision B1 de David (2026-09-28) : une carte de cours compte comme
+	// ACTIVITÉ (pas d'alerte d'inactivité) mais pas dans le taux de réussite
+	// (l'élève s'est noté lui-même) — qu'elle vienne de l'entraînement libre
+	// (`student_self`) ou d'un paquet de révision (`srs`).
+	it('carte de cours : comptée comme activité, hors taux de réussite', async () => {
+		const today = new Date().toISOString();
+		const card = { type: 'course_card' };
+		const supabase = buildMock({
+			class_members: () => ({
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
+				error: null
+			}),
+			skill_attempts: () => ({
+				data: [
+					{
+						student_id: 's1',
+						created_at: today,
+						success: true,
+						source: 'srs',
+						question_templates: { type: 'fill_in_blanks' }
+					},
+					{
+						student_id: 's1',
+						created_at: today,
+						success: false,
+						source: 'srs',
+						question_templates: { type: 'fill_in_blanks' }
+					},
+					{
+						student_id: 's1',
+						created_at: today,
+						success: true,
+						source: 'student_self',
+						question_templates: card
+					},
+					{
+						student_id: 's1',
+						created_at: today,
+						success: true,
+						source: 'srs',
+						question_templates: card
+					}
+				],
+				error: null
+			})
+		});
+		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1);
+		expect(heatmap.cells[0].review_count).toBe(4);
+		expect(heatmap.cells[0].success_pct).toBe(50);
+	});
+
+	it('journée de cartes seulement : active, sans taux de réussite', async () => {
+		const today = new Date().toISOString();
+		const supabase = buildMock({
+			class_members: () => ({
+				data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'A', lastname: '' } }],
+				error: null
+			}),
+			skill_attempts: () => ({
+				data: [
+					{
+						student_id: 's1',
+						created_at: today,
+						success: false,
+						source: 'srs',
+						question_templates: { type: 'course_card' }
+					}
+				],
+				error: null
+			})
+		});
+		const heatmap = await getClassActivityHeatmap(supabase, 'class-1', 1, 5);
+		expect(heatmap.cells[0].review_count).toBe(1);
+		expect(heatmap.cells[0].success_pct).toBeNull();
+		expect(heatmap.students[0].is_alert).toBe(false);
+	});
 });
 
 // =============================================================================
@@ -526,6 +603,41 @@ describe('getStudentGradeHistogram', () => {
 		expect(buckets[1].count).toBe(0); // grade 2
 		expect(buckets[2].count).toBe(1); // grade 3
 		expect(buckets[3].count).toBe(1); // grade 4
+	});
+
+	// Décision A1 de David (2026-09-28) : une carte de cours ne mesure pas une
+	// capacité — ses notes (auto-évaluation) restent hors de l'histogramme.
+	it('ignore les notes des cartes de cours', async () => {
+		const today = new Date().toISOString();
+		const supabase = buildMock({
+			skill_attempts: () => ({
+				data: [
+					{
+						grade: 3,
+						created_at: today,
+						template_id: 't1',
+						question_templates: { type: 'fill_in_blanks' }
+					},
+					{
+						grade: 4,
+						created_at: today,
+						template_id: 'c1',
+						question_templates: { type: 'course_card' }
+					},
+					{
+						grade: 4,
+						created_at: today,
+						template_id: 'c1',
+						question_templates: { type: 'course_card' }
+					}
+				],
+				error: null
+			}),
+			srs_card_stats: () => ({ data: [{ card_reference_id: 't1', stability: 5 }], error: null })
+		});
+		const buckets = await getStudentGradeHistogram(supabase, 'student-1');
+		expect(buckets[2].count).toBe(1); // grade 3
+		expect(buckets[3].count).toBe(0); // grade 4 : cartes exclues
 	});
 
 	it('computes avg_stability_after using current stability as proxy', async () => {
