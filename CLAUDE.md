@@ -226,6 +226,7 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 | ----------------------------------------------------------------------- | -------------------------------------------------- |
 | [CONTEXT.md](CONTEXT.md)                                                | **Glossaire du domaine**                           |
 | [docs/adr/](docs/adr/)                                                  | **Décisions d'architecture figées**                |
+| [skills.md](docs/claude/skills.md)                                      | **Mode d'emploi** des skills et commandes          |
 | [git-workflow.md](docs/claude/git-workflow.md)                          | **Workflow git OBLIGATOIRE**                       |
 | [worktrees.md](docs/claude/worktrees.md)                                | **Worktrees** : règles + verrous partagés          |
 | [architecture.md](docs/claude/architecture.md)                          | Structure, routing, perf                           |
