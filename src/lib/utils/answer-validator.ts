@@ -40,6 +40,7 @@ import {
 	requiredFormVerdict
 } from '$lib/questions/required-form-validator';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
 
 // ============================================================================
@@ -762,6 +763,26 @@ function withAcceptableForm(
 	};
 }
 
+/**
+ * Durée composée de valeur juste mais mal écrite : `warning` = perfectible
+ * (« 2 h 75 min »), `error` = mauvaise forme (« 2 h 15 mn »). Le message de la
+ * durée passe en tête : c'est lui que l'élève lit.
+ */
+function withDurationFormIssue(
+	status: ValidationStatus,
+	violations: NonNullable<ValidationResult['constraintViolations']>,
+	issue: DurationFormIssue
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const violation = {
+		constraint: 'form' as const,
+		severity: issue.severity,
+		feedback: issue.feedback
+	};
+	const worse: ValidationStatus =
+		issue.severity === 'error' ? 'bad_form' : status === 'correct' ? 'unoptimal_form' : status;
+	return { status: worse, violations: [violation, ...violations] };
+}
+
 /** Message d'un résultat : celui d'une ERREUR s'il est refusé, jamais un avertissement */
 function feedbackOf(
 	status: ValidationStatus,
@@ -810,6 +831,8 @@ function validateSingleBlank(
 
 	// 2. Inferred mode (value correctness)
 	let isCorrect: boolean;
+	// Durée composée juste mais mal écrite (« 2 h 75 min », « 2 h 15 mn ») : jugée à l'étape 4
+	let durationFormIssue: DurationFormIssue | undefined;
 
 	if (rulesDecide(blank)) {
 		// Plusieurs bonnes réponses : les règles, déjà passées, suffisent.
@@ -828,6 +851,7 @@ function validateSingleBlank(
 			return { isCorrect: false, feedback: result.feedback };
 		}
 		isCorrect = result.isCorrect;
+		durationFormIssue = result.durationFormIssue;
 	} else if (blank.precision) {
 		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
 		isCorrect = result.isCorrect;
@@ -913,7 +937,10 @@ function validateSingleBlank(
 			studentNumericLatex(effectiveLatex) ??
 			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
-		const { status, violations } = mapCosmeticViolations(raw, false);
+		const cosmetic = mapCosmeticViolations(raw, false);
+		const { status, violations } = durationFormIssue
+			? withDurationFormIssue(cosmetic.status, cosmetic.violations, durationFormIssue)
+			: cosmetic;
 
 		// Nombre, fraction de nombres ou notation scientifique (cf. isQuantityValueLatex)
 		if (!isQuantityValueLatex(numericLatex)) {

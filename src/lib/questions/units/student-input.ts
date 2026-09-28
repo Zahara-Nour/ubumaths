@@ -150,23 +150,34 @@ interface StudentQuantityParts {
 }
 
 /**
+ * Retire de la saisie MathLive ses habillages et notations sans ambiguïté :
+ * `\operatorname{…}`, `{,}`, `\min` → `min`, espacements LaTeX → une espace…
+ * Sert au découpage « nombre + unité » et à la lecture d'une durée composée.
+ */
+export function cleanStudentQuantityLatex(latex: string): string {
+	// Habillages et notations sans ambiguïté
+	return (
+		unwrapCommands(latex)
+			.replace(/\{,\}/g, ',')
+			// Groupe vide : support du degré (`{}^{\circ}`, forme affichée de °) ou
+			// séparateur anti-espacement (`1{}000`) ; il ne porte aucun sens
+			.replace(/\{\s*\}/g, '')
+			.replace(/\\min(?![A-Za-z])/g, 'min')
+			.replace(/\\euro(?![A-Za-z])/g, '€')
+			.replace(DEGREE_PATTERN, '°')
+			.replace(SPACING_PATTERN, ' ')
+			.replace(/°\s+/g, '°')
+			.replace(/ {2,}/g, ' ')
+			.trim()
+	);
+}
+
+/**
  * Découpe la saisie d'un élève (trou à unité) en tête numérique et écriture
  * d'unité nettoyée ; null si ce n'est pas un nombre suivi d'une unité.
  */
 function splitStudentQuantity(latex: string): StudentQuantityParts | null {
-	// Habillages et notations sans ambiguïté
-	const cleaned = unwrapCommands(latex)
-		.replace(/\{,\}/g, ',')
-		// Groupe vide : support du degré (`{}^{\circ}`, forme affichée de °) ou
-		// séparateur anti-espacement (`1{}000`) ; il ne porte aucun sens
-		.replace(/\{\s*\}/g, '')
-		.replace(/\\min(?![A-Za-z])/g, 'min')
-		.replace(/\\euro(?![A-Za-z])/g, '€')
-		.replace(DEGREE_PATTERN, '°')
-		.replace(SPACING_PATTERN, ' ')
-		.replace(/°\s+/g, '°')
-		.replace(/ {2,}/g, ' ')
-		.trim();
+	const cleaned = cleanStudentQuantityLatex(latex);
 
 	// MathLive range le nombre DANS le numérateur : \frac{90km}{h} = 90 km/h
 	const fraction = splitWholeFraction(cleaned);
