@@ -32,13 +32,14 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 
 (Décisions 5 à 9 : David, 2026-09-28.)
 
-⚠️ **Constat (2026-09-28)** : `POST /api/tests/save` rejette en 400 TOUTE instance réelle — le schéma
-Zod `questionInstanceSchema` (`src/lib/server/validation/tests.ts`) exige `answer` et un `type` de
-l'ancien format, absents de `QuestionInstance` (sonde : `generateInstance` → `validateSaveTest` →
-« instance.answer : Invalid input », « instance.type : Invalid option »). Les décisions 5 à 7 sont
-codées et testées, mais **aucune session automaths n'est enregistrée tant que ce schéma n'est pas
-corrigé** — correction qui réactiverait l'enregistrement de TOUTES les questions (sessions,
-`skill_attempts`, FSRS, XP, deck Programme) : décision de David à prendre, hors de cette PR.
+✅ **`/api/tests/save` réparé (#497, 2026-09-28)** : il rejetait en 400 toute instance réelle (schéma
+Zod de l'ancien format). Liste de ce qui s'écrit désormais validée par David ; rien ne s'écrit tant
+qu'aucune question n'est publiée. Avec : R2 (nature « carte » illisible → 3 tentatives puis 503 avant
+toute écriture), sessions et réponses dans l'export RGPD, lecture des sessions par le prof (#496,
+migration appliquée). Délai null des cartes : #495.
+
+Reste signalé, non corrigé (défaut antérieur, rare) : une carte repassée en brouillon pendant la
+série n'est plus vue comme carte à l'enregistrement → comptée comme une question (score, XP).
 
 ## Spécification (phase 0 validée)
 
