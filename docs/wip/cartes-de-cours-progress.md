@@ -13,6 +13,27 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 4. **#617 → 4 cartes distinctes**, 4e réponse corrigée (« On commence par déterminer son ensemble de
    définition. »).
 
+5. **Score de session : les cartes n'y entrent pas** (ni justes ni fausses) ; affichage à part
+   « N carte(s) révisée(s) » ; `test_sessions.score` / `total_questions` recalculés côté serveur hors
+   cartes (inchangés s'il n'y a pas de carte).
+6. **XP du compagnon : aucune** pour une carte.
+7. **Trace à chaque utilisation** (`skill_attempts`, `student_self`, même plusieurs fois par jour) ;
+   **fiche FSRS** (`srs_card_stats`, clé `template_id` — retrouvée si la carte est ajoutée plus tard à un
+   paquet) mise à jour par le même pipeline (`applyFsrsReview`), Good / Again, **au plus une fois par
+   carte et par jour** (jour de Paris), écriture vérifiée ; **jamais ajoutée à un paquet** (ni deck
+   Programme) → n'apparaît pas dans les révisions dues (`get_due_cards_for_deck` part de `srs_cards`).
+8. **Course aux nombres : cartes exclues** de la sélection.
+
+(Décisions 5 à 8 : David, 2026-09-28.)
+
+⚠️ **Constat (2026-09-28)** : `POST /api/tests/save` rejette en 400 TOUTE instance réelle — le schéma
+Zod `questionInstanceSchema` (`src/lib/server/validation/tests.ts`) exige `answer` et un `type` de
+l'ancien format, absents de `QuestionInstance` (sonde : `generateInstance` → `validateSaveTest` →
+« instance.answer : Invalid input », « instance.type : Invalid option »). Les décisions 5 à 7 sont
+codées et testées, mais **aucune session automaths n'est enregistrée tant que ce schéma n'est pas
+corrigé** — correction qui réactiverait l'enregistrement de TOUTES les questions (sessions,
+`skill_attempts`, FSRS, XP, deck Programme) : décision de David à prendre, hors de cette PR.
+
 ## Spécification (phase 0 validée)
 
 - **Type explicite** `course_card` (pas d'inférence « ni case ni choix ») : marqueur persistant dans le

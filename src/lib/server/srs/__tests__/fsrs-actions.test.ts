@@ -351,3 +351,67 @@ describe('applyFsrsReview', () => {
 		);
 	});
 });
+
+// ============================================================================
+// Cartes de cours (#617) : garde-fou « une mise à jour par jour » et écriture vérifiée
+// ============================================================================
+
+describe('applyFsrsReview — options skipIf / verifyWrite', () => {
+	it('skipIf vrai : aucune écriture, rend null', async () => {
+		const { supabase, upsertMock } = buildMockSupabase({ maybeSingleData: dbRow() });
+		const result = await applyFsrsReview(
+			supabase,
+			buildFsrs(),
+			'user-uuid',
+			'template',
+			'tpl-uuid',
+			Grade.GOOD,
+			undefined,
+			{
+				skipIf: () => true
+			}
+		);
+		expect(result).toBeNull();
+		expect(upsertMock).not.toHaveBeenCalled();
+	});
+
+	it('verifyWrite : 0 ligne rendue (RLS silencieuse) → erreur', async () => {
+		const select = vi.fn().mockResolvedValue({ data: [], error: null });
+		const { supabase, chain } = buildMockSupabase({});
+		chain.upsert = vi.fn().mockReturnValue({ select });
+		await expect(
+			applyFsrsReview(
+				supabase,
+				buildFsrs(),
+				'user-uuid',
+				'template',
+				'tpl-uuid',
+				Grade.AGAIN,
+				undefined,
+				{
+					verifyWrite: true
+				}
+			)
+		).rejects.toThrow(/aucune ligne/);
+		expect(select).toHaveBeenCalledWith('id');
+	});
+
+	it('verifyWrite : 1 ligne rendue → fiche mise à jour', async () => {
+		const select = vi.fn().mockResolvedValue({ data: [{ id: 'x' }], error: null });
+		const { supabase, chain } = buildMockSupabase({});
+		chain.upsert = vi.fn().mockReturnValue({ select });
+		const result = await applyFsrsReview(
+			supabase,
+			buildFsrs(),
+			'user-uuid',
+			'template',
+			'tpl-uuid',
+			Grade.GOOD,
+			undefined,
+			{
+				verifyWrite: true
+			}
+		);
+		expect(result?.totalReviews).toBe(1);
+	});
+});

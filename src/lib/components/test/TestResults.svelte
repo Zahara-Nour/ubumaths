@@ -32,6 +32,10 @@
 
 	let { result, onRestart, onBackToCart }: Props = $props();
 
+	// Cartes de cours (#617) : comptées à part, hors score
+	const reviewedCards = $derived(result.reviewedCards ?? 0);
+	const gradedQuestions = $derived(result.totalQuestions - reviewedCards);
+
 	// Derived values
 	let scoreColor = $derived(
 		result.score >= 8
@@ -79,8 +83,12 @@
 				<div class="space-y-2">
 					<p class="text-lg">
 						<span class="font-semibold">{result.correctAnswers}</span> sur
-						<span class="font-semibold">{result.totalQuestions}</span> bonnes réponses
+						<span class="font-semibold">{gradedQuestions}</span> bonnes réponses
 					</p>
+					{#if reviewedCards > 0}
+						<!-- Cartes de cours : auto-évaluées, hors score -->
+						<p class="text-muted-foreground">{reviewedCards} carte(s) révisée(s)</p>
+					{/if}
 					<p class="text-muted-foreground">({Math.round(result.scorePercentage)}%)</p>
 				</div>
 			</div>

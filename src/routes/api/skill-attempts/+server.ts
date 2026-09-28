@@ -32,7 +32,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
+import { attemptSourceForTemplate, reviewedToday } from '$lib/server/course-card-attempts';
 
 // ============================================================================
 // POST /api/skill-attempts
@@ -85,8 +85,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
 	// éviter une désynchro durable srs_card_stats ↔ student_point_state.
 	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
+	// Carte de cours (#617) : fiche mise à jour au plus une fois par jour,
+	// écriture vérifiée ; la trace ci-dessous est TOUJOURS insérée.
+	const isCard = attemptSourceForTemplate(templateRow) === 'student_self';
 	try {
-		await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
+		if (isCard) {
+			const now = new Date();
+			await applyFsrsReview(
+				locals.supabase,
+				new FSRS(),
+				user.id,
+				'template',
+				template_id,
+				grade,
+				undefined,
+				{
+					skipIf: (stats) => reviewedToday(stats.lastReview, now),
+					verifyWrite: true
+				}
+			);
+		} else {
+			await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
+		}
 	} catch (fsrsErr) {
 		console.error('[skill-attempts] FSRS update failed (fail-loud):', {
 			userId: user.id,
@@ -117,7 +137,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// ----- Auto-ajout au deck Programme si template tagué -----
-	if (pointIds.length > 0) {
+	// Jamais pour une carte de cours (décision 2026-09-28)
+	if (pointIds.length > 0 && !isCard) {
 		try {
 			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
 		} catch (progErr) {

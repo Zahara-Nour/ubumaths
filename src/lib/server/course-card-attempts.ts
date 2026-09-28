@@ -56,3 +56,28 @@ export async function fetchCourseCardTemplateIds(
 	}
 	return ids;
 }
+
+// ============================================================================
+// GARDE-FOU FSRS : une mise à jour de la fiche par carte et par jour
+// ============================================================================
+
+const SCHOOL_TIME_ZONE = 'Europe/Paris';
+
+/** Jour civil (AAAA-MM-JJ) à Paris : le « jour » de l'élève, pas celui d'UTC. */
+export function schoolDay(date: Date): string {
+	// `en-CA` formate en AAAA-MM-JJ
+	return new Intl.DateTimeFormat('en-CA', {
+		timeZone: SCHOOL_TIME_ZONE,
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit'
+	}).format(date);
+}
+
+/** La fiche a-t-elle déjà été mise à jour le même jour que `now` ? */
+export function reviewedToday(lastReview: string | null | undefined, now: Date): boolean {
+	if (!lastReview) return false;
+	const last = new Date(lastReview);
+	if (Number.isNaN(last.getTime())) return false;
+	return schoolDay(last) === schoolDay(now);
+}

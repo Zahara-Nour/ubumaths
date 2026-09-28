@@ -118,7 +118,10 @@
 			const timeLimit = timeParam ? parseInt(timeParam, 10) : undefined;
 
 			// Generate instances
-			const instances = await generateInstancesFromCategories(categories);
+			// Course aux nombres : pas de carte de cours (décision 2026-09-28)
+			const instances = await generateInstancesFromCategories(categories, {
+				excludeCourseCards: mode === 'course'
+			});
 
 			// Create test session
 			testSession = {

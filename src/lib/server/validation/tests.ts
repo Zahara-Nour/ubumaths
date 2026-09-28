@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+import { isCourseCard } from '$lib/questions/types';
 import { uuidSchema } from './common';
 
 // ============================================================================
@@ -62,7 +63,10 @@ const questionInstanceSchema = z.object({
 	]),
 	variables: z.record(z.string(), z.any()).optional(),
 	choices: z.array(z.string()).optional(),
-	metadata: z.record(z.string(), z.any()).optional()
+	metadata: z.record(z.string(), z.any()).optional(),
+	// Porte le marqueur `courseCard` (#617) : sert au contrôle de cohérence des
+	// compteurs ; la nature « carte » faisant foi est relue en base.
+	options: z.unknown().optional()
 });
 
 // ============================================================================
@@ -112,6 +116,8 @@ const testResultSchema = z.object({
 	scorePercentage: z.number().min(0).max(100, 'Score percentage must be between 0 and 100'),
 	totalQuestions: z.number().int().positive('Total questions must be positive'),
 	correctAnswers: z.number().int().nonnegative('Correct answers must be non-negative'),
+	// Cartes de cours révisées (hors score)
+	reviewedCards: z.number().int().nonnegative().optional(),
 	timeSpent: z.number().nonnegative('Time spent must be non-negative'),
 	averageTime: z.number().nonnegative('Average time must be non-negative'),
 	answers: z.array(testAnswerResultSchema).max(500, 'Maximum 500 answers'),
@@ -147,7 +153,10 @@ export const saveTestSchema = z
 	.refine(
 		(data) => {
 			// Validate that correctAnswers count matches actual correct answers
-			const actualCorrect = data.result.answers.filter((a) => a.isCorrect).length;
+			// Les cartes de cours (auto-évaluées) ne comptent pas (décision 2026-09-28)
+			const actualCorrect = data.result.answers.filter(
+				(a) => a.isCorrect && !isCourseCard(a.instance)
+			).length;
 			return actualCorrect === data.result.correctAnswers;
 		},
 		{
