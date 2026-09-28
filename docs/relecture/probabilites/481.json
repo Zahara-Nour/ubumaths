@@ -2,9 +2,9 @@
 	"globalIndex": 481,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Énoncés à l'impératif avec un dé ÉQUILIBRÉ à faces numérotées de 1 à n (hypothèse d'équiprobabilité absente) ; « fréquence d'apparition » remplacé par « probabilité » dans la case (confusion de notions) ; solution hors mode math dans la correction ($\\dfrac…$ brut) ; corrections reformulées avec issue/équiprobable/événement impossible. Choix : fraction non réduite juste (intention TinyMath no-penalty, conservée), décimal exact accepté (acceptDecimal), valeurs hors [0;1] refusées.",
+	"editNotes": "Énoncés à l'impératif avec un dé ÉQUILIBRÉ à faces numérotées de 1 à n (hypothèse d'équiprobabilité absente) ; « fréquence d'apparition » remplacé par « probabilité » dans la case (confusion de notions) ; solution hors mode math dans la correction ($\\dfrac…$ brut) ; corrections reformulées avec issue/équiprobable/événement impossible. Choix : fraction non réduite juste (intention TinyMath no-penalty, conservée), décimal exact accepté (acceptDecimal), valeurs hors [0;1] refusées. Décisions de David (2026-09-28) : rangement et casse {'domain': 'apprivoiser', 'subdomain': 'fréquences', 'title': 'probabilité simple'} → {'domain': 'Apprivoiser', 'subdomain': 'Probabilité simple', 'title': 'Probabilité simple'} ; classe 6e gardée.",
 	"template": {
-		"title": "probabilité simple",
+		"title": "Probabilité simple",
 		"variations": [
 			{
 				"statement": "On lance un dé équilibré à ${{a}}$ faces, numérotées de $1$ à ${{a}}$. Donne la probabilité d'obtenir le nombre ${{b}}$.\n\nLa probabilité est $?$.",
@@ -107,8 +107,8 @@
 		},
 		"grades": ["6"],
 		"theme": "Probabilités",
-		"domain": "apprivoiser",
-		"subdomain": "fréquences",
+		"domain": "Apprivoiser",
+		"subdomain": "Probabilité simple",
 		"level": 1,
 		"status": "draft",
 		"delay": 20,

@@ -3,7 +3,9 @@
 2 questions TinyMath (#481, #482), classées en 6e : probabilité simple d'un lancer de dé, fréquence
 d'apparition. Relecture le 2026-09-28 (Claude, un relecteur puis contrôle d'ensemble).
 
-> ⏳ **En attente du feu vert de David** pour l'import en BROUILLON.
+> ✅ **Feu vert de David le 2026-09-28 : les 2 questions sont importées en BROUILLON** (vérifié en
+> base : reliées au suivi, statut draft, classe 6e, rangement et casse corrigés). David les publie
+> lui-même.
 
 ## Bilan
 
@@ -37,15 +39,12 @@ Rendu : aucun marqueur brut.
 - 40 % pour 0,4 : mauvaise forme — cohérent avec ta décision des pourcentages (#491 : `710 %` pour
   7,1 = mauvaise forme).
 
-## À trancher par David
+## Décisions de David (2026-09-28)
 
-1. **Classe** : les deux sont en 6e. Les probabilités sont au programme à partir de la 5e (cycle 4).
-   Recommandé : **#481 en 5e** ; #482 (fréquence d'un effectif observé) peut rester en 6e.
-2. **Rangement de #481** : sous-domaine « fréquences » alors qu'elle porte sur une probabilité.
-   Recommandé : **« Probabilité simple »**.
-3. **Casse** : domaine « apprivoiser », sous-domaine et titres en minuscules, alors que les autres
-   lots écrivent « Apprivoiser ». Recommandé : **majuscule initiale** (Apprivoiser, Fréquences,
-   Probabilité simple, Fréquence).
+1. **Classe** : les deux restent en 6e.
+2. **#481** rangée sous « Probabilité simple » (au lieu de « fréquences »).
+3. **Casse** : domaine « Apprivoiser », sous-domaines « Probabilité simple » / « Fréquences »,
+   titres « Probabilité simple » / « Fréquence ».
 
 ## Défauts de conversion (corrigés à la main)
 

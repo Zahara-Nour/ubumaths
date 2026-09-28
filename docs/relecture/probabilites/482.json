@@ -2,9 +2,9 @@
 	"globalIndex": 482,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Énoncés à l'impératif (« Calcule la fréquence… ») sans question redondante avec la case ; correction : solution hors mode math ($\\dfrac…$ brut) et numéro du dé hors $…$ ; « face? »/« pile? » sans espace. Choix : fraction non réduite juste (option TinyMath no-penalty conservée), décimal exact accepté (acceptDecimal), valeurs > 1 refusées.",
+	"editNotes": "Énoncés à l'impératif (« Calcule la fréquence… ») sans question redondante avec la case ; correction : solution hors mode math ($\\dfrac…$ brut) et numéro du dé hors $…$ ; « face? »/« pile? » sans espace. Choix : fraction non réduite juste (option TinyMath no-penalty conservée), décimal exact accepté (acceptDecimal), valeurs > 1 refusées. Décisions de David (2026-09-28) : rangement et casse {'domain': 'apprivoiser', 'subdomain': 'fréquences', 'title': 'fréquence'} → {'domain': 'Apprivoiser', 'subdomain': 'Fréquences', 'title': 'Fréquence'} ; classe 6e gardée.",
 	"template": {
-		"title": "fréquence",
+		"title": "Fréquence",
 		"variations": [
 			{
 				"statement": "Je lance ${{a}}$ fois un dé à ${{b}}$ faces. J'obtiens ${{c}}$ fois le nombre ${{d}}$.\n\nCalcule la fréquence d'apparition du nombre ${{d}}$.\n\nLa fréquence d'apparition est $?$.",
@@ -92,8 +92,8 @@
 		},
 		"grades": ["6"],
 		"theme": "Probabilités",
-		"domain": "apprivoiser",
-		"subdomain": "fréquences",
+		"domain": "Apprivoiser",
+		"subdomain": "Fréquences",
 		"level": 2,
 		"status": "draft",
 		"delay": 20,
