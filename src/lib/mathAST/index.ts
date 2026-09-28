@@ -235,6 +235,7 @@ export {
 	countNodes,
 	getDepth,
 	stripUnnecessaryBrackets,
+	needsBracketsAsPowerBase,
 	isZeroTerm,
 	removeNullTermsAST
 } from './transforms';

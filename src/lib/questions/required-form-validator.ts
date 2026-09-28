@@ -29,6 +29,7 @@ import {
 	mapNodeTopDown,
 	flattenProductShallow,
 	stripUnnecessaryBrackets,
+	needsBracketsAsPowerBase,
 	mapNode
 } from '$lib/mathAST';
 import { P } from '$lib/mathAST/pattern/builder';
@@ -193,11 +194,15 @@ function matchesPredefinedForm(
 /**
  * Parenthèses de regroupement retirées : la structure de l'arbre porte déjà le groupement.
  * `(9+2):4` et `\\frac{9+2}{4}` ont alors la même forme (la fraction n'a pas de parenthèses).
+ * Idem pour une fraction ou une racine en base de puissance (`(\\sqrt{3})^2`), que
+ * stripUnnecessaryBrackets garde : le motif `sqrt(a)^2` doit la reconnaître.
  * Les autres délimiteurs (valeur absolue…) sont gardés.
  */
 function withoutGroupingParentheses(node: MathNode): MathNode {
 	return mapNode(node, (n) =>
-		n.type === 'delimiter' && n.delimiters === 'parentheses' && groupsAnOperation(n.content)
+		n.type === 'delimiter' &&
+		n.delimiters === 'parentheses' &&
+		(groupsAnOperation(n.content) || needsBracketsAsPowerBase(n.content))
 			? n.content
 			: n
 	);

@@ -336,3 +336,26 @@ describe("runTestSpec — parenthèses autour de la base d'une puissance", () =>
 		}
 	);
 });
+
+describe('runTestSpec — requiredForm à motif avec racine en base de puissance', () => {
+	it('(\\sqrt{3})^2 satisfait le motif sqrt(a)^2', () => {
+		const template = makeTemplate({
+			variations: [
+				{
+					statement: templateMarkdown('$3 = ?$'),
+					variables: [],
+					blanks: [{ expectedAnswer: '3', requiredForm: { pattern: 'sqrt(a)^2' } }]
+				}
+			]
+		});
+		const result = runTestSpec(template, {
+			description: 'racine au carré',
+			variationIndex: 0,
+			variables: {},
+			answers: ['(\\sqrt{3})^2'],
+			expected: { status: 'correct' }
+		});
+		expect(result.error).toBeUndefined();
+		expect(result.actual.status).toBe('correct');
+	});
+});

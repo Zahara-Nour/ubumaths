@@ -1047,7 +1047,7 @@ function isSimpleElement(node: MathNode): boolean {
  * constante, f(x), |x|) restent sans parenthèses. Les autres bases (négatif,
  * produit, somme, puissance) sont déjà traitées par la précédence.
  */
-function needsBracketsAsPowerBase(node: MathNode): boolean {
+export function needsBracketsAsPowerBase(node: MathNode): boolean {
 	if (node.type === 'division') return node.displayStyle === 'fraction';
 	if (node.type === 'function') {
 		return node.name === 'sqrt' || node.name === 'cbrt' || node.name === 'root';
