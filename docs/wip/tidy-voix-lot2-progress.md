@@ -126,8 +126,8 @@ j'ai rejoué la mutation : ils passent au rouge.
 - [x] Contrat écrit en tests rouges : 8 rouges / 123 verts
 - [x] Implémentation (`mathast-expert`, Opus) — 5 gestes, filet `tidy-terms` conservé
 - [x] Revue `code-reviewer` (Opus) : 10 findings, tous traités ou tranchés
-- [ ] `check:incremental` + `lint:fast`
-- [ ] PR, CI verte, merge, worktree supprimé
+- [x] `check:incremental` (1615 fichiers, 0 erreur) + `lint:fast`
+- [x] **PR #397 mergée le 2026-09-21**, CI verte, branche et worktree supprimés
 
 ## Invariants, non négociables (repris du lot 1)
 
@@ -137,3 +137,69 @@ j'ai rejoué la mutation : ils passent au rouge.
 3. Chaque étape est une vraie expression ; la chaîne part de ce que l'élève a
    écrit et recolle sur `tidy(x)`.
 4. Le silence veut dire « rien n'a bougé », vérifié par `nodesEqual`.
+
+---
+
+# Point de reprise — 2026-09-28
+
+Les lots 1 et 2 sont **en production** (PR #396 et #397). `tidy` nomme neuf
+gestes : cinq au niveau du facteur, quatre au niveau de la somme.
+
+Vérifié sur `main` à `c67b482d6` : la suite `tidy/` passe à **447 tests verts**
+(contre 386 à la fusion du lot 2). La narration a survécu aux évolutions de la
+semaine — `unitChoice: 'written'`, nœud pourcentage, calcul avec grandeurs.
+
+## ⛔ Le verdict de David, non traité
+
+> « "On met chaque terme au propre" est vraiment trop grossier. Il faut trouver
+> un moyen de détailler plus. »
+
+Ce filet tombe dans deux situations, et une seule est une fatalité.
+
+**1. Aucune phrase n'existe pour le geste.** Réparable en écrivant la phrase :
+
+| entrée | rend   | phrase proposée, NON validée                  |
+| ------ | ------ | --------------------------------------------- |
+| `1/√2` | `√2/2` | On fait disparaître la racine du dénominateur |
+| `√3²`  | `3`    | Le carré et la racine carrée s'annulent       |
+
+**2. Deux familles ont bougé en même temps** — `2·3·√8 → 12√2` replie les
+nombres ET sort un carré du radical.
+
+⚠️ **Rien ne les force à bouger ensemble : c'est l'implémentation, pas les
+mathématiques.** Un élève écrit `2·3·√8 = 6√8 = 12√2`. Deux verrous, mesurés :
+
+- `toTerm` parcourt les facteurs d'un terme **une seule fois**, en les absorbant
+  dans un accumulateur unique. Il n'existe aucun instant où « les nombres sont
+  repliés et le radical ne l'est pas » : le coefficient est un seul rationnel
+  auquel les deux ont contribué.
+- Si on gardait les nombres non repliés, ils vivraient comme des **facteurs**, et
+  l'ordre canonique les classe après les symboles (`CATEGORY_SYMBOL = 0`, un
+  nombre tombe dans `CATEGORY_OTHER = 2`, `tidy/order.ts`). `2*3*x` se réécrirait
+  donc `x*2*3`. Mesuré au lot 2, avec `x*x*x → xxx` et `-(-x) → --x`.
+
+## Les deux routes, à trancher par David
+
+**A. Composer la phrase** à partir des familles observées : « On calcule les
+nombres **et** on extrait du radical les carrés parfaits ». Le carnet connaît
+déjà les familles, il ne manque que des fragments composables. Bon marché,
+honnête — mais ça reste **une** étape.
+
+**B. Lot 3 — restructurer le niveau du facteur en passes successives** sur
+l'AST, chacune complète et idempotente. `6√8` existe alors comme expression, et
+l'élève voit deux vraies étapes. C'est un chantier de la taille des lots 1 et 2,
+et il rend A inutile.
+
+⚠️ Une troisième route existe et je la déconseille : apprendre à `buildSum` et
+`sortFactors` à écrire un terme partiellement replié. Ça touche le cœur de ce que
+`tidy` **rend**, donc l'invariant qu'on a protégé sur deux lots.
+
+## À faire avant de reprendre
+
+- Lire `CONTEXT.md`, `docs/adr/` et la skill `domain-modeling`, apparus depuis —
+  ne pas travailler sur les souvenirs du 2026-09-21.
+- Le reste du chantier de fusion n'a pas bougé : **étape 2**, `auto` cesse de
+  développer inconditionnellement (`runNormalizePass` est inconditionnel dans
+  `pedagogical-simplify/pipeline.ts`). Le panel `docs/ref/panel-simplifications.md`
+  qualifie toujours quatre de ses lignes de « décision — voulu » alors que ce sont
+  des bugs mesurés contre `tidy-phase0.md §C`.

@@ -92,8 +92,8 @@ recollent pas. Écrit dans la JSDoc de `TidyOptions`. À tenir en tête quand
       résultat inchangé) et doivent rester verts.
 - [x] Matérialisation entre les stages
 - [x] Revue `code-reviewer` (Opus) : 10 findings, tous traités ou tranchés
-- [ ] `check:incremental` + `lint:fast`
-- [ ] PR, CI verte, merge, worktree supprimé
+- [x] `check:incremental` (1615 fichiers, 0 erreur) + `lint:fast`
+- [x] **PR #396 mergée le 2026-09-21**, CI verte, branche et worktree supprimés
 
 ## Ce que le lot 1 ne fait pas
 
