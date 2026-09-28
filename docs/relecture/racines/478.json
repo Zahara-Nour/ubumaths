@@ -1,0 +1,147 @@
+{
+	"globalIndex": 478,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "v1 : la 1re variable « expression2 » (doublon, génération impossible) renommée expression1 et l'énoncé affiche les deux expressions comme v0. v0 : « asqrt(b) » affichait la lettre a (« a√4 ») → {{a}}sqrt({{b}}). « Ces 2 » → « Ces deux ». Toujours vrai en v0 (a√b = √(a²b)), toujours faux en v1 (b±1 ≠ b, b+c=1 exclu).",
+	"template": {
+		"title": "Vérifier l'égalité de deux expressions comportant des racines carrées",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..1;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\t\t\t\t\t\t\t\t\\begin{align} \t\t\t\t\t\t\t\t\\sqrt{{{eval:a*a*b}}} \t\t\t\t\t\t\t\t&= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ \t\t\t\t\t\t\t\t&= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\  \t\t\t\t\t\t\t\t&= {{a}} \\times \\sqrt{{{b}}} \\\\  \t\t\t\t\t\t\t\t&= {{a}} \\sqrt{{{b}}}  \\\\ \t\t\t\t\t\t\t\t\\end{align}$$"
+				]
+			},
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{a}}sqrt({{b}})"
+					}
+				],
+				"conditions": ["true"]
+			},
+			{
+				"statement": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{a}}sqrt({{eval:b+(c)}})"
+					}
+				],
+				"conditions": ["b+(c) !=1"]
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["2"],
+		"theme": "Racines carré",
+		"domain": "Manipuler",
+		"subdomain": "Egalité",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "√(a²b) = a√b : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "bornes a=5, b=4 : Oui",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "4",
+					"c": "-1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 : Non est faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "√(a²b) ≠ a√(b+1) : Non",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "1"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 : Oui est faux",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "-1"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

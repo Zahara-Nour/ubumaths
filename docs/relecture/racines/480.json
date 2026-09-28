@@ -1,0 +1,159 @@
+{
+	"globalIndex": 480,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "v0 : « (bsqrt(a))^2 » affichait la lettre b (« (b√7)² ») → ({{b}}sqrt({{a}}))^2. v1 : la correction commençait par « &= » sans membre de gauche → ajout de √a × b × √a.",
+	"template": {
+		"title": "Calculer avec des racines",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2|3"
+					},
+					{
+						"name": "expression1",
+						"expression": "({{b}}sqrt({{a}}))^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\left({{b}}\\sqrt{{{a}}}\\right)^2 &= {{b}}^2 \\times \\left(\\sqrt{{{a}}}\\right)^2 \\\\                &= {{eval:b^2}} \\times {{a}} \\\\               &= {{solution}}  \\\\               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "sqrt(a)*b*sqrt(a)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\sqrt{{{a}}} \\times {{b}} \\times \\sqrt{{{a}}} &= {{b}} \\times \\left(\\sqrt{{{a}}}\\right)^2 \\\\                &= {{b}} \\times {{a}} \\\\               &= {{solution}}  \\\\               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Racines carré",
+		"domain": "Manipuler",
+		"subdomain": "Calculer",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "(3√7)² = 63",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "(2√2)² = 8 (bornes basses)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "oubli du carré de b : 3×7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["21"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "forme non calculée 9×7",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"answers": ["9\\times7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "√7×9×√7 = 63",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "√9×9×√9 = 81 (bornes hautes)",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "√7 laissé : 9√7 faux",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"answers": ["9\\sqrt{7}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

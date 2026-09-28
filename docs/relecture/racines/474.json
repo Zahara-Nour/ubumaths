@@ -1,0 +1,154 @@
+{
+	"globalIndex": 474,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Renvoi {{exp}} remplacé par {{expressionN}} (correction déplacée du shared vers chaque variation), {{solution}} → {{a}}, réponse attendue simplifiée en {{a}}, correction en une phrase.",
+	"template": {
+		"title": "Carré d'une racine",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "digits:2"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(sqrt(a))^2"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{expression1}} = {{a}}$, car par définition, $\\sqrt{{{a}}}$ est le nombre positif dont le carré est ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			},
+			{
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "sqrt(a)*sqrt(a)"
+					}
+				],
+				"correction": {
+					"steps": [
+						"${{expression2}} = {{a}}$, car par définition, $\\sqrt{{{a}}}$ est le nombre positif dont le carré est ${{a}}$."
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Racines carré",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 4,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 a=47 : 47",
+				"variationIndex": 0,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["47"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 borne 99",
+				"variationIndex": 0,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 2 209 (47^2) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["2\\,209"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v0 94 (2×47) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["94"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 a=47 : 47",
+				"variationIndex": 1,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["47"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 borne 99",
+				"variationIndex": 1,
+				"variables": {
+					"a": "99"
+				},
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 2 209 (47^2) refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["2\\,209"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 94 (2×47) refusé",
+				"variationIndex": 1,
+				"variables": {
+					"a": "47"
+				},
+				"answers": ["94"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,173 @@
+{
+	"globalIndex": 475,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Corrections : conclusion Vrai/Faux explicite, justification du signe (2√ab > 0), « deux membres » en toutes lettres, \\\\ final de l'align v2 retiré.",
+	"template": {
+		"title": "Vrai ou Faux : racines et opérations",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			]
+		},
+		"variations": [
+			{
+				"statement": "Vrai ou Faux ?\n\n$${{expression1}}$$",
+				"correctChoiceIndex": ["1"],
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{a}})+sqrt({{b}})=sqrt({{eval:a+b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Faux : en réalité, $\\sqrt{{{a}}} + \\sqrt{{{b}}} > \\sqrt{{{a}} + {{b}}}$.",
+						"En effet, les deux membres sont positifs, on peut donc comparer leurs carrés :",
+						"$$\\begin{align} \\left(\\sqrt{{{a}}} + \\sqrt{{{b}}}\\right)^2 &= \\left(\\sqrt{{{a}}}\\right)^2 +\\left(\\sqrt{{{b}}}\\right)^2 + 2\\sqrt{{{a}}}\\sqrt{{{b}}} \\\\ &= {{a}} +{{b}}\\textcolor{{{color:primary.1}}}{+2\\sqrt{{{eval:a*b}}}} \\\\ \\left(\\sqrt{{{a}}+{{b}}}\\right)^2 &= {{a}}+{{b}}\\end{align}$$",
+						"Comme $2\\sqrt{{{eval:a*b}}} > 0$, le carré de $\\sqrt{{{a}}} + \\sqrt{{{b}}}$ est plus grand que celui de $\\sqrt{{{a}} + {{b}}}$."
+					]
+				}
+			},
+			{
+				"statement": "Vrai ou Faux ?\n\n$${{expression2}}$$",
+				"correctChoiceIndex": ["0"],
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "sqrt({{a}})*sqrt({{b}})=sqrt({{eval:a*b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"Vrai : pour deux nombres positifs, $\\sqrt{x} \\times \\sqrt{y} = \\sqrt{x \\times y}$.",
+						"$$\\begin{align} \\sqrt{{{a}}} \\times \\sqrt{{{b}}} &= \\sqrt{{{a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*b}}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"options": {
+			"shuffleChoices": false
+		},
+		"grades": ["2"],
+		"theme": "Racines carré",
+		"domain": "Manipuler",
+		"subdomain": "Propriétés",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "v0 a=7 b=9 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 a=2 b=2 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 a=9 b=9 bonne réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v0 mauvaise réponse",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "v1 a=7 b=9 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 a=2 b=2 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 a=9 b=9 bonne réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"selectedChoices": [0],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "v1 mauvaise réponse",
+				"variationIndex": 1,
+				"variables": {
+					"a": "3",
+					"b": "5"
+				},
+				"selectedChoices": [1],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

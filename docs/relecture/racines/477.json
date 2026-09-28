@@ -1,0 +1,131 @@
+{
+	"globalIndex": 477,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Réponse attendue « 5sqrt(3) » illisible par le correcteur (tout refusé) et affichée brute dans la correction : remplacée par {{eval:(a+b)*sqrt(c)}}. Titre : « racines carrées ».",
+	"template": {
+		"title": "Réduire une expression avec des racines carrées",
+		"variations": [
+			{
+				"statement": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5|10!a"
+					},
+					{
+						"name": "c",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*c}})+sqrt({{eval:b*b*c}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align}               \\sqrt{{{eval:a*a*c}}} + \\sqrt{{{eval:b*b*c}}} &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{c}}} + \\sqrt{{{eval:b*b}}} \\times \\sqrt{{{c}}} \\\\               &= {{a}} \\times \\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}} + {{b}} \\times \\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}} \\\\               &= {{a}} \\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}} + {{b}} \\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}} \\\\               &= {{solution}}  \\\\               \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(a+b)*sqrt(c)}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Racines carré",
+		"domain": "Manipuler",
+		"subdomain": "Réduire",
+		"level": 2,
+		"status": "draft",
+		"delay": 40,
+		"testSpecs": [
+			{
+				"description": "√12 + √27 = 5√3",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["5\\sqrt{3}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "√200 + √8 = 12√2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "2",
+					"c": "2"
+				},
+				"answers": ["12\\sqrt{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "non réduit √75 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["\\sqrt{75}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "somme non réduite refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["2\\sqrt{3}+3\\sqrt{3}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "addition sous la racine : √39 faux",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["\\sqrt{39}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "valeur décimale refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3"
+				},
+				"answers": ["8{,}66"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

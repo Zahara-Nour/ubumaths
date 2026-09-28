@@ -1,0 +1,98 @@
+{
+	"globalIndex": 472,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Correction : renvoi {{exp}} remplacé par {{expression1}}, {{solution}} par {{a}} dans une seule formule ; « racine carrée » ; description alignée sur les tirages (1 à 15).",
+	"template": {
+		"title": "Trouver une racine carrée",
+		"description": "Entier de $1$ à $15$",
+		"variations": [
+			{
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a}})"
+					}
+				],
+				"correction": {
+					"steps": ["${{expression1}} = {{a}}$ car ${{a}} \\times {{a}} = {{eval:a^2}}$."]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["4"],
+		"theme": "Racines carré",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 2,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "sqrt(81) = 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 15 : sqrt(225) = 15",
+				"variationIndex": 0,
+				"variables": {
+					"a": "15"
+				},
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "-9 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "81/2 (confusion racine/moitié) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["40{,}5"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "\\sqrt{81} recopié : mauvaise forme",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["\\sqrt{81}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}

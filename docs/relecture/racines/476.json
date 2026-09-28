@@ -1,0 +1,147 @@
+{
+	"globalIndex": 476,
+	"verdict": "corrected",
+	"reviewer": "claude",
+	"editNotes": "Titre : « racine carrée ». Forme par défaut suffisante : √50, √25√2, 2√50 refusés (bad_form), 5×√2 perfectible, décimal refusé. Point final ajouté à la consigne.",
+	"template": {
+		"title": "Réduire une racine carrée",
+		"variations": [
+			{
+				"statement": "Réduis sous la forme $a\\sqrt{b}$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					}
+				],
+				"correction": {
+					"steps": [
+						"$$\\begin{align} \\sqrt{{{eval:a*a*b}}} &= \\sqrt{{{eval:a*a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*a}}} \\times \\sqrt{{{b}}} \\\\  &= {{a}} \\times \\sqrt{{{b}}} \\\\  &= {{solution}}  \\\\ \\end{align}$$"
+					]
+				},
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				]
+			}
+		],
+		"grades": ["2"],
+		"theme": "Racines carré",
+		"domain": "Manipuler",
+		"subdomain": "Réduire",
+		"level": 1,
+		"status": "draft",
+		"delay": 20,
+		"testSpecs": [
+			{
+				"description": "√50 = 5√2",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["5\\sqrt{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "√200 = 10√2 (borne haute)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "2"
+				},
+				"answers": ["10\\sqrt{2}"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "valeur non réduite refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["\\sqrt{50}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "réduction partielle 2√50 refusée",
+				"variationIndex": 0,
+				"variables": {
+					"a": "10",
+					"b": "2"
+				},
+				"answers": ["2\\sqrt{50}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "√25√2 refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["\\sqrt{25}\\sqrt{2}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			},
+			{
+				"description": "5×√2 perfectible",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["5\\times\\sqrt{2}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["products"]
+				}
+			},
+			{
+				"description": "décimal refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["7{,}07"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "a et b inversés",
+				"variationIndex": 0,
+				"variables": {
+					"a": "5",
+					"b": "2"
+				},
+				"answers": ["2\\sqrt{5}"],
+				"expected": {
+					"status": "incorrect"
+				}
+			}
+		]
+	}
+}

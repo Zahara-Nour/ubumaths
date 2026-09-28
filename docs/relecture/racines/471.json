@@ -1,0 +1,94 @@
+{
+	"globalIndex": 471,
+	"verdict": "approved",
+	"reviewer": "claude",
+	"template": {
+		"title": "Trouver un nombre positif de carré donné",
+		"description": "Entier de $1$ à $12$",
+		"variations": [
+			{
+				"statement": "Complète avec un nombre **positif**.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "?^2={{eval:a^2}}"
+					}
+				],
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				]
+			}
+		],
+		"grades": ["5"],
+		"theme": "Racines carré",
+		"domain": "Apprivoiser",
+		"subdomain": "Définition",
+		"level": 1,
+		"status": "draft",
+		"delay": 10,
+		"testSpecs": [
+			{
+				"description": "?^2=81 : 9",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "borne 1 : ?^2=1 → 1",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1"
+				},
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				}
+			},
+			{
+				"description": "-9 refusé (nombre positif demandé)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "81 (confusion avec le carré) refusé",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["81"],
+				"expected": {
+					"status": "incorrect"
+				}
+			},
+			{
+				"description": "\\sqrt{81} non calculé : mauvaise forme",
+				"variationIndex": 0,
+				"variables": {
+					"a": "9"
+				},
+				"answers": ["\\sqrt{81}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				}
+			}
+		]
+	}
+}
