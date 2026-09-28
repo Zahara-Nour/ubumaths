@@ -252,5 +252,6 @@ Après relecture (`code-reviewer`) :
 
 ## Prochaine étape
 
-Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
-plus aucun lot : tous les lots TinyMath sont relus et importés en brouillon.
+✅ **Relecture TinyMath terminée (2026-09-28)** : tous les lots sont relus et importés en brouillon, dont
+Grandeurs #462/#464/#466/#468 après #502 (durées composées, mesurées au vrai clavier). Base : 637
+templates, tous brouillons. David les publie lui-même.
