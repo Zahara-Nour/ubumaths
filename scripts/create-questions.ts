@@ -60,6 +60,7 @@ async function main(): Promise<number> {
 
 	let crees = 0;
 	let deja = 0;
+	let misAJour = 0;
 	for (const fichier of fichiers) {
 		const modele = JSON.parse(readFileSync(join(dossier, fichier), 'utf8')) as Omit<
 			QuestionTemplate,
@@ -84,6 +85,12 @@ async function main(): Promise<number> {
 		const { data: existants, error: e1 } = await requete;
 		if (e1) throw new Error(`${fichier} : lecture impossible — ${e1.message}`);
 		if (existants && existants.length > 0) {
+			if (existants.length > 1) {
+				console.error(
+					`⛔ ${fichier} : ${existants.length} modèles identiques déjà en base — à régler à la main`
+				);
+				return 1;
+			}
 			const existant = existants[0];
 			const ligne = toTemplateInsertRow(modele, auteur);
 			const identique =
@@ -122,6 +129,7 @@ async function main(): Promise<number> {
 					`${fichier} : mise à jour non confirmée — ${e3?.message ?? 'aucune ligne'}`
 				);
 			console.log(`  ↻ ${fichier} : contenu mis à jour (${existant.id})`);
+			misAJour++;
 			continue;
 		}
 
@@ -145,7 +153,7 @@ async function main(): Promise<number> {
 		crees++;
 	}
 	console.log(
-		`\n${fichiers.length} fichiers — ${publier ? `${crees} créés` : 'simulation'}, ${deja} déjà en base.`
+		`\n${fichiers.length} fichiers — ${publier ? `${crees} créés, ${misAJour} mis à jour` : 'simulation'}, ${deja} déjà en base.`
 	);
 	return 0;
 }

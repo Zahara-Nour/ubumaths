@@ -21,7 +21,6 @@ export type Serie = { statement: string; solution: string };
 /** Ce qui remplace une case dans l'énoncé figé */
 export const BLANK_TEXT = '……';
 
-const RETRAIT = '   ';
 /** Case dans une formule : `\placeholder[N]{}` */
 const PLACEHOLDER = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
 /** Case dans le texte : `{{blank:N}}` */
@@ -41,17 +40,32 @@ function reponse(instance: QuestionInstance, index: number, dansFormule: boolean
 /** Énoncé et corrigé d'une instance, en markdown libre (avant mise en liste) */
 function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	const etapes = instance.correction?.steps ?? [];
+	// Correction générée (mode B) : ses étapes ne sont rendues qu'à l'écran ; la
+	// figer demanderait generateCorrection — refuser plutôt que d'en perdre le texte
+	if (etapes.length === 0 && instance.correction?.generatedSteps) {
+		throw new Error(`${template.id} : correction générée (mode B) non prise en charge`);
+	}
+	// La consigne du modèle précède l'énoncé (sinon la question perd son contexte)
+	const texte = instance.exerciseInstruction
+		? `${instance.exerciseInstruction}\n\n${instance.statement}`
+		: instance.statement;
 	if (isCourseCard(template)) {
-		return {
-			statement: instance.statement,
-			solution: [instance.statement, ...etapes].join('\n\n')
-		};
+		return { statement: texte, solution: [texte, ...etapes].join('\n\n') };
 	}
 
-	const enonce = instance.statement
+	// Chaque case attendue doit être remplacée, ni plus ni moins (un marqueur d'une
+	// autre convention, `<<expr:…>>`, laisserait sinon une question sans case)
+	const cases = [...texte.matchAll(PLACEHOLDER), ...texte.matchAll(TEXT_BLANK)].length;
+	if (cases !== (instance.blanks?.length ?? 0)) {
+		throw new Error(
+			`${template.id} : ${cases} case(s) dans l'énoncé pour ${instance.blanks?.length ?? 0} réponse(s) attendue(s)`
+		);
+	}
+
+	const enonce = texte
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
-	let corrige = instance.statement
+	let corrige = texte
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false));
 
@@ -73,9 +87,14 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	return { statement: enonce, solution: corrige };
 }
 
-/** Un item de liste numérotée : première ligne après « N. », les suivantes en retrait */
+/**
+ * Un item de liste numérotée : première ligne après « N. », les suivantes en retrait
+ * de la largeur de « N. » + espace (4 espaces à partir de « 10. », sinon les
+ * paragraphes suivants sortent de la liste).
+ */
 function item(numero: number, texte: string): string {
 	const [premiere, ...suite] = texte.trim().split('\n');
+	const RETRAIT = ' '.repeat(`${numero}. `.length);
 	return [
 		`${numero}. ${premiere}`,
 		...suite.map((ligne) => (ligne.trim() === '' ? '' : `${RETRAIT}${ligne}`))
@@ -100,7 +119,9 @@ export function buildSerie(modeles: Map<string, QuestionTemplate>, items: SerieI
 			);
 		}
 		const serie = figer(template, genere.instance);
-		const residu = `${serie.statement}\n${serie.solution}`.match(/\{\{[^}]*\}\}|\\placeholder/);
+		const residu = `${serie.statement}\n${serie.solution}`.match(
+			/\{\{[^}]*\}\}|\\placeholder|<<[^>]*>>/
+		);
 		if (residu) throw new Error(`marqueur non résolu dans ${templateId} : ${residu[0]}`);
 		return serie;
 	});

@@ -179,7 +179,8 @@ async function main() {
 		const v = createExerciseSchema.safeParse(donnees);
 		if (!v.success)
 			throw new Error(`« ${serie.title} » : Zod refuse — ${v.error.issues[0].message}`);
-		return donnees;
+		// Ce qui est écrit est ce que Zod a validé (défauts et transformations compris)
+		return v.data;
 	});
 	const { data: dejaLa, error: e1 } = await supabase
 		.from('exercises')
@@ -282,9 +283,31 @@ async function main() {
 		console.log('\n✅ Terminé.');
 	} catch (err) {
 		// Rien de partiel : fiche (lignes en cascade), puis exercices
-		if (ficheId) await supabase.from('worksheets').delete().eq('id', ficheId);
-		if (creesExercices.length) await supabase.from('exercises').delete().in('id', creesExercices);
-		throw new Error(`${err instanceof Error ? err.message : String(err)} — tout a été défait`);
+		// Chaque suppression est relue : un retour arrière qui échoue doit se dire
+		const restes: string[] = [];
+		if (ficheId) {
+			const { data, error } = await supabase
+				.from('worksheets')
+				.delete()
+				.eq('id', ficheId)
+				.select('id');
+			if (error || data?.length !== 1) restes.push(`fiche ${ficheId}`);
+		}
+		if (creesExercices.length) {
+			const { data, error } = await supabase
+				.from('exercises')
+				.delete()
+				.in('id', creesExercices)
+				.select('id');
+			if (error || data?.length !== creesExercices.length)
+				restes.push(`exercices ${creesExercices.join(', ')}`);
+		}
+		const cause = err instanceof Error ? err.message : String(err);
+		throw new Error(
+			restes.length
+				? `${cause} — ⚠️ RETOUR ARRIÈRE INCOMPLET, restent en base : ${restes.join(' ; ')}`
+				: `${cause} — tout a été défait`
+		);
 	}
 }
 

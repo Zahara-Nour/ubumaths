@@ -139,6 +139,46 @@ describe('buildSerie — cas nominaux', () => {
 	});
 });
 
+describe('buildSerie — consigne et longues séries', () => {
+	it('la consigne du modèle précède l’énoncé', () => {
+		const consigne = {
+			...coefficient,
+			id: 'consigne',
+			exerciseInstruction: 'Sans calculatrice.'
+		} as QuestionTemplate;
+		const serie = buildSerie(new Map([['consigne', consigne]]), [
+			{ templateId: 'consigne', seed: 7 }
+		]);
+		expect(serie.statement).toMatch(/^1\. Sans calculatrice\.\n\n {3}Donne le coefficient/);
+	});
+
+	it('à partir de l’item 10, le retrait suit la largeur du numéro', () => {
+		// 10 graines qui donnent 10 questions différentes
+		const graines: number[] = [];
+		const vus = new Set<string>();
+		for (let g = 1; graines.length < 10; g++) {
+			const texte = buildSerie(modeles, [{ templateId: 'coef', seed: g }]).statement;
+			if (!vus.has(texte)) {
+				vus.add(texte);
+				graines.push(g);
+			}
+		}
+		const serie = buildSerie(
+			modeles,
+			graines.map((seed) => ({ templateId: 'coef', seed }))
+		);
+		const apres10 = serie.statement.split('\n10. ')[1];
+		expect(apres10).toBeDefined();
+		expect(
+			apres10
+				.split('\n')
+				.filter((l) => l.trim() !== '')
+				.slice(1)
+				.every((l) => l.startsWith('    '))
+		).toBe(true);
+	});
+});
+
 describe('buildSerie — erreurs (rien ne doit être écrit)', () => {
 	it('modèle introuvable', () => {
 		expect(() => buildSerie(modeles, [{ templateId: 'absent', seed: 1 }])).toThrow(/absent/);
@@ -162,6 +202,35 @@ describe('buildSerie — erreurs (rien ne doit être écrit)', () => {
 				{ templateId: 'carte', seed: 2 }
 			])
 		).toThrow(/identiques/);
+	});
+
+	it('réponse attendue sans case dans l’énoncé (marqueur d’une autre convention) : refusée', () => {
+		const sansCase = {
+			...base,
+			id: 'sansCase',
+			variations: [
+				{ statement: 'Calcule $2+3$.', variables: [], blanks: [{ expectedAnswer: '5' }] }
+			]
+		} as unknown as QuestionTemplate;
+		expect(() =>
+			buildSerie(new Map([['sansCase', sansCase]]), [{ templateId: 'sansCase', seed: 1 }])
+		).toThrow(/sansCase/);
+	});
+
+	it('correction générée (mode B) sans étapes rédigées : refusée plutôt qu’ignorée', () => {
+		const modeB = {
+			...coefficient,
+			id: 'modeB',
+			variations: [
+				{
+					...coefficient.variations[0],
+					correction: { generatedSteps: { kind: 'arithmetic', expression: '1+{{a}}/100' } }
+				}
+			]
+		} as unknown as QuestionTemplate;
+		expect(() =>
+			buildSerie(new Map([['modeB', modeB]]), [{ templateId: 'modeB', seed: 1 }])
+		).toThrow(/générée|mode B/);
 	});
 
 	it('série vide', () => {
