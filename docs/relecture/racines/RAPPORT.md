@@ -42,8 +42,10 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
    thème : le corriger en « Racines carrées » ne casse aucun regroupement. Recommandé : corriger.
 2. **#471** (« trouver un nombre positif de carré donné ») est en 5e, ses voisines en 4e. Elle ne
    porte que sur un carré : 5e se défend. Recommandé : garder.
-3. **#478** : avec b = 4, l'égalité affichée est « √64 = 4√4 ? » (vraie, mais avec une racine non
-   réduite, et √64 = 8). Recommandé : exclure b = 4 (tirer b dans {2 ; 3}).
+3. ✅ **#478 — décidé par David (2026-09-28)** : b tiré parmi 2, 3, 5, 6, 7 (plus de « √64 = 4√4 »,
+   où la question se réduisait à « 8 = 8 ? ») ; en v1, b ± 1 aussi sans facteur carré (2↔3, 5↔6,
+   6↔7) ; une correction par variation, avec sa conclusion (égales / pas égales). Vérifié sur
+   300 tirages par variation : aucune racine non réduite.
 
 ## Défauts de conversion restants (corrigés à la main dans ce lot)
 
