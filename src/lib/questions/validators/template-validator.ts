@@ -9,7 +9,7 @@
 
 import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } from '../types';
 import { getQuestionType } from '../types';
-import { correctionText } from '../course-card';
+import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 
 /**
@@ -176,8 +176,10 @@ function validateVariation(
 				errors.push(`${prefix} course_card cannot have choices[]`);
 			}
 			const correction = variation.correction ?? shared?.correction;
-			if (correctionText(correction).trim().length === 0) {
-				errors.push(`${prefix} course_card requires a correction (verso) with non-empty steps`);
+			if (!hasCourseCardBackSource(correction)) {
+				errors.push(
+					`${prefix} course_card requires a correction (verso): non-empty steps or generatedSteps`
+				);
 			}
 			break;
 		}

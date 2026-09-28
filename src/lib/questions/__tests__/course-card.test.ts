@@ -14,7 +14,13 @@ import { validateTemplate } from '../validators/template-validator';
 import { generateInstance } from '../generator/instance-generator';
 import { runAllTestSpecs, runTestSpec } from '../test-spec-runner';
 import { questionTemplateSchema } from '../template-schema';
-import { courseCardBack, courseCardFront, excludeCourseCards, isCourseCard } from '../course-card';
+import {
+	courseCardBack,
+	courseCardBackParts,
+	courseCardFront,
+	excludeCourseCards,
+	isCourseCard
+} from '../course-card';
 import { questionTypeSchema } from '$lib/server/validation/questions';
 import { checkTemplate } from '$lib/migration/review/check-template';
 import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
@@ -227,5 +233,47 @@ describe('exclusion des évaluations notées', () => {
 			{ id: 'y', options: null as unknown }
 		];
 		expect(excludeCourseCards(rows).map((r) => r.id)).toEqual(['y']);
+	});
+});
+
+// ============================================================================
+// VERSO EN ÉTAPES GÉNÉRÉES (mode B)
+// ============================================================================
+
+describe('verso en étapes générées (generatedSteps)', () => {
+	const modeB = () =>
+		card({
+			variations: [
+				{
+					statement: templateMarkdown('Calculer $$2+3$$'),
+					correction: { generatedSteps: { kind: 'arithmetic', expression: '2+3' } }
+				}
+			]
+		});
+
+	it('est acceptée par le validateur', () => {
+		expect(validateTemplate(modeB())).toEqual([]);
+	});
+
+	it('le verso de l’instance porte les étapes rendues', () => {
+		const result = generateInstance(modeB(), 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		const parts = courseCardBackParts(result.instance.correction);
+		expect(parts.generatedSteps?.length ?? 0).toBeGreaterThan(0);
+	});
+
+	it('checkTemplate : importable', () => {
+		const report = checkTemplate(modeB(), { instances: 5 });
+		expect(report.reasons).toEqual([]);
+	});
+
+	it('les étapes écrites (mode A) priment sur les étapes générées', () => {
+		const parts = courseCardBackParts({
+			steps: [templateMarkdown('Écrit') as unknown as string] as never,
+			_renderedSteps: [{} as never]
+		});
+		expect(parts.text).toBe('Écrit');
+		expect(parts.generatedSteps).toBeUndefined();
 	});
 });

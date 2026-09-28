@@ -32,7 +32,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -238,9 +238,7 @@
 			</Card.Title>
 			<div class="flex flex-shrink-0 items-center gap-2">
 				<Badge variant="secondary" class="text-xs"
-					>{getQuestionType(instance) === 'course_card'
-						? 'Carte de cours'
-						: getQuestionType(instance)}</Badge
+					>{QUESTION_TYPE_LABELS[getQuestionType(instance)]}</Badge
 				>
 				<Badge variant="default" class="text-xs">{instance.level}</Badge>
 			</div>

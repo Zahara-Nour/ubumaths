@@ -152,8 +152,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Process each card to prepare ReviewCard objects
 		const reviewCards: ReviewCard[] = [];
-		// Cartes écartées de la session : tracées (réponse + log), plus jamais en
-		// silence — l'élève doit savoir que sa session est incomplète.
+		// Cartes écartées de la session : tracées (log serveur détaillé + nombre
+		// rendu au client), plus jamais en silence — l'élève doit savoir que sa
+		// session est incomplète.
 		const skipped: { cardId: string; templateId: string | null; reason: string }[] = [];
 
 		console.log('[SRS] Processing due cards...');
@@ -265,7 +266,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		if (skipped.length > 0) {
 			console.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
 		}
-		return json({ cards: reviewCards, skipped });
+		// Au client : le seul NOMBRE de cartes écartées (le détail reste dans les logs)
+		return json({ cards: reviewCards, skipped: skipped.length });
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/review/due:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

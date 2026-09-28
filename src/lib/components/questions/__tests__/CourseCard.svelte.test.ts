@@ -4,7 +4,8 @@ import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
-import { resolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 
 /**
  * Carte de cours (#617) : recto = énoncé, verso = correction, sans case.
@@ -89,5 +90,55 @@ describe('carte de cours — révision SRS (FlashCard)', () => {
 		expect(container.textContent).toContain('On détermine son ensemble de définition.');
 		expect(container.textContent).not.toContain('Aucune réponse enregistrée');
 		expect(container.textContent).toContain('Carte de cours');
+	});
+});
+
+describe('carte de cours — vue d’ensemble et taille', () => {
+	it('non interactive (mode display) : recto seul, sans bouton « Voir la réponse »', async () => {
+		const { container } = await render(QuestionCard, { instance: card(), interactive: false });
+		expect(container.textContent).toContain('Que fait-on en premier');
+		expect(buttonByText(container, 'Voir la réponse')).toBeUndefined();
+		expect(container.querySelector('[data-testid="course-card-back"]')).toBeNull();
+	});
+
+	it('respecte la taille demandée (sm)', async () => {
+		const { container } = await render(QuestionCard, {
+			instance: card(),
+			interactive: true,
+			size: 'sm'
+		});
+		expect(container.querySelector('[data-testid="course-card"]')?.className).toContain('text-sm');
+	});
+});
+
+describe('carte de cours — verso en étapes générées (mode B)', () => {
+	it('FlashCard affiche les étapes générées au verso', async () => {
+		const result = generateInstance(
+			{
+				id: 'b',
+				title: 'B',
+				status: 'draft',
+				options: { courseCard: true },
+				variations: [
+					{
+						statement: templateMarkdown('Calculer $$12+30$$'),
+						correction: { generatedSteps: { kind: 'arithmetic', expression: '12+30' } }
+					}
+				],
+				grades: ['6'],
+				theme: 'T',
+				domain: 'D',
+				level: 1
+			},
+			1
+		);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		const { container } = await render(FlashCard, { instance: result.instance });
+		container.querySelector<HTMLButtonElement>('[aria-label="Voir la correction"]')?.click();
+		await tick();
+		const back = container.querySelector('[data-testid="course-card-back"]');
+		expect(back).not.toBeNull();
+		expect(back?.textContent ?? '').toContain('42');
 	});
 });

@@ -15,7 +15,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
@@ -33,6 +33,7 @@
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
+	import CourseCardBack from './CourseCardBack.svelte';
 
 	const logger = createLogger('FlashCard');
 
@@ -105,7 +106,9 @@
 
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
-	const typeLabel = $derived(isCourseCard ? 'Carte de cours' : getQuestionType(instance));
+	const typeLabel = $derived(
+		isCourseCard ? QUESTION_TYPE_LABELS.course_card : getQuestionType(instance)
+	);
 
 	const correctionMarkdown = $derived.by(() => {
 		if (!instance.correction) return '';
@@ -426,9 +429,9 @@
 
 					<Card.Content class="space-y-6">
 						{#if isCourseCard}
-							<!-- Carte de cours : le verso EST la correction -->
+							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
 							<div class="rounded-lg border bg-card p-4">
-								<MarkdownRenderer content={correctionMarkdown} />
+								<CourseCardBack correction={instance.correction} />
 							</div>
 						{:else}
 							<!-- Correct answer -->

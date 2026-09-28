@@ -235,7 +235,12 @@
 		<Card.Content class="space-y-6">
 			{#if getQuestionType(instance) === 'course_card'}
 				<!-- Carte de cours : recto → « Voir la réponse » → verso → auto-évaluation -->
-				<CourseCardView {instance} onSelfAssess={interactive ? handleSelfAssess : undefined} />
+				<CourseCardView
+					{instance}
+					{interactive}
+					{size}
+					onSelfAssess={interactive ? handleSelfAssess : undefined}
+				/>
 			{:else}
 				{#if instance.exerciseInstruction}
 					<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>

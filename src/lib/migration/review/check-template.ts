@@ -17,7 +17,11 @@ import { validateTemplate } from '$lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '$lib/questions/template-schema';
 import { runAllTestSpecs, type TestSpecResult } from '$lib/questions/test-spec-runner';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
-import { courseCardBack, courseCardFront, isCourseCard } from '$lib/questions/course-card';
+import {
+	courseCardFront,
+	hasCourseCardBackContent,
+	isCourseCard
+} from '$lib/questions/course-card';
 
 // ============================================================================
 // TYPES
@@ -78,7 +82,7 @@ function checkGeneration(
 				// Carte de cours : recto et verso doivent être non vides APRÈS résolution
 				const errors: string[] = [];
 				if (courseCardFront(result.instance).trim() === '') errors.push('recto vide');
-				if (courseCardBack(result.instance).trim() === '') errors.push('verso vide');
+				if (!hasCourseCardBackContent(result.instance)) errors.push('verso vide');
 				if (errors.length > 0) failures.push({ variationIndex, seed, errors });
 			}
 		}

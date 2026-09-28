@@ -1218,12 +1218,10 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		expect(response.status).toBe(200);
 		expect(data.cards).toEqual([]);
-		expect(data.skipped).toHaveLength(1);
-		expect(data.skipped[0]).toMatchObject({
-			cardId: TEST_IDS.card1,
-			templateId: TEST_IDS.template1
-		});
-		expect(data.skipped[0].reason).toMatch(/course_card requires a correction/);
+		// Le client n'a besoin que du NOMBRE ; le détail (messages du générateur,
+		// exceptions) reste dans les logs serveur, jamais dans le navigateur.
+		expect(data.skipped).toBe(1);
+		expect(JSON.stringify(data)).not.toContain('course_card requires');
 	});
 
 	it('should require deck_id parameter', async () => {

@@ -16,6 +16,16 @@
 import { isCourseCard } from './types';
 import type { QuestionCorrection, QuestionInstance, ResolvedCorrection } from './types';
 
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Contenu du verso : texte (mode A / feedback) et/ou étapes générées (mode B). */
+export interface CourseCardBackParts {
+	text: string;
+	generatedSteps?: NonNullable<ResolvedCorrection['_renderedSteps']>;
+}
+
 export { isCourseCard };
 
 // ============================================================================
@@ -49,7 +59,47 @@ export function courseCardFront(instance: Pick<QuestionInstance, 'statement'>): 
 	return String(instance.statement ?? '');
 }
 
-/** Verso d'une instance de carte : la correction résolue. */
+/**
+ * Verso d'une carte, source UNIQUE pour tous les affichages (FlashCard,
+ * CourseCardView) et pour la vérification.
+ *
+ * Même règle que `CorrectionCard` : des étapes écrites (mode A) priment sur les
+ * étapes générées (mode B) ; le feedback « juste » accompagne les étapes générées.
+ */
+export function courseCardBackParts(
+	correction: ResolvedCorrection | null | undefined
+): CourseCardBackParts {
+	if (!correction) return { text: '' };
+	const hasWrittenSteps = (correction.steps ?? []).some((s) => String(s).trim().length > 0);
+	const rendered = correction._renderedSteps;
+	if (!hasWrittenSteps && rendered && rendered.length > 0) {
+		const correct = correction.feedback?.correct;
+		return {
+			text: correct && String(correct).trim().length > 0 ? String(correct) : '',
+			generatedSteps: rendered
+		};
+	}
+	return { text: correctionText(correction) };
+}
+
+/** Verso d'une instance de carte, texte seul (mode A et feedback). */
 export function courseCardBack(instance: Pick<QuestionInstance, 'correction'>): string {
-	return correctionText(instance.correction);
+	return courseCardBackParts(instance.correction).text;
+}
+
+/** Le verso d'une instance a-t-il un contenu (texte ou étapes générées) ? */
+export function hasCourseCardBackContent(instance: Pick<QuestionInstance, 'correction'>): boolean {
+	const parts = courseCardBackParts(instance.correction);
+	return parts.text.trim().length > 0 || (parts.generatedSteps?.length ?? 0) > 0;
+}
+
+/**
+ * Le verso d'un MODÈLE est-il déclaré ? Texte non vide, ou étapes générées
+ * (`generatedSteps`, rendues à la génération — `checkTemplate` vérifie
+ * ensuite, tirage par tirage, qu'elles le sont vraiment).
+ */
+export function hasCourseCardBackSource(
+	correction: QuestionCorrection | null | undefined
+): boolean {
+	return correctionText(correction).trim().length > 0 || correction?.generatedSteps !== undefined;
 }
