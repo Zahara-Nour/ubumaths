@@ -49,6 +49,23 @@ describe('comparaison entre deux jokers', () => {
 		expect(ok('p:lt(q) / q', '\\frac{x}{100}')).toBe(false);
 	});
 
+	// Relecture #492 : ces placements seraient faux en silence → motif invalide, erreur explicite
+	it.each([
+		['sous !', 'p:!lt(q) / q:integer'],
+		['sous |', 'p:lt(q) | variable / q:integer'],
+		['posée sur une séquence', '__r:gt(q) + q:integer'],
+		['visant une séquence', 'p:lt(r) + __r']
+	])('comparaison %s : motif invalide', (_label, pattern) => {
+		expect(() => P.parse(pattern)).toThrow(/comparison/);
+	});
+
+	it('#349 : le | porte sur q, pas sur la comparaison — motif valide', () => {
+		const pattern = 'n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000)';
+		expect(() => P.parse(pattern)).not.toThrow();
+		expect(ok(pattern, '3+\\frac{45}{100}')).toBe(true);
+		expect(ok(pattern, '2+\\frac{145}{100}')).toBe(false);
+	});
+
 	it('joker inconnu : motif invalide', () => {
 		expect(() => P.parse('p:integer & lt(r) / q:integer')).toThrow();
 	});

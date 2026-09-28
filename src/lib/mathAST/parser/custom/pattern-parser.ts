@@ -501,6 +501,38 @@ function topLevelWildcardComparisons(
 	return [];
 }
 
+/** La contrainte contient-elle une comparaison entre jokers, à n'importe quel niveau ? */
+function containsWildcardComparison(constraint: PatternConstraint): boolean {
+	switch (constraint.kind) {
+		case 'wildcardComparison':
+			return true;
+		case 'and':
+		case 'or':
+			return constraint.constraints.some(containsWildcardComparison);
+		case 'not':
+			return containsWildcardComparison(constraint.constraint);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Comparaison entre jokers sous `!` ou `|` : tant que l'autre joker n'est pas lié, elle vaut
+ * « vrai », ce que `!` inverse et `|` absorbe → résultat faux en silence (relecture #492).
+ */
+function comparisonUnderNotOrOr(constraint: PatternConstraint): boolean {
+	switch (constraint.kind) {
+		case 'and':
+			return constraint.constraints.some(comparisonUnderNotOrOr);
+		case 'or':
+			return constraint.constraints.some(containsWildcardComparison);
+		case 'not':
+			return containsWildcardComparison(constraint.constraint);
+		default:
+			return false;
+	}
+}
+
 /**
  * `p & lt(q)` : la comparaison ne peut se faire que lorsque p ET q sont liés. On pose la
  * contrainte miroir `gt(p)` sur q : quel que soit l'ordre d'appariement, le second joker
@@ -510,12 +542,20 @@ function topLevelWildcardComparisons(
 function withMirroredWildcardComparisons(pattern: SumPatternElement): SumPatternElement {
 	const mirrors = new Map<string, WildcardComparisonConstraint[]>();
 	const names = new Set<string>();
+	const sequenceNames = new Set<string>();
 	const collect = (value: unknown): void => {
 		if (Array.isArray(value)) return value.forEach(collect);
 		if (!value || typeof value !== 'object') return;
 		const node = value as Record<string, unknown>;
 		if (typeof node.type === 'string' && typeof node.name === 'string' && 'constraint' in node) {
 			const name = node.name;
+			const constraint = node.constraint as PatternConstraint | undefined;
+			if (constraint && comparisonUnderNotOrOr(constraint)) {
+				throw new Error(`Wildcard comparison on '${name}' cannot appear under '!' or '|'`);
+			}
+			if (constraint && node.type !== 'wildcard' && containsWildcardComparison(constraint)) {
+				throw new Error(`Wildcard comparison cannot constrain the sequence '${name}'`);
+			}
 			for (const c of topLevelWildcardComparisons(node.constraint as PatternConstraint)) {
 				const mirror: WildcardComparisonConstraint = {
 					kind: 'wildcardComparison',
@@ -525,14 +565,18 @@ function withMirroredWildcardComparisons(pattern: SumPatternElement): SumPattern
 				mirrors.set(c.other, [...(mirrors.get(c.other) ?? []), mirror]);
 			}
 		}
-		if (node.type === 'wildcard' || node.type === 'sequence' || node.type === 'optional-sequence') {
-			names.add(String(node.name));
+		if (node.type === 'wildcard') names.add(String(node.name));
+		if (node.type === 'sequence' || node.type === 'optional-sequence') {
+			sequenceNames.add(String(node.name));
 		}
 		Object.values(node).forEach(collect);
 	};
 	collect(pattern);
 	if (mirrors.size === 0) return pattern;
 	for (const other of mirrors.keys()) {
+		if (sequenceNames.has(other)) {
+			throw new Error(`Wildcard comparison cannot target the sequence '${other}'`);
+		}
 		if (!names.has(other)) throw new Error(`Unknown wildcard '${other}' in comparison constraint`);
 	}
 	const rebuild = (value: unknown): unknown => {
