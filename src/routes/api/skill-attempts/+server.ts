@@ -32,6 +32,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
+import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
 
 // ============================================================================
 // POST /api/skill-attempts
@@ -59,7 +60,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
 	const { data: templateRow, error: templateError } = await locals.supabase
 		.from('question_templates')
-		.select('id, question_template_points(point_id)')
+		.select('id, options, question_template_points(point_id)')
 		.eq('id', template_id)
 		.maybeSingle();
 
@@ -105,7 +106,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		success,
 		grade,
 		with_help,
-		source: 'auto',
+		// Carte de cours (#617) : auto-évaluation → `student_self`
+		source: attemptSourceForTemplate(templateRow),
 		...(phase_blocage !== undefined ? { phase_blocage } : {})
 	});
 

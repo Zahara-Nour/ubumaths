@@ -63,27 +63,56 @@ export type GradeLevel = GradeCode;
 // ============================================================================
 
 /**
- * Question type — inferred from structure, not stored explicitly.
+ * Question type.
  *
  * - `fill_in_blanks`: question has blanks[] (or is any non-choice question)
  * - `multiple_choice`: question has choices[]
+ * - `course_card`: carte de cours (recto = énoncé, verso = correction), sans
+ *   case ni choix. Jamais inférée : marqueur explicite `options.courseCard`.
  *
  * Use `getQuestionType()` to derive from a template or instance.
  */
-export type QuestionType = 'fill_in_blanks' | 'multiple_choice';
+export type QuestionType = 'fill_in_blanks' | 'multiple_choice' | 'course_card';
+
+/** Libellés français des types (badges, filtres, sélecteurs). */
+export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
+	fill_in_blanks: 'À trous',
+	multiple_choice: 'QCM',
+	course_card: 'Carte de cours'
+};
 
 /**
- * Infer the question type from the presence of `choices`.
+ * Carte de cours ? Le marqueur est le booléen `options.courseCard === true`.
+ *
+ * `options` vient d'une colonne jsonb (ou d'une instance générée côté client) :
+ * la fonction la sonde elle-même.
+ */
+export function isCourseCard(q: { options?: unknown }): boolean {
+	const options = q.options;
+	return (
+		typeof options === 'object' &&
+		options !== null &&
+		'courseCard' in options &&
+		(options as { courseCard?: unknown }).courseCard === true
+	);
+}
+
+/**
+ * Infer the question type: explicit course-card marker first, then the
+ * presence of `choices`.
  *
  * Works on templates (via resolved variation or shared), instances,
- * or any object with an optional `choices` field.
+ * or any object with optional `choices` / `options` fields.
  */
 export function getQuestionType(q: {
 	choices?: unknown[] | undefined;
 	// `shared` vient d'une colonne jsonb, donc de forme libre : la fonction la
 	// sonde elle-même plutôt que d'obliger l'appelant à l'affirmer.
 	shared?: unknown;
+	// `options` aussi (colonne jsonb) : porte le marqueur `courseCard`.
+	options?: unknown;
 }): QuestionType {
+	if (isCourseCard(q)) return 'course_card';
 	const sharedChoices =
 		typeof q.shared === 'object' && q.shared !== null && 'choices' in q.shared
 			? (q.shared as { choices?: unknown }).choices
@@ -471,6 +500,10 @@ export interface QuestionTemplate {
 		 *  each student answer is matched against any unused blank
 		 *  (instead of positional matching). */
 		orderIndependent?: boolean;
+
+		/** Carte de cours : recto = énoncé, verso = correction, ni case ni choix.
+		 *  Marqueur explicite, lu par `getQuestionType()` → `'course_card'`. */
+		courseCard?: boolean;
 	};
 
 	// ---- Metadata (shared across all variations) ----

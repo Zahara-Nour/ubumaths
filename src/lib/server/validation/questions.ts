@@ -38,7 +38,7 @@ export {
 /**
  * Question types
  */
-export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks']);
+export const questionTypeSchema = z.enum(['multiple_choice', 'fill_in_blanks', 'course_card']);
 
 /**
  * Variation schema for question templates

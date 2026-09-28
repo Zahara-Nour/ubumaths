@@ -149,7 +149,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.update({
 				type: getQuestionType({
 					choices: templateData.variations?.[0]?.choices,
-					shared: templateData.shared
+					shared: templateData.shared,
+					options: templateData.options
 				}),
 				title: templateData.title,
 				description: templateData.description || null,

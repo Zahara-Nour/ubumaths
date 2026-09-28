@@ -6,6 +6,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { fetchCourseCardTemplateIds } from '$lib/server/course-card-attempts';
 
 /**
  * API route to save test results to database
@@ -117,13 +118,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
+		// Cartes de cours (#617) : la « réponse » est une auto-évaluation de
+		// l'élève → source `student_self`. Lu en base, pas dans l'instance.
+		const courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+
 		const fsrs = new FSRS();
 		const attemptsToInsert: {
 			student_id: string;
 			template_id: string;
 			success: boolean;
 			grade: Grade;
-			source: 'auto';
+			source: 'auto' | 'student_self';
 			with_help: boolean;
 		}[] = [];
 
@@ -149,7 +154,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				success: answer.isCorrect,
 				// `grade` manquait aussi : la route l'enregistre, cette insertion non.
 				grade,
-				source: 'auto' as const,
+				source: courseCardIds.has(templateId) ? 'student_self' : 'auto',
 				with_help: false
 			});
 		}

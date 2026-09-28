@@ -21,7 +21,8 @@ export function toTemplateInsertRow(
 	return {
 		type: getQuestionType({
 			choices: template.variations?.[0]?.choices,
-			shared: template.shared
+			shared: template.shared,
+			options: template.options
 		}),
 		title: template.title,
 		description: template.description || null,

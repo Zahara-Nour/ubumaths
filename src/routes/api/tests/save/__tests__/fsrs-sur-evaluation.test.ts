@@ -34,6 +34,8 @@ const MODELE_B = '33333333-3333-4333-8333-333333333333';
 
 /** Les lignes réellement insérées dans `skill_attempts`. */
 let attemptsInseres: Record<string, unknown>[];
+/** Modèles marqués « carte de cours » en base (`options.courseCard`). */
+let cartesDeCours: string[];
 
 function fauxSupabase() {
 	return {
@@ -50,6 +52,19 @@ function fauxSupabase() {
 				return {
 					select: () => ({
 						in: async () => ({ data: [{ template_id: MODELE_A }], error: null })
+					})
+				};
+			}
+			if (table === 'question_templates') {
+				return {
+					select: () => ({
+						in: async (_col: string, ids: string[]) => ({
+							data: ids.map((id) => ({
+								id,
+								options: cartesDeCours.includes(id) ? { courseCard: true } : null
+							})),
+							error: null
+						})
 					})
 				};
 			}
@@ -127,6 +142,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[]) {
 describe('enregistrement d’une évaluation', () => {
 	beforeEach(() => {
 		attemptsInseres = [];
+		cartesDeCours = [];
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -185,5 +201,24 @@ describe('enregistrement d’une évaluation', () => {
 
 		expect(ensureProgrammeDeckCard).toHaveBeenCalledTimes(1);
 		expect(ensureProgrammeDeckCard.mock.calls[0].slice(1)).toEqual([ELEVE, MODELE_A]);
+	});
+
+	/**
+	 * Carte de cours (#617) : l'élève s'auto-évalue (« Je savais / Je ne savais
+	 * pas »). La tentative est enregistrée, mais avec la source `student_self`,
+	 * lue en BASE (le marqueur de l'instance vient du client).
+	 */
+	it('enregistre l’auto-évaluation d’une carte de cours en source student_self', async () => {
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)]);
+
+		expect(attemptsInseres).toHaveLength(2);
+		expect(attemptsInseres[0]).toMatchObject({ template_id: MODELE_A, source: 'auto' });
+		expect(attemptsInseres[1]).toMatchObject({
+			template_id: MODELE_B,
+			success: false,
+			grade: Grade.AGAIN,
+			source: 'student_self'
+		});
 	});
 });

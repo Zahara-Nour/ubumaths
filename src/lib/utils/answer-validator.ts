@@ -351,6 +351,15 @@ export function validateAnswer(
 ): ValidationResult {
 	const questionType = getQuestionType(instance);
 
+	// ---- COURSE_CARD : aucune réponse à valider (auto-évaluation de l'élève) ----
+	// Sans cette garde, la carte tomberait dans la branche QCM ci-dessous.
+	if (questionType === 'course_card') {
+		return {
+			isCorrect: false,
+			message: 'Carte de cours : pas de réponse à valider (auto-évaluation)'
+		};
+	}
+
 	try {
 		// ---- FILL_IN_BLANKS: per-blank pipeline (return early) ----
 		// Global validationRules and requiredForm are NOT used here;

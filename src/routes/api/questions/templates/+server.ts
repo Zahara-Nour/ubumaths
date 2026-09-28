@@ -219,7 +219,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.insert({
 				type: getQuestionType({
 					choices: templateData.variations?.[0]?.choices,
-					shared: templateData.shared
+					shared: templateData.shared,
+					options: templateData.options
 				}),
 				title: templateData.title,
 				description: templateData.description || null,
