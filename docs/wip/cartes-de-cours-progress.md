@@ -41,8 +41,11 @@ qu'aucune question n'est publiée. Avec : R2 (nature « carte » illisible → 3
 toute écriture), sessions et réponses dans l'export RGPD, lecture des sessions par le prof (#496,
 migration appliquée). Délai null des cartes : #495.
 
-Reste signalé, non corrigé (défaut antérieur, rare) : une carte repassée en brouillon pendant la
-série n'est plus vue comme carte à l'enregistrement → comptée comme une question (score, XP).
+✅ Carte repassée en brouillon pendant la série (#504, 2026-09-28, option A de David) : la nature du
+modèle est lue avec les droits du serveur (lecture seule) dans `/api/tests/save` et
+`/api/skill-attempts` → reste une carte (hors score, sans XP, trace gardée) ; un brouillon n'entre
+pas dans le paquet Programme. Signalé par l'audit, non traité : la policy permissive « Users can
+create cards in decks » (`srs_cards`) rend inopérante l'exclusion `is_auto_managed`.
 
 ## Spécification (phase 0 validée)
 
