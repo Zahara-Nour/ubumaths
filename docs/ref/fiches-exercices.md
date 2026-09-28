@@ -15,17 +15,18 @@ Deux fiches par thème : **Entraînement technique** (catégorie `automatisme`, 
 sans section) et **Applications** (catégorie `application`, 3 sections, variantes `guided` et
 parfois `autonomous`).
 
-| Thème (topic en base)      | Entraînement technique               | Applications                     | Script                                        |
-| -------------------------- | ------------------------------------ | -------------------------------- | --------------------------------------------- |
-| Second degré               | `b5ca9ed3`                           | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`      |
-| Suites                     | `f09992e6`                           | `2d043bf5`                       | `create-suites-1spe.ts`                       |
-| Fonction exponentielle     | `ad1083a2`                           | `18f2252a`                       | `create-exponentielle-1spe.ts`                |
-| Dérivation                 | `139ec069` (12 neufs + 17 existants) | `4fea9f37`                       | `create-derivation-1spe.ts`                   |
-| Fonctions trigonométriques | `808e2eee`                           | `dde45b26`                       | `create-trigonometrie-1spe.ts`                |
-| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)  | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`             |
-| Probabilités               | `570376ab`                           | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts` |
-| Variables aléatoires       | `0ef45afb`                           | `d720d039`                       | `create-variables-aleatoires-1spe.ts`         |
-| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)  | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`            |
+| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                        |
+| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------- |
+| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`      |
+| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                       |
+| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                |
+| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                   |
+| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                |
+| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`             |
+| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts` |
+| Variables aléatoires       | `0ef45afb`                                                  | `d720d039`                       | `create-variables-aleatoires-1spe.ts`         |
+| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`            |
+| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`      |
 
 Restent (priorité) : automatismes transverses (évolutions, droites, lectures graphiques,
 statistiques), listes Python injectées dans les thèmes, logique et ensembles, démonstrations
@@ -134,6 +135,26 @@ Puis versionner le script de création (branche → PR), et mettre à jour ce do
 4. Recompiler les fiches existantes les plus exposées (`regen-depuis-base.ts`).
 
 ---
+
+## 2 bis. Fiches d'automatismes : séries figées de questions (ADR 0011)
+
+Les automatismes passent par le **système de questions** (modèles paramétrés, corrigés
+automatiquement, Automaths) ; la fiche en est tirée **figée par une graine** : même copie pour
+toute la classe.
+
+1. Modèles neufs : un JSON par modèle (camelCase, `testSpecs` obligatoires) dans
+   `scripts/questions/<thème>/`, vérifié par `pnpm question:specs --file <json> --apercu 3`, puis
+   créé en brouillon par `pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier]`
+   (`--mettre-a-jour` pour corriger un modèle encore en brouillon). Les modèles d'autres niveaux
+   se réutilisent tels quels (pas de niveau ajouté).
+2. Fiche : script sur le modèle de `scripts/create-automatismes-evolutions-1spe.ts` — chaque
+   **série** est un exercice listant des (modèle, graine) ; `buildSerie`
+   (`src/lib/worksheets/serie-automatismes.ts`) met les cases en pointillés et les réponses en gras
+   au corrigé. **Relire les séries en simulation** et changer une graine qui tombe sur un cas limite
+   (coefficient 0) ou sur une question déjà posée (refusé automatiquement).
+3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages).
+
+Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
 ## 3. Choix faits avec David
 
