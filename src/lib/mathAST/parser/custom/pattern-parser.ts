@@ -26,7 +26,12 @@
  * @module mathAST/parser/custom/pattern-parser
  */
 
-import type { Pattern, SumPatternElement } from '../../pattern/types';
+import type {
+	Pattern,
+	PatternConstraint,
+	SumPatternElement,
+	WildcardComparisonConstraint
+} from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import { PatternTokenizer, type PatternToken, type PatternTokenType } from './pattern-tokenizer';
 import { parseConstraintExpr } from './constraint-parser';
@@ -474,5 +479,74 @@ export class PatternPrattParser {
  */
 export function parsePattern(input: string): SumPatternElement {
 	const parser = new PatternPrattParser(input);
-	return parser.parse();
+	return withMirroredWildcardComparisons(parser.parse());
+}
+
+const MIRRORED_OPERATOR = {
+	gt: 'lt',
+	lt: 'gt',
+	gte: 'lte',
+	lte: 'gte',
+	eq: 'eq',
+	ne: 'ne'
+} as const;
+
+/** Comparaisons entre jokers posées en tête de contrainte (seules ou dans un `&`) */
+function topLevelWildcardComparisons(
+	constraint: PatternConstraint | undefined
+): WildcardComparisonConstraint[] {
+	if (!constraint) return [];
+	if (constraint.kind === 'wildcardComparison') return [constraint];
+	if (constraint.kind === 'and') return constraint.constraints.flatMap(topLevelWildcardComparisons);
+	return [];
+}
+
+/**
+ * `p & lt(q)` : la comparaison ne peut se faire que lorsque p ET q sont liés. On pose la
+ * contrainte miroir `gt(p)` sur q : quel que soit l'ordre d'appariement, le second joker
+ * lié compare. Un joker comparé absent du motif est une erreur (la contrainte ne serait
+ * jamais vérifiée).
+ */
+function withMirroredWildcardComparisons(pattern: SumPatternElement): SumPatternElement {
+	const mirrors = new Map<string, WildcardComparisonConstraint[]>();
+	const names = new Set<string>();
+	const collect = (value: unknown): void => {
+		if (Array.isArray(value)) return value.forEach(collect);
+		if (!value || typeof value !== 'object') return;
+		const node = value as Record<string, unknown>;
+		if (typeof node.type === 'string' && typeof node.name === 'string' && 'constraint' in node) {
+			const name = node.name;
+			for (const c of topLevelWildcardComparisons(node.constraint as PatternConstraint)) {
+				const mirror: WildcardComparisonConstraint = {
+					kind: 'wildcardComparison',
+					operator: MIRRORED_OPERATOR[c.operator],
+					other: name
+				};
+				mirrors.set(c.other, [...(mirrors.get(c.other) ?? []), mirror]);
+			}
+		}
+		if (node.type === 'wildcard' || node.type === 'sequence' || node.type === 'optional-sequence') {
+			names.add(String(node.name));
+		}
+		Object.values(node).forEach(collect);
+	};
+	collect(pattern);
+	if (mirrors.size === 0) return pattern;
+	for (const other of mirrors.keys()) {
+		if (!names.has(other)) throw new Error(`Unknown wildcard '${other}' in comparison constraint`);
+	}
+	const rebuild = (value: unknown): unknown => {
+		if (Array.isArray(value)) return value.map(rebuild);
+		if (!value || typeof value !== 'object') return value;
+		const node = value as Record<string, unknown>;
+		const rebuilt = Object.fromEntries(
+			Object.entries(node).map(([key, child]) => [key, rebuild(child)])
+		);
+		const added = node.type === 'wildcard' ? mirrors.get(String(node.name)) : undefined;
+		if (!added) return rebuilt;
+		const existing = node.constraint as PatternConstraint | undefined;
+		const constraints: PatternConstraint[] = existing ? [existing, ...added] : added;
+		return { ...rebuilt, constraint: { kind: 'and', constraints } };
+	};
+	return rebuild(pattern) as SumPatternElement;
 }

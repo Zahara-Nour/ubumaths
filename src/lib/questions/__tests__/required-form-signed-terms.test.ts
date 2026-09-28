@@ -96,6 +96,33 @@ describe('forme canonique : coefficient sous la fraction', () => {
 	});
 });
 
+// Resserrement de #490 (décision de David) : coefficient fraction IRRÉDUCTIBLE, d'entiers,
+// dénominateur ≥ 2 ; coefficient 1 écrit refusé ; réécriture « sous la fraction » réservée
+// à un terme dont la partie non numérique est une PUISSANCE.
+describe('coefficient fraction : irréductible, entiers, dénominateur ≥ 2', () => {
+	it.each([
+		'\\frac{(x+2)^2}{1}-1',
+		'\\frac{2(x+2)^2}{2}-1',
+		'\\frac{(x+2)^2}{0.5}-1',
+		'\\frac{(x+2)^2}{2.5}-1',
+		'\\frac{2}{2}(x+2)^2-1',
+		'\\frac{1}{1}(x+2)^2-1',
+		'\\frac{1}{0.5}(x+2)^2-1',
+		'\\frac{1(x+2)^2}{2}-1',
+		'\\frac{-1(x+2)^2}{2}-1'
+	])('refusé : %s', (answer) => {
+		expect(requiredFormVerdict(answer, CANONICAL)).toBe('violated');
+	});
+
+	it.each([
+		['\\frac{x}{2}', 'a*$x'],
+		['\\frac{3x}{4}+1', 'a*$x+b'],
+		['\\frac{x+4}{2}', 'k*($x+a)']
+	])('réécriture réservée aux puissances : %s refusé pour %s', (answer, pattern) => {
+		expect(requiredFormVerdict(answer, { pattern })).toBe('violated');
+	});
+});
+
 describe('soustraction lue comme somme signée', () => {
 	// Le troisième essai n'accepte que des jokers valant un nombre simple : u = z n'en est pas
 	// un, donc (z-7)^2 reste refusé pour (u+v)^2 — comportement de main, conséquence acceptée.
