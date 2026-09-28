@@ -2,7 +2,7 @@
 	"globalIndex": 480,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "v0 : « (bsqrt(a))^2 » affichait la lettre b (« (b√7)² ») → ({{b}}sqrt({{a}}))^2. v1 : la correction commençait par « &= » sans membre de gauche → ajout de √a × b × √a.",
+	"editNotes": "v0 : « (bsqrt(a))^2 » affichait la lettre b (« (b√7)² ») → ({{b}}sqrt({{a}}))^2. v1 : la correction commençait par « &= » sans membre de gauche → ajout de √a × b × √a. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Calculer avec des racines",
 		"variations": [
@@ -62,7 +62,7 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Calculer",
 		"level": 2,

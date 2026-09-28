@@ -2,7 +2,7 @@
 	"globalIndex": 473,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Renvois {{exp}}/{{expression}} → ${{expressionN}}$ ; {{solution:html}} remplacé par Oui/Non explicite ; variations π : variable a=pi supprimée (introuvable), sqrt(pi) écrit directement ; « racine carrée » ; \\simeq → \\approx.",
+	"editNotes": "Renvois {{exp}}/{{expression}} → ${{expressionN}}$ ; {{solution:html}} remplacé par Oui/Non explicite ; variations π : variable a=pi supprimée (introuvable), sqrt(pi) écrit directement ; « racine carrée » ; \\simeq → \\approx. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Existence d'une racine carrée",
 		"shared": {
@@ -153,7 +153,7 @@
 			"shuffleChoices": false
 		},
 		"grades": ["4"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Apprivoiser",
 		"subdomain": "Définition",
 		"level": 3,

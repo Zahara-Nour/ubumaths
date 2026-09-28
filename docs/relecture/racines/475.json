@@ -2,7 +2,7 @@
 	"globalIndex": 475,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Corrections : conclusion Vrai/Faux explicite, justification du signe (2√ab > 0), « deux membres » en toutes lettres, \\\\ final de l'align v2 retiré.",
+	"editNotes": "Corrections : conclusion Vrai/Faux explicite, justification du signe (2√ab > 0), « deux membres » en toutes lettres, \\\\ final de l'align v2 retiré. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Vrai ou Faux : racines et opérations",
 		"shared": {
@@ -65,7 +65,7 @@
 			"shuffleChoices": false
 		},
 		"grades": ["2"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Propriétés",
 		"level": 1,

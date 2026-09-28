@@ -2,7 +2,7 @@
 	"globalIndex": 474,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Renvoi {{exp}} remplacé par {{expressionN}} (correction déplacée du shared vers chaque variation), {{solution}} → {{a}}, réponse attendue simplifiée en {{a}}, correction en une phrase.",
+	"editNotes": "Renvoi {{exp}} remplacé par {{expressionN}} (correction déplacée du shared vers chaque variation), {{solution}} → {{a}}, réponse attendue simplifiée en {{a}}, correction en une phrase. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Carré d'une racine",
 		"shared": {
@@ -54,7 +54,7 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Apprivoiser",
 		"subdomain": "Définition",
 		"level": 4,

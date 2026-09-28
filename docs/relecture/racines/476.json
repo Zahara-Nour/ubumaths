@@ -2,7 +2,7 @@
 	"globalIndex": 476,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Titre : « racine carrée ». Forme par défaut suffisante : √50, √25√2, 2√50 refusés (bad_form), 5×√2 perfectible, décimal refusé. Point final ajouté à la consigne.",
+	"editNotes": "Titre : « racine carrée ». Forme par défaut suffisante : √50, √25√2, 2√50 refusés (bad_form), 5×√2 perfectible, décimal refusé. Point final ajouté à la consigne. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Réduire une racine carrée",
 		"variations": [
@@ -35,7 +35,7 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Réduire",
 		"level": 1,

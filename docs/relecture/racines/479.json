@@ -2,7 +2,7 @@
 	"globalIndex": 479,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Titre : « racine carrée ». Correction absente : ajout d'une étape par variation (propriété (√a)² = a, √(a²) = a pour a ≥ 0, √((-a)²) = a et non -a). Réponses justes et tirages 2..50 vérifiés.",
+	"editNotes": "Titre : « racine carrée ». Correction absente : ajout d'une étape par variation (propriété (√a)² = a, √(a²) = a pour a ≥ 0, √((-a)²) = a et non -a). Réponses justes et tirages 2..50 vérifiés. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Carré et racine carrée",
 		"shared": {
@@ -95,7 +95,7 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Calculer",
 		"level": 1,

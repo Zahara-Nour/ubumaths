@@ -1,6 +1,6 @@
 {
 	"globalIndex": 471,
-	"verdict": "approved",
+	"verdict": "corrected",
 	"reviewer": "claude",
 	"template": {
 		"title": "Trouver un nombre positif de carré donné",
@@ -26,7 +26,7 @@
 			}
 		],
 		"grades": ["5"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Apprivoiser",
 		"subdomain": "Définition",
 		"level": 1,
@@ -90,5 +90,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": "Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28)."
 }

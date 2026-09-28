@@ -3,14 +3,16 @@
 10 questions TinyMath (#471–#480), 5e–2de : définition, existence, carré d'une racine, réduire,
 égalités, calculer. Relecture le 2026-09-28 (Claude, deux relecteurs puis contrôle d'ensemble).
 
-> ⏳ **En attente du feu vert de David** pour l'import en BROUILLON.
+> ✅ **Feu vert de David le 2026-09-28 : les 10 questions sont importées en BROUILLON** (vérifié en
+> base : reliées au suivi, statut draft, 10 emplacements distincts, thème « Racines carrées »).
+> David les publie lui-même.
 
 ## Bilan
 
 | Verdict                         | Nombre |
 | ------------------------------- | ------ |
-| Approuvée telle que transformée | 1      |
-| Corrigée puis approuvée         | 9      |
+| Approuvée telle que transformée | 0      |
+| Corrigée puis approuvée         | 10     |
 | Rejetée                         | 0      |
 | À arbitrer                      | 0      |
 
@@ -36,12 +38,11 @@ marqueur brut. Avant relecture, 4 questions ne généraient pas ou en partie (#4
 
 Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
-## À trancher par David
+## Décisions de David (2026-09-28)
 
-1. **Thème « Racines carré »** (sans e) sur les 10 questions. Aucune question en base ne porte ce
-   thème : le corriger en « Racines carrées » ne casse aucun regroupement. Recommandé : corriger.
-2. **#471** (« trouver un nombre positif de carré donné ») est en 5e, ses voisines en 4e. Elle ne
-   porte que sur un carré : 5e se défend. Recommandé : garder.
+1. ✅ **Thème** : « Racines carré » → « Racines carrées » sur les 10 questions (décision de David ;
+   #471 passe donc d'approuvée à corrigée).
+2. ✅ **#471** gardée en 5e (décision de David).
 3. ✅ **#478 — décidé par David (2026-09-28)** : b tiré parmi 2, 3, 5, 6, 7 (plus de « √64 = 4√4 »,
    où la question se réduisait à « 8 = 8 ? ») ; en v1, b ± 1 aussi sans facteur carré (2↔3, 5↔6,
    6↔7) ; une correction par variation, avec sa conclusion (égales / pas égales). Vérifié sur

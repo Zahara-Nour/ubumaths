@@ -2,7 +2,7 @@
 	"globalIndex": 472,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Correction : renvoi {{exp}} remplacé par {{expression1}}, {{solution}} par {{a}} dans une seule formule ; « racine carrée » ; description alignée sur les tirages (1 à 15).",
+	"editNotes": "Correction : renvoi {{exp}} remplacé par {{expression1}}, {{solution}} par {{a}} dans une seule formule ; « racine carrée » ; description alignée sur les tirages (1 à 15). Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Trouver une racine carrée",
 		"description": "Entier de $1$ à $15$",
@@ -30,7 +30,7 @@
 			}
 		],
 		"grades": ["4"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Apprivoiser",
 		"subdomain": "Définition",
 		"level": 2,

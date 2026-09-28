@@ -2,7 +2,7 @@
 	"globalIndex": 477,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Réponse attendue « 5sqrt(3) » illisible par le correcteur (tout refusé) et affichée brute dans la correction : remplacée par {{eval:(a+b)*sqrt(c)}}. Titre : « racines carrées ».",
+	"editNotes": "Réponse attendue « 5sqrt(3) » illisible par le correcteur (tout refusé) et affichée brute dans la correction : remplacée par {{eval:(a+b)*sqrt(c)}}. Titre : « racines carrées ». Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Réduire une expression avec des racines carrées",
 		"variations": [
@@ -39,7 +39,7 @@
 			}
 		],
 		"grades": ["2"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Réduire",
 		"level": 2,

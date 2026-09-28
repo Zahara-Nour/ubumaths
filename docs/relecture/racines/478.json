@@ -2,7 +2,7 @@
 	"globalIndex": 478,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "v1 : la 1re variable « expression2 » (doublon, génération impossible) renommée expression1 et l'énoncé affiche les deux expressions comme v0. v0 : « asqrt(b) » affichait la lettre a (« a√4 ») → {{a}}sqrt({{b}}). « Ces 2 » → « Ces deux ». Toujours vrai en v0 (a√b = √(a²b)), toujours faux en v1 (b±1 ≠ b, b+c=1 exclu). Décision de David (2026-09-28) : b tiré parmi 2, 3, 5, 6, 7 (sans facteur carré : plus de √4, où la question se réduisait à « 10 = 10 ? ») ; en v1, b±1 aussi sans facteur carré (conditions b+c ≠ 1, 4, 8 : paires 2↔3, 5↔6, 6↔7) ; une correction par variation avec sa conclusion (égales / pas égales), tabulations et saut de ligne final retirés.",
+	"editNotes": "v1 : la 1re variable « expression2 » (doublon, génération impossible) renommée expression1 et l'énoncé affiche les deux expressions comme v0. v0 : « asqrt(b) » affichait la lettre a (« a√4 ») → {{a}}sqrt({{b}}). « Ces 2 » → « Ces deux ». Toujours vrai en v0 (a√b = √(a²b)), toujours faux en v1 (b±1 ≠ b, b+c=1 exclu). Décision de David (2026-09-28) : b tiré parmi 2, 3, 5, 6, 7 (sans facteur carré : plus de √4, où la question se réduisait à « 10 = 10 ? ») ; en v1, b±1 aussi sans facteur carré (conditions b+c ≠ 1, 4, 8 : paires 2↔3, 5↔6, 6↔7) ; une correction par variation avec sa conclusion (égales / pas égales), tabulations et saut de ligne final retirés. Thème « Racines carré » → « Racines carrées » (décision de David, 2026-09-28).",
 	"template": {
 		"title": "Vérifier l'égalité de deux expressions comportant des racines carrées",
 		"shared": {
@@ -76,7 +76,7 @@
 			"shuffleChoices": false
 		},
 		"grades": ["2"],
-		"theme": "Racines carré",
+		"theme": "Racines carrées",
 		"domain": "Manipuler",
 		"subdomain": "Egalité",
 		"level": 1,

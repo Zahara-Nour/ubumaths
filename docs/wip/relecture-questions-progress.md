@@ -240,12 +240,12 @@ Après relecture (`code-reviewer`) :
   relues ne change, 9 155 tirages comparés). Noté : 3 questions (david/17, décimaux/231, 236) mélangent
   leurs termes sans suivre la graine (génération non reproductible, sans effet sur la réponse).
 
-## Lot Racines — RELU, en attente du feu vert (2026-09-28)
+## Lot Racines — 10/10 IMPORTÉES (2026-09-28)
 
-- `docs/relecture/racines/RAPPORT.md` : 1 approuvée, 9 corrigées ; 3 points à trancher (thème
-  « Racines carré », #471 en 5e, #478 b = 4).
+- `docs/relecture/racines/RAPPORT.md` : 10 corrigées ; décisions de David : thème « Racines carrées »,
+  #471 gardée en 5e, #478 b sans facteur carré. Base : 631 templates, tous brouillons.
 
 ## Prochaine étape
 
 Restent Grandeurs #462/#464/#466/#468 (réponse « 2 h 15 min », mesure MathLive au vrai clavier) et
-12 questions : Racines 10 (#471–#480), Probabilités 2 (#481–#482).
+2 questions : Probabilités (#481–#482).
