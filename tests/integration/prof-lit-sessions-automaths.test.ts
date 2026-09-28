@@ -97,6 +97,11 @@ describe('sessions automaths : lecture par le prof', () => {
 		const client = await createAuthenticatedClient(admin.email);
 		const { data } = await client.from('test_sessions').select('id').eq('id', sessionId);
 		expect(data).toHaveLength(1);
+		const { data: answers } = await client
+			.from('test_answers')
+			.select('id')
+			.eq('test_session_id', sessionId);
+		expect(answers).toHaveLength(1);
 	});
 
 	it('un autre élève ne lit ni la session ni les réponses', async () => {
@@ -121,6 +126,11 @@ describe('sessions automaths : lecture par le prof', () => {
 		const client = await createAuthenticatedClient(student.email);
 		const { data } = await client.from('test_sessions').select('id').eq('id', sessionId);
 		expect(data).toHaveLength(1);
+		const { data: answers } = await client
+			.from('test_answers')
+			.select('id')
+			.eq('test_session_id', sessionId);
+		expect(answers).toHaveLength(1);
 	});
 
 	it('le prof ne peut ni modifier ni supprimer une session d’élève', async () => {
@@ -148,5 +158,36 @@ describe('sessions automaths : lecture par le prof', () => {
 			.eq('id', sessionId)
 			.single();
 		expect(still?.score).toBe(7);
+	});
+
+	it('le prof ne peut ni ajouter, ni modifier, ni supprimer une réponse d’élève', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const student = await TestData.profile().withRole('student').create();
+		const sessionId = await sessionDe(student.id);
+
+		const client = await createAuthenticatedClient(teacher.email);
+		const { data: inserted } = await client
+			.from('test_answers')
+			.insert({ test_session_id: sessionId, question_instance: {}, is_correct: false })
+			.select('id');
+		expect(inserted ?? []).toEqual([]);
+		const { data: updated } = await client
+			.from('test_answers')
+			.update({ is_correct: false })
+			.eq('test_session_id', sessionId)
+			.select('id');
+		expect(updated).toEqual([]);
+		const { data: deleted } = await client
+			.from('test_answers')
+			.delete()
+			.eq('test_session_id', sessionId)
+			.select('id');
+		expect(deleted).toEqual([]);
+
+		const { data: still } = await service
+			.from('test_answers')
+			.select('is_correct')
+			.eq('test_session_id', sessionId);
+		expect(still).toEqual([{ is_correct: true }]);
 	});
 });
