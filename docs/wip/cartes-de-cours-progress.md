@@ -44,8 +44,10 @@ migration appliquée). Délai null des cartes : #495.
 ✅ Carte repassée en brouillon pendant la série (#504, 2026-09-28, option A de David) : la nature du
 modèle est lue avec les droits du serveur (lecture seule) dans `/api/tests/save` et
 `/api/skill-attempts` → reste une carte (hors score, sans XP, trace gardée) ; un brouillon n'entre
-pas dans le paquet Programme. Signalé par l'audit, non traité : la policy permissive « Users can
-create cards in decks » (`srs_cards`) rend inopérante l'exclusion `is_auto_managed`.
+pas dans le paquet Programme. La policy permissive « Users can create cards in decks » (`srs_cards`),
+qui rend inopérante l'exclusion `is_auto_managed`, est PORTEUSE (ajout au paquet Programme avec le
+client de l'élève, assignation par le prof) : gardée en l'état, décision de David (2026-09-28) —
+documenté dans `docs/ref/rls-echecs-silencieux.md`.
 
 ## Spécification (phase 0 validée)
 

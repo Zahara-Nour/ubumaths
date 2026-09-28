@@ -135,6 +135,34 @@ Avant un `drop policy` :
 `using (true)` rend inutiles toutes les autres, qui restent en place, correctes,
 et sans effet. Les compter ne suffit pas : il faut les lire.
 
+### Cas vécu : la policy large de `srs_cards` est PORTEUSE (2026-09-28)
+
+Sur `srs_cards`, deux policies INSERT permissives coexistent :
+
+- « Users can create cards in their non-assigned decks » — la stricte : paquets
+  de l'utilisateur, non assignés, **non gérés automatiquement** ;
+- « Users can create cards in decks » — la large : paquets non assignés de
+  l'utilisateur **y compris le paquet Programme** (`is_auto_managed`), OU tout
+  paquet si l'utilisateur est prof/admin.
+
+En OU, la stricte est sans effet — ce qui ressemble à un trou. **Ne pas retirer la
+large** : elle est la seule qui autorise deux usages légitimes (mesuré) :
+
+1. `ensureProgrammeDeckCard` (`src/lib/server/srs/programme-deck.ts`) ajoute la
+   carte au paquet Programme **avec le client de l'élève** — appelé par
+   `/api/tests/save`, `/api/skill-attempts` et `/api/srs/review/submit` ;
+2. l'assignation de paquets (`/api/srs/decks/[id]/assign`) crée les cartes dans
+   les paquets des élèves **avec le client du prof**.
+
+La retirer ferait échouer ces écritures en silence (l'ajout au paquet Programme
+avale son erreur : non bloquant). Seul usage non voulu : un élève peut, hors de
+l'application, ajouter des cartes à SON paquet Programme — sans effet ailleurs que
+sur ses propres révisions (ni prof, ni badges, ni statistiques). Décision de David
+(2026-09-28) : garder en l'état. Pour resserrer un jour : faire écrire
+`ensureProgrammeDeckCard` avec les droits du serveur, PUIS retirer à l'élève
+l'écriture dans un paquet `is_auto_managed` (en gardant la branche prof/admin), avec
+tests d'intégration sur les trois chemins d'ajout et l'assignation.
+
 ## La contrainte d'ordre : `db:types` génère depuis la PRODUCTION
 
 `pnpm db:types` interroge le projet distant. Une RPC qui n'est pas encore en
