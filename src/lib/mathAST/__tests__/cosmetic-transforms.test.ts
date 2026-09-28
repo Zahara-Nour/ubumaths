@@ -608,6 +608,81 @@ describe('stripUnnecessaryBracketsAST', () => {
 });
 
 // =============================================================================
+// stripUnnecessaryBracketsAST — base d'une puissance
+// =============================================================================
+// Une base qui n'est pas un « atome » (nombre, lettre, constante, f(x), |x|)
+// garde ses parenthèses : sans elles, \frac{1}{5}^n se lit 1/5ⁿ et \sqrt{2}^2
+// est ambigu. Les parenthèses autour d'un atome restent inutiles.
+
+describe("stripUnnecessaryBracketsAST — base d'une puissance", () => {
+	const keeps = (latex: string) =>
+		expect(transformLatex(latex, stripUnnecessaryBracketsAST)).toContain('\\left(');
+	const strips = (latex: string) =>
+		expect(transformLatex(latex, stripUnnecessaryBracketsAST)).not.toContain('\\left(');
+
+	// --- Parenthèses utiles : conservées ---
+	it('preserves (\\frac{1}{5})^n (fraction en base)', () => keeps('(\\frac{1}{5})^n'));
+	it('preserves \\left(\\frac{1}{5}\\right)^n', () => keeps('\\left(\\frac{1}{5}\\right)^n'));
+	it('preserves 6\\times(\\frac{1}{5})^n', () => keeps('6\\times(\\frac{1}{5})^n'));
+	it('preserves (\\sqrt{2})^2 (racine en base)', () => keeps('(\\sqrt{2})^2'));
+	it('preserves (\\sqrt[3]{2})^2 (racine n-ième en base)', () => keeps('(\\sqrt[3]{2})^2'));
+	it('preserves (-3)^2 (négatif en base)', () => keeps('(-3)^2'));
+	it('preserves (x^2)^3 (puissance en base)', () => keeps('(x^2)^3'));
+	it('preserves (2x)^2 (produit en base)', () => keeps('(2x)^2'));
+	it('preserves (a+b)^2 (somme en base)', () => keeps('(a+b)^2'));
+	it('keeps exactly one pair in ((\\frac{1}{5}))^n', () => {
+		const result = transformLatex('((\\frac{1}{5}))^n', stripUnnecessaryBracketsAST);
+		expect(result.match(/\\left\(/g)?.length).toBe(1);
+	});
+
+	// --- Parenthèses inutiles : retirées ---
+	it('strips (2)^3', () => strips('(2)^3'));
+	it('strips (x)^2', () => strips('(x)^2'));
+	it('strips (0{,}5)^2 (un décimal est un atome)', () => strips('(0{,}5)^2'));
+	it('strips (\\pi)^2', () => strips('(\\pi)^2'));
+	it('strips (f(x))^2 (fonction appelée)', () => {
+		// seule reste la parenthèse de l'appel f(x)
+		const result = transformLatex('(f(x))^2', stripUnnecessaryBracketsAST);
+		expect(result.match(/\\left\(/g)?.length).toBe(1);
+	});
+	it('strips the outer pair of ((a+b))^2', () => {
+		const result = transformLatex('((a+b))^2', stripUnnecessaryBracketsAST);
+		expect(result.match(/\\left\(/g)?.length).toBe(1);
+	});
+
+	// --- Hors base de puissance : inchangé ---
+	it('still strips 2\\times(\\frac{1}{5}) (fraction hors puissance)', () =>
+		strips('2\\times(\\frac{1}{5})'));
+	it('still strips (\\sqrt{2})+1 (racine hors puissance)', () => strips('(\\sqrt{2})+1'));
+	it('still strips x^{(\\frac{1}{2})} (fraction en exposant)', () => strips('x^{(\\frac{1}{2})}'));
+});
+
+describe("checkForm — parenthèses autour de la base d'une puissance", () => {
+	it('6\\times\\left(\\frac{1}{5}\\right)^n : aucune violation brackets', () => {
+		const result = checkForm(
+			'6\\times\\left(\\frac{1}{5}\\right)^n',
+			'6\\times\\left(\\frac{1}{5}\\right)^n',
+			// le « × » devant une parenthèse relève de la contrainte products, hors sujet ici
+			{ brackets: 'warn', products: 'off' }
+		);
+		expect(result.status).toBe('correct');
+		expect(result.violations.some((v) => v.id === 'brackets')).toBe(false);
+	});
+
+	it('(2)^3 : violation brackets toujours signalée', () => {
+		const result = checkForm('(2)^3', '2^3', { brackets: 'warn' });
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.violations.some((v) => v.id === 'brackets')).toBe(true);
+	});
+
+	it('(3)+4 : violation brackets toujours signalée', () => {
+		const result = checkForm('(3)+4', '3+4', { brackets: 'warn' });
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.violations.some((v) => v.id === 'brackets')).toBe(true);
+	});
+});
+
+// =============================================================================
 // removeMultOperatorAST
 // =============================================================================
 
