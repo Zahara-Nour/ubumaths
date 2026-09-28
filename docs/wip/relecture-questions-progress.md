@@ -235,7 +235,10 @@ Après relecture (`code-reviewer`) :
   (#621 formes, #625 niveau, #629/#630) validés par David. Base : 621 templates, tous brouillons.
 - Défauts du moteur vérifiés : `{{eval:a*(b)^x}}` perd les parenthèses d'une base négative (faux sans
   erreur) ; `brackets` juge inutiles les parenthèses de `\left(\frac{1}{5}\right)^n`. Correction
-  demandée par David (2026-09-28).
+  demandée par David (2026-09-28) → livrées : #500 (parenthèses d'une base fraction/racine utiles) et
+  #501 (générateurs : base opposé, quotient, produit, puissance parenthésée ; aucune des 615 questions
+  relues ne change, 9 155 tirages comparés). Noté : 3 questions (david/17, décimaux/231, 236) mélangent
+  leurs termes sans suivre la graine (génération non reproductible, sans effet sur la réponse).
 
 ## Prochaine étape
 
