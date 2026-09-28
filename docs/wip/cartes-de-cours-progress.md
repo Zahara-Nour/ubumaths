@@ -65,5 +65,5 @@ corrigé** — correction qui réactiverait l'enregistrement de TOUTES les quest
 
 - [x] Phase 0 validée (2026-09-28)
 - [x] PR migration (#493) : appliquée en prod le 2026-09-28 (contrainte vérifiée, 602 questions intactes). `db:types` lancé : aucun changement (`type` est un `string`).
-- [ ] PR code — implémentée sur `feat/cartes-de-cours` (2026-09-28) ; typecheck 0 erreur, lint propre
-- [ ] #617 importée
+- [x] PR code (#494) mergée le 2026-09-28
+- [x] #617 importée le 2026-09-28 : 4 cartes `course_card` en brouillon (vérifié en base), la 1re reliée au suivi

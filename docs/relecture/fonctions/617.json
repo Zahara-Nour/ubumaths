@@ -1,6 +1,29 @@
 {
 	"globalIndex": 617,
-	"verdict": "rejected",
+	"verdict": "corrected",
 	"reviewer": "claude",
-	"reason": "Questions de cours à réponse libre (flash, sans case ni choix) : le format actuel ne sait pas corriger une réponse rédigée (la conversion produit une case « {{eval:{{expression1}}}} » absente de l'énoncé, génération en échec). De plus la réponse à « Que doit-on faire en premier ? » (« la tracer sur la calculatrice ») est pédagogiquement discutable : on commence par l'ensemble de définition. À refaire en QCM si besoin."
+	"template": {
+		"title": "Étude de fonction : ce qu'on cherche",
+		"description": "Carte de cours",
+		"variations": [
+			{
+				"statement": "Que cherche-t-on à savoir quand on étudie une fonction ?",
+				"correction": {
+					"steps": [
+						"On cherche :\n\n- ses **variations** ;\n- ses **extremums** ;\n- ses **limites** aux bornes de son ensemble de définition ;\n- son **signe**."
+					]
+				}
+			}
+		],
+		"options": {
+			"courseCard": true
+		},
+		"grades": ["1_SPE"],
+		"theme": "Fonctions",
+		"domain": "Etude de fonction",
+		"subdomain": "Flash",
+		"level": 1,
+		"status": "draft"
+	},
+	"editNotes": "Décision de David (2026-09-28) : question de cours gardée comme CARTE DE COURS (type course_card, #493/#494), découpée en 4 cartes distinctes (celle-ci : 1/4 ; les cartes 2 à 4 sont créées en brouillon à part, même thème/domaine, niveaux 2 à 4). 4e réponse TinyMath (« tracer sur la calculatrice ») corrigée en « déterminer son ensemble de définition »."
 }

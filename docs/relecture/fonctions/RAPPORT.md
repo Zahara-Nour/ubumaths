@@ -5,17 +5,18 @@ second degré, dérivation. Relecture le 2026-09-27 (Claude, trois relecteurs pu
 d'ensemble).
 
 > ✅ **Feu vert de David le 2026-09-27 : 38 questions importées en BROUILLON** (vérifié en base :
-> reliées au suivi, statut draft, 38 emplacements distincts), dont #609 après #489 ; #617 rejetée.
-> David les publie lui-même.
+> reliées au suivi, statut draft, 38 emplacements distincts), dont #609 après #489.
+> **#617 : importée le 2026-09-28 en 4 cartes de cours** (type `course_card`, brouillon, niveaux 1 à 4)
+> après le chantier « cartes de cours » (#493, #494). David les publie lui-même.
 
 ## Bilan
 
 | Verdict                         | Nombre |
 | ------------------------------- | ------ |
 | Approuvée telle que transformée | 4      |
-| Corrigée puis approuvée         | 33     |
-| Rejetée                         | 1      |
-| À arbitrer                      | 1      |
+| Corrigée puis approuvée         | 35     |
+| Rejetée                         | 0      |
+| À arbitrer                      | 0      |
 
 Vérification indépendante (`pnpm question:specs --lot docs/relecture/fonctions`) : **39 analysés,
 0 non importable**, 50 tirages par variation sans échec. Images : 262 citées, toutes présentes dans
@@ -50,10 +51,15 @@ générables mais fausses : #603 affichait « x² + 5x + 5 » et attendait 3).
 
 Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
-## Rejetée
+## #617 : quatre cartes de cours
 
-- **#617** : questions de cours à réponse rédigée (« Que cherche-t-on à savoir quand on étudie une
-  fonction ? »), sans case ni choix : le format ne sait pas les corriger.
+Questions de cours à réponse rédigée (« Que cherche-t-on à savoir quand on étudie une fonction ? »),
+sans case ni choix : d'abord rejetées, faute de format. Décision de David (2026-09-28) : ce sont des
+flashcards destinées au SRS → nouveau type « carte de cours » (recto = énoncé, verso = correction,
+auto-évaluation), puis #617 découpée en **4 cartes** (ce qu'on cherche ; où chercher les limites ; ce
+que donne la dérivée ; par quoi commencer). La 4e réponse de la source est corrigée : « On commence
+par déterminer son ensemble de définition. » La 1re carte est reliée au suivi de #617 ; les 3 autres
+sont des brouillons du même thème et du même domaine.
 
 ## Décisions de David (2026-09-27) — appliquées
 
