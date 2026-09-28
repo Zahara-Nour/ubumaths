@@ -21,7 +21,8 @@
 		student_id: string;
 		day: string;
 		review_count: number;
-		success_pct: number;
+		/** `null` : cartes de cours seulement, pas de taux de réussite. */
+		success_pct: number | null;
 	}
 	interface HeatmapData {
 		days: string[];
@@ -164,7 +165,7 @@
 										<div
 											class="mx-auto h-3 w-3 rounded-sm {cellColor(count)}"
 											title={count > 0
-												? `${student.display_name} — ${day} : ${count} review${count > 1 ? 's' : ''} (${cell?.success_pct ?? 0}% succès)`
+												? `${student.display_name} — ${day} : ${count} review${count > 1 ? 's' : ''} (${cell?.success_pct == null ? 'cartes de cours seulement' : `${cell.success_pct}% succès`})`
 												: `${student.display_name} — ${day} : aucune review`}
 										></div>
 									</td>

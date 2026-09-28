@@ -215,7 +215,7 @@ export async function insertKnowledgeAttempt(
 		skillId: string;
 		templateId: string;
 		success: boolean;
-		source?: 'auto' | 'teacher' | 'student_self';
+		source?: 'auto' | 'srs' | 'teacher' | 'student_self';
 	}
 ): Promise<void> {
 	// Family A: the attempt references a template; the after-insert trigger derives

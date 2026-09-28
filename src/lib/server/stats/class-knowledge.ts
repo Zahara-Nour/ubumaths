@@ -68,7 +68,8 @@ export interface HeatmapCell {
 	student_id: string;
 	day: string;
 	review_count: number;
-	success_pct: number;
+	/** `null` : aucune question notée ce jour-là (cartes de cours seulement). */
+	success_pct: number | null;
 }
 
 export interface HeatmapStudent {
@@ -468,6 +469,17 @@ export interface ClassActivityHeatmap {
 	cells: HeatmapCell[];
 }
 
+/**
+ * Tentative sur une carte de cours : auto-évaluation en entraînement libre
+ * (`student_self`) ou révision de la carte dans un paquet (modèle `course_card`).
+ */
+function isCourseCardAttempt(a: {
+	source?: string;
+	question_templates: { type: string } | null;
+}): boolean {
+	return a.source === 'student_self' || a.question_templates?.type === 'course_card';
+}
+
 export async function getClassActivityHeatmap(
 	supabase: SB,
 	classId: string,
@@ -498,7 +510,7 @@ export async function getClassActivityHeatmap(
 
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('skill_attempts')
-		.select('student_id, created_at, success, source')
+		.select('student_id, created_at, success, source, question_templates(type)')
 		.in('student_id', studentIds)
 		.gte('created_at', cutoff);
 
@@ -514,6 +526,7 @@ export async function getClassActivityHeatmap(
 		created_at: string;
 		success: boolean | null;
 		source: string;
+		question_templates: { type: string } | null;
 	};
 	const rows = (attempts ?? []) as AttRow[];
 
@@ -522,14 +535,19 @@ export async function getClassActivityHeatmap(
 		dayKeys.push(toDayKey(new Date(Date.now() - (days - 1 - i) * 24 * 3600 * 1000)));
 	}
 
-	const cellMap = new Map<string, { count: number; successCount: number }>();
+	// Décision B1 (2026-09-28) : une carte de cours compte comme activité, pas
+	// dans le taux de réussite (auto-évaluation).
+	const cellMap = new Map<string, { count: number; gradedCount: number; successCount: number }>();
 	const lastReviewByStudent = new Map<string, string>();
 	for (const r of rows) {
 		const dayKey = toDayKey(new Date(r.created_at));
 		const key = `${r.student_id}:${dayKey}`;
-		const cell = cellMap.get(key) ?? { count: 0, successCount: 0 };
+		const cell = cellMap.get(key) ?? { count: 0, gradedCount: 0, successCount: 0 };
 		cell.count += 1;
-		if (r.success) cell.successCount += 1;
+		if (!isCourseCardAttempt(r)) {
+			cell.gradedCount += 1;
+			if (r.success) cell.successCount += 1;
+		}
 		cellMap.set(key, cell);
 
 		const last = lastReviewByStudent.get(r.student_id);
@@ -556,12 +574,17 @@ export async function getClassActivityHeatmap(
 	const cells: HeatmapCell[] = [];
 	for (const s of studentsOut) {
 		for (const day of dayKeys) {
-			const cell = cellMap.get(`${s.id}:${day}`) ?? { count: 0, successCount: 0 };
+			const cell = cellMap.get(`${s.id}:${day}`) ?? { count: 0, gradedCount: 0, successCount: 0 };
 			cells.push({
 				student_id: s.id,
 				day,
 				review_count: cell.count,
-				success_pct: cell.count > 0 ? Math.round((cell.successCount / cell.count) * 100) : 0
+				success_pct:
+					cell.gradedCount > 0
+						? Math.round((cell.successCount / cell.gradedCount) * 100)
+						: cell.count > 0
+							? null
+							: 0
 			});
 		}
 	}
@@ -582,7 +605,7 @@ export async function getStudentGradeHistogram(
 
 	const { data: rows, error: rowsError } = await supabase
 		.from('skill_attempts')
-		.select('grade, created_at, template_id')
+		.select('grade, created_at, template_id, question_templates(type)')
 		.eq('student_id', studentId)
 		.gte('created_at', cutoff)
 		.not('grade', 'is', null);
@@ -592,8 +615,15 @@ export async function getStudentGradeHistogram(
 		throw new Error(rowsError.message);
 	}
 
-	type AttRow = { grade: number | null; created_at: string; template_id: string | null };
-	const attempts = (rows ?? []) as AttRow[];
+	type AttRow = {
+		grade: number | null;
+		created_at: string;
+		template_id: string | null;
+		question_templates: { type: string } | null;
+	};
+	// Décision A1 (2026-09-28) : les notes d'une carte de cours (auto-évaluation)
+	// ne mesurent pas une capacité.
+	const attempts = ((rows ?? []) as AttRow[]).filter((a) => !isCourseCardAttempt(a));
 
 	const buckets: Record<1 | 2 | 3 | 4, { count: number; stabSum: number; stabCount: number }> = {
 		1: { count: 0, stabSum: 0, stabCount: 0 },
