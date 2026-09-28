@@ -11,6 +11,10 @@
 -- `skill_attempts` est vide en production ; le calcul ne se refait qu'à la
 -- prochaine tentative sur le point.
 --
+-- Effet rétroactif voulu (A1) : si un modèle devient plus tard une carte de
+-- cours, ses anciennes tentatives sortent du calcul au prochain recalcul du
+-- point ; s'il n'en reste aucune, l'état du point est supprimé.
+--
 -- Seul changement : jointure sur `question_templates` et filtre
 -- `qt.type <> 'course_card'` dans les deux requêtes (totaux, fenêtre de
 -- récence). Le reste est identique à 20260830080000.
