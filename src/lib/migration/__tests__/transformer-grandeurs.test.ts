@@ -112,8 +112,8 @@ describe('questions converties : énoncé, réponse attendue, correction', () =>
 	it('#467 durée d’un épisode : énoncé en h min (;hms), réponse 20 min', () => {
 		const instance = instanceOf(467, { a: '1', b: '50', c: '20' });
 		const statement = String(instance.statement);
-		expect(statement).toContain('1~\\unit{h} 50~\\unit{min}');
-		expect(statement).toContain('2~\\unit{h} 10~\\unit{min}');
+		expect(statement).toContain('1~\\unit{h}~50~\\unit{min}');
+		expect(statement).toContain('2~\\unit{h}~10~\\unit{min}');
 		expect(instance.blanks?.[0].expectedAnswer).toBe('20[min]');
 		expect(validateAnswer(['20\\unit{min}'], instance).isCorrect).toBe(true);
 	});
