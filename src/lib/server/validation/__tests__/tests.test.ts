@@ -15,143 +15,44 @@ describe('test system validation schemas', () => {
 	// ============================================================================
 
 	describe('saveTestSchema', () => {
+		// Forme RÉELLE d'une instance (`generateInstance`) et d'une réponse
+		// (`AnswerData` de `QuestionCard`). L'ancien fixture fabriquait `answer`
+		// et `type`, que le générateur ne produit plus : il restait vert pendant
+		// que la route refusait toute session réelle. Voir aussi
+		// `tests-real-instances.test.ts` (instances générées).
+		type FixtureInstance = { templateId?: string; statement: string; theme?: string };
+		const TEMPLATE_ID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+		const makeAnswer = (index: number, isCorrect: boolean) => ({
+			index,
+			instance: {
+				templateId: TEMPLATE_ID,
+				statement: `$$${index}+1$$`,
+				theme: 'Entiers'
+			} as FixtureInstance,
+			userAnswer: {
+				value: [String(index + 1)] as string | string[] | number | number[],
+				isCorrect,
+				timeSpent: 30,
+				attempts: 1,
+				submittedAt: '2025-01-01T11:59:00.000Z'
+			},
+			isCorrect,
+			timeSpent: 30,
+			attempts: 1
+		});
+
 		const createValidTestData = () => ({
 			result: {
 				sessionId: '550e8400-e29b-41d4-a716-446655440000',
 				mode: 'interactive' as 'display' | 'interactive' | 'course',
-				score: 7.5,
-				scorePercentage: 75,
+				score: 7,
+				scorePercentage: 70,
 				totalQuestions: 10,
 				correctAnswers: 7,
 				timeSpent: 600,
 				averageTime: 60,
-				answers: [
-					{
-						index: 0,
-						instance: {
-							templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
-							statement: 'What is 2 + 2?',
-							answer: 4,
-							type: 'input-number' as const,
-							variables: { a: 2, b: 2 }
-						},
-						userAnswer: 4,
-						isCorrect: true,
-						timeSpent: 30,
-						attempts: 1
-					},
-					{
-						index: 1,
-						instance: {
-							statement: 'What is the capital of France?',
-							answer: 'Paris',
-							type: 'input-text' as const,
-							choices: ['Paris', 'London', 'Berlin', 'Madrid']
-						},
-						userAnswer: 'Paris',
-						isCorrect: true,
-						timeSpent: 45,
-						attempts: 1
-					},
-					{
-						index: 2,
-						instance: {
-							statement: 'Which is larger: 5 or 3?',
-							answer: '5',
-							type: 'qcm' as const,
-							choices: ['3', '5']
-						},
-						userAnswer: '5',
-						isCorrect: true,
-						timeSpent: 20,
-						attempts: 1
-					},
-					{
-						index: 3,
-						instance: {
-							statement: 'Simplify 2/4',
-							answer: { numerator: 1, denominator: 2 },
-							type: 'fraction' as const
-						},
-						userAnswer: { numerator: 1, denominator: 2 },
-						isCorrect: true,
-						timeSpent: 90,
-						attempts: 2
-					},
-					{
-						index: 4,
-						instance: {
-							statement: 'Match the terms',
-							answer: ['a-1', 'b-2', 'c-3'],
-							type: 'matching' as const
-						},
-						userAnswer: ['a-1', 'b-2', 'c-3'],
-						isCorrect: true,
-						timeSpent: 120,
-						attempts: 1
-					},
-					{
-						index: 5,
-						instance: {
-							statement: 'Sort these numbers',
-							answer: [1, 2, 3, 4],
-							type: 'sorting' as const
-						},
-						userAnswer: [1, 2, 3, 4],
-						isCorrect: true,
-						timeSpent: 60,
-						attempts: 1
-					},
-					{
-						index: 6,
-						instance: {
-							statement: 'Drag and drop',
-							answer: ['item1', 'item2'],
-							type: 'drag-drop' as const
-						},
-						userAnswer: ['item1', 'item2'],
-						isCorrect: true,
-						timeSpent: 75,
-						attempts: 1
-					},
-					{
-						index: 7,
-						instance: {
-							statement: 'What is 10 / 2?',
-							answer: 5,
-							type: 'input-number' as const
-						},
-						userAnswer: 4, // Wrong answer
-						isCorrect: false,
-						timeSpent: 40,
-						attempts: 1
-					},
-					{
-						index: 8,
-						instance: {
-							statement: 'Is this true?',
-							answer: true,
-							type: 'qcm' as const,
-							choices: ['true', 'false']
-						},
-						userAnswer: false, // Wrong answer
-						isCorrect: false,
-						timeSpent: 25,
-						attempts: 1
-					},
-					{
-						index: 9,
-						instance: {
-							statement: 'Last question',
-							answer: 'correct',
-							type: 'input-text' as const
-						},
-						userAnswer: 'wrong', // Wrong answer
-						isCorrect: false,
-						timeSpent: 95,
-						attempts: 3
-					}
-				],
+				// 7 bonnes réponses, 3 fausses
+				answers: Array.from({ length: 10 }, (_, i) => makeAnswer(i, i < 7)),
 				completedAt: '2025-01-01T12:00:00.000Z'
 			},
 			categories: [
@@ -195,23 +96,18 @@ describe('test system validation schemas', () => {
 			});
 		});
 
-		it('should accept all question types', () => {
-			const types = [
-				'qcm',
-				'input-number',
-				'input-text',
-				'fraction',
-				'drag-drop',
-				'matching',
-				'sorting'
-			] as const;
-
-			types.forEach((type) => {
-				const data = createValidTestData();
-				data.result.answers[0].instance.type = type;
-				const result = saveTestSchema.safeParse(data);
-				expect(result.success).toBe(true);
-			});
+		it('should strip unknown instance fields (never stored in test_answers)', () => {
+			const data = createValidTestData();
+			Object.assign(data.result.answers[0].instance, { answer: 4, type: 'qcm', blanks: [] });
+			const result = saveTestSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(Object.keys(result.data.result.answers[0].instance).sort()).toEqual([
+					'statement',
+					'templateId',
+					'theme'
+				]);
+			}
 		});
 
 		it('should accept test without sessionId', () => {
@@ -258,23 +154,16 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept instance without templateId', () => {
+		it('should reject instance without templateId (the generator always sets it)', () => {
 			const data = createValidTestData();
 			delete data.result.answers[0].instance.templateId;
 			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(result.success).toBe(false);
 		});
 
-		it('should accept instance without variables', () => {
+		it('should accept instance with only templateId and statement', () => {
 			const data = createValidTestData();
-			delete data.result.answers[0].instance.variables;
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		it('should accept instance without choices', () => {
-			const data = createValidTestData();
-			delete data.result.answers[0].instance.choices;
+			delete data.result.answers[0].instance.theme;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
@@ -344,36 +233,15 @@ describe('test system validation schemas', () => {
 
 		it('should reject too many answers', () => {
 			const data = createValidTestData();
-			data.result.answers = Array.from({ length: 501 }, (_, i) => ({
-				index: i,
-				instance: {
-					templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
-					statement: `Question ${i}`,
-					answer: 42,
-					type: 'input-number' as const,
-					variables: { a: i, b: i + 1 }
-				},
-				userAnswer: 42,
-				isCorrect: true,
-				timeSpent: 30,
-				attempts: 1
-			}));
+			data.result.answers = Array.from({ length: 501 }, (_, i) => makeAnswer(i, true));
 			data.result.totalQuestions = 501;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject empty statement', () => {
+		it('should reject statement exceeding max length', () => {
 			const data = createValidTestData();
-			data.result.answers[0].instance.statement = '';
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject invalid question type', () => {
-			const data = createValidTestData();
-			// @ts-expect-error Testing invalid type
-			data.result.answers[0].instance.type = 'invalid-type';
+			data.result.answers[0].instance.statement = 'x'.repeat(20_001);
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
@@ -392,9 +260,17 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject zero attempts', () => {
+		it('should accept zero attempts (time expired, TestInteractive)', () => {
 			const data = createValidTestData();
 			data.result.answers[0].attempts = 0;
+			data.result.answers[0].userAnswer.attempts = 0;
+			const result = saveTestSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject attempts above 100', () => {
+			const data = createValidTestData();
+			data.result.answers[0].attempts = 101;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
@@ -429,9 +305,16 @@ describe('test system validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject category level above 5', () => {
+		it('should accept category level 20 (highest level in production)', () => {
 			const data = createValidTestData();
-			data.categories[0].category.level = 6;
+			data.categories[0].category.level = 20;
+			const result = saveTestSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject category level above 100', () => {
+			const data = createValidTestData();
+			data.categories[0].category.level = 101;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
@@ -559,9 +442,8 @@ describe('test system validation schemas', () => {
 						{
 							index: 0,
 							instance: {
-								statement: 'Q',
-								answer: 'A',
-								type: 'input-text' as const
+								templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+								statement: 'Q'
 							},
 							isCorrect: false
 						}
@@ -618,11 +500,16 @@ describe('test system validation schemas', () => {
 						{
 							index: 0,
 							instance: {
-								statement: 'Test',
-								answer: 42,
-								type: 'input-number'
+								templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+								statement: 'Test'
 							},
-							userAnswer: 42,
+							userAnswer: {
+								value: ['42'],
+								isCorrect: true,
+								timeSpent: 12,
+								attempts: 1,
+								submittedAt: '2025-01-01T11:59:00Z'
+							},
 							isCorrect: true
 						}
 					],

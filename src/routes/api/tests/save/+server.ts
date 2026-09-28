@@ -91,11 +91,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			attempts: answer.attempts || 1
 		}));
 
-		const { error: answersError } = await supabase.from('test_answers').insert(answersToInsert);
+		// `.select()` : un refus RLS rend 0 ligne SANS erreur
+		const { data: answersRows, error: answersError } = await supabase
+			.from('test_answers')
+			.insert(answersToInsert)
+			.select('id');
 
 		if (answersError) {
 			console.error('Error inserting test answers:', answersError);
 			// Note: session is already saved, so we return success but log the error
+		} else if ((answersRows?.length ?? 0) !== answersToInsert.length) {
+			console.error('[tests/save] test_answers : lignes écrites ≠ lignes envoyées', {
+				sent: answersToInsert.length,
+				written: answersRows?.length ?? 0
+			});
 		}
 
 		// ----- Alimentation du référentiel (régime contenus) --------------------

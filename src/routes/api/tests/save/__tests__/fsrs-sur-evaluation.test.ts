@@ -40,6 +40,23 @@ let cartesDeCours: string[];
 /** La ligne insérée dans `test_sessions`. */
 let sessionInseree: Record<string, unknown> | null;
 
+/** Simule un refus RLS : l'INSERT ne rend aucune ligne, et aucune erreur. */
+let refusRlsSilencieux = false;
+
+/** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si refus RLS). */
+function insertAvecSelect(onRows: (rows: Record<string, unknown>[]) => void = () => {}) {
+	return (rows: Record<string, unknown>[] | Record<string, unknown>) => {
+		const list = Array.isArray(rows) ? rows : [rows];
+		return {
+			select: async () => {
+				if (refusRlsSilencieux) return { data: [], error: null };
+				onRows(list);
+				return { data: list.map((_, i) => ({ id: `row-${i}` })), error: null };
+			}
+		};
+	};
+}
+
 function fauxSupabase() {
 	return {
 		from(table: string) {
@@ -75,17 +92,10 @@ function fauxSupabase() {
 				};
 			}
 			if (table === 'skill_attempts') {
-				return {
-					insert: (rows: Record<string, unknown>[]) => {
-						attemptsInseres.push(...rows);
-						return {
-							select: async () => ({ data: rows.map((_, i) => ({ id: `a${i}` })), error: null })
-						};
-					}
-				};
+				return { insert: insertAvecSelect((rows) => attemptsInseres.push(...rows)) };
 			}
 			// test_answers et le reste : acceptés sans effet.
-			return { insert: async () => ({ error: null }) };
+			return { insert: insertAvecSelect() };
 		}
 	};
 }
@@ -93,11 +103,12 @@ function fauxSupabase() {
 function reponse(templateId: string, isCorrect: boolean, index = 0) {
 	return {
 		index,
+		// Forme réelle d'une instance (`generateInstance`) : ni `answer` ni `type`
 		instance: {
 			templateId,
 			statement: 'Combien font 2 + 2 ?',
-			answer: '4',
-			type: 'input-number' as const
+			theme: 'Calcul',
+			generatedAt: new Date().toISOString()
 		},
 		isCorrect,
 		timeSpent: 5,
@@ -153,6 +164,7 @@ describe('enregistrement d’une évaluation', () => {
 		cartesDeCours = [];
 		sessionInseree = null;
 		addBuddyXpFromTest.mockClear();
+		refusRlsSilencieux = false;
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -293,5 +305,17 @@ describe('enregistrement d’une évaluation', () => {
 	it('sans carte : score et total inchangés (ceux du client)', async () => {
 		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)]);
 		expect(sessionInseree).toMatchObject({ score: 10, total_questions: 2 });
+	});
+
+	it('signale un refus RLS silencieux sur skill_attempts (0 ligne, aucune erreur)', async () => {
+		const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+		refusRlsSilencieux = true;
+
+		await enregistrer([reponse(MODELE_A, true)]);
+
+		const messages = consoleError.mock.calls.map((c) => String(c[0]));
+		expect(messages).toContain('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées');
+		expect(messages).toContain('[tests/save] test_answers : lignes écrites ≠ lignes envoyées');
+		consoleError.mockRestore();
 	});
 });
