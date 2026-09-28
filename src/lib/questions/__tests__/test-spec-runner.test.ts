@@ -301,3 +301,61 @@ describe('runAllTestSpecs', () => {
 		expect(results[1].passed).toBe(true);
 	});
 });
+
+// Parenthèses autour de la base d'une puissance (relecture suites #624) :
+// (1/5)^n sans parenthèses se lit 1/5ⁿ, elles sont donc indispensables.
+describe("runTestSpec — parenthèses autour de la base d'une puissance", () => {
+	const template = makeTemplate({
+		variations: [
+			{
+				statement: templateMarkdown('$u_n = ?$'),
+				variables: [
+					{ name: 'a', expression: '6' },
+					{ name: 'b', expression: '5' }
+				],
+				blanks: [{ expectedAnswer: '{{a}}\\times\\left(\\frac{1}{{{b}}}\\right)^n' }]
+			}
+		],
+		// comme le #624 : brackets actif, le « × » devant la parenthèse est toléré
+		options: { constraints: { products: 'off' } }
+	});
+
+	it.each(['6\\times\\left(\\frac{1}{5}\\right)^n', '6\\times(\\frac{1}{5})^n'])(
+		'%s → correct, sans violation brackets',
+		(answer) => {
+			const result = runTestSpec(template, {
+				description: answer,
+				variationIndex: 0,
+				variables: { a: '6', b: '5' },
+				answers: [answer],
+				expected: { status: 'correct' }
+			});
+			expect(result.error).toBeUndefined();
+			expect(result.actual.status).toBe('correct');
+			expect(result.actual.constraintViolations).toEqual([]);
+		}
+	);
+});
+
+describe('runTestSpec — requiredForm à motif avec racine en base de puissance', () => {
+	it('(\\sqrt{3})^2 satisfait le motif sqrt(a)^2', () => {
+		const template = makeTemplate({
+			variations: [
+				{
+					statement: templateMarkdown('$3 = ?$'),
+					variables: [],
+					blanks: [{ expectedAnswer: '3', requiredForm: { pattern: 'sqrt(a)^2' } }]
+				}
+			]
+		});
+		const result = runTestSpec(template, {
+			description: 'racine au carré',
+			variationIndex: 0,
+			variables: {},
+			answers: ['(\\sqrt{3})^2'],
+			expected: { status: 'correct' }
+		});
+		expect(result.error).toBeUndefined();
+		expect(result.actual.status).toBe('correct');
+	});
+});

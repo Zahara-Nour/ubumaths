@@ -1041,6 +1041,21 @@ function isSimpleElement(node: MathNode): boolean {
 }
 
 /**
+ * Base d'une puissance : une fraction ou une racine n'est pas un « atome ».
+ * Sans parenthèses, \frac{1}{5}^n se lit 1/5ⁿ et \sqrt{2}^2 est ambigu : les
+ * parenthèses sont alors utiles. Les atomes (nombre, décimal compris, lettre,
+ * constante, f(x), |x|) restent sans parenthèses. Les autres bases (négatif,
+ * produit, somme, puissance) sont déjà traitées par la précédence.
+ */
+export function needsBracketsAsPowerBase(node: MathNode): boolean {
+	if (node.type === 'division') return node.displayStyle === 'fraction';
+	if (node.type === 'function') {
+		return node.name === 'sqrt' || node.name === 'cbrt' || node.name === 'root';
+	}
+	return false;
+}
+
+/**
  * Checks if a node is a negative value that may need brackets in certain contexts.
  * Examples: -5, -x, -(a+b)
  */
@@ -1152,6 +1167,22 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 			// We only strip parentheses, not other delimiters like brackets or braces with semantic meaning
 			if (node.delimiters !== 'parentheses') {
 				// Rebuild with stripped content but keep the delimiter
+				return delimiter(node.delimiters, strippedContent, node.semantic, {
+					shape: node.shape,
+					delimiterMetadata: node.delimiterMetadata,
+					leftDelimiterMetadata: node.leftDelimiterMetadata,
+					rightDelimiterMetadata: node.rightDelimiterMetadata,
+					metadata: node.metadata
+				});
+			}
+
+			// Case 0 : base d'une puissance — (\frac{1}{5})^n, (\sqrt{2})^2 gardent
+			// leurs parenthèses (cf. needsBracketsAsPowerBase)
+			if (
+				parentType === 'superscript' &&
+				isLeftOperand &&
+				needsBracketsAsPowerBase(strippedContent)
+			) {
 				return delimiter(node.delimiters, strippedContent, node.semantic, {
 					shape: node.shape,
 					delimiterMetadata: node.delimiterMetadata,
@@ -1557,6 +1588,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
  * Preserves brackets when mathematically necessary:
  * - Negative terms in middle of expression: 2+(-5) keeps brackets
  * - With allowFirstNegative: (-5)+3 keeps brackets around first negative
+ * - Base d'une puissance non atomique : (\frac{1}{5})^n, (\sqrt{2})^2
  *
  * @param node - The MathAST node to process
  * @param options - Configuration options

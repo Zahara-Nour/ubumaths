@@ -325,4 +325,17 @@ describe('required-form-validator', () => {
 			);
 		});
 	});
+
+	// Parenthèses gardées autour d'une racine en base de puissance (commit d7d78e19e) :
+	// elles ne doivent pas empêcher un motif sans parenthèses de reconnaître la forme.
+	describe('pattern — racine en base de puissance', () => {
+		it.each([
+			['(\\sqrt{3})^2', 'sqrt(a)^2'],
+			['6(\\sqrt{2})^n', 'a*sqrt(b)^n'],
+			['6(\\sqrt{2})^n', 'a*(sqrt(b))^n'],
+			['6\\times\\left(\\frac{1}{5}\\right)^n', 'a*(b/c)^n']
+		])('%s correspond au motif %s', (latex, pattern) => {
+			expect(checkRequiredForm([latex], { pattern })).toEqual([]);
+		});
+	});
 });
