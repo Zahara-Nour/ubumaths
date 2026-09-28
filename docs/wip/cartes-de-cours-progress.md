@@ -43,6 +43,6 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 ## Avancement
 
 - [x] Phase 0 validée (2026-09-28)
-- [ ] PR migration
+- [x] PR migration (#493) : appliquée en prod le 2026-09-28 (contrainte vérifiée, 602 questions intactes). `db:types` à faire dans la PR de code.
 - [ ] PR code
 - [ ] #617 importée

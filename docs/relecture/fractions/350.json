@@ -2,7 +2,7 @@
 	"globalIndex": 350,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "« Décomposer » → « Décompose ». Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 9+999/1000 »). Forme exigée « n:integer + p:integer / q:integer » (sinon \\frac{9000}{1000}+\\frac{999}{1000} acceptée, reducedFractions étant désactivé ; limite : la fraction < 1 n'est pas vérifiée). Contrainte spaces désactivée : l'énoncé et la correction écrivent \\dfrac{9999}{1000} sans espace, et recopier 1000 était sanctionné [spaces]. Specs : juste aux bornes (dixièmes et millièmes), décimal et somme de fractions refusés, mauvais reste refusé. Contrainte `spaces` rétablie (décision de David) : à l'écran, l'énoncé affiche déjà « 1 000 » (mise en forme française des formules).",
+	"editNotes": "« Décomposer » → « Décompose ». Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 9+999/1000 »). Forme exigée « n:integer + p:integer / q:integer » (sinon \\frac{9000}{1000}+\\frac{999}{1000} acceptée, reducedFractions étant désactivé ; limite : la fraction < 1 n'est pas vérifiée). Contrainte spaces désactivée : l'énoncé et la correction écrivent \\dfrac{9999}{1000} sans espace, et recopier 1000 était sanctionné [spaces]. Specs : juste aux bornes (dixièmes et millièmes), décimal et somme de fractions refusés, mauvais reste refusé. Contrainte `spaces` rétablie (décision de David) : à l'écran, l'énoncé affiche déjà « 1 000 » (mise en forme française des formules). Décision de David (2026-09-28) : la fraction doit être inférieure à 1 (motif « n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000) », comparaison entre jokers #492). Une fraction inférieure à 1 mais non décimale (3 + 9/20) est perfectible (motif acceptable).",
 	"template": {
 		"title": "Décomposer une fraction",
 		"description": "Une fraction décimale (jusqu'aux millièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
@@ -53,7 +53,8 @@
 		"delay": 30,
 		"shared": {
 			"requiredForm": {
-				"pattern": "n:integer + p:integer / q:integer"
+				"pattern": "n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000)",
+				"acceptable": "n:integer + p:inN & lt(q) / q:integer"
 			}
 		},
 		"testSpecs": [
@@ -149,6 +150,20 @@
 				"answers": ["3+\\frac{456}{100}"],
 				"expected": {
 					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction supérieure à 1 : refusée (décision de David)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "1000",
+					"b": "9",
+					"c": "999"
+				},
+				"answers": ["8+\\frac{1\\,999}{1\\,000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
 				}
 			}
 		]

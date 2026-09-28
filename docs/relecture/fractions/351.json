@@ -2,7 +2,7 @@
 	"globalIndex": 351,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "« Décomposer » → « Décompose » ; double espace du sous-titre retiré. Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 4+2/3 »). Forme exigée « n:integer + p:integer / q:integer » (refuse \\frac{12}{3}+\\frac{2}{3} ; limite : 3+\\frac{5}{3} passe encore). Specs : juste aux bornes, ordre inversé accepté ; décimal approché, somme de deux fractions, fraction inversée et nombre mixte collé refusés.",
+	"editNotes": "« Décomposer » → « Décompose » ; double espace du sous-titre retiré. Réponse attendue « b+c/a » → « b+\\frac{c}{a} » (saisie MathLive refusée [form], correction affichée « 4+2/3 »). Forme exigée « n:integer + p:integer / q:integer » (refuse \\frac{12}{3}+\\frac{2}{3} ; limite : 3+\\frac{5}{3} passe encore). Specs : juste aux bornes, ordre inversé accepté ; décimal approché, somme de deux fractions, fraction inversée et nombre mixte collé refusés. Décision de David (2026-09-28) : la fraction doit être inférieure à 1 (motif « n:integer + p:inN & lt(q) / q:integer », comparaison entre jokers #492).",
 	"template": {
 		"title": "Décomposer une fraction",
 		"description": "Une fraction en une somme d'un entier et d'une fraction inférieure à $1$",
@@ -53,7 +53,7 @@
 		"delay": 30,
 		"shared": {
 			"requiredForm": {
-				"pattern": "n:integer + p:integer / q:integer"
+				"pattern": "n:integer + p:inN & lt(q) / q:integer"
 			}
 		},
 		"testSpecs": [
@@ -147,6 +147,20 @@
 				"answers": ["4+\\frac{3}{2}"],
 				"expected": {
 					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction supérieure à 1 : refusée (décision de David)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "2"
+				},
+				"answers": ["3+\\frac{5}{3}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
 				}
 			}
 		]

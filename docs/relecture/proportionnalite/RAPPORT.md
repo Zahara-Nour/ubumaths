@@ -47,7 +47,7 @@ Chaque fichier `<n>.json` porte le détail dans `editNotes`.
 
 ## Rejetée
 
-- **#510** (vitesse moyenne) : source TinyMath incohérente — « Une voiture parcourt … en » suivi d'une
+- **#510** (vitesse moyenne) — **supprimée (décision de David, 2026-09-28 : doublon de #470)** : source TinyMath incohérente — « Une voiture parcourt … en » suivi d'une
   question d'échelle copiée de #506, sans durée ni solution. À réécrire, pas à convertir.
 
 ## Décisions de David (2026-09-28) — tout validé
