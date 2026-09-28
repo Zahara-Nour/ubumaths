@@ -61,10 +61,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
 	// Lu avec les droits du SERVEUR : la RLS cache à l'élève un modèle repassé en
 	// brouillon pendant sa série (0 ligne, sans erreur) ; sa trace doit être gardée
-	// (décision de David, 2026-09-28). Seuls id, options et points sont lus.
+	// (décision de David, 2026-09-28). Seuls id, options, statut et points sont lus.
 	const { data: templateRow, error: templateError } = await createServiceRoleClient()
 		.from('question_templates')
-		.select('id, options, question_template_points(point_id)')
+		.select('id, options, status, question_template_points(point_id)')
 		.eq('id', template_id)
 		.maybeSingle();
 
@@ -155,8 +155,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// ----- Auto-ajout au deck Programme si template tagué -----
-	// Jamais pour une carte de cours (décision 2026-09-28)
-	if (pointIds.length > 0 && !isCard) {
+	// Jamais pour une carte de cours (décision 2026-09-28), ni pour un brouillon :
+	// la révision relit la carte avec les droits de l'élève, qui ne la voit pas.
+	if (pointIds.length > 0 && !isCard && templateRow.status === 'published') {
 		try {
 			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
 		} catch (progErr) {

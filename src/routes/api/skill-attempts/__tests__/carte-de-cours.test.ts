@@ -9,9 +9,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
+const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
-vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
+vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE } })
 }));
@@ -23,7 +24,12 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 			select: () => ({
 				eq: () => ({
 					maybeSingle: async () => ({
-						data: { id: MODELE, options: optionsDuModele, question_template_points: [] },
+						data: {
+							id: MODELE,
+							options: optionsDuModele,
+							status: modeleEnBrouillon ? 'draft' : 'published',
+							question_template_points: pointsDuModele
+						},
 						error: null
 					})
 				})
@@ -41,6 +47,8 @@ let attemptsInseres: Record<string, unknown>[];
 let optionsDuModele: unknown;
 /** Modèle repassé en brouillon : la RLS le cache à l'élève (0 ligne, sans erreur). */
 let modeleEnBrouillon = false;
+/** Points de programme tagués sur le modèle. */
+let pointsDuModele: { point_id: string }[] = [];
 
 function fauxSupabase() {
 	return {
@@ -87,6 +95,8 @@ describe('POST /api/skill-attempts — source', () => {
 		attemptsInseres = [];
 		optionsDuModele = null;
 		modeleEnBrouillon = false;
+		pointsDuModele = [];
+		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 	});
 
@@ -112,5 +122,21 @@ describe('POST /api/skill-attempts — source', () => {
 		modeleEnBrouillon = true;
 		await poster({ template_id: MODELE, success: true });
 		expect(attemptsInseres[0]).toMatchObject({ source: 'student_self', success: true });
+	});
+
+	// Relevé par security-auditor : un brouillon ajouté au paquet Programme y serait
+	// une carte fantôme (la révision le relit avec les droits de l'élève).
+	it('question repassée en brouillon : trace gardée, mais pas ajoutée au paquet Programme', async () => {
+		modeleEnBrouillon = true;
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true });
+		expect(attemptsInseres[0]).toMatchObject({ source: 'auto' });
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	it('question publiée taguée : ajoutée au paquet Programme (inchangé)', async () => {
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true });
+		expect(ensureProgrammeDeckCard).toHaveBeenCalledTimes(1);
 	});
 });
