@@ -24,7 +24,13 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
    Programme) → n'apparaît pas dans les révisions dues (`get_due_cards_for_deck` part de `srs_cards`).
 8. **Course aux nombres : cartes exclues** de la sélection.
 
-(Décisions 5 à 8 : David, 2026-09-28.)
+9. **Indicateurs : l'auto-évaluation n'y compte pas** (option b) — badges de capacité
+   (`update_student_point_state`), vue de classe (`class-knowledge.ts`, carte d'activité), anti-fraude
+   (`anti-fraud/runner.ts`). Mesure prod le 2026-09-28 : `skill_attempts` est VIDE → aucun badge ni
+   aucune statistique existante ne change. Périmètre exact (révisions SRS d'une carte, activité de la
+   carte de chaleur) : phase 0 en attente de David.
+
+(Décisions 5 à 9 : David, 2026-09-28.)
 
 ⚠️ **Constat (2026-09-28)** : `POST /api/tests/save` rejette en 400 TOUTE instance réelle — le schéma
 Zod `questionInstanceSchema` (`src/lib/server/validation/tests.ts`) exige `answer` et un `type` de
