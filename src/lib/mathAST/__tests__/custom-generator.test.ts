@@ -800,3 +800,30 @@ describe('CustomGenerator - base de puissance à parenthéser', () => {
 		expect(toCustom(expr)).toBe('(-1/4)^n');
 	});
 });
+
+// Même classe : une base puissance ou produit construite sans délimiteur.
+describe('CustomGenerator - base de puissance : puissance ou produit', () => {
+	it('(x^2)^3 garde ses parenthèses', () => {
+		const expr = MathAST.power(
+			MathAST.power(MathAST.variable('x'), MathAST.number('2')),
+			MathAST.number('3')
+		);
+		expect(toCustom(expr)).toBe('(x^2)^3');
+	});
+
+	it('(2x)^2 : un produit implicite en base est parenthésé', () => {
+		const expr = MathAST.power(
+			MathAST.implicitMultiply(MathAST.number('2'), MathAST.variable('x')),
+			MathAST.number('2')
+		);
+		expect(toCustom(expr)).toBe('(2x)^2');
+	});
+
+	it('(2*3)^2 : un produit en croix en base est parenthésé', () => {
+		const expr = MathAST.power(
+			MathAST.multiply(MathAST.number('2'), MathAST.number('3'), 'cross'),
+			MathAST.number('2')
+		);
+		expect(toCustom(expr)).toBe('(2*3)^2');
+	});
+});

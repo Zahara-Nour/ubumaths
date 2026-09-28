@@ -28,6 +28,7 @@ import type {
 } from '../common/step-renderer-base';
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
+import { needsParenthesesAsPowerBase } from '../common/sign-parentheses';
 import { toCustom } from '../custom-generator';
 import { toLatex } from '../latex-generator';
 import { nodesEqual } from '../pattern/match';
@@ -213,8 +214,13 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 		case 'superscript': {
 			const base = renderWithHighlights(node.base, fragments);
 			const sup = renderWithHighlights(node.superscript, fragments);
+			// Même garde-fou que latex-generator : `(-2)^3` sans délimiteur s'écrirait
+			// `-2^{3}`, relu −(2³) (voir common/sign-parentheses.ts)
+			const wrappedBase = needsParenthesesAsPowerBase(node.base)
+				? `\\left(${base.latex}\\right)`
+				: base.latex;
 			return {
-				latex: `${base.latex}^{${sup.latex}}`,
+				latex: `${wrappedBase}^{${sup.latex}}`,
 				matched: base.matched || sup.matched
 			};
 		}
