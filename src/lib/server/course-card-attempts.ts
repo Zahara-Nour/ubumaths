@@ -29,11 +29,19 @@ export function attemptSourceForTemplate(template: { options?: unknown }): Templ
 	return isCourseCard(template) ? 'student_self' : 'auto';
 }
 
+/** Attentes entre deux lectures de `question_templates` (3 tentatives en tout). */
+const COURSE_CARD_READ_RETRY_DELAYS_MS = [150, 400];
+
+/** Erreur levée quand la nature « carte » reste illisible après toutes les tentatives. */
+export class CourseCardLookupError extends Error {}
+
 /**
  * Parmi `templateIds`, ceux qui sont des cartes de cours.
  *
- * En cas d'erreur de lecture, rend un ensemble vide ET le signale : la
- * tentative reste enregistrée (source `auto`), l'élève ne perd pas son travail.
+ * La nature « carte » décide du score, de l'XP et du paquet : la deviner fausse
+ * inscrirait une note fausse. En cas d'erreur de lecture, réessaie (3 tentatives
+ * en tout), puis lève `CourseCardLookupError` — l'appelant refuse alors la
+ * session AVANT toute écriture (R2, décision de David du 2026-09-28).
  */
 export async function fetchCourseCardTemplateIds(
 	supabase: SupabaseClient<Database>,
@@ -42,19 +50,24 @@ export async function fetchCourseCardTemplateIds(
 	const ids = new Set<string>();
 	if (templateIds.length === 0) return ids;
 
-	const { data, error } = await supabase
-		.from('question_templates')
-		.select('id, options')
-		.in('id', templateIds);
+	for (let attempt = 0; ; attempt += 1) {
+		const { data, error } = await supabase
+			.from('question_templates')
+			.select('id, options')
+			.in('id', templateIds);
 
-	if (error) {
-		console.error('[course-card] question_templates illisible :', error);
-		return ids;
+		if (!error) {
+			for (const row of data ?? []) {
+				if (isCourseCard(row)) ids.add(row.id);
+			}
+			return ids;
+		}
+
+		console.error(`[course-card] question_templates illisible (tentative ${attempt + 1}) :`, error);
+		const delay = COURSE_CARD_READ_RETRY_DELAYS_MS[attempt];
+		if (delay === undefined) throw new CourseCardLookupError(error.message);
+		await new Promise((resolve) => setTimeout(resolve, delay));
 	}
-	for (const row of data ?? []) {
-		if (isCourseCard(row)) ids.add(row.id);
-	}
-	return ids;
 }
 
 // ============================================================================

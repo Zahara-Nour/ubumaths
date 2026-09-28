@@ -120,20 +120,34 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ----- INSERT skill_attempts (per-template) -----
 	// 1 row par attempt. Le trigger boucle ensuite sur question_template_points
 	// pour recalculer chaque student_point_state impactée.
-	const { error: insertError } = await locals.supabase.from('skill_attempts').insert({
-		student_id: user.id,
-		template_id,
-		success,
-		grade,
-		with_help,
-		// Carte de cours (#617) : auto-évaluation → `student_self`
-		source: attemptSourceForTemplate(templateRow),
-		...(phase_blocage !== undefined ? { phase_blocage } : {})
-	});
+	// `.select()` : garde de principe — un INSERT refusé par la RLS lève une
+	// erreur (42501), mais on vérifie quand même qu'une ligne a été écrite.
+	const { data: insertedRows, error: insertError } = await locals.supabase
+		.from('skill_attempts')
+		.insert({
+			student_id: user.id,
+			template_id,
+			success,
+			grade,
+			with_help,
+			// Carte de cours (#617) : auto-évaluation → `student_self`
+			source: attemptSourceForTemplate(templateRow),
+			...(phase_blocage !== undefined ? { phase_blocage } : {})
+		})
+		.select('id');
 
 	if (insertError) {
 		console.error('[skill-attempts] INSERT failed:', insertError);
 		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
+	}
+
+	if (!insertedRows || insertedRows.length !== 1) {
+		console.error('[skill-attempts] INSERT sans ligne écrite', {
+			userId: user.id,
+			templateId: template_id,
+			written: insertedRows?.length ?? 0
+		});
+		return json({ error: 'insert_failed' }, { status: 500 });
 	}
 
 	// ----- Auto-ajout au deck Programme si template tagué -----

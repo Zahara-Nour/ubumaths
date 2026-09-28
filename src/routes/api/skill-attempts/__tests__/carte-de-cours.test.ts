@@ -40,10 +40,13 @@ function fauxSupabase() {
 				};
 			}
 			return {
-				insert: async (row: Record<string, unknown>) => {
-					attemptsInseres.push(row);
-					return { error: null };
-				}
+				// INSERT … `.select('id')` : la route vérifie la ligne écrite
+				insert: (row: Record<string, unknown>) => ({
+					select: async () => {
+						attemptsInseres.push(row);
+						return { data: [{ id: 'attempt-1' }], error: null };
+					}
+				})
 			};
 		}
 	};

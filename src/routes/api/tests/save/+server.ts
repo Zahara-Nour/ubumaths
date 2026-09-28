@@ -6,7 +6,11 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
-import { fetchCourseCardTemplateIds, reviewedToday } from '$lib/server/course-card-attempts';
+import {
+	CourseCardLookupError,
+	fetchCourseCardTemplateIds,
+	reviewedToday
+} from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
 
@@ -47,7 +51,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Décisions de David (2026-09-28) : trace `student_self` à chaque
 		// utilisation, fiche FSRS au plus une fois par jour, hors score, sans XP,
 		// jamais ajoutée à un paquet.
-		const courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+		// Illisible après 3 tentatives → 503 AVANT toute écriture (R2) : une panne
+		// passagère coûte une session, jamais un score faux.
+		let courseCardIds: Set<string>;
+		try {
+			courseCardIds = await fetchCourseCardTemplateIds(supabase, templateIds);
+		} catch (lookupError) {
+			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
+			return json(
+				{ error: 'Enregistrement momentanément impossible, réessaie dans un instant.' },
+				{ status: 503 }
+			);
+		}
 		const isCardAnswer = (answer: { instance: { templateId?: string | null } }) =>
 			!!answer.instance.templateId && courseCardIds.has(answer.instance.templateId);
 
@@ -91,11 +106,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			attempts: answer.attempts || 1
 		}));
 
-		const { error: answersError } = await supabase.from('test_answers').insert(answersToInsert);
+		// `.select()` : vérifie que toutes les lignes ont été écrites
+		const { data: answersRows, error: answersError } = await supabase
+			.from('test_answers')
+			.insert(answersToInsert)
+			.select('id');
 
 		if (answersError) {
 			console.error('Error inserting test answers:', answersError);
 			// Note: session is already saved, so we return success but log the error
+		} else if ((answersRows?.length ?? 0) !== answersToInsert.length) {
+			console.error('[tests/save] test_answers : lignes écrites ≠ lignes envoyées', {
+				sent: answersToInsert.length,
+				written: answersRows?.length ?? 0
+			});
 		}
 
 		// ----- Alimentation du référentiel (régime contenus) --------------------
@@ -185,7 +209,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		if (attemptsToInsert.length > 0) {
-			// `.select()` : un refus RLS rend 0 ligne sans erreur
+			// `.select()` : vérifie que toutes les lignes ont été écrites
 			const { data: attemptsRows, error: attemptsError } = await supabase
 				.from('skill_attempts')
 				.insert(attemptsToInsert)

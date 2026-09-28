@@ -40,6 +40,27 @@ let cartesDeCours: string[];
 /** La ligne insérée dans `test_sessions`. */
 let sessionInseree: Record<string, unknown> | null;
 
+/** Garde de principe : l'INSERT ne rend aucune ligne, sans erreur (un refus RLS lève normalement 42501). */
+let refusRlsSilencieux = false;
+/** Nombre de lectures de `question_templates` qui échouent avant de réussir. */
+let lecturesModelesEnPanne = 0;
+/** Nombre de lectures de `question_templates` tentées. */
+let lecturesModeles = 0;
+
+/** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si `refusRlsSilencieux`). */
+function insertAvecSelect(onRows: (rows: Record<string, unknown>[]) => void = () => {}) {
+	return (rows: Record<string, unknown>[] | Record<string, unknown>) => {
+		const list = Array.isArray(rows) ? rows : [rows];
+		return {
+			select: async () => {
+				if (refusRlsSilencieux) return { data: [], error: null };
+				onRows(list);
+				return { data: list.map((_, i) => ({ id: `row-${i}` })), error: null };
+			}
+		};
+	};
+}
+
 function fauxSupabase() {
 	return {
 		from(table: string) {
@@ -64,28 +85,27 @@ function fauxSupabase() {
 			if (table === 'question_templates') {
 				return {
 					select: () => ({
-						in: async (_col: string, ids: string[]) => ({
-							data: ids.map((id) => ({
-								id,
-								options: cartesDeCours.includes(id) ? { courseCard: true } : null
-							})),
-							error: null
-						})
+						in: async (_col: string, ids: string[]) => {
+							lecturesModeles += 1;
+							if (lecturesModeles <= lecturesModelesEnPanne) {
+								return { data: null, error: { message: 'connexion perdue' } };
+							}
+							return {
+								data: ids.map((id) => ({
+									id,
+									options: cartesDeCours.includes(id) ? { courseCard: true } : null
+								})),
+								error: null
+							};
+						}
 					})
 				};
 			}
 			if (table === 'skill_attempts') {
-				return {
-					insert: (rows: Record<string, unknown>[]) => {
-						attemptsInseres.push(...rows);
-						return {
-							select: async () => ({ data: rows.map((_, i) => ({ id: `a${i}` })), error: null })
-						};
-					}
-				};
+				return { insert: insertAvecSelect((rows) => attemptsInseres.push(...rows)) };
 			}
 			// test_answers et le reste : acceptés sans effet.
-			return { insert: async () => ({ error: null }) };
+			return { insert: insertAvecSelect() };
 		}
 	};
 }
@@ -93,11 +113,12 @@ function fauxSupabase() {
 function reponse(templateId: string, isCorrect: boolean, index = 0) {
 	return {
 		index,
+		// Forme réelle d'une instance (`generateInstance`) : ni `answer` ni `type`
 		instance: {
 			templateId,
 			statement: 'Combien font 2 + 2 ?',
-			answer: '4',
-			type: 'input-number' as const
+			theme: 'Calcul',
+			generatedAt: new Date().toISOString()
 		},
 		isCorrect,
 		timeSpent: 5,
@@ -105,7 +126,7 @@ function reponse(templateId: string, isCorrect: boolean, index = 0) {
 	};
 }
 
-async function enregistrer(answers: ReturnType<typeof reponse>[]) {
+async function enregistrer(answers: ReturnType<typeof reponse>[], statutAttendu = 201) {
 	const request = new Request('http://localhost/api/tests/save', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -143,7 +164,7 @@ async function enregistrer(answers: ReturnType<typeof reponse>[]) {
 
 	// ⚠️ Sans ce garde, un corps rejeté par Zod rendrait 400 et TOUS les cas
 	// seraient rouges pour une raison étrangère au correctif.
-	expect(reponseHttp.status, 'la route doit accepter la requête').toBe(201);
+	expect(reponseHttp.status, 'statut de la route').toBe(statutAttendu);
 	return reponseHttp;
 }
 
@@ -153,6 +174,9 @@ describe('enregistrement d’une évaluation', () => {
 		cartesDeCours = [];
 		sessionInseree = null;
 		addBuddyXpFromTest.mockClear();
+		refusRlsSilencieux = false;
+		lecturesModelesEnPanne = 0;
+		lecturesModeles = 0;
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		ensureProgrammeDeckCard.mockReset().mockResolvedValue(undefined);
 	});
@@ -293,5 +317,40 @@ describe('enregistrement d’une évaluation', () => {
 	it('sans carte : score et total inchangés (ceux du client)', async () => {
 		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)]);
 		expect(sessionInseree).toMatchObject({ score: 10, total_questions: 2 });
+	});
+
+	it('signale un INSERT skill_attempts qui ne rend aucune ligne', async () => {
+		const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+		refusRlsSilencieux = true;
+
+		await enregistrer([reponse(MODELE_A, true)]);
+
+		const messages = consoleError.mock.calls.map((c) => String(c[0]));
+		expect(messages).toContain('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées');
+		expect(messages).toContain('[tests/save] test_answers : lignes écrites ≠ lignes envoyées');
+		consoleError.mockRestore();
+	});
+	// R2 (David, 2026-09-28) : la nature « carte » décide du score, de l'XP et
+	// du paquet. Sans elle, mieux vaut perdre la session qu'écrire un score faux.
+	it('base momentanément illisible : réessaie, puis enregistre normalement', async () => {
+		lecturesModelesEnPanne = 2;
+		cartesDeCours = [MODELE_B];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
+
+		expect(lecturesModeles).toBe(3);
+		expect(attemptsInseres.find((a) => a.template_id === MODELE_B)).toMatchObject({
+			source: 'student_self'
+		});
+	});
+
+	it('base illisible après 3 tentatives : 503 et RIEN n’est écrit', async () => {
+		lecturesModelesEnPanne = 99;
+		await enregistrer([reponse(MODELE_A, true, 0)], 503);
+
+		expect(lecturesModeles).toBe(3);
+		expect(sessionInseree).toBeNull();
+		expect(attemptsInseres).toEqual([]);
+		expect(applyFsrsReview).not.toHaveBeenCalled();
+		expect(addBuddyXpFromTest).not.toHaveBeenCalled();
 	});
 });
