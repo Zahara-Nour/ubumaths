@@ -76,6 +76,25 @@ case `unit: { expected: true }`.
 imposée (`required: 'min'`) ; « 2 h 15 kg » refusé (grandeur incompatible) ; « 2 h 75 min »
 perfectible. Mesurer d'abord ce que MathLive produit au **vrai clavier**.
 
+**Mesure au vrai clavier (2026-09-28, Chrome + extension, MathLive 0.110.0)** — case reproduite comme
+`MathPrompt.svelte` (`math-field` readonly, `\placeholder[0]{}`, `mathModeSpace = '\,'`), frappe réelle :
+
+| Tapé                       | MathLive (`getPromptValue`)    | Correcteur actuel           |
+| -------------------------- | ------------------------------ | --------------------------- |
+| `2 h 15 min`               | `2\,h\,15\,\min`               | `2\unit{h 15 min}` → refusé |
+| `2h15min`                  | `2h15\min`                     | `2\unit{h15min}` → refusé   |
+| `2 h 15`                   | `2\,h\,15`                     | refusé                      |
+| `1 h 5 min 30 s`           | `1\,h\,5\,\min\,30\,s`         | refusé                      |
+| `2 min 30 s`               | `2\,\min\,30\,s`               | refusé                      |
+| `2 h 75 min`               | `2\,h\,75\,\min`               | refusé                      |
+| `2 h 15 mn`                | `2\,h\,15\,mn`                 | refusé                      |
+| `3 h` / `45 min` / `2,5 h` | `3\,h` / `45\,\min` / `2,5\,h` | ✅ lus                      |
+
+Constats : « min » devient TOUJOURS l'opérateur `\min` (« mn » reste en lettres) ; l'espace tapée
+devient `\,` ; les durées simples passent déjà, toutes les composées échouent (`normalizeStudentQuantity`
+rend `2\unit{h 15 min}`, que `parseLatexQuantity` ne lit pas). Le test navigateur vitest ne démarre pas
+dans cet environnement ; `ubumaths-wt-du` porte un test de mesure non suivi, devenu inutile.
+
 ## Avancement
 
 - [x] Phase 0 validée (2026-09-27)
