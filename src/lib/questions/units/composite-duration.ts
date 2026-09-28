@@ -201,6 +201,12 @@ export function readCompositeDuration(latex: string): CompositeDurationReading |
 
 	const totalSeconds = parts.reduce((sum, part) => sum + part.value * SECONDS[part.unit], 0);
 	if (decimalInside) {
+		// Unités dans le désordre ou répétées : c'est ce défaut-là qu'il faut dire
+		// (la forme normalisée n'a pas de sens : « 2,5 min 1 h » donnerait « 0 h »)
+		const ranks = parts.map((part) => UNIT_ORDER.indexOf(part.unit));
+		if (ranks.some((rank, index) => index > 0 && rank <= ranks[index - 1])) {
+			return { kind: 'decimal-inside', feedback: DURATION_FEEDBACK.order };
+		}
 		const writing = normalizedWriting(totalSeconds, parts[0].unit, parts[parts.length - 1].unit);
 		return {
 			kind: 'decimal-inside',
