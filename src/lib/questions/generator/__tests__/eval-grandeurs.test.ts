@@ -129,9 +129,10 @@ describe('modificateur ;hms — durées', () => {
 		const statement = String(
 			instanceOf('${{eval:135[min];hms}}$ ~{{eval:135[min];hms}}~').statement
 		);
-		expect(statement).toContain('$2~\\unit{h} 15~\\unit{min}$');
+		// Une espace ORDINAIRE entre `\\unit{h}` et `15` est ignorée en mode math : « 2 h15 min »
+		expect(statement).toContain('$2~\\unit{h}~15~\\unit{min}$');
 		expect(statement).toContain('~{2[h]}{15[min]}~');
-		expect(expressionToLatex('{2[h]}{15[min]}', 'custom')).toBe('2~\\mathrm{h} 15~\\mathrm{min}');
+		expect(expressionToLatex('{2[h]}{15[min]}', 'custom')).toBe('2~\\mathrm{h}~15~\\mathrm{min}');
 	});
 
 	it.each([
@@ -230,4 +231,50 @@ describe('relecture : produit de durées, facteurs imbriqués', () => {
 			expect(() => evalOf(expression)).toThrow(/produit de durées/i);
 		}
 	);
+});
+
+// Relecture #467 (« Soustraire des durées ») : « 3 h56 min » dans 40 tirages sur 40, et
+// `4[h]` brut en tête d'une ligne d'`align` quand la fin tombe sur une heure ronde
+describe('relecture #467 : durées ;hms dans l’énoncé et la correction', () => {
+	const template: QuestionTemplate = {
+		id: 't',
+		title: 't',
+		status: 'draft',
+		grades: ['6'],
+		theme: 'T',
+		domain: 'D',
+		level: 1,
+		variations: [
+			{
+				statement: templateMarkdown(
+					'J’ai commencé à ${{eval:(a[h]+b[min]);hms}}$, terminé à ${{eval:(a[h]+b[min]) + c[min];hms}}$.\n\n$?$'
+				),
+				variables: [
+					{ name: 'a', expression: '1..4' },
+					{ name: 'b', expression: '1..59' },
+					{ name: 'c', expression: '1..59' }
+				],
+				correction: {
+					steps: [
+						templateMarkdown(
+							'{{if:{{b}}+{{c}}<60|${{eval:(a[h]+b[min]);hms}} + {{solution}} = {{eval:(a[h]+b[min]) + c[min];hms}}$|$$\\begin{align}{{eval:(a[h]+b[min]) + c[min];hms}} &= {{eval:(a[h]+b[min]);hms}} + {{eval:60-b}}~\\unit{min} + {{eval:c+b-60}}~\\unit{min}\\\\ &= {{eval:(a[h]+b[min]);hms}} + {{solution}}\\end{align}$$}}'
+						)
+					]
+				},
+				blanks: [{ expectedAnswer: '{{eval:c[min]}}', unit: { expected: true } }]
+			}
+		]
+	};
+
+	it('40 tirages : jamais d’espace ordinaire après une unité, jamais de durée brute', () => {
+		const faults: string[] = [];
+		for (let seed = 1; seed <= 40; seed++) {
+			const result = generateInstance(template, seed);
+			if (!result.success) throw new Error(result.errors.join('; '));
+			const text = String(result.instance.statement) + JSON.stringify(result.instance.correction);
+			if (/\\unit\{[^}]*\} \d/.test(text)) faults.push(`graine ${seed} : espace ordinaire`);
+			if (/\d\[(?:h|min|s)\]/.test(text)) faults.push(`graine ${seed} : durée brute`);
+		}
+		expect(faults).toEqual([]);
+	});
 });

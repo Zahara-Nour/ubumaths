@@ -18,7 +18,8 @@ const VARS: ResolvedVariable[] = [
 	{ name: 'b', value: '28[mm]' },
 	{ name: 'c', value: '5.003[km]' },
 	{ name: 'h', value: '{2[h]}{15[min]}' },
-	{ name: 'n', value: '-3[m]' }
+	{ name: 'n', value: '-3[m]' },
+	{ name: 'r', value: '4[h]' }
 ] as ResolvedVariable[];
 
 const resolve = (content: string) =>
@@ -36,6 +37,20 @@ describe('grandeur dans une formule LaTeX d’auteur', () => {
 
 	it('durée composée (;hms) : « 2 h 15 min », séparées par une espace', () => {
 		expect(resolve('$ {{h}} \\approx 2 $')).toBe('$ 2~\\unit{h}~15~\\unit{min} \\approx 2 $');
+	});
+});
+
+// Relecture #467 : une grandeur en tête de ligne d'`align` (`\\begin{align}4[h] &= …`) restait
+// brute — l'accolade de `\\begin{align}` la faisait prendre pour un nombre groupé `12{}345[m]`
+describe('grandeur juste après \\begin{…}', () => {
+	it.each([
+		['$$\\begin{align}{{r}} &= 1\\end{align}$$', '$$\\begin{align}4~\\unit{h} &= 1\\end{align}$$'],
+		[
+			'$$\\begin{align}{{h}} &= 1\\end{align}$$',
+			'$$\\begin{align}2~\\unit{h}~15~\\unit{min} &= 1\\end{align}$$'
+		]
+	])('%s → %s', (content, expected) => {
+		expect(resolve(content)).toBe(expected);
 	});
 });
 

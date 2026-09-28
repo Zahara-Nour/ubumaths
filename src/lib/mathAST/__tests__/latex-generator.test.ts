@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { toLatex, LatexGenerator } from '../latex-generator';
+import { parseCustom } from '../parser/custom';
 import { MathAST } from '../index';
 import type { RelationType } from '../types';
 import {
@@ -689,5 +690,23 @@ describe('LatexGenerator - base de puissance : puissance ou produit', () => {
 			MathAST.power(MathAST.variable('x'), MathAST.number('2'))
 		);
 		expect(toLatex(expr)).toBe('2 x^2');
+	});
+});
+
+// Durée composée écrite par `;hms` (`{3[h]}{56[min]}`) : une espace ordinaire entre `\unit{h}`
+// et `56` est ignorée en mode math → « 3 h56 min » (relecture #467)
+describe('LatexGenerator - durée composée (juxtaposition de grandeurs)', () => {
+	it.each([
+		['{3[h]}{56[min]}', '3~\\unit{h}~56~\\unit{min}'],
+		['{3[h]}{20[min]}{5[s]}', '3~\\unit{h}~20~\\unit{min}~5~\\unit{s}'],
+		['{2[h]}{15[min]}+4[min]', '2~\\unit{h}~15~\\unit{min} + 4~\\unit{min}']
+	])('%s → %s', (source, expected) => {
+		const node = parseCustom(source);
+		expect(toLatex(node)).toBe(expected);
+		expect(toLatex(node, { renderMetadata: true })).toBe(expected);
+	});
+
+	it('un produit implicite ordinaire garde son espace', () => {
+		expect(toLatex(parseCustom('2x'))).toBe('2 x');
 	});
 });
