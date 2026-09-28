@@ -1,4 +1,4 @@
-# Outillage — pnpm 12 et `[local_smtp]`, progression
+# Outillage — pnpm 12, `[local_smtp]` et CLI Supabase fixée, progression
 
 > Chantier ouvert le 2026-09-29, pendant la migration du poste de dev vers le
 > Mac mini. **Rien n'est commencé.** À faire après la migration, sur une branche
@@ -8,7 +8,7 @@
 ## Pourquoi ce chantier
 
 Sur le Mac mini, un `corepack use pnpm@12.6.0` lancé dans le projet a réécrit
-`"packageManager"` et réinstallé avec pnpm 12. Deux constats :
+`"packageManager"` et réinstallé avec pnpm 12. Trois constats :
 
 1. **pnpm 12 ne lit plus la section `"pnpm"` de `package.json`.** Avertissement
    rendu : `The following keys were ignored: "pnpm.onlyBuiltDependencies",
@@ -29,6 +29,17 @@ Sur le Mac mini, un `corepack use pnpm@12.6.0` lancé dans le projet a réécrit
 2. **La CLI Supabase récente déprécie `[inbucket]`** dans `supabase/config.toml`
    (`WARN: config section [inbucket] is deprecated. Please use [local_smtp]
 instead`). Simple avertissement : la section fonctionne encore.
+
+3. **`pnpm db:types` dépend de la CLI Supabase installée sur la machine.**
+   Le projet n'a pas `supabase` en dépendance : `pnpm supabase` appelle la CLI
+   globale (Homebrew). Mesuré le 2026-09-29, même base de prod :
+
+   - laptop, CLI **2.105.0** → fichier **identique** au `database.ts` commité
+     (la prod n'avait donc pas changé) ;
+   - Mac mini, CLI **2.118.0** → **+28 lignes** : le schéma `graphql_public`
+     apparaît (types + `Constants`), `public` inchangé.
+
+   Même cause que le constat 2 : la version de la CLI varie selon le poste.
 
 ## Tâche A — passer le projet à pnpm 12
 
@@ -68,11 +79,33 @@ instead`). Simple avertissement : la section fonctionne encore.
       (cron désactivé, `workflow_dispatch` uniquement) — une PR ne le lance
       donc jamais.
 
+## Tâche C — fixer la version de la CLI Supabase dans le projet
+
+Objectif : `pnpm supabase` = la même version partout (postes et CI), pour que
+`db:types` rende le même fichier et que `config.toml` soit lu pareil.
+
+- [ ] Ajouter `supabase` en `devDependencies`, version **exacte** (pas de `^`).
+- [ ] Le paquet npm `supabase` télécharge son binaire par un script
+      d'installation (**à vérifier**) : il faudra l'autoriser, comme `esbuild`
+      — même mécanisme que la tâche A, qui bloque sous pnpm 12.
+- [ ] Une seule source de vérité pour la version : faire utiliser
+      `pnpm supabase` à `nightly-integration.yml`, ou à défaut aligner
+      `supabase/setup-cli` (aujourd'hui 2.105.0) sur la devDependency.
+- [ ] **À trancher avec David**, le sort de `graphql_public` si la version
+      retenue est ≥ 2.118.0 : accepter le bloc une fois dans la PR, ou passer
+      `--schema public` à `db:types` pour que le fichier ne dépende plus du
+      choix par défaut de la CLI.
+- [ ] Vérifier : `pnpm db:types` sur les deux postes → même fichier ;
+      `check:incremental` à 0 erreur (les helpers génériques de `database.ts`
+      parcourent tous les schémas).
+
 ## Définition de terminé
 
 - `pnpm install` sans avertissement sur les overrides, sans erreur de build.
 - Lockfile : versions imposées par les 12 overrides respectées — planchers,
   et épinglages `parse5` 7.2.1 / `jsdom` 26.1.0 (preuve collée dans la PR).
 - `pnpm db:start` sans avertissement `[inbucket]`.
+- `pnpm supabase --version` identique sur chaque poste et en CI ; `db:types`
+  ne change rien à `database.ts` hors vrai changement de schéma.
 - CI verte, y compris le workflow nocturne lancé sur la branche ; preview
   Vercel OK.
