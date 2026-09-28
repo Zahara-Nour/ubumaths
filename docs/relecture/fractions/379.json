@@ -23,7 +23,7 @@
 		},
 		"variations": [
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression1}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression1}}$$",
 				"variables": [
 					{
 						"name": "expression1",
@@ -34,10 +34,11 @@
 					{
 						"expectedAnswer": "{{a}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			},
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression2}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression2}}$$",
 				"variables": [
 					{
 						"name": "expression2",
@@ -48,10 +49,11 @@
 					{
 						"expectedAnswer": "{{c}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			},
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression3}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression3}}$$",
 				"variables": [
 					{
 						"name": "expression3",
@@ -62,10 +64,11 @@
 					{
 						"expectedAnswer": "{{b}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			},
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression4}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression4}}$$",
 				"variables": [
 					{
 						"name": "expression4",
@@ -76,10 +79,11 @@
 					{
 						"expectedAnswer": "{{c}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			},
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression5}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression5}}$$",
 				"variables": [
 					{
 						"name": "expression5",
@@ -90,10 +94,11 @@
 					{
 						"expectedAnswer": "{{a}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			},
 			{
-				"statement": "Complète cette égalité avec le  nombre manquant.\n\n$${{expression6}}$$",
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression6}}$$",
 				"variables": [
 					{
 						"name": "expression6",
@@ -104,7 +109,8 @@
 					{
 						"expectedAnswer": "{{b}}"
 					}
-				]
+				],
+				"conditions": ["a+b!=0"]
 			}
 		],
 		"grades": ["4"],
@@ -234,5 +240,6 @@
 				}
 			}
 		]
-	}
+	},
+	"editNotes": " Décision de David (2026-09-28) : tirages de somme nulle exclus (a + b ≠ 0 : plus de résultat 0/7) ; double espace retirée."
 }

@@ -292,12 +292,20 @@ function coefficientOutOfFraction(node: MathNode): MathNode | undefined {
 	const over = (c: MathNode): MathNode => divide(c, denominator, 'fraction');
 	const signedOver = (c: MathNode): MathNode =>
 		isOpposite(c) ? opposite(over(c.operand)) : over(c);
+	// Réservé à la forme canonique : la partie non numérique est une PUISSANCE (`(…)^k`) ;
+	// `\\frac{x}{2}`, `\\frac{3x}{4}`, `\\frac{x+4}{2}` ne sont pas réécrits (resserrement #490)
 	if (isMultiplication(numerator) && isSignedNonZeroNumber(numerator.left)) {
+		const c = isOpposite(numerator.left) ? numerator.left.operand : numerator.left;
+		// Coefficient 1 écrit (`\\frac{1(x+2)^2}{2}`) : pas une forme réduite
+		if (isNumber(c) && Number(c.value) === 1) return undefined;
+		if (!isSuperscript(numerator.right)) return undefined;
 		return multiply(signedOver(numerator.left), numerator.right, 'implicit');
 	}
 	if (isOpposite(numerator)) {
+		if (!isSuperscript(numerator.operand)) return undefined;
 		return multiply(opposite(over(number('1'))), numerator.operand, 'implicit');
 	}
+	if (!isSuperscript(numerator)) return undefined;
 	return multiply(over(number('1')), numerator, 'implicit');
 }
 
@@ -358,12 +366,23 @@ function isNonZeroNumber(node: MathNode): boolean {
 function isSimpleNumber(node: MathNode): boolean {
 	const unsigned = isOpposite(node) ? node.operand : node;
 	if (isNonZeroNumber(unsigned)) return true;
-	return (
-		isDivision(unsigned) &&
-		isNonZeroNumber(unsigned.numerator) &&
-		isNumber(unsigned.denominator) &&
-		isNonZeroNumber(unsigned.denominator)
-	);
+	if (!isDivision(unsigned)) return false;
+	// Fraction IRRÉDUCTIBLE d'entiers, dénominateur ≥ 2 : ni `\\frac{2}{2}`, ni `\\frac{1}{1}`,
+	// ni `\\frac{1}{0.5}` (resserrement #490)
+	const p = integerValue(unsigned.numerator);
+	const q = integerValue(unsigned.denominator);
+	return p !== undefined && q !== undefined && p >= 1 && q >= 2 && gcd(p, q) === 1;
+}
+
+/** Valeur d'un nombre écrit entier (`3`), sinon undefined (`2.5`, `x`, `−3`) */
+function integerValue(node: MathNode): number | undefined {
+	if (!isNumber(node)) return undefined;
+	const value = Number(node.value);
+	return Number.isInteger(value) ? value : undefined;
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
 }
 
 /**

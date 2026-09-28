@@ -2,7 +2,7 @@
 	"globalIndex": 349,
 	"verdict": "corrected",
 	"reviewer": "claude",
-	"editNotes": "Réponse attendue « b+c/a » remplacée par « b+\\frac{c}{a} » : toute saisie MathLive (3+\\frac{45}{100}) était refusée [form] et la correction affichait « 3+45/100 » en ligne. Forme exigée ajoutée (motif « n:integer + p:integer / q:integer ») : sans elle, avec reducedFractions désactivé, la non-décomposition \\frac{300}{100}+\\frac{45}{100} était acceptée comme juste. Limite connue : le motif ne vérifie pas que la fraction est < 1 (2+\\frac{145}{100} passe). Specs : juste aux bornes, somme commutée et fraction simplifiée acceptées ; écriture décimale et somme de deux fractions refusées ; mauvaise partie fractionnaire refusée.",
+	"editNotes": "Réponse attendue « b+c/a » remplacée par « b+\\frac{c}{a} » : toute saisie MathLive (3+\\frac{45}{100}) était refusée [form] et la correction affichait « 3+45/100 » en ligne. Forme exigée ajoutée (motif « n:integer + p:integer / q:integer ») : sans elle, avec reducedFractions désactivé, la non-décomposition \\frac{300}{100}+\\frac{45}{100} était acceptée comme juste. Limite connue : le motif ne vérifie pas que la fraction est < 1 (2+\\frac{145}{100} passe). Specs : juste aux bornes, somme commutée et fraction simplifiée acceptées ; écriture décimale et somme de deux fractions refusées ; mauvaise partie fractionnaire refusée. Décision de David (2026-09-28) : la fraction doit être inférieure à 1 (motif « n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000) », comparaison entre jokers #492). Une fraction inférieure à 1 mais non décimale (3 + 9/20) est perfectible (motif acceptable).",
 	"template": {
 		"title": "Décomposer une fraction",
 		"description": "Une fraction décimale (jusqu'aux centièmes) en une somme d'un entier et d'une fraction décimale inférieure à $1$",
@@ -53,7 +53,8 @@
 		"delay": 30,
 		"shared": {
 			"requiredForm": {
-				"pattern": "n:integer + p:integer / q:integer"
+				"pattern": "n:integer + p:inN & lt(q) / q:eq(10) | eq(100) | eq(1000)",
+				"acceptable": "n:integer + p:inN & lt(q) / q:integer"
 			}
 		},
 		"testSpecs": [
@@ -84,7 +85,7 @@
 				}
 			},
 			{
-				"description": "fraction simplifiée",
+				"description": "fraction inférieure à 1 mais non décimale : perfectible",
 				"variationIndex": 0,
 				"variables": {
 					"a": "100",
@@ -93,7 +94,8 @@
 				},
 				"answers": ["3+\\frac{9}{20}"],
 				"expected": {
-					"status": "correct"
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
 				}
 			},
 			{
@@ -161,6 +163,20 @@
 				"answers": ["3+\\frac{4}{100}"],
 				"expected": {
 					"status": "incorrect"
+				}
+			},
+			{
+				"description": "fraction supérieure à 1 : refusée (décision de David)",
+				"variationIndex": 0,
+				"variables": {
+					"a": "100",
+					"b": "3",
+					"c": "45"
+				},
+				"answers": ["2+\\frac{145}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
 				}
 			}
 		]

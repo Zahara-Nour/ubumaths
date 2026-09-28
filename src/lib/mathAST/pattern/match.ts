@@ -232,7 +232,7 @@ function matchWildcard(
 	ctx?: TypeContext
 ): MatchResult {
 	// Check constraint first if present
-	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx)) {
+	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx, bindings)) {
 		return failMatch();
 	}
 
@@ -672,7 +672,7 @@ function matchBareSequence(
 	ctx?: TypeContext
 ): MatchResult {
 	// Honour an element constraint if present.
-	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx)) {
+	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx, bindings)) {
 		return failMatch();
 	}
 
