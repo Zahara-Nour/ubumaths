@@ -117,6 +117,25 @@ describe('case à unité — durée composée', () => {
 	])('durée simple %s : inchangée', (answer, expected) => {
 		expect(check(answer, expected).isCorrect).toBe(true);
 	});
+
+	// Virgule ailleurs qu'au dernier terme : refus inchangé, mais le message disait
+	// « Unité inconnue : h 15 min. » alors que l'unité n'y est pour rien (2026-09-28).
+	it.each([
+		['2,5\\,h\\,15\\,\\min', '165\\unit{min}', '2 h 45 min'],
+		['2{,}5\\,h\\,15\\,\\min', '135\\unit{min}', '2 h 45 min'],
+		['1,5\\,\\min\\,30\\,s', '120\\unit{s}', '2 min']
+	])('%s : refusé, message sur la virgule (%s → %s)', (answer, expected, writing) => {
+		const result = check(answer, expected);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status ?? 'incorrect').toBe('incorrect');
+		expect(result.feedback).toBe(
+			`Seule la dernière unité peut avoir une virgule : écris ${writing}.`
+		);
+	});
+
+	it('virgule au dernier terme : inchangé (2 h 15,5 min juste)', () => {
+		expect(check('2\\,h\\,15{,}5\\,\\min', '135.5\\unit{min}').isCorrect).toBe(true);
+	});
 });
 
 describe('runTestSpec — gabarit de durée', () => {

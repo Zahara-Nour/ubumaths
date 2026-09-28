@@ -43,6 +43,11 @@ export interface ValidationResult {
 	 */
 	unitAtFault?: boolean;
 	/**
+	 * Vrai quand c'est l'ÉCRITURE de la durée composée qui est en cause, pas
+	 * l'unité (« 2,5 h 15 min ») : `feedback` porte un message destiné à l'élève.
+	 */
+	durationWritingAtFault?: boolean;
+	/**
 	 * Durée composée lue (« 2 h 15 min ») : défaut de FORME à signaler si la
 	 * valeur est juste (perfectible ou mauvaise forme, cf. `./composite-duration`).
 	 */
@@ -158,6 +163,17 @@ export function validateQuantityAnswer(
 			feedback: UNIT_FEEDBACK.wrongMagnitude,
 			errorType: 'incompatible_units',
 			unitAtFault: true,
+			parsed: null,
+			expected: expectedDisplay
+		};
+	}
+	// « 2,5 h 15 min » : refusé — le défaut est la virgule, pas l'unité
+	if (duration?.kind === 'decimal-inside') {
+		return {
+			isCorrect: false,
+			feedback: duration.feedback,
+			errorType: 'invalid_input',
+			durationWritingAtFault: true,
 			parsed: null,
 			expected: expectedDisplay
 		};

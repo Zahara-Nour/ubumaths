@@ -846,8 +846,13 @@ function validateSingleBlank(
 			blank.precision,
 			blank.unit.required
 		);
-		// L'unité est en cause : l'élève doit lire pourquoi (message figé, cf. units/feedback)
-		if (!result.isCorrect && result.unitAtFault && result.feedback) {
+		// L'unité (ou l'écriture d'une durée composée) est en cause : l'élève doit
+		// lire pourquoi (message figé, cf. units/feedback et units/composite-duration)
+		if (
+			!result.isCorrect &&
+			(result.unitAtFault || result.durationWritingAtFault) &&
+			result.feedback
+		) {
 			return { isCorrect: false, feedback: result.feedback };
 		}
 		isCorrect = result.isCorrect;
