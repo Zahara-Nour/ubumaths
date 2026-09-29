@@ -15,15 +15,15 @@
 
 <script lang="ts">
 	import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
-	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
+	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
 	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { MathInline } from '$lib/components/markdown/nodes';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, AlertCircle } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import FlipCard from '$lib/components/FlipCard.svelte';
@@ -109,8 +109,11 @@
 
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
-	const typeLabel = $derived(
-		isCourseCard ? QUESTION_TYPE_LABELS.course_card : getQuestionType(instance)
+	// Un seul trou (hors tracé) : le verso n'affiche que sa bonne réponse, en grand
+	const singleBlank = $derived(
+		instance.blanks?.length === 1 && instance.blanks[0].type !== 'graphical'
+			? instance.blanks[0]
+			: undefined
 	);
 
 	const correctionMarkdown = $derived.by(() => {
@@ -416,71 +419,74 @@
 
 		{#snippet back()}
 			<div class="relative h-full">
-				<Card.Root class="h-full">
-					<Card.Header>
-						<div class="flex items-center justify-between">
-							<Card.Title>{isCourseCard ? 'Verso' : 'Correction'}</Card.Title>
-							<Badge variant="outline">{typeLabel}</Badge>
-						</div>
-					</Card.Header>
-
+				<!-- Verso allégé : titre vert centré ; ni badge, ni intitulés, ni encadrés -->
+				<Card.Root class={cn('h-full', fitVisibleFace && 'pb-16')}>
 					<Card.Content class="space-y-6">
+						<p
+							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
+							data-verso-title
+						>
+							{isCourseCard ? 'Verso' : 'Correction'}
+						</p>
+
 						{#if isCourseCard}
 							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
-							<div class="rounded-lg border bg-card p-4">
-								<CourseCardBack correction={instance.correction} />
-							</div>
+							<CourseCardBack correction={instance.correction} />
 						{:else}
-							<!-- Correct answer -->
 							<div class="correct-answer">
 								<!-- Plusieurs bonnes réponses : celle affichée n'en est qu'un exemple -->
-								<h3 class="mb-3 text-lg font-semibold">
-									{hasRulesSufficeBlank(instance) ? 'Une réponse possible' : 'Réponse correcte'}
-								</h3>
-								<div
-									class="rounded-lg border-2 border-green-600 bg-green-50 p-4 dark:bg-green-950/20"
-								>
-									{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
-										<FillBlanksInput
-											statement={instance.statement}
-											blanks={instance.blanks}
-											expressions={instance.expressions}
-											showCorrectAnswers={true}
-											onlyBlanks={true}
-										/>
-									{:else if getQuestionType(instance) === 'multiple_choice' && instance.choices}
-										<ul class="space-y-2">
-											{#each instance.choices as choice, i (i)}
-												{#if choice.isCorrect}
-													<li class="flex items-center gap-2">
-														<Check class="h-5 w-5 flex-shrink-0 text-green-600" />
-														<MarkdownRenderer content={choice.content} />
-													</li>
-												{/if}
-											{/each}
-										</ul>
-									{:else}
-										<!--
-										getQuestionType() ne connaît que deux types : sans `choices`, une
-										question est classée `fill_in_blanks`. Si elle n'a pas non plus de
-										`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
-										repli, l'encadré vert se rendait vide et muet.
-									-->
-										<p class="text-sm text-muted-foreground">
-											{correctionMarkdown
-												? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
-												: 'Aucune réponse enregistrée pour cette question.'}
-										</p>
-									{/if}
-								</div>
+								{#if hasRulesSufficeBlank(instance)}
+									<p class="mb-2 text-center text-sm text-muted-foreground">Une réponse possible</p>
+								{/if}
+								{#if singleBlank}
+									<!-- Un seul trou : uniquement sa bonne réponse, en plus gros -->
+									<div class="text-center text-3xl font-semibold" data-single-answer>
+										{#if singleBlank.type === 'math'}
+											<MathInline
+												expression={singleBlank.expectedAnswerLatex ?? singleBlank.expectedAnswer}
+												syntax={singleBlank.expectedAnswerLatex ? 'latex' : 'custom'}
+											/>
+										{:else}
+											{singleBlank.expectedAnswer}
+										{/if}
+									</div>
+								{:else if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
+									<FillBlanksInput
+										statement={instance.statement}
+										blanks={instance.blanks}
+										expressions={instance.expressions}
+										showCorrectAnswers={true}
+										onlyBlanks={true}
+									/>
+								{:else if getQuestionType(instance) === 'multiple_choice' && instance.choices}
+									<ul class="space-y-2">
+										{#each instance.choices as choice, i (i)}
+											{#if choice.isCorrect}
+												<li class="flex items-center gap-2">
+													<Check class="h-5 w-5 flex-shrink-0 text-green-600" />
+													<MarkdownRenderer content={choice.content} />
+												</li>
+											{/if}
+										{/each}
+									</ul>
+								{:else}
+									<!--
+									getQuestionType() ne connaît que deux types : sans `choices`, une
+									question est classée `fill_in_blanks`. Si elle n'a pas non plus de
+									`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+									repli, la zone de réponse se rendait vide et muette.
+								-->
+									<p class="text-sm text-muted-foreground">
+										{correctionMarkdown
+											? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+											: 'Aucune réponse enregistrée pour cette question.'}
+									</p>
+								{/if}
 							</div>
 
 							{#if correctionMarkdown}
 								<div class="correction-steps">
-									<h3 class="mb-3 text-lg font-semibold">Explication</h3>
-									<div class="rounded-lg border bg-card p-4">
-										<MarkdownRenderer content={correctionMarkdown} />
-									</div>
+									<MarkdownRenderer content={correctionMarkdown} />
 								</div>
 							{/if}
 						{/if}

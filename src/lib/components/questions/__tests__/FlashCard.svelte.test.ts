@@ -102,10 +102,10 @@ describe('FlashCard — verso d’une question à plusieurs bonnes réponses', (
 		expect(container.textContent).not.toContain('Réponse correcte');
 	});
 
-	it('titre « Réponse correcte » sinon (inchangé)', async () => {
+	it('sinon, aucun intitulé au-dessus de la réponse (verso allégé, 2026-09-29)', async () => {
 		const { container } = await render(FlashCard, { instance: instance(undefined) });
 		await flip(container);
-		expect(container.textContent).toContain('Réponse correcte');
+		expect(container.textContent).not.toContain('Réponse correcte');
 		expect(container.textContent).not.toContain('Une réponse possible');
 	});
 });
@@ -206,5 +206,86 @@ describe('FlashCard — hauteur de la face visible (fitVisibleFace)', () => {
 		const h = heights(container);
 
 		expect(h.card).toBeCloseTo(h.back, 0);
+	});
+});
+
+/**
+ * Verso allégé (demande de David, 2026-09-29) : « Correction » centré en vert
+ * en haut ; ni badge, ni « Réponse correcte », ni « Explication », ni encadré ;
+ * un seul trou → uniquement sa bonne réponse, en plus gros.
+ */
+describe('FlashCard — verso allégé', () => {
+	function instance(overrides: Partial<QuestionInstance> = {}): QuestionInstance {
+		return {
+			templateId: 'test',
+			statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
+			blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
+			correction: { steps: [resolvedMarkdown('On multiplie 2 par 8 dizaines.')] },
+			grades: ['6'],
+			theme: 'Entiers',
+			domain: 'Multiplier',
+			level: 1,
+			generatedAt: new Date().toISOString(),
+			...overrides
+		} as unknown as QuestionInstance;
+	}
+
+	function back(container: HTMLElement): HTMLElement {
+		const face = container.querySelector<HTMLElement>('.flip-card-back');
+		expect(face).not.toBeNull();
+		return face!;
+	}
+
+	it('titre « Correction » centré, en vert', async () => {
+		const { container } = await render(FlashCard, { instance: instance() });
+		const title = back(container).querySelector<HTMLElement>('[data-verso-title]');
+
+		expect(title?.textContent?.trim()).toBe('Correction');
+		expect(title?.className).toContain('text-center');
+		expect(title?.className).toMatch(/text-green/);
+	});
+
+	it('ni badge du type, ni « Réponse correcte », ni « Explication »', async () => {
+		const { container } = await render(FlashCard, { instance: instance() });
+		const text = back(container).textContent ?? '';
+
+		expect(text).not.toContain('fill_in_blanks');
+		expect(text).not.toContain('Réponse correcte');
+		expect(text).not.toContain('Explication');
+		expect(text).toContain('On multiplie 2 par 8 dizaines.');
+	});
+
+	it("aucun encadré (ni vert autour de la réponse, ni autour de l'explication)", async () => {
+		const { container } = await render(FlashCard, { instance: instance() });
+
+		// Le contenu du verso, pas la carte elle-même (qui garde son bord)
+		const content = back(container).querySelector('[data-slot="card-content"]');
+		expect(content).not.toBeNull();
+		expect(content!.querySelector('.border, .border-2')).toBeNull();
+	});
+
+	it('un seul trou : uniquement la bonne réponse, en plus gros', async () => {
+		const { container } = await render(FlashCard, { instance: instance() });
+		const answer = back(container).querySelector<HTMLElement>('[data-single-answer]');
+
+		expect(answer).not.toBeNull();
+		expect(answer?.className).toMatch(/text-(2xl|3xl)/);
+		expect(answer?.textContent).toContain('160');
+		// L'énoncé n'est pas répété autour de la réponse
+		expect(answer?.textContent).not.toContain('Calcule');
+	});
+
+	it('plusieurs trous : pas de réponse unique en gros', async () => {
+		const { container } = await render(FlashCard, {
+			instance: instance({
+				statement: resolvedMarkdown('$${{blank:0}} + {{blank:1}} = 5$$'),
+				blanks: [
+					{ expectedAnswer: '2', expectedAnswerLatex: '2', type: 'math' },
+					{ expectedAnswer: '3', expectedAnswerLatex: '3', type: 'math' }
+				]
+			} as Partial<QuestionInstance>)
+		});
+
+		expect(back(container).querySelector('[data-single-answer]')).toBeNull();
 	});
 });

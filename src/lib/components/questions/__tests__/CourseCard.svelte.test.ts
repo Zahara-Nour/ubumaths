@@ -89,7 +89,10 @@ describe('carte de cours — révision SRS (FlashCard)', () => {
 		await tick();
 		expect(container.textContent).toContain('On détermine son ensemble de définition.');
 		expect(container.textContent).not.toContain('Aucune réponse enregistrée');
-		expect(container.textContent).toContain('Carte de cours');
+		// Verso allégé (2026-09-29) : plus de badge du type, le titre « Verso » identifie la carte de cours
+		expect(container.querySelector('.flip-card-back [data-verso-title]')?.textContent?.trim()).toBe(
+			'Verso'
+		);
 	});
 });
 
