@@ -171,3 +171,24 @@ describe('les options existantes cohabitent', () => {
 		).toBe(false);
 	});
 });
+
+// Une variable indicée (x₁, u_n) est une AUTRE variable que sa base : « Soit x > 0 »
+// ne dit rien des racines x₁, x₂. Faux positif trouvé en revue adverse (#522).
+describe('Hypothèses : les variables indicées n’héritent pas de leur base', () => {
+	it.each<[string, string, AnswerAssumptions]>([
+		['|x_{1}|', 'x_{1}', X_POSITIVE],
+		['|x_1|', 'x_1', X_POSITIVE],
+		['|x_{1}|^{a}', 'x_{1}^{a}', X_POSITIVE],
+		['|x_{n+1}|', 'x_{n+1}', X_NONNEGATIVE],
+		['\\sqrt{x_{1}^{2}}', 'x_{1}', X_NONNEGATIVE],
+		['x_{1}^{a}\\times x_{1}^{b}', 'x_{1}^{a+b}', X_POSITIVE],
+		['|x\\times x_{1}|', 'x\\times x_{1}', X_POSITIVE],
+		['(-1)^{2u_{n}}', '1', { u: 'integer' }]
+	])('%s ≢ %s', (a, b, assumptions) => {
+		expect(eq(a, b, assumptions)).toBe(false);
+	});
+
+	it('la base elle-même garde son hypothèse : |x| ≡ x avec x > 0', () => {
+		expect(eq('|x|', 'x', X_POSITIVE)).toBe(true);
+	});
+});

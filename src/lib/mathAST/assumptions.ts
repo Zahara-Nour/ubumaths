@@ -115,8 +115,28 @@ function mentionsAnyVariable(node: MathNode, names: ReadonlySet<string>): boolea
 }
 
 /**
+ * Vrai si le nœud contient une variable INDICÉE dont la base est déclarée
+ * (`x_1`, `u_n` pour une hypothèse sur `x` ou `u`). `numtype` donne à `x_1` le
+ * type de `x` : sans cette garde, « Soit x > 0 » rendait `|x_1| ≡ x_1` vrai,
+ * alors que x₁ est une autre variable (faux positif trouvé en revue, #522).
+ */
+function mentionsIndexedDeclaredVariable(node: MathNode, names: ReadonlySet<string>): boolean {
+	return (
+		findNodes(
+			node,
+			(candidate) => candidate.type === 'subscript' && mentionsAnyVariable(candidate.base, names)
+		).length > 0
+	);
+}
+
+/** L'hypothèse s'applique : le nœud mentionne une variable déclarée, et aucune de ses indicées. */
+function assumptionApplies(node: MathNode, names: ReadonlySet<string>): boolean {
+	return mentionsAnyVariable(node, names) && !mentionsIndexedDeclaredVariable(node, names);
+}
+
+/**
  * Les prédicats de `numtype` sur le contexte des hypothèses, gardés par
- * `mentionsAnyVariable`. `undefined` sans hypothèse.
+ * `assumptionApplies`. `undefined` sans hypothèse.
  */
 export function assumptionOracle(
 	assumptions: AnswerAssumptions | undefined
@@ -125,8 +145,8 @@ export function assumptionOracle(
 	if (!assumptions || !ctx) return undefined;
 	const names: ReadonlySet<string> = new Set(Object.keys(assumptions));
 	return {
-		isPositive: (node) => mentionsAnyVariable(node, names) && isPositiveType(node, ctx),
-		isNonNegative: (node) => mentionsAnyVariable(node, names) && isNonNegativeType(node, ctx),
-		isInteger: (node) => mentionsAnyVariable(node, names) && isIntegerType(node, ctx)
+		isPositive: (node) => assumptionApplies(node, names) && isPositiveType(node, ctx),
+		isNonNegative: (node) => assumptionApplies(node, names) && isNonNegativeType(node, ctx),
+		isInteger: (node) => assumptionApplies(node, names) && isIntegerType(node, ctx)
 	};
 }
