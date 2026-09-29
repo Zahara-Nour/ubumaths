@@ -2,6 +2,14 @@
 
 # Frontière F / R / N proposée — 283 modèles sans correction
 
+## Décisions (2026-09-29)
+
+- **Trous chez les relatifs** (24331791, 84755a7b, b1550840, 372d4f79, 0b6d749f, a5d4c3ee) : passent de
+  R-INV à **N-SIGNES** (× et :) ou **N-REL-ADD** (+ et −) — recommandation suivie par David.
+- **Défauts, NON tranchés explicitement par David** (proposition conservée, modifiable) : opérations
+  à trou dans les tables → F ; compléments à 100 → R-COMPL ; 313 − 126 → R-POSE, 244 + 128 et 164 × 3 →
+  R par décomposition. Les autres cas limites (§ 4) gardent aussi la proposition.
+
 Source : `types-par-niveau.md`. Classement fait à partir des exemples générés (les niveaux ne sont pas ordonnés par difficulté). ⚑ = choix à confirmer.
 
 ## 1. Synthèse
