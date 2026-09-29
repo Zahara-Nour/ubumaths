@@ -359,3 +359,41 @@ describe('runTestSpec — requiredForm à motif avec racine en base de puissance
 		expect(result.actual.status).toBe('correct');
 	});
 });
+
+// ============================================================================
+// Hypothèses de l'énoncé (ADR 0012) : les specs en profitent sans changement
+// ============================================================================
+
+describe('runTestSpec : hypothèses de l’énoncé', () => {
+	function powersTemplate(options?: QuestionTemplate['options']): QuestionTemplate {
+		return makeTemplate({
+			variations: [
+				{
+					statement: templateMarkdown('Soit $x>0$. $x^{a}x^{b}=?$'),
+					blanks: [{ expectedAnswer: 'x^{a}x^{b}', requiredForm: 'power' }]
+				}
+			],
+			options
+		});
+	}
+
+	const spec: TestSpec = {
+		description: 'x^{a+b} juste si x > 0',
+		variables: {},
+		answers: ['x^{a+b}'],
+		expected: { status: 'correct' }
+	};
+
+	it('avec { x: positive } : la spec x^{a+b} passe', () => {
+		const result = runTestSpec(powersTemplate({ answerAssumptions: { x: 'positive' } }), spec);
+		expect(result.error).toBeUndefined();
+		expect(result.actual.status).toBe('correct');
+		expect(result.passed).toBe(true);
+	});
+
+	it('sans hypothèse : la même spec échoue (x = −1, a = 2, b = ½)', () => {
+		const result = runTestSpec(powersTemplate(), spec);
+		expect(result.actual.status).toBe('incorrect');
+		expect(result.passed).toBe(false);
+	});
+});

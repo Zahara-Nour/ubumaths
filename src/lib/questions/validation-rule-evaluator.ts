@@ -19,7 +19,7 @@ import type {
 	PredicateRule,
 	CustomExpressionRule
 } from './types';
-import { evaluateExpression, areEquivalent } from '$lib/math';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { numbersAreClose } from '$lib/mathAST/common/constants';
 
 // ============================================================================
@@ -36,6 +36,8 @@ export interface EvaluationContext {
 	answer: string;
 	/** Numeric answer (parsed) if applicable */
 	numericAnswer?: number;
+	/** Hypothèses de l'énoncé (ADR 0012), transmises à la comparaison symbolique */
+	assumptions?: AnswerAssumptions;
 }
 
 /**
@@ -373,7 +375,10 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		}
 
 		// Fall back to symbolic equivalence check
-		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
+		const valid = areEquivalent(ctx.answer, resolvedExpr, {
+			timeoutMs: EQUIVALENCE_BUDGET_MS,
+			assumptions: ctx.assumptions
+		});
 		return {
 			valid,
 			reason: valid ? undefined : RULE_MESSAGES.notEquivalent,
@@ -381,7 +386,10 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		};
 	} catch {
 		// If evaluation fails, try symbolic comparison
-		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
+		const valid = areEquivalent(ctx.answer, resolvedExpr, {
+			timeoutMs: EQUIVALENCE_BUDGET_MS,
+			assumptions: ctx.assumptions
+		});
 		return {
 			valid,
 			reason: valid ? undefined : RULE_MESSAGES.notEquivalent,
