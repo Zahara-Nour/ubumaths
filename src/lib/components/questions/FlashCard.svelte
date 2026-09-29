@@ -49,6 +49,8 @@
 		showCorrectionOnWrong?: boolean;
 		showValidationFeedback?: boolean;
 		maxAttempts?: number;
+		/** Hauteur de la face visible (tuiles) plutôt que de la plus haute des deux */
+		fitVisibleFace?: boolean;
 	}
 
 	let {
@@ -61,7 +63,8 @@
 		size = 'md',
 		showCorrectionOnWrong = false,
 		showValidationFeedback = true,
-		maxAttempts = 0
+		maxAttempts = 0,
+		fitVisibleFace = false
 	}: Props = $props();
 
 	// ============================================================================
@@ -296,11 +299,12 @@
 </script>
 
 <div class={cn('question-display-wrapper mx-auto w-full', sizeClasses[size])}>
-	<FlipCard bind:flipped={isFlipped}>
+	<FlipCard bind:flipped={isFlipped} {fitVisibleFace}>
 		{#snippet front()}
 			<div class="relative h-full">
-				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré -->
-				<Card.Root class="h-full">
+				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré.
+				     Tuile (hauteur ajustée au recto) : place réservée au bouton de retournement. -->
+				<Card.Root class={cn('h-full', fitVisibleFace && 'pb-16')}>
 					<Card.Content class="space-y-6">
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">

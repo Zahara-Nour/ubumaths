@@ -182,10 +182,9 @@
 					</Card.Header>
 					<Card.Content>
 						<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{#each cartItemsWithInstances as { item, template, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
+							{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
 								<CartQuestionCard
 									{item}
-									{template}
 									{instance}
 									onIncrementQuantity={(cat) => questionCart.incrementQuantity(cat)}
 									onDecrementQuantity={(cat) => questionCart.decrementQuantity(cat)}

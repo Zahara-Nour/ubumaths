@@ -74,12 +74,6 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
-		/**
-		 * Aperçu non interactif : trous et champs mathématiques rendus en cases
-		 * statiques (______ / \boxed{?}) au lieu de champs de saisie. Pour les
-		 * tuiles (grille Automaths, panier), où rien ne doit se saisir.
-		 */
-		flashMode?: boolean;
 		/** Override list numbering config for this render (uses global store by default) */
 		listNumberingOverride?: Partial<ListNumberingConfig>;
 		/** Callback when a hashtag is clicked */
@@ -117,7 +111,6 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
-		flashMode = false,
 		listNumberingOverride,
 		onHashtagClick,
 		onMentionClick,
@@ -202,7 +195,6 @@
 						{onInputChange}
 						{onInputSubmit}
 						{inputsDisabled}
-						{flashMode}
 						{onHashtagClick}
 						{onMentionClick}
 						{genericFunctions}
