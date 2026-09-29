@@ -111,7 +111,8 @@ const SAME_ROUNDED_VALUE = 1e-9;
  *
  * Le décompte des décimales tapées n'a de sens que dans l'unité attendue :
  * écrite dans une autre unité (314 cm pour des mètres), seule la valeur
- * convertie est comparée à l'arrondi.
+ * convertie est comparée à l'arrondi. Exception : une unité seulement DÉCALÉE
+ * (298,5 K pour des °C) est jugée dans l'unité de l'élève (cf. isPureOffsetConversion).
  *
  * @param numericLatex - partie numérique tapée si l'unité est celle attendue, sinon null
  */
@@ -145,6 +146,55 @@ function judgeRoundedQuantity(
 		return { isCorrect: false, feedback: roundingFeedback(precision) };
 	}
 	return verdict;
+}
+
+/**
+ * Vrai quand les deux unités ne diffèrent que d'un DÉCALAGE (même échelle,
+ * origines différentes : °C ↔ K). °C ↔ °F change aussi d'échelle : faux.
+ */
+function isPureOffsetConversion(
+	from: { coefficient: number; offset?: number },
+	to: { coefficient: number; offset?: number }
+): boolean {
+	const sameScale = Math.abs(from.coefficient - to.coefficient) <= 1e-9 * Math.abs(to.coefficient);
+	return sameScale && (from.offset ?? 0) !== (to.offset ?? 0);
+}
+
+/** Résultat d'une grandeur arrondie, à partir du verdict d'arrondi */
+function roundedQuantityResult(
+	verdict: { isCorrect: boolean; feedback?: string },
+	parsed: NonNullable<ValidationResult['parsed']>,
+	expected: NonNullable<ValidationResult['expected']>,
+	duration: ReturnType<typeof readCompositeDuration> | null
+): ValidationResult {
+	if (verdict.feedback) {
+		return {
+			isCorrect: false,
+			feedback: verdict.feedback,
+			errorType: 'wrong_value',
+			roundingAtFault: true,
+			parsed,
+			expected
+		};
+	}
+	if (!verdict.isCorrect) {
+		return {
+			isCorrect: false,
+			feedback: DEFAULT_MESSAGES.incorrectValue,
+			errorType: 'wrong_value',
+			parsed,
+			expected
+		};
+	}
+	return {
+		isCorrect: true,
+		feedback: null,
+		...(duration?.kind === 'duration' && duration.issue
+			? { durationFormIssue: duration.issue }
+			: {}),
+		parsed,
+		expected
+	};
 }
 
 /** Partie numérique d'une saisie normalisée `valeur\unit{…}` */
@@ -369,6 +419,24 @@ export function validateQuantityAnswer(
 		comparisonResult.userValue !== null &&
 		comparisonResult.expectedValue !== null
 	) {
+		// Unités décalées d'une constante (°C ↔ K) : l'arrondi se juge dans l'unité
+		// de l'élève — 25,34 °C vaut 298,49 K, dont l'arrondi au dixième est 298,5 K
+		if (isPureOffsetConversion(userQuantity.unit, expectedQuantity.unit)) {
+			const expectedInUserUnit = convertAffine(
+				comparisonResult.expectedValue,
+				expectedQuantity.unit,
+				userQuantity.unit
+			);
+			if (expectedInUserUnit !== null) {
+				const verdict = judgeRoundedQuantity(
+					comparisonResult.userValue,
+					expectedInUserUnit,
+					precision,
+					studentNumericLatex(userAnswer) ?? numericPartOf(normalizedUser)
+				);
+				return roundedQuantityResult(verdict, parsed, expected, duration);
+			}
+		}
 		const userValueInExpectedUnit = convertAffine(
 			comparisonResult.userValue,
 			userQuantity.unit,
@@ -387,34 +455,7 @@ export function validateQuantityAnswer(
 				precision,
 				numericLatex
 			);
-			if (verdict.feedback) {
-				return {
-					isCorrect: false,
-					feedback: verdict.feedback,
-					errorType: 'wrong_value',
-					roundingAtFault: true,
-					parsed,
-					expected
-				};
-			}
-			if (!verdict.isCorrect) {
-				return {
-					isCorrect: false,
-					feedback: DEFAULT_MESSAGES.incorrectValue,
-					errorType: 'wrong_value',
-					parsed,
-					expected
-				};
-			}
-			return {
-				isCorrect: true,
-				feedback: null,
-				...(duration?.kind === 'duration' && duration.issue
-					? { durationFormIssue: duration.issue }
-					: {}),
-				parsed,
-				expected
-			};
+			return roundedQuantityResult(verdict, parsed, expected, duration);
 		}
 	}
 

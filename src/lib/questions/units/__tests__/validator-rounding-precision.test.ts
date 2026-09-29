@@ -106,3 +106,50 @@ describe('Grandeur dans une autre unité, plus précise que demandé', () => {
 		expect(result.feedback).not.toBe('Arrondis au centième.');
 	});
 });
+
+// Unités décalées d'une constante (°C ↔ K, même échelle) : l'arrondi se juge
+// dans l'unité de l'ÉLÈVE — l'attendue y est convertie puis arrondie, et les
+// décimales se comptent sur son écriture. 25,34 °C = 298,49 K → 298,5 K au dixième.
+describe('Température : conversion par simple décalage (°C ↔ K)', () => {
+	const TENTH: PrecisionType = { type: 'decimal', digits: 1 };
+
+	it('298,5 K pour 25,34 °C au dixième → juste', () => {
+		const result = validateQuantityAnswer('298{,}5\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	it('298,49 K pour 25,34 °C au dixième → faux, « Arrondis au dixième. »', () => {
+		const result = validateQuantityAnswer('298{,}49\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Arrondis au dixième.');
+		expect(result.roundingAtFault).toBe(true);
+	});
+
+	it('298,4 K pour 25,34 °C au dixième → faux, « Valeur incorrecte. »', () => {
+		const result = validateQuantityAnswer('298{,}4\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Valeur incorrecte.');
+		expect(result.roundingAtFault).toBeUndefined();
+	});
+
+	it('sens inverse : 25,3 °C pour 298,49 K au dixième → juste', () => {
+		const result = validateQuantityAnswer('25{,}3\\unit{°C}', '298.49\\unit{K}', TENTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	// °C ↔ °F change aussi d'échelle : jugé dans l'unité attendue, comme m ↔ cm.
+	// 77,6 °F vaut 25,33… °C, plus précis que le dixième de °C demandé.
+	it('°F (échelle différente) : 77,6 °F pour 25,34 °C au dixième → « Arrondis au dixième. »', () => {
+		const result = validateQuantityAnswer('77{,}6\\unit{°F}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Arrondis au dixième.');
+	});
+
+	it('même unité inchangée : 25,3 °C pour 25,34 °C au dixième → juste', () => {
+		expect(validateQuantityAnswer('25{,}3\\unit{°C}', '25.34\\unit{°C}', TENTH).isCorrect).toBe(
+			true
+		);
+	});
+});
