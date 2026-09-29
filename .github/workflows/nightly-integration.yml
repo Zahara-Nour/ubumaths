@@ -56,12 +56,18 @@ jobs:
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
+        # La CLI écrit `NOM="valeur"` ; $GITHUB_ENV garde les guillemets tels quels,
+        # et supabase-js refuse alors l'URL (« Invalid supabaseUrl »). On les retire,
+        # et on échoue ICI si l'URL manque, plutôt que 119 fichiers de tests plus loin.
         run: |
+          set -o pipefail
           pnpm exec supabase status -o env \
             --override-name api.url=SUPABASE_TEST_URL \
             --override-name auth.anon_key=SUPABASE_TEST_ANON_KEY \
             --override-name auth.service_role_key=SUPABASE_TEST_SERVICE_ROLE_KEY \
-            >> "$GITHUB_ENV"
+            | sed -E 's/^([A-Za-z0-9_]+)="(.*)"$/\1=\2/' > supabase-test.env
+          grep -q '^SUPABASE_TEST_URL=http' supabase-test.env
+          cat supabase-test.env >> "$GITHUB_ENV"
 
       - name: Run integration tests
         run: pnpm test:integration
