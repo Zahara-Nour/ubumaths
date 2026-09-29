@@ -1,3 +1,9 @@
+> ✅ **TERMINÉ (2026-09-30)** — 585/636 modèles corrigés en prod. Les 51 sans correction : 49 faits
+> mémorisés (F, décidé) + 2 invérifiables (d6268317 réponse dans une image ; 64e55fc7 unité au choix de
+> l'élève). Lots et outil : `scripts/corrections/`, `docs/corrections/`, suivi
+> `docs/wip/corrections-strategies-progress.md`. Sauvegardes des lignes avant écriture :
+> `data/migration-output/backups/corrections-*.json` (local, non versionné).
+
 > Proposition du 2026-09-29, **à corriger par David** : changer la colonne « classe » (F / R / N) ou la stratégie / règle d'une ligne suffit. Cadre validé : F = fait mémorisé (aucune correction) ; R = calcul réfléchi (une stratégie) ; N = règle ou notion (rappel de la règle appliquée). Classement fait sur deux exemples tirés par modèle : un modèle qui mélange plusieurs cas peut être mal rangé (ex. forme décimale d'une fraction : 1/10 mais aussi 7/2).
 
 # Frontière F / R / N proposée — 283 modèles sans correction
