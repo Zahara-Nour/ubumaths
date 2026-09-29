@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
+import { compareCategories } from '$lib/questions/category-order';
 
 /**
  * Hierarchical structure for organizing questions
@@ -34,14 +35,12 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		.select('*')
 		.eq('status', 'published');
 
-	// Sort by theme, domain, subdomain, level
+	// Ordre déclaré (TinyMath) des thèmes, domaines, sous-domaines, puis niveau.
+	// La hiérarchie ci-dessous est construite dans cet ordre d'apparition.
 	const templates =
 		allTemplates?.sort((a, b) => {
-			if (a.theme !== b.theme) return a.theme.localeCompare(b.theme);
-			if (a.domain !== b.domain) return a.domain.localeCompare(b.domain);
-			if ((a.subdomain || '') !== (b.subdomain || '')) {
-				return (a.subdomain || '').localeCompare(b.subdomain || '');
-			}
+			const byCategory = compareCategories(a, b);
+			if (byCategory !== 0) return byCategory;
 			// `level` est numérique : un tri lexicographique classerait 10 avant 2.
 			return (a.level ?? 0) - (b.level ?? 0);
 		}) || [];
