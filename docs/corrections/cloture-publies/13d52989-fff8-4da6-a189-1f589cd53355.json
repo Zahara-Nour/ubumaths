@@ -1,0 +1,34 @@
+{
+	"templateId": "13d52989-fff8-4da6-a189-1f589cd53355",
+	"title": "Connaître la position décimale",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & {{b}} & {{c}} & {{d}} \\end{array}$$",
+				"Le chiffre des milliers est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ {{a}} & \\textcolor{{{color:primary.0}}}{{{b}}} & {{c}} & {{d}} \\end{array}$$",
+				"Le chiffre des centaines est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ {{a}} & {{b}} & \\textcolor{{{color:primary.0}}}{{{c}}} & {{d}} \\end{array}$$",
+				"Le chiffre des dizaines est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ {{a}} & {{b}} & {{c}} & \\textcolor{{{color:primary.0}}}{{{d}}} \\end{array}$$",
+				"Le chiffre des unités est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `digit` : le tableau relit le nombre, la colonne du rang porte la réponse."
+	]
+}

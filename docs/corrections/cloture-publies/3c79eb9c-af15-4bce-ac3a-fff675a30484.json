@@ -1,0 +1,15 @@
+{
+	"templateId": "3c79eb9c-af15-4bce-ac3a-fff675a30484",
+	"title": "Trouver le quadruple",
+	"classe": "R",
+	"code": "R-QUAD",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Quadruple.** Le quadruple, c’est $4$ fois le nombre : le double du double.",
+			"Le double de $\\textcolor{{{color:primary.0}}}{{{a}}}$ est $\\textcolor{{{color:primary.1}}}{{{eval:2*a}}}$, puis on double encore.",
+			"$$\\begin{align} 4 \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= 2 \\times \\left( 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\right) \\\\ &= 2 \\times \\textcolor{{{color:primary.1}}}{{{eval:2*a}}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

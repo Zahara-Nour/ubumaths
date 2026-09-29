@@ -56,7 +56,10 @@ function main(): number {
 	for (const entry of lot.entries) {
 		const template = templates.get(entry.templateId);
 		if (!template) throw new Error(`${entry.templateId} absent de l'instantané`);
-		const report = verifyProposal(template, readProposal(lot.name, entry.templateId), { seeds });
+		const report = verifyProposal(template, readProposal(lot.name, entry.templateId), {
+			seeds,
+			checks: entry.checks
+		});
 		printReport(report);
 		total += report.instances;
 		if (report.passed) passed++;

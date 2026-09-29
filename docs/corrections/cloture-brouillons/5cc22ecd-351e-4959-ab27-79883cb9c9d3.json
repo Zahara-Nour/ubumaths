@@ -1,0 +1,49 @@
+{
+	"templateId": "5cc22ecd-351e-4959-ab27-79883cb9c9d3",
+	"title": "Connaître la position décimale",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & {{g}} & {{f}} & {{d}} & , & {{c}} & {{b}} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"Le chiffre des millièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & {{g}} & {{f}} & {{d}} & , & {{c}} & \\textcolor{{{color:primary.0}}}{{{b}}} & {{a}} \\end{array}$$",
+				"Le chiffre des centièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & {{g}} & {{f}} & {{d}} & , & \\textcolor{{{color:primary.0}}}{{{c}}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des dixièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & {{g}} & {{f}} & \\textcolor{{{color:primary.0}}}{{{d}}} & , & {{c}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des unités est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & {{g}} & \\textcolor{{{color:primary.0}}}{{{f}}} & {{d}} & , & {{c}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des dizaines est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{h}} & \\textcolor{{{color:primary.0}}}{{{g}}} & {{f}} & {{d}} & , & {{c}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des centaines est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|} \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{h}}} & {{g}} & {{f}} & {{d}} & , & {{c}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des milliers est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `digit` : le tableau relit le nombre, la colonne du rang porte la réponse."
+	]
+}

@@ -1,0 +1,123 @@
+{
+	"templateId": "7a90fc45-a7e2-493b-96d5-d0963e51e136",
+	"title": "Convertir dans une autre unité",
+	"classe": "N",
+	"code": "N-UNITES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{km}$ à $\\text{m}$, on passe 3 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{km} & \\text{hm} & \\text{dam} & \\text{m} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{hm}$ à $\\text{m}$, on passe 2 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{hm} & \\text{dam} & \\text{m} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{dam}$ à $\\text{m}$, on passe 1 unité vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{dam} & \\text{m} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{dm}$ à $\\text{m}$, on passe 1 unité vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{m} & \\text{dm} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{cm}$ à $\\text{m}$, on passe 2 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{m} & \\text{dm} & \\text{cm} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{mm}$ à $\\text{m}$, on passe 3 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{m} & \\text{dm} & \\text{cm} & \\text{mm} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{kL}$ à $\\text{L}$, on passe 3 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{kL} & \\text{hL} & \\text{daL} & \\text{L} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{hL}$ à $\\text{L}$, on passe 2 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{hL} & \\text{daL} & \\text{L} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{daL}$ à $\\text{L}$, on passe 1 unité vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{daL} & \\text{L} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{dL}$ à $\\text{L}$, on passe 1 unité vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{L} & \\text{dL} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{cL}$ à $\\text{L}$, on passe 2 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{L} & \\text{dL} & \\text{cL} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{mL}$ à $\\text{L}$, on passe 3 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{L} & \\text{dL} & \\text{cL} & \\text{mL} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{kg}$ à $\\text{g}$, on passe 3 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{kg} & \\text{hg} & \\text{dag} & \\text{g} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{hg}$ à $\\text{g}$, on passe 2 unités vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{hg} & \\text{dag} & \\text{g} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{dag}$ à $\\text{g}$, on passe 1 unité vers la droite du tableau : on multiplie par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{dag} & \\text{g} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{dg}$ à $\\text{g}$, on passe 1 unité vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{10}$.",
+				"$$\\begin{array}{|c|c|} \\text{g} & \\text{dg} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{cg}$ à $\\text{g}$, on passe 2 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|} \\text{g} & \\text{dg} & \\text{cg} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion.** Une colonne par unité ; on écrit le chiffre des unités du nombre dans la colonne de son unité, puis on complète avec des zéros jusqu’à l’unité demandée. Passer à l’unité voisine plus petite multiplie par $10$.",
+				"De $\\text{mg}$ à $\\text{g}$, on passe 3 unités vers la gauche du tableau : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{g} & \\text{dg} & \\text{cg} & \\text{mg} \\\\ \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Généré variation par variation depuis la variable d’expression `a[U1] = ?[U2]`.",
+		"Tableau : une colonne par unité (× 2 pour les aires, × 3 pour les volumes), le chiffre de `a` en orange, les zéros ajoutés en bleu."
+	]
+}

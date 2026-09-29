@@ -1,0 +1,29 @@
+{
+	"templateId": "f96588e4-50ee-4505-9015-54f965f8ab43",
+	"title": "Connaître la position décimale",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ {{c}} & , & {{b}} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"Le chiffre des centièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ {{c}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & {{a}} \\end{array}$$",
+				"Le chiffre des dixièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{c}}} & , & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des unités est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `digit` : le tableau relit le nombre, la colonne du rang porte la réponse."
+	]
+}

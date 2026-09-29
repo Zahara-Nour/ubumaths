@@ -89,3 +89,17 @@ comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/100
   d'équations). Coïncidence numérique relevée : 294c4316 passe quand b − c = 1 (a × 1 = a).
 - Piège : un `|` (`\left| … \right|`) hors accolades est lu comme un choix aléatoire par le
   résolveur de correction → l'envelopper dans un groupe `{\left| … \right|}`.
+
+## Fait (2026-09-30) — clôture (branche `feat/corrections-cloture`)
+
+- Liste calculée en prod (lecture seule) : modèles R / N du classement sans aucune correction = **40**.
+- Vérificateur (`lib/verify.ts`) : égalité posée avec unités (convertisseur du projet, `2[km] = ?[m]`,
+  aussi lue en LaTeX dans l'énoncé `2~\unit{m^3} = ?~\unit{L}`) ; plusieurs trous dans une relation
+  (`? < d < ?`, `8 = (3 × ?) + ?` : relation vraie une fois remplie, calcul qui COMMENCE par un nombre
+  de la relation) ; contrôles structurels DÉCLARÉS par le lot (`LotEntry.checks`, `StructuralChecks`) :
+  `posed` (opération de la phrase, nombres de l'énoncé ou constantes déclarées, `operand` pour une
+  troncature), `transform` (opposé / inverse), `end: factor`, `equations: affine-root`,
+  `hole: denominator`, `digit` (tableau de numération relu), `written`. Plafond des variations d'une
+  proposition : 150 (c31c9d95 en compte 126). Preuves rouges sur copie : 12 neutralisations.
+- Lots `cloture-brouillons` (23) et `cloture-publies` (15) ; écartés : d6268317 (image), 64e55fc7
+  (unité au choix, `\unit` refusé par MathLive) — `LEFT_OUT` dans `lots/cloture.ts`.

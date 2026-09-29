@@ -1,0 +1,17 @@
+{
+	"templateId": "fac5225d-2dae-49ec-b449-8900e7385fe6",
+	"title": "Encadrer un nombre décimal par deux entiers consécutifs",
+	"classe": "N",
+	"code": "N-ENCADR",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Encadrer.** On garde les chiffres jusqu’au rang demandé (on supprime les suivants) : c’est la borne inférieure ; on ajoute $1$ à ce rang : c’est la borne supérieure.",
+			"On garde les chiffres de $\\textcolor{{{color:primary.0}}}{{{c}}}$ jusqu’aux unités, puis on ajoute $\\textcolor{{{color:primary.1}}}{1}$.",
+			"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{c}}} - {{eval:b*0.1;d}} &= {{a}} \\end{align}$$",
+			"$$\\begin{align} {{a}} + \\textcolor{{{color:primary.1}}}{1} &= {{eval:a+1}} \\end{align}$$",
+			"Donc ${{a}} < {{c}} < {{eval:a+1}}$."
+		]
+	},
+	"notes": []
+}

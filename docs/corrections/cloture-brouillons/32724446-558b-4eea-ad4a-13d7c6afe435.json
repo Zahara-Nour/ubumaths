@@ -1,0 +1,17 @@
+{
+	"templateId": "32724446-558b-4eea-ad4a-13d7c6afe435",
+	"title": "Encadrer un nombre décimal au dixième près",
+	"classe": "N",
+	"code": "N-ENCADR",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Encadrer.** On garde les chiffres jusqu’au rang demandé (on supprime les suivants) : c’est la borne inférieure ; on ajoute $1$ à ce rang : c’est la borne supérieure.",
+			"On garde les chiffres de $\\textcolor{{{color:primary.0}}}{{{d}}}$ jusqu’aux dixièmes, puis on ajoute $\\textcolor{{{color:primary.1}}}{0.1}$.",
+			"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{d}}} - {{eval:c*0.01;d}} &= {{eval:a+b*0.1;d}} \\end{align}$$",
+			"$$\\begin{align} {{eval:a+b*0.1;d}} + \\textcolor{{{color:primary.1}}}{0.1} &= {{eval:a+(b+1)*0.1;d}} \\end{align}$$",
+			"Donc ${{eval:a+b*0.1;d}} < {{d}} < {{eval:a+(b+1)*0.1;d}}$."
+		]
+	},
+	"notes": []
+}

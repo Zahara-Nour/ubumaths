@@ -24,7 +24,8 @@ const stepsSchema = z.array(z.string().min(1)).min(1).max(20);
 
 export const proposalStepsSchema = z.union([
 	z.object({ shared: stepsSchema }).strict(),
-	z.object({ byVariation: z.array(stepsSchema).min(1).max(50) }).strict()
+	// 150 : le plus gros modèle (c31c9d95, conversions de longueurs) compte 126 variations
+	z.object({ byVariation: z.array(stepsSchema).min(1).max(150) }).strict()
 ]);
 
 export const proposalSchema = z

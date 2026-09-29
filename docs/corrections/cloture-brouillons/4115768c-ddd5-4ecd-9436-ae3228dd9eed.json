@@ -1,0 +1,24 @@
+{
+	"templateId": "4115768c-ddd5-4ecd-9436-ae3228dd9eed",
+	"title": "Calculer l'inverse d'un nombre",
+	"classe": "N",
+	"code": "N-INVERSE",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Inverse.** L’inverse d’un nombre $a$ non nul est $\\dfrac{1}{a}$ ; l’inverse de $\\dfrac{a}{b}$ est $\\dfrac{b}{a}$.",
+				"$$\\begin{align} \\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Inverse.** L’inverse d’un nombre $a$ non nul est $\\dfrac{1}{a}$ ; l’inverse de $\\dfrac{a}{b}$ est $\\dfrac{b}{a}$.",
+				"$$\\begin{align} \\dfrac{1}{\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{a}}}}} &= 1 \\times \\dfrac{{{a}}}{1} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Inverse.** L’inverse d’un nombre $a$ non nul est $\\dfrac{1}{a}$ ; l’inverse de $\\dfrac{a}{b}$ est $\\dfrac{b}{a}$.",
+				"$$\\begin{align} \\dfrac{1}{\\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{b}}}}} &= 1 \\times \\dfrac{{{b}}}{{{a}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

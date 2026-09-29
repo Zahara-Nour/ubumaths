@@ -1,0 +1,54 @@
+{
+	"templateId": "355bd41a-1589-4c25-be09-5f062bada81a",
+	"title": "Convertir dans une autre unité",
+	"classe": "N",
+	"code": "N-UNITES-VOL",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{m}^3$ vaut $\\textcolor{{{color:primary.1}}}{1000}~\\text{L}$.",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{L}$ vaut $\\textcolor{{{color:primary.1}}}{0{,}001}~\\text{m}^3$.",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{dm}^3$ vaut $\\textcolor{{{color:primary.1}}}{1}~\\text{L}$.",
+				"$$\\begin{align} ? &= {{a}} \\times 1 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{L}$ vaut $\\textcolor{{{color:primary.1}}}{1}~\\text{dm}^3$.",
+				"$$\\begin{align} ? &= {{a}} \\times 1 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{cm}^3$ vaut $\\textcolor{{{color:primary.1}}}{1}~\\text{mL}$.",
+				"$$\\begin{align} ? &= {{a}} \\times 1 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{mL}$ vaut $\\textcolor{{{color:primary.1}}}{1}~\\text{cm}^3$.",
+				"$$\\begin{align} ? &= {{a}} \\times 1 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{cm}^3$ vaut $\\textcolor{{{color:primary.1}}}{0{,}001}~\\text{L}$.",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Litres et volumes.** $1~\\text{L} = 1~\\text{dm}^3$ et $1~\\text{mL} = 1~\\text{cm}^3$ ; $1~\\text{m}^3 = 1000~\\text{dm}^3$ et $1~\\text{dm}^3 = 1000~\\text{cm}^3$.",
+				"$1~\\text{L}$ vaut $\\textcolor{{{color:primary.1}}}{1000}~\\text{cm}^3$.",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Égalité posée lue dans l’énoncé (`a~\\unit{U1} = ?~\\unit{U2}`), vérifiée par le convertisseur d’unités."
+	]
+}

@@ -383,7 +383,7 @@ function conversion(expression: string): string[] {
 	];
 }
 
-function conversions(template: QuestionTemplate): WrittenCorrection {
+export function conversions(template: QuestionTemplate): WrittenCorrection {
 	return {
 		steps: {
 			byVariation: template.variations.map((variation, index) => {

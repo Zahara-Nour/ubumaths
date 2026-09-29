@@ -1,0 +1,23 @@
+{
+	"templateId": "b26e8a84-3788-40f8-baf0-23f0f96fe1f0",
+	"title": "Trouver l'entier supérieur ou inférieur le plus proche",
+	"classe": "N",
+	"code": "N-ENCADR",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Entier le plus proche.** On supprime la partie décimale : c’est l’entier inférieur ; on lui ajoute $1$ : c’est l’entier supérieur.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{c}}} - {{eval:b*0.1;d}} &= \\textcolor{{{color:primary.1}}}{{{a}}} \\end{align}$$",
+				"$$\\begin{align} \\textcolor{{{color:primary.1}}}{{{a}}} + 1 &= {{solution}} \\end{align}$$",
+				"Donc ${{a}} < {{c}} < {{solution}}$."
+			],
+			[
+				"**Entier le plus proche.** On supprime la partie décimale : c’est l’entier inférieur ; on lui ajoute $1$ : c’est l’entier supérieur.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{c}}} - {{eval:b*0.1;d}} &= {{solution}} \\end{align}$$",
+				"Donc ${{solution}} < {{c}} < {{eval:a+1}}$."
+			]
+		]
+	},
+	"notes": []
+}

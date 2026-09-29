@@ -1,0 +1,14 @@
+{
+	"templateId": "47f97c9f-5117-4817-8d10-7c17777397d8",
+	"title": "Trouver le double",
+	"classe": "R",
+	"code": "R-DOUBLE",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Double.** Pour doubler un nombre, on double ses dizaines, puis ses unités, et on ajoute.",
+			"$$\\begin{align} 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} {{if:mod(a,10)=0|&= 2 \\times {{eval:a/10}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:2*a/10}}} \\times 10 \\\\ |}}{{if:(a-mod(a,10))*mod(a,10)>0|&= 2 \\times {{eval:a-mod(a,10)}} + 2 \\times {{eval:mod(a,10)}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:2*(a-mod(a,10))}}} + \\textcolor{{{color:primary.1}}}{{{eval:2*mod(a,10)}}} \\\\ |}}&= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}
