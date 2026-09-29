@@ -9,7 +9,7 @@
  *
  * Variables énumérées : intervalles entiers `2..8`, bornes calculées
  * (`{{eval:11-b}}..9`, `0..4-a`), unions `1..9|11..99`, listes `0.1|0.01`, signe
- * `;±`. Toute autre écriture aléatoire (`digits:m.q`, exclusions `!cd(a)`…) fait
+ * `;±` / `;+-`, nues ou entre accolades (`{{1..9}}`). Toute autre écriture aléatoire (`digits:m.q`, exclusions `!cd(a)`…) fait
  * repasser aux graines, raison à l'appui.
  *
  * Garde-fou : l'énumération est confrontée au VRAI générateur (`SAMPLE_CHECK`
@@ -26,6 +26,7 @@ import { generateInstance } from '../../../src/lib/questions/generator/instance-
 import { generateInstanceWithFixedVariables } from '../../../src/lib/questions/generator/test-instance-builder';
 import { resolveExpression } from '../../../src/lib/questions/generator/content-resolver';
 import { evaluateConditions } from '../../../src/lib/questions/generator/condition-evaluator';
+import { isFullyWrapped } from '../../../src/lib/ubumark/parameterization/parser/expression-normalizer';
 import { mergedVariables } from './operation';
 
 // ============================================================================
@@ -86,9 +87,23 @@ function splitTopLevel(text: string, separator: string): string[] {
 	return parts.map((part) => part.trim());
 }
 
-/** Variable aléatoire (sinon : calculée par le pipeline) */
-export function isRandomExpression(expression: string): boolean {
+/**
+ * `{{1..9}}` → `1..9` : l'habillage `{{…}}` d'une expression ENTIÈRE (même
+ * lecture que `detectExpressionType` : `isFullyWrapped`). Sinon, inchangée.
+ */
+export function unwrapBraces(expression: string): string {
 	const trimmed = expression.trim();
+	return isFullyWrapped(trimmed) ? trimmed.slice(2, -2).trim() : trimmed;
+}
+
+/**
+ * Variable aléatoire (sinon : calculée par le pipeline). L'écriture entre
+ * accolades (`{{1..9}}`, `{{2|5}}`, `{{digits:2.1}}`, `{{-5..5;+-}}`) est
+ * aléatoire comme l'écriture nue ; `{{eval:…}}` et `{{a}}` ne le sont pas.
+ */
+export function isRandomExpression(expression: string): boolean {
+	const trimmed = unwrapBraces(expression);
+	if (/^(eval|text):/.test(trimmed)) return false;
 	if (/^(digits|random):/.test(trimmed) || trimmed.includes('{{random')) return true;
 	return splitTopLevel(trimmed, '..').length > 1 || splitTopLevel(trimmed, '|').length > 1;
 }
@@ -111,11 +126,12 @@ function evaluateBound(bound: string, resolved: ResolvedVariable[]): number {
 
 /** Valeurs possibles d'une variable aléatoire, les précédentes étant fixées */
 export function domainValues(expression: string, resolved: ResolvedVariable[]): string[] {
-	let body = expression.trim();
+	let body = unwrapBraces(expression);
 	let signed = false;
-	if (body.endsWith(';±')) {
+	const sign = body.match(/;\s*(±|\+-)$/);
+	if (sign) {
 		signed = true;
-		body = body.slice(0, -2).trim();
+		body = body.slice(0, sign.index).trim();
 	}
 	if (/^(digits|random):/.test(body) || body.includes(';') || body.includes('!')) {
 		throw new UnsupportedDomain(`« ${expression} »`);

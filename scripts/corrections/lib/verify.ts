@@ -13,8 +13,13 @@
  *    valent le même nombre, et un membre illisible fait ÉCHOUER — seule exception,
  *    l'inconnue `?` en tête d'une question à trou, suivie de la réponse attendue ;
  * 5. le calcul PART de l'opération posée (premier membre = valeur de la variable
- *    d'expression, ou `?` pour un trou) et FINIT sur la réponse attendue ; pour un
- *    QCM, la dernière étape nomme le bon choix et aucun autre.
+ *    d'expression, ou `?` pour un trou) et FINIT sur la réponse attendue (chaque
+ *    case finit un calcul quand il y en a plusieurs) ; pour un trou, `? = calcul =
+ *    réponse` et la valeur trouvée VÉRIFIE l'égalité posée ; pour un QCM, la
+ *    dernière étape nomme le bon choix et aucun autre (comme un mot ou un nombre
+ *    entier : « 3 » n'est pas nommé dans « 13 » ni dans « 3,5 ») ;
+ * 6. hors des calculs : aucun reste de résolution (`NaN`, `undefined`…), et une
+ *    égalité numérique écrite dans la prose (`$3 + 4 = 7$`) est juste.
  * Le modèle injecté passe aussi `validateTemplate` et le schéma Zod strict.
  *
  * « 0 échec » ne vaut que si l'on sait combien de tirages ont été analysés : le
@@ -172,10 +177,32 @@ export function posedStart(instance: QuestionInstance): PosedStart {
 	return { kind: 'unknown', expression };
 }
 
-/** Réponse attendue de la première case, en nombre (null : pas de case, ou illisible) */
-function expectedBlankValue(instance: QuestionInstance): number | null {
-	const blank = instance.blanks?.[0];
+/** Réponse attendue de la case `index`, en nombre (null : pas de case, ou illisible) */
+function expectedBlankValue(instance: QuestionInstance, index = 0): number | null {
+	const blank = instance.blanks?.[index];
 	return blank ? numericValue(blank.expectedAnswerLatex ?? blank.expectedAnswer) : null;
+}
+
+/** Valeur d'un membre de l'opération posée (forme de calcul : `*`, `:`), null si illisible */
+function evalFormValue(expression: string): number | null {
+	try {
+		return numericValue(resolveExpression(`{{eval:${expression}}}`, []));
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * L'égalité posée par une question à trou tient-elle quand on remplace « ? » par
+ * `value` ? `3 + ? = 10` avec 7 → vrai. `null` : l'égalité posée ne se lit pas
+ * (pas exactement un « = », membre illisible).
+ */
+export function holeEquationHolds(expression: string, value: number): boolean | null {
+	const sides = expression.split('=');
+	if (sides.length !== 2) return null;
+	const [left, right] = sides.map((side) => evalFormValue(side.replace(/\?/g, `(${value})`)));
+	if (left === null || right === null) return null;
+	return sameNumber(left, right);
 }
 
 /**
@@ -216,6 +243,21 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 			) {
 				reasons.push(`« ? » doit être suivi de la réponse attendue : ${shown}`);
 			}
+			// « ? = réponse » seul ne calcule rien : au moins un calcul entre les deux
+			if (chain.length < 3) {
+				reasons.push(`« ? » doit être suivi d'un calcul, puis de la réponse : ${shown}`);
+			}
+			// Le calcul répond à l'égalité POSÉE : « ? » remplacé par sa valeur, elle tient
+			if (second !== undefined && second !== null && start.kind === 'hole') {
+				const holds = holeEquationHolds(start.expression, second);
+				if (holds === null) {
+					reasons.push(`égalité posée illisible « ${start.expression} »`);
+				} else if (!holds) {
+					reasons.push(
+						`« ? » = ${second} ne vérifie pas l'égalité posée « ${start.expression} » : ${shown}`
+					);
+				}
+			}
 		} else if (start.kind === 'hole') {
 			reasons.push(`question à trou : le calcul doit partir de « ? » : ${shown}`);
 		} else if (start.kind === 'unknown') {
@@ -229,6 +271,39 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 	return reasons;
 }
 
+/**
+ * Le texte `choice` est-il nommé dans `text` comme un mot ou un nombre entier ?
+ * Pas de lettre ni de chiffre collé de part et d'autre, ni de séparateur décimal
+ * entre deux chiffres : « 3 » n'est nommé ni dans « 13 » ni dans « 3,5 » / « 0.3 ».
+ */
+export function namesChoice(text: string, choice: string): boolean {
+	const pattern =
+		'(?<![\\p{L}\\p{N}])(?<!\\p{N}[.,])' +
+		escapeRegExp(choice) +
+		'(?![\\p{L}\\p{N}])(?![.,]\\p{N})';
+	return new RegExp(pattern, 'u').test(text);
+}
+
+/** Restes d'une résolution ratée, hors marqueurs `{{` / `<<` */
+const LEFTOVER_TOKENS = /(?<![\p{L}])(NaN|undefined|null|Infinity|\[object Object\])(?![\p{L}])/u;
+
+/**
+ * Égalités écrites HORS des blocs `align` (`$3 + 4 = 7$` dans la prose) : quand
+ * tous les membres se lisent comme des nombres, ils doivent être égaux. Un membre
+ * non numérique (`? + 3`, du texte) fait passer l'égalité sans contrôle.
+ */
+export function proseEqualities(latex: string): string[] {
+	if (/\\begin\{align/.test(latex) || !latex.includes('=')) return [];
+	const members = latex.split(/(?<![<>!\\])=/).map((m) => m.trim());
+	if (members.length < 2 || members.some((m) => m === '')) return [];
+	const values = members.map(numericValue);
+	if (values.some((v) => v === null)) return [];
+	const read = values as number[];
+	return read.some((v) => !sameNumber(v, read[0]))
+		? [`égalité fausse hors calcul : ${members.map(stripDecorations).join(' = ')}`]
+		: [];
+}
+
 /** Contrôles d'un tirage ; rend les raisons d'échec */
 export function checkInstance(instance: QuestionInstance): { reasons: string[] } {
 	const reasons: string[] = [];
@@ -238,6 +313,8 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 	steps.forEach((step, stepIndex) => {
 		const where = `étape ${stepIndex + 1}`;
 		if (step.includes('{{') || step.includes('<<')) reasons.push(`${where} : marqueur non résolu`);
+		const leftover = step.match(LEFTOVER_TOKENS);
+		if (leftover) reasons.push(`${where} : reste de résolution « ${leftover[0]} »`);
 		if ((step.replace(/\$\$/g, '').match(/\$/g) ?? []).length % 2 !== 0) {
 			reasons.push(`${where} : « $ » non refermé`);
 		}
@@ -249,34 +326,48 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 				);
 			}
 			for (const awkward of awkwardWritings(latex)) reasons.push(`${where} : ${awkward}`);
+			for (const wrong of proseEqualities(latex)) reasons.push(`${where} : ${wrong}`);
 		}
 	});
 
 	const chains = steps.flatMap((step) => extractMath(step).flatMap(alignChains));
 	reasons.push(...checkChains(chains, instance));
 
-	// Fin du calcul : la réponse attendue
-	if (instance.blanks && instance.blanks.length > 0) {
+	// Fin du calcul : la réponse attendue (chaque case, quand il y en a plusieurs)
+	const blanks = instance.blanks ?? [];
+	if (blanks.length === 1) {
 		const expected = expectedBlankValue(instance);
 		const last = chains.at(-1)?.at(-1);
 		if (!last) reasons.push('aucun calcul aligné (`align`) dans la correction');
 		else if (expected === null)
-			reasons.push(`réponse attendue illisible : ${instance.blanks[0].expectedAnswer}`);
+			reasons.push(`réponse attendue illisible : ${blanks[0].expectedAnswer}`);
 		else {
 			const value = numericValue(last);
 			if (value === null || !sameNumber(value, expected)) {
 				reasons.push(
-					`le calcul finit sur « ${stripDecorations(last)} », attendu ${instance.blanks[0].expectedAnswer}`
+					`le calcul finit sur « ${stripDecorations(last)} », attendu ${blanks[0].expectedAnswer}`
 				);
 			}
 		}
+	} else if (blanks.length > 1) {
+		// Chaque case doit être la fin d'un calcul distinct
+		const ends = chains.map((chain) => numericValue(chain.at(-1) ?? ''));
+		blanks.forEach((blank, index) => {
+			const expected = expectedBlankValue(instance, index);
+			if (expected === null) {
+				reasons.push(`réponse attendue illisible (case ${index + 1}) : ${blank.expectedAnswer}`);
+				return;
+			}
+			const found = ends.findIndex((end) => end !== null && sameNumber(end, expected));
+			if (found === -1) {
+				reasons.push(`aucun calcul ne finit sur la case ${index + 1} (${blank.expectedAnswer})`);
+			} else ends[found] = null;
+		});
 	} else if (instance.choices && instance.choices.length > 0) {
 		const lastStep = steps.at(-1) ?? '';
 		for (const choice of instance.choices) {
 			const text = String(choice.content);
-			const named = new RegExp(`(^|[^\\p{L}])${escapeRegExp(text)}($|[^\\p{L}])`, 'u').test(
-				lastStep
-			);
+			const named = namesChoice(lastStep, text);
 			if (choice.isCorrect && !named)
 				reasons.push(`la conclusion ne nomme pas le bon choix « ${text} »`);
 			if (!choice.isCorrect && named)
