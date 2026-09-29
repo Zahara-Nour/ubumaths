@@ -48,7 +48,6 @@
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
 	import type { GradeCode } from '$lib/types/grades';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import BulkStatusReport from './BulkStatusReport.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
