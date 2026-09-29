@@ -1,6 +1,6 @@
 # Hypothèses de l'énoncé (ADR 0012) — progression
 
-## Phase 0 — spécification (proposée le 2026-09-29, EN ATTENTE de validation de David)
+## Phase 0 — spécification (VALIDÉE par David le 2026-09-29)
 
 ### Faits mesurés
 
@@ -68,8 +68,13 @@
   Zod serveur, type), instance, `validateAnswer`, règle `equivalent`, éditeur (champ + proposition
   Suites), aperçu. `code-reviewer` + `security-auditor` (entrée Zod serveur). PR seule.
 
-### Questions pour David
+### Décisions de David (2026-09-29)
 
-- Q1 — Stockage : `options.answerAssumptions` (jsonb existant, **pas de migration**) ou colonne dédiée
-  `answer_assumptions` (migration additive) ?
-- Q2 — Périmètre de la phase 1 : 8 à 12 comme ci-dessus, ou réduit ?
+- Q1 — Stockage : **`options.answerAssumptions`** (pas de migration).
+- Q2 — Périmètre : **toute la section C** ; les cas « à mesurer » inclus seulement s'ils passent la
+  revue adverse, signalés sinon.
+
+## Chantiers
+
+- [ ] Lot 1 — mathAST (`feat/hypotheses-enonce-mathast`, worktree `../ubumaths-wt-hypotheses-mathast`)
+- [ ] Lot 2 — modèle + propagation + éditeur (après merge du lot 1)
