@@ -107,6 +107,22 @@ export const generateQuestionSchema = z.object({
 });
 
 /**
+ * Publication par lot : changer le statut de plusieurs modèles en une requête.
+ * Le client envoie des paquets de 50 (`BULK_CLIENT_CHUNK_SIZE`, voir
+ * `$lib/questions/bulk-status`) ; 100 laisse la place à un groupe de rivaux
+ * d'une même catégorie qui déborde un paquet, jamais coupé en deux.
+ */
+export const MAX_BULK_TEMPLATE_IDS = 100;
+
+export const bulkTemplateStatusSchema = z.object({
+	ids: z
+		.array(z.string().uuid('Identifiant de modèle invalide'))
+		.min(1, 'Aucun modèle sélectionné')
+		.max(MAX_BULK_TEMPLATE_IDS, `Au plus ${MAX_BULK_TEMPLATE_IDS} modèles par lot`),
+	status: z.enum(['published', 'draft'])
+});
+
+/**
  * Schema for question categories
  */
 export const questionCategorySchema = z.object({
