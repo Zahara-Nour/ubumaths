@@ -422,23 +422,19 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Install dependencies
-        run: pnpm install
+        # la CLI Supabase est une devDependency (version exacte) : pas de setup-cli
+        run: pnpm install --frozen-lockfile
 
       - name: Start Supabase
-        run: npx supabase start
+        run: pnpm exec supabase start
 
       - name: Run trigger tests
         run: pnpm test:integration
 
       - name: Stop Supabase
         if: always()
-        run: npx supabase stop
+        run: pnpm exec supabase stop
 ```
 
 ## Best Practices
@@ -515,4 +511,4 @@ const student = await TestData.profile().withRole('student').create();
 1. Check migration files in `supabase/migrations/` to understand trigger behavior
 2. Look at existing test files for patterns
 3. Run tests with `--reporter=verbose` for detailed output
-4. Check Supabase logs: `npx supabase logs db`
+4. Check Supabase logs: `pnpm exec supabase logs db`

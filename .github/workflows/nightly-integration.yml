@@ -5,7 +5,8 @@ name: Nightly Integration Tests
 # via the CLI, applies migrations, runs `pnpm test:integration`, tears it down.
 #
 # CRON DÉSACTIVÉ : `supabase start` échoue actuellement car l'image amont
-# storage-api:fix-object-level (défaut CLI 2.105) n'est publiée sur aucun registre
+# storage-api:fix-object-level (défaut CLI 2.105, avant que la CLI devienne une
+# devDependency) n'est publiée sur aucun registre
 # ("manifest unknown"). Tant que ce n'est pas résolu (cf. docs/wip/
 # test-architecture-progress.md), on garde uniquement le déclenchement manuel
 # pour éviter un job rouge toutes les nuits. Réactiver le cron une fois corrigé.
@@ -39,35 +40,48 @@ jobs:
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
-      - name: Setup Supabase CLI
-        # The CLI is not a project dependency (installed via brew locally), so the
-        # runner needs it explicitly before `supabase start`. Pinned to the version
-        # used locally — `latest` pulled a build whose storage-api image tag
-        # (fix-object-level) is unpublished → "manifest unknown".
-        uses: supabase/setup-cli@v3
-        with:
-          version: 2.105.0
+      - name: Supabase CLI version
+        # Doit afficher la version exacte de la devDependency (package.json).
+        run: pnpm exec supabase --version
 
       - name: Start Supabase (applies migrations)
-        # Stack allégée : l'image storage-api renvoie "manifest unknown" (indispo sur
-        # ghcr ET docker.io). Les tests d'intégration n'utilisent pas l'API HTTP
-        # Storage (ils manipulent la table storage.objects en SQL), donc on exclut
-        # storage + les services non requis (studio, edge, analytics, mail, imgproxy).
-        run: supabase start -x storage-api,imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
+        # Stack allégée : on exclut les services non requis (studio, edge, analytics,
+        # mail, imgproxy). storage-api est GARDÉ : deux suites l'appellent
+        # (chapter-documents-size-limit, chat-attachment-signing). Son image était
+        # introuvable avec la CLI 2.105 ; la 2.118 utilise storage-api:v1.77.0.
+        # CLI Supabase = la devDependency du projet (version exacte dans
+        # package.json), la même que sur les postes : une seule source de vérité.
+        run: pnpm exec supabase start -x imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
 
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
+        # La CLI écrit `NOM="valeur"` ; $GITHUB_ENV garde les guillemets tels quels,
+        # et supabase-js refuse alors l'URL (« Invalid supabaseUrl »). On les retire,
+        # et on échoue ICI si l'URL manque, plutôt que 119 fichiers de tests plus loin.
         run: |
-          supabase status -o env \
+          set -o pipefail
+          pnpm exec supabase status -o env \
             --override-name api.url=SUPABASE_TEST_URL \
             --override-name auth.anon_key=SUPABASE_TEST_ANON_KEY \
             --override-name auth.service_role_key=SUPABASE_TEST_SERVICE_ROLE_KEY \
-            >> "$GITHUB_ENV"
+            | sed -E 's/^([A-Za-z0-9_]+)="(.*)"$/\1=\2/' > supabase-test.env
+          grep -q '^SUPABASE_TEST_URL=http' supabase-test.env
+          cat supabase-test.env >> "$GITHUB_ENV"
+          # Le code applicatif appelé par certaines suites (adminElevation, endpoint
+          # skill-attempts) lit $env : sans ça, il garde les adresses bidon de
+          # .github/ci.env (placeholder.supabase.co). Les variables du processus
+          # priment sur le .env pour Vite.
+          . ./supabase-test.env
+          {
+            echo "PUBLIC_SUPABASE_URL=$SUPABASE_TEST_URL"
+            echo "PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_TEST_ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_TEST_SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
 
       - name: Run integration tests
         run: pnpm test:integration
 
       - name: Stop Supabase
         if: always()
-        run: supabase stop
+        run: pnpm exec supabase stop

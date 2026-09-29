@@ -1,8 +1,8 @@
 # Outillage — pnpm 12, `[local_smtp]` et CLI Supabase fixée, progression
 
 > Chantier ouvert le 2026-09-29, pendant la migration du poste de dev vers le
-> Mac mini. **Rien n'est commencé.** À faire après la migration, sur une branche
-> avec une PR (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
+> Mac mini. **En cours depuis le 2026-09-29** (worktree `../ubumaths-wt-pnpm12`,
+> branche `chore/outillage-pnpm12`). Sur une branche avec une PR (#512) (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
 > du code, pas de la doc).
 
 ## Pourquoi ce chantier
@@ -43,16 +43,16 @@ instead`). Simple avertissement : la section fonctionne encore.
 
 ## Tâche A — passer le projet à pnpm 12
 
-- [ ] Lire la page « settings » de pnpm (https://pnpm.io/settings) : nouvel
+- [x] Lire la page « settings » de pnpm (https://pnpm.io/settings) : nouvel
       emplacement de `overrides` et `onlyBuiltDependencies` (a priori
       `pnpm-workspace.yaml`, **à vérifier**, pas à supposer).
-- [ ] Déplacer les **12 overrides** et l'autorisation `esbuild` ; retirer la
+- [x] Déplacer les **12 overrides** et l'autorisation `esbuild` ; retirer la
       section `"pnpm"` de `package.json`.
-- [ ] Décider du sort de `core-js` (arrive par `jspdf` ; son script ne fait
+- [x] Décider du sort de `core-js` (arrive par `jspdf` ; son script ne fait
       qu'afficher un appel au financement) : à ignorer explicitement, sinon
       pnpm 12 bloque l'installation.
-- [ ] `corepack use pnpm@12.x` → `"packageManager"` + `pnpm-lock.yaml`.
-- [ ] Vérifier les **versions VISÉES par les overrides** dans le nouveau
+- [x] `corepack use pnpm@12.x` → `"packageManager"` + `pnpm-lock.yaml`.
+- [x] Vérifier les **versions VISÉES par les overrides** dans le nouveau
       lockfile, pas seulement « install OK » : `esbuild` ne doit exister qu'en
       ≥ 0.28.1, idem `tar` ≥ 7.5.21, `postcss` ≥ 8.5.18, etc. Comparer avec
       le lockfile de `main` avant le changement.
@@ -69,9 +69,9 @@ instead`). Simple avertissement : la section fonctionne encore.
       `nightly-integration.yml` est figé sur `supabase/setup-cli@v3` version
       **2.105.0** (même version que l'ancien laptop). Si 2.105.0 ne connaît pas
       `[local_smtp]`, monter cette version dans la même PR.
-- [ ] Renommer la section (port 54324, interface web des e-mails locaux) et
+- [x] Renommer la section (port 54324, interface web des e-mails locaux) et
       vérifier que les clés internes n'ont pas changé de nom elles aussi.
-- [ ] Vérifier en local : `pnpm db:start` sans l'avertissement, e-mails de
+- [x] Vérifier en local : `pnpm db:start` sans l'avertissement, e-mails de
       connexion visibles sur `http://localhost:54324`.
 - [ ] Déclencher `nightly-integration.yml` à la main sur la branche
       (`gh workflow run nightly-integration.yml --ref <branche>`) : c'est le
@@ -84,14 +84,15 @@ instead`). Simple avertissement : la section fonctionne encore.
 Objectif : `pnpm supabase` = la même version partout (postes et CI), pour que
 `db:types` rende le même fichier et que `config.toml` soit lu pareil.
 
-- [ ] Ajouter `supabase` en `devDependencies`, version **exacte** (pas de `^`).
-- [ ] Le paquet npm `supabase` télécharge son binaire par un script
+- [x] Ajouter `supabase` en `devDependencies`, version **exacte** (pas de `^`).
+- [x] ~~Le paquet npm `supabase` télécharge son binaire par un script
       d'installation (**à vérifier**) : il faudra l'autoriser, comme `esbuild`
-      — même mécanisme que la tâche A, qui bloque sous pnpm 12.
-- [ ] Une seule source de vérité pour la version : faire utiliser
+      — même mécanisme que la tâche A, qui bloque sous pnpm 12.~~ **Réfuté** :
+      aucun script d'installation (cf. journal), pas d'`allowBuilds`.
+- [x] Une seule source de vérité pour la version : faire utiliser
       `pnpm supabase` à `nightly-integration.yml`, ou à défaut aligner
       `supabase/setup-cli` (aujourd'hui 2.105.0) sur la devDependency.
-- [ ] **À trancher avec David**, le sort de `graphql_public` si la version
+- [x] **À trancher avec David**, le sort de `graphql_public` si la version
       retenue est ≥ 2.118.0 : accepter le bloc une fois dans la PR, ou passer
       `--schema public` à `db:types` pour que le fichier ne dépende plus du
       choix par défaut de la CLI.
@@ -109,3 +110,77 @@ Objectif : `pnpm supabase` = la même version partout (postes et CI), pour que
   ne change rien à `database.ts` hors vrai changement de schéma.
 - CI verte, y compris le workflow nocturne lancé sur la branche ; preview
   Vercel OK.
+
+## Journal
+
+- 2026-09-29 — **Vérifié dans la doc** (plus « à vérifier ») : depuis pnpm 11,
+  pnpm ne lit plus le champ `"pnpm"` de `package.json` ; les réglages vont dans
+  `pnpm-workspace.yaml`, et v12 garde ce comportement
+  (https://pnpm.io/migration). `onlyBuiltDependencies` est **supprimé** en v11,
+  remplacé par `allowBuilds` (dictionnaire `nom: true | false`) ;
+  `strictDepBuilds` est actif par défaut → `ERR_PNPM_IGNORED_BUILDS`
+  (https://pnpm.io/settings/build).
+- 2026-09-29 — **Vérifié dans le registre** : le paquet npm `supabase`
+  (2.105.0 comme 2.118.0) n'a **aucun** script `install`/`postinstall`. Le
+  binaire arrive par des `optionalDependencies` par plateforme
+  (`@supabase/cli-darwin-arm64`…, sans script non plus). Confirmé à
+  l'installation sous pnpm 12 : aucune autorisation de build demandée. L'hypothèse
+  du document était fausse : pas d'`allowBuilds` pour `supabase`.
+- 2026-09-29 — **Tâche A faite** : `pnpm-workspace.yaml` (12 overrides +
+  `allowBuilds: { esbuild: true, core-js: false }`), section `"pnpm"` retirée,
+  `packageManager` = `pnpm@12.6.0+sha512…`. Le lockfile de pnpm 12 a **deux
+  documents YAML** : le 1er épingle pnpm lui-même, le 2ᵉ est celui du projet.
+  Résolution des dépendances **identique à `main`** (aucun paquet retiré).
+  Preuve des 12 overrides : script de comparaison au lockfile de `main`, validé
+  par un **contrôle négatif** (pnpm 12 sans overrides → 13 échecs détectés :
+  esbuild 0.25.12 / 0.27.7, parse5 8.0.1, jsdom 28.1.0, fast-uri 3.1.8,
+  cookie 0.6.0, brace-expansion 1.1.21…). Branche : **0 échec**.
+- 2026-09-29 — **Tâche B faite** : `[inbucket]` → `[local_smtp]`, clés
+  identiques (vérifié sur un `supabase init` neuf de la CLI 2.118.0). Local :
+  `db:start` via la CLI du projet, 0 avertissement, Mailpit sur 54324 (HTTP 200).
+- 2026-09-29 — **Tâche C, en partie** : `supabase` **2.118.0** exact en
+  devDependency (dernière stable). Les scripts `db:*` l'utilisent sans
+  changement (`node_modules/.bin` dans le PATH de `pnpm run`).
+  `nightly-integration.yml` : `setup-cli@v3` (2.105.0) retiré, `pnpm exec
+supabase` partout → une seule source de vérité.
+- 2026-09-29 — **Vercel** : `vercel.json` → `ignoreCommand` sort en `exit 0`
+  hors production → **aucune preview de PR n'est construite** (le check
+  « Vercel » des PR passe en 0 s). La preuve du build Vercel sous pnpm 12 doit
+  passer par un autre chemin.
+- 2026-09-29 — Piège noté : le dépôt principal est **lié** à la prod
+  (`supabase/.temp/postgres-version` = 17.6.1.127) ; un worktree ne l'est pas →
+  image Postgres par défaut de la CLI (17.6.1.171). Relancer la pile depuis le
+  dépôt principal pour retrouver la parité prod.
+- 2026-09-29 — **Décision de David (graphql_public)** : CLI retenue 2.118.0 ;
+  `db:types` gagne `--schema public`. Vérifié : la sortie est **identique
+  octet pour octet** au `database.ts` de `main` (sans l'option : +28 lignes
+  `graphql_public`). Aucun code de `src/` ne mentionne `graphql_public`.
+  `nightly-integration.yml` affiche `pnpm exec supabase --version` (preuve de
+  la version en CI). `check:incremental` : 0 erreur.
+- 2026-09-29 — **Vercel, risque production** : la doc Vercel ne liste que
+  pnpm 6-10 ; le build lit `packageManager` (log de prod : « Detected
+  `pnpm-lock.yaml` version 9 generated by pnpm@10.x from
+  package.json#packageManager pnpm@10.23.0 »). Comportement avec
+  `pnpm@12.6.0` inconnu → un **vrai** build Vercel est requis avant le merge.
+  Voie retenue : « Redeploy » de la preview de la PR dans le tableau de bord,
+  case « Use project's Ignore Build Step » décochée. Écartée :
+  `projectSettings.commandForIgnoringBuildStep` de l'API, qui est enregistré
+  pour les déploiements suivants (production comprise).
+- 2026-09-29 — **Revues** : `code-reviewer` = aucun défaut de code (mineurs
+  appliqués : scripts `backup-questions.sh` / `fix-profiles.sh` mettent la CLI
+  du projet en tête du PATH, README des tests d'intégration et `database.md`
+  à jour). `security-auditor` = rien de bloquant ni d'important ; 12 overrides
+  identiques, intégrité des 15 nouveaux paquets et du 1er document (pnpm)
+  vérifiée contre le registre ; retrait de `setup-cli` = amélioration.
+- 2026-09-29 — **Vercel** : David a lancé le « Redeploy » sans Ignore Build
+  Step (commit `d9f3444`). Log : « generated by pnpm@12.x from
+  package.json#packageManager pnpm@12.6.0+sha512… » puis « Done in 8.6s using
+  pnpm v12.6.0 » → Vercel utilise le **vrai pnpm 12**.
+- 2026-09-29 — **Workflow nocturne, 1er lancement sur la branche : rouge**,
+  119/121 fichiers (`Invalid supabaseUrl`). Mais **il n'avait jamais été vert** :
+  ses 6 lancements de juin sur `main` cassaient à `supabase start` (image
+  storage-api introuvable, CLI 2.105). Avec la CLI 2.118 : démarrage et export
+  passent. Cause : la CLI écrit `NOM="valeur"`, `$GITHUB_ENV` garde les
+  guillemets, supabase-js refuse l'URL (reproduit en local : même message).
+  Corrigé : retrait des guillemets, `pipefail`, échec explicite si
+  `SUPABASE_TEST_URL` manque.

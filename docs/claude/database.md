@@ -28,7 +28,7 @@ pnpm db:start      # supabase start (stack local, Docker requis)
 pnpm db:stop       # supabase stop
 pnpm db:reset      # supabase db reset → recrée la base depuis le baseline + seed
 pnpm db:migrate    # supabase db push → applique migrations en attente vers EU
-pnpm db:types      # supabase gen types typescript --project-id cnevnzsvixxpnurautls > database.ts
+pnpm db:types      # supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > database.ts
 pnpm db:status     # diagnostic : profiles manquants vs auth.users
 ```
 
