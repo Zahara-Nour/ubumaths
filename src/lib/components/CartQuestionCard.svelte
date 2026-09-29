@@ -169,42 +169,40 @@
 
 <!-- La question en grand, comme dans la grille Automaths -->
 <Dialog.Root bind:open={isModalOpen}>
-	<Dialog.Portal>
-		<Dialog.Overlay />
-		<Dialog.Content class="max-w-4xl">
-			<Dialog.Header>
-				<Dialog.Title>
-					{#if template}
-						<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
-					{:else}
-						{item.category.domain}
-					{/if}
-				</Dialog.Title>
-				<Dialog.Description>
-					<span class="mt-2 flex flex-wrap items-center gap-2">
-						<Badge variant="outline" class="text-xs">{item.category.level}</Badge>
-						<Badge variant="secondary" class="text-xs">{item.category.theme}</Badge>
-						<Badge variant="secondary" class="text-xs">{item.category.domain}</Badge>
-						{#if item.category.subdomain}
-							<Badge variant="secondary" class="text-xs">{item.category.subdomain}</Badge>
-						{/if}
-						<Badge variant="outline" class="text-xs">{item.delay} s</Badge>
-						<Badge variant="outline" class="text-xs">× {item.quantity}</Badge>
-					</span>
-				</Dialog.Description>
-			</Dialog.Header>
-
-			<div class="mt-4">
-				{#if instance}
-					<FlashCard interactive={false} {instance} size="lg" />
+	<!-- Dialog.Content porte déjà son portail et son voile -->
+	<Dialog.Content class="max-w-4xl">
+		<Dialog.Header>
+			<Dialog.Title>
+				{#if template}
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
 				{:else}
-					<p class="text-sm text-muted-foreground italic">Aperçu indisponible</p>
+					{item.category.domain}
 				{/if}
-			</div>
+			</Dialog.Title>
+			<Dialog.Description>
+				<span class="mt-2 flex flex-wrap items-center gap-2">
+					<Badge variant="outline" class="text-xs">{item.category.level}</Badge>
+					<Badge variant="secondary" class="text-xs">{item.category.theme}</Badge>
+					<Badge variant="secondary" class="text-xs">{item.category.domain}</Badge>
+					{#if item.category.subdomain}
+						<Badge variant="secondary" class="text-xs">{item.category.subdomain}</Badge>
+					{/if}
+					<Badge variant="outline" class="text-xs">{item.delay} s</Badge>
+					<Badge variant="outline" class="text-xs">× {item.quantity}</Badge>
+				</span>
+			</Dialog.Description>
+		</Dialog.Header>
 
-			<div class="mt-6 flex justify-end">
-				<Button variant="outline" onclick={() => (isModalOpen = false)}>Fermer</Button>
-			</div>
-		</Dialog.Content>
-	</Dialog.Portal>
+		<div class="mt-4">
+			{#if instance}
+				<FlashCard interactive={false} {instance} size="lg" />
+			{:else}
+				<p class="text-sm text-muted-foreground italic">Aperçu indisponible</p>
+			{/if}
+		</div>
+
+		<div class="mt-6 flex justify-end">
+			<Button variant="outline" onclick={() => (isModalOpen = false)}>Fermer</Button>
+		</div>
+	</Dialog.Content>
 </Dialog.Root>
