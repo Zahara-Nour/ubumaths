@@ -1,0 +1,36 @@
+{
+	"templateId": "23b29a15-e08d-4c9c-bccf-97e589587578",
+	"title": "Compléter une multiplication à trou",
+	"classe": "N",
+	"code": "N-FRAC-MULT",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"{{if:c*d>0|Le produit des dénominateurs ${{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}} \\times {{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}} = {{eval:abs(c*d)}}$ est positif : le numérateur ${{eval:a*b*c*d/abs(c*d)}}$ du résultat est le produit des numérateurs.|Le produit des dénominateurs ${{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}} \\times {{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}} = {{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}$ est négatif : le résultat $\\dfrac{{{eval:a*b*c*d/abs(c*d)}}}{{{eval:abs(c*d)}}}$ a été écrit avec des signes changés (dénominateur rendu positif), donc le produit des numérateurs vaut ${{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$.}}",
+				"Les numérateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}}} = \\textcolor{{{color:primary.1}}}{{{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}} : \\textcolor{{{color:primary.0}}}{{{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"{{if:c*d>0|Le produit des numérateurs ${{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}} \\times {{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}} = {{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$ est bien le numérateur du résultat : le produit des dénominateurs vaut ${{eval:abs(c*d)}}$.|Le produit des numérateurs ${{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}} \\times {{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}} = {{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$ est l’opposé du numérateur du résultat : le résultat $\\dfrac{{{eval:a*b*c*d/abs(c*d)}}}{{{eval:abs(c*d)}}}$ a été écrit avec des signes changés (dénominateur rendu positif), donc le produit des dénominateurs vaut ${{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}$.}}",
+				"Les dénominateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}}} = \\textcolor{{{color:primary.1}}}{{{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}} : \\textcolor{{{color:primary.0}}}{{{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"{{if:c*d>0|Le produit des dénominateurs ${{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}} \\times {{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}} = {{eval:abs(c*d)}}$ est positif : le numérateur ${{eval:a*b*c*d/abs(c*d)}}$ du résultat est le produit des numérateurs.|Le produit des dénominateurs ${{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}} \\times {{if:(d)<0|\\left( {{eval:d}} \\right)|{{eval:d}}}} = {{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}$ est négatif : le résultat $\\dfrac{{{eval:a*b*c*d/abs(c*d)}}}{{{eval:abs(c*d)}}}$ a été écrit avec des signes changés (dénominateur rendu positif), donc le produit des numérateurs vaut ${{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$.}}",
+				"Les numérateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}}} = \\textcolor{{{color:primary.1}}}{{{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}} : \\textcolor{{{color:primary.0}}}{{{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"{{if:c*d>0|Le produit des numérateurs ${{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}} \\times {{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}} = {{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$ est bien le numérateur du résultat : le produit des dénominateurs vaut ${{eval:abs(c*d)}}$.|Le produit des numérateurs ${{if:(a)<0|\\left( {{eval:a}} \\right)|{{eval:a}}}} \\times {{if:(b)<0|\\left( {{eval:b}} \\right)|{{eval:b}}}} = {{if:(a*b)<0|\\left( {{eval:a*b}} \\right)|{{eval:a*b}}}}$ est l’opposé du numérateur du résultat : le résultat $\\dfrac{{{eval:a*b*c*d/abs(c*d)}}}{{{eval:abs(c*d)}}}$ a été écrit avec des signes changés (dénominateur rendu positif), donc le produit des dénominateurs vaut ${{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}$.}}",
+				"Les dénominateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}}} = \\textcolor{{{color:primary.1}}}{{{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{if:(c*d)<0|\\left( {{eval:c*d}} \\right)|{{eval:c*d}}}}} : \\textcolor{{{color:primary.0}}}{{{if:(c)<0|\\left( {{eval:c}} \\right)|{{eval:c}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

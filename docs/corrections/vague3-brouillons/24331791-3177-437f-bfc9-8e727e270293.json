@@ -1,0 +1,30 @@
+{
+	"templateId": "24331791-3177-437f-bfc9-8e727e270293",
+	"title": "Compléter une addition à trou",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, pour aller de ${{if:(-a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a)}}|{{eval:-a}}}}$ à ${{if:(-a+b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a+b)}}|{{eval:-a+b}}}}$, {{if:(-a+b)>(-a)|on $\\textcolor{{{color:primary.1}}}{\\text{avance}}$ vers la droite|on $\\textcolor{{{color:primary.1}}}{\\text{recule}}$ vers la gauche}} : c’est {{if:(-a+b)>(-a)|ajouter un nombre $\\textcolor{{{color:primary.2}}}{\\text{positif}}$|ajouter un nombre $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$}}.",
+				"Sa distance à zéro est l’écart entre ${{if:(-a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a)}}|{{eval:-a}}}}$ et ${{if:(-a+b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a+b)}}|{{eval:-a+b}}}}$ : {{if:(-a)*(-a+b)=0|l’un des deux est $0$, l’écart est la distance à zéro de l’autre.|{{if:(-a)*(-a+b)<0|ils sont de part et d’autre de zéro, on additionne leurs distances à zéro.|ils sont du même côté de zéro, on soustrait leurs distances à zéro.}}}}",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{{{if:(-a+b)>(-a)|+|-}}}\\left( {{if:(-a)*(-a+b)=0|{{eval:abs(-a)+abs(-a+b)}}|{{if:(-a)*(-a+b)<0|{{eval:abs(-a)}} + {{eval:abs(-a+b)}}|{{if:(-a)*(-a)>(-a+b)*(-a+b)|{{eval:abs(-a)}} - {{eval:abs(-a+b)}}|{{eval:abs(-a+b)}} - {{eval:abs(-a)}}}}}}}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, pour aller de ${{if:(-a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a)}}|{{eval:-a}}}}$ à ${{if:(-a-b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a-b)}}|{{eval:-a-b}}}}$, {{if:(-a-b)>(-a)|on $\\textcolor{{{color:primary.1}}}{\\text{avance}}$ vers la droite|on $\\textcolor{{{color:primary.1}}}{\\text{recule}}$ vers la gauche}} : c’est {{if:(-a-b)>(-a)|soustraire un nombre $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$|soustraire un nombre $\\textcolor{{{color:primary.2}}}{\\text{positif}}$}}.",
+				"Sa distance à zéro est l’écart entre ${{if:(-a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a)}}|{{eval:-a}}}}$ et ${{if:(-a-b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(-a-b)}}|{{eval:-a-b}}}}$ : {{if:(-a)*(-a-b)=0|l’un des deux est $0$, l’écart est la distance à zéro de l’autre.|{{if:(-a)*(-a-b)<0|ils sont de part et d’autre de zéro, on additionne leurs distances à zéro.|ils sont du même côté de zéro, on soustrait leurs distances à zéro.}}}}",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{{{if:(-a-b)>(-a)|-|+}}}\\left( {{if:(-a)*(-a-b)=0|{{eval:abs(-a)+abs(-a-b)}}|{{if:(-a)*(-a-b)<0|{{eval:abs(-a)}} + {{eval:abs(-a-b)}}|{{if:(-a)*(-a)>(-a-b)*(-a-b)|{{eval:abs(-a)}} - {{eval:abs(-a-b)}}|{{eval:abs(-a-b)}} - {{eval:abs(-a)}}}}}}}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, pour aller de ${{if:(a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a)}}|{{eval:a}}}}$ à ${{if:(a-b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a-b)}}|{{eval:a-b}}}}$, {{if:(a-b)>(a)|on $\\textcolor{{{color:primary.1}}}{\\text{avance}}$ vers la droite|on $\\textcolor{{{color:primary.1}}}{\\text{recule}}$ vers la gauche}} : c’est {{if:(a-b)>(a)|soustraire un nombre $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$|soustraire un nombre $\\textcolor{{{color:primary.2}}}{\\text{positif}}$}}.",
+				"Sa distance à zéro est l’écart entre ${{if:(a)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a)}}|{{eval:a}}}}$ et ${{if:(a-b)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a-b)}}|{{eval:a-b}}}}$ : {{if:(a)*(a-b)=0|l’un des deux est $0$, l’écart est la distance à zéro de l’autre.|{{if:(a)*(a-b)<0|ils sont de part et d’autre de zéro, on additionne leurs distances à zéro.|ils sont du même côté de zéro, on soustrait leurs distances à zéro.}}}}",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{{{if:(a-b)>(a)|-|+}}}\\left( {{if:(a)*(a-b)=0|{{eval:abs(a)+abs(a-b)}}|{{if:(a)*(a-b)<0|{{eval:abs(a)}} + {{eval:abs(a-b)}}|{{if:(a)*(a)>(a-b)*(a-b)|{{eval:abs(a)}} - {{eval:abs(a-b)}}|{{eval:abs(a-b)}} - {{eval:abs(a)}}}}}}}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

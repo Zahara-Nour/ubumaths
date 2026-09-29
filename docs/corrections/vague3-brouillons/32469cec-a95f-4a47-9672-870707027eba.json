@@ -1,0 +1,27 @@
+{
+	"templateId": "32469cec-a95f-4a47-9672-870707027eba",
+	"title": "Calculer une somme",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et on additionne les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"${{a}}$ et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|${{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|{{if:(a)<(b)|$\\textcolor{{{color:primary.0}}}{-}{{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+				"$$\\begin{align} {{a}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

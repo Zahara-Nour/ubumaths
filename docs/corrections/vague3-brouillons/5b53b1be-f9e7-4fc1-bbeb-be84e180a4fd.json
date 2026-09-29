@@ -1,0 +1,29 @@
+{
+	"templateId": "5b53b1be-f9e7-4fc1-bbeb-be84e180a4fd",
+	"title": "Calculer une somme ou une différence",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a+0.5)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a+0.5)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a+0.5)=(b)||On soustrait les distances à zéro.}}",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} \\right) + {{b}} {{if:(a+0.5)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} - {{b}} \\right) \\\\ |{{if:(a+0.5)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+				"Sur la droite graduée, on part de ${{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{eval:a+0.5;d}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{eval:a+0.5;d}}$.",
+				"$$\\begin{align} {{eval:a+0.5;d}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

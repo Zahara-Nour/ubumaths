@@ -1,0 +1,32 @@
+{
+	"templateId": "1b866448-717d-44a8-8a6e-648c4ec55a48",
+	"title": "Transformer une soustraction en addition",
+	"classe": "N",
+	"code": "N-REL-SUB",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Soustraire un nombre, c’est ajouter son opposé** : $a - b = a + \\left( -b \\right)$ et $a - \\left( -b \\right) = a + b$.",
+				"L’opposé de $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est $\\textcolor{{{color:primary.2}}}{{{b}}}$ : on remplace « $-$ $\\textcolor{{{color:primary.0}}}{-}{{b}}$ » par « $+$ $\\textcolor{{{color:primary.2}}}{{{b}}}$ ».",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= -{{a}} + \\textcolor{{{color:primary.2}}}{{{b}}} \\end{align}$$"
+			],
+			[
+				"**Soustraire un nombre, c’est ajouter son opposé** : $a - b = a + \\left( -b \\right)$ et $a - \\left( -b \\right) = a + b$.",
+				"L’opposé de $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est $\\textcolor{{{color:primary.2}}}{{{b}}}$ : on remplace « $-$ $\\textcolor{{{color:primary.0}}}{-}{{b}}$ » par « $+$ $\\textcolor{{{color:primary.2}}}{{{b}}}$ ».",
+				"$$\\begin{align} {{a}} - \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= {{a}} + \\textcolor{{{color:primary.2}}}{{{b}}} \\end{align}$$"
+			],
+			[
+				"**Soustraire un nombre, c’est ajouter son opposé** : $a - b = a + \\left( -b \\right)$ et $a - \\left( -b \\right) = a + b$.",
+				"L’opposé de ${{b}}$ est $\\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right)$ : on remplace « $-$ ${{b}}$ » par « $+$ $\\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right)$ ».",
+				"$$\\begin{align} {{a}} - {{b}} &= {{a}} + \\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right) \\end{align}$$"
+			],
+			[
+				"**Soustraire un nombre, c’est ajouter son opposé** : $a - b = a + \\left( -b \\right)$ et $a - \\left( -b \\right) = a + b$.",
+				"L’opposé de ${{b}}$ est $\\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right)$ : on remplace « $-$ ${{b}}$ » par « $+$ $\\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right)$ ».",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - {{b}} &= -{{a}} + \\left( \\textcolor{{{color:primary.2}}}{-}{{b}} \\right) \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

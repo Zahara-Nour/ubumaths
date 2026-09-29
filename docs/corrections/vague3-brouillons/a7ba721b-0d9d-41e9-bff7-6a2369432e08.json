@@ -1,0 +1,24 @@
+{
+	"templateId": "a7ba721b-0d9d-41e9-bff7-6a2369432e08",
+	"title": "Enlever $1$ ou $2$ à un nombre négatif",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"Soustraire $1$, c’est ajouter son opposé $\\textcolor{{{color:primary.0}}}{-}1$.",
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et $\\textcolor{{{color:primary.0}}}{-}1$ sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et on additionne les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - 1 &= \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{-}1 \\right) \\\\ &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + 1 \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"Soustraire $2$, c’est ajouter son opposé $\\textcolor{{{color:primary.0}}}{-}2$.",
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et $\\textcolor{{{color:primary.0}}}{-}2$ sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et on additionne les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - 2 &= \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{-}2 \\right) \\\\ &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + 2 \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,15 @@
+{
+	"templateId": "25b78a6f-7a6e-4067-a729-761351333b27",
+	"title": "Calculer un produit",
+	"classe": "N",
+	"code": "N-FRAC-MULT",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+			"On simplifie ensuite la fraction obtenue{{if:gcd(a*b,c*d)>1| par $\\textcolor{{{color:primary.1}}}{{{eval:gcd(a*b,c*d)}}}$|}}.",
+			"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} \\times \\dfrac{{{b}}}{{{d}}} &= \\dfrac{{{a}} \\times {{b}}}{{{c}} \\times {{d}}} \\\\ &= \\dfrac{{{eval:a*b}}}{{{eval:c*d}}} \\\\ {{if:gcd(a*b,c*d)>1|&= \\dfrac{{{eval:a*b/gcd(a*b,c*d)}} \\times \\textcolor{{{color:primary.1}}}{{{eval:gcd(a*b,c*d)}}}}{{{eval:c*d/gcd(a*b,c*d)}} \\times \\textcolor{{{color:primary.1}}}{{{eval:gcd(a*b,c*d)}}}} \\\\ |}}&= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

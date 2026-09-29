@@ -1,0 +1,15 @@
+{
+	"templateId": "31144f5f-04e1-40d3-8972-871527d5669c",
+	"title": "Ajouter deux nombres négatifs",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+			"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et on additionne les distances à zéro.",
+			"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

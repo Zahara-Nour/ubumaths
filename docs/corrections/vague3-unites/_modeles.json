@@ -1,0 +1,1470 @@
+[
+	{
+		"id": "7a90fc45-a7e2-493b-96d5-d0963e51e136",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[km] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[hm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dam] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[dm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[cm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[mm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[kL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[hL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[daL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[dL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[mL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[kg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[hg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[dag] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "a[dg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "a[cg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression18}}$$",
+				"variables": [
+					{
+						"name": "expression18",
+						"expression": "a[mg] = ?[g]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:15.817159+00:00",
+		"updated_at": "2026-09-27T16:36:15.817159+00:00",
+		"subdomain": "Unités simples",
+		"exercise_instruction": null,
+		"description": "Conversion vers l'unité de référence",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 7\\,000 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km→m)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 700 m",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 70 m",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}7 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}07 m",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}007 m",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 7\\,000 L",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kL→L)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 700 L",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 70 L",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}7 L",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}07 L",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}007 L",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 7\\,000 g",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kg→g)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 700 g",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 70 g",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}7 g",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}07 g",
+				"variationIndex": 16
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}007 g",
+				"variationIndex": 17
+			},
+			{
+				"answers": ["7000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7000 sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "décimal au point",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[km^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[hm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dam^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.0001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[cm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[mm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[km^2] = ?[hm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[hm^2] = ?[dam^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[m^2] = ?[dm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[dm^2] = ?[cm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^2] = ?[mm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[mm^2] = ?[cm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[cm^2] = ?[dm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[m^2] = ?[dam^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "a[dam^2] = ?[hm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "a[hm^2] = ?[km^2]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:16.950832+00:00",
+		"updated_at": "2026-09-27T16:36:16.950832+00:00",
+		"subdomain": "Unités composées",
+		"exercise_instruction": null,
+		"description": "Unités d'aire",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^2 = 7\\,000\\,000 m^2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km^2→m^2)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 70\\,000 m^2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^2 = 700 m^2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 0{,}000\\,7 m^2",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^2 = 0{,}000\\,007 m^2",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^2 = 700 hm^2",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km^2→hm^2)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 700 dam^2",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^2 = 700 dm^2",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 700 cm^2",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 700 mm^2",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^2 = 0{,}07 cm^2",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 0{,}07 dm^2",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (cm^2→dm^2)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^2 = 0{,}07 dam^2",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^2 = 0{,}07 hm^2",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 0{,}07 km^2",
+				"variationIndex": 16
+			}
+		]
+	},
+	{
+		"id": "b79d4cb7-d138-4be0-86e5-57131c8e265d",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 2,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[hm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[dam^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[cm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[km^3] = ?[hm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[hm^3] = ?[dam^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[m^3] = ?[dm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[dm^3] = ?[cm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[cm^3] = ?[mm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[mm^3] = ?[cm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^3] = ?[dm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[m^3] = ?[dam^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dam^3] = ?[hm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[hm^3] = ?[km^3]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:17.150291+00:00",
+		"updated_at": "2026-09-27T16:36:17.150291+00:00",
+		"subdomain": "Unités composées",
+		"exercise_instruction": null,
+		"description": "Unités de volume",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000\\,000 m^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hm^3→m^3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 7\\,000 m^3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}000\\,007 m^3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^3 = 7\\,000 hm^3",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000 dam^3",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 7\\,000 dm^3",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dm^3)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 7\\,000 cm^3",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 7\\,000 mm^3",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^3 = 0{,}007 cm^3",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}007 dm^3",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 0{,}007 dam^3",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dam^3)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 0{,}007 hm^3",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 0{,}007 km^3",
+				"variationIndex": 14
+			}
+		]
+	}
+]

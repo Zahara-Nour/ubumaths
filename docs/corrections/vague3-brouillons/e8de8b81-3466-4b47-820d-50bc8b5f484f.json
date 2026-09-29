@@ -1,0 +1,32 @@
+{
+	"templateId": "e8de8b81-3466-4b47-820d-50bc8b5f484f",
+	"title": "Compléter une multiplication à trou",
+	"classe": "N",
+	"code": "N-FRAC-MULT",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"Les numérateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{b}}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b}}}$. Le nombre manquant s’obtient par une division.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:a*b}}} : \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"Les dénominateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{d}}} = \\textcolor{{{color:primary.1}}}{{{eval:c*d}}}$. Le nombre manquant s’obtient par une division.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:c*d}}} : \\textcolor{{{color:primary.0}}}{{{d}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"Les numérateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{a}}} = \\textcolor{{{color:primary.1}}}{{{eval:a*b}}}$. Le nombre manquant s’obtient par une division.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:a*b}}} : \\textcolor{{{color:primary.0}}}{{{a}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit de fractions.** On multiplie les numérateurs entre eux et les dénominateurs entre eux : $\\dfrac{a}{b} \\times \\dfrac{c}{d} = \\dfrac{a \\times c}{b \\times d}$.",
+				"Les dénominateurs : $? \\times \\textcolor{{{color:primary.0}}}{{{c}}} = \\textcolor{{{color:primary.1}}}{{{eval:c*d}}}$. Le nombre manquant s’obtient par une division.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:c*d}}} : \\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

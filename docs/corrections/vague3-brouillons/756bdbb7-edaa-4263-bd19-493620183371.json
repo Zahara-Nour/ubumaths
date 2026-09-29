@@ -1,0 +1,14 @@
+{
+	"templateId": "756bdbb7-edaa-4263-bd19-493620183371",
+	"title": "Nombre négatif défini par une soustraction",
+	"classe": "N",
+	"code": "N-REL-DEF",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Définition.** Le nombre $-a$ est le résultat de la soustraction $0 - a$ : c’est le nombre qu’il faut ajouter à $a$ pour obtenir $0$.",
+			"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{a}} &= 0 - \\textcolor{{{color:primary.0}}}{{{a}}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

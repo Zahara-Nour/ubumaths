@@ -1,0 +1,4596 @@
+[
+	{
+		"id": "fd2c3e4b-832a-4eda-87d8-cc61ab1c9c71",
+		"title": "Ajouter $1$ ou $2$ à un nombre négatif",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)+1"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)+2"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.714607+00:00",
+		"updated_at": "2026-09-26T15:18:09.714607+00:00",
+		"subdomain": "Sommes",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "+1 borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "+2 borne haute",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "+1 borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "signe oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "recopie non calculée",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "31144f5f-04e1-40d3-8972-871527d5669c",
+		"title": "Ajouter deux nombres négatifs",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 4,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a)+(-b)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:10.201113+00:00",
+		"updated_at": "2026-09-26T15:18:10.201113+00:00",
+		"subdomain": "Sommes",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"description": "bornes basses",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "bornes hautes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"description": "signe oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "1"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "0a34e472-b985-4faa-b4d6-c804e96aff29",
+		"title": "Calculer",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-a+b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "-a-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "c-a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:11.504824+00:00",
+		"updated_at": "2026-09-26T15:18:11.504824+00:00",
+		"subdomain": "Sommes algébriques",
+		"exercise_instruction": null,
+		"description": "Avec écriture simplifiée",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+b positif",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+b nul",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+b mauvais signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a-b bornes hautes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a-b signe oublié",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "c-a borne basse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "8"
+				},
+				"description": "c-a borne haute",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "c-a signe oublié",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "32469cec-a95f-4a47-9672-870707027eba",
+		"title": "Calculer une somme",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 6,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)+b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)+(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a+(-b)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:10.533056+00:00",
+		"updated_at": "2026-09-26T15:18:10.533056+00:00",
+		"subdomain": "Sommes",
+		"exercise_instruction": null,
+		"description": "Cas général",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+b positif",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "(-a)+b nul",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+b mauvais signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-a)+(-b) bornes hautes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-a)+(-b) signe oublié",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a+(-b) négatif",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a+(-b) mauvais signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "db4f1dde-503b-4fad-8b02-96a5124221d5",
+		"title": "Calculer une somme ou une différence",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a)+b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:4-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-a)-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..4"
+					},
+					{
+						"name": "expression3",
+						"expression": "a-b"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:08.873991+00:00",
+		"updated_at": "2026-09-26T15:18:08.873991+00:00",
+		"subdomain": "Sur la droite graduée",
+		"exercise_instruction": null,
+		"description": "À l'aide de la droite graduée, entre $-4$ et $4$.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)+1 = -2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "erreur de signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "calcul non effectué",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4"
+				},
+				"description": "borne : (-4)+4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "(-2)-1 = -3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "confusion avec (-2)+1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "3"
+				},
+				"description": "borne basse : (-1)-3 = -4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "1-4 = -3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "écart sans signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "347eb0d0-4607-4fdb-8f0f-2ecc42ff40b8",
+		"title": "Calculer une somme ou une différence",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a)+b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:7-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-a)-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..8"
+					},
+					{
+						"name": "expression3",
+						"expression": "a-b"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.029218+00:00",
+		"updated_at": "2026-09-26T15:18:09.029218+00:00",
+		"subdomain": "Sur la droite graduée",
+		"exercise_instruction": null,
+		"description": "À l'aide de la droite graduée, entre $-7$ et $7$.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)+1 = -2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "erreur de signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3+1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "calcul non effectué",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8"
+				},
+				"description": "borne : (-7)+8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "(-2)-1 = -3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "confusion avec (-2)+1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "6"
+				},
+				"description": "borne basse : (-1)-6 = -7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "1-4 = -3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "écart sans signe",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8"
+				},
+				"description": "borne : 7-8 = -1",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "5b53b1be-f9e7-4fc1-bbeb-be84e180a4fd",
+		"title": "Calculer une somme ou une différence",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 5,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-a,5)+b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:3-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-a,5)-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}};d}}"
+					}
+				],
+				"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..4"
+					},
+					{
+						"name": "expression3",
+						"expression": "a,5-b"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.565378+00:00",
+		"updated_at": "2026-09-26T18:33:40.544678+00:00",
+		"subdomain": "Sur la droite graduée",
+		"exercise_instruction": null,
+		"description": "À l'aide de la droite graduée, entre $-4$ et $4$, nombres en ${,}5$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-1.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "(-2,5)+1 = -1,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "virgule MathLive",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "erreur de signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1.49"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "valeur voisine (pas d'arrondi toléré)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3/2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "fraction : décimal attendu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-1.5)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1.50"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "zéro final inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "borne : (-3,5)+4 = 0,5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-3.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "(-2,5)-1 = -3,5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1.5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "confusion avec l'addition",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "1,5-4 = -2,5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2.5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "écart sans signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "a7ba721b-0d9d-41e9-bff7-6a2369432e08",
+		"title": "Enlever $1$ ou $2$ à un nombre négatif",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)-1"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)-2"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:10.873793+00:00",
+		"updated_at": "2026-09-26T15:18:10.873793+00:00",
+		"subdomain": "Différences",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "-1 borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "-2 borne haute",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur typique : -a+2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "parenthèses inutiles",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "24331791-3177-437f-bfc9-8e727e270293",
+		"title": "Compléter une addition à trou",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 3,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})+? = {{eval:(-a)+b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:4-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-{{a}})-? = {{eval:(-a)-b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..4"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{a}}-? = {{eval:a-b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"allowBracketsInFirstNegativeTerm": true
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.199929+00:00",
+		"updated_at": "2026-09-26T15:18:09.199929+00:00",
+		"subdomain": "Sur la droite graduée",
+		"exercise_instruction": null,
+		"description": "Relatifs entre $-4$ et $4$. À l'aide de la droite graduée.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)+? = -2 → 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe inversé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["+1"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe + superflu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "parenthèses tolérées (option TinyMath)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "borne haute : (-1)+? = 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)-? = -4 → 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe inversé (soustraction)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "1-? = -3 → 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "résultat recopié",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "84755a7b-fe7d-4be7-b306-40d38dd07aef",
+		"title": "Compléter une addition à trou",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 4,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})+?= {{eval:(-a)+b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:7-a}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "(-{{a}})-?={{eval:(-a)-b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..8"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{a}}-?={{eval:a-b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"allowBracketsInFirstNegativeTerm": true
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.353054+00:00",
+		"updated_at": "2026-09-26T15:18:09.353054+00:00",
+		"subdomain": "Sur la droite graduée",
+		"exercise_instruction": null,
+		"description": "Relatifs entre $-7$ et $7$. À l'aide de la droite graduée.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)+? = -2 → 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe inversé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["+1"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe + superflu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "parenthèses tolérées (option TinyMath)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "8"
+				},
+				"description": "borne haute : (-1)+? = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "(-3)-? = -4 → 1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1"
+				},
+				"description": "signe inversé (soustraction)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "1-? = -3 → 4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "4"
+				},
+				"description": "résultat recopié",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "b1550840-5b8f-4a36-8581-5a8aa1267778",
+		"title": "Compléter une égalité",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 3,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-{{a}}+?= {{eval:-a+b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "-{{a}}-?= {{eval:-a-b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{c}}-? = {{eval:c-a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:11.667828+00:00",
+		"updated_at": "2026-09-26T15:18:11.667828+00:00",
+		"subdomain": "Sommes algébriques",
+		"exercise_instruction": null,
+		"description": "Avec écriture simplifiée",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:a-1}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+?",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+? mauvais signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["+9"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a+? signe + superflu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a-? bornes hautes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "-a-? mauvais signe",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "c-?",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "c-? borne basse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "c-? mauvais signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "372d4f79-d0d9-4016-bd07-56fd782b5b95",
+		"title": "Compléter une somme",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 7,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})+?={{eval:(-a)+b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-{{a}})+?={{eval:(-a)+(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{a}}+?={{eval:a+(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?+(-{{a}})={{eval:(-a)+b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?+(-{{a}})={{eval:(-a)+(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{b}}"
+					}
+				],
+				"statement": "Complète l'égalité avec le nombre manquant.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "?+{{a}}={{eval:a+(-b)}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:10.711867+00:00",
+		"updated_at": "2026-09-26T15:18:10.711867+00:00",
+		"subdomain": "Sommes",
+		"exercise_instruction": null,
+		"description": "Cas général",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+?=(-a)+b",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+? mauvais signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+?=(-a)+(-b) sans parenthèses",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(-9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)+?=(-a)+(-b) avec parenthèses",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "signe oublié",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-11+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "recopie non calculée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "a+?=a+(-b)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2"
+				},
+				"description": "?+(-a)=(-a)+b",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(-9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "?+(-a)=(-a)+(-b)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "?+a=a+(-b)",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "?+a mauvais signe",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "b896b6ce-9cf0-430a-87ef-b242204cbc3b",
+		"title": "Ajouter $2$ nombres opposés",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)+a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+(-a)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:09.876026+00:00",
+		"updated_at": "2026-09-26T15:18:09.876026+00:00",
+		"subdomain": "Sommes",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..15"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "(-a)+a borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "a+(-a) borne haute",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "réponse fausse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-0"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "-0 refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "abc5d417-7638-4048-b710-0394c4ccc42c",
+		"title": "Calculer une somme algébrique",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 4,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}{{eval:b;+}}{{eval:c;+}}{{eval:d;+}}"
+					}
+				],
+				"conditions": [
+					"abs(a)/(a)+abs(b)/(b)+abs(c)/(c)+abs(d)/(d)>-4 && abs(a)/(a)+abs(b)/(b)+abs(c)/(c)+abs(d)/(d)<4 "
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:59:03.271967+00:00",
+		"updated_at": "2026-09-26T15:59:03.271967+00:00",
+		"subdomain": "Sommes algébriques",
+		"exercise_instruction": null,
+		"description": "Avec écriture simplifiée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"description": "9-7-6+2 = -2"
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"description": "signe du résultat oublié"
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"description": "valeurs absolues additionnées (erreur typique)"
+			},
+			{
+				"answers": ["9-7-6+2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"description": "recopie de la somme refusée"
+			},
+			{
+				"answers": ["(-2)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "-6",
+					"d": "2"
+				},
+				"description": "parenthèses inutiles"
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-9",
+					"b": "9",
+					"c": "9",
+					"d": "-9"
+				},
+				"description": "bornes : -9+9+9-9 = 0"
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "2",
+					"d": "-2"
+				},
+				"description": "bornes : 2+2+2-2 = 4"
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "4",
+					"d": "-6"
+				},
+				"description": "9+9+4-6 = 16"
+			}
+		]
+	},
+	{
+		"id": "1d41e370-b662-4c43-89c5-519495d8fd2b",
+		"title": "Soustraire (cas général)",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 4,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)-(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a-(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "(-a)-b"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:11.19203+00:00",
+		"updated_at": "2026-09-26T15:18:11.19203+00:00",
+		"subdomain": "Différences",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)-(-b)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "(-a)-(-b) mauvais signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "a-(-b) bornes hautes",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "a-(-b) : 0 faux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "a-b nul",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a-b négatif",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["(-7)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a-b parenthèses inutiles",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-a)-b",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-a)-b : 0 faux",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "8c7942e4-b81a-4049-9e78-7e2f14d5b055",
+		"title": "Simplifier l'écriture",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}-{{b}}"
+					}
+				],
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "-a+(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}-{{b}}"
+					}
+				],
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}+{{b}}"
+					}
+				],
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "-a-(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}"
+					}
+				],
+				"statement": "Simplifie les doubles signes de cette expression.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a-(-b)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"signs": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:11.361946+00:00",
+		"updated_at": "2026-09-26T15:18:11.361946+00:00",
+		"subdomain": "Sommes algébriques",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "-a+(-b)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2+(-9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "double signe laissé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-11"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "calcul au lieu de simplifier",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a+(-b)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9+2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a+(-b) termes permutés",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "-a-(-b)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-2-(-9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["signs", "form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "-a-(-b) double signe laissé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "a-(-b)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "a-(-b) calculé",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "1b866448-717d-44a8-8a6e-648c4ec55a48",
+		"title": "Transformer une soustraction en addition",
+		"theme": "Relatifs",
+		"domain": "Additionner et soustraire",
+		"level": 3,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}+{{b}}"
+					}
+				],
+				"statement": "Réécris cette soustraction en une addition équivalente.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)-(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}"
+					}
+				],
+				"statement": "Réécris cette soustraction en une addition équivalente.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a-(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+(-{{b}})"
+					}
+				],
+				"statement": "Réécris cette soustraction en une addition équivalente.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a-b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-{{a}}+(-{{b}})"
+					}
+				],
+				"statement": "Réécris cette soustraction en une addition équivalente.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "(-a)-b"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"signs": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:59:02.924017+00:00",
+		"updated_at": "2026-09-26T15:59:02.924017+00:00",
+		"subdomain": "Différences",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"requiredForm": "additionOnly"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-7+3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "(-7)-(-3) → -7+3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-7)-(-3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "(-7)-(-3) : recopie refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-4"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "(-7)-(-3) : résultat calculé refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7+3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "7-(-3) → 7+3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7-(-3)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "7-(-3) : recopie refusée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2+(-9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "2-9 → 2+(-9)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2-9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "2-9 : recopie refusée",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2+9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "9"
+				},
+				"description": "2-9 : signe faux",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-4+(-5)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5"
+				},
+				"description": "(-4)-5 → -4+(-5)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(-4)-5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5"
+				},
+				"description": "(-4)-5 : recopie refusée",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "e0b6d00a-cc63-43bb-b2a0-c13d0e0fa00e",
+		"title": "Comparer deux nombres relatifs.",
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"choices": [
+					{
+						"content": "$$-{{a}}$$"
+					},
+					{
+						"content": "$$-{{b}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"choices": [
+					{
+						"content": "$$-{{b}}$$"
+					},
+					{
+						"content": "$$-{{a}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:08.471978+00:00",
+		"updated_at": "2026-09-26T15:18:08.471978+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Valeurs entières - qcm",
+		"shared": {
+			"statement": "Quel est le plus petit de ces 2 nombres ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..19"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+1}}..20"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"description": "positif contre négatif : le négatif est le plus petit",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"description": "piège : le positif choisi",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"description": "deux négatifs : -b < -a",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"description": "piège : -a choisi (plus petite distance à zéro)",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "20"
+				},
+				"description": "borne haute a=19, b=20",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "8"
+				},
+				"description": "ordre inversé : -b en premier",
+				"variationIndex": 2,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2"
+				},
+				"description": "borne basse a=1, b=2",
+				"variationIndex": 2,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2"
+				},
+				"description": "piège : -a choisi",
+				"variationIndex": 2,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "12e27dba-8939-4f84-94e9-87c88458b7c3",
+		"title": "Comparer deux nombres relatifs.",
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{g}}$$"
+					},
+					{
+						"content": "$${{h}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:-(a+c/10^b);d}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:-(a+d/10);d}}"
+					}
+				],
+				"conditions": ["mod(c,10)!=0", "c!=d"],
+				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+			},
+			{
+				"choices": [
+					{
+						"content": "$${{g}}$$"
+					},
+					{
+						"content": "$${{h}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "s",
+						"expression": "1..1;±"
+					},
+					{
+						"name": "t",
+						"expression": "1..1;±"
+					},
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:s*(p+c/10^b);d}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:t*(q+d/10);d}}"
+					}
+				],
+				"conditions": ["mod(c,10)!=0", "c!=d"],
+				"correctChoiceIndex": "{{eval:(1+(g-h)/abs(g-h))/2}}"
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:08.658036+00:00",
+		"updated_at": "2026-09-26T18:33:40.352038+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Valeurs décimales.",
+		"shared": {
+			"statement": "Quel est le plus petit de ces 2 nombres ?"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "4"
+				},
+				"description": "même partie entière, plus de décimales : -3,45 < -3,4",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "4"
+				},
+				"description": "piège : -3,4 choisi",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "7"
+				},
+				"description": "piège longueur : -3,7 < -3,45",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "45",
+					"d": "7"
+				},
+				"description": "piège longueur refusé",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "9"
+				},
+				"description": "bornes : un chiffre, -9,9 < -9,1",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "99",
+					"d": "1"
+				},
+				"description": "bornes : -1,99 < -1,1",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "2",
+					"c": "95",
+					"d": "5",
+					"p": "5",
+					"q": "8",
+					"s": "1",
+					"t": "-1"
+				},
+				"description": "positif contre négatif : -8,5 < 5,95",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "2",
+					"c": "95",
+					"d": "5",
+					"p": "5",
+					"q": "8",
+					"s": "1",
+					"t": "-1"
+				},
+				"description": "piège : le positif choisi",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "1",
+					"c": "5",
+					"d": "4",
+					"p": "4",
+					"q": "3",
+					"s": "-1",
+					"t": "-1"
+				},
+				"description": "deux négatifs : -4,5 < -3,4",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "2",
+					"c": "15",
+					"d": "3",
+					"p": "2",
+					"q": "2",
+					"s": "1",
+					"t": "1"
+				},
+				"description": "deux positifs : 2,15 < 2,3",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "2",
+					"c": "15",
+					"d": "3",
+					"p": "2",
+					"q": "2",
+					"s": "1",
+					"t": "1"
+				},
+				"description": "deux positifs, piège longueur refusé",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "756bdbb7-edaa-4263-bd19-493620183371",
+		"title": "Nombre négatif défini par une soustraction",
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "0 - a"
+						},
+						"expectedAnswer": "0-{{a}}"
+					}
+				],
+				"statement": "Écris la soustraction définissant le nombre :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					},
+					{
+						"name": "expression1",
+						"expression": "-a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"nullTerms": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:08.107606+00:00",
+		"updated_at": "2026-09-26T15:18:08.107606+00:00",
+		"subdomain": "La définition d'un nombre négatif",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0-15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "bonne réponse"
+			},
+			{
+				"answers": ["0-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "borne basse"
+			},
+			{
+				"answers": ["0-20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "borne haute"
+			},
+			{
+				"answers": ["-15"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "recopie du nombre : pas une soustraction"
+			},
+			{
+				"answers": ["0+(-15)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "addition de l'opposé : pas la soustraction demandée"
+			},
+			{
+				"answers": ["1-16"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "autre soustraction égale"
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "oubli du signe"
+			},
+			{
+				"answers": ["0-(15)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "parenthèses inutiles"
+			}
+		]
+	},
+	{
+		"id": "f7f22023-19cd-4745-aa96-8a3c930cde0f",
+		"title": "Une soustraction enfin possible",
+		"theme": "Relatifs",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Écris le résultat de :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					},
+					{
+						"name": "expression1",
+						"expression": "0-a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"nullTerms": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:07.787855+00:00",
+		"updated_at": "2026-09-26T15:18:07.787855+00:00",
+		"subdomain": "La définition d'un nombre négatif",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "bonne réponse"
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "borne basse"
+			},
+			{
+				"answers": ["-20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "borne haute"
+			},
+			{
+				"answers": ["0-15"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["nullTerms", "form"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "recopie 0-15 : terme nul refusé"
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "oubli du signe"
+			},
+			{
+				"answers": ["(-15)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "parenthèses inutiles"
+			}
+		]
+	},
+	{
+		"id": "e8de8b81-3466-4b47-820d-50bc8b5f484f",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Fractions",
+		"domain": "A trou",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(?/{{c}})*({{b}}/{{d}})={{eval:a*b}}/{{eval:c*d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{a}}/?)*({{b}}/{{d}})={{eval:a*b}}/{{eval:c*d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{a}}/{{c}})*(?/{{d}})={{eval:a*b}}/{{eval:c*d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{a}}/{{c}})*({{b}}/?)={{eval:a*b}}/{{eval:c*d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:31:00.025129+00:00",
+		"updated_at": "2026-09-26T17:31:00.025129+00:00",
+		"subdomain": "Multiplication",
+		"exercise_instruction": null,
+		"description": "Avec des quotients. Nombres positifs.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "2..9!a,b"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "(?/4)×(8/7)=72/28 → 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{9}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "fraction au lieu du nombre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "(9/?)×(8/7) → 4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "(9/4)×(?/7) → 8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "(9/4)×(8/?) → 7",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "3",
+					"d": "9"
+				},
+				"description": "bornes (2/3)×(2/?)=4/27 → 9",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "4",
+					"d": "7"
+				},
+				"description": "confusion numérateur/dénominateur",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "23b29a15-e08d-4c9c-bccf-97e589587578",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Fractions",
+		"domain": "A trou",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(?/{{{c}}})*({{{b}}}/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "({{{a}}}/?)*({{{b}}}/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "({{{a}}}/{{{c}}})*(?/{{{d}}})={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "({{{a}}}/{{{c}}})*({{{b}}}/?)={{eval:a*b*c*d/abs(c*d)}}/{{eval:abs(c*d)}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:31:00.25288+00:00",
+		"updated_at": "2026-09-26T17:31:00.25288+00:00",
+		"subdomain": "Multiplication",
+		"exercise_instruction": null,
+		"description": "Quotients avec nombres relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±!cd(a),cd(b)"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±!cd(a),cd(b)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"description": "(?/8)×(7/(-4))=35/32 → -5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"description": "oubli du signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-5)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "-5",
+					"b": "7",
+					"c": "8",
+					"d": "-4"
+				},
+				"description": "parenthèses : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "2",
+					"d": "4"
+				},
+				"description": "(5/?)×(9/4)=45/8 → 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "2",
+					"d": "2"
+				},
+				"description": "(9/2)×(?/2)=-63/4 → -7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "-7",
+					"c": "8",
+					"d": "3"
+				},
+				"description": "(7/8)×((-7)/?)=-49/24 → 3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "-7",
+					"c": "8",
+					"d": "3"
+				},
+				"description": "(7/8)×((-7)/?) : signe faux",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-8",
+					"b": "2",
+					"c": "-3",
+					"d": "3"
+				},
+				"description": "dénominateur négatif : (-8)/(-3)×(2/?)=16/9 → 3",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "25b78a6f-7a6e-4067-a729-761351333b27",
+		"title": "Calculer un produit",
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"level": 5,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{eval:a*b/gcd(a*b,c*d)}}}{{{eval:c*d/gcd(a*b,c*d)}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "gcd(a*b,c*d)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a/c}*{b/d}"
+					}
+				],
+				"conditions": ["gcd(a*b,c*d)<c*d"]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:31:03.594487+00:00",
+		"updated_at": "2026-09-26T17:31:03.594487+00:00",
+		"subdomain": "Multiplication",
+		"exercise_instruction": null,
+		"description": "avec peut-être une simplification simple",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{21}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "avec simplification",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{42}{20}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "non simplifiée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "écriture décimale",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{13}{9}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "addition au lieu de produit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{35}{6}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "2",
+					"d": "3"
+				},
+				"description": "sans simplification possible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "forte simplification",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "62590cd3-c811-4acc-9b0d-0ff9e19c4c55",
+		"title": "Définition d'un pourcentage",
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "u/100",
+							"acceptable": "u/v"
+						},
+						"expectedAnswer": "\\dfrac{{{a}}}{100}"
+					}
+				],
+				"statement": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					},
+					{
+						"name": "expression1",
+						"expression": "a%"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T23:08:20.259703+00:00",
+		"updated_at": "2026-09-27T23:08:20.259703+00:00",
+		"subdomain": "Définition",
+		"exercise_instruction": null,
+		"description": "Convertir un pourcentage en une fraction de dénominateur $100$.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{71}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Fraction sur 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["71"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Oubli du dénominateur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Décimal",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["71\\%"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Pourcentage recopié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{50}{100}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "50"
+				},
+				"description": "50 % : 50/100 juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "50"
+				},
+				"description": "50 % : 1/2 perfectible (dénominateur 100 demandé)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "8fd459da-05ef-4053-a52e-5bd2f2ac1a44",
+		"title": "Définition d'un pourcentage",
+		"theme": "Proportionnalité",
+		"domain": "Pourcentages",
+		"level": 2,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}%"
+					}
+				],
+				"statement": "Écris cette fraction sous forme de pourcentage.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T23:08:20.427087+00:00",
+		"updated_at": "2026-09-27T23:08:20.427087+00:00",
+		"subdomain": "Définition",
+		"exercise_instruction": null,
+		"description": "convertir une fraction de dénominateur $100$ en pourcentage.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["71\\%"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "71 %",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\%"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "borne 1 %",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100\\%"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "borne 100 %",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}71"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["percent"]
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "décimal 0,71 perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{71}{100}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["percent"]
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "fraction recopiée perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["71"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "oubli du symbole %",
+				"variationIndex": 0
+			}
+		]
+	}
+]

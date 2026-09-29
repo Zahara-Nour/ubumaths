@@ -1,0 +1,22 @@
+{
+	"templateId": "b896b6ce-9cf0-430a-87ef-b242204cbc3b",
+	"title": "Ajouter $2$ nombres opposés",
+	"classe": "N",
+	"code": "N-OPPOSES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Deux nombres opposés** ont la même distance à zéro et des signes contraires ; leur somme est égale à $0$.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{a}}$ sont opposés.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + {{a}} &= \\textcolor{{{color:primary.2}}}{0} \\end{align}$$"
+			],
+			[
+				"**Deux nombres opposés** ont la même distance à zéro et des signes contraires ; leur somme est égale à $0$.",
+				"${{a}}$ et $\\textcolor{{{color:primary.0}}}{-}{{a}}$ sont opposés.",
+				"$$\\begin{align} {{a}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) &= \\textcolor{{{color:primary.2}}}{0} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}
