@@ -65,3 +65,26 @@ describe('Case texte : tolérance aux fautes selon la longueur du mot', () => {
 		expect(check(answer, expected)).toBe(false);
 	});
 });
+
+// Le bruit de saisie (espaces, point final, virgule décimale) n'est pas une faute :
+// il reste toléré quelle que soit la longueur du mot.
+describe('Case texte : bruit de saisie toléré même pour un mot court', () => {
+	it.each([
+		['3cm', '3 cm'],
+		['3  cm', '3 cm'],
+		['( AB)', '(AB)'],
+		['oui.', 'Oui'],
+		['Oui !', 'Oui'],
+		['1.5', '1,5']
+	])('%s accepté pour %s', (answer, expected) => {
+		expect(check(answer, expected)).toBe(true);
+	});
+
+	it.each([
+		['B.', 'A'],
+		['3 mm', '3 cm'],
+		['15', '1,5']
+	])('%s toujours refusé pour %s', (answer, expected) => {
+		expect(check(answer, expected)).toBe(false);
+	});
+});

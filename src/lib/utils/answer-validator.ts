@@ -308,14 +308,19 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 /**
- * Normalize string for fuzzy comparison: lowercase + strip accents
+ * Normalize string for fuzzy comparison: lowercase + strip accents.
+ * Le bruit de saisie n'est pas une faute : espaces supprimés, ponctuation finale
+ * retirée, virgule décimale lue comme un point (« 3cm » = « 3 cm », « oui. » = « Oui »).
  */
 function normalizeForFuzzy(s: string): string {
 	return s
 		.trim()
 		.toLowerCase()
 		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '');
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/[.!?;:]+$/u, '')
+		.replace(/\s+/gu, '')
+		.replace(/,/g, '.');
 }
 
 /**
