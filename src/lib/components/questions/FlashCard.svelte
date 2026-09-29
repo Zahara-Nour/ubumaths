@@ -49,8 +49,11 @@
 		showCorrectionOnWrong?: boolean;
 		showValidationFeedback?: boolean;
 		maxAttempts?: number;
-		/** Hauteur de la face visible (tuiles) plutôt que de la plus haute des deux */
-		fitVisibleFace?: boolean;
+		/**
+		 * Hauteur imposée (ex. '16rem') : recto et verso à cette hauteur, le contenu
+		 * défile dans la carte. Absente : hauteur de la plus haute des deux faces.
+		 */
+		height?: string;
 	}
 
 	let {
@@ -64,7 +67,7 @@
 		showCorrectionOnWrong = false,
 		showValidationFeedback = true,
 		maxAttempts = 0,
-		fitVisibleFace = false
+		height = undefined
 	}: Props = $props();
 
 	// ============================================================================
@@ -302,12 +305,13 @@
 </script>
 
 <div class={cn('question-display-wrapper mx-auto w-full', sizeClasses[size])}>
-	<FlipCard bind:flipped={isFlipped} {fitVisibleFace}>
+	<FlipCard bind:flipped={isFlipped} {height}>
 		{#snippet front()}
-			<div class="relative h-full">
+			<div class="face relative h-full">
 				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré.
-				     Tuile (hauteur ajustée au recto) : place réservée au bouton de retournement. -->
-				<Card.Root class={cn('h-full', fitVisibleFace && 'pb-16')}>
+				     Hauteur imposée : la carte défile, place réservée en bas au bouton de retournement
+				     (frère de la carte, il ne défile pas). -->
+				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
 					<Card.Content class="space-y-6">
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
@@ -418,9 +422,9 @@
 		{/snippet}
 
 		{#snippet back()}
-			<div class="relative h-full">
+			<div class="face relative h-full">
 				<!-- Verso allégé : titre vert centré ; ni badge, ni intitulés, ni encadrés -->
-				<Card.Root class={cn('h-full', fitVisibleFace && 'pb-16')}>
+				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
 					<Card.Content class="space-y-6">
 						<p
 							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
@@ -507,6 +511,24 @@
 </div>
 
 <style>
+	/* ============================================================================
+	 * HAUTEUR IMPOSÉE : la carte défile, le bouton de retournement (frère de la
+	 * carte) reste fixe. En CSS du composant et non en Tailwind : c'est le
+	 * comportement, pas une décoration.
+	 * ============================================================================ */
+
+	.face {
+		position: relative;
+		height: 100%;
+	}
+
+	.face :global(.face-card.scrollable) {
+		height: 100%;
+		overflow-y: auto;
+		/* Place du bouton de retournement sous la dernière ligne */
+		padding-bottom: calc(4rem * var(--font-scale, 1));
+	}
+
 	/* ============================================================================
 	 * FLIP BUTTON (Bottom-Right Corner)
 	 * ============================================================================ */

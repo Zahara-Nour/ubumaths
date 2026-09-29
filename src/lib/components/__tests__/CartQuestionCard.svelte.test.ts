@@ -84,15 +84,15 @@ describe('CartQuestionCard', () => {
 		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
 	});
 
-	it('au survol, un bouton de réglage change la durée', async () => {
+	it('un bouton de réglage change la durée', async () => {
 		const onUpdateDelay = vi.fn();
 		const screen = await renderCard({ onUpdateDelay });
 
-		// Geste réel : survoler la tuile révèle les boutons, puis cliquer
+		// Geste réel : survoler la tuile, puis cliquer. L'apparition au survol
+		// (opacity Tailwind) n'est PAS vérifiée ici : les tests navigateur ne chargent
+		// pas Tailwind, le bouton y est toujours visible (un test d'opacité passait à tort).
 		await screen.getByTitle('Durée par question').hover();
-		const increaseDelay = screen.getByRole('button', { name: 'Augmenter la durée' });
-		await expect.element(increaseDelay).toHaveStyle({ opacity: '1' });
-		await increaseDelay.click();
+		await screen.getByRole('button', { name: 'Augmenter la durée' }).click();
 
 		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.category, 30);
 	});
