@@ -1,0 +1,24 @@
+{
+	"templateId": "6fbf1ab2-c476-4a6c-bd98-ce2c58d8c459",
+	"title": "Simplifier un produit par $0$ ou $1$",
+	"classe": "N",
+	"code": "N-NEUTRE-ABS",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Produit par $1$ ou par $0$.** Multiplier par $1$ ne change pas un nombre ($1$ est neutre) ; multiplier par $0$ donne toujours $0$ ($0$ est absorbant).",
+				"$1{{p}}$ signifie $\\textcolor{{{color:primary.0}}}{1} \\times {{p}}$ : multiplier par $\\textcolor{{{color:primary.0}}}{1}$ ne change rien.",
+				"$$\\begin{align} 1{{p}} &= \\textcolor{{{color:primary.0}}}{1} \\times {{p}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit par $1$ ou par $0$.** Multiplier par $1$ ne change pas un nombre ($1$ est neutre) ; multiplier par $0$ donne toujours $0$ ($0$ est absorbant).",
+				"$0{{p}}$ signifie $\\textcolor{{{color:primary.0}}}{0} \\times {{p}}$ : multiplier par $\\textcolor{{{color:primary.0}}}{0}$ donne $0$, quelle que soit la valeur de ${{p}}$.",
+				"$$\\begin{align} 0{{p}} &= \\textcolor{{{color:primary.0}}}{0} \\times {{p}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
+	]
+}

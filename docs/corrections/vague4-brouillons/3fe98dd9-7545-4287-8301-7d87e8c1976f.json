@@ -1,0 +1,44 @@
+{
+	"templateId": "3fe98dd9-7545-4287-8301-7d87e8c1976f",
+	"title": "Traduire une puissance en produit",
+	"classe": "N",
+	"code": "N-PUISS-DEF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{2}$ indique 2 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{2}} &= {{a}} \\times {{a}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{3}$ indique 3 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{3}} &= {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{4}$ indique 4 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{4}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{5}$ indique 5 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{5}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{6}$ indique 6 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{6}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"L’exposant $\\textcolor{{{color:primary.1}}}{7}$ indique 7 facteurs égaux à $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{\\textcolor{{{color:primary.1}}}{7}} &= {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\times {{a}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
+	]
+}

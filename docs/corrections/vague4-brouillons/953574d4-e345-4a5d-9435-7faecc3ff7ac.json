@@ -1,0 +1,15 @@
+{
+	"templateId": "953574d4-e345-4a5d-9435-7faecc3ff7ac",
+	"title": "Écrire un nombre décimal à l'aide de la notation scientifique",
+	"classe": "N",
+	"code": "N-NOTSCI",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Notation scientifique.** Un nombre s’écrit $a \\times 10^n$ avec $1 \\leq a < 10$ et $n$ entier relatif. Quand la virgule se déplace de $k$ rangs vers la droite, $n = -k$ ; vers la gauche, $n = k$.",
+			"Le premier chiffre non nul est $\\textcolor{{{color:primary.0}}}{{{a}}}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\\textcolor{{{color:primary.1}}}{{{eval:abs(d)}}}$ rang{{if:abs(d)>1|s|}} vers la {{if:d<0|droite|gauche}} : l’exposant est $n = \\textcolor{{{color:primary.2}}}{{{d}}}$.",
+			"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}} \\times \\textcolor{{{color:primary.1}}}{{{eval:10^d}}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}{,}{{c}}} \\times 10^{\\textcolor{{{color:primary.2}}}{{{d}}}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

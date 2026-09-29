@@ -1,0 +1,42 @@
+{
+	"templateId": "d540f96e-6656-434f-bdbd-72347a2232a9",
+	"title": "Calculer la valeur d'une valeur absolue",
+	"classe": "N",
+	"code": "N-ABS",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{b}}}}$ est positif : sa valeur absolue est lui-même.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{\\dfrac{{{a}}}{{{b}}}} \\right|} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{-\\dfrac{{{a}}}{{{b}}}}$ est négatif : sa valeur absolue est son opposé, $\\dfrac{{{a}}}{{{b}}}$.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{-\\dfrac{{{a}}}{{{b}}}} \\right|} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}}$ est positif : sa valeur absolue est lui-même.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{\\sqrt{{{c}}}} \\right|} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{-\\sqrt{{{c}}}}$ est négatif : sa valeur absolue est son opposé, $\\sqrt{{{c}}}$.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{-\\sqrt{{{c}}}} \\right|} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{{{d}}}$ est positif : sa valeur absolue est lui-même.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{{{d}}} \\right|} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+				"$\\textcolor{{{color:primary.0}}}{-{{d}}}$ est négatif : sa valeur absolue est son opposé, ${{d}}$.",
+				"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{-{{d}}} \\right|} &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,17 @@
+{
+	"templateId": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+	"title": "Définition d'une puissance à exposant négatif",
+	"classe": "N",
+	"code": "N-PUISS-NEG",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+			"L’exposant $\\textcolor{{{color:primary.0}}}{-{{b}}}$ est négatif : ${{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}}$ est l’inverse de ${{a}}^{\\textcolor{{{color:primary.1}}}{{{b}}}}$.",
+			"$$\\begin{align} {{a}}^{\\textcolor{{{color:primary.0}}}{-{{b}}}} &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
+	]
+}

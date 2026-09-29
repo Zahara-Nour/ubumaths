@@ -69,3 +69,23 @@ N-ESPACES, N-ZEROS, N-DIVEUCL (15ed5af4). Vérificateur 17/17 (89 281 tirages) e
 égalité à un seul « ? ») : N-POSITION ×8, N-ENCADR ×4, N-DIVISEUR, N-GRADUATION (images),
 14a51794 (deux « ? »). Pièges : `expression` interdit dans une condition ; `mod(n,1000)` lu
 comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/1000))`.
+
+## Fait (2026-09-29) — vague 4 (branche `feat/corrections-vague4`)
+
+- Vérificateur (`lib/verify.ts`), chemin LITTÉRAL : un membre avec des lettres est comparé au suivant
+  par `areEquivalent` ; départ littéral = expression posée convertie en LaTeX, ou (sans variable
+  d'expression) l'unique bloc `$$…$$` de l'énoncé s'il n'a ni `=` ni inconnue ; fin littérale =
+  équivalente à la réponse de la case ; plusieurs cases : une case peut être donnée en prose par
+  `n = valeur` (valeur exacte). Chemin numérique inchangé. Preuves rouges sur copie : 7 contrôles.
+  Lots importés re-vérifiés : pilote 15/15, r-inv 36/36, n-fracdec 20/20, n-decomp 13/13 (mêmes tirages).
+- Lot `vague4-brouillons` (25 `draft`) : 19/25 (353 871 tirages), import SIMULATION 19/25.
+  Lot `vague4-publies` (3 `published`) : 1/3 (1af7263e), import SIMULATION 1/3.
+  Un exemple rendu par code : `docs/corrections/vague4-publies/RESUME.md`.
+- Lots séparés pour l'import tout-ou-rien : `vague4-brouillons` = 19 verts, `vague4-publies` = 1af7263e ;
+  les 8 rouges sont dans `CLOTURE` (lots/vague4.ts), propositions dans `docs/corrections/vague4-cloture/`.
+- Encore rouges : opposé (aeb86af9, 843c3186, 34e569e7 : l'opération est dans la phrase, le calcul
+  part de −A) ; facteur commun (294c4316, e66089e0 : la réponse n'est pas la fin d'un calcul) ;
+  traduire une phrase (5d515eb1, 78feafed : aucun bloc posé) ; racine affine (2bdb3db6 : chaîne
+  d'équations). Coïncidence numérique relevée : 294c4316 passe quand b − c = 1 (a × 1 = a).
+- Piège : un `|` (`\left| … \right|`) hors accolades est lu comme un choix aléatoire par le
+  résolveur de correction → l'envelopper dans un groupe `{\left| … \right|}`.

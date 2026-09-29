@@ -1,0 +1,25 @@
+{
+	"templateId": "ff8082bd-fe4d-4747-bddc-19eced72839f",
+	"title": "Factoriser $a^2-b^2$",
+	"classe": "N",
+	"code": "N-IDREM",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"On lit l’égalité de droite à gauche : ${{eval:a^2}}$ est le carré de $\\textcolor{{{color:primary.0}}}{{{a}}}$ ; c’est une différence de deux carrés.",
+				"$$\\begin{align} {{eval:a^2}} - {{c}}^2 &= \\textcolor{{{color:primary.0}}}{{{a}}}^2 - \\textcolor{{{color:primary.1}}}{{{c}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"On lit l’égalité de droite à gauche : ${{eval:a^2}}$ est le carré de $\\textcolor{{{color:primary.1}}}{{{a}}}$ ; c’est une différence de deux carrés.",
+				"$$\\begin{align} {{c}}^2 - {{eval:a^2}} &= \\textcolor{{{color:primary.0}}}{{{c}}}^2 - \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).",
+		"⚑ Modèle : la variable `b` est déclarée mais jamais utilisée."
+	]
+}

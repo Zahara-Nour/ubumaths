@@ -1,0 +1,15 @@
+{
+	"templateId": "226e5b3b-fad4-4c99-92cb-42e123014055",
+	"title": "Calculer la valeur d'une valeur absolue",
+	"classe": "N",
+	"code": "N-ABS",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Valeur absolue.** La valeur absolue d’un nombre est sa distance à zéro : $|a| = a$ si $a \\geq 0$, et $|a| = -a$ (son opposé) si $a < 0$.",
+			"{{if:a<0|$\\textcolor{{{color:primary.0}}}{{{a}}}$ est négatif : sa valeur absolue est son opposé, $-\\left( \\textcolor{{{color:primary.0}}}{{{a}}} \\right) = {{solution}}$.|$\\textcolor{{{color:primary.0}}}{{{a}}}$ est positif ou nul : sa valeur absolue est lui-même.}}",
+			"$$\\begin{align} {\\left| \\textcolor{{{color:primary.0}}}{{{a}}} \\right|} &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

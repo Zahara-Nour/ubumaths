@@ -1,0 +1,17 @@
+{
+	"templateId": "843c3186-afc6-4ccd-83f7-beab64d3e420",
+	"title": "Déterminer l'opposé d'une expression",
+	"classe": "N",
+	"code": "N-OPPOSE-EXPR",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Opposé d'une expression.** On obtient l'opposé d'une expression en changeant le signe de chacun de ses termes : $-(a + b) = -a - b$.",
+			"On change le signe de chaque terme : $\\textcolor{{{color:primary.0}}}{{{eval:pr}}}$ devient $\\textcolor{{{color:primary.1}}}{{{eval:-(p)r}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:q;+}}}$ devient $\\textcolor{{{color:primary.1}}}{{{eval:-(q);+}}}$.",
+			"$$\\begin{align} -\\left( \\textcolor{{{color:primary.0}}}{{{eval:pr}}}\\textcolor{{{color:primary.0}}}{{{eval:q;+}}} \\right) &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge."
+	]
+}

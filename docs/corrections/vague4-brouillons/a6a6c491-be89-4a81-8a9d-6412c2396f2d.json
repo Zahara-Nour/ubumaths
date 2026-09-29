@@ -1,0 +1,34 @@
+{
+	"templateId": "a6a6c491-be89-4a81-8a9d-6412c2396f2d",
+	"title": "Développer $(a+b)(a-b)$",
+	"classe": "N",
+	"code": "N-IDREM",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"Ici, le premier terme est $\\textcolor{{{color:primary.0}}}{{{a}}}$ et le second $\\textcolor{{{color:primary.1}}}{{{b}}}$.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{b}}} \\right)\\left( \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.1}}}{{{b}}} \\right) &= \\textcolor{{{color:primary.0}}}{{{a}}}^2 - \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"Ici, le premier terme est $\\textcolor{{{color:primary.0}}}{{{a}}}$ et le second $\\textcolor{{{color:primary.1}}}{{{b}}}$.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.1}}}{{{b}}} \\right)\\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.1}}}{{{b}}} \\right) &= \\textcolor{{{color:primary.0}}}{{{a}}}^2 - \\textcolor{{{color:primary.1}}}{{{b}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"Ici, le premier terme est $\\textcolor{{{color:primary.0}}}{{{b}}}$ et le second $\\textcolor{{{color:primary.1}}}{{{a}}}$.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{a}}} \\right)\\left( \\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.1}}}{{{a}}} \\right) &= \\textcolor{{{color:primary.0}}}{{{b}}}^2 - \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Identité remarquable.** $(a + b)(a - b) = a^2 - b^2$ : le produit de la somme par la différence de deux termes est la différence de leurs carrés.",
+				"Ici, le premier terme est $\\textcolor{{{color:primary.0}}}{{{b}}}$ et le second $\\textcolor{{{color:primary.1}}}{{{a}}}$.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.1}}}{{{a}}} \\right)\\left( \\textcolor{{{color:primary.0}}}{{{b}}} + \\textcolor{{{color:primary.1}}}{{{a}}} \\right) &= \\textcolor{{{color:primary.0}}}{{{b}}}^2 - \\textcolor{{{color:primary.1}}}{{{a}}}^2 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
+	]
+}

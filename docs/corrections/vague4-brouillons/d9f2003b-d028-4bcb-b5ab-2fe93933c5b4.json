@@ -1,0 +1,44 @@
+{
+	"templateId": "d9f2003b-d028-4bcb-b5ab-2fe93933c5b4",
+	"title": "Traduire un produit en puissance",
+	"classe": "N",
+	"code": "N-PUISS-DEF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{2}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{2}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{3}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{3}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{4}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{4}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{5}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{5}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{6}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{6}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ est écrit $\\textcolor{{{color:primary.1}}}{7}$ fois : c’est ${{a}}^{\\textcolor{{{color:primary.1}}}{7}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
+	]
+}
