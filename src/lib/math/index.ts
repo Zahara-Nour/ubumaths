@@ -15,6 +15,7 @@ import { normalize, denormalize } from '$lib/mathAST/normal';
 import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
+import { bareDecimalCommaToPoint } from '$lib/mathAST/decimal-comma';
 
 // Re-export evaluateWithModifiers from mathAST (already implemented there)
 export { evaluateWithModifiers } from '$lib/mathAST/eval';
@@ -32,7 +33,9 @@ export * as intervals from './intervals';
  * and plain text may use spaces (12 345).
  */
 function stripLatexSpacing(latex: string): string {
-	return (
+	// Virgule décimale nue (`1234,5` → `1234.5`) ; une virgule séparatrice
+	// (`(3,14)`, `\{1,2,3\}`, `3, 4`) reste intacte (cf. mathAST/decimal-comma)
+	return bareDecimalCommaToPoint(
 		latex
 			// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
 			.replace(/\\[,;:!]\s?/g, '')
@@ -42,8 +45,6 @@ function stripLatexSpacing(latex: string): string {
 			.replace(/(\d)\s+(?=\d)/g, '$1')
 			// French decimal comma: {,} → . (LaTeX notation for comma decimal separator)
 			.replace(/\{,\}/g, '.')
-			// Plain comma as decimal separator between digits: 1234,5 → 1234.5
-			.replace(/(\d),(\d)/g, '$1.$2')
 	);
 }
 
