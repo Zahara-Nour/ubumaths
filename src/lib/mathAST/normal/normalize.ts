@@ -87,6 +87,7 @@ import { divide, euler, number, opposite, parentheses, piConstant, superscript }
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { expandPositiveBasePowers } from './rules/general-power';
+import { expandLogBases } from './rules/log-base';
 import type { AssumptionOracle } from '../assumptions';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
@@ -2103,7 +2104,11 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// qui combine les exponentielles, qui ne connaît que les nœuds fonction
 	// `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
 	// affichée garde la notation de l'élève.
-	const withEuler = expandEulerPowers(node);
+	// `\log_{b}(a)` devient `ln(a)/ln(b)`, `\log(a)` devient `ln(a)/ln(10)` :
+	// même domaine des deux côtés (a > 0, b > 0, b ≠ 1), et la décomposition
+	// des `ln` fait le reste (`\log_{4}(x) ≡ \frac{1}{2}\log_{2}(x)`). Détail
+	// dans `rules/log-base.ts`.
+	const withEuler = expandEulerPowers(expandLogBases(node));
 	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
 	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
 	// strictement positives seulement — détail dans `rules/general-power.ts`.

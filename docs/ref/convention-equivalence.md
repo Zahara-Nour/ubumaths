@@ -145,3 +145,17 @@ ailleurs) : base déclarée strictement positive → `exp(u·ln base)` (`rules/g
 `|u| → u` pour `u ≥ 0` déclaré (`normalize.ts`, cas `abs`) ; `a^{2k} → |a|^{2k}` pour une base
 négative et un exposant entier pair en variables déclarées entières (`foldEvenIntegerPower`).
 Revue adverse, tirages dans le domaine déclaré seul : 11 533 paires, 0 faux positif (2026-09-29).
+
+## Logarithmes de base quelconque
+
+**`\log` sans base est décimal** (convention du dépôt : `normalize`, l'évaluateur, la dérivation).
+Sur le chemin de `equivalenceForm` seul, `\log_{b}(a)` devient `\ln(a)/\ln(b)` et `\log(a)` devient
+`\ln(a)/\ln(10)` (`normal/rules/log-base.ts`) — même domaine des deux côtés (a > 0, b > 0, b ≠ 1),
+rien ne change à l'affichage. Deviennent justes : `\log_{x}(2) ≡ \frac{\ln 2}{\ln x}`,
+`\log_{4}(x) ≡ \frac{1}{2}\log_{2}(x)`, `\log_{10}(x) ≡ \log x`, `\log_{e}(x) ≡ \ln x`,
+`\log_{1/2}(8) ≡ −3`. `\log_{x}(x) ≡ 1` est vrai par la convention (comme `x/x ≡ 1`).
+
+Faux positif corrigé : `|\log_{x}(2)| ≡ \log_{x}(2)` rendait vrai, l'évaluateur lisant `\log_{x}(2)`
+comme `\log 2` (base ignorée, donc « positif »). Le signe de `\log_{b}(a)` n'est connu que si `b`
+l'est : `b > 1` garde le signe de `\log a`, `0 < b < 1` l'inverse, base variable → inconnu. Un log à
+base reste hors de la liste blanche des hypothèses (`isPlainAlgebra`).

@@ -122,3 +122,49 @@ describe('limites pédagogiques : substitution directe', () => {
 		expect(evaluateAtPoint(parseLatex('\\log_{x}(2)'), 'x', 1)).toBeNull();
 	});
 });
+
+describe('changement de base (chemin de la comparaison seul)', () => {
+	it.each([
+		['\\log_{x}(2)', '\\frac{\\ln 2}{\\ln x}'],
+		['\\log_{2}(8)', '3'],
+		['\\log_{\\frac{1}{2}}(8)', '-3'],
+		['\\log_{4}(x)', '\\frac{1}{2}\\log_{2}(x)'],
+		['\\log_{10}(x)', '\\log(x)'],
+		['\\log_{e}(x)', '\\ln x'],
+		['\\log(100)', '2'],
+		['\\log_{2.5}(2.5^{x})', 'x'],
+		['\\log_{x}(y)', '\\frac{\\log y}{\\log x}'],
+		['\\log_{2}(x) + \\log_{2}(y)', '\\log_{2}(xy)'],
+		['\\log_{9}(x)', '\\log_{3}(\\sqrt{x})']
+	])('%s ≡ %s', (a, b) => {
+		expect(areEquivalent(a, b)).toBe(true);
+	});
+
+	// log_x(x) = 1 partout où log_x(x) existe (x > 0, x ≠ 1) : vrai par la
+	// convention (même valeur là où les deux membres sont définis), comme x/x ≡ 1.
+	it('log_x(x) ≡ 1 (convention : égales là où les deux existent)', () => {
+		expect(areEquivalent('\\log_{x}(x)', '1')).toBe(true);
+	});
+
+	it.each([
+		['\\log_{x}(2)', '\\log_{3}(2)'],
+		['\\log_2 x', '\\log_3 x'],
+		['\\log(x)', '\\ln(x)'],
+		['\\log_{x}(2)', '\\log_{2}(x)'],
+		['\\log_{2}(x)', '\\frac{\\ln 2}{\\ln x}'],
+		['|\\log_{x}(2)|', '\\frac{\\ln 2}{\\ln x}']
+	])('%s ≢ %s', (a, b) => {
+		expect(areEquivalent(a, b)).toBe(false);
+	});
+
+	it('hypothèses : un log à base reste hors liste blanche (verdict sans hypothèse)', () => {
+		expect(
+			areEquivalent('|\\log_{x}(2)|', '\\log_{x}(2)', { assumptions: { x: 'positive' } })
+		).toBe(false);
+	});
+
+	it('affichage inchangé : simplify garde log_2(x)', () => {
+		expect(toLatex(simplify(parseLatex('\\log_{2}(x)')).result)).toContain('\\log');
+		expect(toLatex(simplify(parseLatex('\\log_{2}(x)')).result)).not.toContain('\\ln');
+	});
+});
