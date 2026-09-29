@@ -12,7 +12,7 @@
  * exactement à un résultat frais — l'échec est silencieux.
  *
  * On lance le vrai script dans un dépôt jetable (son propre `git init`, donc
- * son propre verrou) ; `npx` et `docker` sont des bouchons, et un compteur dit
+ * son propre verrou) ; `npx` est un bouchon, et un compteur dit
  * si svelte-check a réellement tourné.
  */
 
@@ -84,10 +84,7 @@ fi
 exit 0
 `
 	);
-	// Bouchon docker : aucune pile Supabase, et pas d'appel au vrai démon.
-	writeFileSync(join(bin, 'docker'), '#!/bin/bash\nexit 0\n');
 	chmodSync(join(bin, 'npx'), 0o755);
-	chmodSync(join(bin, 'docker'), 0o755);
 
 	// Premier passage : pose le marqueur et le verdict à rejouer.
 	lancer();

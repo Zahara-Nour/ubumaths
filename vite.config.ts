@@ -44,8 +44,9 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 			// Bundle treemap, only when ANALYZE=1 (never in normal/prod builds).
 			// emitFile → the report lands in each build's output dir, i.e.
 			// .svelte-kit/output/client/stats.html (the user-facing bundle) and the
-			// server one. Generated in CI via .github/workflows/bundle-analyze.yml
-			// because this 8 GB machine can't run a full build locally (OOM).
+			// server one. Generated in CI via .github/workflows/bundle-analyze.yml, or
+			// locally with `ANALYZE=1 pnpm build` (a full build takes 64 s on the Mac
+			// mini, measured 2026-09-29 — the old 8 GB laptop could not run it).
 			...(process.env.ANALYZE
 				? [visualizer({ emitFile: true, filename: 'stats.html', gzipSize: true, brotliSize: true })]
 				: [])

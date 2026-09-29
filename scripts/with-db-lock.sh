@@ -4,7 +4,8 @@
 #
 # Pourquoi : il n'y a qu'UNE pile Supabase locale pour tout le dépôt
 # (project_id "ubumaths", ports 54321-54329 figés dans supabase/config.toml).
-# Un worktree ne duplique pas Docker, et deux piles sur 8 Go ne tiennent pas.
+# Un worktree ne duplique pas Docker : deux piles se disputeraient les mêmes
+# ports et le même project_id.
 #
 # Ce que ça évite précisément : un `db:reset` lancé pendant une suite
 # d'intégration ne rend PAS d'erreur, il rend des fichiers en échec sans aucun

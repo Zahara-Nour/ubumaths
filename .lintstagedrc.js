@@ -1,7 +1,9 @@
 /** @type {import('lint-staged').Config} */
 export default {
-	// Pre-commit is intentionally LIGHT — it must never OOM on this 8 GB machine
-	// (the old eslint --fix + `vitest related` steps did, which forced --no-verify).
+	// Pre-commit is intentionally LIGHT — for DURATION, not memory: ~2 s here, while
+	// a full eslint takes 530 s (measured 2026-09-29, Mac mini Apple M6 24 GB, swap +0).
+	// (On the old 8 GB laptop, the eslint --fix + `vitest related` steps also OOMed,
+	// which forced --no-verify.)
 	//   - oxlint (Rust, ~0 RAM) gives fast local lint feedback. By default errors
 	//     block the commit, warnings don't (oxlint's exit code) — see .oxlintrc.json.
 	//   - prettier formats.
