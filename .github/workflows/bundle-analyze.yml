@@ -3,8 +3,9 @@ name: Bundle Analyze
 # Manual-only bundle treemap (rollup-plugin-visualizer): builds with ANALYZE=1 and
 # uploads the report as an artifact you download from the run's "Artifacts" section.
 # Kept out of push/PR on purpose — a full build is expensive and this is an on-demand
-# investigation tool. It lives in CI (not local) because the dev machine can't run a
-# full build without OOM (8 GB). Trigger it from the Actions tab → "Run workflow".
+# investigation tool; the report stays attached to the run as a downloadable artifact.
+# Trigger it from the Actions tab → "Run workflow". Locally, `ANALYZE=1 pnpm build`
+# gives the same report (a full build takes 64 s on the Mac mini, measured 2026-09-29).
 on:
   workflow_dispatch:
 

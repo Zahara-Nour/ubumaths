@@ -139,8 +139,8 @@ function resolveSource(barrel: string, chemin: string): string | null {
  *
  * On ne garde que les TROIS premiers fichiers par identifiant : il suffit d'en
  * trouver un qui ne soit ni le baril ni la source, et deux exclusions au plus
- * sont possibles. Garder la liste entière ferait exploser la mémoire sur une
- * machine 8 Go.
+ * sont possibles. Garder la liste entière ne servirait à rien : trois
+ * fichiers suffisent à conclure, le reste ne ferait que gonfler la mémoire.
  */
 function indexerLeCorpus(): Map<string, string[]> {
 	const sortie = execFileSync('git', ['ls-files', '--', ...CORPUS_DIRS], {
