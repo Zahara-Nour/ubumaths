@@ -48,8 +48,8 @@ import type { MathNode } from '../../types';
  *
  * Les deux écritures doivent aboutir au même `exp` : sinon `e^{2}` (lettre,
  * réécrite en `exp(2)`) et `\exponentialE^{2}` (constante, restée facteur
- * symbolique `euler²`) ne se reconnaissaient pas — faux négatif mesuré sur la
- * réponse d'un élève.
+ * symbolique `euler²`) ne se reconnaissaient pas : une réponse juste était
+ * comptée fausse (faux négatif mesuré par `euler-letter-vs-command.test.ts`).
  */
 function isEulerLetter(node: MathNode): boolean {
 	return (isVariable(node) && node.name === 'e') || isEulerConstant(node);
