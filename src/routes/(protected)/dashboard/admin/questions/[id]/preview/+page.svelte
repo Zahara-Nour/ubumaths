@@ -15,6 +15,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
@@ -54,14 +55,32 @@
 	let showCorrection = $state(false); // Show correction on wrong answer
 	let interactive = $state(true); // Interactive mode (answer validation)
 
+	// Réponses attendues, lisibles : une ligne par trou, ou le(s) choix correct(s) d'un QCM
+	let expectedAnswers = $derived.by(() => {
+		if (!instance) return [];
+		if (instance.blanks && instance.blanks.length > 0) {
+			return instance.blanks.map((blank, index) => ({
+				label: `Trou ${index + 1}`,
+				value: blank.expectedAnswer
+			}));
+		}
+		if (instance.correctChoiceIndex !== undefined) {
+			const indexes = [instance.correctChoiceIndex].flat();
+			return [{ label: 'Choix correct', value: indexes.join(', ') }];
+		}
+		return [];
+	});
+
 	// ===========================
 	// LIFECYCLE
 	// ===========================
 
 	// Auto-generate instance when component mounts
+	// `untrack` : l'effet ne dépend que du modèle affiché. Sans lui, il suivrait `seed`
+	// (lue et écrite par generateInstance) et chaque nouvelle seed relancerait la génération.
 	$effect(() => {
 		if (templateId) {
-			generateInstance();
+			untrack(() => generateInstance());
 		}
 	});
 
@@ -77,18 +96,25 @@
 	 *
 	 * @param customSeed - Optional seed override (used by regenerate button)
 	 */
+	/** Seed à 6 chiffres au plus (0-999999) */
+	function randomSeed(): number {
+		return Math.floor(Math.random() * 1000000);
+	}
+
 	async function generateInstance(customSeed?: number) {
 		isLoading = true;
 
 		try {
-			// Use custom seed if provided, otherwise use state seed
-			const seedParam = customSeed !== undefined ? customSeed : seed;
+			// Seed fournie, sinon celle du champ, sinon tirée ici : toute instance affichée
+			// doit pouvoir être reproduite (la seed apparaît dans le débogage)
+			const seedParam = customSeed ?? seed ?? randomSeed();
+			seed = seedParam;
 
 			// Call POST endpoint with seed in body
 			const response = await fetch(`/api/questions/generate/${templateId}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(seedParam !== undefined ? { seed: seedParam } : {})
+				body: JSON.stringify({ seed: seedParam })
 			});
 
 			const result = await response.json();
@@ -116,9 +142,7 @@
 	 * This allows testing variability while maintaining reproducibility.
 	 */
 	function handleRegenerate() {
-		const randomSeed = Math.floor(Math.random() * 1000000); // 0-999999
-		seed = randomSeed; // Update seed input for display
-		generateInstance(randomSeed);
+		generateInstance(randomSeed());
 	}
 
 	/**
@@ -257,31 +281,53 @@ TEMPLATE - PAGE LAYOUT
 				<Card.Title class="text-sm">Informations de Débogage</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<div class="grid gap-2 text-sm">
-					<div class="flex justify-between">
-						<span class="text-muted-foreground">Type:</span>
-						<code>{getQuestionType(instance)}</code>
-					</div>
-					<div class="flex justify-between">
-						<span class="text-muted-foreground">Réponse attendue:</span>
-						<code class="max-w-md truncate">
-							{JSON.stringify((instance as unknown as Record<string, unknown>).solution)}
-						</code>
-					</div>
-					{#if instance.resolvedVariables && Object.keys(instance.resolvedVariables).length > 0}
-						<div class="border-t pt-2">
-							<span class="text-muted-foreground">Variables résolues:</span>
-							<div class="mt-1 space-y-1">
-								{#each Object.entries(instance.resolvedVariables) as [name, value] (name)}
-									<div class="flex justify-between font-mono text-xs">
-										<span>{name}:</span>
-										<span>{value}</span>
-									</div>
-								{/each}
-							</div>
-						</div>
+				<dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+					<dt class="text-muted-foreground">Seed</dt>
+					<dd class="font-mono">{instance.seed ?? '—'}</dd>
+
+					<dt class="text-muted-foreground">Type</dt>
+					<dd class="font-mono">{getQuestionType(instance)}</dd>
+
+					{#if instance.selectedVariationIndex !== undefined}
+						<dt class="text-muted-foreground">Variation</dt>
+						<dd class="font-mono">{instance.selectedVariationIndex + 1}</dd>
 					{/if}
-				</div>
+
+					<dt class="text-muted-foreground">Réponse attendue</dt>
+					<dd>
+						{#if expectedAnswers.length === 0}
+							<span class="text-muted-foreground">—</span>
+						{:else}
+							<ul class="space-y-1">
+								{#each expectedAnswers as answer (answer.label)}
+									<li class="break-all">
+										{#if expectedAnswers.length > 1 || answer.label === 'Choix correct'}
+											<span class="text-muted-foreground">{answer.label} :</span>
+										{/if}
+										<code class="font-mono">{answer.value}</code>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+					</dd>
+				</dl>
+
+				{#if instance.resolvedVariables && instance.resolvedVariables.length > 0}
+					<div class="border-t pt-3">
+						<p class="mb-2 text-sm text-muted-foreground">Variables résolues</p>
+						<dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 font-mono text-xs">
+							{#each instance.resolvedVariables as variable (variable.name)}
+								<dt>{variable.name}</dt>
+								<dd class="break-all">
+									= {variable.value}
+									{#if variable.displayValue && variable.displayValue !== variable.value}
+										<span class="text-muted-foreground">(affiché : {variable.displayValue})</span>
+									{/if}
+								</dd>
+							{/each}
+						</dl>
+					</div>
+				{/if}
 			</Card.Content>
 		</Card.Root>
 	{:else}
