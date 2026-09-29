@@ -119,7 +119,9 @@ from pg_policies where schemaname = 'storage';
 **Restauration**, dans cet ordre, en une passe `psql` avec `ON_ERROR_STOP`, sous
 le verrou partagé (`bash scripts/with-db-lock.sh …`) :
 
-1. `drop schema public cascade; create schema public;`
+1. `drop schema public cascade; create schema public authorization pg_database_owner;`
+   (en prod, `public` appartient à `pg_database_owner` ; un simple
+   `create schema public` le rendrait propriété de `postgres`)
 2. `x-schema.sql` (tables, fonctions, policies et droits de `public`,
    extensions `vector` et `unaccent`) ;
 3. `x-hors-public.sql` (triggers et policies de `auth` / `storage`) ;
@@ -151,10 +153,8 @@ client installé sur le Mac.
 
 ### Reste à établir avant tout usage sur la prod
 
-- **Droits sur la prod** : en local, le rôle `postgres` a pu vider `auth.*` et
-  poser `session_replication_role = replica`. Sur le projet hébergé, à
-  vérifier (une restauration qui échoue au milieu laisse une base à moitié
-  vidée).
+- ~~**Droits sur la prod**~~ : **vérifiés le 2026-09-29** (section « Droits du
+  rôle `postgres` en prod »), identiques au local.
 - **`--linked`** : jamais exécuté. Durée et taille sur les vraies données :
   inconnues.
 - **Hors dumps** : fichiers de Storage (seule la table `storage.objects` est
@@ -251,6 +251,31 @@ select cron.alter_job(jobid, active := true)  from cron.job;  -- après
 toutes les heures : une restauration de plus de quelques minutes les croisera
 presque sûrement.
 
+## Droits du rôle `postgres` en prod (vérifiés le 2026-09-29)
+
+Même requête, en lecture seule, sur la pile locale et sur la prod
+(`pnpm exec supabase db query --linked -f …`, exécutée par `postgres`).
+Prod = Postgres 17.6.
+
+| Capacité requise par la restauration                             | Local | Prod | Par quel mécanisme                                                                    |
+| ---------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------------------------------- |
+| Supprimer et recréer `public`                                    | ✅    | ✅   | `postgres` possède la base → membre de `pg_database_owner` ; `CREATE` sur la base     |
+| `session_replication_role = replica`                             | ✅    | ✅   | `supautils.privileged_role_allowed_configs` (`postgres` ∈ `supabase_privileged_role`) |
+| `truncate` de `auth.users`, `auth.identities`, `storage.buckets` | ✅    | ✅   | privilège `TRUNCATE` accordé                                                          |
+| Trigger sur `auth.users`                                         | ✅    | ✅   | privilège `TRIGGER` + `supautils.drop_trigger_grants`                                 |
+| Policies sur `storage.objects`                                   | ✅    | ✅   | `supautils.policy_grants` (le propriétaire est `supabase_storage_admin`)              |
+| Suspendre les tâches (`cron.alter_job`)                          | ✅    | ✅   | `EXECUTE` accordé                                                                     |
+
+⚠️ Les fonctions classiques mentent ici : `has_parameter_privilege(…,
+'session_replication_role', 'SET')` rend `false` en local comme en prod, et
+`postgres` n'est pas membre du propriétaire de `storage.objects` — pourtant la
+restauration locale a fait les deux. C'est `supautils` qui accorde ces droits à
+l'exécution. **Seule vraie différence** : le propriétaire de `public`
+(`pg_database_owner` en prod, `postgres` en local) → étape 1 corrigée.
+
+Vérifié par le catalogue, **pas par l'action** sur la prod : la preuve par
+l'action reste une restauration de répétition (base à part, ou staging).
+
 ## Questions pour David
 
 - Quelle perte de données est acceptable en cas de problème (une heure, un
@@ -281,3 +306,7 @@ presque sûrement.
   `db query --linked` ; le MCP read-only a refusé : `SUPABASE_ACCESS_TOKEN` non
   exporté sur le Mac mini). 8 tâches actives, fonctions toutes présentes dans
   les migrations. `flag_stale_python_rechecks` n'est PAS programmée.
+- 2026-09-29 — **Droits de `postgres` en prod vérifiés** (lecture seule) :
+  mêmes capacités qu'en local, via la propriété de la base et `supautils`. Seule
+  différence : `public` appartient à `pg_database_owner` en prod → étape 1 de la
+  restauration corrigée (`create schema public authorization pg_database_owner`).
