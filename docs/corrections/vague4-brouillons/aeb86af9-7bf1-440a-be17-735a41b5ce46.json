@@ -12,6 +12,6 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine)."
+		"⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge."
 	]
 }

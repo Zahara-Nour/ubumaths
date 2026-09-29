@@ -32,7 +32,7 @@
 
 `aeb86af9-7bf1-440a-be17-735a41b5ce46` · 3 · niveau 1 · 1 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- ⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge.
 
 #### Tirage 1 (variation 0)
 
@@ -124,7 +124,7 @@ $$
 
 `843c3186-afc6-4ccd-83f7-beab64d3e420` · 3 · niveau 2 · 1 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- ⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge.
 
 #### Tirage 1 (variation 0)
 
@@ -216,7 +216,7 @@ $$
 
 `34e569e7-7834-456f-8e48-65b2a1183030` · 2 · niveau 1 · 3 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- ⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -308,7 +308,7 @@ $$
 
 `c32ebff9-7e10-400e-bc06-c376f6991ea8` · 3 · niveau 3 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -394,7 +394,7 @@ $$
 
 `a6a6c491-be89-4a81-8a9d-6412c2396f2d` · 3 · niveau 1 · 4 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -480,7 +480,7 @@ $$
 
 `ff8082bd-fe4d-4747-bddc-19eced72839f` · 3 · niveau 3 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 - ⚑ Modèle : la variable `b` est déclarée mais jamais utilisée.
 
 #### Tirage 1 (variation 1)
@@ -567,7 +567,7 @@ $$
 
 `7410800b-83d3-40a3-8a2d-dc4b16a4679d` · 5 · niveau 4 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -653,7 +653,7 @@ $$
 
 `d9f2003b-d028-4bcb-b5ab-2fe93933c5b4` · 4 · niveau 1 · 6 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -739,7 +739,7 @@ $$
 
 `3fe98dd9-7545-4287-8301-7d87e8c1976f` · 4 · niveau 2 · 6 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -825,7 +825,7 @@ $$
 
 `077c01e0-0c8a-4ff9-a57e-279ec35659ec` · 5 · niveau 1 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -911,7 +911,7 @@ $$
 
 `33b1b496-0de3-47bb-b19a-ff016fd08ef5` · 5 · niveau 2 · 6 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 - ⚑ Modèle : variations 0-1, le facteur `r` est une LETTRE (a|b|c|x|y) — `r` peut valoir `p`.
 
 #### Tirage 1 (variation 1)
@@ -998,7 +998,7 @@ $$
 
 `6fbf1ab2-c476-4a6c-bd98-ce2c58d8c459` · 5 · niveau 3 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -1084,7 +1084,7 @@ $$
 
 `294c4316-d2c9-4894-9c3c-c2b24fdffc99` · 4 · niveau 1 · 8 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : la réponse est UN FACTEUR, pas la fin d’un calcul (la factorisation finit sur le produit) → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -1188,8 +1188,7 @@ Un facteur commun est donc $3$ (tout diviseur de $3$ autre que $1$ convient auss
 
 `e66089e0-b7bd-49fe-a968-9a8df3d325fd` · 4 · niveau 3 · 12 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- ⚑ Vérificateur : la réponse est UN FACTEUR, pas la fin d’un calcul (la factorisation finit sur le produit) → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -1545,7 +1544,7 @@ $$
 
 `15368b02-73cc-4f0d-b978-fa0d0848eb03` · 4 · niveau 3 · 1 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 0)
 
@@ -1823,7 +1822,7 @@ _Étape 1_
 
 _Étape 2_
 
-Le premier chiffre non nul est $\textcolor{#FF5722}{7}$ : la virgule se place juste après lui, ce qui donne $\textcolor{#FF5722}{7{,}985}$, compris entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $\textcolor{#4CAF50}{2}$.
+Le premier chiffre non nul est $\textcolor{#FF5722}{7}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \textcolor{#FF5722}{7{,}985}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $n = \textcolor{#4CAF50}{2}$.
 
 _Étape 3_
 
@@ -1849,7 +1848,7 @@ _Étape 1_
 
 _Étape 2_
 
-Le premier chiffre non nul est $\textcolor{#FF5722}{9}$ : la virgule se place juste après lui, ce qui donne $\textcolor{#FF5722}{9{,}2}$, compris entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $\textcolor{#4CAF50}{2}$.
+Le premier chiffre non nul est $\textcolor{#FF5722}{9}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \textcolor{#FF5722}{9{,}2}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $n = \textcolor{#4CAF50}{2}$.
 
 _Étape 3_
 
@@ -1875,7 +1874,7 @@ _Étape 1_
 
 _Étape 2_
 
-Le premier chiffre non nul est $\textcolor{#FF5722}{2}$ : la virgule se place juste après lui, ce qui donne $\textcolor{#FF5722}{2{,}5}$, compris entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la droite : l’exposant est $\textcolor{#4CAF50}{-2}$.
+Le premier chiffre non nul est $\textcolor{#FF5722}{2}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \textcolor{#FF5722}{2{,}5}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la droite : l’exposant est $n = \textcolor{#4CAF50}{-2}$.
 
 _Étape 3_
 
@@ -1889,7 +1888,7 @@ $$
 
 `2bdb3db6-8ef7-43af-aa7a-2332e34d2a01` · 3 · niveau 1 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : le seul bloc de l’énoncé est une égalité `f(x) = …` et la résolution enchaîne des ÉQUATIONS, pas des égalités de valeurs → rouge.
 - Rédigée à la main : le pipeline pedagogical-solve/linear (mode B) produit des étapes, pas le style maison `align`.
 
 #### Tirage 1 (variation 1)

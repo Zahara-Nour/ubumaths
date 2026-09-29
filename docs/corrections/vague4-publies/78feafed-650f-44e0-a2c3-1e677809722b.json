@@ -29,6 +29,6 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine)."
+		"⚑ Vérificateur : ni variable d’expression ni bloc `$$…$$` dans l’énoncé (phrase à traduire) : point de départ invérifiable → rouge."
 	]
 }

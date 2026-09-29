@@ -11,10 +11,16 @@
  * 3. aucune écriture maladroite dans les calculs (`+ -3`, `+ 0`) ;
  * 4. chaque bloc `align` est une CHAÎNE D'ÉGALITÉS VRAIE : tous ses membres
  *    valent le même nombre, et un membre illisible fait ÉCHOUER — seule exception,
- *    l'inconnue `?` en tête d'une question à trou, suivie de la réponse attendue ;
+ *    l'inconnue `?` en tête d'une question à trou, suivie de la réponse attendue.
+ *    Chemin LITTÉRAL : dès qu'un membre contient des lettres (`6a`, `t^2 - 4`),
+ *    chaque membre est comparé au SUIVANT par `areEquivalent` (politique zéro faux
+ *    positif) ; deux membres numériques gardent la comparaison numérique ;
  * 5. le calcul PART de l'opération posée (premier membre = valeur de la variable
- *    d'expression, ou `?` pour un trou) et FINIT sur la réponse attendue (chaque
- *    case finit un calcul quand il y en a plusieurs) ; pour un trou, `? = calcul =
+ *    d'expression — ou, sans elle, de l'UNIQUE bloc `$$…$$` de l'énoncé —, ou `?`
+ *    pour un trou ; littéral : équivalent à l'expression posée) et FINIT sur la
+ *    réponse attendue (équivalente, si elle est littérale). Plusieurs cases :
+ *    chacune finit un calcul, OU est donnée dans la prose par une égalité
+ *    `n = valeur` (une lettre, la valeur exacte de la case) ; pour un trou, `? = calcul =
  *    réponse` et la valeur trouvée VÉRIFIE l'égalité posée ; pour un QCM, la
  *    dernière étape nomme le bon choix et aucun autre (comme un mot ou un nombre
  *    entier : « 3 » n'est pas nommé dans « 13 » ni dans « 3,5 ») ;
@@ -30,9 +36,13 @@ import { validateLatex } from 'mathlive';
 import type { QuestionInstance, QuestionTemplate } from '../../../src/lib/questions/types';
 import { validateTemplate } from '../../../src/lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '../../../src/lib/questions/template-schema';
-import { parseLatex } from '../../../src/lib/mathAST/parser';
+import { parseLatex, parseLatexSafe } from '../../../src/lib/mathAST/parser';
+import { areEquivalent } from '../../../src/lib/math';
 import { computeNumericValue } from '../../../src/lib/mathAST/solve/numeric-value';
-import { resolveExpression } from '../../../src/lib/questions/generator/content-resolver';
+import {
+	convertToLatex,
+	resolveExpression
+} from '../../../src/lib/questions/generator/content-resolver';
 import { injectCorrection, type Proposal } from './proposal';
 import { planDraws, type Sampling } from './sampling';
 
@@ -130,6 +140,39 @@ export function numericValue(latex: string): number | null {
 	}
 }
 
+/** Délai d'une comparaison littérale : au-delà, `areEquivalent` rend `false` (prudent) */
+const EQUIVALENCE_TIMEOUT_MS = 2000;
+
+/** Inconnue affichée (`?`, case) : jamais un membre lisible */
+const UNKNOWN_MEMBER = /\?|\\square|\\placeholder/;
+
+/**
+ * Un membre non numérique est-il une expression LITTÉRALE lisible (`6a`,
+ * `y(x + y)`) ? Une inconnue (`x + ?`) ne l'est pas ; le texte ne se lit pas (parseur).
+ */
+export function isLiteralMember(latex: string): boolean {
+	const plain = stripDecorations(latex).trim();
+	if (plain === '' || UNKNOWN_MEMBER.test(plain)) return false;
+	if (!/[a-zA-Z]/.test(plain.replace(/\\[a-zA-Z]+/g, ''))) return false;
+	try {
+		const result = parseLatexSafe(plain);
+		return result.ast !== null && result.errors.length === 0;
+	} catch {
+		return false;
+	}
+}
+
+/** Équivalence littérale de deux membres (habillages retirés), `false` si elle échoue */
+export function literallyEquivalent(a: string, b: string): boolean {
+	try {
+		return areEquivalent(stripDecorations(a), stripDecorations(b), {
+			timeoutMs: EQUIVALENCE_TIMEOUT_MS
+		});
+	} catch {
+		return false;
+	}
+}
+
 function sameNumber(a: number, b: number): boolean {
 	return Math.abs(a - b) <= TOLERANCE * Math.max(1, Math.abs(a), Math.abs(b));
 }
@@ -160,17 +203,45 @@ export function escapeRegExp(text: string): string {
 export type PosedStart =
 	| { kind: 'value'; value: number; expression: string }
 	| { kind: 'hole'; expression: string }
+	| { kind: 'literal'; latex: string; expression: string }
 	| { kind: 'unknown'; expression: string | null };
 
-/** L'opération posée : valeur de la variable d'expression, ou trou `?` */
+/**
+ * Sans variable d'expression : l'UNIQUE bloc `$$…$$` de l'énoncé résolu, s'il se lit
+ * comme une valeur (nombre ou expression littérale, sans `=` ni inconnue).
+ */
+function statementStart(instance: QuestionInstance): PosedStart {
+	const blocks = [...String(instance.statement ?? '').matchAll(/\$\$([\s\S]+?)\$\$/g)].map((m) =>
+		m[1].trim()
+	);
+	if (blocks.length !== 1) return { kind: 'unknown', expression: null };
+	const latex = blocks[0];
+	if (latex.includes('=')) return { kind: 'unknown', expression: latex };
+	const value = numericValue(latex);
+	if (value !== null) return { kind: 'value', value, expression: latex };
+	if (isLiteralMember(latex)) return { kind: 'literal', latex, expression: latex };
+	return { kind: 'unknown', expression: latex };
+}
+
+/**
+ * L'opération posée : valeur de la variable d'expression, trou `?`, expression
+ * littérale (convertie en LaTeX, sans évaluation), ou — sans variable
+ * d'expression — le bloc mathématique unique de l'énoncé.
+ */
 export function posedStart(instance: QuestionInstance): PosedStart {
 	const variable = (instance.resolvedVariables ?? []).find((v) => v.name.startsWith('expression'));
-	if (!variable) return { kind: 'unknown', expression: null };
+	if (!variable) return statementStart(instance);
 	const expression = variable.value;
 	if (expression.includes('?')) return { kind: 'hole', expression };
 	try {
 		const value = numericValue(resolveExpression(`{{eval:${expression}}}`, []));
 		if (value !== null) return { kind: 'value', value, expression };
+	} catch {
+		// pas un nombre : peut-être une expression littérale
+	}
+	try {
+		const latex = convertToLatex(expression);
+		if (isLiteralMember(latex)) return { kind: 'literal', latex, expression };
 	} catch {
 		// illisible : point de départ inconnu
 	}
@@ -181,6 +252,12 @@ export function posedStart(instance: QuestionInstance): PosedStart {
 function expectedBlankValue(instance: QuestionInstance, index = 0): number | null {
 	const blank = instance.blanks?.[index];
 	return blank ? numericValue(blank.expectedAnswerLatex ?? blank.expectedAnswer) : null;
+}
+
+/** LaTeX de la réponse attendue de la case `index` */
+function expectedBlankLatex(instance: QuestionInstance, index = 0): string | null {
+	const blank = instance.blanks?.[index];
+	return blank ? (blank.expectedAnswerLatex ?? blank.expectedAnswer) : null;
 }
 
 /** Valeur d'un membre de l'opération posée (forme de calcul : `*`, `:`), null si illisible */
@@ -222,14 +299,35 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 		const values = chain.map((member, index) =>
 			index === 0 && holeHead ? null : numericValue(member)
 		);
+		// Membre lisible : un nombre, ou une expression littérale (chemin littéral)
+		const literal = chain.map(
+			(member, index) =>
+				!(index === 0 && holeHead) && values[index] === null && isLiteralMember(member)
+		);
 		chain.forEach((member, index) => {
 			if (index === 0 && holeHead) return;
-			if (values[index] === null) {
+			if (values[index] === null && !literal[index]) {
 				reasons.push(`membre non numérique « ${stripDecorations(member)} » dans : ${shown}`);
 			}
 		});
-		const read = values.filter((v): v is number => v !== null);
-		if (read.some((v) => !sameNumber(v, read[0]))) reasons.push(`égalités fausses : ${shown}`);
+		if (!literal.some(Boolean)) {
+			const read = values.filter((v): v is number => v !== null);
+			if (read.some((v) => !sameNumber(v, read[0]))) reasons.push(`égalités fausses : ${shown}`);
+		} else {
+			// Chemin littéral : chaque membre lisible est ÉQUIVALENT au suivant
+			for (let i = holeHead ? 1 : 0; i + 1 < chain.length; i++) {
+				const [a, b] = [values[i], values[i + 1]];
+				if (a === null && !literal[i]) continue;
+				if (b === null && !literal[i + 1]) continue;
+				const holds =
+					a !== null && b !== null ? sameNumber(a, b) : literallyEquivalent(chain[i], chain[i + 1]);
+				if (!holds) {
+					reasons.push(
+						`égalité littérale fausse « ${stripDecorations(chain[i])} = ${stripDecorations(chain[i + 1])} » dans : ${shown}`
+					);
+				}
+			}
+		}
 
 		if (chainIndex !== 0) return;
 		if (holeHead) {
@@ -260,6 +358,10 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 			}
 		} else if (start.kind === 'hole') {
 			reasons.push(`question à trou : le calcul doit partir de « ? » : ${shown}`);
+		} else if (start.kind === 'literal') {
+			if (!literallyEquivalent(chain[0], start.latex)) {
+				reasons.push(`le calcul ne part pas de l'expression posée « ${start.latex} » : ${shown}`);
+			}
 		} else if (start.kind === 'unknown') {
 			reasons.push(
 				`point de départ invérifiable (opération posée : ${start.expression ?? 'aucune'}) : ${shown}`
@@ -304,6 +406,23 @@ export function proseEqualities(latex: string): string[] {
 		: [];
 }
 
+/**
+ * Plusieurs cases : une case qui ne finit aucun calcul est-elle DONNÉE dans la prose
+ * par une égalité `lettre = valeur` (`$n = -2$`), hors des blocs `align`, dont la
+ * valeur est exactement celle de la case ?
+ */
+export function givenInProse(steps: string[], expected: number): boolean {
+	return steps.some((step) =>
+		extractMath(step).some((latex) => {
+			if (/\\begin\{align/.test(latex)) return false;
+			const match = stripDecorations(latex).match(/^\s*([a-zA-Z])\s*=\s*([^=]+)$/);
+			if (!match) return false;
+			const value = numericValue(match[2]);
+			return value !== null && sameNumber(value, expected);
+		})
+	);
+}
+
 /** Contrôles d'un tirage ; rend les raisons d'échec */
 export function checkInstance(instance: QuestionInstance): { reasons: string[] } {
 	const reasons: string[] = [];
@@ -337,13 +456,20 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 	const blanks = instance.blanks ?? [];
 	if (blanks.length === 1) {
 		const expected = expectedBlankValue(instance);
+		const expectedLatex = expectedBlankLatex(instance) ?? '';
 		const last = chains.at(-1)?.at(-1);
 		if (!last) reasons.push('aucun calcul aligné (`align`) dans la correction');
-		else if (expected === null)
+		else if (expected === null && !isLiteralMember(expectedLatex))
 			reasons.push(`réponse attendue illisible : ${blanks[0].expectedAnswer}`);
 		else {
 			const value = numericValue(last);
-			if (value === null || !sameNumber(value, expected)) {
+			const ends =
+				expected !== null && value !== null
+					? sameNumber(value, expected)
+					: isLiteralMember(last) || isLiteralMember(expectedLatex)
+						? literallyEquivalent(last, expectedLatex)
+						: false;
+			if (!ends) {
 				reasons.push(
 					`le calcul finit sur « ${stripDecorations(last)} », attendu ${blanks[0].expectedAnswer}`
 				);
@@ -359,9 +485,13 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 				return;
 			}
 			const found = ends.findIndex((end) => end !== null && sameNumber(end, expected));
-			if (found === -1) {
-				reasons.push(`aucun calcul ne finit sur la case ${index + 1} (${blank.expectedAnswer})`);
-			} else ends[found] = null;
+			if (found !== -1) ends[found] = null;
+			else if (!givenInProse(steps, expected)) {
+				reasons.push(
+					`aucun calcul ne finit sur la case ${index + 1} (${blank.expectedAnswer}), ` +
+						`ni égalité « n = valeur » dans la prose`
+				);
+			}
 		});
 	} else if (instance.choices && instance.choices.length > 0) {
 		const lastStep = steps.at(-1) ?? '';

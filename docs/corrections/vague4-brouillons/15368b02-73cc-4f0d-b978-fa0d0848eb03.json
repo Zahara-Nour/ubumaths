@@ -12,6 +12,6 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges."
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non)."
 	]
 }

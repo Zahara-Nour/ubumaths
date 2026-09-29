@@ -19,7 +19,7 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).",
+		"Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).",
 		"⚑ Modèle : la variable `b` est déclarée mais jamais utilisée."
 	]
 }

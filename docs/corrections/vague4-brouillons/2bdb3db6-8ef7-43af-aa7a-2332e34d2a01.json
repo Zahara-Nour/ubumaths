@@ -21,7 +21,7 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).",
+		"⚑ Vérificateur : le seul bloc de l’énoncé est une égalité `f(x) = …` et la résolution enchaîne des ÉQUATIONS, pas des égalités de valeurs → rouge.",
 		"Rédigée à la main : le pipeline pedagogical-solve/linear (mode B) produit des étapes, pas le style maison `align`."
 	]
 }

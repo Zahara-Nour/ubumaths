@@ -94,7 +94,7 @@ $$
 
 `5d515eb1-c8f8-4678-b4bd-f9ab3f34713f` · 6 · niveau 1 · 4 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : ni variable d’expression ni bloc `$$…$$` dans l’énoncé (phrase à traduire) : point de départ invérifiable → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -174,7 +174,7 @@ L’expression est $4 : 2$.
 
 `78feafed-650f-44e0-a2c3-1e677809722b` · 5 · niveau 2 · 4 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : ni variable d’expression ni bloc `$$…$$` dans l’énoncé (phrase à traduire) : point de départ invérifiable → rouge.
 
 #### Tirage 1 (variation 1)
 

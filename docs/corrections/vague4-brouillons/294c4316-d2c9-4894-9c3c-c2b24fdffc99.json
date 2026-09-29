@@ -57,6 +57,6 @@
 		]
 	},
 	"notes": [
-		"⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine)."
+		"⚑ Vérificateur : la réponse est UN FACTEUR, pas la fin d’un calcul (la factorisation finit sur le produit) → rouge."
 	]
 }

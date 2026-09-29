@@ -1,13 +1,13 @@
 # Vague 4 — un exemple rendu par code
 
 Premier tirage de l'aperçu (`APERCU.md` de `vague4-brouillons` et `vague4-publies`), un modèle par code.
-Vérificateur : ✓ vert ; ✗ rouge (réponse littérale ou modèle sans variable d'expression : le vérificateur ne lit que des nombres).
+Vérificateur (chemin littéral par équivalence compris) : brouillons 19/25, publiés 1/3. Encore rouges (notes ⚑) : N-OPPOSE-EXPR, N-FACT-COMMUN, N-VOCAB-OP, N-RACINE-AFF.
 
 ## N-OPPOSE-EXPR — Déterminer l'opposé d'une expression
 
 `aeb86af9-7bf1-440a-be17-735a41b5ce46` · 3 · niveau 1 · 1 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- ⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge.
 
 #### Tirage 1 (variation 0)
 
@@ -43,7 +43,7 @@ _(lot `vague4-brouillons`)_
 
 `7410800b-83d3-40a3-8a2d-dc4b16a4679d` · 5 · niveau 4 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -77,7 +77,7 @@ _(lot `vague4-brouillons`)_
 
 `a6a6c491-be89-4a81-8a9d-6412c2396f2d` · 3 · niveau 1 · 4 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -111,7 +111,7 @@ _(lot `vague4-brouillons`)_
 
 `077c01e0-0c8a-4ff9-a57e-279ec35659ec` · 5 · niveau 1 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -145,7 +145,7 @@ _(lot `vague4-brouillons`)_
 
 `6fbf1ab2-c476-4a6c-bd98-ce2c58d8c459` · 5 · niveau 3 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -179,7 +179,7 @@ _(lot `vague4-brouillons`)_
 
 `294c4316-d2c9-4894-9c3c-c2b24fdffc99` · 4 · niveau 1 · 8 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : la réponse est UN FACTEUR, pas la fin d’un calcul (la factorisation finit sur le produit) → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -219,7 +219,7 @@ _(lot `vague4-brouillons`)_
 
 `5d515eb1-c8f8-4678-b4bd-f9ab3f34713f` · 6 · niveau 1 · 4 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : ni variable d’expression ni bloc `$$…$$` dans l’énoncé (phrase à traduire) : point de départ invérifiable → rouge.
 
 #### Tirage 1 (variation 1)
 
@@ -347,7 +347,7 @@ _(lot `vague4-brouillons`)_
 
 `c32ebff9-7e10-400e-bc06-c376f6991ea8` · 3 · niveau 3 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).
+- Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).
 
 #### Tirage 1 (variation 1)
 
@@ -381,7 +381,7 @@ _(lot `vague4-brouillons`)_
 
 `2bdb3db6-8ef7-43af-aa7a-2332e34d2a01` · 3 · niveau 1 · 2 variation(s) · correction rédigée
 
-- ⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).
+- ⚑ Vérificateur : le seul bloc de l’énoncé est une égalité `f(x) = …` et la résolution enchaîne des ÉQUATIONS, pas des égalités de valeurs → rouge.
 - Rédigée à la main : le pipeline pedagogical-solve/linear (mode B) produit des étapes, pas le style maison `align`.
 
 #### Tirage 1 (variation 1)
@@ -498,7 +498,7 @@ _Étape 1_
 
 _Étape 2_
 
-Le premier chiffre non nul est $\textcolor{#FF5722}{7}$ : la virgule se place juste après lui, ce qui donne $\textcolor{#FF5722}{7{,}985}$, compris entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $\textcolor{#4CAF50}{2}$.
+Le premier chiffre non nul est $\textcolor{#FF5722}{7}$ : la virgule se place juste après lui, ce qui donne la mantisse $m = \textcolor{#FF5722}{7{,}985}$, comprise entre $1$ et $10$. La virgule s’est déplacée de $\textcolor{#2196F3}{2}$ rangs vers la gauche : l’exposant est $n = \textcolor{#4CAF50}{2}$.
 
 _Étape 3_
 

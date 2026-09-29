@@ -9,10 +9,10 @@
  * l'expression tirée. Deux lots selon le statut en prod (lecture seule, 2026-09-29) :
  * `vague4-brouillons` (25 `draft`) et `vague4-publies` (3 `published`).
  *
- * ⚠ Le vérificateur ne lit que des NOMBRES : une réponse littérale (`6a`, `t^2 - 4`)
- * ou un modèle sans variable d'expression (point de départ invérifiable) reste rouge
- * quelle que soit la rédaction. Ces propositions sont rédigées quand même, pour
- * relecture ; l'import les écarte tant qu'elles sont rouges.
+ * Réponses littérales : vérifiées par le chemin d'équivalence de `verify.ts`. Restent
+ * rouges (notes ⚑) : opposé (opération dans la phrase), facteur commun (la réponse
+ * n'est pas la fin d'un calcul), traduction de phrases (pas de bloc posé), racine
+ * affine (chaîne d'équations) ; l'import les écarte tant qu'elles sont rouges.
  */
 
 import type { Lot, LotEntry, WrittenCorrection } from '../lib/lot';
@@ -53,9 +53,15 @@ function entry(
 }
 
 const LITERAL_NOTE =
-	'⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).';
-const NO_EXPRESSION_NOTE =
-	'⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine).';
+	'Réponse littérale : chaîne vérifiée par équivalence (`areEquivalent`, zéro faux positif) ; l’équivalence ne contrôle pas la FORME (réduite ou non).';
+const OPERATION_IN_TEXT_NOTE =
+	'⚑ Vérificateur : l’opération (« l’opposé de ») est dans la phrase, pas dans l’expression posée A ; le calcul part de −(A), non équivalent à A → rouge.';
+const FACTOR_NOTE =
+	'⚑ Vérificateur : la réponse est UN FACTEUR, pas la fin d’un calcul (la factorisation finit sur le produit) → rouge.';
+const NO_BLOCK_NOTE =
+	'⚑ Vérificateur : ni variable d’expression ni bloc `$$…$$` dans l’énoncé (phrase à traduire) : point de départ invérifiable → rouge.';
+const EQUATION_NOTE =
+	'⚑ Vérificateur : le seul bloc de l’énoncé est une égalité `f(x) = …` et la résolution enchaîne des ÉQUATIONS, pas des égalités de valeurs → rouge.';
 
 // ============================================================================
 // RULES
@@ -242,9 +248,9 @@ const POWER10_AE8 = [
 const SCI_953 = [
 	RULE_SCI,
 	`Le premier chiffre non nul est ${inline(O('{{a}}'))} : la virgule se place juste après lui, ` +
-		`ce qui donne ${inline(O('{{a}}{,}{{c}}'))}, compris entre $1$ et $10$. ` +
+		`ce qui donne la mantisse ${inline(`m = ${O('{{a}}{,}{{c}}')}`)}, comprise entre $1$ et $10$. ` +
 		`La virgule s’est déplacée de ${inline(B('{{eval:abs(d)}}'))} rang{{if:abs(d)>1|s|}} vers la ` +
-		`{{if:d<0|droite|gauche}} : l’exposant est ${inline(G('{{d}}'))}.`,
+		`{{if:d<0|droite|gauche}} : l’exposant est ${inline(`n = ${G('{{d}}')}`)}.`,
 	alignBlock([
 		`{{expression1}} &= ${O('{{a}}{,}{{c}}')} \\times ${B('{{eval:10^d}}')}`,
 		`&= ${O('{{a}}{,}{{c}}')} \\times 10^{${G('{{d}}')}}`
@@ -697,19 +703,19 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		'aeb86af9-7bf1-440a-be17-735a41b5ce46',
 		'N-OPPOSE-EXPR',
 		'draft',
-		shared(opposeSingle('{{eval:pq}}'), [LITERAL_NOTE])
+		shared(opposeSingle('{{eval:pq}}'), [OPERATION_IN_TEXT_NOTE])
 	),
 	entry(
 		'843c3186-afc6-4ccd-83f7-beab64d3e420',
 		'N-OPPOSE-EXPR',
 		'draft',
-		shared(OPPOSE_843, [LITERAL_NOTE])
+		shared(OPPOSE_843, [OPERATION_IN_TEXT_NOTE])
 	),
 	entry(
 		'34e569e7-7834-456f-8e48-65b2a1183030',
 		'N-OPPOSE-EXPR',
 		'draft',
-		byVariation(OPPOSE_34E, [LITERAL_NOTE])
+		byVariation(OPPOSE_34E, [OPERATION_IN_TEXT_NOTE])
 	),
 	// N-PARENTH
 	entry(
@@ -758,9 +764,7 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		'draft',
 		byVariation(
 			[2, 3, 4, 5, 6, 7].map((n) => powerFromProduct('{{a}}', n)),
-			[
-				'⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.'
-			]
+			[LITERAL_NOTE]
 		)
 	),
 	entry(
@@ -769,9 +773,7 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		'draft',
 		byVariation(
 			[2, 3, 4, 5, 6, 7].map((n) => productFromPower('{{a}}', n)),
-			[
-				'⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.'
-			]
+			[LITERAL_NOTE]
 		)
 	),
 	// N-ECRIT-PRODUIT
@@ -818,26 +820,26 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		'294c4316-d2c9-4894-9c3c-c2b24fdffc99',
 		'N-FACT-COMMUN',
 		'draft',
-		byVariation(COMMON_294, [NO_EXPRESSION_NOTE])
+		byVariation(COMMON_294, [FACTOR_NOTE])
 	),
 	entry(
 		'e66089e0-b7bd-49fe-a968-9a8df3d325fd',
 		'N-FACT-COMMUN',
 		'draft',
-		byVariation(COMMON_E66, [NO_EXPRESSION_NOTE, LITERAL_NOTE])
+		byVariation(COMMON_E66, [FACTOR_NOTE])
 	),
 	// N-VOCAB-OP
 	entry(
 		'5d515eb1-c8f8-4678-b4bd-f9ab3f34713f',
 		'N-VOCAB-OP',
 		'published',
-		byVariation(VOCAB_5D5, [NO_EXPRESSION_NOTE])
+		byVariation(VOCAB_5D5, [NO_BLOCK_NOTE])
 	),
 	entry(
 		'78feafed-650f-44e0-a2c3-1e677809722b',
 		'N-VOCAB-OP',
 		'published',
-		byVariation(VOCAB_78F, [NO_EXPRESSION_NOTE])
+		byVariation(VOCAB_78F, [NO_BLOCK_NOTE])
 	),
 	// N-ABS
 	entry('226e5b3b-fad4-4c99-92cb-42e123014055', 'N-ABS', 'draft', shared(ABS_226)),
@@ -848,9 +850,7 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		'15368b02-73cc-4f0d-b978-fa0d0848eb03',
 		'N-PUISS-NEG',
 		'draft',
-		shared(NEG_POWER_153, [
-			'⚑ Vérificateur : `a` tire des lettres ET des nombres ; les tirages littéraux restent rouges.'
-		])
+		shared(NEG_POWER_153, [LITERAL_NOTE])
 	),
 	// N-PUISS10
 	entry('ac0e5b62-b6bc-4a82-85c4-d1b25a9d4d69', 'N-PUISS10', 'draft', shared(POWER10_AC0)),
@@ -865,7 +865,7 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 		byVariation(
 			[ROOT_2BD('{{a}}x{{eval:b;+}}'), ROOT_2BD('{{b}}{{eval:a;+}}x')],
 			[
-				NO_EXPRESSION_NOTE,
+				EQUATION_NOTE,
 				'Rédigée à la main : le pipeline pedagogical-solve/linear (mode B) produit des étapes, pas le style maison `align`.'
 			]
 		)

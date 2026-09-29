@@ -21,7 +21,10 @@ import {
 	alignChains,
 	awkwardWritings,
 	escapeRegExp,
+	givenInProse,
 	holeEquationHolds,
+	isLiteralMember,
+	literallyEquivalent,
 	namesChoice,
 	numericValue,
 	proseEqualities,
@@ -422,11 +425,18 @@ describe('verifyProposal', () => {
 describe('verifyProposal : chaînes strictes', () => {
 	const hole = () => holeTemplate('{{a}} + ? = {{eval:a+b}}', '{{b}}');
 
-	it('rougit sur un membre non numérique (inconnue ailleurs qu’en tête d’un trou)', () => {
+	it('rougit sur un membre littéral glissé dans un calcul numérique (chemin littéral)', () => {
 		const reasons = failureReasons(sumTemplate(), [
 			'$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= x + {{c}} \\\\ &= {{solution}} \\end{align}$$'
 		]);
-		expect(reasons.some((r) => r.startsWith('membre non numérique « x + '))).toBe(true);
+		expect(reasons.some((r) => r.startsWith('égalité littérale fausse'))).toBe(true);
+	});
+
+	it('rougit sur un membre illisible (texte)', () => {
+		const reasons = failureReasons(sumTemplate(), [
+			'$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= \\text{beaucoup} \\\\ &= {{solution}} \\end{align}$$'
+		]);
+		expect(reasons.some((r) => r.startsWith('membre non numérique « \\text{beaucoup}'))).toBe(true);
 	});
 
 	it('rougit sur « ? » dans une question qui n’est pas à trou', () => {
@@ -604,6 +614,145 @@ describe('verifyProposal : hors des calculs et plusieurs cases (d)', () => {
 		const product = '$$\\begin{align} {{a}} \\times {{b}} &= {{solution:1}} \\end{align}$$';
 		expect(failureReasons(template, [sum, product])).toEqual([]);
 		const reasons = failureReasons(template, [sum]);
+		expect(reasons.some((r) => r.startsWith('aucun calcul ne finit sur la case 2'))).toBe(true);
+	});
+});
+
+// ============================================================================
+// VÉRIFICATEUR : chemin littéral (vague 4)
+// ============================================================================
+
+/** Réponse littérale : opposé de `{{a}}x + {{b}}`, variable d'expression littérale */
+function literalTemplate(): QuestionTemplate {
+	return {
+		...sumTemplate(),
+		title: 'Opposé',
+		variations: [
+			{
+				statement: templateMarkdown('Développe.\n\n$${{expression1}}$$'),
+				variables: [
+					{ name: 'a', expression: '2..9' },
+					{ name: 'b', expression: '2..9' },
+					{ name: 'expression1', expression: '-({{a}}x+{{b}})' }
+				],
+				blanks: [{ expectedAnswer: '-{{a}}x-{{b}}' }]
+			}
+		]
+	};
+}
+
+/** Sans variable d'expression : le bloc `$$…$$` unique de l'énoncé est le départ */
+function statementOnlyTemplate(statement: string): QuestionTemplate {
+	return {
+		...sumTemplate(),
+		title: 'Réduire',
+		variations: [
+			{
+				statement: templateMarkdown(`${statement}\n\nLe résultat est $?$.`),
+				variables: [{ name: 'a', expression: '2..9' }],
+				blanks: [{ expectedAnswer: '{{a}}x' }]
+			}
+		]
+	};
+}
+
+describe('verifyProposal : chemin littéral', () => {
+	const posed = '-\\left( {{a}}x + {{b}} \\right)';
+
+	it('lit un membre littéral, refuse le texte et l’inconnue', () => {
+		expect(isLiteralMember('6a')).toBe(true);
+		expect(isLiteralMember('\\dfrac{1}{c^{2}}')).toBe(true);
+		expect(isLiteralMember('\\text{six}')).toBe(false);
+		expect(isLiteralMember('?')).toBe(false);
+		expect(isLiteralMember('x + ?')).toBe(false);
+		expect(isLiteralMember('12')).toBe(false);
+	});
+
+	it('faux positif piégé : (x + 1)² = x² + 1 est refusé', () => {
+		expect(literallyEquivalent('(x+1)^2', 'x^2+1')).toBe(false);
+		expect(literallyEquivalent('(x+1)^2', 'x^2+2x+1')).toBe(true);
+		const reasons = failureReasons(statementOnlyTemplate('Développe.\n\n$$(x+1)^2$$'), [
+			'$$\\begin{align} (x+1)^2 &= x^2+1 \\end{align}$$'
+		]);
+		expect(reasons.some((r) => r.startsWith('égalité littérale fausse « (x+1)^2 = x^2+1 »'))).toBe(
+			true
+		);
+	});
+
+	it('accepte une chaîne littérale juste, du départ à la réponse', () => {
+		expect(
+			failureReasons(literalTemplate(), [
+				`$$\\begin{align} ${posed} &= -{{a}}x - {{b}} \\end{align}$$`
+			])
+		).toEqual([]);
+	});
+
+	it('rougit sur une étape littérale fausse au milieu', () => {
+		const reasons = failureReasons(literalTemplate(), [
+			`$$\\begin{align} ${posed} &= -{{a}}x + {{b}} \\\\ &= -{{a}}x - {{b}} \\end{align}$$`
+		]);
+		expect(reasons.some((r) => r.startsWith('égalité littérale fausse'))).toBe(true);
+	});
+
+	it('rougit quand le calcul ne part pas de l’expression posée (littérale)', () => {
+		const reasons = failureReasons(literalTemplate(), [
+			'$$\\begin{align} -\\left( {{a}}x - {{b}} \\right) &= -{{a}}x + {{b}} \\end{align}$$',
+			`$$\\begin{align} ${posed} &= -{{a}}x - {{b}} \\end{align}$$`
+		]);
+		expect(reasons.some((r) => r.startsWith("le calcul ne part pas de l'expression posée"))).toBe(
+			true
+		);
+	});
+
+	it('rougit quand le calcul ne finit pas sur la réponse littérale', () => {
+		const reasons = failureReasons(literalTemplate(), [
+			`$$\\begin{align} ${posed} &= -{{a}}x - {{b}} \\end{align}$$`,
+			'$$\\begin{align} {{a}}x &= {{a}}x \\end{align}$$'
+		]);
+		expect(reasons.some((r) => r.startsWith('le calcul finit sur'))).toBe(true);
+	});
+
+	it('sans variable d’expression : part du bloc unique de l’énoncé', () => {
+		const template = statementOnlyTemplate('Réduis.\n\n$$x + {{eval:a-1}}x$$');
+		expect(
+			failureReasons(template, ['$$\\begin{align} x + {{eval:a-1}}x &= {{a}}x \\end{align}$$'])
+		).toEqual([]);
+		const wrong = failureReasons(template, [
+			'$$\\begin{align} x + {{a}}x &= {{eval:a+1}}x \\end{align}$$'
+		]);
+		expect(wrong.some((r) => r.startsWith("le calcul ne part pas de l'expression posée"))).toBe(
+			true
+		);
+	});
+
+	it('sans variable d’expression, deux blocs dans l’énoncé : départ invérifiable', () => {
+		const template = statementOnlyTemplate('Réduis.\n\n$$x + {{eval:a-1}}x$$\n\n$$x$$');
+		const reasons = failureReasons(template, [
+			'$$\\begin{align} x + {{eval:a-1}}x &= {{a}}x \\end{align}$$'
+		]);
+		expect(reasons.some((r) => r.startsWith('point de départ invérifiable'))).toBe(true);
+	});
+
+	it('plusieurs cases : une case donnée en prose par « n = valeur »', () => {
+		expect(givenInProse(['L’exposant est $n = -2$.'], -2)).toBe(true);
+		expect(givenInProse(['L’exposant est $n = -3$.'], -2)).toBe(false);
+		expect(givenInProse(['$$\\begin{align} n &= -2 \\end{align}$$'], -2)).toBe(false);
+		const template = sumTemplate();
+		template.variations[0].statement = templateMarkdown(
+			'Calcule $${{a}} + {{b}} = ?$$ et $${{a}} \\times {{b}} = ?$$'
+		);
+		template.variations[0].variables = [
+			{ name: 'a', expression: '2..5' },
+			{ name: 'b', expression: '2..5' },
+			{ name: 'expression1', expression: '{{a}} + {{b}}' }
+		];
+		template.variations[0].blanks = [
+			{ expectedAnswer: '{{eval:a+b}}' },
+			{ expectedAnswer: '{{eval:a*b}}' }
+		];
+		const sum = '$$\\begin{align} {{a}} + {{b}} &= {{solution:0}} \\end{align}$$';
+		expect(failureReasons(template, [sum, 'Le produit vaut $p = {{eval:a*b}}$.'])).toEqual([]);
+		const reasons = failureReasons(template, [sum, 'Le produit vaut $p = {{eval:a*b+1}}$.']);
 		expect(reasons.some((r) => r.startsWith('aucun calcul ne finit sur la case 2'))).toBe(true);
 	});
 });
