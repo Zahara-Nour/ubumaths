@@ -47,8 +47,12 @@ export type NumericType =
 
 /**
  * Sign information for a numeric value.
+ *
+ * `nonnegative` (positif ou nul, ≥ 0) n'est PAS `positive` : il ne sert
+ * qu'aux prédicats « positif ou nul » et n'est déduit par aucune règle
+ * arithmétique — il vient seulement d'une hypothèse déclarée (ADR 0012).
  */
-export type SignInfo = 'positive' | 'negative' | 'zero' | 'nonzero' | 'unknown';
+export type SignInfo = 'positive' | 'negative' | 'zero' | 'nonzero' | 'nonnegative' | 'unknown';
 
 // =============================================================================
 // Parity Information

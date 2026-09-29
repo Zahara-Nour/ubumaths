@@ -209,6 +209,11 @@ export function inferSubtractionType(leftType: MathType, rightType: MathType): M
 // Multiplication Type Rules
 // =============================================================================
 
+/** Positif ou positif ou nul (`nonnegative` vient d'une hypothèse de l'énoncé). */
+function isAtLeastZero(sign: SignInfo | undefined): boolean {
+	return sign === 'positive' || sign === 'nonnegative';
+}
+
 /**
  * Infers the type of a multiplication operation.
  *
@@ -254,6 +259,9 @@ export function inferMultiplicationType(leftType: MathType, rightType: MathType)
 			sign = 'negative';
 		} else if (leftType.sign === 'nonzero' && rightType.sign === 'nonzero') {
 			sign = 'nonzero';
+		} else if (isAtLeastZero(leftType.sign) && isAtLeastZero(rightType.sign)) {
+			// ≥ 0 fois ≥ 0 (l'un au moins seulement ≥ 0) : ≥ 0, jamais > 0
+			sign = 'nonnegative';
 		}
 	}
 
@@ -352,6 +360,8 @@ export function inferDivisionType(numeratorType: MathType, denominatorType: Math
 			sign = 'negative';
 		} else if (numeratorType.sign === 'nonzero' && denominatorType.sign === 'nonzero') {
 			sign = 'nonzero';
+		} else if (numeratorType.sign === 'nonnegative' && denominatorType.sign === 'positive') {
+			sign = 'nonnegative';
 		}
 	}
 
