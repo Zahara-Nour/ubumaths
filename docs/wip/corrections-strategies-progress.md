@@ -22,10 +22,29 @@ Branche `feat/corrections-strategies`, worktree `ubumaths-wt-corrections`.
 - Lot `r-inv` : 36 modèles, `docs/corrections/r-inv/` (aperçu, instantané), 36/36 au vérificateur,
   import en SIMULATION 36/36 prêts. 27 des 36 sont `published`.
 
+## Fait (2026-09-29, nuit) — vérificateur durci (revue de #531) + lots `n-fracdec`, `n-decomp`
+
+Branche `feat/corrections-lots-fracdec-decomp`.
+
+- Vérificateur : trou relié à l'égalité posée (`?` remplacé par la valeur trouvée, l'égalité doit
+  tenir ; `? = réponse` seul refusé) ; choix de QCM nommé comme un nombre entier (« 3 » absent de
+  « 13 » et de « 3,5 ») ; aléatoire entre accolades (`{{1..9}}`, `{{2|5}}`, `{{digits:2.1}}`,
+  `{{-5..5;+-}}`) énuméré et compté dans le garde-fou ; hors calcul : restes `NaN` / `undefined`,
+  égalités numériques de la prose ; plusieurs cases : chacune finit un calcul. Preuves rouges
+  faites sur copie. Pilote 15/15 (125 995 tirages), r-inv 36/36 (133 645) : inchangés.
+- Lot `n-fracdec` : 20 modèles, 20/20 (130 963 tirages), import SIMULATION 20/20, 0 publié.
+  Cas mêlés : 322f3479, dd7db98e (fractions non décimales amplifiées) ; dd7db98e tire 1/5 ET 2/10
+  (même valeur, indistinguables par une condition) → branche commune.
+- Lot `n-decomp` : 13 modèles, 13/13 (55 793 tirages), import SIMULATION 13/13, **11 publiés**.
+  accbfd16, 7c642d2f : chiffre des unités nommé `e` (constante d'Euler dans une condition).
+- Briques communes : `scripts/corrections/lots/numeration.ts` (tableau de numération).
+
 ## En attente
 
 - Relecture de `docs/corrections/pilote/APERCU.md` par David (texte, couleurs, ton).
 - Les 4 modèles R-PASS sont passés `published` en prod le 2026-09-29 à 18:05 (hors de cette
   session) : un import toucherait des modèles visibles des élèves.
 - Relecture de `docs/corrections/r-inv/APERCU.md` par David, puis feu vert pour `--publier`.
+- Relecture de `docs/corrections/n-fracdec/APERCU.md` et `n-decomp/APERCU.md` (11 modèles
+  n-decomp sont `published` : un import toucherait des modèles visibles des élèves).
 - Lots suivants : N-REL-ADD (dont les 4 trous + et − chez les relatifs), etc.

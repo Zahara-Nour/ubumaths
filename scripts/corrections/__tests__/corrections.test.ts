@@ -34,6 +34,9 @@ import { publishRefusal } from '../lib/publish-gate';
 import { readProposal, readSnapshot, withoutUserIds } from '../lib/files';
 import { PILOT_LOT } from '../lots/pilote';
 import { R_INV_LOT } from '../lots/r-inv';
+import { N_FRACDEC_LOT } from '../lots/n-fracdec';
+import { N_DECOMP_LOT } from '../lots/n-decomp';
+import { amplifier, listedFraction } from '../lots/numeration';
 import { buildCorrection } from '../lib/lot';
 import type { QuestionTemplateRow } from '../../../src/lib/types/question-template';
 
@@ -606,6 +609,26 @@ describe('verifyProposal : hors des calculs et plusieurs cases (d)', () => {
 });
 
 // ============================================================================
+// NUMÉRATION (lots n-fracdec, n-decomp)
+// ============================================================================
+
+describe('numération : fractions d’une liste', () => {
+	it('amplifie jusqu’à 10, 100 ou 1000', () => {
+		expect(amplifier(2)).toBe(5);
+		expect(amplifier(4)).toBe(25);
+		expect(amplifier(1000)).toBe(1);
+		expect(amplifier(3)).toBeNull();
+	});
+
+	it('signale les cas mêlés et les fractions de même valeur (1/5 = 2/10)', () => {
+		const result = listedFraction('a', '1/2|2/10|1/5');
+		expect(result.mixed).toBe(true);
+		expect(result.collisions).toEqual(['2/10 = 1/5']);
+		expect(listedFraction('a', '1/10|3/100').mixed).toBe(false);
+	});
+});
+
+// ============================================================================
 // PUBLICATION ET INSTANTANÉ
 // ============================================================================
 
@@ -630,7 +653,7 @@ describe('instantané sans identifiant d’utilisateur', () => {
 		expect(Object.keys(withoutUserIds(row))).toEqual(['id', 'title', 'updated_at']);
 	});
 
-	it.each([PILOT_LOT.name, R_INV_LOT.name])(
+	it.each([PILOT_LOT.name, R_INV_LOT.name, N_FRACDEC_LOT.name, N_DECOMP_LOT.name])(
 		'l’instantané commité du lot %s n’en contient pas',
 		(lot) => {
 			const raw = readFileSync(`docs/corrections/${lot}/_modeles.json`, 'utf8');
@@ -658,7 +681,7 @@ describe('outils LaTeX du vérificateur', () => {
 // LOT PILOTE (instantané commité)
 // ============================================================================
 
-describe.each([PILOT_LOT, R_INV_LOT])('lot $name', (lot) => {
+describe.each([PILOT_LOT, R_INV_LOT, N_FRACDEC_LOT, N_DECOMP_LOT])('lot $name', (lot) => {
 	const templates = readSnapshot(lot.name);
 
 	it.each(lot.entries.map((entry) => [entry.code, entry.templateId, entry] as const))(

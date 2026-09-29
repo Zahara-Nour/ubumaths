@@ -1,0 +1,3260 @@
+[
+	{
+		"id": "160f782d-c2ee-4d54-a8f9-86f52418abe9",
+		"title": "Décomposer en unités, dixièmes, centièmes",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + {{c}}/100"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+3/10+4/100$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100;d"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{c}}/100 + ___reste"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+3/10+4/100$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100;d"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + ___reste"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+3/10+4/100$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off",
+				"nullTerms": "off",
+				"factorZero": "off",
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 25,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.246676+00:00",
+		"updated_at": "2026-09-27T08:04:23.755274+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "avec fractions décimales",
+		"shared": {
+			"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+3/10+4/100$$\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5,81 = 5 + 8/10 + 1/100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Nombre recopié : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0{,}8+0{,}01"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Décomposition en décimaux au lieu de fractions : refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{1}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5,01 = 5 + 1/100 (terme nul omis)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5+\\frac{0}{10}+\\frac{1}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5,01 = 5 + 0/10 + 1/100 (terme nul écrit)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5+\\frac{1}{10}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5 + 1/10 : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5+\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "5,8 = 5 + 8/10",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{1}{100}+5+\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "autre ordre des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{4}{5}+\\frac{1}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "fraction simplifiée : pas une fraction décimale",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{4}{5}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "fraction simplifiée (sans centièmes)",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "58f7a8dd-b8de-48f4-9cfa-5356b75e1c64",
+		"title": "Décomposer en unités, dixièmes, centièmes, millièmes",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + {{c}}/100 + {{d}}/1000"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,346=5+3/10+4/100+6/1000$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100+d/1000;d"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{c}}/100 + {{d}}/1000 + ___reste"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,346=5+3/10+4/100+6/1000$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100+d/1000;d"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} + {{b}}/10 + {{d}}/1000 + ___reste"
+						},
+						"expectedAnswer": "{{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,346=5+3/10+4/100+6/1000$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100+d/1000;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off",
+				"nullTerms": "off",
+				"factorZero": "off",
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.592334+00:00",
+		"updated_at": "2026-09-27T08:04:24.109885+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "avec des fractions décimales",
+		"shared": {
+			"statement": "Décompose comme dans cet exemple :\n\n$$5,346=5+3/10+4/100+6/1000$$\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,814 = 5 + 8/10 + 1/100 + 4/1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}814"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Nombre recopié : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{814}{1\\,000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Partie décimale regroupée 5 + 814/1000 : refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,014 = 5 + 1/100 + 4/1000",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5+\\frac{8}{10}+\\frac{4}{1\\,000}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5,804 = 5 + 8/10 + 4/1000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5+\\frac{8}{10}+\\frac{4}{100}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5 + 8/10 + 4/100 : refusé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5+\\frac{8}{10}+\\frac{1}{100}+\\frac{4}{1000}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "1000 sans espace des milliers : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{1\\,000}+5+\\frac{1}{100}+\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "autre ordre des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+\\frac{4}{5}+\\frac{1}{100}+\\frac{4}{1\\,000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "fraction simplifiée : pas une fraction décimale",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "8e32995e-a0fa-4a98-a975-379cc7274f50",
+		"title": "Définition à l'aide de fractions décimales",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:13.516296+00:00",
+		"updated_at": "2026-09-27T07:17:13.516296+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux centièmes",
+		"shared": {
+			"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5 + 8/10 + 1/100 = 5,81 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5,81 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Dixièmes et centièmes inversés : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}810"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Zéro final 5,810 : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{581}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Fraction 581/100 : pas un décimal",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5 + 1/100 = 5,01",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5,1 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "5 + 8/10 = 5,8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5{,}08"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "5,08 : refusé",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "9c602223-064b-4efb-8649-8bf104e1d8b2",
+		"title": "Définition à l'aide de fractions décimales",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:13.755079+00:00",
+		"updated_at": "2026-09-27T07:17:13.755079+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux centièmes (mélangée)",
+		"shared": {
+			"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5 + 8/10 + 1/100 = 5,81 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5,81 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Dixièmes et centièmes inversés : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}810"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Zéro final 5,810 : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{581}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Fraction 581/100 : pas un décimal",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5 + 1/100 = 5,01",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1"
+				},
+				"description": "5,1 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "5 + 8/10 = 5,8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5{,}08"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0"
+				},
+				"description": "5,08 : refusé",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "a377acaf-8e96-4ff4-93b6-23e841b0b094",
+		"title": "Définition à l'aide de fractions décimales",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 8,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:14.535204+00:00",
+		"updated_at": "2026-09-27T07:17:14.535204+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux millièmes",
+		"shared": {
+			"statement": "Quel est le nombre décimal représenté par cette expression ?\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}814"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5 + 8/10 + 1/100 + 4/1000 = 5,814",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.814"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,814 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}418"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Ordre des chiffres inversé 5,418 : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}014"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5 + 1/100 + 4/1000 = 5,014",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,14 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}804"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5 + 8/10 + 4/1000 = 5,804",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5{,}004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5 + 4/1000 = 5,004",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5{,}4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5,4 : refusé",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "fcc54919-0d4d-4794-b27f-1a7945d19fd3",
+		"title": "Définition à l'aide de fractions décimales",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 9,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "a+b/10+c/100+d/1000",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:14.730831+00:00",
+		"updated_at": "2026-09-27T07:17:14.730831+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux millièmes (mélangée)",
+		"shared": {
+			"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$"
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}814"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5 + 8/10 + 1/100 + 4/1000 = 5,814",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.814"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,814 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}418"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Ordre des chiffres inversé 5,418 : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}014"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5 + 1/100 + 4/1000 = 5,014",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,14 (zéro des dixièmes oublié) : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5{,}804"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5 + 8/10 + 4/1000 = 5,804",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5{,}004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5 + 4/1000 = 5,004",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5{,}4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "0",
+					"d": "4"
+				},
+				"description": "5,4 : refusé",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "c680af72-1509-440b-b6a9-bbac0828d0e1",
+		"title": "Définition à l'aide de fractions décimales (2)",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 5,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "digits:b"
+					},
+					{
+						"name": "d",
+						"expression": "a+c/100"
+					},
+					{
+						"name": "expression1",
+						"expression": "d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:13.929796+00:00",
+		"updated_at": "2026-09-27T07:17:13.929796+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux centièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "18"
+				},
+				"description": "5 + 18/100 = 5,18",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "18"
+				},
+				"description": "5,18 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}06"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "6"
+				},
+				"description": "5 + 6/100 = 5,06",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "6"
+				},
+				"description": "5,6 (centièmes lus comme dixièmes) : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}20"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "20"
+				},
+				"description": "5 + 20/100 = 5,2 ; 5,20 perfectible",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "757fc872-e037-47b6-b344-21d48a81e952",
+		"title": "Définition à l'aide de fractions décimales (2)",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 10,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "digits:b"
+					},
+					{
+						"name": "d",
+						"expression": "a+c/1000"
+					},
+					{
+						"name": "expression1",
+						"expression": "d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:14.880539+00:00",
+		"updated_at": "2026-09-27T07:17:14.880539+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux millièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}187"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "187"
+				},
+				"description": "5 + 187/1000 = 5,187",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.187"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "187"
+				},
+				"description": "5,187 tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "7"
+				},
+				"description": "5 + 7/1000 = 5,007",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "1",
+					"c": "7"
+				},
+				"description": "5,7 : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}45"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "2",
+					"c": "45"
+				},
+				"description": "5 + 45/1000 = 5,045 ; 5,45 refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "000368e1-cc26-4b75-a3f3-cc619c02f940",
+		"title": "Déterminer une forme fractionnaire",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				],
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.757406+00:00",
+		"updated_at": "2026-09-27T07:17:15.757406+00:00",
+		"subdomain": "Forme fractionnaire",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{4}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"description": "0,8 = 4/5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{8}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"description": "0,8 = 8/10 (non simplifiée, acceptée)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}8"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"description": "Décimal recopié : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{5}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "4"
+				},
+				"description": "Fraction renversée 5/4 : refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{50}{100}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"description": "0,5 = 50/100",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "c1a83c8f-47ea-4253-92cd-3cc703f913c2",
+		"title": "Déterminer une forme fractionnaire",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b/a}}"
+					}
+				],
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire, en simplifiant la fraction au maximum.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.921799+00:00",
+		"updated_at": "2026-09-27T07:17:15.921799+00:00",
+		"subdomain": "Forme fractionnaire",
+		"exercise_instruction": null,
+		"description": "Simplification exigée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"description": "0,5 = 1/2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{5}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "10",
+					"b": "5"
+				},
+				"description": "5/10 non simplifiée : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "0,75 = 3/4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}75"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Décimal recopié : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Fraction renversée : refusée",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "81a64b0a-e6a2-45fc-90ce-c0aee11f539c",
+		"title": "Déterminer une forme fractionnaire",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 12,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				],
+				"statement": "Réécris ce nombre décimal sous forme fractionnaire la plus simple.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b/a;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:56.505943+00:00",
+		"updated_at": "2026-09-26T18:33:41.475084+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"conditions": ["gcd(a,b)=1"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "trois quarts",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{9}{10}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "9"
+				},
+				"description": "borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.75"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "recopie du décimal",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "fraction inversée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{75}{100}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "fraction non réduite",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "322f3479-0120-4a6d-839a-4e8df194f99e",
+		"title": "Déterminer la forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 5,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1/2|1/4|1/10|2/10|3/2|5/2|1/100|2/1000|7/2|9/2"
+					},
+					{
+						"name": "expression1",
+						"expression": "a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.50915+00:00",
+		"updated_at": "2026-09-26T18:33:40.986272+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Cas à connaître par cœur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "un demi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7/2"
+				},
+				"description": "sept demis, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9/2"
+				},
+				"description": "neuf demis",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "un quart",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "confusion 1/2 = 1,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "confusion 1/4 = 0,4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.002"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2/1000"
+				},
+				"description": "millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.02"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2/1000"
+				},
+				"description": "millièmes mal placés",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "dd7db98e-2c46-4b1f-9501-edfa5b161ac1",
+		"title": "Déterminer la forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 9,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1/2|1/4|3/1000|2/10|3/2|5/2|3/4|1/5|7/2|9/2"
+					},
+					{
+						"name": "expression1",
+						"expression": "a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T20:18:24.497653+00:00",
+		"updated_at": "2026-09-26T20:18:24.497653+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Cas à connaître par cœur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "un demi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7/2"
+				},
+				"description": "sept demis, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9/2"
+				},
+				"description": "neuf demis",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "un quart",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/2"
+				},
+				"description": "confusion 1/2 = 1,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "confusion 1/4 = 0,4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{4}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1/4"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.003"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3/1000"
+				},
+				"description": "millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3/4"
+				},
+				"description": "trois quarts",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1/5"
+				},
+				"description": "un cinquième",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1/5"
+				},
+				"description": "confusion 1/5 = 0,5",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "d159d49f-4141-4ac4-9cb1-de40cba2ffc1",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/10"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:54.879667+00:00",
+		"updated_at": "2026-09-26T18:33:40.633515+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Dixièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "borne haute, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.03"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "centièmes au lieu de dixièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "numérateur seul",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{10}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.30"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "37e39a3e-2714-4ca4-917a-7c865067aa86",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.035673+00:00",
+		"updated_at": "2026-09-26T18:33:40.725553+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Centièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}09"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "borne haute, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "dixièmes au lieu de centièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.070"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "c88d66d6-099c-407f-8b41-2508888e4bd7",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:10*u+v}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}/100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.193406+00:00",
+		"updated_at": "2026-09-26T18:33:40.815338+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Centièmes (2)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.47"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"description": "cas courant",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "1",
+					"v": "1"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "9",
+					"v": "9"
+				},
+				"description": "borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"description": "décalage de rang",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{47}{100}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.470"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"u": "4",
+					"v": "7"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "8a3a572b-526d-4d3a-a854-bb8b9e364190",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "10|100"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}/{{eval:c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.353844+00:00",
+		"updated_at": "2026-09-26T18:33:40.901706+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Fraction décimale jusqu'au centième",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["23.45"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"description": "centièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["27{,}4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "274",
+					"c": "10"
+				},
+				"description": "dixièmes, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "10",
+					"c": "10"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["99.99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "9999",
+					"c": "100"
+				},
+				"description": "borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.345"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"description": "décalage de rang",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["23.450"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "100"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "f3477519-1309-4deb-b3cc-5af828f900bb",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 6,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/1000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.666719+00:00",
+		"updated_at": "2026-09-26T18:33:41.055166+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Millièmes",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.001"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}009"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "borne haute, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.04"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "centièmes au lieu de millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{4}{1000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "reducedFractions", "form"]
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.0040"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros", "spaces"]
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b1d3c8aa-34f3-4d01-9e27-499a91c1940e",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 7,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "0..9"
+					},
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:100*u+10*w+v}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a}}/1000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.823695+00:00",
+		"updated_at": "2026-09-26T18:33:41.128844+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Millièmes (2)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0.473"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "4",
+					"v": "3",
+					"w": "7"
+				},
+				"description": "cas courant",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}305"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "3",
+					"v": "5",
+					"w": "0"
+				},
+				"description": "zéro intercalé, virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.101"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "1",
+					"v": "1",
+					"w": "0"
+				},
+				"description": "borne basse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"u": "9",
+					"v": "9",
+					"w": "9"
+				},
+				"description": "borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.73"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"u": "4",
+					"v": "3",
+					"w": "7"
+				},
+				"description": "centièmes au lieu de millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{473}{1000}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"u": "4",
+					"v": "3",
+					"w": "7"
+				},
+				"description": "recopie de la fraction",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "a62ccb82-e528-4618-867d-728eda80dd8e",
+		"title": "Forme décimale d'une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 8,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}/{{eval:c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:55.983646+00:00",
+		"updated_at": "2026-09-26T18:33:41.221595+00:00",
+		"subdomain": "Forme décimale",
+		"exercise_instruction": null,
+		"description": "Fraction décimale jusqu'au millième",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2.345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "1000"
+				},
+				"description": "millièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}027"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "27",
+					"c": "1000"
+				},
+				"description": "millièmes, zéro de tête",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["38.5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "385",
+					"c": "10"
+				},
+				"description": "dixièmes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["99.99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "9999",
+					"c": "100"
+				},
+				"description": "borne haute",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "27",
+					"c": "1000"
+				},
+				"description": "décalage de rang",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.3450"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros", "spaces"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2345",
+					"c": "1000"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	}
+]

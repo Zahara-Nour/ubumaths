@@ -1,0 +1,30 @@
+{
+	"templateId": "58f7a8dd-b8de-48f4-9cfa-5356b75e1c64",
+	"title": "Décomposer en unités, dixièmes, centièmes, millièmes",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$), le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$) et le troisième celui des millièmes ($\\dfrac{1}{1000} = 0.001$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. $$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} & \\textcolor{{{color:primary.0}}}{{{d}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} + 0.00\\textcolor{{{color:primary.0}}}{{{d}}} \\\\ &= {{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$), le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$) et le troisième celui des millièmes ($\\dfrac{1}{1000} = 0.001$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. Il n'y a pas de dixièmes : on écrit $\\textcolor{{{color:primary.1}}}{0}$ à ce rang. $$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{c}}} & \\textcolor{{{color:primary.0}}}{{{d}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} + 0.00\\textcolor{{{color:primary.0}}}{{{d}}} \\\\ &= {{a}} + \\dfrac{{{c}}}{100} + \\dfrac{{{d}}}{1000} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$), le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$) et le troisième celui des millièmes ($\\dfrac{1}{1000} = 0.001$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. Il n'y a pas de centièmes : on écrit $\\textcolor{{{color:primary.1}}}{0}$ à ce rang. $$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{d}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} + 0.00\\textcolor{{{color:primary.0}}}{{{d}}} \\\\ &= {{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{d}}}{1000} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Variation à chiffre fixé à 0 : terme nul omis, 0 écrit en bleu dans le tableau.",
+		"⚑ Modèle : dans les variations à 0, la réponse attendue écrit le terme nul (5 + 0/10 + 4/100) ; la correction ne l’écrit pas."
+	]
+}

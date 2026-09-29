@@ -1,0 +1,18 @@
+{
+	"templateId": "7c642d2f-7060-45bf-bce7-9192925ff49c",
+	"title": "Décomposition décimale -> nombre entier",
+	"classe": "N",
+	"code": "N-DECOMP",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Tableau de numération.** Dans $\\left( 4 \\times 1000 \\right)$, le chiffre $4$ est au rang des milliers : le nombre qui multiplie le chiffre donne son rang. On place chaque chiffre dans la colonne de son rang ; un rang qui n'apparaît pas reçoit un $0$. On n'écrit pas de zéro à gauche du premier chiffre.",
+			"On place chaque chiffre dans la colonne de son rang. Les termes peuvent être dans le désordre : on les range du plus grand rang au plus petit. $$\\begin{array}{|c|c|c|c|c|} \\text{dizaines de milliers} & \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ {{if:a>0|{{if:a>0|\\textcolor{{{color:primary.0}}}{{{a}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & {{if:a+b>0|{{if:b>0|\\textcolor{{{color:primary.0}}}{{{b}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & {{if:a+b+c>0|{{if:c>0|\\textcolor{{{color:primary.0}}}{{{c}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & {{if:a+b+c+d>0|{{if:d>0|\\textcolor{{{color:primary.0}}}{{{d}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & \\textcolor{{{color:primary.0}}}{{{eval:{{e}}}}} \\end{array}$$",
+			"$$\\begin{align} {{if:a>0|\\left( {{if:a>0|\\textcolor{{{color:primary.0}}}{{{a}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 10000 \\right)|}}{{if:a+b>0|{{if:a>0| + |}}\\left( {{if:b>0|\\textcolor{{{color:primary.0}}}{{{b}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 1000 \\right)|}}{{if:a+b+c>0|{{if:a+b>0| + |}}\\left( {{if:c>0|\\textcolor{{{color:primary.0}}}{{{c}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 100 \\right)|}}{{if:a+b+c+d>0|{{if:a+b+c>0| + |}}\\left( {{if:d>0|\\textcolor{{{color:primary.0}}}{{{d}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 10 \\right)|}}{{if:a+b+c+d>0| + |}}\\left( \\textcolor{{{color:primary.0}}}{{{eval:{{e}}}}} \\times 1 \\right) &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": [
+		"⚑ Modèle : le chiffre des unités s’appelle `e` (constante d’Euler dans une condition) : écrit sans condition, (e × 1).",
+		"Termes mélangés dans l’énoncé : la correction les range."
+	]
+}

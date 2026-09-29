@@ -1,0 +1,15 @@
+{
+	"templateId": "81a64b0a-e6a2-45fc-90ce-c0aee11f539c",
+	"title": "Déterminer une forme fractionnaire",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Fraction décimale.** Le rang du dernier chiffre après la virgule donne le dénominateur : dixièmes → $10$, centièmes → $100$. On simplifie ensuite la fraction quand c’est possible.",
+			"{{if:mod((10*b),a)=0|Le dernier chiffre de ${{expression1}}$, $\\textcolor{{{color:primary.0}}}{{{eval:10*b/a}}}$, est au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$.{{if:gcd((10*b/a),10)>1| Le numérateur et le dénominateur sont divisibles par $\\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}$ : on simplifie.|}}|Le dernier chiffre de ${{expression1}}$, $\\textcolor{{{color:primary.0}}}{{{eval:mod((100*b/a),10)}}}$, est au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$.{{if:gcd((100*b/a),100)>1| Le numérateur et le dénominateur sont divisibles par $\\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}$ : on simplifie.|}}}}",
+			"{{if:mod((10*b),a)=0|$$\\begin{align} {{expression1}} &= \\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:10*b/a}}}}{10}{{if:gcd((10*b/a),10)>1| \\\\ &= \\dfrac{{{eval:10*b/a}} : \\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}}{10 : \\textcolor{{{color:primary.1}}}{{{eval:gcd((10*b/a),10)}}}} \\\\ &= \\dfrac{{{eval:10*b/a/gcd((10*b/a),10)}}}{{{eval:10/gcd((10*b/a),10)}}}|}} \\end{align}$$|$$\\begin{align} {{expression1}} &= \\dfrac{\\textcolor{{{color:primary.0}}}{{{eval:100*b/a}}}}{100}{{if:gcd((100*b/a),100)>1| \\\\ &= \\dfrac{{{eval:100*b/a}} : \\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}}{100 : \\textcolor{{{color:primary.1}}}{{{eval:gcd((100*b/a),100)}}}} \\\\ &= \\dfrac{{{eval:100*b/a/gcd((100*b/a),100)}}}{{{eval:100/gcd((100*b/a),100)}}}|}} \\end{align}$$}}"
+		]
+	},
+	"notes": ["Condition du modèle gcd(a,b) = 1 : b/a déjà irréductible."]
+}

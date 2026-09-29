@@ -1,0 +1,1866 @@
+[
+	{
+		"id": "2227cd4e-cde2-4dbd-9930-5116d110c626",
+		"title": "Décomposer en unités, dixièmes, centièmes",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{eval:b*0.1;d}}+{{eval:c*0.01;d}}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,34=5+0,3+0,04$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"nullTerms": "off"
+			}
+		},
+		"precision": null,
+		"delay": 25,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.036888+00:00",
+		"updated_at": "2026-09-27T07:17:15.036888+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "avec décimaux",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5+0{,}8+0{,}01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "5,81 = 5 + 0,8 + 0,01",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0.8+0.01"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Décomposition tapée avec des points",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}01+5+0{,}8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Termes dans un autre ordre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}81"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Nombre recopié sans décomposer : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0{,}08+0{,}1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1"
+				},
+				"description": "Dixièmes et centièmes inversés : refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ef7785cf-e448-4ee7-b588-a4e298bcc696",
+		"title": "Décomposer en unités, dixièmes, centièmes, millièmes",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{eval:b*0.1;d}}+{{eval:c*0.01;d}}+{{eval:d*0.001;d}}"
+					}
+				],
+				"statement": "Décompose comme dans cet exemple :\n\n$$5,346=5+0,3+0,04+0,006$$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "digits:1"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "digits:1"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a+b/10+c/100+d/1000;d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:15.410186+00:00",
+		"updated_at": "2026-09-27T07:17:15.410186+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "avec des décimaux",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5+0{,}8+0{,}01+0{,}004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "5,814 = 5 + 0,8 + 0,01 + 0,004",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0.8+0.01+0.004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Décomposition tapée avec des points",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5{,}814"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Nombre recopié : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0{,}8+0{,}014"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "Terme regroupé 0,014 : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+0{,}8+0{,}1+0{,}004"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "8",
+					"c": "1",
+					"d": "4"
+				},
+				"description": "0,1 au lieu de 0,01 : refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "52c4d773-d86c-45a3-88e4-ddc99cc4beab",
+		"title": "Décomposer l'écriture décimale d'un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+						},
+						"expectedAnswer": "{{eval:a*10}}+{{b}}"
+					}
+				],
+				"statement": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"conditions": ["a*10+b != 74"]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.322707+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "74 = 70 + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4+70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "ordre inversé accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7+4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "chiffres additionnés au lieu de dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["74"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "nombre recopié non décomposé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "9"
+				},
+				"description": "borne : 19 = 10 + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40+13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "9827242b-fbcd-4b63-8003-2b898372be63",
+		"title": "Décomposer l'écriture décimale d'un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{eval:b*10}}+{{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100}}+{{eval:b*10}}"
+					}
+				],
+				"statement": "Décompose ce nombre en centaines, dizaines et unités comme dans l'exemple :\n$$235=200+30+5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100+b*10+c"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.626222+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En centaines, dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["200+30+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"description": "235 = 200+30+5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5+30+200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"description": "ordre inversé accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2+3+5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"description": "additionne les chiffres",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["235"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"description": "nombre recopié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100+130+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "2",
+					"b": "3",
+					"c": "5"
+				},
+				"description": "décomposition non canonique",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["900+90+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "borne : 999",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["400+6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "0",
+					"c": "6"
+				},
+				"description": "406 = 400 + 6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["400+0+6"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["nullTerms"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "0",
+					"c": "6"
+				},
+				"description": "406 : terme nul inutile",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["400+70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "0"
+				},
+				"description": "470 = 400 + 70",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["400+7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "0"
+				},
+				"description": "470 : erreur de rang",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "495a397f-23b6-4bc4-82c3-2974b234b275",
+		"title": "Décomposer l'écriture décimale d'un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}*100) + ({{b}}*10) + {{c}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple : \n$$345 = (3 * 100) +(4 * 10) + 5$$ \n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*100 + b*10 + c"
+					}
+				],
+				"conditions": ["a*100+b*10+c != 345"]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.762687+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En centaines, dizaines et unités, à l'aide de produits",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["(3\\times100)+(4\\times10)+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "345 = (3×100)+(4×10)+5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\times100+4\\times10+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "sans parenthèses accepté (brackets off)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(100\\times3)+(10\\times4)+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "facteurs commutés acceptés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(3\\times100)+(4\\times10)+(5\\times1)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "5×1 accepté (factorOne off)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(3\\times10)+(4\\times100)+5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "rangs inversés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["300+40+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "décomposition additive sans produits",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["345"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "nombre recopié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(2\\times100)+(14\\times10)+5"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "décomposition non canonique",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(9\\times100)+(9\\times10)+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "borne : 999",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7a34967c-bcb2-414b-920f-05d04aba34b4",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 6,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000}}+{{eval:b*100}}+{{eval:c*10}}+{{d}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple :\n$$2345 = 2000+ 300 + 40 + 5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*1000+b*100+c*10+d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.056874+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En milliers, centaines, dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,000+200+30+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1000+200+30+4"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte mais mauvaise écriture des nombres (epsaces)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+4+200+30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse correcte avec permutation des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (écriture correcte)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form", "spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (écriture incorrecte des nombres - espaces)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times1000+2\\times100+3\\times10+4"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form", "spaces", "factorOne"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "reponse sous mauvaise forme (somme de produits)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "823f9e95-4459-49fb-9378-683e1b886079",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 7,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}*1000) + ({{b}}*100) + ({{c}}*10)+{{d}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple :\n$$2345 = (2 * 1000) + (3 * 100) +(4 * 10) + 5$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*1000 + b*100 + c*10+d"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off"
+			}
+		},
+		"precision": null,
+		"delay": 40,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.226677+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En milliers, centaines, dizaines et unités, à l'aide de produits",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"\\left(1\\times1\\,000\\right)+\\left(2\\times100\\right)+\\left(3\\times10\\right)+4"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (avec parenthèse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times1\\,000+2\\times100+3\\times10+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (sans parenthèse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse sous mauvaise forme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form", "spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse sous mauvaise forme avec mauvaise écriture des nombres (espaces)",
+				"variationIndex": 0
+			},
+			{
+				"answers": [
+					"\\left(1\\times1\\,000\\right)+4+\\left(2\\times100\\right)+\\left(3\\times10\\right)"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "éponse correcte (avec parenthèse) - termes mélangés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times1\\,000+4+2\\times100+3\\times10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (sans parenthèse) - termes mélangés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+2\\times100+3\\times10+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (sans parenthèse) - facteur 1 enlevé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+4+\\left(2\\times100\\right)+\\left(3\\times10\\right)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (avec parenthèse) - facteur 1 enlevé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+4+\\,2\\times100+3\\times10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte (sans parenthèse) - facteur 1 enlevé - termes mélangés",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "a6045667-0ede-4774-a56b-d4728841133c",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 10,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000}}+{{eval:b*1000}}+{{eval:c*100}}+{{eval:d*10}}+{{n}}"
+					}
+				],
+				"statement": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n$$23456 = 20000 + 3000 + 400 + 50 + 6$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10000+b*1000+c*100+d*10+n"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.645946+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En dizaines de milliers, milliers, centaines, dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["10\\,000\\,+\\,2\\,000\\,+\\,300\\,+\\,40+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10\\,000\\,+\\,2\\,000\\,+\\,300\\,+\\,40+6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10\\,000\\,+\\,5+2\\,000\\,+\\,300\\,+\\,40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte avec mélange des termes",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,345"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte - mauvaise forme",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7612e79a-7d54-4020-8d11-7253ec42622a",
+		"title": "Décomposer l'écriture décimale un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 11,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}*10000) + ({{b}}*1000) + ({{c}}*100)+({{d}}*10)+{{n}}"
+					}
+				],
+				"statement": "Décompose ce nombre comme dans cet exemple :\n$$23456 = (2 * 10000) +(3 * 1000) + (4*100) +(5*10) + 6$$\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10000 + b*1000 + c*100+d*10+n"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off",
+				"factorOne": "off"
+			}
+		},
+		"precision": null,
+		"delay": 50,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.785282+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "En dizaines de milliers, milliers, centaines, dizaines et unités, à l'aide de produits",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": [
+					"\\left(1\\times10\\,000\\right)+\\left(2\\times1\\,000\\right)+\\left(3\\times100\\right)+\\left(4\\times10\\right)+5"
+				],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (avec parentheses)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+2\\times1\\,000+3\\times100+4\\times10+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (sans parentheses) ",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+3\\times1\\,000+3\\times100+4\\times10+5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\times10\\,000+4\\times10+2\\times1\\,000+3\\times100+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"n": "5"
+				},
+				"description": "Réponse correcte (sans parentheses)  - termes mélangés",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "accbfd16-cfcb-4256-a4db-c2f9383b5feb",
+		"title": "Décomposition décimale -> nombre entier",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 8,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "e",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*10000) +  (b*1000) + (c*100) + (d*10) + e",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.359472+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12\\,345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12345,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces", "zeros"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse correcte - mauvaise écriture du nombre (espaces, zero)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,346"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,\\,000+345"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse incorrecte (mauvaise forme)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7c642d2f-7060-45bf-bce7-9192925ff49c",
+		"title": "Décomposition décimale -> nombre entier",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 9,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "e",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*10000) +  (b*1000) + (c*100) + (d*10) + e",
+						"displayOptions": {
+							"shuffleTerms": true,
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:47.50636+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "Termes mélangés",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["12\\,345"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse correcte",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse vide",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12\\,346"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4",
+					"e": "5"
+				},
+				"description": "Réponse incorrecte",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "3eedd905-1526-4c90-9005-eb1df389a9f9",
+		"title": "Décomposition décimale -> nombre entier (jusqu'aux centaines)",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*100) +  (b*10) + c",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				],
+				"conditions": ["a*b+a*c+b*c != 0"]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.469636+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["307"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"description": "(3×100)+7 = 307",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"description": "oublie le zéro des dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["300+7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "7"
+				},
+				"description": "laisse une somme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["42"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "(4×10)+2 = 42",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["402"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "ajoute un zéro de trop",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["042"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "zéro de tête inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["560"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "6",
+					"c": "0"
+				},
+				"description": "(5×100)+(6×10) = 560",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "6ef8aedf-c8cf-4769-aa3e-b3de249492ae",
+		"title": "Décomposition décimale -> nombre entier (jusqu'aux milliers)",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 5,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "Réécris cette expression sous la forme d'un nombre entier.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "(a*1000) +  (b*100) + (c*10) + d",
+						"displayOptions": {
+							"removeNullTerms": true
+						}
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.917472+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte mal formatée (manque espace)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte bien formatée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse correcte avec partie décimale inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000+200+30+4"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "2",
+					"c": "3",
+					"d": "4"
+				},
+				"description": "Réponse sous forme incorrecte",
+				"variationIndex": 0
+			}
+		]
+	}
+]
