@@ -28,14 +28,35 @@
  * - Les limites (`normalize-extended`), qui calculent une VALEUR : la base
  *   change le sens de variation (`\log_{1/2}(x) → +∞` en `0⁺`).
  *
- * Laissés tels quels : un `log` à exposant (`\log_{2}^{2}(x)`), dérivé ou
- * réciproque, et tout appel à plusieurs arguments.
+ * Un `log` à exposant (`\log_{2}^{2}(x)`) devient `(ln x / ln 2)^{2}` :
+ * sans ça, `\log^{2}_{2}(x) ≢ (\log_{2}x)^{2}` (un côté réécrit, l'autre
+ * atome). Laissés tels quels : la réciproque (`\log^{-1}`, drapeau
+ * `isInverse` ou exposant `-1`), la dérivée et tout appel à plusieurs
+ * arguments.
+ *
+ * `log_b(b^u) = u` est traité AVANT le quotient : vrai partout où le membre de
+ * gauche existe (b > 0, b ≠ 1), alors que `ln(x^a)` à exposant symbolique
+ * reste opaque et que `\log_{x}(x^{a}) ≡ a` serait perdu.
  */
 
-import { divide, func, number } from '../../factory';
-import { isFunction } from '../../guards';
+import { divide, func, number, superscript } from '../../factory';
+import { isDelimiter, isFunction, isSuperscript } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
+import { hashMathNode } from '../hash';
+
+/** Le nœud sans ses parenthèses englobantes. */
+function stripDelimiters(node: MathNode): MathNode {
+	return isDelimiter(node) ? stripDelimiters(node.content) : node;
+}
+
+/** Exposant `-1` écrit `^{-1}` : notation de la réciproque, pas une puissance. */
+function isInverseNotation(power: MathNode): boolean {
+	if (power.type === 'opposite') {
+		return power.operand.type === 'number' && power.operand.value === '1';
+	}
+	return power.type === 'number' && power.value === '-1';
+}
 
 /**
  * `ln(a)/ln(b)` pour `log_b(a)` (et `ln(a)/ln(10)` pour `log(a)` si
@@ -43,12 +64,19 @@ import type { MathNode } from '../../types';
  */
 export function changeOfBaseAt(node: MathNode, includeDecimal: boolean): MathNode | null {
 	if (!isFunction(node) || node.args.length !== 1) return null;
-	if (node.power !== undefined || node.derivativeOrder !== undefined || node.isInverse) return null;
+	if (node.derivativeOrder !== undefined || node.isInverse) return null;
+	if (node.power !== undefined && isInverseNotation(node.power)) return null;
 	const name = node.name.toLowerCase();
 	if (name !== 'log' && name !== 'ln') return null;
 	const base = node.base ?? (name === 'log' && includeDecimal ? number('10') : undefined);
 	if (base === undefined) return null;
-	return divide(func('ln', [node.args[0]]), func('ln', [base]), 'fraction');
+	const arg = stripDelimiters(node.args[0]);
+	const value =
+		isSuperscript(arg) &&
+		hashMathNode(stripDelimiters(arg.base)) === hashMathNode(stripDelimiters(base))
+			? arg.superscript
+			: divide(func('ln', [node.args[0]]), func('ln', [base]), 'fraction');
+	return node.power !== undefined ? superscript(value, node.power) : value;
 }
 
 /**

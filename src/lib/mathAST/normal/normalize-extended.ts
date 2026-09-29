@@ -1005,7 +1005,20 @@ export function normalizeExtended(
 		// `ln(a)/ln(b)`, le quotient étendu porte le bon signe
 		// (`\log_{1/2}(x) → +∞` en `0⁺`).
 		const changedBase = node.base !== undefined ? changeOfBaseAt(node, false) : null;
-		if (changedBase !== null) return normalizeExtended(changedBase, ctx, options);
+		if (changedBase !== null) {
+			// Valeur finie : la normalisation ordinaire simplifie le quotient
+			// (`2 ln 2 / (−ln 2)` → `−2`), ce que `divExtended` ne fait pas.
+			const parts = node.base !== undefined ? [...node.args, node.base] : node.args;
+			const finite = parts.every((part) => normalizeExtended(part, ctx, options).type === 'normal');
+			if (finite) {
+				try {
+					return normalResult(normalize(changedBase));
+				} catch {
+					// hors domaine ou non normalisable : lecture étendue ci-dessous
+				}
+			}
+			return normalizeExtended(changedBase, ctx, options);
+		}
 		const args = node.args.map((arg) => normalizeExtended(arg, ctx, options));
 		return applyFunctionExtended(node.name, args);
 	}

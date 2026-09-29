@@ -168,3 +168,33 @@ describe('changement de base (chemin de la comparaison seul)', () => {
 		expect(toLatex(simplify(parseLatex('\\log_{2}(x)')).result)).not.toContain('\\ln');
 	});
 });
+
+describe('régressions de la revue adverse (#524)', () => {
+	it.each([
+		['\\log^{2}(x)', '(\\log x)^{2}'],
+		['\\log^{2}(x)', '\\log x\\cdot\\log x'],
+		['\\log^{2}_{2}(x)', '(\\log_{2}x)^{2}'],
+		['\\log^{2}_{2}(x)', '\\log_2 x\\cdot\\log_2 x'],
+		['\\log^{3}_{4}(x)', '\\frac{1}{8}(\\log_{2}x)^{3}'],
+		// log_x(x^a) = a partout où le membre de gauche existe (x > 0, x ≠ 1)
+		['\\log_{x}(x^{a})', 'a'],
+		['\\log_{x+1}((x+1)^{n})', 'n']
+	])('%s ≡ %s', (a, b) => {
+		expect(areEquivalent(a, b)).toBe(true);
+	});
+
+	it.each([
+		['\\log^{2}_{2}(x)', '\\log_{2}(x)'],
+		['\\log^{2}(x)', '\\log(x^{2})'],
+		['\\log_{x}(x^{a})', '\\log_{x}(a)']
+	])('%s ≢ %s', (a, b) => {
+		expect(areEquivalent(a, b)).toBe(false);
+	});
+
+	it('limites finies : valeur exacte simplifiée', () => {
+		const half = evaluateLimit(parseLatex('\\log_{\\frac{1}{2}}(x)'), 'x', parseLatex('4'), 'both');
+		expect(half.value && toLatex(half.value)).toBe('-2');
+		const two = evaluateLimit(parseLatex('\\log_{2}(x)'), 'x', parseLatex('8'), 'both');
+		expect(two.value && toLatex(two.value)).toBe('3');
+	});
+});
