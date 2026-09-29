@@ -23,10 +23,17 @@
  * forme normale de la base. `0`, les bases négatives, les radicaux, `π` et
  * toute base contenant une variable sont laissés tels quels.
  *
+ * ## Bases variables : seulement sous hypothèse de l'énoncé (ADR 0012)
+ *
+ * Sans hypothèse, `x^a·x^b ≢ x^{a+b}` reste faux : réécrire
+ * `x^a = exp(a·ln x)` supposerait `x > 0`. Quand la question DÉCLARE
+ * `x > 0`, le rappel `isPositiveBase` le dit, et la même définition
+ * s'applique : `x^a = exp(a·ln x)` pour tout `a` réel dès que `x > 0`. La
+ * condition est donc exactement celle de l'identité, « strictement » compris :
+ * `x ≥ 0` ne suffit pas (`0^a` vaut `0`, `1` ou n'existe pas selon `a`).
+ *
  * ## Ce que ce module ne fait PAS, décidé
  *
- * - Les bases **variables** : `x^a·x^b ≢ x^{a+b}` reste faux. Réécrire
- *   `x^a = exp(a·ln x)` supposerait `x > 0`, ce que le décideur ne sait pas.
  * - Les bases **négatives** : `(-2)^{n}` n'a pas d'écriture exponentielle
  *   réelle.
  * - Les exposants **rationnels** (`2^{3}`, `4^{1/2}`) : la forme normale les
@@ -39,8 +46,9 @@
  * seul (ADR 0006) : `simplify(2^{x})` continue de rendre `2^x`.
  */
 
-import { func, multiply } from '../../factory';
-import { isSuperscript } from '../../guards';
+import { add, func, multiply } from '../../factory';
+import { flattenProductShallow } from '../../flatten';
+import { isDelimiter, isSuperscript } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 import type { Rational } from '../types';
@@ -55,11 +63,17 @@ export interface GeneralPowerContext {
 	 * (variable, radical, `π`, imaginaire, normalisation impossible).
 	 */
 	rationalValue: (node: MathNode) => Rational | null;
+	/**
+	 * Vrai si la base est strictement positive d'après les hypothèses de
+	 * l'énoncé (`isPositiveType`). Absent sans hypothèse : seules les bases
+	 * rationnelles strictement positives sont alors visées.
+	 */
+	isPositiveBase?: (node: MathNode) => boolean;
 }
 
 /**
  * Réécrit `a^u` en `exp(u·ln a)` quand `a` est un rationnel strictement positif
- * et `u` n'est pas rationnel. `null` quand il n'y a rien à faire.
+ * (ou une base déclarée strictement positive) et `u` n'est pas rationnel. `null` quand il n'y a rien à faire.
  */
 function expandPositiveBasePowerAt(node: MathNode, ctx: GeneralPowerContext): MathNode | null {
 	if (!isSuperscript(node)) return null;
@@ -67,12 +81,35 @@ function expandPositiveBasePowerAt(node: MathNode, ctx: GeneralPowerContext): Ma
 	const base = ctx.rationalValue(node.base);
 	// Strictement positif : `n > 0` suffit, le dénominateur d'un `Rational`
 	// normalisé est toujours positif.
-	if (base === null || base.n <= 0n) return null;
+	const positiveRational = base !== null && base.n > 0n;
+	if (!positiveRational && !(base === null && ctx.isPositiveBase?.(node.base))) return null;
 
 	// Exposant rationnel : la forme normale sait déjà faire, exactement.
 	if (ctx.rationalValue(node.superscript) !== null) return null;
 
-	return func('exp', [multiply(node.superscript, func('ln', [node.base]), 'cross')]);
+	const logarithm = positiveRational
+		? func('ln', [node.base])
+		: positiveProductLogarithm(node.base, ctx);
+	return func('exp', [multiply(node.superscript, logarithm, 'cross')]);
+}
+
+/**
+ * `ln(a·b·…)` écrit `ln a + ln b + …` quand CHAQUE facteur est strictement
+ * positif (rationnel positif ou base déclarée positive) : `(2x)^{x} ≡
+ * 2^{x}·x^{x}` pour x > 0. Identité vraie dès que tous les facteurs sont
+ * positifs, exactement la condition vérifiée ici. Sinon `ln(base)` tel quel.
+ */
+function positiveProductLogarithm(base: MathNode, ctx: GeneralPowerContext): MathNode {
+	const content = isDelimiter(base) ? base.content : base;
+	const factors = flattenProductShallow(content).map(({ factor }) => factor);
+	const allPositive = factors.every((factor) => {
+		const value = ctx.rationalValue(factor);
+		return value !== null ? value.n > 0n : ctx.isPositiveBase?.(factor) === true;
+	});
+	if (factors.length < 2 || !allPositive) return func('ln', [base]);
+	return factors
+		.map((factor): MathNode => func('ln', [factor]))
+		.reduce((sum, logarithm) => add(sum, logarithm));
 }
 
 /**

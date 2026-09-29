@@ -84,9 +84,10 @@ import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
 import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
-import { isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
+import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { expandPositiveBasePowers } from './rules/general-power';
+import type { AssumptionOracle } from '../assumptions';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -136,6 +137,14 @@ export interface NormalizeContext {
 	 * Throws AbortError when work should stop. Build with `makeAbortChecker`.
 	 */
 	readonly abortChecker?: AbortChecker;
+	/**
+	 * Hypothèses de l'énoncé (ADR 0012) : les prédicats de `numtype` sur le
+	 * `TypeContext` qu'elles définissent (`assumptionOracle`). Posé par
+	 * `areEquivalent` seul, donc sur le chemin de la comparaison seul
+	 * (ADR 0006) : la forme affichée n'en dépend jamais. Absent, le
+	 * comportement est celui d'avant les hypothèses.
+	 */
+	readonly assumptions?: AssumptionOracle;
 }
 
 /**
@@ -2098,8 +2107,11 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
 	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
 	// strictement positives seulement — détail dans `rules/general-power.ts`.
+	const assumptions = ctx?.assumptions;
 	const withPositiveBases = expandPositiveBasePowers(withEuler, {
-		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
+		rationalValue: (candidate) => exactRationalValue(candidate, ctx),
+		// Base variable : seulement si l'énoncé la déclare strictement positive
+		...(assumptions && { isPositiveBase: assumptions.isPositive })
 	});
 	const withDefinitions = expandTrigDefinitions(withPositiveBases);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
@@ -2151,9 +2163,9 @@ function mergeNegativeBasePowersInPolynomial(
 	ctx: NormalizeContext | undefined
 ): NormalTerm[] | null {
 	let changed = false;
-	const terms = polynomial.map((term) => {
+	const terms = polynomial.flatMap((term) => {
 		const merged = mergeNegativeBasePowersInTerm(term, ctx);
-		if (merged === null) return term;
+		if (merged === null) return [term];
 		changed = true;
 		return merged;
 	});
@@ -2168,11 +2180,15 @@ interface NegativeBasePower {
 	count: number;
 }
 
-/** Le terme réécrit, ou `null` s'il n'y a rien à faire. */
+/**
+ * Le terme réécrit — un polynôme, car une puissance repliée par l'hypothèse
+ * « entier » (`foldEvenIntegerPower`) revient comme une forme normale —, ou
+ * `null` s'il n'y a rien à faire.
+ */
 function mergeNegativeBasePowersInTerm(
 	term: NormalTerm,
 	ctx: NormalizeContext | undefined
-): NormalTerm | null {
+): NormalTerm[] | null {
 	const groups = new Map<string, NegativeBasePower>();
 	const others: SymbolicFactor[] = [];
 
@@ -2198,6 +2214,7 @@ function mergeNegativeBasePowersInTerm(
 
 	let coefficient = term.coefficient;
 	const monomial = [...others];
+	const folded: NormalForm[] = [];
 	for (const { base, exponent } of groups.values()) {
 		let exponentForm: NormalForm;
 		try {
@@ -2219,10 +2236,65 @@ function mergeNegativeBasePowersInTerm(
 		// Un reste constant non entier (`(-2)^{n}·(-2)^{1/2-n}`) n'a de sens
 		// qu'en valeur complexe : on n'invente rien, le terme reste tel quel.
 		if (isConstantPolynomial(rest.numerator) && isConstantPolynomial(rest.denominator)) return null;
+		const foldedPower = foldEvenIntegerPower(base, rest, ctx);
+		if (foldedPower !== null) {
+			folded.push(foldedPower);
+			continue;
+		}
 		monomial.push(symbolicFactor(superscript(rationalBaseNode(base), denormalize(rest)), ONE));
 	}
 
-	return { coefficient, monomial: sortSymbolicFactors(monomial) };
+	const merged: NormalTerm = { coefficient, monomial: sortSymbolicFactors(monomial) };
+	if (folded.length === 0) return [merged];
+	let product = normalFormFromPolynomial([merged]);
+	for (const form of folded) product = mulNormalForms(product, form);
+	// Un dénominateur ne se range pas dans un terme : on n'invente rien.
+	if (!isOnePolynomial(product.denominator)) return null;
+	return [...product.numerator];
+}
+
+/**
+ * Hypothèse de l'énoncé « n entier » (ADR 0012) : `a^{2k} = |a|^{2k}` quand
+ * `2k` est un entier PAIR, quelles que soient les valeurs entières des
+ * variables. La base devient positive, donc une exponentielle
+ * (`rules/general-power.ts`) : `(-2)^{2n} ≡ 4^{n}`, `(-1)^{2n} ≡ 1`,
+ * `((-2)^{n})^{2} ≡ 4^{n}`.
+ *
+ * La condition est exactement celle de l'identité : l'exposant (partie
+ * entière constante déjà sortie) est un polynôme à coefficients entiers PAIRS
+ * en variables déclarées entières, à exposants entiers naturels — il prend
+ * donc une valeur entière paire en tout point du domaine déclaré. Rien pour
+ * un coefficient impair (`(-2)^{n} ≢ 2^{n}`), une variable non déclarée
+ * (`(-2)^{2x}`) ou une fraction (`(-2)^{n/2}`).
+ *
+ * `null` quand la condition n'est pas remplie, ou sans hypothèse.
+ */
+function foldEvenIntegerPower(
+	base: Rational,
+	exponent: NormalForm,
+	ctx: NormalizeContext | undefined
+): NormalForm | null {
+	const assumptions = ctx?.assumptions;
+	if (!assumptions || !isOnePolynomial(exponent.denominator)) return null;
+	for (const term of exponent.numerator) {
+		const coefficient = getRationalValue(term.coefficient);
+		if (coefficient === null || coefficient.d !== 1n || coefficient.n % 2n !== 0n) return null;
+		for (const factor of term.monomial) {
+			if (factor.exponent.d !== 1n || factor.exponent.n < 0n) return null;
+			if (!assumptions.isInteger(factor.base)) return null;
+		}
+	}
+	// |a|, écrit sans signe : `2`, `\frac{1}{2}`
+	const numerator = number((-base.n).toString());
+	const magnitude =
+		base.d === 1n ? numerator : divide(numerator, number(base.d.toString()), 'fraction');
+	const power = superscript(magnitude, denormalize(exponent));
+	try {
+		return equivalenceForm(power, arcDecompositionContext(ctx));
+	} catch (error) {
+		if (error instanceof AbortError) throw error;
+		return null;
+	}
 }
 
 /**
@@ -2297,7 +2369,11 @@ function constantRational(polynomial: readonly NormalTerm[]): Rational | null {
  * l'interruption seule, sans enregistreur ni verbosité.
  */
 function arcDecompositionContext(ctx: NormalizeContext | undefined): NormalizeContext | undefined {
-	return ctx?.abortChecker ? { abortChecker: ctx.abortChecker } : undefined;
+	if (!ctx?.abortChecker && !ctx?.assumptions) return undefined;
+	return {
+		...(ctx.abortChecker && { abortChecker: ctx.abortChecker }),
+		...(ctx.assumptions && { assumptions: ctx.assumptions })
+	};
 }
 
 /**
@@ -3691,6 +3767,25 @@ function canonicalizeFunctionNode(
  * - √(variable) = variable^{1/2} (fractional exponent in monomial)
  * - √(expression) = (expression)^{1/2} (for arbitrary expressions)
  */
+/**
+ * Retire les signes moins de tête (`−(−u)`, délimiteurs compris) : le nœud
+ * restant, et si leur nombre est impair.
+ */
+function stripOpposites(node: MathNode): { node: MathNode; negated: boolean } {
+	let current = node;
+	let negated = false;
+	for (;;) {
+		if (isOpposite(current)) {
+			negated = !negated;
+			current = current.operand;
+		} else if (isDelimiter(current)) {
+			current = current.content;
+		} else {
+			return { node: current, negated };
+		}
+	}
+}
+
 function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeContext): NormalForm {
 	const originalArg = node.args[0];
 
@@ -4503,6 +4598,17 @@ function normalizeFunction(
 		if (canonicalArg0.type === 'function' && canonicalArg0.name === 'abs') {
 			recordNormalizationStep(ctx, 'abs-idempotent', node, argForm, 'summarized');
 			return argForm;
+		}
+
+		// |u| → u quand l'énoncé déclare u ≥ 0 (ADR 0012) : `|x| ≡ x` et, par
+		// `√(x²) = |x|`, `√(x²) ≡ x`. Le contexte n'est posé que par
+		// `areEquivalent` : chemin de la comparaison seul.
+		if (ctx?.assumptions) {
+			const unsigned = stripOpposites(canonicalArg0);
+			if (ctx.assumptions.isNonNegative(unsigned.node)) {
+				// |−u| = |u| = u : un nombre impair de signes moins se retire
+				return unsigned.negated ? negNormalForm(argForm) : argForm;
+			}
 		}
 
 		// |x^n| → x^n when n is a literal positive even integer
