@@ -4,15 +4,108 @@ name: Nightly Integration Tests
 # trigger & RLS tests) need a real local Supabase stack. This spins up Supabase
 # via the CLI, applies migrations, runs `pnpm test:integration`, tears it down.
 #
-# CRON DÉSACTIVÉ : `supabase start` échoue actuellement car l'image amont
-# storage-api:fix-object-level (défaut CLI 2.105, avant que la CLI devienne une
-# devDependency) n'est publiée sur aucun registre
-# ("manifest unknown"). Tant que ce n'est pas résolu (cf. docs/wip/
-# test-architecture-progress.md), on garde uniquement le déclenchement manuel
-# pour éviter un job rouge toutes les nuits. Réactiver le cron une fois corrigé.
+# DÉCLENCHEURS (réactivés le 2026-09-29, après le premier run vert, PR #512) :
+#   - chaque nuit (cron, en UTC) ;
+#   - sur les PR qui touchent un fichier pouvant changer le résultat de la suite
+#     (filtre `paths` ci-dessous) ;
+#   - à la main (workflow_dispatch).
+#
+# ⚠️ Ce workflow ne doit PAS être un check obligatoire de la protection de
+# `main` : filtré par `paths`, il ne tourne pas sur les autres PR, qui
+# attendraient pour toujours un check qui ne vient jamais. Le cron nocturne est
+# le filet pour ce que le filtre laisserait passer.
 
 on:
-  workflow_dispatch: # manual trigger only (cron disabled — see comment above)
+  schedule:
+    # 02:17 UTC = 04:17 à Paris en heure d'été, 03:17 en heure d'hiver. Minute
+    # non ronde : GitHub retarde souvent les tâches planifiées à l'heure pile.
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+  pull_request:
+    # Filtre établi le 2026-09-29 en calculant la fermeture transitive des
+    # imports de la suite (tests/integration/**/*.test.ts + global-setup.ts) :
+    # 519 fichiers de src/ atteints. Dossier entier (/**) quand la suite en
+    # atteint une bonne part, ou pour ne pas rater un nouveau voisin importé ;
+    # fichiers explicites quand l'atteinte est ponctuelle dans un grand dossier.
+    # Un import ajouté plus tard hors de cette liste n'est vu que par le cron.
+    paths:
+      # la base, les tests et leur outillage
+      - 'supabase/**'
+      - 'tests/integration/**'
+      - 'tests/helpers/**'
+      - 'vitest.integration.config.ts'
+      - 'vitest.base.config.ts'
+      - 'svelte.config.js'
+      - '.github/workflows/nightly-integration.yml'
+      - '.github/ci.env'
+      - 'scripts/with-db-lock.sh'
+      - 'scripts/lib/lock.py'
+      # dépendances : version de la CLI Supabase, de supabase-js, de vitest
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      # src/lib : dossiers atteints par la suite
+      - 'src/lib/math/**'
+      - 'src/lib/mathAST/**'
+      - 'src/lib/migration/**'
+      - 'src/lib/questions/**'
+      - 'src/lib/resources/**'
+      - 'src/lib/server/**'
+      - 'src/lib/srs/**'
+      - 'src/lib/ubumark/**'
+      - 'src/lib/utils/**'
+      # src/lib : fichiers atteints ponctuellement
+      - 'src/lib/components/markdown/utils/math-utils.ts'
+      - 'src/lib/constants/deadlines.ts'
+      - 'src/lib/exercises/services/image-dimensions.ts'
+      - 'src/lib/exercises/types.ts'
+      - 'src/lib/exercises/validation.ts'
+      - 'src/lib/types/assessment.ts'
+      - 'src/lib/types/chapter-templates.ts'
+      - 'src/lib/types/database-helpers.ts'
+      - 'src/lib/types/grades.ts'
+      - 'src/lib/types/locale.ts'
+      - 'src/lib/typst/image-loader.ts'
+      - 'src/lib/worksheets/exercise-numbering.ts'
+      # src/routes : handlers appelés directement par les tests. `[`, `]`, `(`, `)`
+      # et `+` sont spéciaux dans ces motifs : un segment qui en contient devient
+      # `*`, et `+server.ts` devient `?server.ts` (un caractère quelconque).
+      - 'src/routes/*/dashboard/teacher/cahier-texte/*/*/?page.server.ts'
+      - 'src/routes/*/dashboard/teacher/contenu/worksheets/*/assignments/*/progress/?page.server.ts'
+      - 'src/routes/*/presques-evaluations/?page.server.ts'
+      - 'src/routes/api/assessments/*/?server.ts'
+      - 'src/routes/api/marketplace/listings/*/proposals/?server.ts'
+      - 'src/routes/api/skill-attempts/?server.ts'
+      - 'src/routes/api/srs/decks/*/sections/?server.ts'
+      - 'src/routes/api/srs/decks/*/sections/*/?server.ts'
+      - 'src/routes/api/student/reports/?server.ts'
+      - 'src/routes/api/student/worksheets/?server.ts'
+      - 'src/routes/api/teacher/curriculum/activities/?server.ts'
+      - 'src/routes/api/teacher/curriculum/activities/*/?server.ts'
+      - 'src/routes/api/teacher/curriculum/coverage/?server.ts'
+      - 'src/routes/api/teacher/curriculum/exercise-tags/?server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/?server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/*/?server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/reorder/?server.ts'
+      - 'src/routes/api/teacher/curriculum/points/?server.ts'
+      - 'src/routes/api/teacher/curriculum/points/*/?server.ts'
+      - 'src/routes/api/teacher/curriculum/points/reorder/?server.ts'
+      - 'src/routes/api/teacher/curriculum/template-tags/?server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/?server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/*/?server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/reorder/?server.ts'
+      - 'src/routes/api/worksheets/?server.ts'
+      - 'src/routes/api/worksheets/*/?server.ts'
+      - 'src/routes/api/worksheets/*/assignments/*/reports/*/?server.ts'
+      - 'src/routes/api/worksheets/*/duplicate/?server.ts'
+      - 'src/routes/api/worksheets/*/exercise-number/*/?server.ts'
+concurrency:
+  # Un nouveau push sur la même branche (ou la même PR) annule le run en cours.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   integration:
