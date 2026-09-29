@@ -190,11 +190,18 @@ describe('Per-blank validation — Fuzzy text', () => {
 		expect(result.isCorrect).toBe(true);
 	});
 
-	it('B8. should match with Levenshtein distance <= 1', () => {
-		const instance = createInstance([textBlank('pair')]);
-		// "paire" has Levenshtein distance 1 from "pair"
-		const result = validateAnswer(['paire'], instance);
+	it('B8. should match with Levenshtein distance <= 1 (expected word of 5+ letters)', () => {
+		const instance = createInstance([textBlank('paire')]);
+		// "pair" has Levenshtein distance 1 from "paire" (5 letters → tolerated)
+		const result = validateAnswer(['pair'], instance);
 		expect(result.isCorrect).toBe(true);
+	});
+
+	it('B8b. short expected word (< 5 letters): exact match required', () => {
+		const instance = createInstance([textBlank('pair')]);
+		// "paire" is a different word from "pair": no typo tolerance
+		const result = validateAnswer(['paire'], instance);
+		expect(result.isCorrect).toBe(false);
 	});
 
 	it('B9. should reject Levenshtein distance > 1', () => {

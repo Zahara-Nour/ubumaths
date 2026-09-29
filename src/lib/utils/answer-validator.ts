@@ -318,7 +318,14 @@ function normalizeForFuzzy(s: string): string {
 }
 
 /**
- * Fuzzy text matching: case insensitive, accents ignored, Levenshtein distance <= 1
+ * Nombre minimal de lettres du mot attendu pour tolérer une faute de frappe.
+ * En dessous, une faute change le mot (« A » / « B », « pair » / « paire »).
+ */
+const FUZZY_MIN_LETTERS = 5;
+
+/**
+ * Fuzzy text matching: case insensitive, accents ignored ; Levenshtein distance
+ * <= 1 only when the expected word has at least FUZZY_MIN_LETTERS letters.
  */
 function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
 	const normalizedUser = normalizeForFuzzy(userAnswer);
@@ -330,6 +337,9 @@ function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
 	}
 
 	if (normalizedUser === normalizedExpected) return true;
+	// Mot court : égalité exigée (casse et accents mis à part)
+	const letterCount = normalizedExpected.match(/\p{L}/gu)?.length ?? 0;
+	if (letterCount < FUZZY_MIN_LETTERS) return false;
 	return levenshteinDistance(normalizedUser, normalizedExpected) <= 1;
 }
 
