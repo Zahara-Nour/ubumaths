@@ -1,7 +1,7 @@
 # Vague 4 — un exemple rendu par code
 
 Premier tirage de l'aperçu (`APERCU.md` de `vague4-brouillons` et `vague4-publies`), un modèle par code.
-Vérificateur (chemin littéral par équivalence compris) : brouillons 19/25, publiés 1/3. Encore rouges (notes ⚑) : N-OPPOSE-EXPR, N-FACT-COMMUN, N-VOCAB-OP, N-RACINE-AFF.
+Vérificateur (chemin littéral par équivalence compris) : lots `vague4-brouillons` 19/19 et `vague4-publies` 1/1. Les codes N-OPPOSE-EXPR, N-FACT-COMMUN, N-VOCAB-OP, N-RACINE-AFF sont CLOS (liste `CLOTURE` de `scripts/corrections/lots/vague4.ts`, propositions dans `docs/corrections/vague4-cloture/`) : exemples conservés pour relecture, hors de tout lot importable.
 
 ## N-OPPOSE-EXPR — Déterminer l'opposé d'une expression
 

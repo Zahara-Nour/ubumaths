@@ -81,6 +81,8 @@ comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/100
 - Lot `vague4-brouillons` (25 `draft`) : 19/25 (353 871 tirages), import SIMULATION 19/25.
   Lot `vague4-publies` (3 `published`) : 1/3 (1af7263e), import SIMULATION 1/3.
   Un exemple rendu par code : `docs/corrections/vague4-publies/RESUME.md`.
+- Lots séparés pour l'import tout-ou-rien : `vague4-brouillons` = 19 verts, `vague4-publies` = 1af7263e ;
+  les 8 rouges sont dans `CLOTURE` (lots/vague4.ts), propositions dans `docs/corrections/vague4-cloture/`.
 - Encore rouges : opposé (aeb86af9, 843c3186, 34e569e7 : l'opération est dans la phrase, le calcul
   part de −A) ; facteur commun (294c4316, e66089e0 : la réponse n'est pas la fin d'un calcul) ;
   traduire une phrase (5d515eb1, 78feafed : aucun bloc posé) ; racine affine (2bdb3db6 : chaîne

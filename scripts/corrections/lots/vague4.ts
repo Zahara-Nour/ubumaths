@@ -887,14 +887,36 @@ export const VAGUE4_ENTRIES: Vague4Entry[] = [
 // LOTS
 // ============================================================================
 
+/** Modèles CLOS : rédigés mais rouges au vérificateur, hors de tout lot importable */
+export const CLOTURE: { templateId: string; code: string; reason: string }[] = [
+	...[
+		'aeb86af9-7bf1-440a-be17-735a41b5ce46',
+		'843c3186-afc6-4ccd-83f7-beab64d3e420',
+		'34e569e7-7834-456f-8e48-65b2a1183030'
+	].map((templateId) => ({ templateId, code: 'N-OPPOSE-EXPR', reason: OPERATION_IN_TEXT_NOTE })),
+	...['294c4316-d2c9-4894-9c3c-c2b24fdffc99', 'e66089e0-b7bd-49fe-a968-9a8df3d325fd'].map(
+		(templateId) => ({ templateId, code: 'N-FACT-COMMUN', reason: FACTOR_NOTE })
+	),
+	...['5d515eb1-c8f8-4678-b4bd-f9ab3f34713f', '78feafed-650f-44e0-a2c3-1e677809722b'].map(
+		(templateId) => ({ templateId, code: 'N-VOCAB-OP', reason: NO_BLOCK_NOTE })
+	),
+	{
+		templateId: '2bdb3db6-8ef7-43af-aa7a-2332e34d2a01',
+		code: 'N-RACINE-AFF',
+		reason: EQUATION_NOTE
+	}
+];
+
+const isClosed = (entry: LotEntry) => CLOTURE.some((c) => c.templateId === entry.templateId);
+
 export const VAGUE4_DRAFTS_LOT: Lot = {
 	name: 'vague4-brouillons',
-	description: 'Vague 4, modèles en brouillon (règles N littérales, puissances, affine, limites)',
-	entries: VAGUE4_ENTRIES.filter((e) => e.status === 'draft')
+	description: 'Vague 4, modèles en brouillon verts au vérificateur (19)',
+	entries: VAGUE4_ENTRIES.filter((e) => e.status === 'draft' && !isClosed(e))
 };
 
 export const VAGUE4_PUBLISHED_LOT: Lot = {
 	name: 'vague4-publies',
-	description: 'Vague 4, modèles publiés (N-NEUTRE-ABS, N-VOCAB-OP)',
-	entries: VAGUE4_ENTRIES.filter((e) => e.status === 'published')
+	description: 'Vague 4, modèle publié vert au vérificateur (1af7263e)',
+	entries: VAGUE4_ENTRIES.filter((e) => e.status === 'published' && !isClosed(e))
 };
