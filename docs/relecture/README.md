@@ -25,6 +25,11 @@ Toutes les commandes d'écriture sont **en simulation sans `--publier`**, n'écr
 - chaque variation génère sur **50 tirages** sans échec ;
 - son niveau est ≥ 1 (contrainte de la base ; les niveaux TinyMath commencent à 0).
 
+**Ce contrôle est rejoué à chaque PR** sur tous les fichiers de ce dossier
+(`src/lib/migration/review/__tests__/corpus-relecture.test.ts`, ~7 s) : une modification du
+générateur, du validateur ou de mathAST qui casse une question relue rougit la CI. Seul
+l'instantané de la relecture est couvert, pas un modèle modifié ensuite dans l'éditeur.
+
 ## Format d'un fichier de verdict
 
 ```json
