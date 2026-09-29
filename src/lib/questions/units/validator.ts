@@ -25,7 +25,7 @@ import { compareQuantities, type Tolerance } from './ce-integration';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
 import { convertAffine } from '$lib/mathAST/units/conversion';
-import { judgeRounding } from '$lib/questions/rounding';
+import { judgeRounding, roundToPrecision, roundingFeedback } from '$lib/questions/rounding';
 
 // ============================================================================
 // TYPES
@@ -129,7 +129,22 @@ function judgeRoundedQuantity(
 		return { isCorrect: gap <= SAME_ROUNDED_VALUE * Math.max(Math.abs(user), Math.abs(expected)) };
 	}
 	// Autre unité : pas d'écriture à compter, la valeur seule est jugée
-	return judgeRounding(numericLatex ?? '', userValueInExpectedUnit, expectedValue, precision);
+	const verdict = judgeRounding(
+		numericLatex ?? '',
+		userValueInExpectedUnit,
+		expectedValue,
+		precision
+	);
+	if (verdict.isCorrect || verdict.feedback) return verdict;
+	// Valeur plus précise que l'arrondi demandé (3141,59 mm pour « au centième de m ») :
+	// c'est l'arrondi qui manque, pas la valeur qui est fausse.
+	const roundedUser = roundToPrecision(userValueInExpectedUnit, precision);
+	const roundedExpected = roundToPrecision(expectedValue, precision);
+	const scale = Math.max(Math.abs(roundedUser), Math.abs(roundedExpected));
+	if (Math.abs(roundedUser - roundedExpected) <= SAME_ROUNDED_VALUE * scale) {
+		return { isCorrect: false, feedback: roundingFeedback(precision) };
+	}
+	return verdict;
 }
 
 /** Partie numérique d'une saisie normalisée `valeur\unit{…}` */

@@ -87,3 +87,22 @@ describe('Case à unité + arrondi : le message arrive à l’élève', () => {
 		expect(validateAnswer(['3{,}14\\unit{m}'], instance, ['3{,}14\\unit{m}']).isCorrect).toBe(true);
 	});
 });
+
+// Autre unité : une valeur plus précise que l'arrondi demandé est refusée comme
+// dans l'unité attendue, mais avec le message d'arrondi, pas « Valeur incorrecte ».
+describe('Grandeur dans une autre unité, plus précise que demandé', () => {
+	it.each([['3141{,}59\\unit{mm}'], ['314{,}2\\unit{cm}'], ['314{,}159\\unit{cm}']])(
+		'%s pour 3,14159 m au centième → faux, « Arrondis au centième. »',
+		(answer) => {
+			const result = validateQuantityAnswer(answer, '3.14159\\unit{m}', HUNDREDTH);
+			expect(result.isCorrect).toBe(false);
+			expect(result.feedback).toBe('Arrondis au centième.');
+		}
+	);
+
+	it('valeur fausse dans une autre unité (3150 mm) → faux, sans message d’arrondi', () => {
+		const result = validateQuantityAnswer('3150\\unit{mm}', '3.14159\\unit{m}', HUNDREDTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).not.toBe('Arrondis au centième.');
+	});
+});
