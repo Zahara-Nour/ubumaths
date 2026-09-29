@@ -1,5 +1,7 @@
 # Hypothèses de l'énoncé (ADR 0012) — progression
 
+# ✅ TERMINÉ (2026-09-29) — #522, #523
+
 ## Phase 0 — spécification (VALIDÉE par David le 2026-09-29)
 
 ### Faits mesurés
@@ -79,4 +81,24 @@
 - [x] Lot 1 — mathAST (`feat/hypotheses-enonce-mathast`, worktree `../ubumaths-wt-hypotheses-mathast`) :
       contrat `areEquivalent(l1, l2, { assumptions })` + `AnswerAssumptions` (`$lib/math`), règles 8-12,
       gardes 13-17, revue adverse 0 faux positif. PR à ouvrir.
-- [ ] Lot 2 — modèle + propagation + éditeur (`feat/hypotheses-enonce-modele`, worktree `../ubumaths-wt-hypotheses-modele`)
+- [x] Lot 2 — modèle + propagation + éditeur : **#523 mergée**. `options.answerAssumptions` validé
+      client + serveur (faille : l'`optionsSchema` serveur supprimait le champ en silence), collision avec
+      une variable tirée (y compris PUT partiel), propagation à `areEquivalent` et à la règle `equivalent`,
+      section « Hypothèses de l'énoncé » dans l'éditeur, bouton « Ajouter n ∈ ℕ » pour les Suites, aperçu.
+- [x] Hors chantier : **#524** base du logarithme (valeur, signe, limites, étapes pédagogiques,
+      changement de base à la comparaison) — 177 faux positifs de main corrigés, 0 nouveau.
+
+## ⚠️ Limite à connaître (constatée le 2026-09-29)
+
+En **mode exact** (défaut), le contrôle de forme compare à la réponse attendue : une réponse de forme
+différente reste `bad_form` (comptée fausse) même si l'hypothèse rend la valeur équivalente. L'hypothèse
+change le verdict avec `requiredForm`, la règle `equivalent`, `orderIndependent`, ou
+`constraints.form: 'warn'`. Même chose pour #521 : `6×2^{n−1}` pour `3×2^n` (#623) est `bad_form`, pas
+juste. Choix produit par question (contrainte `form`), non tranché.
+
+## Restes notés
+
+- PUT partiel sans `status` traité comme une publication (`updateQuestionTemplateSchema`, défaut antérieur).
+- Logarithme, hors périmètre : dérivée de `\log_x(2)` = 0 ; `\log^2` ignoré par la dérivation ;
+  `isInDomain` sans contrainte b > 0, b ≠ 1 ; `divExtended` lit un signe inconnu comme positif avec une
+  variable ; `\log_{0}(0) ≡ 1` vrai.
