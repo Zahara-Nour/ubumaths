@@ -1,0 +1,22 @@
+{
+	"templateId": "f1a392f5-060d-4e1c-b7a5-2920a054b83b",
+	"title": "Calculer une somme ",
+	"classe": "R",
+	"code": "R-DEC-RANG",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Additionner des décimaux.** On additionne rang par rang : les unités avec les unités, les dixièmes avec les dixièmes, les centièmes avec les centièmes. $10$ dixièmes font $1$ unité.",
+				"Unités : $\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a+d}}$. Dixièmes : ${{eval:b+f}}$ dixièmes. Centièmes : $\\textcolor{{{color:primary.0}}}{{{g}}}$ centième{{if:g>1|s|}}, seul le nombre ${{h}}$ en a.",
+				"$$\\begin{align} {{c}} + {{h}} &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) + \\textcolor{{{color:primary.0}}}{{{eval:g/100;d}}} \\\\ &= {{eval:a+d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b+f)/10;d}}} + {{eval:g/100;d}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Additionner des décimaux.** On additionne rang par rang : les unités avec les unités, les dixièmes avec les dixièmes, les centièmes avec les centièmes. $10$ dixièmes font $1$ unité.",
+				"Unités : $\\textcolor{{{color:primary.0}}}{{{d}}} + \\textcolor{{{color:primary.0}}}{{{a}}} = {{eval:a+d}}$. Dixièmes : ${{eval:b+f}}$ dixièmes. Centièmes : $\\textcolor{{{color:primary.0}}}{{{g}}}$ centième{{if:g>1|s|}}, seul le nombre ${{h}}$ en a.",
+				"$$\\begin{align} {{h}} + {{c}} &= \\left( \\textcolor{{{color:primary.0}}}{{{d}}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} \\right) + \\textcolor{{{color:primary.0}}}{{{eval:g/100;d}}} \\\\ &= {{eval:a+d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b+f)/10;d}}} + {{eval:g/100;d}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

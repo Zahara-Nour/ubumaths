@@ -1,0 +1,22 @@
+{
+	"templateId": "4063af49-ad24-46be-a9c1-124dcbe74413",
+	"title": "Calculer un produit d'entiers",
+	"classe": "R",
+	"code": "R-X10",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+				"{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}",
+				"$$\\begin{align} {{a}} \\times 10 &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+				"{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}",
+				"$$\\begin{align} 10 \\times {{a}} &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

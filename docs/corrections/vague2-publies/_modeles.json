@@ -1,0 +1,1487 @@
+[
+	{
+		"id": "8390762c-b72d-4449-a8cc-5322e5bd77a4",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 3,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..99"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}*{{eval:10^b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:47.3287+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Puissances de $$10$$",
+		"exercise_instruction": null,
+		"description": "Multiplication par $10$, $100$ ou $1000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["99\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99",
+					"b": "3"
+				},
+				"description": "99×1000 = 99 000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1"
+				},
+				"description": "2×10 = 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\,100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "71",
+					"b": "3"
+				},
+				"description": "Erreur : ×100 au lieu de ×1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["71000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "71",
+					"b": "3"
+				},
+				"description": "Sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "4063af49-ad24-46be-a9c1-124dcbe74413",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 1,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*10"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "10*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:47.072864+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Puissances de $$10$$",
+		"exercise_instruction": null,
+		"description": "Multiplication par $10$ d'un nombre inférieur à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["990"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "99×10 = 990",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "1×10 = 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "Erreur : ×100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["990"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "10×99 = 990",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "2c3a18e7-2727-4ae3-a899-e16cfc9c730b",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "100*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:47.211023+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Puissances de $$10$$",
+		"exercise_instruction": null,
+		"description": "Multiplication par $100$ d'un nombre inférieur à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9\\,900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "99×100 = 9 900",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "Sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["990"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "99"
+				},
+				"description": "Erreur : ×10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "100×1 = 100",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7\\,100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "100×71 = 7 100",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "943151d0-0af5-46f0-bce8-e4acbd5f1029",
+		"title": "Comparer deux nombres entiers",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{f}}$$"
+					},
+					{
+						"content": "$${{g}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*10+b"
+					},
+					{
+						"name": "g",
+						"expression": "eval:c*10+d"
+					}
+				],
+				"conditions": ["f!=g"],
+				"correctChoiceIndex": ["{{if:f<g|0|1}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:29.93761+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Nombres inférieurs à $100$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "79 < 96 : bon choix 0",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "79 < 96 : mauvais choix",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "9",
+					"d": "9"
+				},
+				"description": "borne : 0 < 99",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "15 < 91 : bon choix 1",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "d4245f88-26a7-4608-991b-bfac03f996a5",
+		"title": "Comparer deux nombres entiers",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{h}}$$"
+					},
+					{
+						"content": "$${{j}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..9"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a*100+b*10+c"
+					},
+					{
+						"name": "j",
+						"expression": "eval:d*100+f*10+g"
+					}
+				],
+				"conditions": ["h!=j"],
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:30.181592+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Nombres inférieurs à $1\\,000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8"
+				},
+				"description": "628 < 799 : bon choix 1",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8"
+				},
+				"description": "628 < 799 : mauvais choix",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "5",
+					"d": "4",
+					"f": "3",
+					"g": "4"
+				},
+				"description": "205 < 434",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "68775a97-3dd5-4bc6-8af0-1ec9544e9a19",
+		"title": "Comparer deux nombres entiers",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{eval:h}}$$"
+					},
+					{
+						"content": "$${{eval:j}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..9"
+					},
+					{
+						"name": "g",
+						"expression": "0..9"
+					},
+					{
+						"name": "h1",
+						"expression": "0..9"
+					},
+					{
+						"name": "h",
+						"expression": "eval:a*1000+b*100+c*10+h1"
+					},
+					{
+						"name": "j1",
+						"expression": "0..9"
+					},
+					{
+						"name": "j",
+						"expression": "eval:d*1000+f*100+g*10+j1"
+					}
+				],
+				"conditions": ["h!=j"],
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:30.312575+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Nombres inférieurs à $10\\,000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h1": "3",
+					"j1": "1"
+				},
+				"description": "6281 < 7993 : bon choix 1",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h1": "3",
+					"j1": "1"
+				},
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "5",
+					"d": "4",
+					"f": "3",
+					"g": "4",
+					"h1": "6",
+					"j1": "2"
+				},
+				"description": "2056 < 4342",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "0021eee7-2b1d-4228-ada9-6c759c01d0ec",
+		"title": "Comparer deux nombres entiers",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "$${{eval:g}}$$"
+					},
+					{
+						"content": "$${{eval:h}}$$"
+					}
+				],
+				"statement": "Quel est le plus petit de ces 2 nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..4"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:4-a}}..{{eval:6-a}}"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a"
+					},
+					{
+						"name": "d",
+						"expression": "digits:b"
+					},
+					{
+						"name": "f",
+						"expression": "digits:b"
+					},
+					{
+						"name": "g",
+						"expression": "eval:d+c*10^b"
+					},
+					{
+						"name": "h",
+						"expression": "eval:f+c*10^b"
+					}
+				],
+				"conditions": ["g!=h"],
+				"correctChoiceIndex": ["{{if:g<h|0|1}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:30.46337+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": "Jusqu'au million",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "18",
+					"d": "4498",
+					"f": "7123"
+				},
+				"description": "184498 < 187123",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "18",
+					"d": "4498",
+					"f": "7123"
+				},
+				"description": "mauvais choix",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "4",
+					"c": "0",
+					"d": "2748",
+					"f": "5372"
+				},
+				"description": "a=0 : 2748 < 5372",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "906252f8-0104-4c9f-9eb9-3f70d80d7045",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 5,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "1000..9999"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:45.5422+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Nombre à 4 chiffres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3\\,456"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"expression": "3456"
+				},
+				"description": "3456 bien espacé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3 456"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"expression": "3456"
+				},
+				"description": "3456 avec espace ordinaire",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3456"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"expression": "3456"
+				},
+				"description": "3456 recopié sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3\\,457"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"expression": "3456"
+				},
+				"description": "chiffre modifié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"expression": "1000"
+				},
+				"description": "1000 (borne basse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"expression": "1000"
+				},
+				"description": "1000 sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "bd760867-7303-4ac8-87eb-724fb5994cab",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 6,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"removeSpaces": true,
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..7"
+					},
+					{
+						"name": "expression",
+						"expression": "digits:a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:45.692393+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'à 7 chiffres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,234\\,567"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"expression": "1234567"
+				},
+				"description": "7 chiffres bien espacés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234567"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"a": "7",
+					"expression": "1234567"
+				},
+				"description": "7 chiffres sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"expression": "1234"
+				},
+				"description": "4 chiffres (borne basse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"a": "4",
+					"expression": "1234"
+				},
+				"description": "4 chiffres sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "0dd3de90-10fc-485b-a961-343b01a84cee",
+		"title": "Ecrire un grand nombre entier avec des espaces",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 8,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"removeSpaces": true,
+						"expectedAnswer": "expression"
+					}
+				],
+				"statement": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "4..10"
+					},
+					{
+						"name": "expression",
+						"expression": "digits:a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"spaces": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.020289+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'à 10 chiffres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,234\\,567\\,890"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"description": "10 chiffres bien espacés (borne haute)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1234567890"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"description": "10 chiffres sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,234\\,567\\,891"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "10",
+					"expression": "1234567890"
+				},
+				"description": "chiffre modifié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"expression": "5000"
+				},
+				"description": "4 chiffres (borne basse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["spaces", "form"]
+				},
+				"variables": {
+					"a": "4",
+					"expression": "5000"
+				},
+				"description": "4 chiffres sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "cda36cc2-7d9c-4340-99f0-143467c83786",
+		"title": "Ecrire un grand nombre entier sans les zéros inutiles",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 7,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"prefilled": "expression",
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "",
+				"variables": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:45.85717+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"statement": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "c",
+					"expression": "0|1..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "003045 → 3 045",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["003\\,045"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["345"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéro intérieur supprimé à tort",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3045"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros enlevés mais sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30\\,450"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "0030450 → 30 450",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéro final supprimé à tort",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0030\\,450"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["304\\,500"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "00304500 → 304 500",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["3\\,045"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros finaux supprimés à tort",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["00304\\,500"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "4",
+					"d": "5"
+				},
+				"description": "zéros de tête conservés",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "15ed5af4-6f6b-4795-baf9-5037e801a532",
+		"title": "Effectuer une division euclidienne",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}*{{b}})+{{c}}"
+					}
+				],
+				"statement": "Écris l'égalité correspondant à la division euclidienne de ${{eval:a*b+c}}$ par ${{b}}$.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}=?"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:56.145625+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Division euclidienne",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["(7\\times10)+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "79 = (7×10)+9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\times10+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "Sans parenthèses accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(10\\times7)+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "Ordre des facteurs libre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(6\\times10)+19"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "Reste trop grand refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["79"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "9"
+				},
+				"description": "Recopie du dividende refusée",
+				"variationIndex": 0
+			}
+		]
+	}
+]

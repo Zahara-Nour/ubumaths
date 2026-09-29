@@ -1,0 +1,15 @@
+{
+	"templateId": "de15a4b0-a846-40d5-acb2-7a3f0b1aa22c",
+	"title": "Calculer un quotient",
+	"classe": "R",
+	"code": "R-X10",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ rend chaque chiffre $10$ fois plus petit : dans le tableau de numération, chaque chiffre glisse d'un rang vers la droite. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides entre la virgule et le premier chiffre reçoivent un $0$.",
+			"{{if:b>=1000|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:b>=100|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|{{if:b>=10|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.|Le premier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(b/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.}}}}}}",
+			"$$\\begin{align} {{b}} \\div 1000 &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

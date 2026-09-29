@@ -1,0 +1,15 @@
+{
+	"templateId": "0dd3de90-10fc-485b-a961-343b01a84cee",
+	"title": "Ecrire un grand nombre entier avec des espaces",
+	"classe": "N",
+	"code": "N-ESPACES",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Écrire un grand nombre.** On sépare les chiffres par groupes de trois **en partant de la droite** (des unités) : classe des unités, classe des milliers, classe des millions, classe des milliards. Le groupe de gauche peut avoir un, deux ou trois chiffres.",
+			"On part du chiffre des unités de ${{expression}}$ et on compte les chiffres trois par trois vers la gauche ; on laisse un espace entre deux groupes.",
+			"$$\\begin{align} {{expression}} &= {{if:a>12|{{eval:floor(round(floor(expression/1000000000)-1000*floor(expression/1000000000000))/100)}}{{eval:mod((floor(round(floor(expression/1000000000)-1000*floor(expression/1000000000000))/10)),10)}}{{eval:mod((round(floor(expression/1000000000)-1000*floor(expression/1000000000000))),10)}}\\,|{{if:a>9|{{eval:round(floor(expression/1000000000)-1000*floor(expression/1000000000000))}}\\,|}}}}{{if:a>9|{{eval:floor(round(floor(expression/1000000)-1000*floor(expression/1000000000))/100)}}{{eval:mod((floor(round(floor(expression/1000000)-1000*floor(expression/1000000000))/10)),10)}}{{eval:mod((round(floor(expression/1000000)-1000*floor(expression/1000000000))),10)}}\\,|{{if:a>6|{{eval:round(floor(expression/1000000)-1000*floor(expression/1000000000))}}\\,|}}}}{{if:a>6|{{eval:floor(round(floor(expression/1000)-1000*floor(expression/1000000))/100)}}{{eval:mod((floor(round(floor(expression/1000)-1000*floor(expression/1000000))/10)),10)}}{{eval:mod((round(floor(expression/1000)-1000*floor(expression/1000000))),10)}}\\,|{{if:a>3|{{eval:round(floor(expression/1000)-1000*floor(expression/1000000))}}\\,|}}}}{{if:a>3|\\textcolor{{{color:primary.0}}}{{{eval:floor(round(expression-1000*floor(expression/1000))/100)}}{{eval:mod((floor(round(expression-1000*floor(expression/1000))/10)),10)}}{{eval:mod((round(expression-1000*floor(expression/1000))),10)}}}|{{if:a>0|\\textcolor{{{color:primary.0}}}{{{eval:round(expression-1000*floor(expression/1000))}}}|}}}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,15 @@
+{
+	"templateId": "b9a9048a-d973-47a3-ad5b-acbde2d80a66",
+	"title": "Calculer une différence ",
+	"classe": "R",
+	"code": "R-DEC-RANG",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Soustraire des décimaux.** On soustrait rang par rang : les unités des unités, les dixièmes des dixièmes. Quand on ne peut pas retirer les dixièmes, on échange $1$ unité contre $10$ dixièmes.",
+			"Unités : $\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:a-f}}$. Dixièmes : $\\textcolor{{{color:primary.0}}}{{{b}}} - \\textcolor{{{color:primary.0}}}{{{g}}} = {{eval:b-g}}$. Centièmes : ${{h}}$ n'en a pas, il reste les $\\textcolor{{{color:primary.0}}}{{{c}}}$ centième{{if:c>1|s|}} de ${{d}}$.",
+			"$$\\begin{align} {{d}} - {{h}} &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{f}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} - \\textcolor{{{color:primary.0}}}{{{eval:g/10;d}}} \\right) + \\textcolor{{{color:primary.0}}}{{{eval:c/100;d}}} \\\\ &= {{eval:a-f}} + \\textcolor{{{color:primary.1}}}{{{eval:(b-g)/10;d}}} + {{eval:c/100;d}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

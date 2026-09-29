@@ -1,0 +1,2107 @@
+[
+	{
+		"id": "69f6a332-5c4f-4e85-af37-0a4e1bcd07ad",
+		"title": "Calculer un produit",
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*10"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:21.494931+00:00",
+		"updated_at": "2026-09-27T07:17:21.494931+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "Multiplier par $10$",
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["183.8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "18,38 × 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["183{,}8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "virgule",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.4",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "0,4 × 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "× 100 au lieu de × 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6.4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6.4",
+					"p": "1",
+					"q": "1"
+				},
+				"description": "recopie",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["04"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "0.4",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "e38d205a-5737-4a0a-a9cd-aab742107c2b",
+		"title": "Calculer un produit",
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:21.686094+00:00",
+		"updated_at": "2026-09-27T07:17:21.686094+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "Multiplier par $100$",
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1\\,838"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "18,38 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.07",
+					"p": "0",
+					"q": "2"
+				},
+				"description": "0,07 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["640"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6.4",
+					"p": "1",
+					"q": "1"
+				},
+				"description": "6,4 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["350"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3.5",
+					"p": "2",
+					"q": "1"
+				},
+				"description": "3,5 × 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1838"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["183.8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.38",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "× 10 seulement",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "19323604-1e27-4b0f-8a24-1eef76ab6e59",
+		"title": "Calculer un produit",
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "0..2"
+					},
+					{
+						"name": "q",
+						"expression": "1..2"
+					},
+					{
+						"name": "a",
+						"expression": "digits:p.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a*1000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:21.879221+00:00",
+		"updated_at": "2026-09-27T07:17:21.879221+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "Multiplier par $1000$",
+		"shared": {
+			"conditions": ["mod(a*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["99\\,990"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99.99",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "99,99 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.3",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "0,3 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0.07",
+					"p": "0",
+					"q": "2"
+				},
+				"description": "0,07 × 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["99990"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "99.99",
+					"p": "2",
+					"q": "2"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0.3",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "× 100 seulement",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "819df2a9-5dd9-40c5-9525-c68e626c04b6",
+		"title": "Calculer un produit",
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"level": 4,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:10^a}}*{{b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:10^a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:22.056567+00:00",
+		"updated_at": "2026-09-27T07:17:22.056567+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "Multiplier par $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..4-a"
+				},
+				{
+					"name": "q",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "digits:p.q"
+				}
+			],
+			"conditions": ["mod(b*10^q,10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4\\,680{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4.6803",
+					"p": "1",
+					"q": "4"
+				},
+				"description": "1000 × 4,6803",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0.7",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "10 × 0,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\,496{,}803"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "449.6803",
+					"p": "3",
+					"q": "4"
+				},
+				"description": "v1 449,6803 × 10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["325"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "3.25",
+					"p": "1",
+					"q": "2"
+				},
+				"description": "v1 point",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4680.3"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4.6803",
+					"p": "1",
+					"q": "4"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0.7",
+					"p": "0",
+					"q": "1"
+				},
+				"description": "division au lieu de multiplication",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "0629645f-7de3-4225-8326-83c868ce8adf",
+		"title": "Calculer un quotient",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "0..3"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "a",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a:10"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:26.09077+00:00",
+		"updated_at": "2026-09-27T07:17:26.09077+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Diviser par $10$",
+		"shared": {
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["43{,}21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "432.1",
+					"m": "3",
+					"q": "1"
+				},
+				"description": "432,1 : 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["43.21"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "432.1",
+					"m": "3",
+					"q": "1"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["43{,}210"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "432.1",
+					"m": "3",
+					"q": "1"
+				},
+				"description": "zéro inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"m": "1",
+					"q": "0"
+				},
+				"description": "7 : 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"m": "1",
+					"q": "0"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "590169c4-e51d-4ea1-adaa-1cc38093442f",
+		"title": "Calculer un quotient",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "0..3"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "a",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "a:100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:26.25023+00:00",
+		"updated_at": "2026-09-27T07:17:26.25023+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Diviser par $100$",
+		"shared": {
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4{,}321"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "432.1",
+					"m": "3",
+					"q": "1"
+				},
+				"description": "432,1 : 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.321"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "432.1",
+					"m": "3",
+					"q": "1"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}070"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"m": "1",
+					"q": "0"
+				},
+				"description": "0,070 : zéro inutile",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"m": "1",
+					"q": "0"
+				},
+				"description": "7 : 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"m": "1",
+					"q": "0"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "de15a4b0-a846-40d5-acb2-7a3f0b1aa22c",
+		"title": "Calculer un quotient",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "expression1",
+						"expression": "b:1000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:26.4157+00:00",
+		"updated_at": "2026-09-27T07:17:26.4157+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Diviser par $1000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4{,}321"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"description": "4321 : 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4.321"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["43{,}21"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "7"
+				},
+				"description": "7 : 1000",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "a94ddf87-4e4d-46a3-935e-e28e6a2d49df",
+		"title": "Calculer un quotient",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "0..4"
+					},
+					{
+						"name": "q",
+						"expression": "0..4-a"
+					},
+					{
+						"name": "b",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}:{{eval:10^a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:26.582374+00:00",
+		"updated_at": "2026-09-27T07:17:26.582374+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Diviser par $10$, $100$ ou $1000$",
+		"shared": {
+			"conditions": ["q<=4-a", "b!=0", "mod(b*10^q,10)!=0", "b>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4{,}498\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "4 498,7 : 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4{,}4987"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "4,4987 sans espace : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["44{,}987"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}183\\,8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "18.38",
+					"m": "2",
+					"q": "2"
+				},
+				"description": "18,38 : 100",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "3bbe92f2-84f0-487f-9ca1-2077248a313b",
+		"title": "Calculer une somme ",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.941886+00:00",
+		"updated_at": "2026-09-27T07:17:16.941886+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (pas de retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "6,8 + 2,1 = 8,9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8.9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "8.9 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "erreur : 8,8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["89"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "réponse 89 (virgule oubliée)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "a0241952-7930-4e8a-aa6c-2a5b8bef664a",
+		"title": "Calculer une somme ",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:10-b}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.258325+00:00",
+		"updated_at": "2026-09-27T07:17:17.258325+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue pour la partie décimale)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "5,9 + 2,3 = 8,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "8.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "retenue oubliée : 7,12",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "retenue oubliée : 7,2",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ff3ee576-e032-4c82-a428-9f49f046c313",
+		"title": "Calculer une somme",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:10-a}}..9"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:10-b}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c+g"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.396616+00:00",
+		"updated_at": "2026-09-27T07:17:17.396616+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenues)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["15{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "7,9 + 7,3 = 15,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "15.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14{,}12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "retenues oubliées : 14,12",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "f1a392f5-060d-4e1c-b7a5-2920a054b83b",
+		"title": "Calculer une somme ",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "c+h"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "h+c"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.105186+00:00",
+		"updated_at": "2026-09-27T07:17:17.105186+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Parties décimales à $1$ et $2$ chiffres (pas de retenue)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:d+f/10+g/100;d}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9{,}75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "8,2 + 1,55 = 9,75",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9.75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "9.75 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9{,}75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "1,55 + 8,2 = 9,75",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1{,}57"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "alignement à droite : 1,57",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b100ddb2-e91d-402c-9940-012da8236d1d",
+		"title": "Calculer une différence ",
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-g"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:18.928096+00:00",
+		"updated_at": "2026-09-27T07:17:18.928096+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (pas de retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2{,}6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"description": "6,8 − 4,2 = 2,6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"description": "2.6 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "4",
+					"f": "2"
+				},
+				"description": "addition au lieu de soustraction : 11",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7d57fb3b-a050-4920-8231-e5ac609fa07d",
+		"title": "Calculer une différence ",
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "a.b"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "g",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-g"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:19.39355+00:00",
+		"updated_at": "2026-09-27T07:17:19.39355+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2{,}9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "7,8 − 4,9 = 2,9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "2.9 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3{,}1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"d": "4",
+					"f": "9"
+				},
+				"description": "petit ôté du grand chiffre à chiffre : 3,1",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "6a16303a-acb1-46c4-aed2-ebae62cb5c32",
+		"title": "Calculer une différence ",
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10+a+b/10;d}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "d.f"
+					},
+					{
+						"name": "expression1",
+						"expression": "c-h"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:19.06859+00:00",
+		"updated_at": "2026-09-27T07:17:19.06859+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": null,
+		"description": "Partie entière à $2$ chiffres et partie entière à $1$ (retenue sur la partie entière)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "16,9 − 8,2 = 8,7 (virgule)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8.7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "8.7 avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "oubli de la retenue : 18,7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{87}{10}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "fraction 87/10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}70"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"d": "8",
+					"f": "2"
+				},
+				"description": "8,70",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b9a9048a-d973-47a3-ad5b-acbde2d80a66",
+		"title": "Calculer une différence ",
+		"theme": "Décimaux",
+		"domain": "Soustraire",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:a+b/10+c/100;d}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "f.g"
+					},
+					{
+						"name": "expression1",
+						"expression": "d-h"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:19.222972+00:00",
+		"updated_at": "2026-09-27T07:17:19.222972+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": null,
+		"description": "Partie entière à $1$ chiffre et partie décimale à $1$ et $2$ chiffres (pas de retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5{,}29"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"description": "7,99 − 2,7 = 5,29",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5.29"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"description": "5.29 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}72"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "2",
+					"g": "7"
+				},
+				"description": "alignement à droite : 7,72",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "9c0c47ef-72b0-4333-870d-06cdf0f4a2de",
+		"title": "Comparer deux nombres décimaux",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"statement": "Quel est le plus petit de ces deux nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a"
+					},
+					{
+						"name": "d",
+						"expression": "digits:b"
+					},
+					{
+						"name": "f",
+						"expression": "digits:b"
+					},
+					{
+						"name": "h",
+						"expression": "eval:(d+c*10^b)/10^b;d"
+					},
+					{
+						"name": "j",
+						"expression": "eval:(f+c*10^b)/10^b;d"
+					}
+				],
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+			},
+			{
+				"statement": "Quel est le plus petit de ces deux nombres ?",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "10..99"
+					},
+					{
+						"name": "h",
+						"expression": "eval:(c+b*10)/10;d"
+					},
+					{
+						"name": "j",
+						"expression": "eval:(d+b*100)/100;d"
+					}
+				],
+				"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.303535+00:00",
+		"updated_at": "2026-09-27T07:17:16.303535+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"choices": [
+				{
+					"content": "$${{h}}$$"
+				},
+				{
+					"content": "$${{j}}$$"
+				}
+			],
+			"statement": "Quel est le plus petit de ces deux nombres ?",
+			"conditions": ["h!=j"],
+			"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18",
+					"d": "44",
+					"f": "71"
+				},
+				"description": "18,44 < 18,71",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "18",
+					"d": "44",
+					"f": "71"
+				},
+				"description": "18,71 choisi : refusé",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "82",
+					"c": "1",
+					"d": "67"
+				},
+				"description": "82,1 < 82,67",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "5",
+					"c": "9",
+					"d": "12"
+				},
+				"description": "Piège : 5,12 < 5,9",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "5",
+					"c": "9",
+					"d": "12"
+				},
+				"description": "Piège : 5,9 choisi (plus court) : refusé",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			}
+		]
+	}
+]

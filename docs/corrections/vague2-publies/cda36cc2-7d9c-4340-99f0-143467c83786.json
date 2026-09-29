@@ -1,0 +1,27 @@
+{
+	"templateId": "cda36cc2-7d9c-4340-99f0-143467c83786",
+	"title": "Ecrire un grand nombre entier sans les zéros inutiles",
+	"classe": "N",
+	"code": "N-ZEROS",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+				"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève.",
+				"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+				"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève. Le zéro de droite reste : il donne le rang des autres chiffres.",
+				"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}}0 &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Zéros inutiles.** Dans un nombre entier, les zéros écrits **à gauche** du premier chiffre non nul ne servent à rien : on les enlève. Les autres zéros (au milieu ou à droite) donnent le rang des chiffres : on les garde.",
+				"Les deux zéros $\\textcolor{{{color:primary.1}}}{00}$ écrits devant $\\textcolor{{{color:primary.0}}}{{{a}}}$ sont inutiles : on les enlève. Les zéros de droite restent : ils donnent le rang des autres chiffres.",
+				"$$\\begin{align} \\textcolor{{{color:primary.1}}}{00}\\textcolor{{{color:primary.0}}}{{{a}}}{{b}}{{c}}{{d}}00 &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

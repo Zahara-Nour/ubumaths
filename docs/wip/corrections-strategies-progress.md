@@ -59,3 +59,13 @@ Branche `feat/corrections-lots-fracdec-decomp`.
 - Relecture de `docs/corrections/n-fracdec/APERCU.md` et `n-decomp/APERCU.md` (11 modèles
   n-decomp sont `published` : un import toucherait des modèles visibles des élèves).
 - Lots suivants : N-REL-ADD (dont les 4 trous + et − chez les relatifs), etc.
+
+## Fait (2026-09-29) — vague 2 : lots `vague2-brouillons` (17) et `vague2-publies` (12)
+
+Branche `feat/corrections-vague2`. Codes R-X10, R-DEC-RANG, N-COMPARER-ENT, N-COMPARER-DEC,
+N-ESPACES, N-ZEROS, N-DIVEUCL (15ed5af4). Vérificateur 17/17 (89 281 tirages) et 12/12
+(69 250) ; import SIMULATION 17/17 et 12/12. Résumé : `docs/corrections/vague2-publies/RESUME.md`.
+Écartés (le vérificateur exige un calcul `align` parti d'une variable d'expression ou d'une
+égalité à un seul « ? ») : N-POSITION ×8, N-ENCADR ×4, N-DIVISEUR, N-GRADUATION (images),
+14a51794 (deux « ? »). Pièges : `expression` interdit dans une condition ; `mod(n,1000)` lu
+comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/1000))`.

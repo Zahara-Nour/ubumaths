@@ -1,0 +1,15 @@
+{
+	"templateId": "906252f8-0104-4c9f-9eb9-3f70d80d7045",
+	"title": "Ecrire un grand nombre entier avec des espaces",
+	"classe": "N",
+	"code": "N-ESPACES",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Écrire un grand nombre.** On sépare les chiffres par groupes de trois **en partant de la droite** (des unités) : classe des unités, classe des milliers, classe des millions, classe des milliards. Le groupe de gauche peut avoir un, deux ou trois chiffres.",
+			"On part du chiffre des unités de ${{expression}}$ et on compte les chiffres trois par trois vers la gauche ; on laisse un espace entre deux groupes.",
+			"$$\\begin{align} {{expression}} &= {{eval:round(floor(expression/1000)-1000*floor(expression/1000000))}}\\,\\textcolor{{{color:primary.0}}}{{{eval:floor(round(expression-1000*floor(expression/1000))/100)}}{{eval:mod((floor(round(expression-1000*floor(expression/1000))/10)),10)}}{{eval:mod((round(expression-1000*floor(expression/1000))),10)}}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}
