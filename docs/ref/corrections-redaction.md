@@ -73,8 +73,17 @@ pnpm corrections:import pilote                    # SIMULATION ; --publier écri
 - Sortie : `docs/corrections/<lot>/_modeles.json` (instantané), une proposition `<id>.json` par
   modèle (`{ templateId, title, classe, code, source, steps: { shared } | { byVariation }, notes }`),
   `APERCU.md`.
-- `corrections:check` rougit si : un `{{` ou `<<` survit, le LaTeX est invalide pour MathLive,
-  un calcul écrit `+ 0` ou `+ -3`, une égalité d'un `align` est fausse, le calcul ne finit pas sur la
-  réponse de la case, ou la conclusion d'un QCM ne nomme pas le bon choix (ou en nomme un mauvais).
+- `corrections:check` tire chaque variation sur **tout son domaine** quand il compte au plus 20 000
+  combinaisons (intervalles, bornes dépendantes, unions, listes, `;±`), sinon sur 5 000 graines (le
+  rapport dit lequel et pourquoi) ; il rougit si : un `{{` ou `<<` survit, le LaTeX est invalide pour
+  MathLive, un calcul écrit `+ 0` ou `+ -3`, une égalité d'un `align` est fausse, **un membre ne se
+  lit pas comme un nombre** (seule exception : `?` en tête d'une question à trou, suivi de la réponse
+  attendue), le calcul **ne part pas de l'opération posée** ou ne finit pas sur la réponse de la case,
+  ou la conclusion d'un QCM ne nomme pas le bon choix (ou en nomme un mauvais).
+- Les branches `{{if:…}}` d'une stratégie R sont choisies sur le même domaine entier.
+- L'instantané `_modeles.json` ne contient aucun identifiant d'utilisateur (`created_by`…).
 - `corrections:import` écarte un modèle modifié en prod depuis l'instantané (`updated_at`), une
-  variation qui a déjà une correction, une proposition rouge ; l'écriture relit la ligne rendue.
+  variation qui a déjà une correction, une proposition rouge ; avec `--publier`, **une seule entrée
+  écartée fait refuser le lot entier** (rien n'est écrit) ; l'écriture relit la ligne rendue.
+- Stratégies générées : `R-PASS` (`lib/r-pass.ts`), `R-INV` (`lib/r-inv.ts` : `a + ? = s → ? = s − a`,
+  `a × ? = s → ? = s : a`, `? : a = s → ? = s × a`…).

@@ -1,0 +1,23 @@
+{
+	"templateId": "ae96d7af-e1f6-4390-8100-c779260e4152",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}} \\times ? = {{eval:a*10^b*c*10^d}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}}$, donne ${{eval:a*10^b*c*10^d}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*10^b*c*10^d}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10^b*c*10^d}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}} = {{eval:a*10^b*c*10^d}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}}$, donne ${{eval:a*10^b*c*10^d}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*10^b*c*10^d}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10^b*c*10^d}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10^b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:a*10^b}}*?= {{eval:a*10^b*c*10^d}} » ; trou à droite de « * »",
+		"variation 1 : expression2 = « ?*{{eval:a*10^b}}= {{eval:a*10^b*c*10^d}} » ; trou à gauche de « * »"
+	]
+}

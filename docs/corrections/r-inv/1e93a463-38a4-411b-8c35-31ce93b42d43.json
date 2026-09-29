@@ -1,0 +1,18 @@
+{
+	"templateId": "1e93a463-38a4-411b-8c35-31ce93b42d43",
+	"title": "Compléter une soustraction à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:b*10+c}}} - ? = {{eval:b*10+c - a*10}}$. On cherche le nombre qu'il faut retrancher à $\\textcolor{{{color:primary.0}}}{{{eval:b*10+c}}}$ pour obtenir ${{eval:b*10+c - a*10}}$ : c'est l'écart entre $\\textcolor{{{color:primary.0}}}{{{eval:b*10+c}}}$ et ${{eval:b*10+c - a*10}}$, on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ ${{eval:b*10+c - a*10}}$ de $\\textcolor{{{color:primary.0}}}{{{eval:b*10+c}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:b*10+c}}} \\textcolor{{{color:primary.1}}}{-} {{eval:b*10+c - a*10}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:b*10+c}} - ? = {{eval:b*10+c - a*10}} » ; trou à droite de « - »"
+	]
+}

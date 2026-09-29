@@ -22,7 +22,7 @@
 
 `5fea90e6-9a98-433a-a909-0c4444817633` · CP · niveau 6 · 1 variation(s) · correction générée
 
-- variation 0 : expression1 = « {{eval:a*10 + b}} + {{c}} » ; branches : cas général + R = 9 (±10 ∓ 1)
+- variation 0 : expression1 = « {{eval:a*10 + b}} + {{c}} » ; branches : cas général + R = 9 (±10 ∓ 1) (domaine entier, 252 combinaisons)
 
 #### Tirage 1 (variation 0)
 
@@ -96,7 +96,7 @@ $$
 
 `83c1feb9-0c4f-4b43-ba79-2e2e0f185268` · CE2 · niveau 12 · 1 variation(s) · correction générée
 
-- variation 0 : expression1 = « {{eval:b}} +{{eval:a*10-b}} » ; branches : cas général + sans passage (calcul direct)
+- variation 0 : expression1 = « {{eval:b}} +{{eval:a*10-b}} » ; branches : cas général + sans passage (calcul direct) (domaine entier, 259 combinaisons)
 
 #### Tirage 1 (variation 0)
 
@@ -170,7 +170,7 @@ $$
 
 `e6df0a85-507e-48a1-aadf-f46ffc7bf09a` · CE2 · niveau 15 · 1 variation(s) · correction générée
 
-- variation 0 : expression1 = « {{eval:a*10 + b}} +{{eval:c*10+d}} » ; branches : cas général seul
+- variation 0 : expression1 = « {{eval:a*10 + b}} +{{eval:c*10+d}} » ; branches : cas général seul (domaine entier, 1008 combinaisons)
 
 #### Tirage 1 (variation 0)
 
@@ -244,7 +244,7 @@ $$
 
 `83aa2196-817e-4f49-8fee-d0053a9b9198` · CE1 · niveau 5 · 1 variation(s) · correction générée
 
-- variation 0 : expression = « {{eval:a*10+b}}-{{c}} » ; branches : cas général + R = 9 (±10 ∓ 1)
+- variation 0 : expression = « {{eval:a*10+b}}-{{c}} » ; branches : cas général + R = 9 (±10 ∓ 1) (domaine entier, 324 combinaisons)
 
 #### Tirage 1 (variation 0)
 

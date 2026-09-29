@@ -1,0 +1,18 @@
+{
+	"templateId": "7d2d412b-843c-446f-8394-2a31856556d5",
+	"title": "Compléter une soustraction à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval: a*1000 + b*100 + c*10+d}}} - ? = {{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}$. On cherche le nombre qu'il faut retrancher à $\\textcolor{{{color:primary.0}}}{{{eval: a*1000 + b*100 + c*10+d}}}$ pour obtenir ${{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}$ : c'est l'écart entre $\\textcolor{{{color:primary.0}}}{{{eval: a*1000 + b*100 + c*10+d}}}$ et ${{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}$, on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ ${{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}$ de $\\textcolor{{{color:primary.0}}}{{{eval: a*1000 + b*100 + c*10+d}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval: a*1000 + b*100 + c*10+d}}} \\textcolor{{{color:primary.1}}}{-} {{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval: a*1000 + b*100 + c*10+d}}- ? = {{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }} » ; trou à droite de « - »"
+	]
+}

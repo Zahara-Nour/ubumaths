@@ -73,9 +73,27 @@ export async function writeFormatted(path: string, content: string): Promise<str
 	return path;
 }
 
+/** Colonnes qui portent un identifiant d'utilisateur (`created_by`, `user_id`…) */
+export function isUserIdField(key: string): boolean {
+	return /(^|_)by$|(^|_)user_id$|^(owner|author|teacher|student)_id$/.test(key);
+}
+
+/**
+ * Ligne publiable dans le dépôt : sans identifiant d'utilisateur (RGPD — un
+ * instantané commité n'a pas à dire QUI a créé le modèle).
+ */
+export function withoutUserIds(row: QuestionTemplateRow): QuestionTemplateRow {
+	return Object.fromEntries(
+		Object.entries(row).filter(([key]) => !isUserIdField(key))
+	) as QuestionTemplateRow;
+}
+
 export async function writeSnapshot(lot: string, rows: QuestionTemplateRow[]): Promise<string> {
 	mkdirSync(lotDir(lot), { recursive: true });
-	return writeFormatted(join(lotDir(lot), SNAPSHOT_FILE), JSON.stringify(rows));
+	return writeFormatted(
+		join(lotDir(lot), SNAPSHOT_FILE),
+		JSON.stringify(rows.map(withoutUserIds), null, 2)
+	);
 }
 
 export function readSnapshotRows(lot: string): QuestionTemplateRow[] {

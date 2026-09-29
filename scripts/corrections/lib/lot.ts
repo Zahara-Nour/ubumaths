@@ -10,6 +10,7 @@
 
 import type { QuestionTemplate } from '../../../src/lib/questions/types';
 import type { ProposalSteps } from './proposal';
+import { generateRInv } from './r-inv';
 import { generateRPass } from './r-pass';
 
 // ============================================================================
@@ -43,6 +44,10 @@ export interface Lot {
 export const GENERATORS: Record<string, (template: QuestionTemplate) => WrittenCorrection> = {
 	'R-PASS': (template) => {
 		const { byVariation, notes } = generateRPass(template);
+		return { steps: { byVariation }, notes };
+	},
+	'R-INV': (template) => {
+		const { byVariation, notes } = generateRInv(template);
 		return { steps: { byVariation }, notes };
 	}
 };

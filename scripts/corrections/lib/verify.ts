@@ -2,17 +2,19 @@
  * Vérification d'une proposition de correction
  * ============================================
  *
- * La proposition est injectée dans le modèle, puis chaque variation est tirée
- * `instances` fois (graines 1..N, variation seule). Pour chaque tirage :
+ * La proposition est injectée dans le modèle, puis chaque variation est tirée sur
+ * TOUT son domaine quand il est énumérable (`sampling.ts`), sinon sur 5 000 graines.
+ * Pour chaque tirage :
  * 1. plus aucun `{{` ni `<<` dans la correction rendue ;
  * 2. le LaTeX de chaque bloc `$…$` / `$$…$$` est valide pour MathLive
  *    (environnements équilibrés, commandes connues) ;
  * 3. aucune écriture maladroite dans les calculs (`+ -3`, `+ 0`) ;
  * 4. chaque bloc `align` est une CHAÎNE D'ÉGALITÉS VRAIE : tous ses membres
- *    lisibles valent le même nombre ;
- * 5. le calcul FINIT sur la réponse attendue (dernier membre du dernier `align`
- *    égal à la réponse de la case) ; pour un QCM, la dernière étape nomme le bon
- *    choix et aucun autre.
+ *    valent le même nombre, et un membre illisible fait ÉCHOUER — seule exception,
+ *    l'inconnue `?` en tête d'une question à trou, suivie de la réponse attendue ;
+ * 5. le calcul PART de l'opération posée (premier membre = valeur de la variable
+ *    d'expression, ou `?` pour un trou) et FINIT sur la réponse attendue ; pour un
+ *    QCM, la dernière étape nomme le bon choix et aucun autre.
  * Le modèle injecté passe aussi `validateTemplate` et le schéma Zod strict.
  *
  * « 0 échec » ne vaut que si l'on sait combien de tirages ont été analysés : le
@@ -21,12 +23,13 @@
 
 import { validateLatex } from 'mathlive';
 import type { QuestionInstance, QuestionTemplate } from '../../../src/lib/questions/types';
-import { generateInstance } from '../../../src/lib/questions/generator/instance-generator';
 import { validateTemplate } from '../../../src/lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '../../../src/lib/questions/template-schema';
 import { parseLatex } from '../../../src/lib/mathAST/parser';
 import { computeNumericValue } from '../../../src/lib/mathAST/solve/numeric-value';
+import { resolveExpression } from '../../../src/lib/questions/generator/content-resolver';
 import { injectCorrection, type Proposal } from './proposal';
+import { planDraws, type Sampling } from './sampling';
 
 // ============================================================================
 // TYPES
@@ -34,7 +37,8 @@ import { injectCorrection, type Proposal } from './proposal';
 
 export interface InstanceFailure {
 	variationIndex: number;
-	seed: number;
+	/** Tirage : `a=3, b=7` (énumération) ou `graine 12` */
+	draw: string;
 	reasons: string[];
 }
 
@@ -44,8 +48,8 @@ export interface ProposalReport {
 	code: string;
 	/** Tirages analysés, toutes variations confondues */
 	instances: number;
-	/** Membres d'égalité non lus comme des nombres (ex. `?`) : non vérifiés */
-	unreadSegments: number;
+	/** Mode de tirage de chaque variation (énumération complète ou graines) */
+	samplings: Sampling[];
 	templateErrors: string[];
 	failures: InstanceFailure[];
 	passed: boolean;
@@ -55,7 +59,6 @@ export interface ProposalReport {
 // CONSTANTS
 // ============================================================================
 
-export const DEFAULT_INSTANCES = 50;
 const TOLERANCE = 1e-9;
 
 // ============================================================================
@@ -143,15 +146,94 @@ export function awkwardWritings(latex: string): string[] {
 	return found;
 }
 
-/** Contrôles d'un tirage ; rend les raisons d'échec et le nombre de membres non lus */
-export function checkInstance(instance: QuestionInstance): {
-	reasons: string[];
-	unreadSegments: number;
-} {
+/** Échappe un texte pour l'insérer tel quel dans une expression régulière */
+export function escapeRegExp(text: string): string {
+	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Point de départ attendu du calcul : l'opération posée par la question */
+export type PosedStart =
+	| { kind: 'value'; value: number; expression: string }
+	| { kind: 'hole'; expression: string }
+	| { kind: 'unknown'; expression: string | null };
+
+/** L'opération posée : valeur de la variable d'expression, ou trou `?` */
+export function posedStart(instance: QuestionInstance): PosedStart {
+	const variable = (instance.resolvedVariables ?? []).find((v) => v.name.startsWith('expression'));
+	if (!variable) return { kind: 'unknown', expression: null };
+	const expression = variable.value;
+	if (expression.includes('?')) return { kind: 'hole', expression };
+	try {
+		const value = numericValue(resolveExpression(`{{eval:${expression}}}`, []));
+		if (value !== null) return { kind: 'value', value, expression };
+	} catch {
+		// illisible : point de départ inconnu
+	}
+	return { kind: 'unknown', expression };
+}
+
+/** Réponse attendue de la première case, en nombre (null : pas de case, ou illisible) */
+function expectedBlankValue(instance: QuestionInstance): number | null {
+	const blank = instance.blanks?.[0];
+	return blank ? numericValue(blank.expectedAnswerLatex ?? blank.expectedAnswer) : null;
+}
+
+/**
+ * Chaînes d'égalités : chaque membre vaut le même nombre, et TOUS sont lisibles.
+ * Seule exception : l'inconnue `?` en tête de la première chaîne d'une question à
+ * trou, et alors le membre suivant doit valoir la réponse attendue. La première
+ * chaîne part de l'opération posée (même valeur que la variable d'expression).
+ */
+export function checkChains(chains: string[][], instance: QuestionInstance): string[] {
 	const reasons: string[] = [];
-	let unreadSegments = 0;
+	const start = posedStart(instance);
+	const isHoleQuestion = start.kind === 'hole' && (instance.blanks?.length ?? 0) > 0;
+	chains.forEach((chain, chainIndex) => {
+		const shown = chain.map(stripDecorations).join(' = ');
+		const holeHead =
+			chainIndex === 0 && isHoleQuestion && stripDecorations(chain[0]).trim() === '?';
+		const values = chain.map((member, index) =>
+			index === 0 && holeHead ? null : numericValue(member)
+		);
+		chain.forEach((member, index) => {
+			if (index === 0 && holeHead) return;
+			if (values[index] === null) {
+				reasons.push(`membre non numérique « ${stripDecorations(member)} » dans : ${shown}`);
+			}
+		});
+		const read = values.filter((v): v is number => v !== null);
+		if (read.some((v) => !sameNumber(v, read[0]))) reasons.push(`égalités fausses : ${shown}`);
+
+		if (chainIndex !== 0) return;
+		if (holeHead) {
+			const expected = expectedBlankValue(instance);
+			const second = values[1];
+			if (
+				second === undefined ||
+				second === null ||
+				expected === null ||
+				!sameNumber(second, expected)
+			) {
+				reasons.push(`« ? » doit être suivi de la réponse attendue : ${shown}`);
+			}
+		} else if (start.kind === 'hole') {
+			reasons.push(`question à trou : le calcul doit partir de « ? » : ${shown}`);
+		} else if (start.kind === 'unknown') {
+			reasons.push(
+				`point de départ invérifiable (opération posée : ${start.expression ?? 'aucune'}) : ${shown}`
+			);
+		} else if (values[0] === null || !sameNumber(values[0], start.value)) {
+			reasons.push(`le calcul ne part pas de l'opération posée « ${start.expression} » : ${shown}`);
+		}
+	});
+	return reasons;
+}
+
+/** Contrôles d'un tirage ; rend les raisons d'échec */
+export function checkInstance(instance: QuestionInstance): { reasons: string[] } {
+	const reasons: string[] = [];
 	const steps = (instance.correction?.steps ?? []).map(String);
-	if (steps.length === 0) return { reasons: ['aucune étape rendue'], unreadSegments };
+	if (steps.length === 0) return { reasons: ['aucune étape rendue'] };
 
 	steps.forEach((step, stepIndex) => {
 		const where = `étape ${stepIndex + 1}`;
@@ -170,24 +252,13 @@ export function checkInstance(instance: QuestionInstance): {
 		}
 	});
 
-	// Chaînes d'égalités : tous les membres lisibles valent le même nombre
 	const chains = steps.flatMap((step) => extractMath(step).flatMap(alignChains));
-	for (const chain of chains) {
-		const values = chain.map(numericValue);
-		unreadSegments += values.filter((v) => v === null).length;
-		const read = values.filter((v): v is number => v !== null);
-		if (read.some((v) => !sameNumber(v, read[0]))) {
-			reasons.push(`égalités fausses : ${chain.map(stripDecorations).join(' = ')}`);
-		}
-	}
+	reasons.push(...checkChains(chains, instance));
 
 	// Fin du calcul : la réponse attendue
 	if (instance.blanks && instance.blanks.length > 0) {
-		const expected = numericValue(
-			instance.blanks[0].expectedAnswerLatex ?? instance.blanks[0].expectedAnswer
-		);
-		const lastChain = chains.at(-1);
-		const last = lastChain?.at(-1);
+		const expected = expectedBlankValue(instance);
+		const last = chains.at(-1)?.at(-1);
 		if (!last) reasons.push('aucun calcul aligné (`align`) dans la correction');
 		else if (expected === null)
 			reasons.push(`réponse attendue illisible : ${instance.blanks[0].expectedAnswer}`);
@@ -203,14 +274,16 @@ export function checkInstance(instance: QuestionInstance): {
 		const lastStep = steps.at(-1) ?? '';
 		for (const choice of instance.choices) {
 			const text = String(choice.content);
-			const named = new RegExp(`(^|[^\\p{L}])${text}($|[^\\p{L}])`, 'u').test(lastStep);
+			const named = new RegExp(`(^|[^\\p{L}])${escapeRegExp(text)}($|[^\\p{L}])`, 'u').test(
+				lastStep
+			);
 			if (choice.isCorrect && !named)
 				reasons.push(`la conclusion ne nomme pas le bon choix « ${text} »`);
 			if (!choice.isCorrect && named)
 				reasons.push(`la conclusion nomme un mauvais choix « ${text} »`);
 		}
 	}
-	return { reasons, unreadSegments };
+	return { reasons };
 }
 
 /** Champs portés par la base, absents du schéma strict de l'éditeur */
@@ -225,18 +298,22 @@ function withoutDatabaseFields(template: QuestionTemplate): Omit<QuestionTemplat
 	return rest;
 }
 
-/** Vérifie une proposition sur `instances` tirages par variation */
+/**
+ * Vérifie une proposition : chaque variation sur TOUT son domaine quand il est
+ * énumérable (≤ 20 000 combinaisons), sinon sur 5 000 graines au moins ;
+ * `seeds` impose N graines (tests rapides).
+ */
 export function verifyProposal(
 	template: QuestionTemplate,
 	proposal: Proposal,
-	instances = DEFAULT_INSTANCES
+	options: { seeds?: number } = {}
 ): ProposalReport {
 	const report: ProposalReport = {
 		templateId: template.id,
 		title: template.title,
 		code: proposal.code,
 		instances: 0,
-		unreadSegments: 0,
+		samplings: [],
 		templateErrors: [],
 		failures: [],
 		passed: false
@@ -256,18 +333,17 @@ export function verifyProposal(
 		);
 	}
 
-	injected.variations.forEach((variation, variationIndex) => {
-		const single: QuestionTemplate = { ...injected, variations: [variation] };
-		for (let seed = 1; seed <= instances; seed++) {
+	injected.variations.forEach((_, variationIndex) => {
+		const { sampling, draws } = planDraws(injected, variationIndex, options);
+		report.samplings.push(sampling);
+		for (const { label, result } of draws) {
 			report.instances++;
-			const result = generateInstance(single, seed);
 			if (!result.success) {
-				report.failures.push({ variationIndex, seed, reasons: result.errors });
+				report.failures.push({ variationIndex, draw: label, reasons: result.errors });
 				continue;
 			}
-			const { reasons, unreadSegments } = checkInstance(result.instance);
-			report.unreadSegments += unreadSegments;
-			if (reasons.length > 0) report.failures.push({ variationIndex, seed, reasons });
+			const { reasons } = checkInstance(result.instance);
+			if (reasons.length > 0) report.failures.push({ variationIndex, draw: label, reasons });
 		}
 	});
 	report.passed = report.templateErrors.length === 0 && report.failures.length === 0;

@@ -1,0 +1,23 @@
+{
+	"templateId": "9c32b3cc-f8d8-4fe8-808b-e2e021fbb146",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{20} = {{eval:a*20}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{20}$, donne ${{eval:a*20}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*20}}$ par $\\textcolor{{{color:primary.0}}}{20}$.",
+				"$$\\begin{align} ? &= {{eval:a*20}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{20} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{20} \\times ? = {{eval:20*a}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{20}$, donne ${{eval:20*a}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:20*a}}$ par $\\textcolor{{{color:primary.0}}}{20}$.",
+				"$$\\begin{align} ? &= {{eval:20*a}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{20} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?*20={{eval:a*20}} » ; trou à gauche de « * »",
+		"variation 1 : expression2 = « 20*?={{eval:20*a}} » ; trou à droite de « * »"
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"templateId": "6632e5c2-45eb-4b6f-afff-c162bcb382e8",
+	"title": "Compléter une division à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? : \\textcolor{{{color:primary.0}}}{{{eval:b;d}}} = {{eval:c:b;d}}$. On cherche le nombre qui, divisé par $\\textcolor{{{color:primary.0}}}{{{eval:b;d}}}$, donne ${{eval:c:b;d}}$. La division et la multiplication sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{multiplie}}$ ${{eval:c:b;d}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:b;d}}}$.",
+				"$$\\begin{align} ? &= {{eval:c:b;d}} \\textcolor{{{color:primary.1}}}{\\times} \\textcolor{{{color:primary.0}}}{{{eval:b;d}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? : \\textcolor{{{color:primary.0}}}{{{eval:b;d}}} = {{eval:a:b;d}}$. On cherche le nombre qui, divisé par $\\textcolor{{{color:primary.0}}}{{{eval:b;d}}}$, donne ${{eval:a:b;d}}$. La division et la multiplication sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{multiplie}}$ ${{eval:a:b;d}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:b;d}}}$.",
+				"$$\\begin{align} ? &= {{eval:a:b;d}} \\textcolor{{{color:primary.1}}}{\\times} \\textcolor{{{color:primary.0}}}{{{eval:b;d}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?:{{eval:b;d}} = {{eval:c:b;d}} » ; trou à gauche de « : »",
+		"variation 1 : expression2 = « ?:{{eval:b;d}} = {{eval:a:b;d}} » ; trou à gauche de « : »"
+	]
+}

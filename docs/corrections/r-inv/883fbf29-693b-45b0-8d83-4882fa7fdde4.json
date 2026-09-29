@@ -1,0 +1,93 @@
+{
+	"templateId": "883fbf29-693b-45b0-8d83-4882fa7fdde4",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{4} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{4}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{4}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{4} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{5} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{5}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{5}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{5} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{2} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{2}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{2}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{2} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{5} = 60$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{5}$, donne $60$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $60$ par $\\textcolor{{{color:primary.0}}}{5}$.",
+				"$$\\begin{align} ? &= 60 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{5} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{4} = 60$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{4}$, donne $60$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $60$ par $\\textcolor{{{color:primary.0}}}{4}$.",
+				"$$\\begin{align} ? &= 60 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{4} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{5} = 70$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{5}$, donne $70$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $70$ par $\\textcolor{{{color:primary.0}}}{5}$.",
+				"$$\\begin{align} ? &= 70 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{5} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{5} = 90$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{5}$, donne $90$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $90$ par $\\textcolor{{{color:primary.0}}}{5}$.",
+				"$$\\begin{align} ? &= 90 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{5} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{6} = 90$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{6}$, donne $90$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $90$ par $\\textcolor{{{color:primary.0}}}{6}$.",
+				"$$\\begin{align} ? &= 90 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{6} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{25} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{25}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{25}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{25} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{20} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{20}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{20}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{20} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{50} = 100$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{50}$, donne $100$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $100$ par $\\textcolor{{{color:primary.0}}}{50}$.",
+				"$$\\begin{align} ? &= 100 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{50} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{12} = 60$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{12}$, donne $60$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $60$ par $\\textcolor{{{color:primary.0}}}{12}$.",
+				"$$\\begin{align} ? &= 60 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{12} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{15} = 60$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{15}$, donne $60$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $60$ par $\\textcolor{{{color:primary.0}}}{15}$.",
+				"$$\\begin{align} ? &= 60 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{15} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{14} = 70$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{14}$, donne $70$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $70$ par $\\textcolor{{{color:primary.0}}}{14}$.",
+				"$$\\begin{align} ? &= 70 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{14} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{18} = 90$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{18}$, donne $90$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $90$ par $\\textcolor{{{color:primary.0}}}{18}$.",
+				"$$\\begin{align} ? &= 90 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{18} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{15} = 90$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{15}$, donne $90$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $90$ par $\\textcolor{{{color:primary.0}}}{15}$.",
+				"$$\\begin{align} ? &= 90 \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{15} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?*4=100 » ; trou à gauche de « * »",
+		"variation 1 : expression2 = « ?*5=100 » ; trou à gauche de « * »",
+		"variation 2 : expression3 = « ?*2=100 » ; trou à gauche de « * »",
+		"variation 3 : expression4 = « ?*5=60 » ; trou à gauche de « * »",
+		"variation 4 : expression5 = « ?*4=60 » ; trou à gauche de « * »",
+		"variation 5 : expression6 = « ?*5=70 » ; trou à gauche de « * »",
+		"variation 6 : expression7 = « ?*5=90 » ; trou à gauche de « * »",
+		"variation 7 : expression8 = « ?*6=90 » ; trou à gauche de « * »",
+		"variation 8 : expression9 = « ?*25=100 » ; trou à gauche de « * »",
+		"variation 9 : expression10 = « ?*20=100 » ; trou à gauche de « * »",
+		"variation 10 : expression11 = « ?*50=100 » ; trou à gauche de « * »",
+		"variation 11 : expression12 = « ?*12=60 » ; trou à gauche de « * »",
+		"variation 12 : expression13 = « ?*15=60 » ; trou à gauche de « * »",
+		"variation 13 : expression14 = « ?*14=70 » ; trou à gauche de « * »",
+		"variation 14 : expression15 = « ?*18=90 » ; trou à gauche de « * »",
+		"variation 15 : expression16 = « ?*15=90 » ; trou à gauche de « * »"
+	]
+}
