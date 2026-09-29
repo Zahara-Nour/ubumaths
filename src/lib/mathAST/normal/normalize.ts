@@ -3518,7 +3518,9 @@ function isPerfectPowerOf(n: bigint, base: bigint): bigint | null {
  */
 function getNumericBase(base: MathNode | undefined): bigint | null {
 	if (!base) return 10n; // Default base 10
-	if (base.type === 'number') {
+	// Entier littéral seulement : `parseInt('2.5')` vaudrait 2, et
+	// `\log_{2.5}(8)` serait devenu `\log_{2}(8) = 3`
+	if (base.type === 'number' && /^\d+$/.test(base.value)) {
 		const val = parseInt(base.value, 10);
 		if (Number.isInteger(val) && val > 1) return BigInt(val);
 	}
@@ -4336,7 +4338,7 @@ function normalizeFunction(
 			const numericLogBase = getNumericBase(logBase);
 
 			// Check if exp base matches log base (numeric case)
-			if (numericLogBase !== null && expBase.type === 'number') {
+			if (numericLogBase !== null && expBase.type === 'number' && /^\d+$/.test(expBase.value)) {
 				const expBaseVal = BigInt(expBase.value);
 				if (expBaseVal === numericLogBase) {
 					const result = normalizeNode(arg.superscript, ctx);

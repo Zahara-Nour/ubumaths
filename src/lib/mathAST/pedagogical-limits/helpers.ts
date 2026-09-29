@@ -151,10 +151,18 @@ export function evaluateAtPoint(expr: MathNode, varName: string, value: number):
 					v = Math.exp(arg);
 					break;
 				case 'ln':
-				case 'log':
+				case 'log': {
 					if (arg <= 0) return null;
-					v = Math.log(arg);
+					// Base explicite : log_b(a) = ln(a)/ln(b) ; `\log` sans base est décimal
+					if (expr.base !== undefined) {
+						const base = evaluateAtPoint(expr.base, varName, value);
+						if (base === null || base <= 0 || base === 1) return null;
+						v = Math.log(arg) / Math.log(base);
+					} else {
+						v = name === 'ln' ? Math.log(arg) : Math.log10(arg);
+					}
 					break;
+				}
 				case 'sqrt':
 					if (arg < 0) return null;
 					v = Math.sqrt(arg);
