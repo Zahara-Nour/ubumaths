@@ -89,3 +89,21 @@ option par question, pas un changement du décideur.
 seul domaine où le membre de gauche existe. Le décideur compare `x` à `|x|` et
 les sépare, faute de porter le domaine. Faux négatif, assumé : `√x·√x ≡ x` est
 ce qu'un élève écrit, `√x·√x ≡ |x|` est exotique.
+
+## Virgule nue : décimale ou séparateur (#520)
+
+MathLive n'a pas de `decimalSeparator` réglé : une virgule tapée au clavier physique arrive **nue**
+(`1,5`), pas `1{,}5`. La règle (`src/lib/mathAST/decimal-comma.ts`) :
+
+- **Contexte nombre** (case à précision, `rulesSuffice`, grandeur, évaluation numérique) : toute
+  virgule nue entre deux chiffres est décimale.
+- **`areEquivalent(élève, attendu)`** : c'est la **réponse attendue** qui décide. Si elle porte une
+  virgule séparatrice — couple ou intervalle de deux nombres `(3,14)` `[3,14]` `]3,14[`, liste
+  `1,2,3`, ensemble `\{1,2\}`, `f(x,y)`, `3, 4` — aucune virgule n'est convertie, ni d'un côté ni de
+  l'autre. Sinon, toute virgule nue entre deux chiffres est décimale des deux côtés.
+- Une écriture qui contient `;` a toujours ses virgules entre chiffres décimales (convention
+  française : `A(1,5;2)`, `[1,5;2]`).
+
+⚠️ **Pour un auteur** : dans une réponse attendue, `(3,5)` veut dire **le couple (3 ; 5)**, pas
+3,5 entre parenthèses. Écrire un décimal avec `{,}` ou un point (`3{,}5`, `3.5`), jamais une
+virgule nue entre délimiteurs. Aucun des 640 modèles n'était concerné au 2026-09-29.
