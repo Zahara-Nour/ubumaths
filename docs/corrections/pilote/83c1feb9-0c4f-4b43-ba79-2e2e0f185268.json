@@ -1,0 +1,18 @@
+{
+	"templateId": "83c1feb9-0c4f-4b43-ba79-2e2e0f185268",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-PASS",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"{{if:mod(b,10)=0|Ici, pas de passage de la dizaine : on calcule directement.|{{if:(a*10-b)-(10-mod(b,10))<=0|Ici, pas de passage de la dizaine : on calcule directement.|On complète ${{eval:b}}$ à la dizaine : il manque $\\textcolor{{{color:primary.0}}}{{{eval:10-mod(b,10)}}}$ pour arriver à $\\textcolor{{{color:primary.1}}}{{{eval:b+10-mod(b,10)}}}$. On décompose donc $\\textcolor{{{color:primary.0}}}{{{eval:a*10-b}}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:10-mod(b,10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:(a*10-b)-(10-mod(b,10))}}}$.}}}}",
+				"{{if:mod(b,10)=0|$$\\begin{align} {{eval:b}} + {{eval:a*10-b}} &= {{solution}} \\end{align}$$|{{if:(a*10-b)-(10-mod(b,10))<=0|$$\\begin{align} {{eval:b}} + {{eval:a*10-b}} &= {{solution}} \\end{align}$$|$$\\begin{align} {{eval:b}} + \\textcolor{{{color:primary.0}}}{{{eval:a*10-b}}} &= {{eval:b}} + \\textcolor{{{color:primary.0}}}{{{eval:10-mod(b,10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:(a*10-b)-(10-mod(b,10))}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:b+10-mod(b,10)}}} + {{eval:(a*10-b)-(10-mod(b,10))}} \\\\ &= {{solution}} \\end{align}$$}}}}"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:b}} +{{eval:a*10-b}} » ; branches : cas général + sans passage (calcul direct)"
+	]
+}

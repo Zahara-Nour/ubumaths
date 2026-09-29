@@ -1,0 +1,52 @@
+{
+	"templateId": "ace89247-0194-4049-b365-76c3a644069b",
+	"title": "Déterminer le signe d'un facteur",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu ${{a}}$ est positif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu ${{a}}$ est positif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu ${{a}}$ est positif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu ${{a}}$ est positif.",
+				"Le facteur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			]
+		]
+	},
+	"notes": ["Règle rappelée, puis appliquée aux nombres de la variation."]
+}

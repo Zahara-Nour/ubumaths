@@ -1,0 +1,22 @@
+{
+	"templateId": "4b07cd65-5d06-4fd4-ac56-d2388f4a66fe",
+	"title": "Déterminer le signe dans un quotient",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient ${{if:b<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(b)}}|{{b}}}}$ est {{if:b>0|positif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$.|négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$.}} Le dividende ${{if:a<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a)}}|{{a}}}}$ est {{if:a>0|positif|négatif}}.",
+				"Le diviseur manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient ${{if:b<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(b)}}|{{b}}}}$ est {{if:b>0|positif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$.|négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$.}} Le diviseur ${{if:a<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a)}}|{{a}}}}$ est {{if:a>0|positif|négatif}}.",
+				"Le dividende manquant est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			]
+		]
+	},
+	"notes": ["Règle rappelée, puis appliquée aux nombres de la variation."]
+}

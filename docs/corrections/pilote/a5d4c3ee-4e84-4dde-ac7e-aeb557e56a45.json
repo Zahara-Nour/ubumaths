@@ -1,0 +1,44 @@
+{
+	"templateId": "a5d4c3ee-4e84-4dde-ac7e-aeb557e56a45",
+	"title": "Compléter une multiplication à trou",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{+}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{eval:a*b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu ${{a}}$ est positif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{+}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit ${{eval:a*b}}$ est positif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le facteur connu $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"Le produit $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif : les deux facteurs sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le facteur connu ${{a}}$ est positif, donc le facteur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Classé R-INV puis N-SIGNES (décision du 2026-09-29) : signe par la règle, distance à zéro par la division."
+	]
+}

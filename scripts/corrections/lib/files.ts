@@ -1,0 +1,93 @@
+/**
+ * Fichiers d'un lot : `docs/corrections/<lot>/`
+ * =============================================
+ *
+ * - `_modeles.json` : instantané des lignes `question_templates` du lot, lues en
+ *   prod (LECTURE SEULE) ou depuis un JSON local ; vérification et aperçu
+ *   travaillent dessus, sans base ;
+ * - `<id>.json` : une proposition par modèle ;
+ * - `APERCU.md` : l'aperçu à relire sur GitHub.
+ */
+
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { z } from 'zod';
+import type { QuestionTemplate } from '../../../src/lib/questions/types';
+import {
+	toQuestionTemplate,
+	type QuestionTemplateRow
+} from '../../../src/lib/types/question-template';
+import { parseProposal, type Proposal } from './proposal';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+export const CORRECTIONS_ROOT = 'docs/corrections';
+const SNAPSHOT_FILE = '_modeles.json';
+
+/** Ligne `question_templates` relue d'un fichier : les champs utiles sont contrôlés */
+const rowSchema = z
+	.object({
+		id: z.string().uuid(),
+		title: z.string(),
+		theme: z.string(),
+		domain: z.string(),
+		level: z.number(),
+		status: z.string(),
+		grades: z.array(z.string()),
+		variations: z.array(z.record(z.string(), z.unknown())).min(1)
+	})
+	.passthrough();
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+export function lotDir(lot: string): string {
+	return join(CORRECTIONS_ROOT, lot);
+}
+
+export function proposalPath(lot: string, templateId: string): string {
+	return join(lotDir(lot), `${templateId}.json`);
+}
+
+/** Lignes brutes validées (tableau JSON de lignes `question_templates`) */
+export function parseRows(raw: unknown, origin: string): QuestionTemplateRow[] {
+	const result = z.array(rowSchema).safeParse(raw);
+	if (!result.success) {
+		const issue = result.error.issues[0];
+		throw new Error(`${origin} : ${issue.path.join('.')} : ${issue.message}`);
+	}
+	return result.data as unknown as QuestionTemplateRow[];
+}
+
+export function writeSnapshot(lot: string, rows: QuestionTemplateRow[]): string {
+	mkdirSync(lotDir(lot), { recursive: true });
+	const path = join(lotDir(lot), SNAPSHOT_FILE);
+	writeFileSync(path, `${JSON.stringify(rows, null, '\t')}\n`);
+	return path;
+}
+
+export function readSnapshotRows(lot: string): QuestionTemplateRow[] {
+	const path = join(lotDir(lot), SNAPSHOT_FILE);
+	if (!existsSync(path)) {
+		throw new Error(`${path} absent : lancer d'abord \`pnpm corrections:generate ${lot}\``);
+	}
+	return parseRows(JSON.parse(readFileSync(path, 'utf8')), path);
+}
+
+export function readSnapshot(lot: string): Map<string, QuestionTemplate> {
+	return new Map(readSnapshotRows(lot).map((row) => [row.id, toQuestionTemplate(row)]));
+}
+
+export function writeProposal(lot: string, proposal: Proposal): string {
+	const path = proposalPath(lot, proposal.templateId);
+	writeFileSync(path, `${JSON.stringify(proposal, null, '\t')}\n`);
+	return path;
+}
+
+export function readProposal(lot: string, templateId: string): Proposal {
+	const path = proposalPath(lot, templateId);
+	return parseProposal(JSON.parse(readFileSync(path, 'utf8')), path);
+}

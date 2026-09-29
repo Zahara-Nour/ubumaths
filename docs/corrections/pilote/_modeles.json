@@ -1,0 +1,2287 @@
+[
+	{
+		"id": "5fea90e6-9a98-433a-a909-0c4444817633",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 6,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:31.440854+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre à deux chiffres et d’un nombre à un chiffre, avec franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["78"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "69+9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["68"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["31"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "9"
+				},
+				"description": "22+9",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "83c1feb9-0c4f-4b43-ba79-2e2e0f185268",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 12,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "12..{{eval:a*10-12}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b}} +{{eval:a*10-b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.208326+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres qui se marient bien",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"description": "56+14",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "13"
+				},
+				"description": "13+27",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "e6df0a85-507e-48a1-aadf-f46ffc7bf09a",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 15,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} +{{eval:c*10+d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.617552+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "59+37",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["86"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "83aa2196-817e-4f49-8fee-d0053a9b9198",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 5,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:a*10+b}}-{{c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:49.924487+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, avec franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["38"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45-7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["38,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b2af6f39-9f24-4491-95ba-7d25d53813fe",
+		"title": "Simplifier une fraction",
+		"theme": "Fractions",
+		"domain": "Apprivoiser",
+		"level": 5,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Simplifie les signes.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)/b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-\\dfrac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Simplifie les signes.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a/(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{{{a}}}{{{b}}}"
+					}
+				],
+				"statement": "Simplifie les signes.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(-a)/(-b)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:58.280149+00:00",
+		"updated_at": "2026-09-26T17:30:58.280149+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Simplification",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "(-3)/4 → -3/4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{-3}{4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "signe au numérateur : perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "signe perdu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "3/(-4) → -3/4",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{-4}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "recopie : perfectible",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{1}{9}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "9"
+				},
+				"description": "(-1)/(-9) → 1/9 (bornes)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-\\frac{3}{4}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4"
+				},
+				"description": "(-3)/(-4) : signe faux",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "2da974f7-133c-4ad3-9053-dc18a48e4afd",
+		"title": "Calculer un produit",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 5,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-a)*b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-a)*(-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a*(-b)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:12.493871+00:00",
+		"updated_at": "2026-09-26T15:18:12.493871+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "(-3)×2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "oubli du signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-6)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "parenthèses",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-9)×(-9)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-81"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "signe faux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["+81"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["signs"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "+81",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "2×(-2)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "2×(-2) signe faux",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "995bd551-58e8-4295-bd06-f2d377784a64",
+		"title": "Diviser",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{eval:a*b}}):{{b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-{{eval:a*b}}):(-{{b}})"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*b}}:(-{{b}})"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:13.366254+00:00",
+		"updated_at": "2026-09-26T15:18:13.366254+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "(-6):2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "signe faux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(-3)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "parenthèses",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "(-81):(-9)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "signe faux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "4:(-2)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "signe faux",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "a5d4c3ee-4e84-4dde-ac7e-aeb557e56a45",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 6,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})*?={{eval:-a*b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-{{a}})*?={{eval:(-a)*(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{a}}*?={{eval:a*(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?*(-{{a}})={{eval:-a*b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?*(-{{a}})={{eval:(-a)*(-b)}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "?*{{a}}={{eval:a*(-b)}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:12.663971+00:00",
+		"updated_at": "2026-09-26T15:18:12.663971+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v0 signe faux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(-9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1 avec parenthèses",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1 signe faux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(-3)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "v4 bornes",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "v5 bornes",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "v5 signe faux",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "0b6d749f-95fc-4cfe-a83d-4e2c84bc0e38",
+		"title": "Compléter une division à trou",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(-{{eval:a*b}}):? = -{{a}} "
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(-{{eval:a*b}}):?= {{a}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*b}}:? = -{{a}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{eval:a*b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?:b = -a "
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "(-{{eval:a*b}})"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?:(-b)= a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "?:(-b) = -a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:13.544231+00:00",
+		"updated_at": "2026-09-26T15:18:13.544231+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Nombres relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v0 signe faux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(-9)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1 avec parenthèses",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "v1 signe faux",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["-6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "v3 signe faux",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-81"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "v4 bornes",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "v5 bornes",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["-4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "v5 signe faux",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "ace89247-0194-4049-b365-76c3a644069b",
+		"title": "Déterminer le signe d'un facteur",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?={{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?=-{{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?=-{{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?={{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})={{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})=-{{b}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}=-{{b}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}={{b}}$$",
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:12.007738+00:00",
+		"updated_at": "2026-09-26T15:18:12.007738+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"choices": [
+				{
+					"content": "positif"
+				},
+				{
+					"content": "négatif"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30..99"
+				},
+				{
+					"name": "b",
+					"expression": "30..99"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v0",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v1",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v2",
+				"variationIndex": 2,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v3",
+				"variationIndex": 3,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v4",
+				"variationIndex": 4,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v5",
+				"variationIndex": 5,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v6",
+				"variationIndex": 6,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v7",
+				"variationIndex": 7,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "79",
+					"b": "96"
+				},
+				"description": "v0 erreur de signe",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "30",
+					"b": "99"
+				},
+				"description": "v3 bornes",
+				"variationIndex": 3,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "99",
+					"b": "30"
+				},
+				"description": "v6 bornes",
+				"variationIndex": 6,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "4bee24f9-60bc-47f3-aab9-e8904c8772bf",
+		"title": "Déterminer le signe d'un produit",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)*(b)",
+						"displayOptions": {
+							"removeUnnecessaryBrackets": true
+						}
+					}
+				],
+				"conditions": ["a<=0 || b<=0"],
+				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:11.832817+00:00",
+		"updated_at": "2026-09-26T15:18:11.832817+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "$2$ facteurs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49×(-65) négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49×(-65) : positif faux",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "(-71)×(-90) positif",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "(-71)×(-90) : négatif faux",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-30",
+					"b": "99"
+				},
+				"description": "bornes -30×99",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-99",
+					"b": "-30"
+				},
+				"description": "bornes -99×-30",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "74a31e06-3cb6-4360-823b-299e7cb55e03",
+		"title": "Déterminer le signe d'un produit",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "c",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)*(b)*(c)",
+						"displayOptions": {
+							"removeUnnecessaryBrackets": true
+						}
+					}
+				],
+				"correctChoiceIndex": ["{{eval:(1-a*b*c/abs(a*b*c))/2}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:12.158732+00:00",
+		"updated_at": "2026-09-26T15:18:12.158732+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "$3$ facteurs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "59",
+					"b": "92",
+					"c": "97"
+				},
+				"description": "tous positifs",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "59",
+					"b": "-92",
+					"c": "97"
+				},
+				"description": "un négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "96",
+					"b": "-78",
+					"c": "-72"
+				},
+				"description": "deux négatifs",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "96",
+					"b": "-78",
+					"c": "-72"
+				},
+				"description": "deux négatifs : négatif faux",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-30",
+					"b": "-99",
+					"c": "-30"
+				},
+				"description": "trois négatifs (bornes)",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "aa8d6e3b-256f-4b8e-b7eb-9493dbf7f193",
+		"title": "Déterminer le signe d'un produit",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe de ce produit ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "c",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "d",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a)*(b)*(c)*(d)",
+						"displayOptions": {
+							"removeUnnecessaryBrackets": true
+						}
+					}
+				],
+				"correctChoiceIndex": ["{{eval:(1-a*b*c*d/abs(a*b*c*d))/2}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:12.312368+00:00",
+		"updated_at": "2026-09-26T15:18:12.312368+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "$4$ facteurs",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "59",
+					"b": "92",
+					"c": "97",
+					"d": "49"
+				},
+				"description": "tous positifs",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-59",
+					"b": "92",
+					"c": "97",
+					"d": "49"
+				},
+				"description": "un négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "96",
+					"b": "-78",
+					"c": "-72",
+					"d": "30"
+				},
+				"description": "deux négatifs",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90",
+					"c": "34",
+					"d": "-34"
+				},
+				"description": "trois négatifs",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90",
+					"c": "34",
+					"d": "-34"
+				},
+				"description": "trois négatifs : positif faux",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-30",
+					"b": "-99",
+					"c": "-30",
+					"d": "-99"
+				},
+				"description": "quatre négatifs (bornes)",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "4d13f5d6-8350-4c34-96de-a5e31fb9759b",
+		"title": "Déterminer le signe d'un quotient",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe de ce quotient ?\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "a:(b)"
+					}
+				],
+				"conditions": ["a<=0 || b<0"],
+				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:13.008824+00:00",
+		"updated_at": "2026-09-26T15:18:13.008824+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49:(-65) négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49:(-65) : positif faux",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "(-71):(-90) positif",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-97",
+					"b": "78"
+				},
+				"description": "(-97):78 négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-30",
+					"b": "-99"
+				},
+				"description": "bornes -30:(-99)",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "4b07cd65-5d06-4fd4-ac56-d2388f4a66fe",
+		"title": "Déterminer le signe dans un quotient",
+		"theme": "Relatifs",
+		"domain": "Multiplier et Diviser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe du nombre manquant :\n\n$$({{a}}):?=({{b}})$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					}
+				],
+				"conditions": ["a<=0 || b<0"],
+				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+			},
+			{
+				"choices": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				],
+				"statement": "Quel est le signe du nombre manquant :\n\n$$?:({{a}})=({{b}})$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					}
+				],
+				"conditions": ["a<=0 || b<0"],
+				"correctChoiceIndex": ["{{eval:(1-a*b/abs(a*b))/2}}"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T15:18:13.186719+00:00",
+		"updated_at": "2026-09-26T15:18:13.186719+00:00",
+		"created_by": "6e1dbd63-dc7f-4aa4-abe1-771a7556b78e",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49:?=(-65) → négatif",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "49:?=(-65) : positif faux",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "(-71):?=(-90) → positif",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "49",
+					"b": "-65"
+				},
+				"description": "?:49=(-65) → négatif",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "?:(-71)=(-90) → positif",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-71",
+					"b": "-90"
+				},
+				"description": "?:(-71)=(-90) : négatif faux",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-30",
+					"b": "99"
+				},
+				"description": "bornes ?:(-30)=99",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-99",
+					"b": "-30"
+				},
+				"description": "bornes (-99):?=(-30)",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			}
+		]
+	}
+]

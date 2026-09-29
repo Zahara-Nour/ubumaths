@@ -1,0 +1,30 @@
+{
+	"templateId": "b2af6f39-9f24-4491-95ba-7d25d53813fe",
+	"title": "Simplifier une fraction",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le numérateur est négatif et le dénominateur est positif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc la fraction est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ : on écrit le signe « − » devant la fraction.",
+				"$$\\begin{align} \\dfrac{\\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right)}{{{b}}} &= \\textcolor{{{color:primary.2}}}{-}\\dfrac{{{a}}}{{{b}}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le numérateur est positif et le dénominateur est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc la fraction est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ : on écrit le signe « − » devant la fraction.",
+				"$$\\begin{align} \\dfrac{{{a}}}{\\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right)} &= \\textcolor{{{color:primary.2}}}{-}\\dfrac{{{a}}}{{{b}}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le numérateur est négatif et le dénominateur est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$, donc la fraction est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ : on n’écrit aucun signe.",
+				"$$\\begin{align} \\dfrac{\\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right)}{\\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right)} &= \\dfrac{{{a}}}{{{b}}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Règle rappelée, puis appliquée aux nombres de la variation.",
+		"Fraction déjà irréductible (b premier avec a) : seul le signe change."
+	]
+}
