@@ -419,9 +419,14 @@ export function validateQuantityAnswer(
 		comparisonResult.userValue !== null &&
 		comparisonResult.expectedValue !== null
 	) {
-		// Unités décalées d'une constante (°C ↔ K) : l'arrondi se juge dans l'unité
-		// de l'élève — 25,34 °C vaut 298,49 K, dont l'arrondi au dixième est 298,5 K
-		if (isPureOffsetConversion(userQuantity.unit, expectedQuantity.unit)) {
+		// Unités décalées d'une constante (°C ↔ K) : l'arrondi DÉCIMAL se juge dans
+		// l'unité de l'élève — 25,34 °C vaut 298,49 K, dont l'arrondi au dixième est
+		// 298,5 K. Significatifs et ordre de grandeur restent jugés dans l'unité
+		// attendue : 2 c.s. en kelvins (300 K) effaceraient les degrés Celsius.
+		if (
+			precision.type === 'decimal' &&
+			isPureOffsetConversion(userQuantity.unit, expectedQuantity.unit)
+		) {
 			const expectedInUserUnit = convertAffine(
 				comparisonResult.expectedValue,
 				expectedQuantity.unit,

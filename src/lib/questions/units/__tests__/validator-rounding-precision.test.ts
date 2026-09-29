@@ -173,3 +173,25 @@ describe('Unité imposée °C : une réponse en kelvins est refusée', () => {
 		expect(validateQuantityAnswer('298{,}15\\unit{K}', '25\\unit{°C}').isCorrect).toBe(true);
 	});
 });
+
+// Chiffres significatifs et ordre de grandeur : toujours jugés dans l'unité
+// ATTENDUE, même pour °C ↔ K (en kelvins, 2 c.s. effacent les degrés Celsius).
+describe('Température décalée : significatifs jugés dans l’unité attendue', () => {
+	it('300 K pour 25,34 °C à 2 c.s. → faux, « Valeur incorrecte. »', () => {
+		const result = validateQuantityAnswer('300\\unit{K}', '25.34\\unit{°C}', {
+			type: 'significant',
+			digits: 2
+		});
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Valeur incorrecte.');
+	});
+
+	it('25 °C pour 298,49 K à 3 c.s. → faux, « Donne 3 chiffres significatifs. »', () => {
+		const result = validateQuantityAnswer('25\\unit{°C}', '298.49\\unit{K}', {
+			type: 'significant',
+			digits: 3
+		});
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
+	});
+});
