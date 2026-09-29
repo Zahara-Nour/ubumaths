@@ -109,3 +109,48 @@ describe('FlashCard — verso d’une question à plusieurs bonnes réponses', (
 		expect(container.textContent).not.toContain('Une réponse possible');
 	});
 });
+
+/**
+ * Recto allégé (demande de David, 2026-09-29) : ni titre « Question », ni
+ * badge du type, ni sous-titre « Énoncé », ni encadré autour de l'énoncé.
+ * L'énoncé reste affiché.
+ */
+describe('FlashCard — recto allégé', () => {
+	const INSTANCE = {
+		templateId: 'test',
+		statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
+		blanks: [{ expectedAnswer: '160', type: 'math' }],
+		grades: ['6'],
+		theme: 'Entiers',
+		domain: 'Multiplier',
+		level: 1,
+		generatedAt: new Date().toISOString()
+	} as unknown as QuestionInstance;
+
+	function front(container: HTMLElement): HTMLElement {
+		const face = container.querySelector<HTMLElement>('.flip-card-front');
+		expect(face).not.toBeNull();
+		return face!;
+	}
+
+	it("affiche l'énoncé", async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+
+		expect(front(container).textContent).toContain('Calcule.');
+	});
+
+	it('ne montre ni « Question », ni « Énoncé », ni le badge du type', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+		const text = front(container).textContent ?? '';
+
+		expect(text).not.toMatch(/\bQuestion\b/);
+		expect(text).not.toContain('Énoncé');
+		expect(text).not.toContain('fill_in_blanks');
+	});
+
+	it("n'encadre pas l'énoncé", async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+
+		expect(front(container).querySelector('.statement-content.border')).toBeNull();
+	});
+});

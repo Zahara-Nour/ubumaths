@@ -299,14 +299,8 @@
 	<FlipCard bind:flipped={isFlipped}>
 		{#snippet front()}
 			<div class="relative h-full">
+				<!-- Recto allégé : ni titre, ni badge du type, ni sous-titre, ni encadré -->
 				<Card.Root class="h-full">
-					<Card.Header>
-						<div class="flex items-center justify-between">
-							<Card.Title>{isCourseCard ? 'Recto' : 'Question'}</Card.Title>
-							<Badge variant="outline">{typeLabel}</Badge>
-						</div>
-					</Card.Header>
-
 					<Card.Content class="space-y-6">
 						{#if instance.exerciseInstruction}
 							<p class="text-base font-medium text-muted-foreground">
@@ -315,8 +309,7 @@
 						{/if}
 						<!-- Question Statement -->
 						<div class="statement-section">
-							<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
-							<div class="statement-content rounded-lg border bg-card p-4">
+							<div class="statement-content">
 								{#if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
 									<FillBlanksInput
 										statement={instance.statement}
