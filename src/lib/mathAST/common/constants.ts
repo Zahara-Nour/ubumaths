@@ -28,7 +28,9 @@ export const RELATIVE_EQUALITY_TOLERANCE = 1e-12;
 
 /**
  * Plancher ABSOLU de `numbersAreClose` : le bruit des flottants autour de 0
- * (`0.1 + 0.2 - 0.3` vaut 5,5·10⁻¹⁷). Assez bas pour que 10⁻¹² ≠ 0.
+ * (`0.1 + 0.2 - 0.3` vaut 5,5·10⁻¹⁷). Assez bas pour que 10⁻¹² ≠ 0 et que
+ * l'écriture scientifique reste distinguée (10⁻¹² ≠ 1,1·10⁻¹²) — au prix du
+ * bruit d'une compensation de grands termes (1000·tan(π/4) − 1000 ≈ −1,1·10⁻¹³).
  */
 export const ABSOLUTE_EQUALITY_FLOOR = 1e-14;
 
