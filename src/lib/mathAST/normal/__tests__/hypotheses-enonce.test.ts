@@ -192,3 +192,26 @@ describe('Hypothèses : les variables indicées n’héritent pas de leur base',
 		expect(eq('|x|', 'x', X_POSITIVE)).toBe(true);
 	});
 });
+
+// Une fonction que l'énoncé ne définit pas (f, g, u, f′) ne transmet pas l'hypothèse de
+// son argument : n entier ne dit rien de f(n) (f(n) = n/2). Faux positif trouvé en revue (#522).
+describe('Hypothèses : une fonction inconnue n’hérite pas du type de son argument', () => {
+	it.each<[string, string, AnswerAssumptions]>([
+		['(-1)^{2f(n)}', '1', N_INTEGER],
+		['(-1)^{2g(n)}', '1', N_NATURAL],
+		['(-1)^{2u(n)}', '1', N_INTEGER],
+		["(-1)^{2f'(n)}", '1', N_INTEGER],
+		['(-2)^{2f(x)}', '4^{f(x)}', { x: 'integer' }],
+		['(-1)^{2n+2f(n)}', '1', N_INTEGER]
+	])('%s ≢ %s', (a, b, assumptions) => {
+		expect(eq(a, b, assumptions)).toBe(false);
+	});
+
+	it.each<[string, string, AnswerAssumptions]>([
+		['(-1)^{2n}', '1', N_INTEGER],
+		['(-1)^{2\\lfloor x \\rfloor}', '1', { x: 'integer' }],
+		['|\\sqrt{x}|', '\\sqrt{x}', X_POSITIVE]
+	])('fonctions connues toujours comprises : %s ≡ %s', (a, b, assumptions) => {
+		expect(eq(a, b, assumptions)).toBe(true);
+	});
+});

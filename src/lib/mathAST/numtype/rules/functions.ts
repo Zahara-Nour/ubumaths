@@ -66,6 +66,22 @@ const INTEGER_OUTPUT_FUNCTIONS = new Set(['floor', 'ceil', 'round', 'trunc', 'si
  */
 const TYPE_PRESERVING_FUNCTIONS = new Set(['abs']);
 
+/**
+ * La fonction a-t-elle une règle de typage propre ? Une fonction inconnue (f, g, u)
+ * reçoit le type de ses arguments (voir la fin de `inferFunctionType`) : utile
+ * pour `simplify`, mais une hypothèse de l'énoncé ne doit pas passer par elle.
+ */
+export function isKnownFunctionName(name: string): boolean {
+	const lowerName = name.toLowerCase();
+	return (
+		lowerName === 'sqrt' ||
+		TRANSCENDENTAL_FUNCTIONS.has(lowerName) ||
+		INTEGER_OUTPUT_FUNCTIONS.has(lowerName) ||
+		TYPE_PRESERVING_FUNCTIONS.has(lowerName) ||
+		['min', 'max', 'gcd', 'lcm', 'mod', 'rem'].includes(lowerName)
+	);
+}
+
 // =============================================================================
 // Main Function Type Inference
 // =============================================================================

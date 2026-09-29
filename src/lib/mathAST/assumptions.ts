@@ -11,9 +11,10 @@
  * règles conditionnelles interrogent par ses prédicats (`isPositiveType`…).
  */
 
-import { isGreek, isVariable } from './guards';
+import { isFunction, isGreek, isVariable } from './guards';
 import type { NumericType, TypeContext, VariableAssumption } from './numtype';
 import { isIntegerType, isNonNegativeType, isPositiveType } from './numtype';
+import { isKnownFunctionName } from './numtype/rules/functions';
 import { findNodes } from './transforms';
 import type { MathNode } from './types';
 
@@ -129,9 +130,36 @@ function mentionsIndexedDeclaredVariable(node: MathNode, names: ReadonlySet<stri
 	);
 }
 
-/** L'hypothèse s'applique : le nœud mentionne une variable déclarée, et aucune de ses indicées. */
+/**
+ * Vrai si le nœud applique une fonction que l'énoncé ne définit pas (f, g, u)
+ * à une variable déclarée : `numtype` donne à f(n) le type de n, si bien que
+ * « n entier » rendait `(-1)^{2f(n)} ≡ 1` vrai (faux en f(n) = n/2, #522).
+ */
+function mentionsUnknownFunctionOfDeclaredVariable(
+	node: MathNode,
+	names: ReadonlySet<string>
+): boolean {
+	return (
+		findNodes(
+			node,
+			(candidate) =>
+				isFunction(candidate) &&
+				!isKnownFunctionName(candidate.name) &&
+				candidate.args.some((arg) => mentionsAnyVariable(arg, names))
+		).length > 0
+	);
+}
+
+/**
+ * L'hypothèse s'applique : le nœud mentionne une variable déclarée, sans passer
+ * par une de ses indicées ni par une fonction inconnue.
+ */
 function assumptionApplies(node: MathNode, names: ReadonlySet<string>): boolean {
-	return mentionsAnyVariable(node, names) && !mentionsIndexedDeclaredVariable(node, names);
+	return (
+		mentionsAnyVariable(node, names) &&
+		!mentionsIndexedDeclaredVariable(node, names) &&
+		!mentionsUnknownFunctionOfDeclaredVariable(node, names)
+	);
 }
 
 /**
