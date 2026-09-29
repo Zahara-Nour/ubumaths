@@ -87,8 +87,10 @@
 
 - [ ] Create production database backup:
   ```bash
-  # Via Supabase Dashboard or CLI
-  supabase db dump -f backup-pre-sanitize-$(date +%Y%m%d).sql
+  # ⚠️ `db dump` alone passes --schema-only to pg_dump: it saves NO data.
+  # Schema, then data (checked 2026-09-29, CLI 2.118, `--dry-run`):
+  pnpm exec supabase db dump --linked -f backup-pre-sanitize-$(date +%Y%m%d)-schema.sql
+  pnpm exec supabase db dump --linked --data-only -f backup-pre-sanitize-$(date +%Y%m%d)-data.sql
   ```
 - [ ] Verify backup file exists and is not empty
 
@@ -177,9 +179,11 @@ If issues are detected:
 
 ### Option 1: Full Database Restore (Critical Issues)
 
-```bash
-supabase db restore backup-pre-sanitize-YYYYMMDD.sql
-```
+> ⚠️ **`supabase db restore` does not exist** (checked 2026-09-29, CLI 2.118:
+> `Unknown subcommand "restore" for "supabase db"`). There is no one-command
+> CLI restore. Before relying on this step, establish the procedure (a backup
+> from the Supabase dashboard, or replaying the schema + data dumps with
+> `psql`) and **test it on the local stack** first.
 
 - [ ] Restore from backup
 - [ ] Verify restoration successful

@@ -317,10 +317,11 @@ If the migration causes issues:
 
 If you backed up before migration:
 
-```bash
-# Restore from backup (Supabase CLI)
-supabase db restore backup_name
-```
+> ⚠️ **`supabase db restore` does not exist** (checked 2026-09-29, CLI 2.118:
+> `Unknown subcommand "restore" for "supabase db"`). There is no one-command
+> CLI restore. Before relying on this step, establish the procedure (a backup
+> from the Supabase dashboard, or replaying the schema + data dumps with
+> `psql`) and **test it on the local stack** first.
 
 ### Option 2: Selective Rollback
 
