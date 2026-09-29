@@ -42,6 +42,7 @@ import {
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
+import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -476,12 +477,43 @@ export function validateAnswer(
  * @param userAnswer - User's answer (string or number)
  * @param correctAnswer - Correct answer from instance
  * @param precision - Precision specification
+ * @param studentLatex - Écriture tapée (LaTeX MathLive), pour compter les
+ *   décimales d'un arrondi ; `userAnswer` à défaut
  * @returns Validation result
  */
 export function validateNumerical(
 	userAnswer: string | number,
 	correctAnswer: string,
-	precision?: PrecisionType
+	precision?: PrecisionType,
+	studentLatex?: string
+): ValidationResult {
+	return numericalVerdict(userAnswer, correctAnswer, precision, studentLatex).result;
+}
+
+/**
+ * Verdict numérique, avec l'indication qu'un ARRONDI est en cause (trop de
+ * décimales ou de chiffres significatifs) : son message est alors destiné à
+ * l'élève (« Arrondis au centième. »).
+ */
+function numericalVerdict(
+	userAnswer: string | number,
+	correctAnswer: string,
+	precision?: PrecisionType,
+	studentLatex?: string
+): { result: ValidationResult; roundingAtFault: boolean } {
+	const result = numericalResult(userAnswer, correctAnswer, precision, studentLatex);
+	const roundingAtFault =
+		!result.isCorrect &&
+		(precision?.type === 'decimal' || precision?.type === 'significant') &&
+		result.feedback === roundingFeedback(precision);
+	return { result, roundingAtFault };
+}
+
+function numericalResult(
+	userAnswer: string | number,
+	correctAnswer: string,
+	precision?: PrecisionType,
+	studentLatex?: string
 ): ValidationResult {
 	// Convert to string if number
 	const userStr = typeof userAnswer === 'number' ? String(userAnswer) : userAnswer;
@@ -516,33 +548,23 @@ export function validateNumerical(
 		};
 	}
 
-	// Decimal precision
-	if (precision.type === 'decimal') {
-		const userRounded = Number(userNum.toFixed(precision.digits));
-		const correctRounded = Number(correctNum.toFixed(precision.digits));
-		const isCorrect = userRounded === correctRounded;
-
+	// Arrondi (décimales ou chiffres significatifs) : la réponse de l'élève n'est
+	// PAS arrondie — trop de chiffres est faux (cf. questions/rounding)
+	if (precision.type === 'decimal' || precision.type === 'significant') {
+		const verdict = judgeRounding(studentLatex ?? userStr, userNum, correctNum, precision);
+		if (verdict.feedback) {
+			// Trop de chiffres : message destiné à l'élève (cf. numericalVerdict)
+			return { isCorrect: false, message: 'Incorrect', feedback: verdict.feedback };
+		}
+		const correctRounded = roundToPrecision(correctNum, precision);
 		return {
-			isCorrect,
-			message: isCorrect ? 'Correct !' : 'Incorrect',
-			feedback: isCorrect
+			isCorrect: verdict.isCorrect,
+			message: verdict.isCorrect ? 'Correct !' : 'Incorrect',
+			feedback: verdict.isCorrect
 				? undefined
-				: `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
-		};
-	}
-
-	// Significant figures
-	if (precision.type === 'significant') {
-		const userSig = toSignificantFigures(userNum, precision.digits);
-		const correctSig = toSignificantFigures(correctNum, precision.digits);
-		const isCorrect = userSig === correctSig;
-
-		return {
-			isCorrect,
-			message: isCorrect ? 'Correct !' : 'Incorrect',
-			feedback: isCorrect
-				? undefined
-				: `La réponse avec ${precision.digits} chiffres significatifs est ${correctSig}`
+				: precision.type === 'decimal'
+					? `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
+					: `La réponse avec ${precision.digits} chiffres significatifs est ${correctRounded}`
 		};
 	}
 
@@ -586,22 +608,6 @@ export function validateNumerical(
 		isCorrect,
 		message: isCorrect ? 'Correct !' : 'Incorrect'
 	};
-}
-
-/**
- * Round number to significant figures
- *
- * @param num - Number to round
- * @param digits - Number of significant figures
- * @returns Rounded number
- */
-function toSignificantFigures(num: number, digits: number): number {
-	if (num === 0) return 0;
-
-	const magnitude = Math.floor(Math.log10(Math.abs(num)));
-	const scale = Math.pow(10, magnitude - digits + 1);
-
-	return Math.round(num / scale) * scale;
 }
 
 /**
@@ -858,7 +864,16 @@ function validateSingleBlank(
 		isCorrect = result.isCorrect;
 		durationFormIssue = result.durationFormIssue;
 	} else if (blank.precision) {
-		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
+		const { result, roundingAtFault } = numericalVerdict(
+			userAnswer,
+			blank.expectedAnswer,
+			blank.precision,
+			userAnswerLatex || userAnswer
+		);
+		// Trop de décimales / de chiffres significatifs : l'élève doit lire pourquoi
+		if (roundingAtFault && result.feedback) {
+			return { isCorrect: false, feedback: result.feedback };
+		}
 		isCorrect = result.isCorrect;
 	} else {
 		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer);
