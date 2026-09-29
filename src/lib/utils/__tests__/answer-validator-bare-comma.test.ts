@@ -90,7 +90,11 @@ describe('virgule nue — équivalence simple', () => {
 		expect(check('-0,5', { expectedAnswer: '-0.5', type: 'math' }).isCorrect).toBe(true);
 	});
 
-	it('le couple (3,14) n’est pas le décimal 3,14', () => {
-		expect(check('(3,14)', { expectedAnswer: '3.14', type: 'math' }).isCorrect).toBe(false);
+	it('(-3,5) pour -3.5 → juste (parenthèses autour d’un décimal)', () => {
+		expect(check('(-3,5)', { expectedAnswer: '-3.5', type: 'math' }).isCorrect).toBe(true);
+	});
+
+	it('attendu couple (3,14) : 3,14 n’est pas ce couple', () => {
+		expect(check('3,14', { expectedAnswer: '(3,14)', type: 'math' }).isCorrect).toBe(false);
 	});
 });

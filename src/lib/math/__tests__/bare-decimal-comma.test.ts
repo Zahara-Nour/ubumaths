@@ -7,25 +7,50 @@
 
 import { describe, it, expect } from 'vitest';
 import { areEquivalent, evaluateExpression } from '$lib/math';
-import { bareDecimalCommaToPoint } from '$lib/mathAST/decimal-comma';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
 import { isQuantityValueLatex, isSimpleNumberLatex } from '$lib/mathAST/cosmetic-transforms';
 
-describe('bareDecimalCommaToPoint', () => {
+describe('bareDecimalCommaToPoint (contexte NOMBRE : toute virgule entre chiffres)', () => {
 	it.each([
 		['3,14', '3.14'],
 		['-0,5', '-0.5'],
 		['12,5\\unit{cm}', '12.5\\unit{cm}'],
-		['1\\,200,5', '1\\,200.5']
+		['1\\,200,5', '1\\,200.5'],
+		['1,5x+2,5', '1.5x+2.5'],
+		['(-3,5)', '(-3.5)']
 	])('%s → %s', (latex, expected) => {
 		expect(bareDecimalCommaToPoint(latex)).toBe(expected);
 	});
 
-	it.each(['(3,14)', '\\{1,2,3\\}', '[3,14]', ']3,14[', 'f(x,y)', '3, 4', '1,2,3', '3{,}14'])(
-		'virgule séparatrice ou déjà MathLive : %s inchangé',
+	it.each(['f(x,y)', '3, 4', '3{,}14'])(
+		'virgule hors chiffres ou MathLive : %s inchangé',
 		(latex) => {
 			expect(bareDecimalCommaToPoint(latex)).toBe(latex);
 		}
 	);
+});
+
+describe('expectsSeparatorComma (mode décidé par la réponse attendue)', () => {
+	it.each(['(3,14)', '[3,14]', ']3,14[', '\\{1,2,3\\}', '1,2,3', 'f(x,y)', '3, 4', '(a,b)'])(
+		'%s : virgule séparatrice',
+		(latex) => {
+			expect(expectsSeparatorComma(latex)).toBe(true);
+		}
+	);
+
+	it.each([
+		'3,14',
+		'1,5x+2,5',
+		'y=0,5x+1,5',
+		'2(x+1,5)',
+		'\\frac{1,5}{2,5}',
+		'(1,5;2)',
+		'x\\in[1,5;2]',
+		'3{,}14',
+		'1\\,200,5'
+	])('%s : virgule décimale (ou aucune virgule nue)', (latex) => {
+		expect(expectsSeparatorComma(latex)).toBe(false);
+	});
 });
 
 describe('forme « nombre simple »', () => {
@@ -49,14 +74,40 @@ describe('équivalence et évaluation', () => {
 		expect(evaluateExpression('-0,5')).toBe(-0.5);
 	});
 
-	it('un couple (3,14) n’est pas le décimal 3,14', () => {
-		expect(areEquivalent('(3,14)', '3.14')).toBe(false);
-		expect(areEquivalent('(3,14)', '(3.14)')).toBe(false);
+	it('attendu couple (3,14) : ni 3,14 ni 3.14 ni (3.14) ne l’égalent', () => {
+		expect(areEquivalent('3.14', '(3,14)')).toBe(false);
+		expect(areEquivalent('3,14', '(3,14)')).toBe(false);
+		expect(areEquivalent('(3.14)', '(3,14)')).toBe(false);
+		expect(areEquivalent('(3,14)', '(3,14)')).toBe(true);
 	});
 
-	it('un couple collé (1,5) reste un couple : égal à lui-même, pas à 1,5', () => {
-		expect(areEquivalent('(1,5)', '(1,5)')).toBe(true);
-		expect(areEquivalent('(1,5)', '1.5')).toBe(false);
+	it('attendu couple (1,5) : 1,5 ne l’égale pas', () => {
+		expect(areEquivalent('1,5', '(1,5)')).toBe(false);
+	});
+
+	it('attendu ensemble \\{1,2,3\\} : \\{1.2,3\\} ne l’égale pas', () => {
+		expect(areEquivalent('\\{1.2,3\\}', '\\{1,2,3\\}')).toBe(false);
+	});
+
+	// Relecture #520 : réponses justes à virgule nue, attendu à point décimal
+	it.each([
+		['1,5x+2,5', '1.5x+2.5'],
+		['y=0,5x+1,5', 'y=0.5x+1.5'],
+		['(-3,5)', '-3.5'],
+		['1,5\\times 2,5', '3.75'],
+		['2(x+1,5)', '2x+3'],
+		['\\left(1,5\\right)', '1.5'],
+		['-(1,5)', '-1.5'],
+		['\\frac{1,5}{2,5}', '0.6'],
+		['0,5\\times 2,4', '1.2'],
+		['(1,5;2)', '(1{,}5;2)'],
+		['x\\in[1,5;2]', 'x\\in[1{,}5;2]']
+	])('%s ≡ %s', (user, expected) => {
+		expect(areEquivalent(user, expected)).toBe(true);
+	});
+
+	it('point-virgule : (1,5;2) attendu ≡ (1{,}5;2) tapé', () => {
+		expect(areEquivalent('(1{,}5;2)', '(1,5;2)')).toBe(true);
 	});
 
 	it('un ensemble \\{1,2,3\\} reste égal à lui-même', () => {

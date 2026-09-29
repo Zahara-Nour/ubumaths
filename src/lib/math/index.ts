@@ -15,7 +15,7 @@ import { normalize, denormalize } from '$lib/mathAST/normal';
 import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
-import { bareDecimalCommaToPoint } from '$lib/mathAST/decimal-comma';
+import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
 
 // Re-export evaluateWithModifiers from mathAST (already implemented there)
 export { evaluateWithModifiers } from '$lib/mathAST/eval';
@@ -31,21 +31,23 @@ export * as intervals from './intervals';
  * Strip LaTeX spacing commands and French number grouping spaces.
  * MathLive may produce \, for French number grouping (12\,345),
  * and plain text may use spaces (12 345).
+ *
+ * @param commas - `decimal` (défaut) : toute virgule nue entre deux chiffres est
+ *   décimale ; `separator` : virgules nues intactes, sauf dans une écriture à
+ *   point-virgule (`(1,5;2)`) — cf. mathAST/decimal-comma
  */
-function stripLatexSpacing(latex: string): string {
-	// Virgule décimale nue (`1234,5` → `1234.5`) ; une virgule séparatrice
-	// (`(3,14)`, `\{1,2,3\}`, `3, 4`) reste intacte (cf. mathAST/decimal-comma)
-	return bareDecimalCommaToPoint(
-		latex
-			// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
-			.replace(/\\[,;:!]\s?/g, '')
-			.replace(/\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)\s?/g, '')
-			.replace(/\\ /g, '')
-			// French number grouping: spaces between digit groups (12 345 → 12345)
-			.replace(/(\d)\s+(?=\d)/g, '$1')
-			// French decimal comma: {,} → . (LaTeX notation for comma decimal separator)
-			.replace(/\{,\}/g, '.')
-	);
+function stripLatexSpacing(latex: string, commas: 'decimal' | 'separator' = 'decimal'): string {
+	const stripped = latex
+		// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
+		.replace(/\\[,;:!]\s?/g, '')
+		.replace(/\\(?:quad|qquad|enspace|thinspace|medspace|thickspace)\s?/g, '')
+		.replace(/\\ /g, '')
+		// French number grouping: spaces between digit groups (12 345 → 12345)
+		.replace(/(\d)\s+(?=\d)/g, '$1')
+		// French decimal comma: {,} → . (LaTeX notation for comma decimal separator)
+		.replace(/\{,\}/g, '.');
+	if (commas === 'separator' && !stripped.includes(';')) return stripped;
+	return bareDecimalCommaToPoint(stripped);
 }
 
 function isMathNode(value: EvalValue): value is MathNode {
@@ -115,7 +117,8 @@ export function evaluateExpression(latex: string): number | string {
  * if normalization fails.
  *
  * @param latex1 - First LaTeX expression
- * @param latex2 - Second LaTeX expression
+ * @param latex2 - Second LaTeX expression — la réponse ATTENDUE : elle décide si
+ *   une virgule nue est décimale ou séparatrice
  * @returns True if expressions are equivalent
  *
  * @example
@@ -132,8 +135,11 @@ export function areEquivalent(
 	latex2: string,
 	options?: { signal?: AbortSignal; timeoutMs?: number }
 ): boolean {
-	const cleaned1 = stripLatexSpacing(latex1);
-	const cleaned2 = stripLatexSpacing(latex2);
+	// La réponse attendue (latex2) décide du rôle des virgules nues : une
+	// attendue « (3,14) » est un couple, pas le décimal 3,14 (cf. mathAST/decimal-comma)
+	const commas = expectsSeparatorComma(latex2) ? 'separator' : 'decimal';
+	const cleaned1 = stripLatexSpacing(latex1, commas);
+	const cleaned2 = stripLatexSpacing(latex2, commas);
 	const result1 = parseLatexSafe(cleaned1);
 	const result2 = parseLatexSafe(cleaned2);
 
