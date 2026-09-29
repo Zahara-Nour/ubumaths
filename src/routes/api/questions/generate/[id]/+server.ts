@@ -9,39 +9,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateInstance } from '$lib/questions';
 import { generateQuestionSchema } from '$lib/server/validation/questions';
-import type { QuestionTemplate } from '$lib/questions/types';
-import type { Database } from '$lib/types/database';
-import { requireRole } from '$lib/server/middleware/auth';
+import { toQuestionTemplate } from '$lib/types/question-template';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
-
-type DbQuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
-
-/**
- * Transform database row to QuestionTemplate type
- * Database uses snake_case and Json types, application uses camelCase and specific types
- * Safe: Database schema guarantees these Json fields match the expected structures
- */
-function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
-	return {
-		id: row.id,
-		title: row.title,
-		description: row.description ?? undefined,
-		variations: row.variations as unknown as QuestionTemplate['variations'],
-		exerciseInstruction: row.exercise_instruction ?? undefined,
-		options: (row.options as unknown as QuestionTemplate['options']) ?? undefined,
-		grades: row.grades as unknown as QuestionTemplate['grades'],
-		theme: row.theme,
-		domain: row.domain,
-		subdomain: row.subdomain ?? undefined,
-		level: row.level,
-		status: row.status as unknown as QuestionTemplate['status'],
-		delay: row.delay ?? undefined,
-		multipleAnswers: row.multiple_answers ?? undefined,
-		created_at: row.created_at ?? undefined,
-		updated_at: row.updated_at ?? undefined,
-		created_by: row.created_by ?? undefined
-	};
-}
 
 /**
  * POST /api/questions/generate/[id]
@@ -55,7 +25,8 @@ function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
-	await requireRole(locals, 'teacher');
+	// L'aperçu est une page admin : le rôle admin doit passer, pas seulement teacher.
+	await requireRoles(locals, ['teacher', 'admin']);
 	const supabase = locals.supabase;
 
 	try {
@@ -89,8 +60,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
-		// Transform database row to application type
-		const questionTemplate = dbRowToQuestionTemplate(template);
+		// Conversion commune (`shared` et `default_display_options` compris)
+		const questionTemplate = toQuestionTemplate(template);
 
 		// Generate instance
 		const result = generateInstance(questionTemplate, seed);
