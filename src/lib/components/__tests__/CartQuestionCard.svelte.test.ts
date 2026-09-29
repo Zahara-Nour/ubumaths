@@ -28,8 +28,8 @@ const ITEM: CartItem = {
 };
 const { instance } = previewCartItem([TEMPLATE], ITEM.category);
 
-function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
-	return render(CartQuestionCard, {
+async function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
+	return await render(CartQuestionCard, {
 		item: ITEM,
 		template: TEMPLATE,
 		instance,
