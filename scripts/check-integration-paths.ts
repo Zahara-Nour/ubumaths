@@ -22,7 +22,13 @@
  * Le périmètre est la fermeture transitive des imports des tests
  * (`tests/integration/**`) et du global-setup, calculée par esbuild en mode
  * analyse (rien n'est exécuté). `$lib` est résolu vers `src/lib` ; les modules
- * virtuels de SvelteKit (`$env`, `$app`) et les paquets npm sont exclus.
+ * virtuels de SvelteKit (`$env`, `$app`) et les paquets npm sont exclus ; le
+ * `<script>` des composants `.svelte` est suivi. Un autre alias `$…` fait
+ * échouer la garde plutôt que de disparaître en silence.
+ *
+ * Angle mort assumé : les fichiers LUS à l'exécution (`readFile` d'une
+ * migration, seed du global-setup) ne sont pas des imports. Tous vivent
+ * aujourd'hui sous `supabase/**`, couvert par le filtre.
  *
  * Usage : pnpm check:integration-paths
  */
@@ -47,6 +53,10 @@ export function githubPathPattern(pattern: string): RegExp {
 		const c = pattern[i];
 		if (c === '\\' && i + 1 < pattern.length) {
 			atoms.push(escapeRegExp(pattern[++i]));
+		} else if (c === '*' && pattern[i + 1] === '*' && pattern[i + 2] === '/') {
+			// `**/` peut aussi valoir ZÉRO dossier : `**/README.md` couvre `README.md`.
+			atoms.push('(?:.*/)?');
+			i += 2;
 		} else if (c === '*' && pattern[i + 1] === '*') {
 			atoms.push('.*');
 			i++;
@@ -54,14 +64,12 @@ export function githubPathPattern(pattern: string): RegExp {
 			atoms.push('[^/]*');
 		} else if ((c === '?' || c === '+') && atoms.length > 0) {
 			atoms.push(`(?:${atoms.pop()})${c}`);
-		} else if (c === '[') {
-			const end = pattern.indexOf(']', i + 1);
-			if (end === -1) {
-				atoms.push(escapeRegExp(c));
-			} else {
-				atoms.push(`[${pattern.slice(i + 1, end)}]`);
-				i = end;
-			}
+		} else if (c === '[' && /^\[[A-Za-z0-9-]+\]/.test(pattern.slice(i))) {
+			// La doc n'admet que des alphanumériques et des plages entre crochets ;
+			// toute autre forme reste littérale plutôt que de devenir une RegExp.
+			const end = pattern.indexOf(']', i);
+			atoms.push(`[${pattern.slice(i + 1, end)}]`);
+			i = end;
 		} else {
 			atoms.push(escapeRegExp(c));
 		}
@@ -123,8 +131,21 @@ export async function integrationClosure(root: string): Promise<string[]> {
 				path: args.path,
 				external: true
 			}));
-			// Un composant compte comme fichier atteint, sans être compilé.
-			b.onLoad({ filter: /\.svelte$/ }, () => ({ contents: '', loader: 'js' }));
+			// Tout autre alias `$…` (ex. `$tests` de svelte.config.js) : non suivi ici,
+			// donc signalé plutôt que traité comme un paquet externe.
+			b.onResolve({ filter: /^\$/ }, (args) => {
+				unresolved.push(args.path);
+				return { path: args.path, external: true };
+			});
+			// Un composant : seuls ses blocs <script> importent quelque chose.
+			b.onLoad({ filter: /\.svelte$/ }, (args) => {
+				const source = readFileSync(args.path, 'utf8');
+				const scripts = [...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)];
+				// Un composant a un export par défaut implicite : sans lui, tout
+				// `import X from '….svelte'` casserait l'analyse.
+				const contents = [...scripts.map((m) => m[1]), 'export default {};'].join('\n');
+				return { contents, loader: 'ts' };
+			});
 		}
 	};
 
@@ -143,7 +164,7 @@ export async function integrationClosure(root: string): Promise<string[]> {
 		loader: { '.sql': 'text', '.json': 'json' }
 	});
 	if (unresolved.length > 0) {
-		throw new Error(`Imports $lib non résolus : ${unresolved.join(', ')}`);
+		throw new Error(`Alias non résolus : ${[...new Set(unresolved)].join(', ')}`);
 	}
 	return Object.keys(result.metafile.inputs).sort();
 }

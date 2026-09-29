@@ -32,6 +32,12 @@ describe('githubPathPattern — exemples de la doc GitHub', () => {
 		expect(matches('**/README.md', 'docs/x/README.md')).toBe(true);
 	});
 
+	it('`**/` peut correspondre à ZÉRO dossier (exemples de la doc)', () => {
+		expect(matches('**/README.md', 'README.md')).toBe(true);
+		expect(matches('docs/**/*.md', 'docs/README.md')).toBe(true);
+		expect(matches('docs/**/*.md', 'docs/a/b/c.md')).toBe(true);
+	});
+
 	it('`?` : zéro ou une fois le caractère PRÉCÉDENT', () => {
 		expect(matches('docs?', 'doc')).toBe(true);
 		expect(matches('docs?', 'docs')).toBe(true);
@@ -48,6 +54,16 @@ describe('githubPathPattern — exemples de la doc GitHub', () => {
 		expect(matches('[CB]at', 'Bat')).toBe(true);
 		expect(matches('[1-2]00', '200')).toBe(true);
 		expect(matches('[CB]at', 'Rat')).toBe(false);
+	});
+
+	it('`[]` hors de la forme permise (alphanumérique, plages) reste littéral', () => {
+		expect(matches('a[^b]', 'a[^b]')).toBe(true);
+		expect(() => githubPathPattern('a[x\\]')).not.toThrow();
+	});
+
+	it('`?` et `+` après `*` ou une classe portent sur cet élément', () => {
+		expect(matches('a*?b', 'axxb')).toBe(true);
+		expect(matches('[ab]+c', 'abbac')).toBe(true);
 	});
 
 	it('`\\` échappe un caractère spécial', () => {
@@ -78,6 +94,14 @@ describe('uncoveredFiles', () => {
 	it('rend les fichiers atteints qu’aucun motif ne couvre', () => {
 		const files = ['src/lib/server/a.ts', 'src/lib/components/b.svelte'];
 		expect(uncoveredFiles(files, ['src/lib/server/**'])).toEqual(['src/lib/components/b.svelte']);
+	});
+
+	it('une négation avec `**/` exclut aussi un fichier à la racine du dossier', () => {
+		const files = ['src/lib/a.md', 'src/lib/x/b.md', 'src/lib/c.ts'];
+		expect(uncoveredFiles(files, ['src/lib/**', '!src/lib/**/*.md'])).toEqual([
+			'src/lib/a.md',
+			'src/lib/x/b.md'
+		]);
 	});
 
 	it('une négation en tête retire ce qu’un motif précédent couvrait', () => {

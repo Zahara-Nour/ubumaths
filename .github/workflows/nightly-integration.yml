@@ -23,11 +23,12 @@ on:
   workflow_dispatch:
   pull_request:
     # Filtre établi le 2026-09-29 en calculant la fermeture transitive des
-    # imports de la suite (tests/integration/**/*.test.ts + global-setup.ts) :
-    # 519 fichiers de src/ atteints. Dossier entier (/**) quand la suite en
-    # atteint une bonne part, ou pour ne pas rater un nouveau voisin importé ;
-    # fichiers explicites quand l'atteinte est ponctuelle dans un grand dossier.
-    # Un import ajouté plus tard hors de cette liste n'est vu que par le cron.
+    # imports de la suite (tests/integration/**/*.test.ts + global-setup.ts).
+    # Dossier entier (/**) quand la suite en atteint une bonne part, ou pour ne
+    # pas rater un nouveau voisin importé ; fichiers explicites quand l'atteinte
+    # est ponctuelle dans un grand dossier. Le job `paths-filter` recalcule ce
+    # périmètre à chaque run et échoue si le filtre ne le suit plus
+    # (`pnpm check:integration-paths` fait foi).
     paths:
       # la base, les tests et leur outillage
       - 'supabase/**'
