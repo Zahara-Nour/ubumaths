@@ -280,9 +280,10 @@ export function assumptionsToRows(
 
 /**
  * Hypothèses à enregistrer à partir des lignes : toutes les lignes nommées,
- * TELLES QUELLES (nom rogné). Une ligne invalide n'est pas écartée ici : le
- * schéma Zod (éditeur JSON, API) la refuse avec son message, au lieu de la
- * perdre en silence à l'enregistrement.
+ * nom rogné. Une ligne au nom invalide est gardée : le schéma Zod (éditeur
+ * JSON, API) la refuse avec son message au lieu de la perdre en silence.
+ * Un DOUBLON, lui, ne survit pas à l'objet (la dernière ligne écrase la
+ * première) : l'appelant doit bloquer avant, par `duplicateAssumptionMessage`.
  */
 export function rowsToAssumptions(
 	rows: readonly AnswerAssumptionRow[]
@@ -290,4 +291,22 @@ export function rowsToAssumptions(
 	const named = rows.filter((row) => row.name.trim() !== '');
 	if (named.length === 0) return undefined;
 	return Object.fromEntries(named.map((row) => [row.name.trim(), row.kind]));
+}
+
+/**
+ * Message du premier doublon (même variable sur deux lignes), `undefined`
+ * sinon. L'éditeur bloque l'enregistrement et le passage en JSON tant qu'il y
+ * en a un : `rowsToAssumptions` perdrait la première ligne en silence.
+ */
+export function duplicateAssumptionMessage(
+	rows: readonly AnswerAssumptionRow[]
+): string | undefined {
+	const seen = new Set<string>();
+	for (const row of rows) {
+		const name = row.name.trim();
+		if (name === '') continue;
+		if (seen.has(name)) return MESSAGES.duplicate(name);
+		seen.add(name);
+	}
+	return undefined;
 }

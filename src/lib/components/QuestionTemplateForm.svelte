@@ -98,6 +98,7 @@
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
 	import {
 		assumptionsToRows,
+		duplicateAssumptionMessage,
 		rowsToAssumptions,
 		templateDrawnVariableNames,
 		validateAssumptionRows,
@@ -973,6 +974,12 @@
 				jsonValid = false;
 			}
 		} else {
+			// Doublon d'hypothèse : le JSON perdrait la première ligne en silence
+			const duplicate = duplicateAssumptionMessage(assumptionRows);
+			if (duplicate) {
+				toaster.error(duplicate);
+				return;
+			}
 			// Form → JSON: serialize current state
 			const built = buildTemplate();
 			jsonString = JSON.stringify(built, null, 2);
@@ -1001,6 +1008,12 @@
 				_jsonErrors = ['JSON invalide'];
 				jsonValid = false;
 			}
+			return;
+		}
+		// Doublon d'hypothèse : l'enregistrement perdrait la première ligne en silence
+		const duplicate = duplicateAssumptionMessage(assumptionRows);
+		if (duplicate) {
+			if (!options?.silent) toaster.error(duplicate);
 			return;
 		}
 		const templateData = buildTemplate();

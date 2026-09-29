@@ -15,6 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	answerAssumptionsSchema,
+	duplicateAssumptionMessage,
 	assumptionsToRows,
 	rowsToAssumptions,
 	findAssumptionCollisions,
@@ -385,5 +386,25 @@ describe('aller-retour éditeur ↔ base', () => {
 		};
 		const parsed = updateQuestionTemplateSchema.parse(payload);
 		expect(parsed.options?.answerAssumptions).toEqual({ x: 'positive', n: 'natural' });
+	});
+});
+
+describe('duplicateAssumptionMessage (enregistrement bloqué)', () => {
+	it('x strictement positif + x entier : message de doublon (sinon la 1re ligne disparaît)', () => {
+		const rows = [
+			{ name: 'x', kind: 'positive' as const },
+			{ name: ' x', kind: 'integer' as const }
+		];
+		expect(duplicateAssumptionMessage(rows)).toMatch(/« x » a déjà une hypothèse/);
+	});
+
+	it('sans doublon (lignes vides ignorées) : rien', () => {
+		expect(
+			duplicateAssumptionMessage([
+				{ name: 'x', kind: 'positive' },
+				{ name: '', kind: 'positive' },
+				{ name: ' ', kind: 'integer' }
+			])
+		).toBeUndefined();
 	});
 });
