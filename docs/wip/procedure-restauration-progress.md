@@ -196,9 +196,60 @@ Aucune fonction, vue, type ou table du projet hors `public` (hors
   (`cron.alter_job(<id>, active := false)`), les réactiver après.
 - **Trafic applicatif pendant la restauration** : couper l'accès
   (`pnpm maintenance:on`, puis `:off`).
-- **Liste des tâches de prod** : à relever (lecture seule :
-  `select jobname, schedule, command from cron.job`) et à consigner dans le
-  dépôt, sinon une restauration dans un nouveau projet les perd sans trace.
+- **Liste des tâches de prod** : relevée le 2026-09-29 (section « Tâches
+  `pg_cron` de la production » ci-dessous).
+
+## Tâches `pg_cron` de la production (relevées le 2026-09-29)
+
+Relevé en lecture seule (`select … from cron.job`, via
+`pnpm exec supabase db query --linked`). Ces tâches ont été programmées **à la
+main** : ce tableau est leur seule trace dans le dépôt. **À tenir à jour** à
+chaque tâche ajoutée, modifiée ou supprimée en prod.
+
+| jobid | Nom                                 | Planification (UTC) | Commande                                                |
+| ----- | ----------------------------------- | ------------------- | ------------------------------------------------------- |
+| 1     | `cleanup-stale-trades`              | `*/10 * * * *`      | `SELECT public.cleanup_stale_trades()`                  |
+| 2     | `recalculate-minesweeper-ref-times` | `30 1 * * 0`        | `SELECT public.run_recalculate_minesweeper_ref_times()` |
+| 3     | `cleanup-stuck-job-runs`            | `30 * * * *`        | `SELECT public.cleanup_stuck_job_runs()`                |
+| 4     | `weekly-best-bonuses`               | `0 0,12 * * *`      | `SELECT public.run_weekly_best_bonuses()`               |
+| 5     | `weekly-rewards`                    | `0 0,12 * * *`      | `SELECT public.run_weekly_rewards()`                    |
+| 6     | `daily-summaries`                   | `0 * * * *`         | `SELECT public.run_daily_summaries()`                   |
+| 7     | `cleanup-all`                       | `0 2 * * *`         | `SELECT public.run_cleanup_all()`                       |
+| 8     | `rgpd-retention-cleanup`            | `0 3 * * 0`         | `SELECT public.run_cleanup_expired_data()`              |
+
+Toutes actives, exécutées par `postgres`. Les 8 fonctions appelées existent
+dans le schéma issu des migrations (vérifié sur la pile locale) : une
+restauration les recrée.
+
+⚠️ **Non programmée** : `flag_stale_python_rechecks`, que la migration
+`20260827120000_python_submission_server_verification.sql` décrit comme « à
+programmer » (horaire, `15 * * * *`). La fonction
+`public.run_flag_stale_python_rechecks()` existe mais **ne tourne jamais** en
+prod. À trancher par David (oubli ou choix).
+
+**Recréer dans un nouveau projet :**
+
+```sql
+select cron.schedule('cleanup-stale-trades', '*/10 * * * *', 'SELECT public.cleanup_stale_trades()');
+select cron.schedule('recalculate-minesweeper-ref-times', '30 1 * * 0', 'SELECT public.run_recalculate_minesweeper_ref_times()');
+select cron.schedule('cleanup-stuck-job-runs', '30 * * * *', 'SELECT public.cleanup_stuck_job_runs()');
+select cron.schedule('weekly-best-bonuses', '0 0,12 * * *', 'SELECT public.run_weekly_best_bonuses()');
+select cron.schedule('weekly-rewards', '0 0,12 * * *', 'SELECT public.run_weekly_rewards()');
+select cron.schedule('daily-summaries', '0 * * * *', 'SELECT public.run_daily_summaries()');
+select cron.schedule('cleanup-all', '0 2 * * *', 'SELECT public.run_cleanup_all()');
+select cron.schedule('rgpd-retention-cleanup', '0 3 * * 0', 'SELECT public.run_cleanup_expired_data()');
+```
+
+**Suspendre pendant une restauration sur place, puis réactiver** (non testé) :
+
+```sql
+select cron.alter_job(jobid, active := false) from cron.job;  -- avant
+select cron.alter_job(jobid, active := true)  from cron.job;  -- après
+```
+
+`cleanup-stale-trades` tourne toutes les 10 minutes et `daily-summaries`
+toutes les heures : une restauration de plus de quelques minutes les croisera
+presque sûrement.
 
 ## Questions pour David
 
@@ -226,3 +277,7 @@ Aucune fonction, vue, type ou table du projet hors `public` (hors
   migrations (sans effet sur place) et **tâches `pg_cron` programmées à la main
   sur la prod**, absentes du dépôt. Ajouts à la procédure : suspendre les
   tâches cron et passer en maintenance pendant une restauration.
+- 2026-09-29 — **Tâches `pg_cron` de prod relevées** (lecture seule, CLI
+  `db query --linked` ; le MCP read-only a refusé : `SUPABASE_ACCESS_TOKEN` non
+  exporté sur le Mac mini). 8 tâches actives, fonctions toutes présentes dans
+  les migrations. `flag_stale_python_rechecks` n'est PAS programmée.
