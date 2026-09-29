@@ -1,0 +1,18 @@
+{
+	"templateId": "ce3247c0-d642-4bf9-ba3e-b8de60f76d72",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:c*10+d}}$ selon ses rangs : ${{eval:c*10+d}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10+d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10+d)),10)}}}$. On ajoute les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{eval:c*10+d}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10+d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10+d)),10)}}}{{if:(floor(mod(((c*10+d)),100)/10)*10)*((mod(((c*10+d)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+((floor(mod(((c*10+d)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10+d)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*10 + b}} + {{eval:c*10+d}} : 2 rang(s) (domaine entier, 2916 combinaisons)"
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"templateId": "6ac9df91-c5e0-4a59-9ce5-029eeab9f6fd",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** {{if:(ceil(((d-c))/10)*10-((d-c)))*(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|On avance de ${{eval:d-c}}$ jusqu'à ${{d}}$ en passant par les nombres ronds : ${{eval:d-c}}{{if:(ceil(((d-c))/10)*10-((d-c)))*((d)-ceil(((d-c))/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d-c))/10)*10}}}|}} \\to {{d}}$. Le nombre cherché est la somme des bonds.|On avance de ${{eval:d-c}}$ jusqu'à ${{d}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{d}}} - \\textcolor{{{color:primary.0}}}{{{eval:d-c}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil(((d-c))/10)*10-((d-c)))*(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|{{if:(ceil(((d-c))/10)*10-((d-c)))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil(((d-c))/10)*10-((d-c))}}}|}}{{if:(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|{{if:(ceil(((d-c))/10)*10-((d-c)))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:ceil(((d-c))/100)*100-ceil(((d-c))/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{{{d}}} - \\textcolor{{{color:primary.0}}}{{{eval:d-c}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** {{if:(ceil(((d-c))/10)*10-((d-c)))*(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|On avance de ${{eval:d-c}}$ jusqu'à ${{d}}$ en passant par les nombres ronds : ${{eval:d-c}}{{if:(ceil(((d-c))/10)*10-((d-c)))*((d)-ceil(((d-c))/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d-c))/10)*10}}}|}} \\to {{d}}$. Le nombre cherché est la somme des bonds.|On avance de ${{eval:d-c}}$ jusqu'à ${{d}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{d}}} - \\textcolor{{{color:primary.0}}}{{{eval:d-c}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil(((d-c))/10)*10-((d-c)))*(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|{{if:(ceil(((d-c))/10)*10-((d-c)))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil(((d-c))/10)*10-((d-c))}}}|}}{{if:(ceil(((d-c))/100)*100-ceil(((d-c))/10)*10)>0|{{if:(ceil(((d-c))/10)*10-((d-c)))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:ceil(((d-c))/100)*100-ceil(((d-c))/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{{{d}}} - \\textcolor{{{color:primary.0}}}{{{eval:d-c}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{eval:d-c}} à {{d}}, rangs 10, 100 (domaine entier, 792 combinaisons)",
+		"variation 1 : bonds de {{eval:d-c}} à {{d}}, rangs 10, 100 (domaine entier, 792 combinaisons)"
+	]
+}

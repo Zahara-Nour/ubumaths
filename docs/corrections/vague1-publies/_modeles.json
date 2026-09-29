@@ -1,0 +1,4859 @@
+[
+	{
+		"id": "5706769f-d29d-410d-a2e0-2943d3c11a25",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 11,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "12..{{eval:a*10-12}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b}}+{{eval:100-b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.079699+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres dont la somme vaut 100",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"description": "56+44",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["110"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "56"
+				},
+				"description": "retenue mal gérée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "12"
+				},
+				"description": "borne 12+88",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "c381596f-f278-4f29-a205-5c60f748b590",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:c-b}}={{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:c-b}}+?={{c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.186452+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "À la dizaine supérieure",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*10"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "70"
+				},
+				"description": "Bonne réponse 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "70"
+				},
+				"description": "Erreur : complément du chiffre des unités",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "90"
+				},
+				"description": "Bonne réponse 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "90"
+				},
+				"description": "Erreur : dizaine mal comptée",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "cba5b70a-6b03-405c-955c-01554a4e55a2",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 3,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10-b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{b}}={{eval:a*10}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10-b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}+?={{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.31631+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à un multiple de 10",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..{{eval:a*10-2}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["75"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "15"
+				},
+				"description": "Bonne réponse 75",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["85"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "15"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["27"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "3"
+				},
+				"description": "Bonne réponse 27",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "3"
+				},
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "b2ad1cc0-55cf-41be-9db7-3f24f77fc200",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+b=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b+?=100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.456108+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à 100 des dizaines entières",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*a"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "70"
+				},
+				"description": "Bonne réponse 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "70"
+				},
+				"description": "Erreur : dizaines au lieu du nombre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "20"
+				},
+				"description": "Bonne réponse 80",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "20"
+				},
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "6ac9df91-c5e0-4a59-9ce5-029eeab9f6fd",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 5,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:d-c}}={{d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:d-c}}+?={{d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.622584+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "À la centaine supérieure",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..99"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*100"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"c": "98",
+					"d": "700"
+				},
+				"description": "Bonne réponse 98",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["108"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"c": "98",
+					"d": "700"
+				},
+				"description": "Erreur : retenue mal gérée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"c": "20",
+					"d": "900"
+				},
+				"description": "Bonne réponse 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"c": "20",
+					"d": "900"
+				},
+				"description": "Erreur : centaine mal comptée",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "ff427b27-6f6c-4679-9fc7-fc6c66aaa867",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 6,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+a=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:100-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+?=100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.739874+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à 100",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..99"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["29"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Bonne réponse 29",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["39"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "71"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "97"
+				},
+				"description": "Bonne réponse 3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "97"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "d186d4ef-6880-4261-95f4-6d9e64b75388",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 7,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+a=1000"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:1000-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+?=1000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.856012+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à 1000",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..999"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["290"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "710"
+				},
+				"description": "Bonne réponse 290",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["390"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "710"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["26"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "974"
+				},
+				"description": "Bonne réponse 26",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "974"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "115745fe-b2ac-49fb-b6b3-447503077924",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 8,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:d-c}}={{d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:d-c}}+?={{d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:33.972677+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Au millier supérieur",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..999"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*1000"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["948"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"c": "948",
+					"d": "7000"
+				},
+				"description": "Bonne réponse 948",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1948"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"c": "948",
+					"d": "7000"
+				},
+				"description": "Erreur : millier mal compté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"c": "70",
+					"d": "3000"
+				},
+				"description": "Bonne réponse 70",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["170"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"c": "70",
+					"d": "3000"
+				},
+				"description": "Erreur : centaine mal comptée",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "45e9fa53-1c61-40e8-88a4-183fcb162ce5",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 9,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:10000-(c)}}=10000"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:10000-(c)}}+?=10000"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:34.105441+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à 10 000 - à trou",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*1000+b*100"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Bonne réponse 7\\,900",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\,100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Erreur : recopie le nombre donné",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\,100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2100"
+				},
+				"description": "Bonne réponse 2\\,100",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3\\,100"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "2100"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "716d5c68-4b13-4cdb-b063-bdfa07ead4db",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 5,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression7}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression8}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{eval:a*10 + b}} + {{c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:31.302346+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Somme sans retenue. Au moins un nombre à 2 chiffres.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"description": "v0 : 99",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"description": "v1 : 98",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["98"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "2",
+					"d": "4"
+				},
+				"description": "v2 : 98",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "v3 : 99",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["79"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "v4 : 79",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "v5 : 49",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["79"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "5"
+				},
+				"description": "v6 : 79",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["49"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "v7 : 49",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["89"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"description": "erreur",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ce3247c0-d642-4bf9-ba3e-b8de60f76d72",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 9,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} +{{eval:c*10+d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:31.81797+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres (sans retenue entre les unités et les dizaines)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["169"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "1"
+				},
+				"description": "78+91",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["159"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "1"
+				},
+				"description": "erreur dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "1",
+					"d": "2"
+				},
+				"description": "25+12",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "5d4dfd32-bc56-49a5-827c-7233881a68ad",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 16,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:9-c}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} + {{eval:d*100 + f*10 + g}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.759264+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 3 chiffres (sans retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["998"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "682+316",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["988"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "erreur",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "fe9df9ba-2017-4027-b678-bae8196c3651",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 17,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..7"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:8-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:11-c}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} +{{eval:d*100+f*10+g}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.908033+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 3 chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["892"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "3",
+					"d": "3",
+					"f": "1",
+					"g": "9"
+				},
+				"description": "573+319",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["882"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "7",
+					"c": "3",
+					"d": "3",
+					"f": "1",
+					"g": "9"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "fc29d0c2-cb55-4b38-89b4-ab275b3442ae",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 2,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:a*10+c}}-{{b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:49.508251+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, sans franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "4"
+				},
+				"description": "cas normal",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["32"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "4"
+				},
+				"description": "résultat faux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["34-1"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "4"
+				},
+				"description": "mauvaise forme",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["033"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "4"
+				},
+				"description": "forme non optimale",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "3",
+					"b": "1",
+					"c": "4"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b0b30022-ed72-45e9-bbf9-628711470573",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 6,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval: d*10 + f}} "
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.069904+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": " Soustraire un nombre à deux chiffres à un nombre à $3$ chiffres, sans retenue",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["741"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2",
+					"f": "4"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["41"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2",
+					"f": "4"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0741"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros", "spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2",
+					"f": "4"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["765-24"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2",
+					"f": "4"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2",
+					"f": "4"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "810f1824-18ac-48e5-bf15-1c0b3854f78b",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 8,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "0..{{eval:c-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10+d}}-{{eval: f*100 + g*10+h}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.359276+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Soustraire un nombre d'au plus $3$ chiffres à un nombre à $4$ chiffres, sans retenue",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9\\,333"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,331"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9333"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,876-543"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "9",
+					"b": "8",
+					"c": "7",
+					"d": "6",
+					"f": "5",
+					"g": "4",
+					"h": "3"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "54468151-387e-425d-bc4f-74bcf1c7fb01",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 7,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + {{eval:c*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:31.567245+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Sommes d’un nombre à deux chiffres et de dizaines entières",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["99"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "69+30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["72"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "dizaines ajoutées aux unités",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "579d0b00-b3a5-46e6-a076-04ec265c1c4f",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 10,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..2"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10+c}} +{{eval:f*10^d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:31.951771+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["829"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"description": "799+30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["802"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"description": "chiffre mal placé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1\\,899"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "2",
+					"f": "9"
+				},
+				"description": "999+900 espacé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1899"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "2",
+					"f": "9"
+				},
+				"description": "999+900 sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ed5f5f52-ba4f-4c51-a843-2be19156b4b7",
+		"title": "Calculer une somme",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 14,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..3"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*1000 + b*100+c*10+d}} +{{eval:g*10^f}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:32.470753+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Somme",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre ayant au plus 4 chiffres et d’un nombre ayant un seul chiffre non nul",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8\\,004"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"description": "7996+8 espacé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8004"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8\\,003"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"description": "retenue oubliée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18\\,999"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9",
+					"c": "9",
+					"d": "9",
+					"f": "3",
+					"g": "9"
+				},
+				"description": "9999+9000",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "201b17f0-a12e-4772-abc4-fe75cb81ef44",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 3,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval:b*10+c}}-{{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:49.638478+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Soustraire des dizaines entières à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["32"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["33"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["72-40"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["032"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "unoptimal form (zeros)",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "4d94ec28-27a9-4af5-8b11-42dc9d9aa103",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 7,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*100}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.212148+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "  Soustraire des centaines entières à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["565"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "corect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["65"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0\\,565"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["765-200"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "a0cae721-afb8-46af-b966-8856fb012be0",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 9,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*10}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*1000}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d}}  - {{eval:f*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.537601+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Soustraire des dizaines entières, des centaines entières ou des milliers entiers à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["676"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["76"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0\\,676"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["876-200"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "8",
+					"b": "7",
+					"c": "6",
+					"d": "2"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["275"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "v2 correct : 345 - 70 = 275",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["375"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "v2 erreur typique : chiffre retranché au plus petit sans retenue (375)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["338"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "v2 erreur : 7 unités retranchées au lieu de 7 dizaines (338)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "9"
+				},
+				"description": "v2 borne : 100 - 90 = 10",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0\\,275"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4",
+					"c": "5",
+					"d": "7"
+				},
+				"description": "v2 zéro inutile : 0\\,275",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1\\,038"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"description": "v3 correct : 5038 - 4000 = 1\\,038",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1038"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"description": "v3 sans espace des milliers : 1038",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1\\,380"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "3",
+					"d": "8",
+					"f": "4"
+				},
+				"description": "v3 erreur : chiffres permutés (1\\,380)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "1"
+				},
+				"description": "v3 borne : 2000 - 1000 = 1\\,000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2\\,541"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"d": "1",
+					"f": "7"
+				},
+				"description": "v4 correct : 3241 - 700 = 2\\,541",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3\\,171"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "4",
+					"d": "1",
+					"f": "7"
+				},
+				"description": "v4 erreur : 7 dizaines retranchées au lieu de 7 centaines (3\\,171)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"description": "v4 borne : 1000 - 900 = 100",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0\\,100"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"description": "v4 zéro inutile : 0\\,100",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["4\\,537"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "v5 correct : 4567 - 30 = 4\\,537",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4\\,564"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "v5 erreur : 3 unités retranchées au lieu de 3 dizaines (4\\,564)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4537"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "5",
+					"c": "6",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "v5 sans espace des milliers : 4537",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["910"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"description": "v5 borne : 1000 - 90 = 910",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1\\,090"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "1",
+					"b": "0",
+					"c": "0",
+					"d": "0",
+					"f": "9"
+				},
+				"description": "v5 erreur : 1\\,090 (retenue oubliée)",
+				"variationIndex": 4
+			}
+		]
+	},
+	{
+		"id": "59b781cc-1e3c-45e7-8b31-9773931129b3",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 1,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*50"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a*25"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:46.466011+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produits particuliers",
+		"exercise_instruction": null,
+		"description": "Premiers multiples de $25$ et $50$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6×50 = 300",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "2×50 = 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "Erreur : 6×5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["150"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6×25 = 150",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "2×25 = 50",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "e58b1357-6fa8-4fce-9518-91d09d9acc49",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 2,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "4*25"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "2*50"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression3}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "5*12"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression4}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "4*15"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression5}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "4*20"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression6}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "5*14"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression7}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "5*18"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression8}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "6*15"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression9}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "6*20"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression10}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "8*15"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:46.633751+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produits particuliers",
+		"exercise_instruction": null,
+		"description": "Produits à connaître par cœur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "4×25 = 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "2×50 = 100",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "5×12 = 60",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "4×15 = 60",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "4×20 = 80",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "5×14 = 70",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "5×18 = 90",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "6×15 = 90",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "6×20 = 120",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["120"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "8×15 = 120",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["1\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 4×25 lu 1000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 6×15 = 80",
+				"variationIndex": 7
+			}
+		]
+	},
+	{
+		"id": "3d0d175f-0d2a-40d1-bc08-104c564d66d3",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 7,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:43.659679+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "Un facteur à $2$ chiffres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "12..99"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["665"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "95"
+				},
+				"description": "7×95 = 665",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["635"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "95"
+				},
+				"description": "Erreur : retenue oubliée (635)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["665"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "95"
+				},
+				"description": "95×7 = 665",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["672"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "95"
+				},
+				"description": "Erreur : 7×95 + 7",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "d793de49-b065-46ea-aa8b-d09adcbb7617",
+		"title": "Calculer un produit d'entiers",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 8,
+		"status": "published",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:43.789394+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "Un facteur à $3$ chiffres",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "102..999"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6\\,671"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"description": "7×953 = 6 671",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6671"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"description": "6671 sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6\\,331"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "953"
+				},
+				"description": "Erreur : retenue oubliée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["492"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "164"
+				},
+				"description": "164×3 = 492",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["462"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "164"
+				},
+				"description": "Erreur : 462",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "61baef92-f8ff-4641-91f3-74ce63f04232",
+		"title": "Calculer un quotient entier",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 2,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "3..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:54.084307+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Le dividende est un nombre de dizaines (simple)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "250:5 = 50",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "Borne : 180:3 = 60",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5"
+				},
+				"description": "Erreur : zéro oublié",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "09f22a2f-9a2d-404a-b0b4-be00046b3d49",
+		"title": "Calculer un quotient entier",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 3,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:54.192648+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Quotient",
+		"exercise_instruction": null,
+		"description": "Le dividende est un nombre de dizaines",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "630:9 = 70",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "Borne : 810:9 = 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : zéro oublié",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "68bb6eda-b853-4a98-aad6-4fea055a7482",
+		"title": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 4,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}*{{b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*{{eval:a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:43.217854+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "Nombre à $1$ chiffre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["630"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "70×9 = 630",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 7×9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["270"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "3×90 = 270",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2\\,700"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "Erreur : 2 700",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "0e39dbfb-cd2c-4d78-b070-7bdc1d7a62cc",
+		"title": "Multiplier par 20",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*20"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:42.935899+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "Nombre à $1$ chiffre",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["140"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7×20 = 140",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : 7×2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["180"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "20×9 = 180",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1\\,800"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "Erreur : zéro oublié… en trop",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0"
+				},
+				"description": "Borne 0 : 20×0 = 0",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "7caa084f-655c-49ce-8658-1e253efbbeda",
+		"title": "Décomposer un entier en produit",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 1,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{b}}"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:a*b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*{{eval:2*a}}"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "expression2",
+						"expression": "eval:a*4"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*{{eval:4*a}}"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "expression3",
+						"expression": "eval:a*8"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*{{eval:3*a}}"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "expression4",
+						"expression": "eval:a*6"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "3*{{eval:3*a}}"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2|3|5|7"
+					},
+					{
+						"name": "expression5",
+						"expression": "eval:a*9"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*16"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "32"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*18"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "36"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*24"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "48"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*27"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "54"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*32"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "64"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2*36"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "72"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "3*27"
+					}
+				],
+				"statement": "Décompose ce nombre en un produit de $2$ facteurs ($1$ n'est pas un facteur autorisé).\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "81"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:53.579604+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Décomposition",
+		"exercise_instruction": null,
+		"description": "Produit de deux nombres entiers",
+		"shared": {
+			"requiredForm": {
+				"pattern": "a:inN & gte(2) * b:inN & gte(2)"
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\times2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "2"
+				},
+				"description": "14 = 7×2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\times7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "2"
+				},
+				"description": "14 = 2×7 (ordre libre)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "2"
+				},
+				"description": "Recopie du nombre refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "20 = 4×5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\times8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "40 = 5×8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "30 = 6×5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9\\times7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "63 = 9×7",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4\\times8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "32 = 4×8",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["6\\times6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "36 = 6×6",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["1\\times36"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {},
+				"description": "36 : 1×36 refusé (1 interdit)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["2\\times2\\times9"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {},
+				"description": "36 : trois facteurs refusés",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["3\\times16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "48 = 3×16",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["6\\times9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "54 = 6×9",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["8\\times8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "64 = 8×8",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["8\\times9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "72 = 8×9",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["9\\times9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "81 = 9×9",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["8\\times10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : produit faux",
+				"variationIndex": 11
+			}
+		]
+	},
+	{
+		"id": "5f78bd0e-9913-483f-808b-73d4b7d7a0a4",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 10,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*10 + d}}  - {{eval: c*10 + b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.714076+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Nombres à $2$ chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["27"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["028"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "unoptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["45-17"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "1",
+					"d": "5"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "08fbcd26-6068-47cc-8384-8aeed96c6a78",
+		"title": "Calculer une différence (résultat positif)",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 11,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "eval:expression"
+					}
+				],
+				"statement": "$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:c-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + f*10 + g}}  - {{eval: d*100 + b*10 + c}} "
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:50.855071+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Différence",
+		"exercise_instruction": "Calcule.",
+		"description": "Nombres à $3$ chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["229"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "correct",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "incorrect",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["229,0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "unomptimal form",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["456-227"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "bad form",
+				"variationIndex": 0
+			},
+			{
+				"answers": [""],
+				"expected": {
+					"status": "empty"
+				},
+				"variables": {
+					"a": "4",
+					"b": "2",
+					"c": "7",
+					"d": "2",
+					"f": "5",
+					"g": "6"
+				},
+				"description": "empty",
+				"variationIndex": 0
+			}
+		]
+	}
+]

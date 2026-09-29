@@ -1,0 +1,23 @@
+{
+	"templateId": "3d0d175f-0d2a-40d1-bc08-104c564d66d3",
+	"title": "Calculer un produit d'entiers",
+	"classe": "R",
+	"code": "R-DISTRIB",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"{{if:(floor(mod((b),100)/10)*10)*(mod((b),10))>0|**Décomposer un facteur.** On décompose ${{b}}$ selon ses rangs, ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((b),100)/10)*10}}}{{if:(mod((b),10))>0| + \\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}|}}$, puis on multiplie chaque morceau par ${{a}}$ et on ajoute les résultats.|{{if:mod((b),100)=0|**Décomposer un facteur.** ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}}$, puis par $100$.|**Décomposer un facteur.** ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}}$, puis par $10$.}}}}",
+				"$$\\begin{align} {{a}} \\times {{b}} &= {{if:(floor(mod((b),100)/10)*10)*(mod((b),10))>0|{{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((b),100)/10)*10}}}{{if:(mod((b),10))>0| + {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}|}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(floor(mod((b),100)/10)*10)}}}{{if:(mod((b),10))>0| + \\textcolor{{{color:primary.1}}}{{{eval:(a)*(mod((b),10))}}}|}}|{{if:mod((b),100)=0|{{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(b)/100}}} \\times 100|{{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(b)/10}}} \\times 10}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"{{if:(floor(mod((b),100)/10)*10)*(mod((b),10))>0|**Décomposer un facteur.** On décompose ${{b}}$ selon ses rangs, ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((b),100)/10)*10}}}{{if:(mod((b),10))>0| + \\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}|}}$, puis on multiplie chaque morceau par ${{a}}$ et on ajoute les résultats.|{{if:mod((b),100)=0|**Décomposer un facteur.** ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}}$, puis par $100$.|**Décomposer un facteur.** ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}}$, puis par $10$.}}}}",
+				"$$\\begin{align} {{b}} \\times {{a}} &= {{if:(floor(mod((b),100)/10)*10)*(mod((b),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:floor(mod((b),100)/10)*10}}} \\times {{a}}{{if:(mod((b),10))>0| + \\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}} \\times {{a}}|}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(floor(mod((b),100)/10)*10)}}}{{if:(mod((b),10))>0| + \\textcolor{{{color:primary.1}}}{{{eval:(a)*(mod((b),10))}}}|}}|{{if:mod((b),100)=0|\\textcolor{{{color:primary.0}}}{{{eval:(b)/100}}} \\times {{a}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(b)/100}}} \\times 100|\\textcolor{{{color:primary.0}}}{{{eval:(b)/10}}} \\times {{a}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(b)/10}}} \\times 10}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{a}} \\times {{b}} : {{b}} décomposé, 2 morceau(x) (domaine entier, 704 combinaisons)",
+		"variation 1 : {{b}} \\times {{a}} : {{b}} décomposé, 2 morceau(x) (domaine entier, 704 combinaisons)"
+	]
+}

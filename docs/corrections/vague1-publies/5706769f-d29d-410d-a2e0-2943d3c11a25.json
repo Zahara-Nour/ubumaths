@@ -1,0 +1,18 @@
+{
+	"templateId": "5706769f-d29d-410d-a2e0-2943d3c11a25",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter jusqu'au nombre rond.** {{if:(ceil((b)/10)*10-(b))>0|On décompose ${{eval:100-b}}$ en deux bonds : le premier complète ${{eval:b}}$ à la dizaine, le second va jusqu'à ${{eval:b+(100-b)}}$ : ${{eval:b}}{{if:(ceil((b)/10)*10-(b))*((b+(100-b))-ceil((b)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((b)/10)*10}}}|}} \\to {{eval:b+(100-b)}}$.|${{eval:b}}$ et ${{eval:100-b}}$ sont des nombres ronds de dizaines : on compte en dizaines.}}",
+				"$$\\begin{align} {{eval:b}} + {{eval:100-b}} &= {{if:(ceil((b)/10)*10-(b))>0|{{eval:b}} + \\textcolor{{{color:primary.0}}}{{{eval:ceil((b)/10)*10-(b)}}} + \\textcolor{{{color:primary.0}}}{{{eval:(b+(100-b))-ceil((b)/10)*10}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:ceil((b)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:(b+(100-b))-ceil((b)/10)*10}}}|{{eval:b}} + {{eval:100-b}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : somme {{eval:b}} + {{eval:100-b}} : bonds par la dizaine (domaine entier, 259 combinaisons)"
+	]
+}

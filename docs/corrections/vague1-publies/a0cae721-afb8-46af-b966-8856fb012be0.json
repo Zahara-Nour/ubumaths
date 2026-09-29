@@ -1,0 +1,38 @@
+{
+	"templateId": "a0cae721-afb8-46af-b966-8856fb012be0",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Retrancher des centaines entières.** On retranche ${{eval:d*100}}$, c'est-à-dire ${{eval:((d*100))/100}}$ {{if:((d*100))=100|centaine|centaines}} : {{if:(mod(((a*100 + b*10 + c)),100))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),100)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)}}} - {{eval:d*100}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)-(d*100)}}}$.|on compte en centaines.}}",
+				"$$\\begin{align} {{eval: a*100 + b*10 + c}} - {{eval:d*100}} &= {{if:(mod(((a*100 + b*10 + c)),100))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)}}} - {{eval:d*100}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),100)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)-(d*100)}}} + {{eval:mod(((a*100 + b*10 + c)),100)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			],
+			[
+				"**Retrancher des dizaines entières.** On retranche ${{eval:d*10}}$, c'est-à-dire ${{eval:((d*10))/10}}$ {{if:((d*10))=10|dizaine|dizaines}} : {{if:(mod(((a*100 + b*10 + c)),10))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),10)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10)}}} - {{eval:d*10}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10)-(d*10)}}}$.|on compte en dizaines.}}",
+				"$$\\begin{align} {{eval: a*100 + b*10 + c}} - {{eval:d*10}} &= {{if:(mod(((a*100 + b*10 + c)),10))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10)}}} - {{eval:d*10}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),10)-(d*10)}}} + {{eval:mod(((a*100 + b*10 + c)),10)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			],
+			[
+				"**Retrancher des milliers entiers.** On retranche ${{eval:f*1000}}$, c'est-à-dire ${{eval:((f*1000))/1000}}$ {{if:((f*1000))=1000|millier|milliers}} : {{if:(mod(((a*1000 + b*100 + c*10 + d)),1000))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),1000)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000)}}} - {{eval:f*1000}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000)-(f*1000)}}}$.|on compte en milliers.}}",
+				"$$\\begin{align} {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*1000}} &= {{if:(mod(((a*1000 + b*100 + c*10 + d)),1000))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000)}}} - {{eval:f*1000}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),1000)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),1000)-(f*1000)}}} + {{eval:mod(((a*1000 + b*100 + c*10 + d)),1000)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			],
+			[
+				"**Retrancher des centaines entières.** On retranche ${{eval:f*100}}$, c'est-à-dire ${{eval:((f*100))/100}}$ {{if:((f*100))=100|centaine|centaines}} : {{if:(mod(((a*1000 + b*100 + c*10 + d)),100))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),100)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100)}}} - {{eval:f*100}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100)-(f*100)}}}$.|on compte en centaines.}}",
+				"$$\\begin{align} {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*100}} &= {{if:(mod(((a*1000 + b*100 + c*10 + d)),100))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100)}}} - {{eval:f*100}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),100)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),100)-(f*100)}}} + {{eval:mod(((a*1000 + b*100 + c*10 + d)),100)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			],
+			[
+				"**Retrancher des dizaines entières.** On retranche ${{eval:f*10}}$, c'est-à-dire ${{eval:((f*10))/10}}$ {{if:((f*10))=10|dizaine|dizaines}} : {{if:(mod(((a*1000 + b*100 + c*10 + d)),10))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),10)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10)}}} - {{eval:f*10}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10)-(f*10)}}}$.|on compte en dizaines.}}",
+				"$$\\begin{align} {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*10}} &= {{if:(mod(((a*1000 + b*100 + c*10 + d)),10))*((a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10)}}} - {{eval:f*10}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*1000 + b*100 + c*10 + d)),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10 + d)-mod(((a*1000 + b*100 + c*10 + d)),10)-(f*10)}}} + {{eval:mod(((a*1000 + b*100 + c*10 + d)),10)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval: a*100 + b*10 + c}} - {{eval:d*100}} : rang(s) 100 (domaine entier, 3600 combinaisons)",
+		"variation 1 : {{eval: a*100 + b*10 + c}} - {{eval:d*10}} : rang(s) 10 (domaine entier, 8100 combinaisons)",
+		"variation 2 : {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*1000}} : rang(s) 1000 (5000 graines : domaine > 20000 combinaisons)",
+		"variation 3 : {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*100}} : rang(s) 100 (5000 graines : domaine > 20000 combinaisons)",
+		"variation 4 : {{eval: a*1000 + b*100 + c*10 + d}} - {{eval:f*10}} : rang(s) 10 (5000 graines : domaine > 20000 combinaisons)"
+	]
+}

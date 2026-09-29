@@ -1,0 +1,23 @@
+{
+	"templateId": "814a46a9-2f73-4b2d-91e4-2052fc425b53",
+	"title": "Calculer un produit",
+	"classe": "R",
+	"code": "R-DISTRIB",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Décomposer un facteur.** On décompose ${{b}}$ selon ses rangs, ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(b)}}} + \\textcolor{{{color:primary.0}}}{{{eval:round(((b)-floor(b))*10)/10;d}}}$, puis on multiplie chaque morceau par ${{a}}$ et on ajoute les résultats.",
+				"$$\\begin{align} {{a}} \\times {{b}} &= {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(b)}}} + {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:round(((b)-floor(b))*10)/10;d}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(floor(b));d}}} + \\textcolor{{{color:primary.1}}}{{{eval:(a)*(round(((b)-floor(b))*10)/10);d}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose ${{b}}$ selon ses rangs, ${{b}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(b)}}} + \\textcolor{{{color:primary.0}}}{{{eval:round(((b)-floor(b))*10)/10;d}}}$, puis on multiplie chaque morceau par ${{a}}$ et on ajoute les résultats.",
+				"$$\\begin{align} {{b}} \\times {{a}} &= \\textcolor{{{color:primary.0}}}{{{eval:floor(b)}}} \\times {{a}} + \\textcolor{{{color:primary.0}}}{{{eval:round(((b)-floor(b))*10)/10;d}}} \\times {{a}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(floor(b));d}}} + \\textcolor{{{color:primary.1}}}{{{eval:(a)*(round(((b)-floor(b))*10)/10);d}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{a}} \\times {{b}} : {{b}} décomposé (unités + dixièmes), 2 morceau(x) (domaine entier, 648 combinaisons)",
+		"variation 1 : {{b}} \\times {{a}} : {{b}} décomposé (unités + dixièmes), 2 morceau(x) (domaine entier, 648 combinaisons)"
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"templateId": "45e9fa53-1c61-40e8-88a4-183fcb162ce5",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** On avance de ${{eval:10000-(c)}}$ jusqu'à $10000$ en passant par les nombres ronds : ${{eval:10000-(c)}} \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((10000-(c)))/1000)*1000}}} \\to 10000$. Le nombre cherché est la somme des bonds.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:ceil(((10000-(c)))/1000)*1000-ceil(((10000-(c)))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:(10000)-ceil(((10000-(c)))/1000)*1000}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** On avance de ${{eval:10000-(c)}}$ jusqu'à $10000$ en passant par les nombres ronds : ${{eval:10000-(c)}} \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((10000-(c)))/1000)*1000}}} \\to 10000$. Le nombre cherché est la somme des bonds.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:ceil(((10000-(c)))/1000)*1000-ceil(((10000-(c)))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:(10000)-ceil(((10000-(c)))/1000)*1000}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{eval:10000-(c)}} à 10000, rangs 10, 100, 1000 (domaine entier, 81 combinaisons)",
+		"variation 1 : bonds de {{eval:10000-(c)}} à 10000, rangs 10, 100, 1000 (domaine entier, 81 combinaisons)"
+	]
+}

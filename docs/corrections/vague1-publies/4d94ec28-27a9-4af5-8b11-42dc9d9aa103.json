@@ -1,0 +1,18 @@
+{
+	"templateId": "4d94ec28-27a9-4af5-8b11-42dc9d9aa103",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Retrancher des centaines entières.** On retranche ${{eval:d*100}}$, c'est-à-dire ${{eval:((d*100))/100}}$ {{if:((d*100))=100|centaine|centaines}} : {{if:(mod(((a*100 + b*10 + c)),100))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),100)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)}}} - {{eval:d*100}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)-(d*100)}}}$.|on compte en centaines.}}",
+				"$$\\begin{align} {{eval: a*100 + b*10 + c}} - {{eval:d*100}} &= {{if:(mod(((a*100 + b*10 + c)),100))*((a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)}}} - {{eval:d*100}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10 + c)),100)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-mod(((a*100 + b*10 + c)),100)-(d*100)}}} + {{eval:mod(((a*100 + b*10 + c)),100)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval: a*100 + b*10 + c}} - {{eval:d*100}} : rang(s) 100 (domaine entier, 2916 combinaisons)"
+	]
+}

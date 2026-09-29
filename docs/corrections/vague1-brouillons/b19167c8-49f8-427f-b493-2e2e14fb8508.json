@@ -1,0 +1,23 @@
+{
+	"templateId": "b19167c8-49f8-427f-b493-2e2e14fb8508",
+	"title": "Trouver le complément ",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** {{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|On avance de ${{eval:a-b;d}}$ jusqu'à ${{a}}$ en passant par les nombres ronds : ${{eval:a-b;d}}{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:(ceil(round(((a-b))*100)/10)*10)/100;d}}}|}} \\to {{a}}$. Le nombre cherché est la somme des bonds.|On avance de ${{eval:a-b;d}}$ jusqu'à ${{a}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{eval:a-b;d}}}$.}}",
+				"$$\\begin{align} ? &= {{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)>0|\\textcolor{{{color:primary.0}}}{{{eval:(ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100;d}}}|}}{{if:((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100;d}}}|}}|\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{eval:a-b;d}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** {{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|On avance de ${{eval:a-b;d}}$ jusqu'à ${{a}}$ en passant par les nombres ronds : ${{eval:a-b;d}}{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:(ceil(round(((a-b))*100)/10)*10)/100;d}}}|}} \\to {{a}}$. Le nombre cherché est la somme des bonds.|On avance de ${{eval:a-b;d}}$ jusqu'à ${{a}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{eval:a-b;d}}}$.}}",
+				"$$\\begin{align} ? &= {{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)*((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)>0|\\textcolor{{{color:primary.0}}}{{{eval:(ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100;d}}}|}}{{if:((round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100)>0|{{if:((ceil(round(((a-b))*100)/10)*10-round(((a-b))*100))/100)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(round((a)*100)-ceil(round(((a-b))*100)/10)*10)/100;d}}}|}}|\\textcolor{{{color:primary.0}}}{{{a}}} - \\textcolor{{{color:primary.0}}}{{{eval:a-b;d}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{eval:a-b;d}} à {{a}}, rangs 10 (centièmes) (domaine entier, 1620 combinaisons)",
+		"variation 1 : bonds de {{eval:a-b;d}} à {{a}}, rangs 10 (centièmes) (domaine entier, 1620 combinaisons)"
+	]
+}

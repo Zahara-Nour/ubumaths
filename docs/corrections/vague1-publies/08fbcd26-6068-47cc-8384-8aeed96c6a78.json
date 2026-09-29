@@ -1,0 +1,18 @@
+{
+	"templateId": "08fbcd26-6068-47cc-8384-8aeed96c6a78",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-POSE",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer un écart.** ${{eval: a*100 + f*10 + g}} - {{eval: d*100 + b*10 + c}}$, c'est l'écart entre ${{eval: d*100 + b*10 + c}}$ et ${{eval: a*100 + f*10 + g}}$ : on avance de ${{eval: d*100 + b*10 + c}}$ jusqu'à ${{eval: a*100 + f*10 + g}}$ par bonds, en passant par les nombres ronds : ${{eval: d*100 + b*10 + c}} \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d*100 + b*10 + c))/10)*10}}}{{if:(ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10)*(((a*100 + f*10 + g))-ceil(((d*100 + b*10 + c))/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((d*100 + b*10 + c))/100)*100}}}|}}{{if:(floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100)*(((a*100 + f*10 + g))-floor(((a*100 + f*10 + g))/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:floor(((a*100 + f*10 + g))/100)*100}}}|}} \\to {{eval: a*100 + f*10 + g}}$. L'écart est la somme des bonds.",
+				"$$\\begin{align} {{eval: a*100 + f*10 + g}} - {{eval: d*100 + b*10 + c}} &= \\textcolor{{{color:primary.0}}}{{{eval:ceil(((d*100 + b*10 + c))/10)*10-((d*100 + b*10 + c))}}}{{if:(ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10)>0| + \\textcolor{{{color:primary.0}}}{{{eval:ceil(((d*100 + b*10 + c))/100)*100-ceil(((d*100 + b*10 + c))/10)*10}}}|}}{{if:(floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100)>0| + \\textcolor{{{color:primary.0}}}{{{eval:floor(((a*100 + f*10 + g))/100)*100-ceil(((d*100 + b*10 + c))/100)*100}}}|}} + \\textcolor{{{color:primary.0}}}{{{eval:((a*100 + f*10 + g))-floor(((a*100 + f*10 + g))/100)*100}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : écart de {{eval: d*100 + b*10 + c}} à {{eval: a*100 + f*10 + g}}, rangs 10, 100 (5000 graines : domaine > 20000 combinaisons)"
+	]
+}

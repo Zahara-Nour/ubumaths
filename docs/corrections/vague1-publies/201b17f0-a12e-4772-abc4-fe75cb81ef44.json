@@ -1,0 +1,18 @@
+{
+	"templateId": "201b17f0-a12e-4772-abc4-fe75cb81ef44",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Retrancher des dizaines entières.** On retranche ${{eval:a*10}}$, c'est-à-dire ${{eval:((a*10))/10}}$ {{if:((a*10))=10|dizaine|dizaines}} : {{if:(mod(((b*10+c)),10))*((b*10+c)-mod(((b*10+c)),10))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((b*10+c)),10)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(b*10+c)-mod(((b*10+c)),10)}}} - {{eval:a*10}} = \\textcolor{{{color:primary.1}}}{{{eval:(b*10+c)-mod(((b*10+c)),10)-(a*10)}}}$.|on compte en dizaines.}}",
+				"$$\\begin{align} {{eval:b*10+c}} - {{eval:a*10}} &= {{if:(mod(((b*10+c)),10))*((b*10+c)-mod(((b*10+c)),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:(b*10+c)-mod(((b*10+c)),10)}}} - {{eval:a*10}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((b*10+c)),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(b*10+c)-mod(((b*10+c)),10)-(a*10)}}} + {{eval:mod(((b*10+c)),10)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:b*10+c}} - {{eval:a*10}} : rang(s) 10 (domaine entier, 360 combinaisons)"
+	]
+}

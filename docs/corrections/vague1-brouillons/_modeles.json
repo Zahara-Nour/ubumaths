@@ -1,0 +1,297 @@
+[
+	{
+		"id": "b19167c8-49f8-427f-b493-2e2e14fb8508",
+		"title": "Trouver le complément ",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+{{eval:a-b;d}}={{a}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a-b;d}}+?={{a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.560203+00:00",
+		"updated_at": "2026-09-27T07:17:17.560203+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "À l'entier supérieur",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b_int",
+					"expression": "0"
+				},
+				{
+					"name": "b_dec",
+					"expression": "1..2"
+				},
+				{
+					"name": "b1",
+					"expression": "0..9"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:(b_dec-1)*(b1/10+b2/100)+(2-b_dec)*b2/10;d}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0{,}68"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "6",
+					"b2": "8",
+					"b_dec": "2",
+					"b_int": "0"
+				},
+				"description": "? + 6,32 = 7 → 0,68",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.68"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "6",
+					"b2": "8",
+					"b_dec": "2",
+					"b_int": "0"
+				},
+				"description": "0.68 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}68"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "6",
+					"b2": "8",
+					"b_dec": "2",
+					"b_int": "0"
+				},
+				"description": "6,32 + ? = 7 → 0,68",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}78"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "6",
+					"b2": "8",
+					"b_dec": "2",
+					"b_int": "0"
+				},
+				"description": "complément à 10 chiffre à chiffre : 0,78",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b1": "0",
+					"b2": "1",
+					"b_dec": "1",
+					"b_int": "0"
+				},
+				"description": "? + 8,9 = 9 → 0,1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}10"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "9",
+					"b1": "0",
+					"b2": "1",
+					"b_dec": "1",
+					"b_int": "0"
+				},
+				"description": "0,10 zéro inutile",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "814a46a9-2f73-4b2d-91e4-2052fc425b53",
+		"title": "Calculer un produit",
+		"theme": "Décimaux",
+		"domain": "Multiplier",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*b"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression2}};d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "b*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:20.131761+00:00",
+		"updated_at": "2026-09-27T07:17:20.131761+00:00",
+		"subdomain": "Produit",
+		"exercise_instruction": null,
+		"description": "Un des facteurs est un entier",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..9"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:b1+b2/10;d}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["25{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"description": "7 × 3,6 = 25,2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["25.2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"description": "25.2 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["25{,}2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"description": "3,6 × 7 = 25,2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["21{,}42"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b1": "3",
+					"b2": "6"
+				},
+				"description": "retenue oubliée : 21,42",
+				"variationIndex": 0
+			}
+		]
+	}
+]
