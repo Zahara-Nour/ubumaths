@@ -7,8 +7,9 @@
 
 ## Le problème, en une phrase
 
-**Rien ne prévient.** La CI ne joue pas les tests d'intégration (ils exigent une
-base locale), les échecs de RLS ne rendent aucune erreur, et les erreurs qui
+**Rien ne prévient.** Les tests d'intégration ne tournent en CI que la nuit et
+sur les PR qui touchent leur périmètre (`nightly-integration.yml`, depuis le
+2026-09-29), les échecs de RLS ne rendent aucune erreur, et les erreurs qui
 sont journalisées le sont dans un endroit que personne ne regarde.
 
 Un bug qui crie se corrige le jour même ; un bug qui chuchote survit des mois.

@@ -1,5 +1,10 @@
 # Prompt — débloquer les tests d'intégration + reconvertir les tests « Type A »
 
+> ✅ **Problème bloquant #1 résolu le 2026-09-29** : `supabase start` passe avec la
+> CLI 2.118 (devDependency, PR #512) ; `nightly-integration.yml` est vert et tourne
+> chaque nuit et sur les PR concernées (PR #515). Le passage ci-dessous sur le cron
+> désactivé est historique.
+
 > À coller dans une nouvelle session Claude Code. Contexte complet dans
 > `docs/wip/test-architecture-progress.md` (section « Suivi post-migration »).
 

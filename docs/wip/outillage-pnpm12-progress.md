@@ -207,3 +207,8 @@ supabase` partout → une seule source de vérité.
   le dépôt principal (Postgres 17.6.1.127, parité prod).
 - **Rappel postes** : `corepack enable` après chaque mise à jour de Node ; plus
   besoin de CLI Supabase globale (Homebrew) pour ce projet.
+- 2026-09-29 — **Suite (PR #515)** : `nightly-integration.yml` réactivé —
+  cron `17 2 * * *` (04:17 Paris l'été, 03:17 l'hiver), `pull_request` filtré
+  par `paths` (fermeture des imports de la suite), `workflow_dispatch` gardé,
+  `concurrency` avec annulation. Run de la PR #515, événement `pull_request` :
+  vert (121/121). Non obligatoire dans la protection de `main` (vérifié).
