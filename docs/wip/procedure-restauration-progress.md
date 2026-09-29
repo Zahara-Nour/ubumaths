@@ -186,4 +186,4 @@ client installé sur le Mac.
   `storage.objects` perdus. Procédure à **3 fichiers** : empreinte identique
   (253 mesures, 962 noms), suite d'intégration 121/121 sur la base restaurée,
   contrôle inverse 21 échecs sans les objets. Pas de `psql` à installer.
-  Base locale remise en état (`db:reset`, `db:dev-accounts`).
+  Base locale laissée dans l'état restauré (suite d'intégration passée dessus), comptes de dev remis (`db:dev-accounts`).
