@@ -1146,7 +1146,41 @@ function isAnswerMatch(userAns: string, correctAns: string): boolean {
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 
-/** Order-independent matching: each answer is matched against any unused blank */
+/**
+ * Appariement maximal réponses → cases (chemins augmentants de Kuhn) : exact,
+ * et largement assez rapide pour le nombre de cases d'une question.
+ *
+ * @param accepts - `accepts[a][b]` : la case `b` accepte la réponse `a`
+ * @returns `matching[a]` = case attribuée à la réponse `a`, `-1` si aucune
+ */
+function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
+	const answerOfBlank: number[] = new Array(blankCount).fill(-1);
+
+	const tryAssign = (a: number, visited: boolean[]): boolean => {
+		for (let b = 0; b < blankCount; b++) {
+			if (!accepts[a][b] || visited[b]) continue;
+			visited[b] = true;
+			// Case libre, ou sa réponse actuelle peut se reloger ailleurs
+			if (answerOfBlank[b] === -1 || tryAssign(answerOfBlank[b], visited)) {
+				answerOfBlank[b] = a;
+				return true;
+			}
+		}
+		return false;
+	};
+
+	for (let a = 0; a < accepts.length; a++) {
+		tryAssign(a, new Array(blankCount).fill(false));
+	}
+
+	const matching: number[] = new Array(accepts.length).fill(-1);
+	answerOfBlank.forEach((a, b) => {
+		if (a !== -1) matching[a] = b;
+	});
+	return matching;
+}
+
+/** Order-independent matching: answers matched to blanks by maximum bipartite matching */
 function validateBlanksOrderIndependent(
 	userAnswers: string[],
 	instance: QuestionInstance,
@@ -1165,22 +1199,14 @@ function validateBlanksOrderIndependent(
 		return { isCorrect: false, status: 'empty', feedback: "Tu n'as rien répondu." };
 	}
 
-	const used = new Set<number>();
-	const matching: number[] = new Array(userAnswers.length).fill(-1);
-
-	for (let a = 0; a < userAnswers.length; a++) {
-		// Skip empty answers — they won't match anything
-		if (!userAnswers[a].trim()) continue;
-
-		for (let b = 0; b < blanks.length; b++) {
-			if (used.has(b)) continue;
-			if (validateBlankValue(userAnswers[a], blanks[b], instance)) {
-				used.add(b);
-				matching[a] = b;
-				break;
-			}
-		}
-	}
+	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
+	// Un appariement glouton (première case libre qui accepte) pouvait prendre
+	// la seule case d'une autre réponse et refuser une copie juste.
+	const accepts = userAnswers.map((answer) =>
+		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
+	);
+	const matching = maximumMatching(accepts, blanks.length);
+	const used = new Set(matching.filter((b) => b !== -1));
 
 	// Count unmatched non-empty answers
 	const unmatchedNonEmpty = userAnswers.filter((a, i) => a.trim() && matching[i] === -1).length;
