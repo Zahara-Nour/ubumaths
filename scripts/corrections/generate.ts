@@ -45,7 +45,7 @@ async function main(): Promise<number> {
 	if (missing.length > 0) throw new Error(`modèle(s) introuvable(s) : ${missing.join(', ')}`);
 	// Ordre du lot, pour un instantané stable
 	rows.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
-	if (source !== 'snapshot') console.log(`Instantané : ${writeSnapshot(lot.name, rows)}`);
+	if (source !== 'snapshot') console.log(`Instantané : ${await writeSnapshot(lot.name, rows)}`);
 
 	let failures = 0;
 	for (const entry of lot.entries) {
@@ -67,7 +67,7 @@ async function main(): Promise<number> {
 				template.id
 			);
 			console.log(
-				`  ✓ ${entry.code} ${template.id.slice(0, 8)} ${template.title} → ${writeProposal(lot.name, proposal)}`
+				`  ✓ ${entry.code} ${template.id.slice(0, 8)} ${template.title} → ${await writeProposal(lot.name, proposal)}`
 			);
 		} catch (error) {
 			failures++;

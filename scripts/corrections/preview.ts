@@ -8,13 +8,12 @@
  * propositions (aucune base).
  */
 
-import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { lotDir, readProposal, readSnapshot } from './lib/files';
+import { lotDir, readProposal, readSnapshot, writeFormatted } from './lib/files';
 import { buildPreview } from './lib/preview';
 import { findLot } from './lots';
 
-try {
+async function main(): Promise<void> {
 	const lot = findLot(process.argv[2]);
 	const templates = readSnapshot(lot.name);
 	const items = lot.entries.map((entry) => {
@@ -23,9 +22,11 @@ try {
 		return { template, proposal: readProposal(lot.name, entry.templateId) };
 	});
 	const path = join(lotDir(lot.name), 'APERCU.md');
-	writeFileSync(path, buildPreview(lot.name, lot.description, items));
+	await writeFormatted(path, buildPreview(lot.name, lot.description, items));
 	console.log(`Aperçu : ${path} (${items.length} modèle(s))`);
-} catch (error) {
+}
+
+main().catch((error: unknown) => {
 	console.error(error instanceof Error ? error.message : error);
 	process.exit(1);
-}
+});

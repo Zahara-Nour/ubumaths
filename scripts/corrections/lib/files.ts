@@ -11,6 +11,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { format, resolveConfig } from 'prettier';
 import { z } from 'zod';
 import type { QuestionTemplate } from '../../../src/lib/questions/types';
 import {
@@ -62,11 +63,19 @@ export function parseRows(raw: unknown, origin: string): QuestionTemplateRow[] {
 	return result.data as unknown as QuestionTemplateRow[];
 }
 
-export function writeSnapshot(lot: string, rows: QuestionTemplateRow[]): string {
-	mkdirSync(lotDir(lot), { recursive: true });
-	const path = join(lotDir(lot), SNAPSHOT_FILE);
-	writeFileSync(path, `${JSON.stringify(rows, null, '\t')}\n`);
+/**
+ * Écrit un fichier généré tel que le hook pre-commit (prettier) le laisserait :
+ * régénérer un lot inchangé ne produit alors aucun diff.
+ */
+export async function writeFormatted(path: string, content: string): Promise<string> {
+	const options = (await resolveConfig(path)) ?? {};
+	writeFileSync(path, await format(content, { ...options, filepath: path }));
 	return path;
+}
+
+export async function writeSnapshot(lot: string, rows: QuestionTemplateRow[]): Promise<string> {
+	mkdirSync(lotDir(lot), { recursive: true });
+	return writeFormatted(join(lotDir(lot), SNAPSHOT_FILE), JSON.stringify(rows));
 }
 
 export function readSnapshotRows(lot: string): QuestionTemplateRow[] {
@@ -81,10 +90,8 @@ export function readSnapshot(lot: string): Map<string, QuestionTemplate> {
 	return new Map(readSnapshotRows(lot).map((row) => [row.id, toQuestionTemplate(row)]));
 }
 
-export function writeProposal(lot: string, proposal: Proposal): string {
-	const path = proposalPath(lot, proposal.templateId);
-	writeFileSync(path, `${JSON.stringify(proposal, null, '\t')}\n`);
-	return path;
+export async function writeProposal(lot: string, proposal: Proposal): Promise<string> {
+	return writeFormatted(proposalPath(lot, proposal.templateId), JSON.stringify(proposal));
 }
 
 export function readProposal(lot: string, templateId: string): Proposal {
