@@ -95,6 +95,14 @@
 	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
 	import SharedFieldsEditor from './SharedFieldsEditor.svelte';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
+	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
+	import {
+		assumptionsToRows,
+		rowsToAssumptions,
+		templateDrawnVariableNames,
+		validateAssumptionRows,
+		type AnswerAssumptionRow
+	} from '$lib/questions/answer-assumptions';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -292,10 +300,18 @@
 		)
 	);
 
+	// Hypothèses de l'énoncé (ADR 0012) : lignes de l'éditeur
+	let assumptionRows = $state<AnswerAssumptionRow[]>(
+		assumptionsToRows(initialTemplate?.options?.answerAssumptions)
+	);
+
 	// Current options (derived for TestSpecEditor)
 	let currentOptions = $derived.by(() => {
 		const opts: QuestionTemplate['options'] = {};
 		if (optOrderIndependent) opts.orderIndependent = true;
+		// Les specs doivent être jugées avec les hypothèses, comme les élèves
+		const answerAssumptions = rowsToAssumptions(assumptionRows);
+		if (answerAssumptions) opts.answerAssumptions = answerAssumptions;
 		if (!optShuffleChoices) opts.shuffleChoices = false;
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
@@ -791,6 +807,9 @@
 		if (Object.keys(constraints).length > 0) options.constraints = constraints;
 		// Carte de cours : marqueur explicite, lu par getQuestionType()
 		if (questionType === 'course_card') options.courseCard = true;
+		// Hypothèses de l'énoncé : lignes telles quelles, le schéma refuse les invalides
+		const answerAssumptions = rowsToAssumptions(assumptionRows);
+		if (answerAssumptions) options.answerAssumptions = answerAssumptions;
 		const finalOptions = Object.keys(options).length > 0 ? options : undefined;
 
 		const base = {
@@ -862,6 +881,7 @@
 		constraintModes = Object.fromEntries(
 			CONSTRAINT_IDS.map((id) => [id, t.options?.constraints?.[id] || ''])
 		);
+		assumptionRows = assumptionsToRows(t.options?.answerAssumptions);
 
 		// Shared fields
 		sharedVariables = t.shared?.variables || [];
@@ -1064,7 +1084,8 @@
 				correctChoiceIndex: v.correctChoiceIndex
 			})),
 			sharedVariables: sharedVariables.length,
-			variationExtras
+			variationExtras,
+			assumptionRows
 		});
 	}
 
@@ -1115,6 +1136,16 @@
 	}
 	let variationErrors = $derived(variations.flatMap((v, i) => getVariationErrors(v, i)));
 
+	// Variables tirées (partagées + variations) : une hypothèse ne peut pas les viser
+	let drawnVariableNames = $derived(
+		templateDrawnVariableNames({ shared: { variables: sharedVariables }, variations })
+	);
+	let assumptionsAreValid = $derived(
+		validateAssumptionRows(assumptionRows, drawnVariableNames).errors.every(
+			(error) => error === undefined
+		)
+	);
+
 	// Global validity (used to disable the Publish button)
 	let isValid = $derived(
 		title.trim().length > 0 &&
@@ -1130,7 +1161,8 @@
 			grades.length > 0 &&
 			theme.trim().length > 0 &&
 			domain.trim().length > 0 &&
-			level > 0
+			level > 0 &&
+			assumptionsAreValid
 	);
 </script>
 
@@ -1485,6 +1517,14 @@
 			bind:removeNullTerms={displayRemoveNullTerms}
 			bind:removeUnnecessaryBrackets={displayRemoveUnnecessaryBrackets}
 			bind:removeSpaces={displayRemoveSpaces}
+		/>
+
+		<!-- Hypothèses de l'énoncé (ADR 0012) -->
+		<AnswerAssumptionsEditor
+			bind:rows={assumptionRows}
+			drawnNames={drawnVariableNames}
+			{theme}
+			{domain}
 		/>
 
 		<!-- Options de validation -->

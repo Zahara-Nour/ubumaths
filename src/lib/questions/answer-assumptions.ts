@@ -259,3 +259,35 @@ export function formatAnswerAssumptions(assumptions: AnswerAssumptions | undefin
 		)
 		.join(' ; ');
 }
+
+/**
+ * Catégorie « Suites » (thème ou domaine) : l'éditeur y PROPOSE « n ∈ ℕ ».
+ * Jamais appliqué d'office (ADR 0012 : hypothèses explicites seulement).
+ */
+export function isSequenceCategory(theme: string, domain: string): boolean {
+	return [theme, domain].some((label) => /^suites?\b/i.test(label.trim()));
+}
+
+/** Lignes de l'éditeur à partir des hypothèses enregistrées (hypothèses inconnues écartées). */
+export function assumptionsToRows(
+	assumptions: AnswerAssumptions | undefined | null
+): AnswerAssumptionRow[] {
+	if (!assumptions) return [];
+	return Object.entries(assumptions)
+		.filter(([, kind]) => (ANSWER_ASSUMPTION_KINDS as readonly string[]).includes(kind))
+		.map(([name, kind]) => ({ name, kind }));
+}
+
+/**
+ * Hypothèses à enregistrer à partir des lignes : toutes les lignes nommées,
+ * TELLES QUELLES (nom rogné). Une ligne invalide n'est pas écartée ici : le
+ * schéma Zod (éditeur JSON, API) la refuse avec son message, au lieu de la
+ * perdre en silence à l'enregistrement.
+ */
+export function rowsToAssumptions(
+	rows: readonly AnswerAssumptionRow[]
+): AnswerAssumptions | undefined {
+	const named = rows.filter((row) => row.name.trim() !== '');
+	if (named.length === 0) return undefined;
+	return Object.fromEntries(named.map((row) => [row.name.trim(), row.kind]));
+}

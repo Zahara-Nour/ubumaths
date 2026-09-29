@@ -27,6 +27,7 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 
 	interface Props {
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
@@ -157,6 +158,7 @@
 					<Card.Description>
 						Instance générée avec graine : <code class="rounded bg-muted px-1">{seed}</code>
 					</Card.Description>
+					<AnswerAssumptionsNotice assumptions={template.options?.answerAssumptions} />
 				</div>
 				<Button onclick={regenerate} disabled={isGenerating} class="gap-2">
 					<RefreshCw class="h-4 w-4" />

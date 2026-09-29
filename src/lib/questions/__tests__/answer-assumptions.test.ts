@@ -15,14 +15,17 @@
 import { describe, it, expect } from 'vitest';
 import {
 	answerAssumptionsSchema,
+	assumptionsToRows,
+	rowsToAssumptions,
 	findAssumptionCollisions,
 	formatAnswerAssumptions,
+	isSequenceCategory,
 	validateAssumptionRows,
 	MAX_ANSWER_ASSUMPTIONS
 } from '../answer-assumptions';
 import { questionTemplateSchema } from '../template-schema';
 import { validateTemplate } from '../validators/template-validator';
-import type { QuestionTemplate } from '../types';
+import { mapDbTemplateToForm, type QuestionTemplate } from '../types';
 import {
 	createQuestionTemplateSchema,
 	updateQuestionTemplateSchema
@@ -328,5 +331,59 @@ describe('validateAssumptionRows (éditeur)', () => {
 		}));
 		const result = validateAssumptionRows(rows, []);
 		expect(result.errors[10]).toMatch(/Au plus 10 hypothèses/);
+	});
+});
+
+describe('isSequenceCategory (proposition « n ∈ ℕ »)', () => {
+	it('reconnaît le thème ou le domaine Suites', () => {
+		expect(isSequenceCategory('Suites', 'Généralités')).toBe(true);
+		expect(isSequenceCategory('Analyse', 'Suites arithmétiques')).toBe(true);
+		expect(isSequenceCategory(' suites ', '')).toBe(true);
+	});
+
+	it('ignore les autres catégories', () => {
+		expect(isSequenceCategory('Algèbre', 'Puissances')).toBe(false);
+		expect(isSequenceCategory('Probabilités', 'Poursuites')).toBe(false);
+	});
+});
+
+describe('aller-retour éditeur ↔ base', () => {
+	it('lignes → hypothèses → lignes : identique', () => {
+		const rows = [
+			{ name: 'x', kind: 'positive' as const },
+			{ name: 'n', kind: 'natural' as const }
+		];
+		expect(assumptionsToRows(rowsToAssumptions(rows))).toEqual(rows);
+	});
+
+	it('lignes vides → aucune hypothèse (pas de clé vide)', () => {
+		expect(rowsToAssumptions([{ name: '  ', kind: 'positive' }])).toBeUndefined();
+	});
+
+	it('hypothèse inconnue lue en base : écartée des lignes', () => {
+		expect(
+			assumptionsToRows({ x: 'negative', n: 'integer' } as unknown as Record<string, 'integer'>)
+		).toEqual([{ name: 'n', kind: 'integer' }]);
+	});
+
+	it('ligne de base → formulaire → PUT : options.answerAssumptions conservé', () => {
+		const dbRow = {
+			id: '00000000-0000-4000-8000-000000000000',
+			...baseTemplate,
+			exercise_instruction: null,
+			default_display_options: null,
+			multiple_answers: null,
+			test_specs: null,
+			options: { answerAssumptions: { x: 'positive', n: 'natural' } }
+		};
+		const form = mapDbTemplateToForm(dbRow);
+		expect(form.options?.answerAssumptions).toEqual({ x: 'positive', n: 'natural' });
+		const rows = assumptionsToRows(form.options?.answerAssumptions);
+		const payload = {
+			...baseTemplate,
+			options: { answerAssumptions: rowsToAssumptions(rows) }
+		};
+		const parsed = updateQuestionTemplateSchema.parse(payload);
+		expect(parsed.options?.answerAssumptions).toEqual({ x: 'positive', n: 'natural' });
 	});
 });
