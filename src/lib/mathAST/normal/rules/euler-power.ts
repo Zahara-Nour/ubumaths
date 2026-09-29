@@ -22,12 +22,11 @@
  *
  * ## Ce que ce module ne fait PAS
  *
- * Un exposant symbolique sur une base **quelconque** reste opaque :
- * `x^a · x^b` ne devient pas `x^{a+b}`, et `2^{2x}/2^{x}` reste tel quel. Ce
- * n'est pas le même trou : un `SymbolicFactor` porte un exposant **rationnel**,
- * si bien qu'une puissance à exposant symbolique ne peut pas être représentée
- * comme un facteur et reste une base opaque. Le réparer demanderait de changer
- * la forme normale, pas d'y ajouter une règle.
+ * Un exposant symbolique sur une base **quelconque** n'est pas son affaire :
+ * un `SymbolicFactor` porte un exposant **rationnel**, si bien qu'une puissance
+ * à exposant symbolique reste une base opaque. Les bases numériques
+ * strictement positives (`2^{2x}/2^{x}`) sont traitées à part par
+ * `general-power.ts` ; les bases variables (`x^a · x^b`) restent opaques.
  *
  * ## La contrepartie assumée
  *

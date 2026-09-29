@@ -70,7 +70,9 @@ import {
 	floorRational,
 	ceilRational,
 	roundRational,
-	floatToRational
+	floatToRational,
+	divRational,
+	ZERO
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess, expandTrigDefinitions, expandCommensurableArcs } from './rules/index.js';
@@ -83,6 +85,7 @@ import { format as formatUnit } from '../units/formatter';
 import { divide, euler, number, opposite, piConstant } from '../factory';
 import { isEulerConstant, isNumber, isOpposite } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
+import { expandPositiveBasePowers } from './rules/general-power';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -2091,7 +2094,13 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
 	// affichée garde la notation de l'élève.
 	const withEuler = expandEulerPowers(node);
-	const withDefinitions = expandTrigDefinitions(withEuler);
+	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
+	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
+	// strictement positives seulement — détail dans `rules/general-power.ts`.
+	const withPositiveBases = expandPositiveBasePowers(withEuler, {
+		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
+	});
+	const withDefinitions = expandTrigDefinitions(withPositiveBases);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
 		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
 		// passe que l'interruption, jamais l'enregistreur d'étapes.
@@ -2099,6 +2108,38 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 		abortChecker: ctx?.abortChecker
 	});
 	return reducePythagorasInNormalForm(normalize(withArcs, ctx), ctx);
+}
+
+/**
+ * La valeur rationnelle exacte d'un nœud, ou `null` s'il n'en a pas une :
+ * variable, radical, `π`, unité imaginaire, ou normalisation impossible.
+ *
+ * Sert de garde à `expandPositiveBasePowers` : une base n'est réécrite en
+ * exponentielle que si cette valeur existe et est strictement positive.
+ */
+function exactRationalValue(node: MathNode, ctx: NormalizeContext | undefined): Rational | null {
+	let form: NormalForm;
+	try {
+		form = normalize(node, arcDecompositionContext(ctx));
+	} catch (error) {
+		// L'interruption doit remonter : l'avaler ferait tourner la suite hors
+		// budget.
+		if (error instanceof AbortError) throw error;
+		return null;
+	}
+	if (form.numerator.length === 0) return ZERO;
+	const numerator = constantRational(form.numerator);
+	const denominator = constantRational(form.denominator);
+	if (numerator === null || denominator === null || denominator.n === 0n) return null;
+	return divRational(numerator, denominator);
+}
+
+/** Le rationnel porté par un polynôme réduit à une constante, ou `null`. */
+function constantRational(polynomial: readonly NormalTerm[]): Rational | null {
+	if (polynomial.length !== 1) return null;
+	const [term] = polynomial;
+	if (term.monomial.length !== 0) return null;
+	return getRationalValue(term.coefficient);
 }
 
 /**

@@ -31,12 +31,11 @@
  *
  * ## Hors périmètre, et pourquoi
  *
- * Un exposant **symbolique** sur une base quelconque reste opaque :
- * `x^a·x^b ≢ x^{a+b}`, `2^{2x}/2^{x} ≢ 2^{x}`. Ce n'est pas le même trou : un
- * `SymbolicFactor` porte un exposant **rationnel**, si bien qu'une puissance à
- * exposant symbolique ne peut pas être représentée comme un facteur et reste
- * une base opaque. Le réparer demanderait de changer la forme normale, pas d'y
- * ajouter une règle. Deux tests le pinnent tel quel.
+ * Un exposant **symbolique** sur une base **variable** reste opaque :
+ * `x^a·x^b ≢ x^{a+b}` (réécrire supposerait `x > 0`). Les bases numériques
+ * strictement positives, elles, sont couvertes depuis par
+ * `rules/general-power.ts` : `2^{2x}/2^{x} ≡ 2^{x}` (voir
+ * `puissance-base-numerique.test.ts`).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -107,10 +106,15 @@ describe('ce qui n’est pas égal ne le devient pas', () => {
 	});
 });
 
-describe('hors périmètre : un exposant symbolique sur une base quelconque', () => {
+describe('hors périmètre : un exposant symbolique sur une base variable', () => {
 	it('reste opaque, et c’est assumé', () => {
 		expect(eq('x^{a}x^{b}', 'x^{a+b}')).toBe(false);
-		expect(eq('\\frac{2^{2x}}{2^{x}}', '2^{x}')).toBe(false);
+	});
+
+	// Autrefois pinné faux ici : une base numérique positive est désormais
+	// réécrite en exponentielle (`rules/general-power.ts`).
+	it('sauf sur une base numérique strictement positive', () => {
+		expect(eq('\\frac{2^{2x}}{2^{x}}', '2^{x}')).toBe(true);
 	});
 
 	it('mais reste réflexif', () => {
