@@ -19,6 +19,10 @@
 
 set -e  # Exit on error
 
+# La CLI Supabase est une devDependency (version exacte dans package.json) :
+# lancé par `bash`, sans `pnpm run`, ce script ne verrait que la CLI globale.
+PATH="$(cd "$(dirname "$0")/.." && pwd)/node_modules/.bin:$PATH"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -35,10 +39,8 @@ echo ""
 if ! command -v supabase &> /dev/null; then
     echo -e "${RED}❌ Error: Supabase CLI is not installed${NC}"
     echo ""
-    echo "Install it with:"
-    echo "  npm install -g supabase"
-    echo "  or"
-    echo "  brew install supabase/tap/supabase"
+    echo "It is a devDependency of the project. Install it with:"
+    echo "  pnpm install"
     exit 1
 fi
 

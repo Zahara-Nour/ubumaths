@@ -2,8 +2,7 @@
 
 > Chantier ouvert le 2026-09-29, pendant la migration du poste de dev vers le
 > Mac mini. **En cours depuis le 2026-09-29** (worktree `../ubumaths-wt-pnpm12`,
-> branche `chore/outillage-pnpm12`). À faire après la migration, sur une branche
-> avec une PR (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
+> branche `chore/outillage-pnpm12`). Sur une branche avec une PR (#512) (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
 > du code, pas de la doc).
 
 ## Pourquoi ce chantier
@@ -44,16 +43,16 @@ instead`). Simple avertissement : la section fonctionne encore.
 
 ## Tâche A — passer le projet à pnpm 12
 
-- [ ] Lire la page « settings » de pnpm (https://pnpm.io/settings) : nouvel
+- [x] Lire la page « settings » de pnpm (https://pnpm.io/settings) : nouvel
       emplacement de `overrides` et `onlyBuiltDependencies` (a priori
       `pnpm-workspace.yaml`, **à vérifier**, pas à supposer).
-- [ ] Déplacer les **12 overrides** et l'autorisation `esbuild` ; retirer la
+- [x] Déplacer les **12 overrides** et l'autorisation `esbuild` ; retirer la
       section `"pnpm"` de `package.json`.
-- [ ] Décider du sort de `core-js` (arrive par `jspdf` ; son script ne fait
+- [x] Décider du sort de `core-js` (arrive par `jspdf` ; son script ne fait
       qu'afficher un appel au financement) : à ignorer explicitement, sinon
       pnpm 12 bloque l'installation.
-- [ ] `corepack use pnpm@12.x` → `"packageManager"` + `pnpm-lock.yaml`.
-- [ ] Vérifier les **versions VISÉES par les overrides** dans le nouveau
+- [x] `corepack use pnpm@12.x` → `"packageManager"` + `pnpm-lock.yaml`.
+- [x] Vérifier les **versions VISÉES par les overrides** dans le nouveau
       lockfile, pas seulement « install OK » : `esbuild` ne doit exister qu'en
       ≥ 0.28.1, idem `tar` ≥ 7.5.21, `postcss` ≥ 8.5.18, etc. Comparer avec
       le lockfile de `main` avant le changement.
@@ -70,9 +69,9 @@ instead`). Simple avertissement : la section fonctionne encore.
       `nightly-integration.yml` est figé sur `supabase/setup-cli@v3` version
       **2.105.0** (même version que l'ancien laptop). Si 2.105.0 ne connaît pas
       `[local_smtp]`, monter cette version dans la même PR.
-- [ ] Renommer la section (port 54324, interface web des e-mails locaux) et
+- [x] Renommer la section (port 54324, interface web des e-mails locaux) et
       vérifier que les clés internes n'ont pas changé de nom elles aussi.
-- [ ] Vérifier en local : `pnpm db:start` sans l'avertissement, e-mails de
+- [x] Vérifier en local : `pnpm db:start` sans l'avertissement, e-mails de
       connexion visibles sur `http://localhost:54324`.
 - [ ] Déclencher `nightly-integration.yml` à la main sur la branche
       (`gh workflow run nightly-integration.yml --ref <branche>`) : c'est le
@@ -85,14 +84,15 @@ instead`). Simple avertissement : la section fonctionne encore.
 Objectif : `pnpm supabase` = la même version partout (postes et CI), pour que
 `db:types` rende le même fichier et que `config.toml` soit lu pareil.
 
-- [ ] Ajouter `supabase` en `devDependencies`, version **exacte** (pas de `^`).
-- [ ] Le paquet npm `supabase` télécharge son binaire par un script
+- [x] Ajouter `supabase` en `devDependencies`, version **exacte** (pas de `^`).
+- [x] ~~Le paquet npm `supabase` télécharge son binaire par un script
       d'installation (**à vérifier**) : il faudra l'autoriser, comme `esbuild`
-      — même mécanisme que la tâche A, qui bloque sous pnpm 12.
-- [ ] Une seule source de vérité pour la version : faire utiliser
+      — même mécanisme que la tâche A, qui bloque sous pnpm 12.~~ **Réfuté** :
+      aucun script d'installation (cf. journal), pas d'`allowBuilds`.
+- [x] Une seule source de vérité pour la version : faire utiliser
       `pnpm supabase` à `nightly-integration.yml`, ou à défaut aligner
       `supabase/setup-cli` (aujourd'hui 2.105.0) sur la devDependency.
-- [ ] **À trancher avec David**, le sort de `graphql_public` si la version
+- [x] **À trancher avec David**, le sort de `graphql_public` si la version
       retenue est ≥ 2.118.0 : accepter le bloc une fois dans la PR, ou passer
       `--schema public` à `db:types` pour que le fichier ne dépende plus du
       choix par défaut de la CLI.
