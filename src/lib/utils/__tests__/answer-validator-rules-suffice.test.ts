@@ -98,12 +98,13 @@ describe('rulesSuffice — cas limites', () => {
 		expect(check('3', blank).isCorrect).toBe(false);
 	});
 
-	it('sans le mode, 12/2 garde le verdict historique de la règle (non-régression)', () => {
+	it('sans le mode, 12/2 vaut 6 pour la règle, puis est comparé à la réponse tirée', () => {
 		const blank = divisorBlank({ rulesSuffice: undefined });
 		const verdict = check('12/2', blank, '\\frac{12}{2}');
+		// 6 divise 12 (la règle passe) mais n'est pas la réponse tirée (2) :
+		// réponse fausse ordinaire, sans le faux « pas un nombre » d'avant
 		expect(verdict.isCorrect).toBe(false);
-		// `Number('12/2')` = NaN → la règle échoue, comme avant ce correctif
-		expect(verdict.feedback).toBe('Ta réponse doit être un nombre.');
+		expect(verdict.feedback).toBe('Les blancs suivants sont incorrects: 1');
 	});
 
 	it('case texte : le mode est ignoré (comparaison à la réponse attendue)', () => {

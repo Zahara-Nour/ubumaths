@@ -242,8 +242,7 @@ function toNumericAnswer(userAnswer: string): number {
 function evaluateValidationRules(
 	rules: ValidationRule[],
 	userAnswer: string,
-	instance: QuestionInstance,
-	evaluateAnswer = false
+	instance: QuestionInstance
 ): ValidationResult | undefined {
 	// Build context from resolved variables
 	const variables: Record<string, number | string> = {};
@@ -258,9 +257,10 @@ function evaluateValidationRules(
 	const ctx: EvaluationContext = {
 		variables,
 		answer: userAnswer,
-		// rulesSuffice : `12/2` vaut 6 pour les règles (la forme est jugée ensuite).
-		// Sinon, comportement historique : `Number()` seul.
-		numericAnswer: evaluateAnswer ? toNumericAnswer(userAnswer) : Number(userAnswer)
+		// Valeur du LaTeX tapé : `12/2` vaut 6, `2{,}5` vaut 2,5, `12\,000` vaut
+		// 12000 pour les règles (la forme est jugée ensuite). `Number()` seul
+		// rendait NaN pour toute saisie MathLive non triviale.
+		numericAnswer: toNumericAnswer(userAnswer)
 	};
 
 	// Evaluate each rule
@@ -711,12 +711,7 @@ function validateBlankValue(
 ): boolean {
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(
-			blank.validationRules,
-			userAnswer,
-			instance,
-			rulesDecide(blank)
-		);
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) return false;
 	}
 
@@ -814,12 +809,7 @@ function validateSingleBlank(
 
 	// 1. Validation rules (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(
-			blank.validationRules,
-			userAnswer,
-			instance,
-			rulesDecide(blank)
-		);
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) {
 			// rulesSuffice : la règle EST le verdict ; son message (« 5 n'est pas un
 			// diviseur de 12 ») répéterait la consigne → retour ordinaire d'une
