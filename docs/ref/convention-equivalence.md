@@ -159,3 +159,10 @@ Faux positif corrigé : `|\log_{x}(2)| ≡ \log_{x}(2)` rendait vrai, l'évaluat
 comme `\log 2` (base ignorée, donc « positif »). Le signe de `\log_{b}(a)` n'est connu que si `b`
 l'est : `b > 1` garde le signe de `\log a`, `0 < b < 1` l'inverse, base variable → inconnu. Un log à
 base reste hors de la liste blanche des hypothèses (`isPlainAlgebra`).
+
+Revue adverse (2026-09-29) : 38 422 paires (bases 2, 3, 4, 9, 10, ½, ¼, 0.5, e, x, y, x+1, x² ;
+valeurs absolues, carrés, quotients, inverses `1/\log_{a}(b)`, bases inversées), chaque verdict
+« équivalent » évalué en 121 points réels : **0 faux positif** (contre 137 sur `main`, tous des
+`|\log_{b}(a)|` à base < 1 ou variable). Écarts avec `main` : 137 vrai → faux (exactement ces 137
+faux positifs), 3 680 faux → vrai (tous vérifiés numériquement). Échantillon sans base (4 000 paires) :
+0 écart.
