@@ -78,7 +78,7 @@ function chunk<T>(items: T[], size: number): T[][] {
  * `checkTemplate` (celui de l'éditeur) les refuse comme clés inconnues. Sans ce
  * retrait, TOUS les modèles seraient refusés pour « 1 erreur(s) de schéma ».
  */
-function withoutDbMetadata(template: QuestionTemplate): QuestionTemplate {
+export function withoutDbMetadata(template: QuestionTemplate): QuestionTemplate {
 	const {
 		created_at: _createdAt,
 		updated_at: _updatedAt,

@@ -26,6 +26,7 @@
 	import { goto } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { QuestionTemplate } from '$lib/questions/types';
+	import { toTemplatePutBody } from '$lib/questions/template-put-body';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft, Loader2, ListTodo, ChevronDown, ChevronRight } from '@lucide/svelte';
@@ -59,7 +60,8 @@
 			const response = await fetch(`/api/questions/templates/${data.template.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(template)
+				// Champs vidés envoyés à null : la route garde une clé absente (PATCH)
+				body: JSON.stringify(toTemplatePutBody(template))
 			});
 
 			const result = await response.json();

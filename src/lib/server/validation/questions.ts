@@ -99,11 +99,16 @@ export const createQuestionTemplateSchema = questionTemplateFieldsSchema.superRe
 /**
  * Schema for updating a question template (all fields optional)
  *
- * La collision n'est vérifiable qu'avec les variables présentes dans la
- * requête (l'éditeur envoie toujours le modèle entier).
+ * La collision n'est vérifiable ici qu'avec les variables présentes dans la
+ * requête ; la route la revérifie sur le modèle fusionné (base ⊕ requête).
+ *
+ * `status` sans défaut : avec Zod 4, `.partial()` applique quand même le
+ * `.default('published')` → un PUT sans statut PUBLIAIT le modèle. Absent,
+ * le statut en base est conservé.
  */
 export const updateQuestionTemplateSchema = questionTemplateFieldsSchema
 	.partial()
+	.extend({ status: z.enum(['draft', 'published']).optional() })
 	.superRefine(refineAssumptionCollisions);
 
 /**
