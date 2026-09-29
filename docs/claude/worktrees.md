@@ -17,15 +17,15 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 
 ## Ce qui est isolé, ce qui ne l'est pas
 
-| Ressource                                   | Isolée ?                        | Conséquence                                                                               |
-| ------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------- |
-| Répertoire de travail, fichiers non suivis  | ✅                              | Le piège « un fichier untracked suit la branche » disparaît                               |
-| Cache `.svelte-kit`, `node_modules`, `.env` | ✅                              | Changer de chantier n'invalide plus le cache du typecheck                                 |
-| Branche courante                            | ✅ (git refuse le doublon)      | Garde-fou gratuit                                                                         |
-| `git stash`, refs, hooks                    | ❌ (`.git` commun)              | Un stash de hook n'est pas attribuable à un chantier                                      |
-| **RAM (8 Go)**                              | ❌                              | Deux `check:incremental` concurrents rendent la machine inutilisable → verrou `typecheck` |
-| **Supabase local**                          | ❌ (`project_id` + ports figés) | Une seule base pour tout le dépôt → verrou `supabase`                                     |
-| **Ports dev (5173-5180)**                   | ❌                              | Collision, et `kill:servers` tue tout                                                     |
+| Ressource                                   | Isolée ?                        | Conséquence                                                                  |
+| ------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
+| Répertoire de travail, fichiers non suivis  | ✅                              | Le piège « un fichier untracked suit la branche » disparaît                  |
+| Cache `.svelte-kit`, `node_modules`, `.env` | ✅                              | Changer de chantier n'invalide plus le cache du typecheck                    |
+| Branche courante                            | ✅ (git refuse le doublon)      | Garde-fou gratuit                                                            |
+| `git stash`, refs, hooks                    | ❌ (`.git` commun)              | Un stash de hook n'est pas attribuable à un chantier                         |
+| **RAM, CPU, cache de typecheck**            | ❌                              | Un seul gros process à la fois → verrou `typecheck` pour `check:incremental` |
+| **Supabase local**                          | ❌ (`project_id` + ports figés) | Une seule base pour tout le dépôt → verrou `supabase`                        |
+| **Ports dev (5173-5180)**                   | ❌                              | Collision, et `kill:servers` tue tout                                        |
 
 ---
 
@@ -78,10 +78,10 @@ pnpm install --prefer-offline
 Implémentation : `scripts/lib/lock.py`, appelé par `scripts/check-incremental.sh`
 (qui se ré-exécute sous le verrou) et par `scripts/with-db-lock.sh`.
 
-| Verrou      | Pris par                                                                                            | Ce qu'il évite                                    |
-| ----------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `typecheck` | `pnpm check:incremental`                                                                            | Deux typechecks concurrents sur 8 Go              |
-| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:dev-accounts`, `db:fix-profiles`, `test:integration(:watch)` | Un `db:reset` au milieu d'une suite d'intégration |
+| Verrou      | Pris par                                                                                            | Ce qu'il évite                                               |
+| ----------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `typecheck` | `pnpm check:incremental`                                                                            | Deux typechecks concurrents (un seul gros process à la fois) |
+| `supabase`  | `db:start`, `db:stop`, `db:reset`, `db:dev-accounts`, `db:fix-profiles`, `test:integration(:watch)` | Un `db:reset` au milieu d'une suite d'intégration            |
 
 **Où ils vivent** : `<répertoire git commun>/.locks/<nom>`, c'est-à-dire
 `.git/.locks/` du dépôt principal — le seul endroit que tous les worktrees
@@ -170,12 +170,14 @@ rejouait ensuite comme vérité. Les `?` étaient le seul indice, et personne ne
 lit un `?` sur un run vert. Vérifié en renommant `tsconfig.check.json` : refus
 explicite, code 1, aucun verdict écrit.
 
-### Garde déjà existante, à ne pas confondre
+### Garde retirée : Supabase allumé
 
-`check:incremental` refuse aussi de tourner **quand la pile Supabase locale est
-allumée** (12 conteneurs, ~1,9 Go : sur 8 Go elle étrangle le typecheck —
-mesuré 15 min au lieu de 40 s, puis tué sans verdict). Message différent,
-contournement `ALLOW_DB=1`. Ce n'est pas le verrou inter-worktree.
+`check:incremental` refusait de tourner quand la pile Supabase locale était
+allumée (`ALLOW_DB=1` pour passer outre) : sur l'ancien laptop de 8 Go, elle
+étranglait le typecheck (15 min puis tué). **Retirée le 2026-09-29** : sur le
+Mac mini (M6, 24 Go), le scénario exact — édition sous `src/routes`, Supabase ET
+serveur de dev allumés — a pris 47 s, swap +0. `pnpm check`, `build` et `lint`,
+eux, ne sont sous **aucun verrou** : ne pas les lancer en parallèle.
 
 ### L'état de rejeu reste local — et doit le rester
 

@@ -126,3 +126,37 @@ Mémoire de Claude **du Mac mini** à revoir (section « Machine 8 Go » de
 ## Journal
 
 - 2026-09-29 — protocole écrit (depuis le laptop). Phase 1 : non commencée.
+- 2026-09-29 — **Phase 1 faite** sur Mac mini Apple M6 (12 cœurs, 24 Go), node
+  v22.23.3, pnpm 10.23.0, OrbStack plafonné à 12 Go. Brave, VS Code et deux
+  sessions Claude ouverts. **Swap 0 → 0 sur toutes les mesures.** Pic total =
+  somme des RSS (surestime : pages partagées comptées plusieurs fois).
+
+  | #   | Commande                                            | Supabase | Durée | Plus gros process | Pic total (avant) | Verdict                               |
+  | --- | --------------------------------------------------- | -------- | ----- | ----------------- | ----------------- | ------------------------------------- |
+  | M6  | `pnpm test:integration`                             | allumé   | 180 s | 0,4 Go            | 18,4 Go (16,0)    | 1065 ✓, 12 ignorés                    |
+  | M5  | `check:incremental` après édition + dev sur 5175    | allumé   | 47 s  | 2,9 Go            | 19,4 Go (18,3)    | 0 erreur, chemin lent (sync) confirmé |
+  | M1  | `pnpm check`                                        | éteint   | 82 s  | 5,3 Go            | 18,9 Go (16,1)    | 10 016 fichiers, 0 erreur             |
+  | M2  | `pnpm build`                                        | éteint   | 64 s  | 5,7 Go            | 18,6 Go (12,9)    | OK                                    |
+  | M3  | `pnpm lint`                                         | éteint   | 530 s | 4,1 Go            | 17,8 Go (12,8)    | 0 erreur, 190 avertissements          |
+  | M4  | `FORCE=1 check:incremental`                         | éteint   | 44 s  | 2,9 Go            | 17,2 Go (14,1)    | 0 erreur                              |
+  | M7  | `pnpm check:fast`                                   | éteint   | 47 s  | 4,2 Go            | 18,4 Go (14,2)    | **exit 134 : tas Node par défaut**    |
+  | M8  | `npx svelte-check --tsconfig ./tsconfig.check.json` | éteint   | 44 s  | 4,2 Go            | 18,3 Go (14,1)    | **exit 134 : tas Node par défaut**    |
+  | M9  | `FRESH=1 check:incremental` (cache froid)           | éteint   | 82 s  | 4,0 Go            | 18,3 Go (14,2)    | 0 erreur                              |
+
+  M7 et M8 : `JavaScript heap out of memory` près de 4030 Mo, plafond par
+  défaut de Node = 4144 Mo sur cette machine. Limite V8, pas la RAM (swap 0).
+
+- 2026-09-29 — **Décisions de David** : (1) `check`/`build`/`lint` autorisés,
+  un seul gros process à la fois ; `tsc --noEmit` déconseillé — `check:fast` et
+  `svelte-check` sans `--incremental` mesurés (M7, M8) : ils plantent sur le tas
+  Node, donc laissés déconseillés, motif corrigé ; (2) `lint:fast` gardé, motif
+  durée ; (3) eslint complet en local en arrière-plan ; (4) « ~10 min après une
+  édition » retiré ; (5) hook léger gardé, motif durée ; (6) agents :
+  `check:incremental` et tests ciblés, `check`/`build`/`lint` complets réservés
+  à la session principale ; (7) garde 2 retirée ; (8) heap 4096 gardé,
+  commentaire corrigé ; (9) 8192 gardé ; (10) motifs réels dans commentaires et
+  doc.
+- 2026-09-29 — **Phase 3** : scripts/configs → PR #509 ; doc → commit direct
+  sur `main` ; mémoire de Claude du Mac mini mise à jour. Hors liste, non
+  touchés : `scripts/check-barrel-exports.ts:143` et
+  `.github/workflows/bundle-analyze.yml:7` mentionnent encore « 8 Go ».

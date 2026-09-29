@@ -1,22 +1,22 @@
 # Quality Standards
 
-Référence synthétique pour Claude : **linting/checks (sous contrainte OOM)**, **validation Zod**, **tests**. Détail : [docs/ref/tests/](../ref/tests/) · règles condensées dans [CLAUDE.md](../../CLAUDE.md).
+Référence synthétique pour Claude : **linting/checks**, **validation Zod**, **tests**. Détail : [docs/ref/tests/](../ref/tests/) · règles condensées dans [CLAUDE.md](../../CLAUDE.md).
 
 ---
 
-## Linting & checks (machine à faible RAM)
+## Linting & checks
 
-> ⚠️ Contrainte OOM (cf. `CLAUDE.md §Contrainte mémoire`). **NE JAMAIS** lancer sur tout le projet : `pnpm check` · `pnpm build` · `pnpm lint` (eslint) · `svelte-check` sans `--incremental`.
+> ⚠️ **Un seul gros process à la fois** (cf. `CLAUDE.md §Gros process`) : `pnpm check`, `pnpm build`, `pnpm lint` sont autorisés en local mais sous aucun verrou (plus gros process 4 à 6 Go, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` et `tsc --noEmit` meurent sur le tas par défaut de Node (~4 Go) : limite de Node, pas de la RAM.
 
-| Outil                        | Où                    | Détail                                                                                                                                         |
-| ---------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **oxlint** (Rust, ~0 RAM)    | pre-commit local      | `.lintstagedrc.js` : `oxlint --fix` sur `.{js,ts}` staged + `prettier`. Bloque sur **erreurs** seulement (warnings non bloquants).             |
-| **prettier**                 | pre-commit + CI       | `prettier --check .` en CI (job _Lint_) ; `--write` au commit.                                                                                 |
-| **eslint** (complet)         | **CI uniquement**     | OOM en local (type-aware). Couvre `eslint-plugin-svelte` + la règle custom Zod. Round-trip CI assumé.                                          |
-| **`pnpm check:incremental`** | local, **avant push** | TS + Svelte, memory-safe (heap 4096, `svelte-kit sync` conditionnel ; `FRESH=1` pour forcer après suppression/renommage). **0 erreur exigée**. |
+| Outil                        | Où                    | Détail                                                                                                                                           |
+| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **oxlint** (Rust, rapide)    | pre-commit local      | `.lintstagedrc.js` : `oxlint --fix` sur `.{js,ts}` staged + `prettier`. Bloque sur **erreurs** seulement (warnings non bloquants).               |
+| **prettier**                 | pre-commit + CI       | `prettier --check .` en CI (job _Lint_) ; `--write` au commit.                                                                                   |
+| **eslint** (complet)         | CI + local en fond    | 530 s en local (mesuré le 2026-09-29) → en arrière-plan. Couvre `eslint-plugin-svelte` + la règle custom Zod. `lint:fast` (~2,5 s) au quotidien. |
+| **`pnpm check:incremental`** | local, **avant push** | TS + Svelte, ~45 s (heap 4096, `svelte-kit sync` conditionnel ; `FRESH=1` pour forcer après suppression/renommage). **0 erreur exigée**.         |
 
 - Le hook pre-commit est **léger** → `--no-verify` **n'est plus nécessaire**.
-- eslint local seulement en ciblé si la machine tient : `npx eslint <fichiers>`.
+- eslint complet en local : `pnpm lint` en arrière-plan (530 s) ; en ciblé : `npx eslint <fichiers>`.
 - `pnpm format "src/**/*.{ts,svelte}"` = `prettier --write`.
 
 ---

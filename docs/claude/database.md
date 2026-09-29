@@ -33,7 +33,7 @@ pnpm db:status     # diagnostic : profiles manquants vs auth.users
 ```
 
 - ⛔ **JAMAIS modifier le schéma via le Dashboard Supabase.** Toute évolution passe par une migration versionnée (reproductible, reviewable).
-- ⚠️ **OOM** : ne pas lancer `db:migrate` / `db:reset` en agent ou sans accord (touche la prod / lourd).
+- ⚠️ **Prod / données locales** : ne pas lancer `db:migrate` / `db:reset` en agent ou sans accord (`db:migrate` touche la prod ; `db:reset` recrée la base locale).
 - État actuel des migrations : **1 baseline** (`20260616220000_baseline_schema.sql`, ~46 k lignes, schéma EU complet) **+ correctifs** post-baseline. Les **619** anciennes migrations sont archivées dans `supabase/migrations_archive/` (ne pas les rejouer).
 
 ### Timing additif vs destructif

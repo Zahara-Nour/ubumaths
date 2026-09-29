@@ -12,7 +12,7 @@ Toutes les commandes `pnpm <script>` définies dans `package.json`, par catégor
 | Commande            | Effet                                         | Notes                                          |
 | ------------------- | --------------------------------------------- | ---------------------------------------------- |
 | `pnpm dev`          | Serveur de dev Vite (HMR)                     | `pnpm dev --port 5175 --strictPort` — cf. note |
-| `pnpm build`        | Build de production (`vite build`, heap 8 Go) | Identique au build Vercel                      |
+| `pnpm build`        | Build de production (`vite build`, heap 8 Go) | Identique au build Vercel ; 64 s en local      |
 | `pnpm preview`      | Sert le build de prod en local                | À lancer après `pnpm build`                    |
 | `pnpm kill:servers` | Tue les serveurs dev restés ouverts           | Pratique si un port est bloqué                 |
 
@@ -28,19 +28,19 @@ Toutes les commandes `pnpm <script>` définies dans `package.json`, par catégor
 
 ## ✅ Qualité — types, lint, format
 
-| Commande                 | Effet                                                                  | Notes                                    |
-| ------------------------ | ---------------------------------------------------------------------- | ---------------------------------------- |
-| `pnpm check`             | **Le check CI** : `svelte-check` sur `tsconfig.check.json` (heap 8 Go) | Lourd (~12 min), scope source            |
-| `pnpm check:incremental` | Même scope que la CI, **avec cache** (`--incremental`)                 | Rapide (~20-40s) — le check du quotidien |
-| `pnpm check:watch`       | `svelte-check` en mode watch                                           | Pendant le dev                           |
-| `pnpm check:fast`        | `tsc --noEmit --incremental`                                           | Types only, sans la couche Svelte        |
-| `pnpm check:safe`        | `svelte-check` sur `tsconfig.json` (scope large)                       | Diagnostic ponctuel                      |
-| `pnpm check:changed`     | Check des fichiers modifiés (git)                                      | Voir `scripts/check-changed.sh`          |
-| `pnpm check:staged`      | Check des fichiers stagés                                              | Utilisé en pre-commit                    |
-| `pnpm format`            | `prettier --write` (passer des chemins)                                | Ex. `pnpm format "src/**/*.ts"`          |
-| `pnpm format:all`        | Prettier sur tout le repo                                              | Lourd                                    |
-| `pnpm lint`              | `eslint` (passer des chemins)                                          | Ex. `pnpm lint src/lib/x.ts`             |
-| `pnpm lint:all`          | ESLint sur tout le repo (avec cache)                                   | Lourd                                    |
+| Commande                 | Effet                                                                  | Notes                                      |
+| ------------------------ | ---------------------------------------------------------------------- | ------------------------------------------ |
+| `pnpm check`             | **Le check CI** : `svelte-check` sur `tsconfig.check.json` (heap 8 Go) | 82 s en local (2026-09-29), scope source   |
+| `pnpm check:incremental` | Même scope que la CI, **avec cache** (`--incremental`)                 | ~45 s (~80 s à froid) — le quotidien       |
+| `pnpm check:watch`       | `svelte-check` en mode watch                                           | Pendant le dev                             |
+| `pnpm check:fast`        | `tsc --noEmit --incremental`                                           | ⚠️ Meurt sur le tas Node (~4 Go), exit 134 |
+| `pnpm check:safe`        | `svelte-check` sur `tsconfig.json` (scope large)                       | Diagnostic ponctuel                        |
+| `pnpm check:changed`     | Check des fichiers modifiés (git)                                      | Voir `scripts/check-changed.sh`            |
+| `pnpm check:staged`      | Check des fichiers stagés                                              | Utilisé en pre-commit                      |
+| `pnpm format`            | `prettier --write` (passer des chemins)                                | Ex. `pnpm format "src/**/*.ts"`            |
+| `pnpm format:all`        | Prettier sur tout le repo                                              | Lourd                                      |
+| `pnpm lint`              | `eslint` (passer des chemins)                                          | Ex. `pnpm lint src/lib/x.ts`               |
+| `pnpm lint:all`          | ESLint sur tout le repo (avec cache)                                   | ~9 min à froid → en arrière-plan           |
 
 > ⚠️ `check:incremental` filtre `extern/` (présent en local, absent en CI). Si une
 > erreur ressemble à un fantôme (fichier supprimé), purger le cache :
@@ -181,7 +181,8 @@ il se pose à la main, `pnpm release:major`.
 
 ## Notes Claude Code (rappel CLAUDE.md)
 
-- **Quotidien** : `pnpm check:incremental` (pas `pnpm check`/`check:fast`/`check:safe`
-  qui sont lourds), `pnpm format "<chemins>"`, `pnpm lint <fichiers>`.
+- **Quotidien** : `pnpm check:incremental` (~45 s), `pnpm lint:fast`, `pnpm format "<chemins>"`,
+  `pnpm lint <fichiers>`. `pnpm check` / `build` / `lint` complets : autorisés, **un seul à la
+  fois** (aucun verrou). `check:fast` : meurt sur le tas par défaut de Node.
 - **Tests ciblés** : `pnpm test:server <path>` / `pnpm test:client <path>`.
-- Ne pas lancer `format:all` / `lint:all` / `test:triggers` (lourd ou cassé en local).
+- `lint:all` : en arrière-plan (~9 min). Ne pas lancer `format:all` / `test:triggers` (lourd ou cassé en local).

@@ -14,14 +14,16 @@ Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/)
 
 ---
 
-## ⚠️ Contrainte mémoire (OOM) — LIRE
+## ⚠️ Gros process : un seul à la fois — LIRE
 
-Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
-`pnpm check` · `pnpm check:fast` · `svelte-check` (sans `--incremental`) · `pnpm build` · `pnpm lint` · `npx tsc --noEmit` (en plus, faux positifs `$lib`).
+Machine : **Mac mini Apple M6, 24 Go**. Mesuré le 2026-09-29, **swap +0 partout** (détail : [étape 5](docs/wip/etape5-mesures-mac-mini.md)) : `pnpm check` 82 s (plus gros process 5,3 Go) · `pnpm build` 64 s (5,7 Go) · `pnpm lint` 530 s (4,1 Go) · `check:incremental` 44 s à chaud, 82 s à cache froid · `test:integration` 180 s.
 
-- À la place : **`pnpm check:incremental`** (TS + Svelte, memory-safe, **0 erreur exigée**). ~40 s à cache chaud, mais ⚠️ **~10 min après une édition** → grouper toutes les corrections avant de relancer. Verrou : un 2ᵉ run concurrent sort en **exit 2** ; si rien n'a changé, le résultat précédent est rejoué (`FORCE=1` pour passer outre).
-- **eslint complet OOM en local → CI-only.** À la place **`pnpm lint:fast`** (~2,5 s) rejoue les 3 règles qui font rougir le job Lint : `no-unused-vars` (oxlint), `supabase/require-error-check` et `custom/require-zod-validation` (`eslint.fast.config.js`, sans `projectService`). Lancé au `pre-push`. Ne jamais lancer `pnpm lint` / `lint:all` en local.
-- **Hook pre-commit léger** (`oxlint` + `prettier` sur les fichiers staged, ~2 s) → **`--no-verify` n'est plus nécessaire**. oxlint ne bloque que sur les _erreurs_. eslint complet et les tests restent **en CI** ; le typecheck reste hors hook → `check:incremental` avant de pousser.
+- **`pnpm check`, `pnpm build`, `pnpm lint` : autorisés, UN SEUL gros process à la fois.** Ils ne sont sous **aucun verrou** : deux en parallèle = 2 × 5 Go. Ni deux ensemble, ni pendant un `check:incremental`.
+- **eslint complet autorisé en local, en arrière-plan** (`pnpm lint`, 530 s : trop près de la coupure à 10 min du premier plan).
+- **Déconseillés — limite de Node, pas de la RAM** : `pnpm check:fast`, `npx tsc --noEmit` et `svelte-check` sans `--incremental` meurent sur le **tas par défaut de Node (~4 Go)** : `JavaScript heap out of memory`, exit 134, en 44-47 s, swap +0 (mesuré le 2026-09-29). Plus de RAM n'y change rien. `tsc --noEmit` donne en plus des faux positifs `$lib`.
+- **Le check du quotidien : `pnpm check:incremental`** (TS + Svelte, **0 erreur exigée**) : ~45 s à chaud, ~80 s à cache froid (`FRESH=1`), une édition sous `src/routes` comprise (47 s). Verrou : un 2ᵉ run concurrent sort en **exit 2** ; si rien n'a changé, le résultat précédent est rejoué (`FORCE=1` pour passer outre).
+- **`pnpm lint:fast`** (~2,5 s, contre 530 s pour eslint complet — le motif est la **durée**) rejoue les 3 règles qui font rougir le job Lint : `no-unused-vars` (oxlint), `supabase/require-error-check` et `custom/require-zod-validation` (`eslint.fast.config.js`, sans `projectService`). Lancé au `pre-push`.
+- **Hook pre-commit léger** (`oxlint` + `prettier` sur les fichiers staged, ~2 s — motif : la **durée**, un eslint complet prend 530 s) → **`--no-verify` n'est plus nécessaire**. oxlint ne bloque que sur les _erreurs_. eslint complet et les tests restent **en CI** ; le typecheck reste hors hook → `check:incremental` avant de pousser.
 - ⚠️ Si un hook crashe, il peut **stasher** le travail non commité (→ perdu) : commiter tôt, et après un crash vérifier `git stash list`.
 
 ---
@@ -30,7 +32,7 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 
 ```bash
 pnpm dev --port 5175 --strictPort   # dev (TOUJOURS 5175 ; 5173 = user, NE PAS utiliser)
-pnpm check:incremental              # TS + Svelte (memory-safe, 0 erreur exigée)
+pnpm check:incremental              # TS + Svelte (~45 s, 0 erreur exigée)
 pnpm lint:fast                      # lint des fichiers modifiés (~2,5 s ; évite l'aller-retour CI)
 pnpm format "src/**/*.{ts,svelte}"  # prettier --write
 
@@ -180,7 +182,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 - **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
 - **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
-- ⛔ **Interdit aux agents** : lancer build/lint/check/format (cf. OOM) ; tourner > 5 min sans résultat concret.
+- **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — aucun verrou, donc risque de deux gros process en parallèle (décidé le 2026-09-29). `format` : toujours interdit aux agents (règle antérieure, non réexaminée). ⛔ Tourner > 5 min sans résultat concret.
 
 (Liste complète : `.claude/agents/README.md`.)
 
