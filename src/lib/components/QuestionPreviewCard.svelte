@@ -96,6 +96,7 @@
 			<div class="">
 				<MarkdownRenderer
 					content={convertLegacyLatexToMarkdown(getPreviewText(preview.statement))}
+					flashMode
 				/>
 			</div>
 		</Card.Content>
