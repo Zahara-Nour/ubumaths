@@ -1,0 +1,15 @@
+{
+	"templateId": "19323604-1e27-4b0f-8a24-1eef76ab6e59",
+	"title": "Calculer un produit",
+	"classe": "R",
+	"code": "R-X10",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+			"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de millions}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{millions}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a>=1/10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*100+1/100000)}}}$, est au rang des centièmes. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.}}}}}}}}}}}}",
+			"$$\\begin{align} {{a}} \\times 1000 &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

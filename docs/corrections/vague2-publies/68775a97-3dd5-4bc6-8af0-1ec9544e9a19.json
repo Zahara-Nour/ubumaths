@@ -1,0 +1,15 @@
+{
+	"templateId": "68775a97-3dd5-4bc6-8af0-1ec9544e9a19",
+	"title": "Comparer deux nombres entiers",
+	"classe": "N",
+	"code": "N-COMPARER-ENT",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+			"{{if:floor(h/1000)=floor(j/1000)|{{if:floor(h/100)=floor(j/100)|{{if:floor(h/10)=floor(j/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|{{if:h<10|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<10|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<100|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<100|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/100),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<1000|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<1000|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1000),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1000),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}",
+			"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+		]
+	},
+	"notes": []
+}

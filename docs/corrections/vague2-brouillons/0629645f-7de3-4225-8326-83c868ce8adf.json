@@ -1,0 +1,15 @@
+{
+	"templateId": "0629645f-7de3-4225-8326-83c868ce8adf",
+	"title": "Calculer un quotient",
+	"classe": "R",
+	"code": "R-X10",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Diviser par $10$, $100$, $1000$.** Diviser par $10$ rend chaque chiffre $10$ fois plus petit : dans le tableau de numération, chaque chiffre glisse d'un rang vers la droite. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides entre la virgule et le premier chiffre reçoivent un $0$.",
+			"{{if:a>=10000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10000+1/100000)}}}$, est au rang des dizaines de milliers. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|{{if:a>=1000|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1000+1/100000)}}}$, est au rang des milliers. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:a>=100|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/100+1/100000)}}}$, est au rang des centaines. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:a>=10|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$.|{{if:a>=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a*10+1/100000)}}}$, est au rang des dixièmes. Il glisse d'un rang vers la droite : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.}}}}}}}}}}",
+			"$$\\begin{align} {{a}} \\div 10 &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

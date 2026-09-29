@@ -1,0 +1,15 @@
+{
+	"templateId": "8390762c-b72d-4449-a8cc-5322e5bd77a4",
+	"title": "Calculer un produit d'entiers",
+	"classe": "R",
+	"code": "R-X10",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Multiplier par $10$, $100$, $1000$.** Multiplier par $10$ rend chaque chiffre $10$ fois plus grand : dans le tableau de numération, chaque chiffre glisse d'un rang vers la gauche. Par $100$, il glisse de deux rangs ; par $1000$, de trois rangs. Les rangs restés vides jusqu'aux unités reçoivent un $0$.",
+			"{{if:a>=10|{{if:b=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|{{if:b=2|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/10+1/100000)}}}$, est au rang des dizaines. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$.}}}}|{{if:b=1|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse d'un rang vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$.|{{if:b=2|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de deux rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$.|Le premier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:floor(a/1+1/100000)}}}$, est au rang des unités. Il glisse de trois rangs vers la gauche : il arrive au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$.}}}}}}",
+			"$$\\begin{align} {{a}} \\times {{eval:10^b}} &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

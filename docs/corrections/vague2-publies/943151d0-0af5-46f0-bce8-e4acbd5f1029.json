@@ -1,0 +1,15 @@
+{
+	"templateId": "943151d0-0af5-46f0-bce8-e4acbd5f1029",
+	"title": "Comparer deux nombres entiers",
+	"classe": "N",
+	"code": "N-COMPARER-ENT",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+			"{{if:floor(f/10)=floor(g/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/1),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.|{{if:f<10|${{f}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$.|{{if:g<10|${{g}}$ a moins de chiffres que ${{f}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/10),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.}}}}}}",
+			"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+		]
+	},
+	"notes": []
+}

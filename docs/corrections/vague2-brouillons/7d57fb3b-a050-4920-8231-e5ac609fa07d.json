@@ -1,0 +1,15 @@
+{
+	"templateId": "7d57fb3b-a050-4920-8231-e5ac609fa07d",
+	"title": "Calculer une différence ",
+	"classe": "R",
+	"code": "R-DEC-RANG",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Soustraire des décimaux.** On soustrait rang par rang : les unités des unités, les dixièmes des dixièmes. Quand on ne peut pas retirer les dixièmes, on échange $1$ unité contre $10$ dixièmes.",
+			"On ne peut pas retirer $\\textcolor{{{color:primary.0}}}{{{f}}}$ dixièmes de $\\textcolor{{{color:primary.0}}}{{{b}}}$ dixièmes : on échange $\\textcolor{{{color:primary.1}}}{1}$ unité de ${{c}}$ contre $\\textcolor{{{color:primary.1}}}{10}$ dixièmes. ${{c}}$, c'est ${{eval:a-1}}$ unité{{if:a-1>1|s|}} et $\\textcolor{{{color:primary.1}}}{{{eval:10+b}}}$ dixièmes. Unités : ${{eval:a-1}} - \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a-1-d}}$. Dixièmes : $\\textcolor{{{color:primary.1}}}{{{eval:10+b}}} - \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:10+b-f}}$.",
+			"$$\\begin{align} {{c}} - {{g}} &= \\left( {{eval:a-1}} + \\textcolor{{{color:primary.1}}}{{{eval:(10+b)/10;d}}} \\right) - \\left( \\textcolor{{{color:primary.0}}}{{{d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= \\left( {{eval:a-1}} - \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.1}}}{{{eval:(10+b)/10;d}}} - \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{if:a-1-d>0|{{eval:a-1-d}} + |}}{{eval:(10+b-f)/10;d}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": ["Échange toujours nécessaire (f > b)."]
+}

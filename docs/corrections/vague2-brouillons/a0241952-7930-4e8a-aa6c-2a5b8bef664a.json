@@ -1,0 +1,15 @@
+{
+	"templateId": "a0241952-7930-4e8a-aa6c-2a5b8bef664a",
+	"title": "Calculer une somme ",
+	"classe": "R",
+	"code": "R-DEC-RANG",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Additionner des décimaux.** On additionne rang par rang : les unités avec les unités, les dixièmes avec les dixièmes, les centièmes avec les centièmes. $10$ dixièmes font $1$ unité.",
+			"Unités : $\\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} = {{eval:a+d}}$. Dixièmes : $\\textcolor{{{color:primary.0}}}{{{b}}} + \\textcolor{{{color:primary.0}}}{{{f}}} = {{eval:b+f}}$ dixièmes{{if:b+f>=10|, soit $\\textcolor{{{color:primary.1}}}{1}$ unité et ${{eval:b+f-10}}$ dixième{{if:b+f-10>1|s|}}|}}.",
+			"$$\\begin{align} {{c}} + {{g}} &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{d}}} \\right) + \\left( \\textcolor{{{color:primary.0}}}{{{eval:b/10;d}}} + \\textcolor{{{color:primary.0}}}{{{eval:f/10;d}}} \\right) \\\\ &= {{eval:a+d}} + \\textcolor{{{color:primary.1}}}{{{eval:(b+f)/10;d}}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": ["Retenue toujours présente (b + f ≥ 10)."]
+}

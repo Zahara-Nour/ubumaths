@@ -1,0 +1,22 @@
+{
+	"templateId": "9c0c47ef-72b0-4333-870d-06cdf0f4a2de",
+	"title": "Comparer deux nombres décimaux",
+	"classe": "N",
+	"code": "N-COMPARER-DEC",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+				"Les parties entières sont égales (${{c}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}",
+				"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+			],
+			[
+				"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+				"Les parties entières sont égales (${{b}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}",
+				"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+			]
+		]
+	},
+	"notes": []
+}

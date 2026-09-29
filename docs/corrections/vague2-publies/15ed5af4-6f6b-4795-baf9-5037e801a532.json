@@ -1,0 +1,15 @@
+{
+	"templateId": "15ed5af4-6f6b-4795-baf9-5037e801a532",
+	"title": "Effectuer une division euclidienne",
+	"classe": "N",
+	"code": "N-DIVEUCL",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Division euclidienne.** Diviser $N$ par $b$, c’est trouver le quotient $q$ et le reste $r$ tels que $N = \\left( q \\times b \\right) + r$, avec un reste plus petit que $b$. Le quotient est le plus grand nombre de fois que $b$ « tient » dans $N$.",
+			"On cherche ${{eval:a*b+c}}$ dans la table de ${{b}}$ : $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} = {{eval:a*b}}$ ne dépasse pas ${{eval:a*b+c}}$, mais ${{eval:a+1}} \\times {{b}} = {{eval:(a+1)*b}}$ le dépasse. Le quotient est $\\textcolor{{{color:primary.0}}}{{{a}}}$. Le reste est ${{eval:a*b+c}} - {{eval:a*b}} = \\textcolor{{{color:primary.1}}}{{{c}}}$, plus petit que ${{b}}$.",
+			"$$\\begin{align} ? &= {{eval:a*b+c}} \\\\ &= \\left( \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} \\right) + \\textcolor{{{color:primary.1}}}{{{c}}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}
