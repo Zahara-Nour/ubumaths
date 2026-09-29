@@ -3,7 +3,8 @@
 	// Test files (*.test.ts, __tests__/**, tests/**) are validated by running
 	// them via vitest (esbuild, no type-check); svelte-check is the type GATE
 	// for product source. Excluding them keeps the gate honest (real bugs) and
-	// keeps the program small enough to type-check without OOM.
+	// keeps the program within the V8 heap cap (a Node limit, not a RAM one: see
+	// scripts/check-incremental.sh).
 	// `exclude` REPLACES the parent's exclude when extending, so the
 	// service-worker / node_modules excludes from .svelte-kit/tsconfig.json
 	// are replicated here.

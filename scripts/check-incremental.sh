@@ -13,23 +13,28 @@
 #   (The old `grep -v slides/demo` was dropped: that dir was deleted.)
 #
 # --incremental is load-bearing, not a nicety: without it svelte-check re-transpiles
-# every .svelte file each run — measured ~6x more CPU, and it thrashes swap and
-# CRASHES on this 8 GB machine (366s then SIGABRT vs ~37s with the cache). The
+# every .svelte file each run — measured ~6x more CPU. Without it, it also dies on
+# Node's DEFAULT heap limit (~4 GB): measured on 2026-09-29 on the Mac mini (Apple
+# M6, 24 GB), a bare `npx svelte-check --tsconfig ./tsconfig.check.json` aborts
+# after 44 s with "JavaScript heap out of memory" (exit 134) while swap stays at 0.
+# That is a V8 limit, not a RAM one: more RAM does not fix it. The
 # disk cache can go stale after DELETING/renaming files and emit a phantom "ghost"
 # error. That is the SAME trigger as the conditional-sync blind spot below, so one
 # switch cures both: `FRESH=1 pnpm check:incremental` clears the cache AND forces a
 # sync. Reach for it after deleting/renaming files, or if an error here disagrees
 # with `pnpm check`.
 #
-# THREE GUARDS, because this script costs ~40s warm but ~10 min after an edit, and
-# on this machine a wasted run is wasted wall-clock the user pays for:
-#   1. A lock: a second instance refuses to start while one is running (two
-#      concurrent svelte-check + tsc make an 8 GB machine unusable).
+# TWO GUARDS. Measured on 2026-09-29 on the Mac mini (Apple M6, 24 GB): ~45 s warm,
+# ~80 s from a cold cache (FRESH=1), largest process 2.9 GB then 4.0 GB RSS.
+#   1. A lock: a second instance refuses to start while one is running — one big
+#      process at a time, and two runs would only fight over the same cache.
 #   3. A redundancy guard: if nothing that can change the result has changed
 #      since the last completed run, the previous result is REPLAYED instead of
 #      recomputed. Re-running to "have another look" answers nothing.
-#   (Guard 2 = refuse to run while the local Supabase stack is up, see below.)
-# Both are bypassed with FORCE=1 (and FRESH=1 implies a real run).
+#   (Guard 2 — refuse to run while the local Supabase stack is up — was removed on
+#   2026-09-29: on the Mac mini, the exact scenario that justified it, an edit
+#   under src/routes with Supabase AND the dev server up, took 47 s, swap +0.)
+# Guard 3 is bypassed with FORCE=1 (and FRESH=1 implies a real run).
 set -uo pipefail
 
 # --- Guard 1: one run at a time — ACROSS WORKTREES ---------------------------
@@ -71,30 +76,6 @@ marker="$state_dir/last-run"
 last_output="$state_dir/last-output"
 last_status="$state_dir/last-status"
 
-# --- Guard 2: don't run while the local Supabase stack is up -----------------
-# Le 2026-09-09, un check a été tué après 15 minutes. Aucun fantôme : la pile
-# Supabase locale (12 conteneurs, ~1,9 Go mesurés) était restée allumée depuis
-# des tests d'intégration, et le check venait d'être poussé sur son chemin LENT
-# (une édition sous src/routes force `svelte-kit sync`, qui invalide le cache :
-# ~1,6 Go et 2x plus long, cf. plus bas). Sur 8 Go, la machine ne calculait
-# plus, elle swappait.
-#
-# Refuser franchement vaut mieux que ramer : un check étranglé ne donne aucun
-# verdict, coûte un quart d'heure, et se fait tuer — ce qui laisse en plus un
-# cache à moitié écrit, donc le run suivant repart à froid.
-if command -v docker >/dev/null 2>&1; then
-	supa_containers=$(docker ps --quiet --filter label=com.supabase.cli.project=ubumaths 2>/dev/null | wc -l | tr -d ' ')
-	if [ "${supa_containers:-0}" -gt 0 ] && [ "${ALLOW_DB:-0}" != "1" ]; then
-		echo "⛔ La pile Supabase locale tourne ($supa_containers conteneurs, ~1,9 Go)."
-		echo "   Sur cette machine (8 Go), elle étrangle le typecheck : mesuré 15 min"
-		echo "   au lieu de ~40 s, puis tué sans verdict."
-		echo
-		echo "   → pnpm db:stop      puis relance le check"
-		echo "   → ALLOW_DB=1 pnpm check:incremental   pour passer outre en connaissance de cause"
-		exit 2
-	fi
-fi
-
 # --- Guard 3: refuse a run that cannot say anything new ----------------------
 # Tout ce qui peut changer le verdict. Le 2026-09-24, une correction de
 # `vitest.base.config.ts` a été REJOUÉE avec l'ancienne erreur : la liste ne
@@ -134,8 +115,9 @@ if [ "${FRESH:-0}" = "1" ]; then
 fi
 
 # `svelte-kit sync` regenerates .svelte-kit/* with fresh mtimes, which busts
-# svelte-check's incremental cache → measured ~2x slower and ~2x memory (72s/1.6GB
-# vs 37s/0.8GB). So only sync when routes / svelte config / env actually changed
+# svelte-check's incremental cache. On the old 8 GB laptop that cost ~2x time and
+# memory (72s/1.6GB vs 37s/0.8GB); on the Mac mini (2026-09-29) it is marginal:
+# 47 s vs 44 s, both at 2.9 GB RSS. Syncing is still skipped when useless: only sync when routes / svelte config / env actually changed
 # since the last sync, detected against a file the sync ALWAYS rewrites
 # (.svelte-kit/tsconfig.json). Editing lib/component code needs no sync → fast path.
 # Blind spot: route DELETIONS/renames leave no "newer" file → use FRESH=1 then.
@@ -145,20 +127,20 @@ watch=(src/routes svelte.config.* .env .env.*)
 shopt -u nullglob
 if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
 	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
-	# Prévenir : ce sync invalide le cache, donc ce run sera ~2x plus long et ~2x
-	# plus gourmand. Le dire évite de croire à un blocage.
-	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé,"
-	echo "   ce passage sera plus lent (~2x) et plus gourmand (~1,6 Go)."
+	# Dire pourquoi un sync a lieu : il invalide le cache incrémental.
+	echo "ℹ️  Routes ou config modifiées → svelte-kit sync : cache invalidé."
 	npx svelte-kit sync >/dev/null 2>&1
 fi
 
-# Heap cap = 4096 MiB, not 8192. Measured peak RSS for the full check is ~1.5 GB
-# (1697 source files; tests are excluded via tsconfig.check.json), so 4 GiB is
-# ~2.7x headroom. On an 8 GB machine an 8192 cap is dangerous: it lets V8 grow
-# the heap toward 8 GB before GC kicks in hard, so it can grab all RAM and thrash
-# swap. 4096 guarantees ~4 GB stays free for the OS while keeping ample headroom
-# over the real working set. If a future, much larger codebase OOMs here, bump it
-# (and re-measure — don't cargo-cult the number back up).
+# Heap cap = 4096 MiB. `--max-old-space-size` caps the V8 HEAP, not the process.
+# Measured on 2026-09-29 on the Mac mini (Apple M6, 24 GB): the largest process
+# peaks at 2.9 GB RSS warm and 4.0 GB RSS from a cold cache (FRESH=1), and both
+# runs pass. RSS also counts code, native buffers and the rest of the process, so
+# the V8 heap itself is smaller than those figures. Kept at 4096 (decided
+# 2026-09-29). The cold run is the one closest to the cap: without --incremental
+# the same program dies at Node's default ~4 GB heap (see the header). If a
+# FRESH=1 run ever fails with "JavaScript heap out of memory", raise the cap and
+# re-measure — don't cargo-cult the number either way.
 output=$(NODE_OPTIONS='--max-old-space-size=4096' npx svelte-check \
 	--tsconfig ./tsconfig.check.json --threshold error --incremental --output machine 2>&1)
 sc_status=$?
