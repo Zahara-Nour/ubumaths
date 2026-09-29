@@ -67,38 +67,40 @@ on:
       - 'src/lib/types/locale.ts'
       - 'src/lib/typst/image-loader.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
-      # src/routes : handlers appelés directement par les tests. `[`, `]`, `(`, `)`
-      # et `+` sont spéciaux dans ces motifs : un segment qui en contient devient
-      # `*`, et `+server.ts` devient `?server.ts` (un caractère quelconque).
-      - 'src/routes/*/dashboard/teacher/cahier-texte/*/*/?page.server.ts'
-      - 'src/routes/*/dashboard/teacher/contenu/worksheets/*/assignments/*/progress/?page.server.ts'
-      - 'src/routes/*/presques-evaluations/?page.server.ts'
-      - 'src/routes/api/assessments/*/?server.ts'
-      - 'src/routes/api/marketplace/listings/*/proposals/?server.ts'
-      - 'src/routes/api/skill-attempts/?server.ts'
-      - 'src/routes/api/srs/decks/*/sections/?server.ts'
-      - 'src/routes/api/srs/decks/*/sections/*/?server.ts'
-      - 'src/routes/api/student/reports/?server.ts'
-      - 'src/routes/api/student/worksheets/?server.ts'
-      - 'src/routes/api/teacher/curriculum/activities/?server.ts'
-      - 'src/routes/api/teacher/curriculum/activities/*/?server.ts'
-      - 'src/routes/api/teacher/curriculum/coverage/?server.ts'
-      - 'src/routes/api/teacher/curriculum/exercise-tags/?server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/?server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/*/?server.ts'
-      - 'src/routes/api/teacher/curriculum/objectives/reorder/?server.ts'
-      - 'src/routes/api/teacher/curriculum/points/?server.ts'
-      - 'src/routes/api/teacher/curriculum/points/*/?server.ts'
-      - 'src/routes/api/teacher/curriculum/points/reorder/?server.ts'
-      - 'src/routes/api/teacher/curriculum/template-tags/?server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/?server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/*/?server.ts'
-      - 'src/routes/api/teacher/curriculum/themes/reorder/?server.ts'
-      - 'src/routes/api/worksheets/?server.ts'
-      - 'src/routes/api/worksheets/*/?server.ts'
-      - 'src/routes/api/worksheets/*/assignments/*/reports/*/?server.ts'
-      - 'src/routes/api/worksheets/*/duplicate/?server.ts'
-      - 'src/routes/api/worksheets/*/exercise-number/*/?server.ts'
+      # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`
+      # est une classe de caractères, et `?` / `+` portent sur le caractère
+      # PRÉCÉDENT (pas « un caractère quelconque ») : un segment `[id]` ou `(groupe)`
+      # devient `*`, et `+server.ts` devient `*server.ts`. Vérifié par
+      # `pnpm check:integration-paths` (job `paths-filter` ci-dessous).
+      - 'src/routes/*/dashboard/teacher/cahier-texte/*/*/*page.server.ts'
+      - 'src/routes/*/dashboard/teacher/contenu/worksheets/*/assignments/*/progress/*page.server.ts'
+      - 'src/routes/*/presques-evaluations/*page.server.ts'
+      - 'src/routes/api/assessments/*/*server.ts'
+      - 'src/routes/api/marketplace/listings/*/proposals/*server.ts'
+      - 'src/routes/api/skill-attempts/*server.ts'
+      - 'src/routes/api/srs/decks/*/sections/*server.ts'
+      - 'src/routes/api/srs/decks/*/sections/*/*server.ts'
+      - 'src/routes/api/student/reports/*server.ts'
+      - 'src/routes/api/student/worksheets/*server.ts'
+      - 'src/routes/api/teacher/curriculum/activities/*server.ts'
+      - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'
+      - 'src/routes/api/teacher/curriculum/coverage/*server.ts'
+      - 'src/routes/api/teacher/curriculum/exercise-tags/*server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/*server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/*/*server.ts'
+      - 'src/routes/api/teacher/curriculum/objectives/reorder/*server.ts'
+      - 'src/routes/api/teacher/curriculum/points/*server.ts'
+      - 'src/routes/api/teacher/curriculum/points/*/*server.ts'
+      - 'src/routes/api/teacher/curriculum/points/reorder/*server.ts'
+      - 'src/routes/api/teacher/curriculum/template-tags/*server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/*server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/*/*server.ts'
+      - 'src/routes/api/teacher/curriculum/themes/reorder/*server.ts'
+      - 'src/routes/api/worksheets/*server.ts'
+      - 'src/routes/api/worksheets/*/*server.ts'
+      - 'src/routes/api/worksheets/*/assignments/*/reports/*/*server.ts'
+      - 'src/routes/api/worksheets/*/duplicate/*server.ts'
+      - 'src/routes/api/worksheets/*/exercise-number/*/*server.ts'
 concurrency:
   # Un nouveau push sur la même branche (ou la même PR) annule le run en cours.
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -108,6 +110,33 @@ permissions:
   contents: read
 
 jobs:
+  paths-filter:
+    # Le filtre `paths` ci-dessus suit-il encore la suite ? Une PR qui change le
+    # périmètre (nouvel import) modifie forcément un fichier couvert, donc passe
+    # ici. Échoue sur un fichier atteint non couvert, ou un motif mort.
+    name: Integration paths filter
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the paths filter against the suite's imports
+        run: pnpm check:integration-paths
+
   integration:
     name: Integration tests (Supabase local)
     runs-on: ubuntu-latest
