@@ -852,11 +852,12 @@ function validateSingleBlank(
 			blank.precision,
 			blank.unit.required
 		);
-		// L'unité (ou l'écriture d'une durée composée) est en cause : l'élève doit
-		// lire pourquoi (message figé, cf. units/feedback et units/composite-duration)
+		// L'unité, l'écriture d'une durée composée ou l'arrondi est en cause :
+		// l'élève doit lire pourquoi (message figé, cf. units/feedback,
+		// units/composite-duration et questions/rounding)
 		if (
 			!result.isCorrect &&
-			(result.unitAtFault || result.durationWritingAtFault) &&
+			(result.unitAtFault || result.durationWritingAtFault || result.roundingAtFault) &&
 			result.feedback
 		) {
 			return { isCorrect: false, feedback: result.feedback };
