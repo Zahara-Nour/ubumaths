@@ -18,7 +18,11 @@ import type {
 	ConstraintOptions,
 	ValidationRule
 } from '$lib/questions/types';
-import { DEFAULT_CONSTRAINT_MODE, getQuestionType } from '$lib/questions/types';
+import {
+	DEFAULT_CONSTRAINT_MODE,
+	DEFAULT_FORM_CONSTRAINT_MODE,
+	getQuestionType
+} from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { checkUnit } from '$lib/questions/constraint-validators';
@@ -149,6 +153,7 @@ function applyConstraints(
 	let worstStatus: ValidationStatus = 'correct';
 	const isMultiple = answers.length > 1;
 	const severities = buildConstraintSeverities(constraints);
+	const formMode = (constraints.form as ConstraintMode | undefined) ?? DEFAULT_FORM_CONSTRAINT_MODE;
 	const formOptions = {
 		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true
 	};
@@ -178,14 +183,18 @@ function applyConstraints(
 			}
 		}
 
-		// Final form mismatch: the answer structure is fundamentally different
-		// from expected (e.g. 400+80 vs 480). This is unconditional — no severity mode.
-		// Added even when other violations exist (e.g. spaces), since the form
-		// mismatch is the primary issue and should override cosmetic warnings.
-		if (!formResult.valid && formResult.status === 'bad_form') {
+		// Comparaison de fin de pipeline : la réponse retouchée n'est pas l'attendue
+		// retouchée (400+80 contre 480). Gouvernée par `form`, `strict` par défaut
+		// (ADR 0013) : `warn` → juste avec avertissement, `off` → juste sans remarque.
+		if (!formResult.valid && formResult.status === 'bad_form' && formMode !== 'off') {
 			const feedback = CONSTRAINT_FEEDBACK['form'][isMultiple ? 'multiple' : 'single'];
-			violations.push({ constraint: 'form', severity: 'error', feedback });
-			worstStatus = 'bad_form';
+			if (formMode === 'strict') {
+				violations.push({ constraint: 'form', severity: 'error', feedback });
+				worstStatus = 'bad_form';
+			} else {
+				violations.push({ constraint: 'form', severity: 'warning', feedback });
+				if (worstStatus === 'correct') worstStatus = 'unoptimal_form';
+			}
 		}
 	}
 

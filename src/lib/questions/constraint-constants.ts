@@ -1,4 +1,5 @@
 import type { ConstraintId } from './types';
+import { DEFAULT_CONSTRAINT_MODE, DEFAULT_FORM_CONSTRAINT_MODE } from './types';
 
 export const CONSTRAINT_IDS: ConstraintId[] = [
 	'spaces',
@@ -36,3 +37,14 @@ export const CONSTRAINT_MODE_OPTIONS = [
 	{ value: 'warn', label: 'Avertissement' },
 	{ value: 'off', label: 'Désactivé' }
 ] as const;
+
+/**
+ * Choix proposés pour une contrainte, avec le libellé de SON défaut : `form`
+ * est `strict` par défaut, les autres `warn` (ADR 0013).
+ */
+export function constraintModeOptions(id: ConstraintId): { value: string; label: string }[] {
+	const defaultMode = id === 'form' ? DEFAULT_FORM_CONSTRAINT_MODE : DEFAULT_CONSTRAINT_MODE;
+	return CONSTRAINT_MODE_OPTIONS.map((option) =>
+		option.value === '' ? { value: '', label: `Défaut (${defaultMode})` } : { ...option }
+	);
+}
