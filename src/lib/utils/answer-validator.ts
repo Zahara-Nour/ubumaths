@@ -20,7 +20,7 @@ import type {
 } from '$lib/questions/types';
 import { DEFAULT_CONSTRAINT_MODE, getQuestionType } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
-import { evaluateExpression, areEquivalent } from '$lib/math';
+import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { checkUnit } from '$lib/questions/constraint-validators';
 import {
 	checkForm as checkFormUnified,
@@ -261,7 +261,9 @@ function evaluateValidationRules(
 		// Valeur du LaTeX tapé : `12/2` vaut 6, `2{,}5` vaut 2,5, `12\,000` vaut
 		// 12000 pour les règles (la forme est jugée ensuite). `Number()` seul
 		// rendait NaN pour toute saisie MathLive non triviale.
-		numericAnswer: toNumericAnswer(userAnswer)
+		numericAnswer: toNumericAnswer(userAnswer),
+		// Hypothèses de l'énoncé (ADR 0012), pour la règle `equivalent`
+		assumptions: instance.options?.answerAssumptions
 	};
 
 	// Evaluate each rule
@@ -638,10 +640,14 @@ function roundToMagnitude(num: number, magnitude: number): number {
  * @param correctAnswer - Correct expression (LaTeX)
  * @returns Validation result
  */
-export function validateAlgebraic(userAnswer: string, correctAnswer: string): ValidationResult {
+export function validateAlgebraic(
+	userAnswer: string,
+	correctAnswer: string,
+	assumptions?: AnswerAssumptions
+): ValidationResult {
 	// Bound wall-clock time so a pathological learner input cannot freeze the UI.
 	// On timeout, areEquivalent returns false → answer treated as incorrect.
-	const isCorrect = areEquivalent(userAnswer, correctAnswer, { timeoutMs: 500 });
+	const isCorrect = areEquivalent(userAnswer, correctAnswer, { timeoutMs: 500, assumptions });
 
 	return {
 		isCorrect,
@@ -759,7 +765,7 @@ function validateBlankValue(
 		return result.isCorrect;
 	}
 
-	return isAnswerMatch(userAnswer, blank.expectedAnswer);
+	return isAnswerMatch(userAnswer, blank.expectedAnswer, instance.options?.answerAssumptions);
 }
 
 /**
@@ -882,7 +888,11 @@ function validateSingleBlank(
 		}
 		isCorrect = result.isCorrect;
 	} else {
-		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer);
+		isCorrect = isAnswerMatch(
+			userAnswer,
+			blank.expectedAnswer,
+			instance.options?.answerAssumptions
+		);
 	}
 
 	if (!isCorrect) {
@@ -1143,11 +1153,18 @@ export function validateBlanks(
 	return result;
 }
 
-/** Match a single answer against expected (algebraic equivalence or case-insensitive string) */
-function isAnswerMatch(userAns: string, correctAns: string): boolean {
+/**
+ * Match a single answer against expected (algebraic equivalence or case-insensitive string).
+ * `assumptions` : hypothèses de l'énoncé (ADR 0012), qui restreignent le domaine de comparaison.
+ */
+function isAnswerMatch(
+	userAns: string,
+	correctAns: string,
+	assumptions: AnswerAssumptions | undefined
+): boolean {
 	// Same UI-protection rationale as validateAlgebraic: bound the equivalence
 	// check so a malicious or accidental pathological input cannot freeze the UI.
-	if (areEquivalent(userAns, correctAns, { timeoutMs: 500 })) return true;
+	if (areEquivalent(userAns, correctAns, { timeoutMs: 500, assumptions })) return true;
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 

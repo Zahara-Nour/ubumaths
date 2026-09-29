@@ -23,6 +23,10 @@ import {
 	blankDefaultsSchema,
 	testSpecSchema
 } from '$lib/questions/template-schema';
+import {
+	answerAssumptionsSchema,
+	refineAssumptionCollisions
+} from '$lib/questions/answer-assumptions';
 
 // ============================================================================
 // QUESTION TEMPLATE SCHEMAS FOR EDITING
@@ -137,7 +141,9 @@ export const editedQuestionTemplateSchema = z
 			.object({
 				constraints: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
 				shuffleChoices: z.boolean().optional(),
-				orderIndependent: z.boolean().optional()
+				orderIndependent: z.boolean().optional(),
+				// Hypothèses de l'énoncé (ADR 0012) : validées, pas laissées au passthrough
+				answerAssumptions: answerAssumptionsSchema.optional()
 			})
 			.passthrough()
 			.optional(),
@@ -161,7 +167,8 @@ export const editedQuestionTemplateSchema = z
 			message: 'Chaque variation doit avoir un enonce, ou un enonce partage doit etre defini',
 			path: ['variations']
 		}
-	);
+	)
+	.superRefine(refineAssumptionCollisions);
 
 /**
  * Schema for saving an edit to a question

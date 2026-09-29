@@ -20,6 +20,7 @@
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -240,6 +241,7 @@ TEMPLATE - PAGE LAYOUT
 			</Card.Content>
 		</Card.Root>
 	{:else if instance}
+		<AnswerAssumptionsNotice assumptions={instance.options?.answerAssumptions} />
 		<FlashCard
 			{interactive}
 			{instance}

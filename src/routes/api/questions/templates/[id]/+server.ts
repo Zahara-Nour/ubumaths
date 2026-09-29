@@ -17,6 +17,10 @@ import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/valid
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
+import {
+	assumptionCollisionMessage,
+	findAssumptionCollisions
+} from '$lib/questions/answer-assumptions';
 
 /**
  * GET /api/questions/templates/[id]
@@ -77,6 +81,39 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		const templateData = validation.data as Partial<QuestionTemplate>;
+
+		// Hypothèses de l'énoncé (ADR 0012) : le schéma ne voit que les variables
+		// présentes dans la requête. Mise à jour partielle sans `shared` ni
+		// `variations` → relire celles de la ligne en base, même contrôle.
+		const answerAssumptions = templateData.options?.answerAssumptions;
+		if (answerAssumptions && (!templateData.variations || templateData.shared === undefined)) {
+			const { data: stored, error: storedError } = await locals.supabase
+				.from('question_templates')
+				.select('shared, variations')
+				.eq('id', id)
+				.single();
+			if (storedError?.code === 'PGRST116' || (!storedError && !stored)) {
+				throw error(404, 'Template not found');
+			}
+			if (storedError) {
+				console.error('Error reading template for assumption check:', storedError);
+				throw error(500, 'Failed to read template');
+			}
+			const collisions = findAssumptionCollisions(answerAssumptions, {
+				shared: templateData.shared !== undefined ? templateData.shared : stored.shared,
+				variations:
+					templateData.variations ??
+					(Array.isArray(stored.variations)
+						? (stored.variations as unknown as QuestionTemplate['variations'])
+						: [])
+			});
+			if (collisions.length > 0) {
+				return json(
+					{ success: false, errors: collisions.map(assumptionCollisionMessage) },
+					{ status: 400 }
+				);
+			}
+		}
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {

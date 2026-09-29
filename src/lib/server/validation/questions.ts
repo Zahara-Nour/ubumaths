@@ -20,6 +20,7 @@ import {
 	optionsSchema,
 	testSpecSchema
 } from '$lib/questions/template-schema';
+import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
 
 // Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
 export {
@@ -58,9 +59,9 @@ const variationSchema = z.object({
 });
 
 /**
- * Schema for creating a question template
+ * Champs d'un modèle de question (création), sans les contrôles croisés
  */
-export const createQuestionTemplateSchema = z.object({
+const questionTemplateFieldsSchema = z.object({
 	type: questionTypeSchema.optional(),
 	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200 caractères)'),
 	description: z.string().max(1000).optional().nullable(),
@@ -85,9 +86,25 @@ export const createQuestionTemplateSchema = z.object({
 });
 
 /**
- * Schema for updating a question template (all fields optional)
+ * Schema for creating a question template
+ *
+ * Contrôle croisé : une hypothèse de l'énoncé (`options.answerAssumptions`)
+ * ne vise jamais une variable tirée — refusé ici, quel que soit le statut
+ * (`validateTemplate` ne tourne qu'à la publication).
  */
-export const updateQuestionTemplateSchema = createQuestionTemplateSchema.partial();
+export const createQuestionTemplateSchema = questionTemplateFieldsSchema.superRefine(
+	refineAssumptionCollisions
+);
+
+/**
+ * Schema for updating a question template (all fields optional)
+ *
+ * La collision n'est vérifiable qu'avec les variables présentes dans la
+ * requête (l'éditeur envoie toujours le modèle entier).
+ */
+export const updateQuestionTemplateSchema = questionTemplateFieldsSchema
+	.partial()
+	.superRefine(refineAssumptionCollisions);
 
 /**
  * Schema for listing question templates
