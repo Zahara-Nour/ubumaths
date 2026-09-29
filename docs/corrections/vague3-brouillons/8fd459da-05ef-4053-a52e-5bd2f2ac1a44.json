@@ -1,0 +1,14 @@
+{
+	"templateId": "8fd459da-05ef-4053-a52e-5bd2f2ac1a44",
+	"title": "Définition d'un pourcentage",
+	"classe": "N",
+	"code": "N-POURCENT",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Pourcentage.** Une fraction de dénominateur $100$ s’écrit en pourcentage : $\\dfrac{p}{100} = p\\,\\%$.",
+			"$$\\begin{align} \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{100} &= \\textcolor{{{color:primary.0}}}{{{a}}}\\,\\% \\end{align}$$"
+		]
+	},
+	"notes": []
+}

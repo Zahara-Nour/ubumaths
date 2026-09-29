@@ -1,0 +1,14 @@
+{
+	"templateId": "f7f22023-19cd-4745-aa96-8a3c930cde0f",
+	"title": "Une soustraction enfin possible",
+	"classe": "N",
+	"code": "N-REL-DEF",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Définition.** Le nombre $-a$ est le résultat de la soustraction $0 - a$ : c’est le nombre qu’il faut ajouter à $a$ pour obtenir $0$.",
+			"$$\\begin{align} 0 - \\textcolor{{{color:primary.0}}}{{{a}}} &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,22 @@
+{
+	"templateId": "12e27dba-8939-4f84-94e9-87c88458b7c3",
+	"title": "Comparer deux nombres relatifs.",
+	"classe": "N",
+	"code": "N-COMPARER-REL",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Comparer deux relatifs.** Un nombre négatif est plus petit qu’un nombre positif. Entre deux nombres négatifs, le plus petit est celui qui est le plus éloigné de zéro.",
+				"{{if:(g)<(h)|{{if:(g)<0|{{if:(h)<0|Les deux nombres sont négatifs : ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est plus éloigné de zéro que ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ (${{eval:abs(g)}} > {{eval:abs(h)}}$), donc $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.|${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est négatif et ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est positif, donc $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.}}|Les deux nombres sont positifs : $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.}}|{{if:(h)<0|{{if:(g)<0|Les deux nombres sont négatifs : ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est plus éloigné de zéro que ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ (${{eval:abs(h)}} > {{eval:abs(g)}}$), donc $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.|${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est négatif et ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est positif, donc $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.}}|Les deux nombres sont positifs : $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.}}}}",
+				"Le plus petit des deux nombres est donc : {{solution}}"
+			],
+			[
+				"**Comparer deux relatifs.** Un nombre négatif est plus petit qu’un nombre positif. Entre deux nombres négatifs, le plus petit est celui qui est le plus éloigné de zéro.",
+				"{{if:(g)<(h)|{{if:(g)<0|{{if:(h)<0|Les deux nombres sont négatifs : ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est plus éloigné de zéro que ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ (${{eval:abs(g)}} > {{eval:abs(h)}}$), donc $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.|${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est négatif et ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est positif, donc $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.}}|Les deux nombres sont positifs : $\\textcolor{{{color:primary.1}}}{{{eval:g}} < {{eval:h}}}$.}}|{{if:(h)<0|{{if:(g)<0|Les deux nombres sont négatifs : ${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est plus éloigné de zéro que ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ (${{eval:abs(h)}} > {{eval:abs(g)}}$), donc $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.|${{if:(h)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(h)}}|{{eval:h}}}}$ est négatif et ${{if:(g)<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(g)}}|{{eval:g}}}}$ est positif, donc $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.}}|Les deux nombres sont positifs : $\\textcolor{{{color:primary.1}}}{{{eval:h}} < {{eval:g}}}$.}}}}",
+				"Le plus petit des deux nombres est donc : {{solution}}"
+			]
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,32 @@
+{
+	"templateId": "8c7942e4-b81a-4049-9e78-7e2f14d5b055",
+	"title": "Simplifier l'écriture",
+	"classe": "N",
+	"code": "N-REL-SUB",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Doubles signes.** $+\\left( -b \\right)$ s’écrit $-b$ ; $-\\left( -b \\right)$ s’écrit $+b$ (soustraire un nombre, c’est ajouter son opposé).",
+				"Ajouter $\\textcolor{{{color:primary.0}}}{-}{{b}}$, c’est soustraire ${{b}}$.",
+				"$$\\begin{align} -{{a}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= -{{a}} \\textcolor{{{color:primary.2}}}{-} {{b}} \\end{align}$$"
+			],
+			[
+				"**Doubles signes.** $+\\left( -b \\right)$ s’écrit $-b$ ; $-\\left( -b \\right)$ s’écrit $+b$ (soustraire un nombre, c’est ajouter son opposé).",
+				"Ajouter $\\textcolor{{{color:primary.0}}}{-}{{b}}$, c’est soustraire ${{b}}$.",
+				"$$\\begin{align} {{a}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= {{a}} \\textcolor{{{color:primary.2}}}{-} {{b}} \\end{align}$$"
+			],
+			[
+				"**Doubles signes.** $+\\left( -b \\right)$ s’écrit $-b$ ; $-\\left( -b \\right)$ s’écrit $+b$ (soustraire un nombre, c’est ajouter son opposé).",
+				"Soustraire $\\textcolor{{{color:primary.0}}}{-}{{b}}$, c’est ajouter ${{b}}$.",
+				"$$\\begin{align} -{{a}} - \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= -{{a}} \\textcolor{{{color:primary.2}}}{+} {{b}} \\end{align}$$"
+			],
+			[
+				"**Doubles signes.** $+\\left( -b \\right)$ s’écrit $-b$ ; $-\\left( -b \\right)$ s’écrit $+b$ (soustraire un nombre, c’est ajouter son opposé).",
+				"Soustraire $\\textcolor{{{color:primary.0}}}{-}{{b}}$, c’est ajouter ${{b}}$.",
+				"$$\\begin{align} {{a}} - \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= {{a}} \\textcolor{{{color:primary.2}}}{+} {{b}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

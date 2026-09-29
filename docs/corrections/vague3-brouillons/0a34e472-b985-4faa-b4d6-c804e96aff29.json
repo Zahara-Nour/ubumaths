@@ -1,0 +1,29 @@
+{
+	"templateId": "0a34e472-b985-4faa-b4d6-c804e96aff29",
+	"title": "Calculer",
+	"classe": "N",
+	"code": "N-REL-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{a}} + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+			],
+			[
+				"Soustraire ${{b}}$, c’est ajouter son opposé $\\textcolor{{{color:primary.0}}}{-}{{b}}$.",
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et on additionne les distances à zéro.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{a}} - {{b}} &= \\textcolor{{{color:primary.0}}}{-}{{a}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) \\\\ &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"Soustraire ${{a}}$, c’est ajouter son opposé $\\textcolor{{{color:primary.0}}}{-}{{a}}$.",
+				"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+				"${{c}}$ et $\\textcolor{{{color:primary.0}}}{-}{{a}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(c)>(a)|${{c}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|{{if:(c)<(a)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(c)=(a)||On soustrait les distances à zéro.}}",
+				"$$\\begin{align} {{c}} - {{a}} &= {{c}} + \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) \\\\ {{if:(c)>(a)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{c}} - {{a}} \\right) \\\\ |{{if:(c)<(a)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{c}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

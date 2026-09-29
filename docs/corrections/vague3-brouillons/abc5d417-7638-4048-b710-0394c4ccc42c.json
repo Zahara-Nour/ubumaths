@@ -1,0 +1,15 @@
+{
+	"templateId": "abc5d417-7638-4048-b710-0394c4ccc42c",
+	"title": "Calculer une somme algébrique",
+	"classe": "N",
+	"code": "N-REL-ALG",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Somme algébrique.** On regroupe les termes positifs d’un côté, les termes négatifs de l’autre : on additionne les uns, on additionne les distances à zéro des autres, puis on conclut avec la règle des signes contraires.",
+			"Termes positifs : leur somme vaut $\\textcolor{{{color:primary.1}}}{{{eval:(a+abs(a)+b+abs(b)+c+abs(c)+d+abs(d))/2}}}$. Termes négatifs : leurs distances à zéro ont pour somme $\\textcolor{{{color:primary.0}}}{{{eval:(abs(a)-a+abs(b)-b+abs(c)-c+abs(d)-d)/2}}}$.",
+			"$$\\begin{align} {{a}}{{eval:b;+}}{{eval:c;+}}{{eval:d;+}} &= \\textcolor{{{color:primary.1}}}{{{eval:(a+abs(a)+b+abs(b)+c+abs(c)+d+abs(d))/2}}} - \\textcolor{{{color:primary.0}}}{{{eval:(abs(a)-a+abs(b)-b+abs(c)-c+abs(d)-d)/2}}} \\\\ {{if:a+b+c+d<0|&= \\textcolor{{{color:primary.2}}}{-}\\left( \\textcolor{{{color:primary.0}}}{{{eval:(abs(a)-a+abs(b)-b+abs(c)-c+abs(d)-d)/2}}} - \\textcolor{{{color:primary.1}}}{{{eval:(a+abs(a)+b+abs(b)+c+abs(c)+d+abs(d))/2}}} \\right) \\\\ |}}&= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": ["Les conditions du modèle garantissent au moins un terme positif et un terme négatif."]
+}

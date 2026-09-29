@@ -1,0 +1,14 @@
+{
+	"templateId": "62590cd3-c811-4acc-9b0d-0ff9e19c4c55",
+	"title": "Définition d'un pourcentage",
+	"classe": "N",
+	"code": "N-POURCENT",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Pourcentage.** $p\\,\\%$ signifie « $p$ pour cent » : $p\\,\\% = \\dfrac{p}{100}$.",
+			"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}\\,\\% &= \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{100} \\end{align}$$"
+		]
+	},
+	"notes": []
+}
