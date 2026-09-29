@@ -236,3 +236,29 @@ describe('Hypothèses : ignorées dès qu’une expression sort de l’algèbre 
 		expect(eq(a, b, assumptions)).toBe(false);
 	});
 });
+
+// Une fonction connue DÉCORÉE (réciproque f^{-1}, puissance, dérivée, base de log)
+// n'a pas le type de la fonction nue : exp^{-1} est ln, pas exp (revue #522).
+describe('Hypothèses : fonction connue décorée hors liste blanche', () => {
+	it.each<[string, string, AnswerAssumptions]>([
+		['\\left|\\exp^{-1}(x-3)\\right|', '\\exp^{-1}(x-3)', X_POSITIVE],
+		['\\left|\\exp^{-1}(x)\\right|', '\\exp^{-1}(x)', X_POSITIVE],
+		['\\left|\\cosh^{-1}(x)\\right|', '\\cosh^{-1}(x)', X_POSITIVE]
+	])('%s ≢ %s', (a, b, assumptions) => {
+		expect(eq(a, b, assumptions)).toBe(false);
+	});
+});
+
+// Données venues d'un jsonb : une hypothèse hors vocabulaire est ignorée, sans planter.
+describe('Hypothèses : valeur hors vocabulaire ignorée', () => {
+	it('{ e: "negative" } ne lève pas et ne change rien', () => {
+		const unknownKind = { e: 'negative' } as unknown as AnswerAssumptions;
+		expect(() => eq('|x|', 'x', unknownKind)).not.toThrow();
+		expect(eq('|x|', 'x', unknownKind)).toBe(false);
+	});
+
+	it('une hypothèse valide voisine garde son effet', () => {
+		const mixed = { e: 'negative', x: 'positive' } as unknown as AnswerAssumptions;
+		expect(eq('|x|', 'x', mixed)).toBe(true);
+	});
+});

@@ -16,7 +16,7 @@ import type { NumericType, TypeContext, VariableAssumption } from './numtype';
 import { isIntegerType, isNonNegativeType, isPositiveType } from './numtype';
 import { isKnownFunctionName } from './numtype/rules/functions';
 import { findNodes } from './transforms';
-import type { MathNode } from './types';
+import type { FunctionNode, MathNode } from './types';
 
 // =============================================================================
 // Types
@@ -74,6 +74,18 @@ const KIND_TRANSLATION: Readonly<
 // =============================================================================
 
 /**
+ * Les hypothèses dont la valeur appartient au vocabulaire. Elles viennent d'un
+ * jsonb (`options.answerAssumptions`) : une valeur inconnue est ignorée — pas
+ * d'hypothèse, donc comportement sûr — au lieu de faire planter la correction.
+ */
+function validEntries(
+	assumptions: AnswerAssumptions | undefined
+): [string, AnswerAssumptionKind][] {
+	if (!assumptions) return [];
+	return Object.entries(assumptions).filter(([, kind]) => Object.hasOwn(KIND_TRANSLATION, kind));
+}
+
+/**
  * Traduit les hypothèses en `TypeContext`. `undefined` quand il n'y en a
  * aucune : l'appelant retombe alors EXACTEMENT sur le comportement sans
  * hypothèse (aucun contexte transmis).
@@ -81,8 +93,7 @@ const KIND_TRANSLATION: Readonly<
 export function answerAssumptionsToTypeContext(
 	assumptions: AnswerAssumptions | undefined
 ): TypeContext | undefined {
-	if (!assumptions) return undefined;
-	const entries = Object.entries(assumptions);
+	const entries = validEntries(assumptions);
 	if (entries.length === 0) return undefined;
 
 	const variables = new Map<string, NumericType>();
@@ -187,6 +198,21 @@ const PLAIN_ALGEBRA_NODE_TYPES: ReadonlySet<MathNode['type']> = new Set([
 ]);
 
 /**
+ * Fonction connue NUE : ni réciproque (`\exp^{-1}` est ln, pas exp), ni
+ * puissance, ni dérivée, ni base de logarithme. `numtype` type la fonction par
+ * son nom seul et ignorerait ces décorations (faux positif en revue, #522).
+ */
+function isPlainKnownFunction(node: FunctionNode): boolean {
+	return (
+		isKnownFunctionName(node.name) &&
+		node.power === undefined &&
+		node.base === undefined &&
+		node.derivativeOrder === undefined &&
+		!node.isInverse
+	);
+}
+
+/**
  * L'expression n'est-elle faite que d'algèbre simple (fonctions connues
  * comprises) ? Sinon, les hypothèses de l'énoncé sont ignorées pour TOUTE la
  * comparaison : on retombe sur le verdict sans hypothèse, qui est sûr.
@@ -197,7 +223,7 @@ export function isPlainAlgebra(node: MathNode): boolean {
 			node,
 			(candidate) =>
 				!PLAIN_ALGEBRA_NODE_TYPES.has(candidate.type) ||
-				(isFunction(candidate) && !isKnownFunctionName(candidate.name))
+				(isFunction(candidate) && !isPlainKnownFunction(candidate))
 		).length === 0
 	);
 }
@@ -211,7 +237,7 @@ export function assumptionOracle(
 ): AssumptionOracle | undefined {
 	const ctx = answerAssumptionsToTypeContext(assumptions);
 	if (!assumptions || !ctx) return undefined;
-	const names: ReadonlySet<string> = new Set(Object.keys(assumptions));
+	const names: ReadonlySet<string> = new Set(validEntries(assumptions).map(([name]) => name));
 	return {
 		isPositive: (node) => assumptionApplies(node, names) && isPositiveType(node, ctx),
 		isNonNegative: (node) => assumptionApplies(node, names) && isNonNegativeType(node, ctx),
