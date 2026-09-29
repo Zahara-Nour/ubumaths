@@ -1,13 +1,17 @@
 <script lang="ts">
+	/**
+	 * Tuile d'un modèle dans la grille Automaths
+	 *
+	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
+	 * (non interactive, avec son bouton de retournement), sous l'intitulé
+	 * « Thème / Domaine ». Un clic sur la tuile ne fait rien. En dessous, le
+	 * bouton d'ajout au panier (la grille n'a ni durée ni répétitions).
+	 */
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { Plus, Check } from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
 	let {
@@ -18,10 +22,6 @@
 		preview: QuestionInstance;
 	} = $props();
 
-	// Modal state
-	let isModalOpen = $state(false);
-
-	// Check if category already in cart
 	let category = $derived({
 		theme: template.theme,
 		domain: template.domain,
@@ -30,116 +30,40 @@
 	});
 	let isInCart = $derived(questionCart.hasCategory(category));
 
-	/**
-	 * Get preview text from statement (ResolvedMarkdown string)
-	 * Truncates to 200 chars if needed
-	 */
-	function getPreviewText(statement: string): string {
-		if (!statement) return '';
-		// Statement is now a ResolvedMarkdown string
-		return statement.length > 200 ? statement.substring(0, 200) + '...' : statement;
-	}
-
-	/**
-	 * Add category to cart
-	 */
-	function handleAddToCart(e: MouseEvent) {
-		e.stopPropagation(); // Prevent card click
+	function handleAddToCart() {
 		questionCart.addToCart(category, 1);
-	}
-
-	/**
-	 * Open modal to view full question
-	 */
-	function handleCardClick() {
-		isModalOpen = true;
 	}
 </script>
 
-<Dialog.Root bind:open={isModalOpen}>
-	<Card.Root
-		class="group relative cursor-pointer transition-all duration-200 hover:shadow-lg"
-		onclick={handleCardClick}
-	>
-		<!-- FAB Button overlay -->
+<div class="flex flex-col gap-3">
+	<!-- Intitulé -->
+	<div class="flex items-center justify-between gap-2">
+		<p class="text-sm font-medium">
+			{template.theme}
+			<span class="text-muted-foreground"> / {template.domain}</span>
+		</p>
+		<Badge variant="outline" class="text-xs" title="Niveau">{template.level}</Badge>
+	</div>
+
+	<!-- La flash-card elle-même -->
+	<FlashCard instance={preview} interactive={false} size="sm" fitVisibleFace />
+
+	<!-- Ajout au panier -->
+	<div class="flex justify-end">
 		<Button
-			size="icon"
-			variant={isInCart ? 'default' : 'secondary'}
-			class="absolute top-2 right-2 z-10 h-10 w-10 rounded-full shadow-md transition-all duration-200 {isInCart
-				? 'bg-primary text-primary-foreground'
-				: 'opacity-0 group-hover:opacity-100'}"
+			size="sm"
+			variant={isInCart ? 'default' : 'outline'}
+			class="gap-2"
 			onclick={handleAddToCart}
 			disabled={isInCart}
-			aria-label={isInCart ? 'Dans le panier' : 'Ajouter au panier'}
 		>
 			{#if isInCart}
-				<Check class="h-5 w-5" />
+				<Check class="h-4 w-4" />
+				Dans le panier
 			{:else}
-				<Plus class="h-5 w-5" />
+				<Plus class="h-4 w-4" />
+				Ajouter au panier
 			{/if}
 		</Button>
-
-		<Card.Header class="space-y-2 pb-3">
-			<!-- Header badges -->
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="outline" class="text-xs">{template.level}</Badge>
-			</div>
-
-			<!-- Title -->
-			<Card.Title class="">
-				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
-			</Card.Title>
-		</Card.Header>
-
-		<Card.Content class="space-y-3">
-			<!-- Preview statement -->
-			<div class="">
-				<MarkdownRenderer
-					content={convertLegacyLatexToMarkdown(getPreviewText(preview.statement))}
-					flashMode
-				/>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<!-- Modal with QuestionDisplay in flashcard mode -->
-	<Dialog.Portal>
-		<Dialog.Overlay />
-		<Dialog.Content class="max-w-4xl">
-			<Dialog.Header>
-				<Dialog.Title>
-					<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
-				</Dialog.Title>
-				<Dialog.Description>
-					<div class="mt-2 flex flex-wrap items-center gap-2">
-						<Badge variant="outline" class="text-xs">{template.level}</Badge>
-						<Badge variant="secondary" class="text-xs">{template.theme}</Badge>
-						<Badge variant="secondary" class="text-xs">{template.domain}</Badge>
-						{#if template.subdomain}
-							<Badge variant="secondary" class="text-xs">{template.subdomain}</Badge>
-						{/if}
-					</div>
-				</Dialog.Description>
-			</Dialog.Header>
-
-			<!-- Question Display in read-only mode -->
-			<div class="mt-4">
-				<FlashCard interactive={false} instance={preview} size="lg" />
-			</div>
-
-			<!-- Add to cart button at the bottom -->
-			<div class="mt-6 flex justify-end gap-3">
-				<Button variant="outline" onclick={() => (isModalOpen = false)}>Fermer</Button>
-				<Button onclick={handleAddToCart} disabled={isInCart} class="gap-2">
-					{#if isInCart}
-						<Check class="h-4 w-4" />
-						Dans le panier
-					{:else}
-						<Plus class="h-4 w-4" />
-						Ajouter au panier
-					{/if}
-				</Button>
-			</div>
-		</Dialog.Content>
-	</Dialog.Portal>
-</Dialog.Root>
+	</div>
+</div>

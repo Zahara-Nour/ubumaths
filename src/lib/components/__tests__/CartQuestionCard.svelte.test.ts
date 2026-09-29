@@ -1,9 +1,9 @@
 /**
  * CartQuestionCard — tuile du panier / de la création d'évaluation
  *
- * Ce qui doit se VOIR sans survol : l'aperçu de l'énoncé, la durée, le nombre
- * de répétitions. Clic sur la tuile : la question en grand. Clic sur un bouton
- * de réglage : pas d'ouverture.
+ * La tuile EST la flash-card (non interactive, retournable), sous « Thème /
+ * Domaine » ; en dessous, durée et répétitions toujours visibles, boutons − / +
+ * au survol. Un clic sur la tuile n'ouvre rien.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -12,7 +12,7 @@ import CartQuestionCard from '../CartQuestionCard.svelte';
 import { previewCartItem } from '$lib/questions/cart-preview';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { CartItem } from '$lib/stores/questionCart.svelte';
-// Modèle réel relu (Entiers #139)
+// Modèle réel relu (Entiers #139) : « Le double de … est … », avec un trou
 import fixture from '../../../../docs/relecture/entiers/139.json';
 
 const TEMPLATE = { ...(fixture.template as unknown as QuestionTemplate), id: 'modele-139' };
@@ -31,7 +31,6 @@ const { instance } = previewCartItem([TEMPLATE], ITEM.category);
 async function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
 	return await render(CartQuestionCard, {
 		item: ITEM,
-		template: TEMPLATE,
 		instance,
 		onIncrementQuantity: vi.fn(),
 		onDecrementQuantity: vi.fn(),
@@ -40,23 +39,29 @@ async function renderCard(overrides: { onUpdateDelay?: () => void } = {}) {
 }
 
 describe('CartQuestionCard', () => {
-	it("affiche l'aperçu de l'énoncé", async () => {
-		expect(instance?.statement.length).toBeGreaterThan(0);
+	it('affiche « Thème / Domaine » au-dessus de la flash-card', async () => {
 		const screen = await renderCard();
 
-		const card = screen.getByRole('button', { name: /Voir la question/ });
-		// L'énoncé contient du texte en clair avant toute formule : on en cherche le début
-		const firstWords = (instance?.statement ?? '').split('$')[0].trim().slice(0, 12);
-		expect(firstWords.length).toBeGreaterThan(0);
-		await expect.element(card).toHaveTextContent(firstWords);
+		await expect
+			.element(screen.getByText(`${TEMPLATE.theme}`, { exact: false }).first())
+			.toHaveTextContent(`${TEMPLATE.theme} / ${TEMPLATE.domain}`);
 	});
 
-	it("l'aperçu n'est pas interactif : aucun champ de saisie dans la tuile", async () => {
-		// Le modèle #139 a un trou (« Le double de 2 est … ») : il doit rester une case statique
+	it("affiche l'énoncé dans la flash-card, sans champ de saisie", async () => {
+		expect(instance).toBeDefined();
 		const screen = await renderCard();
-		const card = screen.getByRole('button', { name: /Voir la question/ }).element();
+		const front = screen.container.querySelector<HTMLElement>('.flip-card-front');
 
-		expect(card.querySelector('math-field, input, textarea')).toBeNull();
+		expect(front?.textContent).toContain('double');
+		expect(screen.container.querySelector('math-field, input, textarea')).toBeNull();
+	});
+
+	it('propose le bouton de retournement de la flash-card', async () => {
+		await renderCard();
+
+		await expect
+			.element(page.getByRole('button', { name: 'Voir la correction' }).first())
+			.toBeInTheDocument();
 	});
 
 	it('affiche la durée et le nombre de répétitions sans survol', async () => {
@@ -66,25 +71,29 @@ describe('CartQuestionCard', () => {
 		await expect.element(page.getByTitle('Nombre de répétitions')).toHaveTextContent('3');
 	});
 
-	it('ouvre la question en grand au clic sur la tuile', async () => {
+	it("un clic sur l'énoncé n'ouvre rien", async () => {
 		const screen = await renderCard();
 
-		await screen.getByRole('button', { name: /Voir la question/ }).click();
+		// FlipCard rend aussi une copie cachée (mesure de hauteur) : on vise la face visible
+		const statement = screen.container.querySelector<HTMLElement>(
+			'.flip-card-front .statement-content'
+		);
+		expect(statement).not.toBeNull();
+		await page.elementLocator(statement!).click();
 
-		await expect.element(page.getByRole('dialog')).toBeVisible();
+		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
 	});
 
-	it("un bouton de réglage change la durée sans ouvrir l'aperçu", async () => {
+	it('au survol, un bouton de réglage change la durée', async () => {
 		const onUpdateDelay = vi.fn();
 		const screen = await renderCard({ onUpdateDelay });
 
 		// Geste réel : survoler la tuile révèle les boutons, puis cliquer
-		await screen.getByRole('button', { name: /Voir la question/ }).hover();
+		await screen.getByTitle('Durée par question').hover();
 		const increaseDelay = screen.getByRole('button', { name: 'Augmenter la durée' });
 		await expect.element(increaseDelay).toHaveStyle({ opacity: '1' });
 		await increaseDelay.click();
 
 		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.category, 30);
-		await expect.element(page.getByRole('dialog')).not.toBeInTheDocument();
 	});
 });

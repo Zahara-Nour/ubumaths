@@ -154,3 +154,57 @@ describe('FlashCard — recto allégé', () => {
 		expect(front(container).querySelector('.statement-content.border')).toBeNull();
 	});
 });
+
+/**
+ * Tuiles : la carte prend la hauteur de la face VISIBLE. Sans cela, un recto
+ * court hérite de la hauteur d'une longue correction et reste vide aux trois
+ * quarts (constaté le 2026-09-29 sur la grille Automaths).
+ */
+describe('FlashCard — hauteur de la face visible (fitVisibleFace)', () => {
+	const LONG_CORRECTION = Array.from({ length: 12 }, (_, i) =>
+		resolvedMarkdown(
+			`Étape ${i + 1} : une ligne d'explication assez longue pour prendre de la place.`
+		)
+	);
+	const INSTANCE = {
+		templateId: 'test',
+		statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
+		blanks: [{ expectedAnswer: '160', type: 'math' }],
+		correction: { steps: LONG_CORRECTION },
+		grades: ['6'],
+		theme: 'Entiers',
+		domain: 'Multiplier',
+		level: 1,
+		generatedAt: new Date().toISOString()
+	} as unknown as QuestionInstance;
+
+	function heights(container: HTMLElement) {
+		const inner = container.querySelector<HTMLElement>('.flip-card-inner');
+		const [frontMeasure, backMeasure] = container.querySelectorAll<HTMLElement>(
+			'.measure-container > div'
+		);
+		return {
+			// Hauteur CIBLE (style) : la hauteur rendue est animée pendant 0,6 s
+			card: parseFloat(inner?.style.height ?? '0'),
+			front: frontMeasure?.getBoundingClientRect().height ?? 0,
+			back: backMeasure?.getBoundingClientRect().height ?? 0
+		};
+	}
+
+	it('au recto, la carte a la hauteur du recto, pas celle de la correction', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE, fitVisibleFace: true });
+		await new Promise((r) => setTimeout(r, 50));
+		const h = heights(container);
+
+		expect(h.back).toBeGreaterThan(h.front);
+		expect(h.card).toBeCloseTo(h.front, 0);
+	});
+
+	it('sans l’option, la carte garde la hauteur de la plus haute face', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+		await new Promise((r) => setTimeout(r, 50));
+		const h = heights(container);
+
+		expect(h.card).toBeCloseTo(h.back, 0);
+	});
+});

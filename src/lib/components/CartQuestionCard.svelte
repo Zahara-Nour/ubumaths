@@ -2,28 +2,24 @@
 	/**
 	 * Tuile d'une catégorie du panier (panier Automaths, création d'évaluation)
 	 *
-	 * Toujours visibles : titre, aperçu de l'énoncé, durée, nombre de répétitions.
-	 * Au survol (ou au focus clavier, ou toujours sur écran tactile) : seulement
-	 * les boutons − / + de la durée et des répétitions.
-	 * Clic sur la tuile : la question en grand, comme dans la grille Automaths.
+	 * Décision de David (2026-09-29) : la tuile EST la flash-card de la question
+	 * (non interactive, avec son bouton de retournement), sous l'intitulé
+	 * « Thème / Domaine ». En dessous : la durée et le nombre de répétitions,
+	 * toujours visibles ; leurs boutons − / + n'apparaissent qu'au survol (ou au
+	 * focus clavier, ou toujours sur écran tactile). Un clic sur la tuile ne fait
+	 * rien : tout est déjà dans la flash-card.
 	 */
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { MarkdownRenderer } from '$lib/components/markdown';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
 	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+	import type { QuestionInstance } from '$lib/questions/types';
 
 	// Bornes et pas de la durée (secondes)
 	const DELAY_STEP = 5;
 	const DELAY_MIN = 5;
 	const DELAY_MAX = 300;
 	const QUANTITY_MAX = 99;
-	const PREVIEW_MAX_LENGTH = 200;
 
 	// Boutons révélés au survol, au focus clavier, et toujours sur écran tactile
 	const revealOnHover =
@@ -31,29 +27,17 @@
 
 	let {
 		item,
-		template,
 		instance,
 		onIncrementQuantity,
 		onDecrementQuantity,
 		onUpdateDelay
 	}: {
 		item: CartItem;
-		template?: QuestionTemplate;
 		instance?: QuestionInstance;
 		onIncrementQuantity: (category: QuestionCategory) => void;
 		onDecrementQuantity: (category: QuestionCategory) => void;
 		onUpdateDelay: (category: QuestionCategory, delay: number) => void;
 	} = $props();
-
-	let isModalOpen = $state(false);
-
-	// L'énoncé est une chaîne Markdown résolue, tronquée pour la tuile
-	let previewText = $derived.by(() => {
-		const statement = instance?.statement ?? '';
-		return statement.length > PREVIEW_MAX_LENGTH
-			? statement.substring(0, PREVIEW_MAX_LENGTH) + '...'
-			: statement;
-	});
 
 	function handleIncrementDelay() {
 		const newDelay = item.delay + DELAY_STEP;
@@ -64,49 +48,29 @@
 		const newDelay = item.delay - DELAY_STEP;
 		if (newDelay >= DELAY_MIN) onUpdateDelay(item.category, newDelay);
 	}
-
-	function handleCardKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			isModalOpen = true;
-		}
-	}
 </script>
 
-<div class="group relative">
-	<Card.Root
-		class="h-full cursor-pointer pb-14 transition-all duration-200 hover:shadow-lg"
-		role="button"
-		tabindex={0}
-		aria-label="Voir la question : {item.category.domain}{item.category.subdomain
-			? ` / ${item.category.subdomain}`
-			: ''}"
-		onclick={() => (isModalOpen = true)}
-		onkeydown={handleCardKeydown}
-	>
-		<Card.Header class="space-y-2 pb-3">
-			<Card.Title class="text-lg">
-				{item.category.domain}
-				{#if item.category.subdomain}
-					<span class="text-muted-foreground"> / {item.category.subdomain}</span>
-				{/if}
-			</Card.Title>
-		</Card.Header>
+<div class="group flex flex-col gap-3">
+	<!-- Intitulé -->
+	<p class="text-sm font-medium">
+		{item.category.theme}
+		<span class="text-muted-foreground"> / {item.category.domain}</span>
+	</p>
 
-		<Card.Content>
-			{#if instance}
-				<div class="text-sm">
-					<MarkdownRenderer content={convertLegacyLatexToMarkdown(previewText)} flashMode />
-				</div>
-			{:else}
-				<div class="text-sm text-muted-foreground italic">Aperçu indisponible</div>
-			{/if}
-		</Card.Content>
-	</Card.Root>
+	<!-- La flash-card elle-même -->
+	{#if instance}
+		<FlashCard {instance} interactive={false} size="sm" fitVisibleFace />
+	{:else}
+		<div
+			class="rounded-xl border p-6 text-center text-sm text-muted-foreground italic"
+			role="status"
+		>
+			Aperçu indisponible
+		</div>
+	{/if}
 
-	<!-- Réglages : valeurs toujours visibles, boutons au survol. Hors de la carte
-	     cliquable, pour qu'un clic sur un bouton n'ouvre pas l'aperçu. -->
-	<div class="absolute inset-x-3 bottom-3 z-10 flex items-center justify-between gap-2">
+	<!-- Réglages : valeurs toujours visibles, boutons au survol -->
+	<div class="flex items-center justify-between gap-2">
 		<!-- Durée -->
 		<div class="flex items-center gap-1 rounded-full bg-muted px-2 py-1 shadow-sm">
 			<Button
@@ -166,43 +130,3 @@
 		</div>
 	</div>
 </div>
-
-<!-- La question en grand, comme dans la grille Automaths -->
-<Dialog.Root bind:open={isModalOpen}>
-	<!-- Dialog.Content porte déjà son portail et son voile -->
-	<Dialog.Content class="max-w-4xl">
-		<Dialog.Header>
-			<Dialog.Title>
-				{#if template}
-					<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
-				{:else}
-					{item.category.domain}
-				{/if}
-			</Dialog.Title>
-			<Dialog.Description>
-				<span class="mt-2 flex flex-wrap items-center gap-2">
-					<Badge variant="outline" class="text-xs">{item.category.level}</Badge>
-					<Badge variant="secondary" class="text-xs">{item.category.theme}</Badge>
-					<Badge variant="secondary" class="text-xs">{item.category.domain}</Badge>
-					{#if item.category.subdomain}
-						<Badge variant="secondary" class="text-xs">{item.category.subdomain}</Badge>
-					{/if}
-					<Badge variant="outline" class="text-xs">{item.delay} s</Badge>
-					<Badge variant="outline" class="text-xs">× {item.quantity}</Badge>
-				</span>
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="mt-4">
-			{#if instance}
-				<FlashCard interactive={false} {instance} size="lg" />
-			{:else}
-				<p class="text-sm text-muted-foreground italic">Aperçu indisponible</p>
-			{/if}
-		</div>
-
-		<div class="mt-6 flex justify-end">
-			<Button variant="outline" onclick={() => (isModalOpen = false)}>Fermer</Button>
-		</div>
-	</Dialog.Content>
-</Dialog.Root>

@@ -3,13 +3,18 @@
 		flipped = $bindable(false),
 		front = $bindable(),
 		back = $bindable(),
-		class: className = ''
+		class: className = '',
+		// Hauteur de la face VISIBLE (et non de la plus haute des deux) : une tuile
+		// reste courte au recto et s'agrandit une fois retournée sur la correction.
+		fitVisibleFace = false
 	} = $props();
 
 	let frontHeight = $state(0);
 	let backHeight = $state(0);
 
-	let currentHeight = $derived(Math.max(frontHeight, backHeight));
+	let currentHeight = $derived(
+		fitVisibleFace ? (flipped ? backHeight : frontHeight) : Math.max(frontHeight, backHeight)
+	);
 </script>
 
 <div class="flip-card {className}">
