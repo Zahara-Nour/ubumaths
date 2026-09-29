@@ -27,6 +27,7 @@ import {
 	unflattenProduct
 } from './flatten';
 import { parseLatexSafe } from './parser';
+import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
 import {
@@ -849,7 +850,8 @@ function applyFullASTPipeline(ast: MathNode, options: CheckFormOptions = {}): Ma
  * @returns true if the answer is a simple (possibly negative) number
  */
 export function isSimpleNumberLatex(latex: string): boolean {
-	const parsed = parseLatexSafe(latex.trim());
+	// Virgule décimale nue (`3,14`) lue comme `3{,}14` ; un couple `(3,14)` reste refusé
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
 	if (!parsed.ast || parsed.errors.length > 0) return false;
 
 	let node: MathNode = parsed.ast;
@@ -870,7 +872,7 @@ export function isSimpleNumberLatex(latex: string): boolean {
  */
 export function isQuantityValueLatex(latex: string): boolean {
 	if (isSimpleNumberLatex(latex)) return true;
-	const parsed = parseLatexSafe(latex.trim());
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
 	if (!parsed.ast || parsed.errors.length > 0) return false;
 
 	let node: MathNode = parsed.ast;

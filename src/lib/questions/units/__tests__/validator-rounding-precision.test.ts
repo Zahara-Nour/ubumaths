@@ -106,3 +106,112 @@ describe('Grandeur dans une autre unité, plus précise que demandé', () => {
 		expect(result.feedback).not.toBe('Arrondis au centième.');
 	});
 });
+
+// Unités décalées d'une constante (°C ↔ K, même échelle) : l'arrondi se juge
+// dans l'unité de l'ÉLÈVE — l'attendue y est convertie puis arrondie, et les
+// décimales se comptent sur son écriture. 25,34 °C = 298,49 K → 298,5 K au dixième.
+describe('Température : conversion par simple décalage (°C ↔ K)', () => {
+	const TENTH: PrecisionType = { type: 'decimal', digits: 1 };
+
+	it('298,5 K pour 25,34 °C au dixième → juste', () => {
+		const result = validateQuantityAnswer('298{,}5\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	it('298,49 K pour 25,34 °C au dixième → faux, « Arrondis au dixième. »', () => {
+		const result = validateQuantityAnswer('298{,}49\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Arrondis au dixième.');
+		expect(result.roundingAtFault).toBe(true);
+	});
+
+	it('298,4 K pour 25,34 °C au dixième → faux, « Valeur incorrecte. »', () => {
+		const result = validateQuantityAnswer('298{,}4\\unit{K}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Valeur incorrecte.');
+		expect(result.roundingAtFault).toBeUndefined();
+	});
+
+	it('sens inverse : 25,3 °C pour 298,49 K au dixième → juste', () => {
+		const result = validateQuantityAnswer('25{,}3\\unit{°C}', '298.49\\unit{K}', TENTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.feedback).toBeNull();
+	});
+
+	// °C ↔ °F change aussi d'échelle : jugé dans l'unité attendue, comme m ↔ cm.
+	// 77,6 °F vaut 25,33… °C, plus précis que le dixième de °C demandé.
+	it('°F (échelle différente) : 77,6 °F pour 25,34 °C au dixième → « Arrondis au dixième. »', () => {
+		const result = validateQuantityAnswer('77{,}6\\unit{°F}', '25.34\\unit{°C}', TENTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Arrondis au dixième.');
+	});
+
+	it('même unité inchangée : 25,3 °C pour 25,34 °C au dixième → juste', () => {
+		expect(validateQuantityAnswer('25{,}3\\unit{°C}', '25.34\\unit{°C}', TENTH).isCorrect).toBe(
+			true
+		);
+	});
+});
+
+// Unité imposée : °C et K ont la même échelle mais pas le même zéro, ce ne sont
+// pas la même unité. Une réponse en K ne satisfait pas une unité imposée en °C.
+describe('Unité imposée °C : une réponse en kelvins est refusée', () => {
+	it('298,15 K pour 25 °C imposés → faux', () => {
+		expect(
+			validateQuantityAnswer('298{,}15\\unit{K}', '25\\unit{°C}', undefined, '°C').isCorrect
+		).toBe(false);
+	});
+
+	it('25 °C pour 25 °C imposés → juste', () => {
+		expect(validateQuantityAnswer('25\\unit{°C}', '25\\unit{°C}', undefined, '°C').isCorrect).toBe(
+			true
+		);
+	});
+
+	it('298,15 K pour 25 °C sans unité imposée → juste (conversion)', () => {
+		expect(validateQuantityAnswer('298{,}15\\unit{K}', '25\\unit{°C}').isCorrect).toBe(true);
+	});
+});
+
+// Chiffres significatifs et ordre de grandeur : toujours jugés dans l'unité
+// ATTENDUE, même pour °C ↔ K (en kelvins, 2 c.s. effacent les degrés Celsius).
+describe('Température décalée : significatifs jugés dans l’unité attendue', () => {
+	it('300 K pour 25,34 °C à 2 c.s. → faux, « Valeur incorrecte. »', () => {
+		const result = validateQuantityAnswer('300\\unit{K}', '25.34\\unit{°C}', {
+			type: 'significant',
+			digits: 2
+		});
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Valeur incorrecte.');
+	});
+
+	it('25 °C pour 298,49 K à 3 c.s. → faux, « Donne 3 chiffres significatifs. »', () => {
+		const result = validateQuantityAnswer('25\\unit{°C}', '298.49\\unit{K}', {
+			type: 'significant',
+			digits: 3
+		});
+		expect(result.isCorrect).toBe(false);
+		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
+	});
+});
+
+// Bruit flottant : 268 − 273,15 = −5,149999… en machine, mais vaut −5,15 :
+// l'arrondi au dixième (moitié loin de zéro) est −5,2, pas −5,1.
+describe('Température décalée : bruit flottant sur les moitiés', () => {
+	const TENTH: PrecisionType = { type: 'decimal', digits: 1 };
+
+	it.each([
+		['268', '-5{,}2', '-5{,}1'],
+		['273', '-0{,}2', '-0{,}1'],
+		['300', '26{,}9', '26{,}8']
+	])('%s K au dixième : %s °C juste, %s °C faux', (kelvins, right, wrong) => {
+		const expected = `${kelvins}\\unit{K}`;
+		const good = validateQuantityAnswer(`${right}\\unit{°C}`, expected, TENTH);
+		expect(good.isCorrect).toBe(true);
+		expect(good.feedback).toBeNull();
+		const bad = validateQuantityAnswer(`${wrong}\\unit{°C}`, expected, TENTH);
+		expect(bad.isCorrect).toBe(false);
+		expect(bad.feedback).toBe('Valeur incorrecte.');
+	});
+});

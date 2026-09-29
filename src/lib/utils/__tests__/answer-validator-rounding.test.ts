@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from '../answer-validator';
+import { roundToPrecision } from '$lib/questions/rounding';
 import type { InstanceBlank, PrecisionType, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -120,5 +121,18 @@ describe('Chiffres significatifs', () => {
 	it('singulier : « Donne 1 chiffre significatif. »', () => {
 		const result = check('3{,}1', '3.14', { type: 'significant', digits: 1 });
 		expect(result.feedback).toBe('Donne 1 chiffre significatif.');
+	});
+});
+
+describe('Arrondi : moitiés exactes malgré le flottant', () => {
+	it('2,675 au centième → 2,68 juste, 2,67 faux', () => {
+		expect(check('2{,}68', '2.675', HUNDREDTH).isCorrect).toBe(true);
+		const wrong = check('2{,}67', '2.675', HUNDREDTH);
+		expect(wrong.isCorrect).toBe(false);
+		expect(wrong.feedback).not.toBe('Arrondis au centième.');
+	});
+
+	it('valeur calculée bruitée (268 − 273,15 = −5,1499…) au dixième → −5,2', () => {
+		expect(roundToPrecision(268 - 273.15, { type: 'decimal', digits: 1 })).toBe(-5.2);
 	});
 });
