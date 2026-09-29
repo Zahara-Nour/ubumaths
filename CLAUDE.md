@@ -182,7 +182,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 - **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
 - **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
-- **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — aucun verrou, donc risque de deux gros process en parallèle (décidé le 2026-09-29). `format` : toujours interdit aux agents (règle antérieure, non réexaminée). ⛔ Tourner > 5 min sans résultat concret.
+- **Agents autorisés** : `pnpm check:incremental` (verrouillé) et les tests ciblés. ⛔ **Réservés à la session principale** : `pnpm check`, `pnpm build`, `pnpm lint` complets — aucun verrou, donc risque de deux gros process en parallèle (décidé le 2026-09-29). ⛔ `format` interdit aux agents : reformater l'arbre entier noie le vrai changement dans un diff hors sujet, et le pre-commit formate déjà les fichiers modifiés. ⛔ Tourner > 5 min sans résultat concret.
 
 (Liste complète : `.claude/agents/README.md`.)
 
