@@ -20,6 +20,7 @@ import type {
 	CustomExpressionRule
 } from './types';
 import { evaluateExpression, areEquivalent } from '$lib/math';
+import { numbersAreClose } from '$lib/mathAST/common/constants';
 
 // ============================================================================
 // TYPES
@@ -362,9 +363,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 		if (!isNaN(expected) && !isNaN(answer)) {
-			// Numeric comparison with tolerance
-			const tolerance = 1e-10;
-			const valid = Math.abs(expected - answer) < tolerance;
+			// Tolérance relative : une absolue (1e-10) jugeait 10⁻¹² égal à 0
+			const valid = numbersAreClose(expected, answer);
 			return {
 				valid,
 				reason: valid ? undefined : RULE_MESSAGES.notEquivalent,

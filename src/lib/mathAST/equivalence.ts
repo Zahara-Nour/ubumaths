@@ -9,7 +9,7 @@ import type { MathNode } from './types';
 import { equivalenceForms, type NormalizeAbortOptions } from './normal/normalize';
 import { normalFormsEquivalent } from './normal/hash';
 import { evaluate, evaluateNodeToApproximatedNumber } from './eval/evaluate';
-import { EQUALITY_TOLERANCE } from './common/constants';
+import { numbersAreClose } from './common/constants';
 import { AbortError, makeAbortChecker } from './common/abort';
 
 /**
@@ -61,7 +61,8 @@ export function areEquivalent(a: MathNode, b: MathNode, options?: NormalizeAbort
 						: NaN;
 
 			if (!isNaN(numA) && !isNaN(numB)) {
-				return Math.abs(numA - numB) < EQUALITY_TOLERANCE;
+				// Tolérance relative : une absolue (1e-10) jugeait 10⁻¹² égal à 0
+				return numbersAreClose(numA, numB);
 			}
 		}
 	} catch {
