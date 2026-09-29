@@ -92,9 +92,8 @@
 
 En **mode exact** (défaut), le contrôle de forme compare à la réponse attendue : une réponse de forme
 différente reste `bad_form` (comptée fausse) même si l'hypothèse rend la valeur équivalente. L'hypothèse
-change le verdict avec `requiredForm`, la règle `equivalent`, `orderIndependent`, ou
-`constraints.form: 'warn'`. Même chose pour #521 : `6×2^{n−1}` pour `3×2^n` (#623) est `bad_form`, pas
-juste. Choix produit par question (contrainte `form`), non tranché.
+change le verdict avec `requiredForm`, la règle `equivalent`, `orderIndependent`. Même chose pour #521 : `6×2^{n−1}` pour `3×2^n` (#623) est `bad_form`, pas
+juste. Aucun réglage ne permet aujourd'hui d'accepter une valeur juste de forme différente en mode exact : l'écart de forme final est codé en dur (`answer-validator.ts:180`, « unconditional — no severity mode »). Le permettre = changement de code, décision de David.
 
 ## Restes notés
 
