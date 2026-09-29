@@ -10,6 +10,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
 	import { Plus, Check } from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
@@ -46,7 +47,7 @@
 	</div>
 
 	<!-- La flash-card elle-même -->
-	<FlashCard instance={preview} interactive={false} size="sm" fitVisibleFace />
+	<FlashCard instance={preview} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
 
 	<!-- Ajout au panier -->
 	<div class="flex justify-end">

@@ -156,11 +156,14 @@ describe('FlashCard — recto allégé', () => {
 });
 
 /**
- * Tuiles : la carte prend la hauteur de la face VISIBLE. Sans cela, un recto
- * court hérite de la hauteur d'une longue correction et reste vide aux trois
- * quarts (constaté le 2026-09-29 sur la grille Automaths).
+ * Hauteur des deux faces (demande de David, 2026-09-30) : recto et verso ont
+ * TOUJOURS la même hauteur. Deux modes :
+ * - sans `height` : la hauteur de la plus haute face, tout le contenu visible ;
+ * - avec `height` : hauteur imposée, le contenu défile dans la carte.
+ * Les deux faces sont empilées dans une grille CSS : plus de copie cachée
+ * mesurée en JavaScript (chaque face rendue une seule fois).
  */
-describe('FlashCard — hauteur de la face visible (fitVisibleFace)', () => {
+describe('FlashCard — hauteur des deux faces', () => {
 	const LONG_CORRECTION = Array.from({ length: 12 }, (_, i) =>
 		resolvedMarkdown(
 			`Étape ${i + 1} : une ligne d'explication assez longue pour prendre de la place.`
@@ -169,7 +172,7 @@ describe('FlashCard — hauteur de la face visible (fitVisibleFace)', () => {
 	const INSTANCE = {
 		templateId: 'test',
 		statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
-		blanks: [{ expectedAnswer: '160', type: 'math' }],
+		blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
 		correction: { steps: LONG_CORRECTION },
 		grades: ['6'],
 		theme: 'Entiers',
@@ -178,34 +181,57 @@ describe('FlashCard — hauteur de la face visible (fitVisibleFace)', () => {
 		generatedAt: new Date().toISOString()
 	} as unknown as QuestionInstance;
 
-	function heights(container: HTMLElement) {
-		const inner = container.querySelector<HTMLElement>('.flip-card-inner');
-		const [frontMeasure, backMeasure] = container.querySelectorAll<HTMLElement>(
-			'.measure-container > div'
-		);
-		return {
-			// Hauteur CIBLE (style) : la hauteur rendue est animée pendant 0,6 s
-			card: parseFloat(inner?.style.height ?? '0'),
-			front: frontMeasure?.getBoundingClientRect().height ?? 0,
-			back: backMeasure?.getBoundingClientRect().height ?? 0
-		};
+	function faces(container: HTMLElement) {
+		const front = container.querySelector<HTMLElement>('.flip-card-front');
+		const back = container.querySelector<HTMLElement>('.flip-card-back');
+		expect(front).not.toBeNull();
+		expect(back).not.toBeNull();
+		return { front: front!, back: back! };
 	}
 
-	it('au recto, la carte a la hauteur du recto, pas celle de la correction', async () => {
-		const { container } = await render(FlashCard, { instance: INSTANCE, fitVisibleFace: true });
-		await new Promise((r) => setTimeout(r, 50));
-		const h = heights(container);
+	it('sans hauteur imposée : recto et verso ont la même hauteur, celle de la plus haute', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+		const { front, back } = faces(container);
+		const frontHeight = front.getBoundingClientRect().height;
+		const backHeight = back.getBoundingClientRect().height;
 
-		expect(h.back).toBeGreaterThan(h.front);
-		expect(h.card).toBeCloseTo(h.front, 0);
+		expect(frontHeight).toBeCloseTo(backHeight, 0);
+		// Rien n'est rogné ni ne défile : tout le contenu reste visible
+		expect(getComputedStyle(back).overflowY).toBe('visible');
+		expect(back.querySelector('.scrollable')).toBeNull();
 	});
 
-	it('sans l’option, la carte garde la hauteur de la plus haute face', async () => {
+	it('chaque face est rendue une seule fois (plus de copie cachée)', async () => {
 		const { container } = await render(FlashCard, { instance: INSTANCE });
-		await new Promise((r) => setTimeout(r, 50));
-		const h = heights(container);
 
-		expect(h.card).toBeCloseTo(h.back, 0);
+		expect(container.querySelectorAll('.flip-card-front').length).toBe(1);
+		expect(container.textContent?.split('Étape 12').length).toBe(2);
+	});
+
+	it('la face cachée est inerte (ni tabulation, ni lecteur d’écran)', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE });
+		const { front, back } = faces(container);
+
+		expect(back.inert).toBe(true);
+		expect(front.inert).toBe(false);
+	});
+
+	it('hauteur imposée : même hauteur des deux côtés, le contenu défile, le bouton reste dans la carte', async () => {
+		const { container } = await render(FlashCard, { instance: INSTANCE, height: '200px' });
+		const { front, back } = faces(container);
+
+		expect(front.getBoundingClientRect().height).toBeCloseTo(200, 0);
+		expect(back.getBoundingClientRect().height).toBeCloseTo(200, 0);
+
+		// La zone qui défile : la carte du verso (le bouton de retournement est à côté)
+		const scroller = back.querySelector<HTMLElement>('[data-slot="card"]');
+		expect(scroller).not.toBeNull();
+		expect(scroller!.scrollHeight).toBeGreaterThan(scroller!.clientHeight);
+		expect(getComputedStyle(scroller!).overflowY).toBe('auto');
+
+		const card = back.getBoundingClientRect();
+		const button = back.querySelector<HTMLElement>('.flip-button')!.getBoundingClientRect();
+		expect(button.bottom).toBeLessThanOrEqual(card.bottom + 1);
 	});
 });
 

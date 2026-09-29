@@ -11,6 +11,7 @@
 	 */
 	import { Button } from '$lib/components/ui/button';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
 	import { Clock, Minus, Plus, Repeat } from '@lucide/svelte';
 	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
@@ -59,7 +60,7 @@
 
 	<!-- La flash-card elle-même -->
 	{#if instance}
-		<FlashCard {instance} interactive={false} size="sm" fitVisibleFace />
+		<FlashCard {instance} interactive={false} size="sm" height={TILE_CARD_HEIGHT} />
 	{:else}
 		<div
 			class="rounded-xl border p-6 text-center text-sm text-muted-foreground italic"
