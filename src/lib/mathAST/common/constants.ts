@@ -20,9 +20,11 @@ export const EQUALITY_TOLERANCE = 1e-10;
 
 /**
  * Écart RELATIF sous lequel deux valeurs calculées sont le même nombre
- * (cf. `numbersAreClose`). Même ordre que EQUALITY_TOLERANCE autour de 1.
+ * (cf. `numbersAreClose`). 1e-12 : mille fois le bruit des flottants (~1e-15),
+ * et deux entiers voisins restent distincts jusqu’à 10¹² (à 1e-10, 123456789012
+ * et 123456789020 étaient confondus).
  */
-export const RELATIVE_EQUALITY_TOLERANCE = 1e-10;
+export const RELATIVE_EQUALITY_TOLERANCE = 1e-12;
 
 /**
  * Plancher ABSOLU de `numbersAreClose` : le bruit des flottants autour de 0

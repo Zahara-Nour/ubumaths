@@ -58,9 +58,13 @@ describe('numbersAreClose', () => {
 		[1e-12, 0, false],
 		[0, 0, true],
 		[5.551115123125783e-17, 0, true],
-		[1, 1 + 1e-11, true],
+		[1, 1 + 1e-13, true],
+		[1, 1 + 1e-11, false],
 		[1, 1 + 1e-9, false],
 		[123456789012, 123456789012.001, true],
+		// Deux entiers voisins restent distincts jusqu’à 10¹² (un nombre de CM2 en a 12 chiffres)
+		[123456789012, 123456789013, false],
+		[123456789012, 123456789020, false],
 		[1e-12, 1.0000000000001e-12, true],
 		[1e-12, 1.1e-12, false]
 	])('%d ≈ %d : %s', (a, b, expected) => {
