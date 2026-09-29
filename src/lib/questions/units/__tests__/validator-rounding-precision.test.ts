@@ -153,3 +153,23 @@ describe('Température : conversion par simple décalage (°C ↔ K)', () => {
 		);
 	});
 });
+
+// Unité imposée : °C et K ont la même échelle mais pas le même zéro, ce ne sont
+// pas la même unité. Une réponse en K ne satisfait pas une unité imposée en °C.
+describe('Unité imposée °C : une réponse en kelvins est refusée', () => {
+	it('298,15 K pour 25 °C imposés → faux', () => {
+		expect(
+			validateQuantityAnswer('298{,}15\\unit{K}', '25\\unit{°C}', undefined, '°C').isCorrect
+		).toBe(false);
+	});
+
+	it('25 °C pour 25 °C imposés → juste', () => {
+		expect(validateQuantityAnswer('25\\unit{°C}', '25\\unit{°C}', undefined, '°C').isCorrect).toBe(
+			true
+		);
+	});
+
+	it('298,15 K pour 25 °C sans unité imposée → juste (conversion)', () => {
+		expect(validateQuantityAnswer('298{,}15\\unit{K}', '25\\unit{°C}').isCorrect).toBe(true);
+	});
+});

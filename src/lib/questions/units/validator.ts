@@ -501,11 +501,15 @@ function unitWritingFeedback(normalizedUser: string): string | null {
  * Check if two units match exactly (same components and coefficient)
  */
 export function checkExactUnitMatch(
-	userUnit: { components: ReadonlyMap<string, number>; coefficient: number },
-	expectedUnit: { components: ReadonlyMap<string, number>; coefficient: number }
+	userUnit: { components: ReadonlyMap<string, number>; coefficient: number; offset?: number },
+	expectedUnit: { components: ReadonlyMap<string, number>; coefficient: number; offset?: number }
 ): boolean {
 	const epsilon = 1e-9;
 	if (Math.abs(userUnit.coefficient - expectedUnit.coefficient) > epsilon) {
+		return false;
+	}
+	// Même échelle, zéro différent (°C / K) : ce n'est pas la même unité
+	if (Math.abs((userUnit.offset ?? 0) - (expectedUnit.offset ?? 0)) > epsilon) {
 		return false;
 	}
 
