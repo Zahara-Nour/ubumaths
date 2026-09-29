@@ -821,9 +821,9 @@ function validateSingleBlank(
 			rulesDecide(blank)
 		);
 		if (ruleResult) {
-			// rulesSuffice : la règle EST le verdict ; ses messages techniques (en
-			// anglais, « 5 does not divide 12 ») ne sont pas destinés à l'élève
-			// → retour ordinaire d'une réponse fausse.
+			// rulesSuffice : la règle EST le verdict ; son message (« 5 n'est pas un
+			// diviseur de 12 ») répéterait la consigne → retour ordinaire d'une
+			// réponse fausse.
 			if (rulesDecide(blank)) return { isCorrect: false };
 			return { isCorrect: false, feedback: ruleResult.feedback };
 		}

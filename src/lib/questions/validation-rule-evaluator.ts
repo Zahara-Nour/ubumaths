@@ -83,6 +83,45 @@ export interface EvaluationResult {
 const EQUIVALENCE_BUDGET_MS = 500;
 
 /**
+ * Messages destinés à l'ÉLÈVE : la raison d'un refus devient le feedback de la
+ * case (cf. `evaluateValidationRules` dans `answer-validator.ts`). En français,
+ * et sans jamais révéler la réponse attendue. Le détail technique reste dans
+ * `debug`.
+ */
+const RULE_MESSAGES = {
+	notANumber: 'Ta réponse doit être un nombre.',
+	zeroDivisor: "0 n'est pas un diviseur.",
+	nonIntegerDivisor: (a: number) =>
+		`${fr(a)} n'est pas un nombre entier : un diviseur est un entier.`,
+	notADivisor: (a: number, n: number) => `${fr(a)} n'est pas un diviseur de ${fr(n)}.`,
+	zeroBase: 'Erreur de configuration de la question : la base d’un multiple ne peut pas être 0.',
+	notAMultiple: (a: number, b: number) => `${fr(a)} n'est pas un multiple de ${fr(b)}.`,
+	outOfRange: (a: number, min: number, max: number, inclusive: boolean) =>
+		`${fr(a)} n'est pas ${inclusive ? '' : 'strictement '}compris entre ${fr(min)} et ${fr(max)}.`,
+	notARoot: (a: number) => `${fr(a)} n'est pas solution de l'équation.`,
+	rootUnevaluable: "Impossible de vérifier ta réponse dans l'équation.",
+	notEquivalent: "Ta réponse n'est pas égale à la valeur attendue.",
+	customFailed: 'Ta réponse ne satisfait pas les critères demandés.',
+	customUnevaluable: 'Impossible de vérifier ta réponse.'
+} as const;
+
+/** Fin de phrase de chaque prédicat : « 9 n'est pas un nombre premier. » */
+const PREDICATE_MESSAGES: Record<PredicateRule['predicate'], string> = {
+	isPrime: 'un nombre premier',
+	isComposite: 'un nombre composé',
+	isEven: 'un nombre pair',
+	isOdd: 'un nombre impair',
+	isPositive: 'strictement positif',
+	isNegative: 'strictement négatif',
+	isInteger: 'un nombre entier'
+};
+
+/** Nombre écrit à la française pour un message : `2.5` → `2,5` */
+function fr(value: number): string {
+	return String(value).replace('.', ',');
+}
+
+/**
  * Evaluate a validation rule against a student answer
  *
  * @param rule - The validation rule to evaluate
@@ -167,21 +206,21 @@ function evaluateDivisorRule(rule: DivisorRule, ctx: EvaluationContext): Evaluat
 	const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 	if (isNaN(answer)) {
-		return { valid: false, reason: 'Invalid numeric answer' };
+		return { valid: false, reason: RULE_MESSAGES.notANumber };
 	}
 
 	if (answer === 0) {
-		return { valid: false, reason: 'Zero cannot be a divisor' };
+		return { valid: false, reason: RULE_MESSAGES.zeroDivisor };
 	}
 
 	if (!Number.isInteger(answer)) {
-		return { valid: false, reason: 'Divisor must be an integer' };
+		return { valid: false, reason: RULE_MESSAGES.nonIntegerDivisor(answer) };
 	}
 
 	const valid = dividend % answer === 0;
 	return {
 		valid,
-		reason: valid ? undefined : `${answer} does not divide ${dividend}`,
+		reason: valid ? undefined : RULE_MESSAGES.notADivisor(answer, dividend),
 		debug: { dividend, answer }
 	};
 }
@@ -194,17 +233,17 @@ function evaluateMultipleRule(rule: MultipleRule, ctx: EvaluationContext): Evalu
 	const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 	if (isNaN(answer)) {
-		return { valid: false, reason: 'Invalid numeric answer' };
+		return { valid: false, reason: RULE_MESSAGES.notANumber };
 	}
 
 	if (base === 0) {
-		return { valid: false, reason: 'Base cannot be zero' };
+		return { valid: false, reason: RULE_MESSAGES.zeroBase };
 	}
 
 	const valid = answer % base === 0;
 	return {
 		valid,
-		reason: valid ? undefined : `${answer} is not a multiple of ${base}`,
+		reason: valid ? undefined : RULE_MESSAGES.notAMultiple(answer, base),
 		debug: { base, answer }
 	};
 }
@@ -218,25 +257,21 @@ function evaluateRangeRule(rule: RangeRule, ctx: EvaluationContext): EvaluationR
 	const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 	if (isNaN(answer)) {
-		return { valid: false, reason: 'Invalid numeric answer' };
+		return { valid: false, reason: RULE_MESSAGES.notANumber };
 	}
 
 	const inclusive = rule.inclusive !== false; // default true
 
 	let valid: boolean;
-	let rangeDesc: string;
-
 	if (inclusive) {
 		valid = answer >= min && answer <= max;
-		rangeDesc = `[${min}, ${max}]`;
 	} else {
 		valid = answer > min && answer < max;
-		rangeDesc = `(${min}, ${max})`;
 	}
 
 	return {
 		valid,
-		reason: valid ? undefined : `${answer} is not in range ${rangeDesc}`,
+		reason: valid ? undefined : RULE_MESSAGES.outOfRange(answer, min, max, inclusive),
 		debug: { min, max, answer, inclusive }
 	};
 }
@@ -254,7 +289,7 @@ function evaluateEquationRootRule(
 	const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 	if (isNaN(answer)) {
-		return { valid: false, reason: 'Invalid numeric answer' };
+		return { valid: false, reason: RULE_MESSAGES.notANumber };
 	}
 
 	// Resolve variables in the equation first
@@ -290,7 +325,7 @@ function evaluateEquationRootRule(
 
 		return {
 			valid,
-			reason: valid ? undefined : `${answer} is not a root of the equation`,
+			reason: valid ? undefined : RULE_MESSAGES.notARoot(answer),
 			debug: {
 				equation: rule.equation,
 				variable,
@@ -303,8 +338,13 @@ function evaluateEquationRootRule(
 	} catch (error) {
 		return {
 			valid: false,
-			reason: `Failed to evaluate equation: ${error instanceof Error ? error.message : String(error)}`,
-			debug: { equation: rule.equation, substitutedLeft, substitutedRight }
+			reason: RULE_MESSAGES.rootUnevaluable,
+			debug: {
+				equation: rule.equation,
+				substitutedLeft,
+				substitutedRight,
+				error: error instanceof Error ? error.message : String(error)
+			}
 		};
 	}
 }
@@ -327,7 +367,7 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 			const valid = Math.abs(expected - answer) < tolerance;
 			return {
 				valid,
-				reason: valid ? undefined : `${ctx.answer} is not equivalent to ${expected}`,
+				reason: valid ? undefined : RULE_MESSAGES.notEquivalent,
 				debug: { expected, answer, difference: Math.abs(expected - answer) }
 			};
 		}
@@ -336,7 +376,7 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
 		return {
 			valid,
-			reason: valid ? undefined : `${ctx.answer} is not equivalent to ${resolvedExpr}`,
+			reason: valid ? undefined : RULE_MESSAGES.notEquivalent,
 			debug: { expression: resolvedExpr, answer: ctx.answer }
 		};
 	} catch {
@@ -344,7 +384,7 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, { timeoutMs: EQUIVALENCE_BUDGET_MS });
 		return {
 			valid,
-			reason: valid ? undefined : `${ctx.answer} is not equivalent to ${resolvedExpr}`,
+			reason: valid ? undefined : RULE_MESSAGES.notEquivalent,
 			debug: { expression: resolvedExpr, answer: ctx.answer }
 		};
 	}
@@ -357,46 +397,38 @@ function evaluatePredicateRule(rule: PredicateRule, ctx: EvaluationContext): Eva
 	const answer = ctx.numericAnswer ?? parseFloat(ctx.answer);
 
 	if (isNaN(answer)) {
-		return { valid: false, reason: 'Invalid numeric answer' };
+		return { valid: false, reason: RULE_MESSAGES.notANumber };
 	}
 
 	let valid: boolean;
-	let predicateDesc: string;
 
 	switch (rule.predicate) {
 		case 'isPrime':
 			valid = isPrime(answer);
-			predicateDesc = 'prime';
 			break;
 		case 'isComposite':
 			valid = isComposite(answer);
-			predicateDesc = 'composite';
 			break;
 		case 'isEven':
 			valid = isEven(answer);
-			predicateDesc = 'even';
 			break;
 		case 'isOdd':
 			valid = isOdd(answer);
-			predicateDesc = 'odd';
 			break;
 		case 'isPositive':
 			valid = answer > 0;
-			predicateDesc = 'positive';
 			break;
 		case 'isNegative':
 			valid = answer < 0;
-			predicateDesc = 'negative';
 			break;
 		case 'isInteger':
 			valid = Number.isInteger(answer);
-			predicateDesc = 'an integer';
 			break;
 	}
 
 	return {
 		valid,
-		reason: valid ? undefined : `${answer} is not ${predicateDesc}`,
+		reason: valid ? undefined : `${fr(answer)} n'est pas ${PREDICATE_MESSAGES[rule.predicate]}.`,
 		debug: { predicate: rule.predicate, answer }
 	};
 }
@@ -423,14 +455,18 @@ function evaluateCustomRule(rule: CustomExpressionRule, ctx: EvaluationContext):
 		const result = evaluateCustomExpression(expression);
 		return {
 			valid: result,
-			reason: result ? undefined : rule.description || `Custom rule failed: ${rule.expression}`,
+			// La description, écrite par l'auteur, prime ; à défaut, message générique
+			reason: result ? undefined : rule.description || RULE_MESSAGES.customFailed,
 			debug: { expression: rule.expression, resolved: expression }
 		};
 	} catch (error) {
 		return {
 			valid: false,
-			reason: `Failed to evaluate custom rule: ${error instanceof Error ? error.message : String(error)}`,
-			debug: { expression: rule.expression }
+			reason: RULE_MESSAGES.customUnevaluable,
+			debug: {
+				expression: rule.expression,
+				error: error instanceof Error ? error.message : String(error)
+			}
 		};
 	}
 }

@@ -103,7 +103,7 @@ describe('rulesSuffice — cas limites', () => {
 		const verdict = check('12/2', blank, '\\frac{12}{2}');
 		expect(verdict.isCorrect).toBe(false);
 		// `Number('12/2')` = NaN → la règle échoue, comme avant ce correctif
-		expect(verdict.feedback).toBe('Invalid numeric answer');
+		expect(verdict.feedback).toBe('Ta réponse doit être un nombre.');
 	});
 
 	it('case texte : le mode est ignoré (comparaison à la réponse attendue)', () => {
