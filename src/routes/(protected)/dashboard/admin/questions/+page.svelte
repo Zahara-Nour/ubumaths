@@ -32,7 +32,7 @@
 
 	import type { PageData } from './$types';
 	import { getQuestionType } from '$lib/questions/types';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -47,7 +47,17 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
-	import type { GradeCode } from '$lib/types/grades';
+	import { GRADE_OPTIONS, type GradeCode } from '$lib/types/grades';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import BulkStatusReport from './BulkStatusReport.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
+	import {
+		BulkStatusError,
+		changeTemplatesStatus,
+		type BulkStatusSummary,
+		type BulkTemplateStatus
+	} from '$lib/questions/bulk-status';
 	import {
 		Plus,
 		Eye,
@@ -63,7 +73,9 @@
 		ArrowUp,
 		ArrowDown,
 		Loader2,
-		ChevronDown
+		ChevronDown,
+		Send,
+		Undo2
 	} from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -106,6 +118,16 @@
 	let searchDebounceTimer: number; // Timeout ID for debounced search
 	let filtersOpen = $state(true); // Filters section collapsible state
 
+	// Publication par lot
+	const selectedDraftIds = new SvelteSet<string>(); // Brouillons cochés
+	const selectedPublishedIds = new SvelteSet<string>(); // Publiés cochés (page courante)
+	let draftGradeFilter = $state('all'); // Filtre de l'onglet Brouillons : niveau scolaire
+	let draftThemeFilter = $state('all'); // Filtre de l'onglet Brouillons : thème
+	let bulkProgress = $state<{ done: number; total: number } | null>(null); // Paquets envoyés
+	let bulkSummary = $state<BulkStatusSummary | null>(null); // Dernier compte rendu
+	let bulkError = $state<string | null>(null); // Paquet en échec
+	let unpublishConfirmOpen = $state(false); // Confirmation du retour en brouillon
+
 	// Question types for filter
 	const questionTypes: { value: string; label: string }[] = [
 		{ value: 'all', label: 'Tous les types' },
@@ -124,6 +146,46 @@
 	// Pagination info
 	let totalPages = $derived(Math.ceil(data.total / data.limit));
 	let currentPage = $derived(data.page);
+
+	// Brouillons visibles selon les filtres de l'onglet (niveau scolaire, thème)
+	let filteredDrafts = $derived(
+		data.drafts.filter(
+			(template) =>
+				(draftGradeFilter === 'all' || template.grades.includes(draftGradeFilter)) &&
+				(draftThemeFilter === 'all' || template.theme === draftThemeFilter)
+		)
+	);
+	// On ne publie que ce qu'on voit : coché ET visible
+	let draftIdsToPublish = $derived(
+		filteredDrafts.filter((template) => selectedDraftIds.has(template.id)).map((t) => t.id)
+	);
+	let allFilteredDraftsSelected = $derived(
+		filteredDrafts.length > 0 && draftIdsToPublish.length === filteredDrafts.length
+	);
+	let publishedIdsToUnpublish = $derived(
+		data.templates.filter((template) => selectedPublishedIds.has(template.id)).map((t) => t.id)
+	);
+	let allPublishedSelected = $derived(
+		data.templates.length > 0 && publishedIdsToUnpublish.length === data.templates.length
+	);
+	let draftGradeItems = $derived([
+		{ value: 'all', label: 'Tous les niveaux' },
+		...GRADE_OPTIONS.filter((option) =>
+			data.drafts.some((template) => template.grades.includes(option.value))
+		)
+	]);
+	let draftThemeItems = $derived([
+		{ value: 'all', label: 'Tous les thèmes' },
+		...[...new Set(data.drafts.map((template) => template.theme))]
+			.sort((a, b) => a.localeCompare(b, 'fr'))
+			.map((theme) => ({ value: theme, label: theme }))
+	]);
+	let isBulkRunning = $derived(bulkProgress !== null);
+	let unpublishConfirmText = $derived(
+		publishedIdsToUnpublish.length > 1
+			? `${publishedIdsToUnpublish.length} modèles ne seront plus proposés aux élèves. Les republier repassera le contrôle complet.`
+			: 'Ce modèle ne sera plus proposé aux élèves. Le republier repassera le contrôle complet.'
+	);
 
 	/**
 	 * localStorage persistence for view mode
@@ -438,6 +500,63 @@
 	}
 
 	/**
+	 * Coche / décoche une ligne
+	 */
+	function handleToggleRow(selection: SvelteSet<string>, id: string, checked: boolean) {
+		if (checked) selection.add(id);
+		else selection.delete(id);
+	}
+
+	/**
+	 * « Tout cocher » : porte sur les lignes visibles seulement
+	 */
+	function handleToggleAll(selection: SvelteSet<string>, ids: string[], checked: boolean) {
+		for (const id of ids) {
+			if (checked) selection.add(id);
+			else selection.delete(id);
+		}
+	}
+
+	/**
+	 * Publication / retour en brouillon par lot, puis rechargement des données
+	 */
+	async function runBulkStatusChange(ids: string[], status: BulkTemplateStatus) {
+		if (ids.length === 0 || isBulkRunning) return;
+		bulkSummary = null;
+		bulkError = null;
+		bulkProgress = { done: 0, total: ids.length };
+		try {
+			bulkSummary = await changeTemplatesStatus(ids, status, (done, total) => {
+				bulkProgress = { done, total };
+			});
+		} catch (err) {
+			console.error('Bulk status error:', err);
+			bulkError = err instanceof Error ? err.message : 'Erreur inconnue';
+			if (err instanceof BulkStatusError) bulkSummary = err.partial;
+			toaster.error('Le changement de statut a été interrompu');
+		} finally {
+			bulkProgress = null;
+		}
+		// Les modèles changés quittent leur onglet : on vide les sélections
+		for (const entry of bulkSummary?.changed ?? []) {
+			selectedDraftIds.delete(entry.id);
+			selectedPublishedIds.delete(entry.id);
+		}
+		questionCategoriesCache.invalidate();
+		questionTemplatesCache.invalidate();
+		await invalidateAll();
+	}
+
+	function handlePublishSelection() {
+		runBulkStatusChange(draftIdsToPublish, 'published').then(() => {});
+	}
+
+	function handleConfirmUnpublish() {
+		unpublishConfirmOpen = false;
+		runBulkStatusChange(publishedIdsToUnpublish, 'draft').then(() => {});
+	}
+
+	/**
 	 * Navigate to page
 	 */
 	function goToPage(page: number) {
@@ -642,6 +761,24 @@
 		</Card.Header>
 	</Card.Root>
 
+	<!-- Progression / compte rendu de la publication par lot -->
+	{#if bulkProgress}
+		<p class="flex items-center gap-2 text-sm text-muted-foreground" role="status">
+			<Loader2 class="h-4 w-4 animate-spin" />
+			Traitement… {bulkProgress.done} / {bulkProgress.total}
+		</p>
+	{/if}
+	{#if bulkSummary}
+		<BulkStatusReport
+			summary={bulkSummary}
+			error={bulkError}
+			ondismiss={() => {
+				bulkSummary = null;
+				bulkError = null;
+			}}
+		/>
+	{/if}
+
 	<!-- Tabs: Drafts / Published -->
 	<Tabs.Root value="published" class="space-y-4">
 		<Tabs.List class="grid w-full grid-cols-2">
@@ -655,7 +792,41 @@
 			<div class="flex items-center justify-between text-sm text-muted-foreground">
 				<span>
 					{data.drafts.length} brouillon{data.drafts.length > 1 ? 's' : ''}
+					{#if filteredDrafts.length !== data.drafts.length}
+						· {filteredDrafts.length} affiché{filteredDrafts.length > 1 ? 's' : ''}
+					{/if}
 				</span>
+			</div>
+
+			<!-- Publication par lot : filtres + sélection -->
+			<div class="flex flex-wrap items-end gap-4">
+				<div class="w-48 space-y-2">
+					<Label class="text-sm font-medium">Niveau scolaire</Label>
+					<MySelect type="single" bind:value={draftGradeFilter} items={draftGradeItems} />
+				</div>
+				<div class="w-56 space-y-2">
+					<Label class="text-sm font-medium">Thème</Label>
+					<MySelect type="single" bind:value={draftThemeFilter} items={draftThemeItems} />
+				</div>
+				<MyCheckbox
+					checked={allFilteredDraftsSelected}
+					disabled={filteredDrafts.length === 0 || isBulkRunning}
+					label="Tout cocher (filtrés)"
+					onchange={(checked) =>
+						handleToggleAll(
+							selectedDraftIds,
+							filteredDrafts.map((template) => template.id),
+							checked
+						)}
+				/>
+				<Button
+					class="ml-auto gap-2"
+					disabled={draftIdsToPublish.length === 0 || isBulkRunning}
+					onclick={handlePublishSelection}
+				>
+					<Send class="h-4 w-4" />
+					Publier la sélection ({draftIdsToPublish.length})
+				</Button>
 			</div>
 
 			<!-- Templates Display (Table or Card view) -->
@@ -669,6 +840,7 @@
 							<table class="w-full">
 								<thead class="border-b bg-muted/50">
 									<tr>
+										<th class="w-10 px-4 py-3"><span class="sr-only">Sélection</span></th>
 										<!-- Sortable Type header -->
 										<th class="px-4 py-3 text-left text-sm font-medium">
 											<button
@@ -695,15 +867,24 @@
 									</tr>
 								</thead>
 								<tbody class="divide-y">
-									{#if data.drafts.length === 0}
+									{#if filteredDrafts.length === 0}
 										<tr>
-											<td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+											<td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
 												Aucun brouillon
 											</td>
 										</tr>
 									{:else}
-										{#each data.drafts as template (template.id)}
+										{#each filteredDrafts as template (template.id)}
 											<tr class="hover:bg-muted/30">
+												<td class="px-4 py-3">
+													<MyCheckbox
+														checked={selectedDraftIds.has(template.id)}
+														disabled={isBulkRunning}
+														aria-label={`Sélectionner « ${template.title || 'Sans titre'} »`}
+														onchange={(checked) =>
+															handleToggleRow(selectedDraftIds, template.id, checked)}
+													/>
+												</td>
 												<!-- Type + Status + Categories -->
 												<td class="px-4 py-3">
 													<div class="flex flex-col gap-1">
@@ -790,7 +971,7 @@
 				</Card.Root>
 			{:else}
 				<!-- Card Grid View (Drafts) -->
-				{#if data.drafts.length === 0}
+				{#if filteredDrafts.length === 0}
 					<Card.Root>
 						<Card.Content class="py-12 text-center">
 							<p class="text-muted-foreground">Aucun brouillon</p>
@@ -798,7 +979,7 @@
 					</Card.Root>
 				{:else}
 					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each data.drafts as template (template.id)}
+						{#each filteredDrafts as template (template.id)}
 							<QuestionTemplateCard
 								{template}
 								onPreview={handlePreview}
@@ -824,6 +1005,30 @@
 				</span>
 			</div>
 
+			<!-- Retour en brouillon par lot (page courante) -->
+			<div class="flex flex-wrap items-center gap-4">
+				<MyCheckbox
+					checked={allPublishedSelected}
+					disabled={data.templates.length === 0 || isBulkRunning}
+					label="Tout cocher (page)"
+					onchange={(checked) =>
+						handleToggleAll(
+							selectedPublishedIds,
+							data.templates.map((template) => template.id),
+							checked
+						)}
+				/>
+				<Button
+					variant="outline"
+					class="ml-auto gap-2"
+					disabled={publishedIdsToUnpublish.length === 0 || isBulkRunning}
+					onclick={() => (unpublishConfirmOpen = true)}
+				>
+					<Undo2 class="h-4 w-4" />
+					Repasser en brouillon ({publishedIdsToUnpublish.length})
+				</Button>
+			</div>
+
 			<!-- Templates Display (Table or Card view) -->
 			{#if viewMode === 'table'}
 				{@const SortTypeIcon = getSortIcon('type')}
@@ -835,6 +1040,7 @@
 							<table class="w-full">
 								<thead class="border-b bg-muted/50">
 									<tr>
+										<th class="w-10 px-4 py-3"><span class="sr-only">Sélection</span></th>
 										<!-- Sortable Type header -->
 										<th class="px-4 py-3 text-left text-sm font-medium">
 											<button
@@ -863,13 +1069,22 @@
 								<tbody class="divide-y">
 									{#if data.templates.length === 0}
 										<tr>
-											<td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+											<td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
 												Aucun template trouvé
 											</td>
 										</tr>
 									{:else}
 										{#each data.templates as template (template.id)}
 											<tr class="hover:bg-muted/30">
+												<td class="px-4 py-3">
+													<MyCheckbox
+														checked={selectedPublishedIds.has(template.id)}
+														disabled={isBulkRunning}
+														aria-label={`Sélectionner « ${template.title || 'Sans titre'} »`}
+														onchange={(checked) =>
+															handleToggleRow(selectedPublishedIds, template.id, checked)}
+													/>
+												</td>
 												<!-- Type + Categories -->
 												<td class="px-4 py-3">
 													<div class="flex flex-col gap-1">
@@ -1024,6 +1239,22 @@
 			<Button variant="destructive" onclick={confirmDelete} disabled={isDeleting}>
 				{isDeleting ? 'Suppression...' : 'Supprimer'}
 			</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Confirmation du retour en brouillon par lot -->
+<Dialog.Root bind:open={unpublishConfirmOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Repasser en brouillon</Dialog.Title>
+			<Dialog.Description>
+				{unpublishConfirmText}
+			</Dialog.Description>
+		</Dialog.Header>
+		<div class="flex justify-end gap-2">
+			<Button variant="outline" onclick={() => (unpublishConfirmOpen = false)}>Annuler</Button>
+			<Button variant="destructive" onclick={handleConfirmUnpublish}>Repasser en brouillon</Button>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

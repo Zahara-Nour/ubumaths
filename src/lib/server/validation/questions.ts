@@ -107,6 +107,20 @@ export const generateQuestionSchema = z.object({
 });
 
 /**
+ * Publication par lot : changer le statut de plusieurs modèles en une requête.
+ * 700 = marge au-dessus des 640 modèles actuels (tout publier d'un coup).
+ */
+export const MAX_BULK_TEMPLATE_IDS = 700;
+
+export const bulkTemplateStatusSchema = z.object({
+	ids: z
+		.array(z.string().uuid('Identifiant de modèle invalide'))
+		.min(1, 'Aucun modèle sélectionné')
+		.max(MAX_BULK_TEMPLATE_IDS, `Au plus ${MAX_BULK_TEMPLATE_IDS} modèles par lot`),
+	status: z.enum(['published', 'draft'])
+});
+
+/**
  * Schema for question categories
  */
 export const questionCategorySchema = z.object({
