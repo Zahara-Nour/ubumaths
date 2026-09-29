@@ -9,7 +9,8 @@
  * - Server-side sorting with SQL injection prevention
  * - Full-text search using PostgreSQL's textSearch (French config)
  * - Grade filtering using JSONB array containment
- * - Pagination with 50 items per page
+ * - Pagination with 50 items per page (published tab)
+ * - Same filters applied to drafts (no pagination) for bulk publication
  *
  * Security:
  * - Validates sort field against whitelist (prevents SQL injection)
@@ -26,6 +27,65 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Filtres de la page, communs aux onglets Brouillons et Publiés */
+interface TemplateFilters {
+	type: string | null;
+	grades: string | null;
+	theme: string | null;
+	domain: string | null;
+	subdomain: string | null;
+	minLevel: string | null;
+	maxLevel: string | null;
+}
+
+/** Ce que `applyTemplateFilters` utilise d'une requête PostgREST */
+interface FilterableQuery {
+	eq(column: string, value: string): this;
+	overlaps(column: string, value: string[]): this;
+	gte(column: string, value: number): this;
+	lte(column: string, value: number): this;
+}
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Plafond de lignes par requête côté PostgREST */
+const ID_PAGE_SIZE = 1000;
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+/**
+ * Applique les filtres de la page à une requête, quel que soit l'onglet.
+ *
+ * Niveaux scolaires : chevauchement de tableaux JSONB (un modèle 6e/5e sort
+ * pour le filtre « 6e, 3e »). Thème, domaine, sous-domaine : égalité exacte.
+ */
+function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: TemplateFilters): Q {
+	let filtered = query;
+	if (filters.type) filtered = filtered.eq('type', filters.type);
+	if (filters.grades) {
+		filtered = filtered.overlaps(
+			'grades',
+			filters.grades.split(',').map((grade) => grade.trim())
+		);
+	}
+	if (filters.theme) filtered = filtered.eq('theme', filters.theme);
+	if (filters.domain) filtered = filtered.eq('domain', filters.domain);
+	if (filters.subdomain) filtered = filtered.eq('subdomain', filters.subdomain);
+	const minLevel = filters.minLevel ? parseInt(filters.minLevel) : NaN;
+	if (!isNaN(minLevel)) filtered = filtered.gte('level', minLevel);
+	const maxLevel = filters.maxLevel ? parseInt(filters.maxLevel) : NaN;
+	if (!isNaN(maxLevel)) filtered = filtered.lte('level', maxLevel);
+	return filtered;
+}
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -64,18 +124,27 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const actualSortField = validSortFields.includes(sortField) ? sortField : 'created_at';
 	const actualSortOrder = sortOrder === 'asc' ? true : false; // Convert to boolean
 
+	const filters: TemplateFilters = {
+		type: typeFilter,
+		grades: gradesFilter,
+		theme: themeFilter,
+		domain: domainFilter,
+		subdomain: subdomainFilter,
+		minLevel: minLevelFilter,
+		maxLevel: maxLevelFilter
+	};
+	// Recherche plein texte (`searchFilter`) toujours désactivée : elle attend un index
+	// tsvector sur `variations` (migration à écrire, GIN + config 'french').
+
 	try {
 		/**
-		 * Load all draft templates separately (always visible, no filters)
-		 *
-		 * Drafts are shown in their own tab, sorted by last modification date.
-		 * They are not affected by any filters.
+		 * Brouillons : mêmes filtres et même tri que les publiés, sans pagination
+		 * (la publication par lot doit pouvoir cocher tout ce qui est filtré).
 		 */
-		const { data: drafts, error: draftsError } = await supabase
-			.from('question_templates')
-			.select('*')
-			.eq('status', 'draft')
-			.order('updated_at', { ascending: false });
+		const { data: drafts, error: draftsError } = await applyTemplateFilters(
+			supabase.from('question_templates').select('*').eq('status', 'draft'),
+			filters
+		).order(actualSortField, { ascending: actualSortOrder });
 
 		if (draftsError) {
 			console.error('Error fetching draft templates:', draftsError);
@@ -83,115 +152,45 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 
 		/**
-		 * Build Supabase query for published templates with filters
-		 *
-		 * Query builder pattern allows chaining multiple filters.
-		 * count: 'exact' calculates total matching rows for pagination.
-		 * Only published templates are affected by filters.
+		 * Publiés : page courante (50 lignes), total pour la pagination
 		 */
-		let query = supabase
-			.from('question_templates')
-			.select('*', { count: 'exact' })
-			.eq('status', 'published');
-
-		/**
-		 * Apply type filter (exact match)
-		 *
-		 * Filters by question type (numerical_exact, algebraic_transform, etc.)
-		 * Uses .eq() for exact match on 'type' column.
-		 */
-		if (typeFilter) {
-			query = query.eq('type', typeFilter);
-		}
-
-		/**
-		 * Apply grades filter (JSONB array containment)
-		 *
-		 * Filters templates that apply to ANY of the selected grades.
-		 * Uses .overlaps() for JSONB array matching.
-		 *
-		 * Example:
-		 * - Template grades: ['6', '5', '4']
-		 * - Selected grades: ['6', '3']
-		 * - Match: Yes (contains '6')
-		 */
-		if (gradesFilter) {
-			const grades = gradesFilter.split(',').map((g) => g.trim());
-			query = query.overlaps('grades', grades);
-		}
-
-		/**
-		 * Apply category filters (exact match)
-		 */
-		if (themeFilter) {
-			query = query.eq('theme', themeFilter);
-		}
-
-		if (domainFilter) {
-			query = query.eq('domain', domainFilter);
-		}
-
-		if (subdomainFilter) {
-			query = query.eq('subdomain', subdomainFilter);
-		}
-
-		/**
-		 * Apply level range filters
-		 */
-		if (minLevelFilter) {
-			const minLevel = parseInt(minLevelFilter);
-			if (!isNaN(minLevel)) {
-				query = query.gte('level', minLevel);
-			}
-		}
-
-		if (maxLevelFilter) {
-			const maxLevel = parseInt(maxLevelFilter);
-			if (!isNaN(maxLevel)) {
-				query = query.lte('level', maxLevel);
-			}
-		}
-
-		/**
-		 * Server-side full-text search (PostgreSQL)
-		 *
-		 * NOTE: Text search is temporarily disabled pending creation of proper
-		 * tsvector index on variations JSONB column. Current implementation uses
-		 * client-side filtering as a fallback.
-		 *
-		 * TODO: Create migration with:
-		 * - Generated column for text content extraction from variations
-		 * - GIN index on tsvector for fast full-text search
-		 * - French language configuration for stemming
-		 * - Include 'title' field in search (has dedicated GIN index: idx_question_templates_title_search)
-		 */
-		// Temporarily disabled - will be re-enabled after proper index is added
-		// if (searchFilter) {
-		// 	query = query.textSearch('variations', searchFilter, {
-		// 		type: 'websearch',
-		// 		config: 'french'
-		// 	});
-		// }
-
-		/**
-		 * Apply pagination and ordering
-		 *
-		 * - range(offset, offset + limit - 1): Paginate results (50 per page)
-		 * - order(field, {ascending}): Sort by validated field
-		 *
-		 * Example for page 2 (limit 50):
-		 * - offset = (2-1) * 50 = 50
-		 * - range = 50 to 99 (rows 51-100)
-		 */
-		query = query
+		const {
+			data: templates,
+			error: queryError,
+			count
+		} = await applyTemplateFilters(
+			supabase.from('question_templates').select('*', { count: 'exact' }).eq('status', 'published'),
+			filters
+		)
 			.range(offset, offset + limit - 1)
 			.order(actualSortField, { ascending: actualSortOrder });
-
-		const { data: templates, error: queryError, count } = await query;
 
 		if (queryError) {
 			console.error('Error fetching templates:', queryError);
 			throw error(500, 'Failed to load question templates');
+		}
+
+		/**
+		 * Identifiants de TOUS les publiés filtrés, toutes pages confondues :
+		 * « Tout cocher (filtrés) » ne se limite pas à la page affichée.
+		 * PostgREST plafonne à 1000 lignes par requête : on pagine.
+		 */
+		const publishedIds: string[] = [];
+		for (let from = 0; ; from += ID_PAGE_SIZE) {
+			const idsQuery = supabase
+				.from('question_templates')
+				.select('id')
+				.eq('status', 'published')
+				.order('id')
+				.range(from, from + ID_PAGE_SIZE - 1);
+			const { data: idRows, error: idsError } = await applyTemplateFilters(idsQuery, filters);
+
+			if (idsError) {
+				console.error('Error fetching published template ids:', idsError);
+				throw error(500, 'Failed to load question templates');
+			}
+			publishedIds.push(...idRows.map((row) => row.id));
+			if (idRows.length < ID_PAGE_SIZE) break;
 		}
 
 		/**
@@ -224,6 +223,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		return {
 			drafts: drafts || [],
 			templates: templates || [],
+			publishedIds,
 			total: count || 0,
 			page,
 			limit,

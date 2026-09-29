@@ -47,7 +47,7 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
-	import { GRADE_OPTIONS, type GradeCode } from '$lib/types/grades';
+	import type { GradeCode } from '$lib/types/grades';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import BulkStatusReport from './BulkStatusReport.svelte';
@@ -121,9 +121,7 @@
 
 	// Publication par lot
 	const selectedDraftIds = new SvelteSet<string>(); // Brouillons cochés
-	const selectedPublishedIds = new SvelteSet<string>(); // Publiés cochés (page courante)
-	let draftGradeFilter = $state('all'); // Filtre de l'onglet Brouillons : niveau scolaire
-	let draftThemeFilter = $state('all'); // Filtre de l'onglet Brouillons : thème
+	const selectedPublishedIds = new SvelteSet<string>(); // Publiés cochés (toutes pages)
 	let bulkProgress = $state<{ done: number; total: number } | null>(null); // Paquets envoyés
 	let bulkSummary = $state<BulkStatusSummary | null>(null); // Dernier compte rendu
 	let bulkError = $state<string | null>(null); // Paquet en échec
@@ -148,45 +146,19 @@
 	let totalPages = $derived(Math.ceil(data.total / data.limit));
 	let currentPage = $derived(data.page);
 
-	let draftGradeItems = $derived([
-		{ value: 'all', label: 'Tous les niveaux' },
-		...GRADE_OPTIONS.filter((option) =>
-			data.drafts.some((template) => template.grades.includes(option.value))
-		)
-	]);
-	let draftThemeItems = $derived([
-		{ value: 'all', label: 'Tous les thèmes' },
-		...[...new Set(data.drafts.map((template) => template.theme))]
-			.sort((a, b) => a.localeCompare(b, 'fr'))
-			.map((theme) => ({ value: theme, label: theme }))
-	]);
-	// Un filtre dont la valeur a disparu des brouillons (tous publiés) ne masque plus rien
-	let effectiveDraftGrade = $derived(
-		draftGradeItems.some((item) => item.value === draftGradeFilter) ? draftGradeFilter : 'all'
-	);
-	let effectiveDraftTheme = $derived(
-		draftThemeItems.some((item) => item.value === draftThemeFilter) ? draftThemeFilter : 'all'
-	);
-	// Brouillons visibles selon les filtres de l'onglet (niveau scolaire, thème)
-	let filteredDrafts = $derived(
-		data.drafts.filter(
-			(template) =>
-				(effectiveDraftGrade === 'all' || template.grades.includes(effectiveDraftGrade)) &&
-				(effectiveDraftTheme === 'all' || template.theme === effectiveDraftTheme)
-		)
-	);
-	// On ne publie que ce qu'on voit : coché ET visible
+	// Les brouillons arrivent déjà filtrés par le serveur (mêmes filtres que les publiés)
 	let draftIdsToPublish = $derived(
-		filteredDrafts.filter((template) => selectedDraftIds.has(template.id)).map((t) => t.id)
+		data.drafts.filter((template) => selectedDraftIds.has(template.id)).map((t) => t.id)
 	);
-	let allFilteredDraftsSelected = $derived(
-		filteredDrafts.length > 0 && draftIdsToPublish.length === filteredDrafts.length
+	let allDraftsSelected = $derived(
+		data.drafts.length > 0 && draftIdsToPublish.length === data.drafts.length
 	);
+	// Publiés : la sélection porte sur tous les filtrés, pas seulement la page affichée
 	let publishedIdsToUnpublish = $derived(
-		data.templates.filter((template) => selectedPublishedIds.has(template.id)).map((t) => t.id)
+		data.publishedIds.filter((id) => selectedPublishedIds.has(id))
 	);
 	let allPublishedSelected = $derived(
-		data.templates.length > 0 && publishedIdsToUnpublish.length === data.templates.length
+		data.publishedIds.length > 0 && publishedIdsToUnpublish.length === data.publishedIds.length
 	);
 	let isBulkRunning = $derived(bulkProgress !== null);
 	let unpublishConfirmText = $derived(
@@ -331,7 +303,8 @@
 	 * - Browser history (back button restores previous filter state)
 	 */
 	function applyFilters() {
-		// La sélection des publiés ne vaut que pour la page affichée
+		// Nouveaux filtres : la sélection repart de zéro dans les deux onglets
+		selectedDraftIds.clear();
 		selectedPublishedIds.clear();
 		const params = new URLSearchParams();
 
@@ -382,6 +355,7 @@
 	 * Clear all filters
 	 */
 	function clearFilters() {
+		selectedDraftIds.clear();
 		selectedPublishedIds.clear();
 		selectedType = 'all';
 		selectedGradesList = [];
@@ -519,13 +493,35 @@
 	}
 
 	/**
-	 * « Tout cocher » : porte sur les lignes visibles seulement
+	 * « Tout cocher » : porte sur tout ce que les filtres retiennent
 	 */
 	function handleToggleAll(selection: SvelteSet<string>, ids: string[], checked: boolean) {
 		for (const id of ids) {
 			if (checked) selection.add(id);
 			else selection.delete(id);
 		}
+	}
+
+	/**
+	 * Fin de traitement sans incident : une notification. Le compte rendu détaillé
+	 * ne reste affiché que s'il y a des refus à lire.
+	 */
+	function notifyBulkResult(summary: BulkStatusSummary) {
+		const changed = summary.changed.length;
+		const plural = changed > 1 ? 's' : '';
+		const changedText =
+			summary.status === 'published'
+				? `${changed} modèle${plural} publié${plural}`
+				: `${changed} modèle${plural} repassé${plural} en brouillon`;
+		const refused = summary.refused.length;
+		if (refused === 0) {
+			toaster.success(changedText);
+			bulkSummary = null;
+			return;
+		}
+		toaster.warning(
+			`${changedText}, ${refused} refusé${refused > 1 ? 's' : ''} : voir le compte rendu en haut de page`
+		);
 	}
 
 	/**
@@ -550,6 +546,7 @@
 				},
 				status === 'published' ? groupOf : undefined
 			);
+			notifyBulkResult(bulkSummary);
 		} catch (err) {
 			console.error('Bulk status error:', err);
 			bulkError = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -574,9 +571,6 @@
 			);
 			return;
 		}
-		// Les brouillons ont changé : un filtre devenu sans objet revient à « tous »
-		draftGradeFilter = effectiveDraftGrade;
-		draftThemeFilter = effectiveDraftTheme;
 	}
 
 	async function handlePublishSelection() {
@@ -592,7 +586,6 @@
 	 * Navigate to page
 	 */
 	function goToPage(page: number) {
-		selectedPublishedIds.clear();
 		const params = new URLSearchParams(window.location.search);
 		params.set('page', String(page));
 		goto(`/dashboard/admin/questions?${params.toString()}`);
@@ -634,7 +627,7 @@
 				<Collapsible.Trigger
 					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
 				>
-					<Card.Title>Filtres et Tri</Card.Title>
+					<Card.Title>Filtres et tri (brouillons et publiés)</Card.Title>
 					<ChevronDown
 						class="h-4 w-4 transition-transform duration-200 {filtersOpen ? 'rotate-180' : ''}"
 					/>
@@ -825,30 +818,19 @@
 			<div class="flex items-center justify-between text-sm text-muted-foreground">
 				<span>
 					{data.drafts.length} brouillon{data.drafts.length > 1 ? 's' : ''}
-					{#if filteredDrafts.length !== data.drafts.length}
-						· {filteredDrafts.length} affiché{filteredDrafts.length > 1 ? 's' : ''}
-					{/if}
 				</span>
 			</div>
 
-			<!-- Publication par lot : filtres + sélection -->
-			<div class="flex flex-wrap items-end gap-4">
-				<div class="w-48 space-y-2">
-					<Label class="text-sm font-medium">Niveau scolaire</Label>
-					<MySelect type="single" bind:value={draftGradeFilter} items={draftGradeItems} />
-				</div>
-				<div class="w-56 space-y-2">
-					<Label class="text-sm font-medium">Thème</Label>
-					<MySelect type="single" bind:value={draftThemeFilter} items={draftThemeItems} />
-				</div>
+			<!-- Publication par lot : sélection (les filtres sont ceux du haut de page) -->
+			<div class="flex flex-wrap items-center gap-4">
 				<MyCheckbox
-					checked={allFilteredDraftsSelected}
-					disabled={filteredDrafts.length === 0 || isBulkRunning}
+					checked={allDraftsSelected}
+					disabled={data.drafts.length === 0 || isBulkRunning}
 					label="Tout cocher (filtrés)"
 					onchange={(checked) =>
 						handleToggleAll(
 							selectedDraftIds,
-							filteredDrafts.map((template) => template.id),
+							data.drafts.map((template) => template.id),
 							checked
 						)}
 				/>
@@ -900,14 +882,14 @@
 									</tr>
 								</thead>
 								<tbody class="divide-y">
-									{#if filteredDrafts.length === 0}
+									{#if data.drafts.length === 0}
 										<tr>
 											<td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
 												Aucun brouillon
 											</td>
 										</tr>
 									{:else}
-										{#each filteredDrafts as template (template.id)}
+										{#each data.drafts as template (template.id)}
 											<tr class="hover:bg-muted/30">
 												<td class="px-4 py-3">
 													<MyCheckbox
@@ -1004,7 +986,7 @@
 				</Card.Root>
 			{:else}
 				<!-- Card Grid View (Drafts) -->
-				{#if filteredDrafts.length === 0}
+				{#if data.drafts.length === 0}
 					<Card.Root>
 						<Card.Content class="py-12 text-center">
 							<p class="text-muted-foreground">Aucun brouillon</p>
@@ -1012,7 +994,7 @@
 					</Card.Root>
 				{:else}
 					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each filteredDrafts as template (template.id)}
+						{#each data.drafts as template (template.id)}
 							<div class="space-y-2">
 								<MyCheckbox
 									checked={selectedDraftIds.has(template.id)}
@@ -1047,18 +1029,13 @@
 				</span>
 			</div>
 
-			<!-- Retour en brouillon par lot (page courante) -->
+			<!-- Retour en brouillon par lot (tous les filtrés, toutes pages) -->
 			<div class="flex flex-wrap items-center gap-4">
 				<MyCheckbox
 					checked={allPublishedSelected}
-					disabled={data.templates.length === 0 || isBulkRunning}
-					label="Tout cocher (page)"
-					onchange={(checked) =>
-						handleToggleAll(
-							selectedPublishedIds,
-							data.templates.map((template) => template.id),
-							checked
-						)}
+					disabled={data.publishedIds.length === 0 || isBulkRunning}
+					label="Tout cocher (filtrés)"
+					onchange={(checked) => handleToggleAll(selectedPublishedIds, data.publishedIds, checked)}
 				/>
 				<Button
 					variant="outline"
