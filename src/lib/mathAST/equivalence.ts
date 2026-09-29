@@ -9,7 +9,7 @@
 
 import type { MathNode } from './types';
 import type { NormalizeAbortOptions } from './normal/normalize';
-import { assumptionOracle, type AnswerAssumptions } from './assumptions';
+import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { areEquivalentCore } from './equivalence-core';
 
 /**
@@ -43,7 +43,10 @@ export interface EquivalenceOptions extends NormalizeAbortOptions {
  * areEquivalent(parse('x^a x^b'), parse('x^{a+b}'), { assumptions: { x: 'positive' } }) // true
  */
 export function areEquivalent(a: MathNode, b: MathNode, options?: EquivalenceOptions): boolean {
-	const assumptions = assumptionOracle(options?.assumptions);
+	// Liste blanche : une limite, un indice, une fonction inconnue… dans l'une des
+	// deux expressions, et les hypothèses sont ignorées (verdict sans hypothèse).
+	const assumptions =
+		isPlainAlgebra(a) && isPlainAlgebra(b) ? assumptionOracle(options?.assumptions) : undefined;
 	return areEquivalentCore(a, b, {
 		...(options?.signal && { signal: options.signal }),
 		...(options?.timeoutMs !== undefined && { timeoutMs: options.timeoutMs }),

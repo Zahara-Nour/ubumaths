@@ -163,6 +163,46 @@ function assumptionApplies(node: MathNode, names: ReadonlySet<string>): boolean 
 }
 
 /**
+ * Nœuds de l'algèbre simple, dont `numtype` transmet le type sans surprise.
+ * LISTE BLANCHE : tout autre nœud (limite, indice, relation, matrice, unité,
+ * composition, piecewise… et tout nœud qu'un parseur ajoutera plus tard) coupe
+ * les hypothèses. Trois faux positifs trouvés en revue (#522) venaient de nœuds
+ * qui lient ou renomment une variable (x_1, f(n), lim_{x→−1} x).
+ */
+const PLAIN_ALGEBRA_NODE_TYPES: ReadonlySet<MathNode['type']> = new Set([
+	'number',
+	'variable',
+	'greek',
+	'constant',
+	'addition',
+	'subtraction',
+	'multiplication',
+	'division',
+	'opposite',
+	'positive',
+	'percentage',
+	'delimiter',
+	'superscript',
+	'function'
+]);
+
+/**
+ * L'expression n'est-elle faite que d'algèbre simple (fonctions connues
+ * comprises) ? Sinon, les hypothèses de l'énoncé sont ignorées pour TOUTE la
+ * comparaison : on retombe sur le verdict sans hypothèse, qui est sûr.
+ */
+export function isPlainAlgebra(node: MathNode): boolean {
+	return (
+		findNodes(
+			node,
+			(candidate) =>
+				!PLAIN_ALGEBRA_NODE_TYPES.has(candidate.type) ||
+				(isFunction(candidate) && !isKnownFunctionName(candidate.name))
+		).length === 0
+	);
+}
+
+/**
  * Les prédicats de `numtype` sur le contexte des hypothèses, gardés par
  * `assumptionApplies`. `undefined` sans hypothèse.
  */

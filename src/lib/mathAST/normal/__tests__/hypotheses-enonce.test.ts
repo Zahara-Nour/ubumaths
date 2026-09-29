@@ -215,3 +215,24 @@ describe('Hypothèses : une fonction inconnue n’hérite pas du type de son arg
 		expect(eq(a, b, assumptions)).toBe(true);
 	});
 });
+
+// Liste blanche : une hypothèse ne vaut que pour une comparaison entièrement faite de
+// nœuds algébriques simples. Une limite lie sa variable (x muet dans lim_{x→−1} x) :
+// « x > 0 » ne dit rien de lui. Faux positifs trouvés en revue (#522), y compris à
+// l'intérieur de la limite (lim |x| contre lim x).
+describe('Hypothèses : ignorées dès qu’une expression sort de l’algèbre simple', () => {
+	it.each<[string, string, AnswerAssumptions]>([
+		['\\left|\\lim_{x\\to -1} x\\right|', '\\lim_{x\\to -1} x', X_POSITIVE],
+		['\\left|\\lim_{x\\to -1} x\\right|', '\\lim_{x\\to -1} x', X_NONNEGATIVE],
+		['\\left|\\lim_{t\\to -1} t\\right|', '\\lim_{t\\to -1} t', { t: 'positive' }],
+		['\\left|x\\lim_{x\\to -1} x\\right|', 'x\\lim_{x\\to -1} x', X_POSITIVE],
+		['\\lim_{x\\to -1} |x|', '\\lim_{x\\to -1} x', X_POSITIVE],
+		[
+			'\\left(\\lim_{x\\to -1} x\\right)^{a}\\left(\\lim_{x\\to -1} x\\right)^{b}',
+			'\\left(\\lim_{x\\to -1} x\\right)^{a+b}',
+			X_POSITIVE
+		]
+	])('%s ≢ %s', (a, b, assumptions) => {
+		expect(eq(a, b, assumptions)).toBe(false);
+	});
+});
