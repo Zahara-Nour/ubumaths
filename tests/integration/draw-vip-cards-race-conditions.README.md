@@ -339,7 +339,7 @@ const { data } = await studentClient.rpc('draw_multiple_vip_cards', {...});
 
 **Solution**:
 
-- Verify Supabase is running: `supabase status`
+- Verify Supabase is running: `pnpm exec supabase status`
 - Check Docker logs: `docker logs supabase-db`
 - Increase timeout in config if needed
 

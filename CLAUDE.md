@@ -161,6 +161,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 > **Détails** : [database.md](docs/claude/database.md) · schéma : [database-schema.md](docs/architecture/database-schema.md) (à maj après changement de schéma)
 
 - Migration `.sql` dans `supabase/migrations/` (`<timestamp>_<description>.sql`). **Jamais** modifier le schéma via le Dashboard Supabase.
+- **CLI Supabase = devDependency du projet** (version exacte dans `package.json`), aucune CLI globale : les scripts `pnpm db:*` la trouvent seuls ; à la main, `pnpm exec supabase …` (jamais `supabase …` ni `npx supabase`).
 - **Tests d'intégration locaux OBLIGATOIRES** pour toute RLS / fonction `SECURITY DEFINER` / trigger / policy (`db:start` + `test:integration`). **JAMAIS** valider par un smoke-test `auth.uid()` NULL : le garde sort avant la requête → faux positif.
 - Après push : `pnpm db:types` (+ commit). **Interroger la prod** : MCP Supabase **read-only** (EU).
 - ⚠️ **`db:types` génère depuis la PRODUCTION** : une RPC pas encore en prod n'existe pas dans `database.ts`. Livrer une fonction SQL + le code qui l'appelle demande donc **deux PR** — la migration d'abord, `db:migrate`, `db:types`, puis le code.

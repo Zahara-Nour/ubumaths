@@ -23,6 +23,8 @@ Référence synthétique pour Claude : **workflow migrations**, **règle des typ
 | 5. Régénérer types  | **`pnpm db:types`** → réécrit `src/lib/types/database.ts`. Commit.                                                                                                           |
 | 6. Documenter       | Mettre à jour [docs/architecture/database-schema.md](../architecture/database-schema.md) si cluster de tables feature-level.                                                 |
 
+**CLI Supabase** : devDependency du projet, version **exacte** dans `package.json` (2.118.0 depuis #512) — la même sur chaque poste et en CI (`nightly-integration.yml`). Aucune CLI globale (Homebrew désinstallée le 2026-09-29). Les scripts `pnpm db:*` la trouvent via `node_modules/.bin` ; pour une commande à la main : `pnpm exec supabase <commande>`.
+
 ```bash
 pnpm db:start      # supabase start (stack local, Docker requis)
 pnpm db:stop       # supabase stop

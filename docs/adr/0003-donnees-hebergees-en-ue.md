@@ -20,5 +20,5 @@ Base Supabase en **eu-west-3 (Paris)**, projet `cnevnzsvixxpnurautls` ; fonction
 ## Conséquences
 
 - Tout nouveau service qui touche des données d'élèves doit être hébergé en UE.
-- Après tout clone / restore Supabase, `supabase migration list` doit montrer la colonne Remote
+- Après tout clone / restore Supabase, `pnpm exec supabase migration list` doit montrer la colonne Remote
   remplie, sinon `migration repair` **avant** tout push.
