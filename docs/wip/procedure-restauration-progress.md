@@ -167,6 +167,39 @@ client installé sur le Mac.
   ci-dessus toujours ouverts).
 - **Restaurer à côté** plutôt que sur place : non testé.
 
+## Recensement des objets hors `public` (2026-09-29)
+
+Deux angles : le catalogue de la base locale (objets appartenant au rôle des
+migrations, `postgres`, hors `public` ; publications ; `pg_cron`) et le texte
+des 123 migrations.
+
+| Objet                                                                                                                                                          | Où                                      | Couvert par la sauvegarde ?                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trigger `on_auth_user_created` → `public.handle_new_user`                                                                                                      | `auth.users`                            | ✅ 3ᵉ fichier (`x-hors-public.sql`)                                                                                                                                           |
+| 4 policies « Teachers can … chapter documents »                                                                                                                | `storage.objects`                       | ✅ 3ᵉ fichier                                                                                                                                                                 |
+| Publication `supabase_realtime` : `messages`, `notifications`, `student_achievements`, `minesweeper_multiplayer_matches`, `minesweeper_multiplayer_game_state` | hors schéma                             | ✅ dump de schéma (`ALTER PUBLICATION … ADD TABLE`) ; vérifié présent après restauration                                                                                      |
+| Extensions `vector`, `unaccent`                                                                                                                                | `public`                                | ✅ dump de schéma                                                                                                                                                             |
+| Lignes `auth.users`, `auth.identities`, `storage.buckets`                                                                                                      | `auth`, `storage`                       | ✅ dump de données                                                                                                                                                            |
+| Historique des migrations                                                                                                                                      | `supabase_migrations.schema_migrations` | ⚠️ non sauvegardé ; intact en restauration **sur place**, à reconstituer dans un **nouveau** projet                                                                           |
+| **Tâches `pg_cron`** (ex. `flag_stale_python_rechecks`)                                                                                                        | `cron.job`                              | ❌ **programmées à la main sur la prod** (« OUT OF BAND, like every other job », migration `20260827120000`) : dans **aucun** fichier du dépôt ; `cron.job` est vide en local |
+| Policies `cron_job_policy`, `cron_job_run_details_policy`                                                                                                      | `cron`                                  | — fournies par l'extension `pg_cron`                                                                                                                                          |
+
+Aucune fonction, vue, type ou table du projet hors `public` (hors
+`supabase_migrations`).
+
+### Conséquences pour la procédure
+
+- **Tâches `pg_cron` pendant une restauration sur place** : elles survivent
+  (`cron` n'est pas touché) et appellent des fonctions de `public` par leur
+  nom — mais elles **continuent de se déclencher pendant la restauration**, sur
+  une base à moitié vidée. Les **suspendre** avant
+  (`cron.alter_job(<id>, active := false)`), les réactiver après.
+- **Trafic applicatif pendant la restauration** : couper l'accès
+  (`pnpm maintenance:on`, puis `:off`).
+- **Liste des tâches de prod** : à relever (lecture seule :
+  `select jobname, schedule, command from cron.job`) et à consigner dans le
+  dépôt, sinon une restauration dans un nouveau projet les perd sans trace.
+
 ## Questions pour David
 
 - Quelle perte de données est acceptable en cas de problème (une heure, un
@@ -187,3 +220,9 @@ client installé sur le Mac.
   (253 mesures, 962 noms), suite d'intégration 121/121 sur la base restaurée,
   contrôle inverse 21 échecs sans les objets. Pas de `psql` à installer.
   Base locale laissée dans l'état restauré (suite d'intégration passée dessus), comptes de dev remis (`db:dev-accounts`).
+- 2026-09-29 — **Recensement hors `public`** : couverts = trigger `auth.users`,
+  4 policies `storage.objects`, publication Realtime (dans le dump de schéma,
+  vérifié), extensions, lignes `auth`/`storage`. Non couverts : historique des
+  migrations (sans effet sur place) et **tâches `pg_cron` programmées à la main
+  sur la prod**, absentes du dépôt. Ajouts à la procédure : suspendre les
+  tâches cron et passer en maintenance pendant une restauration.
