@@ -22,11 +22,12 @@ import type { Database } from '$lib/types/database';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { checkTemplate } from '$lib/migration/review/check-template';
-import type {
-	BulkPublishResult,
-	BulkTemplateEntry,
-	BulkTemplateRefusal,
-	BulkUnpublishResult
+import {
+	templateCategoryKey,
+	type BulkPublishResult,
+	type BulkTemplateEntry,
+	type BulkTemplateRefusal,
+	type BulkUnpublishResult
 } from '$lib/questions/bulk-status';
 
 // ============================================================================
@@ -85,11 +86,6 @@ function withoutDbMetadata(template: QuestionTemplate): QuestionTemplate {
 		...rest
 	} = template;
 	return rest;
-}
-
-/** Clé de catégorie, alignée sur l'index unique : `coalesce(subdomain, '')` */
-function categoryKey(row: Pick<CategoryRow, 'theme' | 'domain' | 'subdomain' | 'level'>): string {
-	return JSON.stringify([row.theme, row.domain, row.subdomain ?? '', row.level]);
 }
 
 function describeCategory(row: Pick<CategoryRow, 'theme' | 'domain' | 'subdomain' | 'level'>) {
@@ -215,6 +211,16 @@ export async function publishTemplates(
 			refused.push({ id, title: row.title, reasons: ['déjà publié'] });
 			continue;
 		}
+		// `toQuestionTemplate` ramène un statut inconnu à « draft » : sans ce garde,
+		// un modèle archivé passerait le contrôle puis échouerait en « droits insuffisants ? »
+		if (row.status !== 'draft') {
+			refused.push({
+				id,
+				title: row.title,
+				reasons: [`statut « ${row.status} » : seul un brouillon peut être publié`]
+			});
+			continue;
+		}
 		const report = checkTemplate(withoutDbMetadata(toQuestionTemplate(row)));
 		if (!report.passed) {
 			refused.push({ id, title: row.title, reasons: report.reasons });
@@ -227,16 +233,16 @@ export async function publishTemplates(
 	const published = await fetchPublishedCategories(supabase, [
 		...new Set(checked.map((row) => row.theme))
 	]);
-	const publishedByKey = new Map(published.map((row) => [categoryKey(row), row]));
+	const publishedByKey = new Map(published.map((row) => [templateCategoryKey(row), row]));
 	const batchByKey = new Map<string, QuestionTemplateRow[]>();
 	for (const row of checked) {
-		const key = categoryKey(row);
+		const key = templateCategoryKey(row);
 		batchByKey.set(key, [...(batchByKey.get(key) ?? []), row]);
 	}
 
 	const candidates: QuestionTemplateRow[] = [];
 	for (const row of checked) {
-		const key = categoryKey(row);
+		const key = templateCategoryKey(row);
 		const occupant = publishedByKey.get(key);
 		if (occupant) {
 			refused.push({
@@ -289,8 +295,14 @@ export async function unpublishTemplates(
 		const row = byId.get(id);
 		if (!row) {
 			refused.push({ id, title: '', reasons: [NOT_FOUND] });
-		} else if (row.status !== 'published') {
+		} else if (row.status === 'draft') {
 			refused.push({ id, title: row.title, reasons: ['déjà en brouillon'] });
+		} else if (row.status !== 'published') {
+			refused.push({
+				id,
+				title: row.title,
+				reasons: [`statut « ${row.status} » : seul un modèle publié peut repasser en brouillon`]
+			});
 		} else {
 			candidates.push(row);
 		}

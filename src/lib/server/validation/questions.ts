@@ -108,9 +108,11 @@ export const generateQuestionSchema = z.object({
 
 /**
  * Publication par lot : changer le statut de plusieurs modèles en une requête.
- * 700 = marge au-dessus des 640 modèles actuels (tout publier d'un coup).
+ * Le client envoie des paquets de 50 (`BULK_CLIENT_CHUNK_SIZE`, voir
+ * `$lib/questions/bulk-status`) ; 100 laisse la place à un groupe de rivaux
+ * d'une même catégorie qui déborde un paquet, jamais coupé en deux.
  */
-export const MAX_BULK_TEMPLATE_IDS = 700;
+export const MAX_BULK_TEMPLATE_IDS = 100;
 
 export const bulkTemplateStatusSchema = z.object({
 	ids: z

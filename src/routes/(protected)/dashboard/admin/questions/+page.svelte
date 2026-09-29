@@ -56,6 +56,7 @@
 		BulkStatusError,
 		changeTemplatesStatus,
 		type BulkStatusSummary,
+		templateCategoryKey,
 		type BulkTemplateStatus
 	} from '$lib/questions/bulk-status';
 	import {
@@ -147,12 +148,31 @@
 	let totalPages = $derived(Math.ceil(data.total / data.limit));
 	let currentPage = $derived(data.page);
 
+	let draftGradeItems = $derived([
+		{ value: 'all', label: 'Tous les niveaux' },
+		...GRADE_OPTIONS.filter((option) =>
+			data.drafts.some((template) => template.grades.includes(option.value))
+		)
+	]);
+	let draftThemeItems = $derived([
+		{ value: 'all', label: 'Tous les thèmes' },
+		...[...new Set(data.drafts.map((template) => template.theme))]
+			.sort((a, b) => a.localeCompare(b, 'fr'))
+			.map((theme) => ({ value: theme, label: theme }))
+	]);
+	// Un filtre dont la valeur a disparu des brouillons (tous publiés) ne masque plus rien
+	let effectiveDraftGrade = $derived(
+		draftGradeItems.some((item) => item.value === draftGradeFilter) ? draftGradeFilter : 'all'
+	);
+	let effectiveDraftTheme = $derived(
+		draftThemeItems.some((item) => item.value === draftThemeFilter) ? draftThemeFilter : 'all'
+	);
 	// Brouillons visibles selon les filtres de l'onglet (niveau scolaire, thème)
 	let filteredDrafts = $derived(
 		data.drafts.filter(
 			(template) =>
-				(draftGradeFilter === 'all' || template.grades.includes(draftGradeFilter)) &&
-				(draftThemeFilter === 'all' || template.theme === draftThemeFilter)
+				(effectiveDraftGrade === 'all' || template.grades.includes(effectiveDraftGrade)) &&
+				(effectiveDraftTheme === 'all' || template.theme === effectiveDraftTheme)
 		)
 	);
 	// On ne publie que ce qu'on voit : coché ET visible
@@ -168,18 +188,6 @@
 	let allPublishedSelected = $derived(
 		data.templates.length > 0 && publishedIdsToUnpublish.length === data.templates.length
 	);
-	let draftGradeItems = $derived([
-		{ value: 'all', label: 'Tous les niveaux' },
-		...GRADE_OPTIONS.filter((option) =>
-			data.drafts.some((template) => template.grades.includes(option.value))
-		)
-	]);
-	let draftThemeItems = $derived([
-		{ value: 'all', label: 'Tous les thèmes' },
-		...[...new Set(data.drafts.map((template) => template.theme))]
-			.sort((a, b) => a.localeCompare(b, 'fr'))
-			.map((theme) => ({ value: theme, label: theme }))
-	]);
 	let isBulkRunning = $derived(bulkProgress !== null);
 	let unpublishConfirmText = $derived(
 		publishedIdsToUnpublish.length > 1
@@ -323,6 +331,8 @@
 	 * - Browser history (back button restores previous filter state)
 	 */
 	function applyFilters() {
+		// La sélection des publiés ne vaut que pour la page affichée
+		selectedPublishedIds.clear();
 		const params = new URLSearchParams();
 
 		if (selectedType && selectedType !== 'all') {
@@ -372,6 +382,7 @@
 	 * Clear all filters
 	 */
 	function clearFilters() {
+		selectedPublishedIds.clear();
 		selectedType = 'all';
 		selectedGradesList = [];
 		selectedTheme = 'all';
@@ -522,13 +533,23 @@
 	 */
 	async function runBulkStatusChange(ids: string[], status: BulkTemplateStatus) {
 		if (ids.length === 0 || isBulkRunning) return;
+		// Publication : les rivaux d'une même catégorie doivent partir dans le même paquet
+		const categoryById = new Map(
+			data.drafts.map((template) => [template.id, templateCategoryKey(template)])
+		);
+		const groupOf = (id: string) => categoryById.get(id) ?? id;
 		bulkSummary = null;
 		bulkError = null;
 		bulkProgress = { done: 0, total: ids.length };
 		try {
-			bulkSummary = await changeTemplatesStatus(ids, status, (done, total) => {
-				bulkProgress = { done, total };
-			});
+			bulkSummary = await changeTemplatesStatus(
+				ids,
+				status,
+				(done, total) => {
+					bulkProgress = { done, total };
+				},
+				status === 'published' ? groupOf : undefined
+			);
 		} catch (err) {
 			console.error('Bulk status error:', err);
 			bulkError = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -544,22 +565,34 @@
 		}
 		questionCategoriesCache.invalidate();
 		questionTemplatesCache.invalidate();
-		await invalidateAll();
+		try {
+			await invalidateAll();
+		} catch (err) {
+			console.error('Reload after bulk status change failed:', err);
+			toaster.error(
+				'Statuts modifiés, mais la liste n’a pas pu être rechargée : actualise la page'
+			);
+			return;
+		}
+		// Les brouillons ont changé : un filtre devenu sans objet revient à « tous »
+		draftGradeFilter = effectiveDraftGrade;
+		draftThemeFilter = effectiveDraftTheme;
 	}
 
-	function handlePublishSelection() {
-		runBulkStatusChange(draftIdsToPublish, 'published').then(() => {});
+	async function handlePublishSelection() {
+		await runBulkStatusChange(draftIdsToPublish, 'published');
 	}
 
-	function handleConfirmUnpublish() {
+	async function handleConfirmUnpublish() {
 		unpublishConfirmOpen = false;
-		runBulkStatusChange(publishedIdsToUnpublish, 'draft').then(() => {});
+		await runBulkStatusChange(publishedIdsToUnpublish, 'draft');
 	}
 
 	/**
 	 * Navigate to page
 	 */
 	function goToPage(page: number) {
+		selectedPublishedIds.clear();
 		const params = new URLSearchParams(window.location.search);
 		params.set('page', String(page));
 		goto(`/dashboard/admin/questions?${params.toString()}`);
@@ -980,13 +1013,22 @@
 				{:else}
 					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{#each filteredDrafts as template (template.id)}
-							<QuestionTemplateCard
-								{template}
-								onPreview={handlePreview}
-								onEdit={handleEdit}
-								onDuplicate={handleDuplicate}
-								onDelete={handleDeleteClick}
-							/>
+							<div class="space-y-2">
+								<MyCheckbox
+									checked={selectedDraftIds.has(template.id)}
+									disabled={isBulkRunning}
+									label="Sélectionner"
+									aria-label={`Sélectionner « ${template.title || 'Sans titre'} »`}
+									onchange={(checked) => handleToggleRow(selectedDraftIds, template.id, checked)}
+								/>
+								<QuestionTemplateCard
+									{template}
+									onPreview={handlePreview}
+									onEdit={handleEdit}
+									onDuplicate={handleDuplicate}
+									onDelete={handleDeleteClick}
+								/>
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -1179,13 +1221,23 @@
 				{:else}
 					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{#each data.templates as template (template.id)}
-							<QuestionTemplateCard
-								{template}
-								onPreview={handlePreview}
-								onEdit={handleEdit}
-								onDuplicate={handleDuplicate}
-								onDelete={handleDeleteClick}
-							/>
+							<div class="space-y-2">
+								<MyCheckbox
+									checked={selectedPublishedIds.has(template.id)}
+									disabled={isBulkRunning}
+									label="Sélectionner"
+									aria-label={`Sélectionner « ${template.title || 'Sans titre'} »`}
+									onchange={(checked) =>
+										handleToggleRow(selectedPublishedIds, template.id, checked)}
+								/>
+								<QuestionTemplateCard
+									{template}
+									onPreview={handlePreview}
+									onEdit={handleEdit}
+									onDuplicate={handleDuplicate}
+									onDelete={handleDeleteClick}
+								/>
+							</div>
 						{/each}
 					</div>
 				{/if}

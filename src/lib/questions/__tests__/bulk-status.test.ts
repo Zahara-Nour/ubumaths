@@ -73,4 +73,65 @@ describe('changeTemplatesStatus', () => {
 		expect(bulkError.message).toBe('Impossible de lire les modèles');
 		expect(bulkError.partial.changed).toEqual([{ id: ids[0], title: 'a' }]);
 	});
+
+	it('met les rivaux d’une même catégorie dans le MÊME paquet (A en 10, B en 55)', async () => {
+		const sixty = ids.slice(0, 60);
+		const rivalA = sixty[10];
+		const rivalB = sixty[55];
+		const groupOf = (id: string) => (id === rivalA || id === rivalB ? 'rivaux' : id);
+		const sentParts: string[][] = [];
+		// Serveur simulé : refuse les modèles qui partagent une catégorie DANS le paquet reçu
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async (_url: string, init: RequestInit) => {
+				const { ids: part } = JSON.parse(String(init.body)) as { ids: string[] };
+				sentParts.push(part);
+				const clash = (id: string) =>
+					part.filter((other) => groupOf(other) === groupOf(id)).length > 1;
+				return jsonResponse({
+					published: part.filter((id) => !clash(id)).map((id) => ({ id, title: id })),
+					refused: part
+						.filter(clash)
+						.map((id) => ({ id, title: id, reasons: ['même catégorie dans la sélection'] }))
+				});
+			})
+		);
+
+		const summary = await changeTemplatesStatus(sixty, 'published', undefined, groupOf);
+
+		expect(summary.refused.map((entry) => entry.id).sort()).toEqual([rivalA, rivalB].sort());
+		expect(summary.changed).toHaveLength(58);
+		// Chaque identifiant part une fois, aucun paquet ne dépasse la taille prévue
+		expect(sentParts.flat().sort()).toEqual([...sixty].sort());
+		expect(sentParts.every((part) => part.length <= BULK_CLIENT_CHUNK_SIZE)).toBe(true);
+	});
+
+	it('lève BulkStatusError avec le partiel quand le réseau tombe au 2e paquet', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi
+				.fn()
+				.mockResolvedValueOnce(
+					jsonResponse({ published: [{ id: ids[0], title: 'a' }], refused: [] })
+				)
+				.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+		);
+
+		const failure = await changeTemplatesStatus(ids, 'published').catch((err: unknown) => err);
+
+		expect(failure).toBeInstanceOf(BulkStatusError);
+		expect((failure as BulkStatusError).partial.changed).toEqual([{ id: ids[0], title: 'a' }]);
+	});
+
+	it('lève BulkStatusError quand une réponse 200 est illisible', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response('<html>passerelle</html>', { status: 200 }))
+		);
+
+		const failure = await changeTemplatesStatus([ids[0]], 'published').catch((err: unknown) => err);
+
+		expect(failure).toBeInstanceOf(BulkStatusError);
+		expect((failure as BulkStatusError).partial.changed).toEqual([]);
+	});
 });

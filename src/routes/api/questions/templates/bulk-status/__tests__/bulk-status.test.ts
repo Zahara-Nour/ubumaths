@@ -28,6 +28,8 @@ interface FakeDb {
 	profiles: Row[];
 	/** Simule une RLS qui refuse l'écriture : 0 ligne rendue, pas d'erreur */
 	blockUpdates?: boolean;
+	/** Simule un conflit d'unicité (index partiel des catégories publiées) */
+	uniqueViolation?: boolean;
 }
 
 interface FixtureTemplate {
@@ -85,9 +87,10 @@ function templateRow(id: string, overrides: Row = {}): Row {
 		test_specs: structuredClone(FIXTURE.testSpecs ?? null),
 		multiple_answers: null,
 		exercise_instruction: null,
-		created_at: null,
-		updated_at: null,
-		created_by: null,
+		// Horodatages RÉELS : c'est leur présence qui faisait refuser tous les modèles
+		created_at: '2026-09-28T09:14:03.52+00:00',
+		updated_at: '2026-09-28T09:14:03.52+00:00',
+		created_by: USER_ID,
 		...overrides
 	};
 }
@@ -110,6 +113,12 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 		const matching = db[table].filter((row) => filters.every((keep) => keep(row)));
 		let data: Row[];
 		if (patch) {
+			if (db.uniqueViolation) {
+				return {
+					data: null,
+					error: { code: '23505', message: 'idx_question_templates_unique_category' }
+				};
+			}
 			if (db.blockUpdates) {
 				data = [];
 			} else {
@@ -168,11 +177,16 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 	return builder;
 }
 
-function fakeDb(role: string, templates: Row[], options: { blockUpdates?: boolean } = {}): FakeDb {
+function fakeDb(
+	role: string,
+	templates: Row[],
+	options: { blockUpdates?: boolean; uniqueViolation?: boolean } = {}
+): FakeDb {
 	return {
 		question_templates: templates,
 		profiles: [{ id: USER_ID, role }],
-		blockUpdates: options.blockUpdates
+		blockUpdates: options.blockUpdates,
+		uniqueViolation: options.uniqueViolation
 	};
 }
 
@@ -283,6 +297,40 @@ describe('POST /api/questions/templates/bulk-status — publier', () => {
 		expect(body.refused).toEqual([{ id: ID_A, title: '', reasons: ['modèle introuvable'] }]);
 	});
 
+	it('refuse un modèle déjà publié, sans le recompter comme publié', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A, { status: 'published' })]);
+
+		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
+
+		expect(body.published).toEqual([]);
+		expect(body.refused).toEqual([
+			{ id: ID_A, title: 'Trouver le double', reasons: ['déjà publié'] }
+		]);
+	});
+
+	it('refuse clairement un statut inconnu de la page (archived), sans le publier', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A, { status: 'archived' })]);
+
+		const body = await (await callBulk(db, { ids: [ID_A], status: 'published' })).json();
+
+		expect(body.published).toEqual([]);
+		const reasons = body.refused[0].reasons.join(' ');
+		expect(reasons).toMatch(/statut « archived »/);
+		expect(reasons).not.toMatch(/droits insuffisants|déjà en brouillon/);
+		expect(statusOf(db, ID_A)).toBe('archived');
+	});
+
+	it('transforme un conflit d’unicité de la base (23505) en refus, pas en erreur 500', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A)], { uniqueViolation: true });
+
+		const response = await callBulk(db, { ids: [ID_A], status: 'published' });
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		expect(body.published).toEqual([]);
+		expect(body.refused[0].reasons.join(' ')).toMatch(/catégorie est devenue occupée/);
+	});
+
 	it("rend un échec, pas un succès, quand la RLS refuse l'écriture en silence (0 ligne)", async () => {
 		const db = fakeDb('admin', [templateRow(ID_A)], { blockUpdates: true });
 
@@ -309,6 +357,17 @@ describe('POST /api/questions/templates/bulk-status — repasser en brouillon', 
 		expect(body.unpublished).toEqual([{ id: ID_A, title: 'Trouver le double' }]);
 		expect(body.refused).toEqual([]);
 		expect(statusOf(db, ID_A)).toBe('draft');
+	});
+
+	it('refuse clairement un statut archived au retour en brouillon', async () => {
+		const db = fakeDb('admin', [templateRow(ID_A, { status: 'archived' })]);
+
+		const body = await (await callBulk(db, { ids: [ID_A], status: 'draft' })).json();
+
+		expect(body.unpublished).toEqual([]);
+		const reasons = body.refused[0].reasons.join(' ');
+		expect(reasons).toMatch(/statut « archived »/);
+		expect(reasons).not.toMatch(/droits insuffisants|déjà en brouillon/);
 	});
 
 	it('rend un échec quand la RLS refuse le retour en brouillon en silence', async () => {
@@ -340,10 +399,10 @@ describe('POST /api/questions/templates/bulk-status — gardes', () => {
 		expect(statusOf(db, ID_A)).toBe('draft');
 	});
 
-	it('rejette plus de 700 identifiants (400)', async () => {
+	it('rejette plus de 100 identifiants par appel (400) : le client envoie des paquets de 50', async () => {
 		const db = fakeDb('admin', []);
 		const ids = Array.from(
-			{ length: 701 },
+			{ length: 101 },
 			(_, index) => `22222222-2222-4222-8222-${String(index).padStart(12, '0')}`
 		);
 		await expect(callBulk(db, { ids, status: 'published' })).rejects.toMatchObject({
