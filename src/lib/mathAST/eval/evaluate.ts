@@ -300,16 +300,26 @@ function evaluateFunctionToRational(
 			result = Math.exp(numArgs[0]);
 			break;
 		case 'ln':
-			if (numArgs.length !== 1) throw new Error('ln requires exactly 1 argument');
-			if (numArgs[0] <= 0) throw new Error('ln argument must be positive');
-			result = Math.log(numArgs[0]);
-			break;
 		case 'log':
-		case 'log10':
-			if (numArgs.length !== 1) throw new Error('log requires exactly 1 argument');
-			if (numArgs[0] <= 0) throw new Error('log argument must be positive');
-			result = Math.log10(numArgs[0]);
+		case 'log10': {
+			if (numArgs.length !== 1) throw new Error(`${name} requires exactly 1 argument`);
+			if (numArgs[0] <= 0) throw new Error(`${name} argument must be positive`);
+			// Base explicite (`\log_{b}(a)`) : log_b(a) = ln(a)/ln(b). Ignorer la
+			// base lisait `\log_{x}(2)` comme `\log(2)`, donc « positif », et
+			// `|\log_{x}(2)|` perdait sa valeur absolue (faux positif). Une base
+			// variable lève ici (variable libre), comme l'argument.
+			if (base) {
+				const baseValue = rationalToNumber(evaluateToRational(base, depth + 1));
+				if (!(baseValue > 0) || baseValue === 1) {
+					throw new Error('log base must be positive and different from 1');
+				}
+				result = Math.log(numArgs[0]) / Math.log(baseValue);
+				break;
+			}
+			// Sans base : `\ln` naturel, `\log` décimal (convention du dépôt)
+			result = name.toLowerCase() === 'ln' ? Math.log(numArgs[0]) : Math.log10(numArgs[0]);
 			break;
+		}
 		case 'sqrt': {
 			if (numArgs.length !== 1) throw new Error('sqrt requires exactly 1 argument');
 			if (numArgs[0] < 0) throw new Error('sqrt argument must be non-negative');

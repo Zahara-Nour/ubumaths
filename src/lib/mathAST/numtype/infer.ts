@@ -317,7 +317,56 @@ function inferFunctionNodeType(node: FunctionNode, ctx: TypeContext): MathType {
 	const argTypes = node.args.map((arg) => inferType(arg, ctx));
 	const argValues = node.args.map((arg) => getNumericValue(arg));
 
-	return inferFunctionType(node.name, argTypes, argValues);
+	const type = inferFunctionType(node.name, argTypes, argValues);
+	const lowerName = node.name.toLowerCase();
+	if (node.base !== undefined && (lowerName === 'log' || lowerName === 'ln')) {
+		return adjustLogTypeForBase(type, node.base);
+	}
+	return type;
+}
+
+/**
+ * Corrige le type de `log_b(a)` calculé comme `log(a)` (base 10) : la base
+ * `b` change le signe et les bornes, pas le domaine.
+ *
+ * `log_b(a) = log(a)/log(b)` : même signe que `log(a)` si `b > 1`, signe
+ * opposé si `0 < b < 1`, inconnu sinon (base variable ou hors domaine). Les
+ * bornes, calculées en base 10, sont fausses dès que `b ≠ 10` : on les retire.
+ * Sans cette correction, `\log_{x}(2)` était typé positif (bornes de `log 2`).
+ */
+function adjustLogTypeForBase(type: MathType, base: MathNode): MathType {
+	// log_b(1) = 0 et les domaines (argument ≤ 0) ne dépendent pas de la base
+	if (type.sign === 'zero' || type.base === 'complex' || type.finite === false) {
+		const { bounds: _bounds, ...rest } = type;
+		return rest;
+	}
+	const { bounds: _bounds, sign, ...rest } = type;
+	const baseValue = getSimpleNumericValue(base);
+	if (baseValue === undefined || !(baseValue > 0) || baseValue === 1) return rest;
+	if (baseValue > 1) return sign !== undefined ? { ...rest, sign } : rest;
+	const flipped = flipSign(sign);
+	return flipped !== undefined ? { ...rest, sign: flipped } : rest;
+}
+
+/** Signe de `−t` connaissant celui de `t` ; `undefined` si non représentable. */
+function flipSign(sign: MathType['sign']): MathType['sign'] {
+	if (sign === 'positive') return 'negative';
+	if (sign === 'negative') return 'positive';
+	if (sign === 'zero' || sign === 'nonzero') return sign;
+	// `nonnegative` inversé serait « négatif ou nul », absent du vocabulaire
+	return undefined;
+}
+
+/** Valeur d'un littéral, d'un opposé de littéral ou d'un quotient de littéraux. */
+function getSimpleNumericValue(node: MathNode): number | undefined {
+	if (node.type === 'division') {
+		const numerator = getSimpleNumericValue(node.numerator);
+		const denominator = getSimpleNumericValue(node.denominator);
+		if (numerator === undefined || denominator === undefined || denominator === 0) return undefined;
+		return numerator / denominator;
+	}
+	if (node.type === 'delimiter') return getSimpleNumericValue(node.content);
+	return getNumericValue(node);
 }
 
 /**

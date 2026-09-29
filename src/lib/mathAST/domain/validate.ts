@@ -303,6 +303,13 @@ function tryEvaluate(node: MathNode, bindings: Bindings): number | null {
 			if (node.args.length === 0) return null;
 			const arg = tryEvaluate(node.args[0], bindings);
 			if (arg === null) return null;
+			const lowerName = node.name.toLowerCase();
+			// Base explicite : log_b(a) = ln(a)/ln(b), b > 0 et b ≠ 1
+			if (node.base !== undefined && (lowerName === 'log' || lowerName === 'ln')) {
+				const base = tryEvaluate(node.base, bindings);
+				if (base === null || base <= 0 || base === 1 || arg <= 0) return null;
+				return Math.log(arg) / Math.log(base);
+			}
 			return evaluateBuiltinFunction(node.name, arg);
 		}
 
@@ -320,8 +327,9 @@ function evaluateBuiltinFunction(name: string, arg: number): number | null {
 		case 'sqrt':
 			return arg >= 0 ? Math.sqrt(arg) : null;
 		case 'ln':
-		case 'log':
 			return arg > 0 ? Math.log(arg) : null;
+		// `\log` sans base est décimal (convention du dépôt : `evaluate`, `normalize`)
+		case 'log':
 		case 'log10':
 			return arg > 0 ? Math.log10(arg) : null;
 		case 'log2':

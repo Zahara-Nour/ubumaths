@@ -33,6 +33,8 @@ import {
 	superscript as supNode
 } from '../factory';
 import { denormalize } from './denormalize';
+import { changeOfBaseAt } from './rules/log-base';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, ZERO_NORMAL_FORM, ONE_NORMAL_FORM } from './normalize';
 import {
 	addPolynomials,
@@ -193,6 +195,17 @@ function getSignOfNormalForm(form: NormalForm): number | null {
 				return numSign * denSign;
 			}
 		}
+	}
+
+	// Constante non rationnelle (`−ln 2` pour `ln(1/2)`, `π − 4`…) : signe par
+	// évaluation numérique. Sans ça, `divExtended` lisait `null` comme positif
+	// et `\ln(0⁺)/\ln(1/2)` rendait −∞ au lieu de +∞. Une variable libre fait
+	// lever l'évaluation ; une valeur trop proche de 0 reste indécise.
+	try {
+		const value = evaluateNodeToApproximatedNumber(denormalize(form));
+		if (Number.isFinite(value) && Math.abs(value) > 1e-12) return value > 0 ? 1 : -1;
+	} catch {
+		// variables libres, fonction inconnue : signe inconnu
 	}
 
 	// Cannot determine sign (contains variables or complex radicals)
@@ -987,6 +1000,25 @@ export function normalizeExtended(
 
 	// Handle Function
 	if (isFunction(node)) {
+		// `log_b(a)` : la reconstruction plus bas (`funcNode(name, [arg])`) perdait
+		// la base, et `ln(0⁺) = −∞` ne vaut que pour b > 1. Réécrit en
+		// `ln(a)/ln(b)`, le quotient étendu porte le bon signe
+		// (`\log_{1/2}(x) → +∞` en `0⁺`).
+		const changedBase = node.base !== undefined ? changeOfBaseAt(node, false) : null;
+		if (changedBase !== null) {
+			// Valeur finie : la normalisation ordinaire simplifie le quotient
+			// (`2 ln 2 / (−ln 2)` → `−2`), ce que `divExtended` ne fait pas.
+			const parts = node.base !== undefined ? [...node.args, node.base] : node.args;
+			const finite = parts.every((part) => normalizeExtended(part, ctx, options).type === 'normal');
+			if (finite) {
+				try {
+					return normalResult(normalize(changedBase));
+				} catch {
+					// hors domaine ou non normalisable : lecture étendue ci-dessous
+				}
+			}
+			return normalizeExtended(changedBase, ctx, options);
+		}
 		const args = node.args.map((arg) => normalizeExtended(arg, ctx, options));
 		return applyFunctionExtended(node.name, args);
 	}
