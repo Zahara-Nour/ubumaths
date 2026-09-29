@@ -48,7 +48,7 @@ describe('DivisorRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('does not divide');
+		expect(result.reason).toContain("n'est pas un diviseur de");
 	});
 
 	it('resolves variable references in dividend', () => {
@@ -65,7 +65,7 @@ describe('DivisorRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('Zero cannot be a divisor');
+		expect(result.reason).toContain("0 n'est pas un diviseur");
 	});
 
 	it('returns invalid for non-integer divisor', () => {
@@ -74,7 +74,7 @@ describe('DivisorRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('integer');
+		expect(result.reason).toContain('entier');
 	});
 
 	it('returns invalid for non-numeric answer', () => {
@@ -83,7 +83,7 @@ describe('DivisorRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('Invalid numeric answer');
+		expect(result.reason).toContain('Ta réponse doit être un nombre');
 	});
 
 	it('uses numericAnswer when provided', () => {
@@ -118,7 +118,7 @@ describe('MultipleRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('not a multiple');
+		expect(result.reason).toContain("n'est pas un multiple");
 	});
 
 	it('resolves variable references in base', () => {
@@ -135,7 +135,7 @@ describe('MultipleRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('Base cannot be zero');
+		expect(result.reason).toContain('ne peut pas être 0');
 	});
 
 	it('handles zero as valid multiple', () => {
@@ -188,7 +188,7 @@ describe('RangeRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('not in range');
+		expect(result.reason).toContain("n'est pas compris entre");
 	});
 
 	it('resolves variable references in min and max', () => {
@@ -244,7 +244,7 @@ describe('EquationRootRule evaluation', () => {
 
 		const result = evaluateRule(rule, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('not a root');
+		expect(result.reason).toContain("n'est pas solution");
 	});
 
 	it('resolves variables in equation', () => {
@@ -562,7 +562,7 @@ describe('evaluateRules (multiple rules)', () => {
 
 		const result = evaluateRules(rules, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('not prime');
+		expect(result.reason).toContain("n'est pas un nombre premier");
 	});
 
 	it('returns valid for empty rules array', () => {
@@ -579,8 +579,8 @@ describe('evaluateRules (multiple rules)', () => {
 
 		const result = evaluateRules(rules, context);
 		expect(result.valid).toBe(false);
-		expect(result.reason).toContain('not in range');
-		expect(result.reason).toContain('not negative');
+		expect(result.reason).toContain("n'est pas compris entre");
+		expect(result.reason).toContain("n'est pas strictement négatif");
 	});
 });
 

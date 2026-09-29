@@ -38,15 +38,21 @@
  */
 
 import { func, number } from '../../factory';
-import { isFunction, isNumber, isVariable } from '../../guards';
+import { isEulerConstant, isFunction, isNumber, isVariable } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 
 /**
- * Le nœud est-il la lettre `e` employée seule, sans indice ni décoration ?
+ * Le nœud est-il le nombre d'Euler : la lettre `e` employée seule, sans indice
+ * ni décoration, ou la constante `\exponentialE` (écriture MathLive) ?
+ *
+ * Les deux écritures doivent aboutir au même `exp` : sinon `e^{2}` (lettre,
+ * réécrite en `exp(2)`) et `\exponentialE^{2}` (constante, restée facteur
+ * symbolique `euler²`) ne se reconnaissaient pas — faux négatif mesuré sur la
+ * réponse d'un élève.
  */
 function isEulerLetter(node: MathNode): boolean {
-	return isVariable(node) && node.name === 'e';
+	return (isVariable(node) && node.name === 'e') || isEulerConstant(node);
 }
 
 /**

@@ -19,11 +19,13 @@ import {
 	requiredUnitMessage,
 	unknownUnitMessage
 } from './feedback';
-import { normalizeStudentQuantity } from './student-input';
+import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
 import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
 import { compareQuantities, type Tolerance } from './ce-integration';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
+import { convertAffine } from '$lib/mathAST/units/conversion';
+import { judgeRounding, roundToPrecision, roundingFeedback } from '$lib/questions/rounding';
 
 // ============================================================================
 // TYPES
@@ -47,6 +49,12 @@ export interface ValidationResult {
 	 * l'unité (« 2,5 h 15 min ») : `feedback` porte un message destiné à l'élève.
 	 */
 	durationWritingAtFault?: boolean;
+	/**
+	 * Vrai quand c'est l'ARRONDI qui est en cause (trop de décimales ou de
+	 * chiffres significatifs) : `feedback` porte un message destiné à l'élève
+	 * (« Arrondis au centième. »).
+	 */
+	roundingAtFault?: boolean;
 	/**
 	 * Durée composée lue (« 2 h 15 min ») : défaut de FORME à signaler si la
 	 * valeur est juste (perfectible ou mauvaise forme, cf. `./composite-duration`).
@@ -79,9 +87,9 @@ const DEFAULT_MESSAGES = {
 
 /**
  * Convert PrecisionType to Tolerance for compareQuantities.
- * Only 'tolerance' type maps directly. Other precision types (decimal,
- * significant, magnitude) are not supported for unit quantities and
- * fall back to exact comparison.
+ * Only 'tolerance' type maps directly. The rounding types (decimal,
+ * significant, magnitude) are judged by `judgeRoundedQuantity`, after the
+ * exact comparison.
  */
 function precisionToTolerance(precision?: PrecisionType): Tolerance | undefined {
 	if (!precision || precision.type === 'none') return undefined;
@@ -90,8 +98,58 @@ function precisionToTolerance(precision?: PrecisionType): Tolerance | undefined 
 			? { absolute: precision.tolerance }
 			: { relative: precision.tolerance };
 	}
-	// decimal, significant, magnitude: no tolerance, exact comparison
+	// decimal, significant, magnitude: jugés par judgeRoundedQuantity
 	return undefined;
+}
+
+/** Écart relatif sous lequel deux flottants sont le même arrondi */
+const SAME_ROUNDED_VALUE = 1e-9;
+
+/**
+ * Verdict d'une grandeur ARRONDIE (`decimal`, `significant`, `magnitude`),
+ * comparée dans l'unité attendue — la précision porte sur elle.
+ *
+ * Le décompte des décimales tapées n'a de sens que dans l'unité attendue :
+ * écrite dans une autre unité (314 cm pour des mètres), seule la valeur
+ * convertie est comparée à l'arrondi.
+ *
+ * @param numericLatex - partie numérique tapée si l'unité est celle attendue, sinon null
+ */
+function judgeRoundedQuantity(
+	userValueInExpectedUnit: number,
+	expectedValue: number,
+	precision: Extract<PrecisionType, { type: 'decimal' | 'significant' | 'magnitude' }>,
+	numericLatex: string | null
+): { isCorrect: boolean; feedback?: string } {
+	if (precision.type === 'magnitude') {
+		const scale = 10 ** precision.digits;
+		const user = Math.round(userValueInExpectedUnit / scale) * scale;
+		const expected = Math.round(expectedValue / scale) * scale;
+		const gap = Math.abs(user - expected);
+		return { isCorrect: gap <= SAME_ROUNDED_VALUE * Math.max(Math.abs(user), Math.abs(expected)) };
+	}
+	// Autre unité : pas d'écriture à compter, la valeur seule est jugée
+	const verdict = judgeRounding(
+		numericLatex ?? '',
+		userValueInExpectedUnit,
+		expectedValue,
+		precision
+	);
+	if (verdict.isCorrect || verdict.feedback) return verdict;
+	// Valeur plus précise que l'arrondi demandé (3141,59 mm pour « au centième de m ») :
+	// c'est l'arrondi qui manque, pas la valeur qui est fausse.
+	const roundedUser = roundToPrecision(userValueInExpectedUnit, precision);
+	const roundedExpected = roundToPrecision(expectedValue, precision);
+	const scale = Math.max(Math.abs(roundedUser), Math.abs(roundedExpected));
+	if (Math.abs(roundedUser - roundedExpected) <= SAME_ROUNDED_VALUE * scale) {
+		return { isCorrect: false, feedback: roundingFeedback(precision) };
+	}
+	return verdict;
+}
+
+/** Partie numérique d'une saisie normalisée `valeur\unit{…}` */
+function numericPartOf(normalized: string): string {
+	return normalized.replace(/\\unit\{(?:[^{}]|\{[^{}]*\})*\}/, '').trim();
 }
 
 // ============================================================================
@@ -300,6 +358,64 @@ export function validateQuantityAnswer(
 			parsed,
 			expected
 		};
+	}
+
+	// Arrondi demandé : la comparaison exacte ne dit rien, on juge l'arrondi
+	if (
+		precision &&
+		(precision.type === 'decimal' ||
+			precision.type === 'significant' ||
+			precision.type === 'magnitude') &&
+		comparisonResult.userValue !== null &&
+		comparisonResult.expectedValue !== null
+	) {
+		const userValueInExpectedUnit = convertAffine(
+			comparisonResult.userValue,
+			userQuantity.unit,
+			expectedQuantity.unit
+		);
+		if (userValueInExpectedUnit !== null) {
+			const sameUnit =
+				checkExactUnitMatch(userQuantity.unit, expectedQuantity.unit) &&
+				!(duration?.kind === 'duration' && duration.multiPart);
+			const numericLatex = sameUnit
+				? (studentNumericLatex(userAnswer) ?? numericPartOf(normalizedUser))
+				: null;
+			const verdict = judgeRoundedQuantity(
+				userValueInExpectedUnit,
+				comparisonResult.expectedValue,
+				precision,
+				numericLatex
+			);
+			if (verdict.feedback) {
+				return {
+					isCorrect: false,
+					feedback: verdict.feedback,
+					errorType: 'wrong_value',
+					roundingAtFault: true,
+					parsed,
+					expected
+				};
+			}
+			if (!verdict.isCorrect) {
+				return {
+					isCorrect: false,
+					feedback: DEFAULT_MESSAGES.incorrectValue,
+					errorType: 'wrong_value',
+					parsed,
+					expected
+				};
+			}
+			return {
+				isCorrect: true,
+				feedback: null,
+				...(duration?.kind === 'duration' && duration.issue
+					? { durationFormIssue: duration.issue }
+					: {}),
+				parsed,
+				expected
+			};
+		}
 	}
 
 	if (comparisonResult.isEqual) {

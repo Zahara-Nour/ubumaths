@@ -42,6 +42,7 @@ import {
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
+import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -242,8 +243,7 @@ function toNumericAnswer(userAnswer: string): number {
 function evaluateValidationRules(
 	rules: ValidationRule[],
 	userAnswer: string,
-	instance: QuestionInstance,
-	evaluateAnswer = false
+	instance: QuestionInstance
 ): ValidationResult | undefined {
 	// Build context from resolved variables
 	const variables: Record<string, number | string> = {};
@@ -258,9 +258,10 @@ function evaluateValidationRules(
 	const ctx: EvaluationContext = {
 		variables,
 		answer: userAnswer,
-		// rulesSuffice : `12/2` vaut 6 pour les règles (la forme est jugée ensuite).
-		// Sinon, comportement historique : `Number()` seul.
-		numericAnswer: evaluateAnswer ? toNumericAnswer(userAnswer) : Number(userAnswer)
+		// Valeur du LaTeX tapé : `12/2` vaut 6, `2{,}5` vaut 2,5, `12\,000` vaut
+		// 12000 pour les règles (la forme est jugée ensuite). `Number()` seul
+		// rendait NaN pour toute saisie MathLive non triviale.
+		numericAnswer: toNumericAnswer(userAnswer)
 	};
 
 	// Evaluate each rule
@@ -307,18 +308,30 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 /**
- * Normalize string for fuzzy comparison: lowercase + strip accents
+ * Normalize string for fuzzy comparison: lowercase + strip accents.
+ * Le bruit de saisie n'est pas une faute : espaces supprimés, ponctuation finale
+ * retirée, virgule décimale lue comme un point (« 3cm » = « 3 cm », « oui. » = « Oui »).
  */
 function normalizeForFuzzy(s: string): string {
 	return s
 		.trim()
 		.toLowerCase()
 		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '');
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/[.!?;:]+$/u, '')
+		.replace(/\s+/gu, '')
+		.replace(/,/g, '.');
 }
 
 /**
- * Fuzzy text matching: case insensitive, accents ignored, Levenshtein distance <= 1
+ * Nombre minimal de lettres du mot attendu pour tolérer une faute de frappe.
+ * En dessous, une faute change le mot (« A » / « B », « pair » / « paire »).
+ */
+const FUZZY_MIN_LETTERS = 5;
+
+/**
+ * Fuzzy text matching: case insensitive, accents ignored ; Levenshtein distance
+ * <= 1 only when the expected word has at least FUZZY_MIN_LETTERS letters.
  */
 function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
 	const normalizedUser = normalizeForFuzzy(userAnswer);
@@ -330,6 +343,9 @@ function isFuzzyTextMatch(userAnswer: string, expected: string): boolean {
 	}
 
 	if (normalizedUser === normalizedExpected) return true;
+	// Mot court : égalité exigée (casse et accents mis à part)
+	const letterCount = normalizedExpected.match(/\p{L}/gu)?.length ?? 0;
+	if (letterCount < FUZZY_MIN_LETTERS) return false;
 	return levenshteinDistance(normalizedUser, normalizedExpected) <= 1;
 }
 
@@ -466,12 +482,43 @@ export function validateAnswer(
  * @param userAnswer - User's answer (string or number)
  * @param correctAnswer - Correct answer from instance
  * @param precision - Precision specification
+ * @param studentLatex - Écriture tapée (LaTeX MathLive), pour compter les
+ *   décimales d'un arrondi ; `userAnswer` à défaut
  * @returns Validation result
  */
 export function validateNumerical(
 	userAnswer: string | number,
 	correctAnswer: string,
-	precision?: PrecisionType
+	precision?: PrecisionType,
+	studentLatex?: string
+): ValidationResult {
+	return numericalVerdict(userAnswer, correctAnswer, precision, studentLatex).result;
+}
+
+/**
+ * Verdict numérique, avec l'indication qu'un ARRONDI est en cause (trop de
+ * décimales ou de chiffres significatifs) : son message est alors destiné à
+ * l'élève (« Arrondis au centième. »).
+ */
+function numericalVerdict(
+	userAnswer: string | number,
+	correctAnswer: string,
+	precision?: PrecisionType,
+	studentLatex?: string
+): { result: ValidationResult; roundingAtFault: boolean } {
+	const result = numericalResult(userAnswer, correctAnswer, precision, studentLatex);
+	const roundingAtFault =
+		!result.isCorrect &&
+		(precision?.type === 'decimal' || precision?.type === 'significant') &&
+		result.feedback === roundingFeedback(precision);
+	return { result, roundingAtFault };
+}
+
+function numericalResult(
+	userAnswer: string | number,
+	correctAnswer: string,
+	precision?: PrecisionType,
+	studentLatex?: string
 ): ValidationResult {
 	// Convert to string if number
 	const userStr = typeof userAnswer === 'number' ? String(userAnswer) : userAnswer;
@@ -506,33 +553,23 @@ export function validateNumerical(
 		};
 	}
 
-	// Decimal precision
-	if (precision.type === 'decimal') {
-		const userRounded = Number(userNum.toFixed(precision.digits));
-		const correctRounded = Number(correctNum.toFixed(precision.digits));
-		const isCorrect = userRounded === correctRounded;
-
+	// Arrondi (décimales ou chiffres significatifs) : la réponse de l'élève n'est
+	// PAS arrondie — trop de chiffres est faux (cf. questions/rounding)
+	if (precision.type === 'decimal' || precision.type === 'significant') {
+		const verdict = judgeRounding(studentLatex ?? userStr, userNum, correctNum, precision);
+		if (verdict.feedback) {
+			// Trop de chiffres : message destiné à l'élève (cf. numericalVerdict)
+			return { isCorrect: false, message: 'Incorrect', feedback: verdict.feedback };
+		}
+		const correctRounded = roundToPrecision(correctNum, precision);
 		return {
-			isCorrect,
-			message: isCorrect ? 'Correct !' : 'Incorrect',
-			feedback: isCorrect
+			isCorrect: verdict.isCorrect,
+			message: verdict.isCorrect ? 'Correct !' : 'Incorrect',
+			feedback: verdict.isCorrect
 				? undefined
-				: `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
-		};
-	}
-
-	// Significant figures
-	if (precision.type === 'significant') {
-		const userSig = toSignificantFigures(userNum, precision.digits);
-		const correctSig = toSignificantFigures(correctNum, precision.digits);
-		const isCorrect = userSig === correctSig;
-
-		return {
-			isCorrect,
-			message: isCorrect ? 'Correct !' : 'Incorrect',
-			feedback: isCorrect
-				? undefined
-				: `La réponse avec ${precision.digits} chiffres significatifs est ${correctSig}`
+				: precision.type === 'decimal'
+					? `La réponse arrondie à ${precision.digits} décimales est ${correctRounded}`
+					: `La réponse avec ${precision.digits} chiffres significatifs est ${correctRounded}`
 		};
 	}
 
@@ -576,22 +613,6 @@ export function validateNumerical(
 		isCorrect,
 		message: isCorrect ? 'Correct !' : 'Incorrect'
 	};
-}
-
-/**
- * Round number to significant figures
- *
- * @param num - Number to round
- * @param digits - Number of significant figures
- * @returns Rounded number
- */
-function toSignificantFigures(num: number, digits: number): number {
-	if (num === 0) return 0;
-
-	const magnitude = Math.floor(Math.log10(Math.abs(num)));
-	const scale = Math.pow(10, magnitude - digits + 1);
-
-	return Math.round(num / scale) * scale;
 }
 
 /**
@@ -711,12 +732,7 @@ function validateBlankValue(
 ): boolean {
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(
-			blank.validationRules,
-			userAnswer,
-			instance,
-			rulesDecide(blank)
-		);
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) return false;
 	}
 
@@ -814,16 +830,11 @@ function validateSingleBlank(
 
 	// 1. Validation rules (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
-		const ruleResult = evaluateValidationRules(
-			blank.validationRules,
-			userAnswer,
-			instance,
-			rulesDecide(blank)
-		);
+		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) {
-			// rulesSuffice : la règle EST le verdict ; ses messages techniques (en
-			// anglais, « 5 does not divide 12 ») ne sont pas destinés à l'élève
-			// → retour ordinaire d'une réponse fausse.
+			// rulesSuffice : la règle EST le verdict ; son message (« 5 n'est pas un
+			// diviseur de 12 ») répéterait la consigne → retour ordinaire d'une
+			// réponse fausse.
 			if (rulesDecide(blank)) return { isCorrect: false };
 			return { isCorrect: false, feedback: ruleResult.feedback };
 		}
@@ -846,11 +857,12 @@ function validateSingleBlank(
 			blank.precision,
 			blank.unit.required
 		);
-		// L'unité (ou l'écriture d'une durée composée) est en cause : l'élève doit
-		// lire pourquoi (message figé, cf. units/feedback et units/composite-duration)
+		// L'unité, l'écriture d'une durée composée ou l'arrondi est en cause :
+		// l'élève doit lire pourquoi (message figé, cf. units/feedback,
+		// units/composite-duration et questions/rounding)
 		if (
 			!result.isCorrect &&
-			(result.unitAtFault || result.durationWritingAtFault) &&
+			(result.unitAtFault || result.durationWritingAtFault || result.roundingAtFault) &&
 			result.feedback
 		) {
 			return { isCorrect: false, feedback: result.feedback };
@@ -858,7 +870,16 @@ function validateSingleBlank(
 		isCorrect = result.isCorrect;
 		durationFormIssue = result.durationFormIssue;
 	} else if (blank.precision) {
-		const result = validateNumerical(userAnswer, blank.expectedAnswer, blank.precision);
+		const { result, roundingAtFault } = numericalVerdict(
+			userAnswer,
+			blank.expectedAnswer,
+			blank.precision,
+			userAnswerLatex || userAnswer
+		);
+		// Trop de décimales / de chiffres significatifs : l'élève doit lire pourquoi
+		if (roundingAtFault && result.feedback) {
+			return { isCorrect: false, feedback: result.feedback };
+		}
 		isCorrect = result.isCorrect;
 	} else {
 		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer);
@@ -1130,7 +1151,44 @@ function isAnswerMatch(userAns: string, correctAns: string): boolean {
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 
-/** Order-independent matching: each answer is matched against any unused blank */
+/**
+ * Appariement maximal réponses → cases (chemins augmentants de Kuhn) : exact,
+ * et largement assez rapide pour le nombre de cases d'une question.
+ *
+ * @param accepts - `accepts[a][b]` : la case `b` accepte la réponse `a`
+ * @returns `matching[a]` = case attribuée à la réponse `a`, `-1` si aucune
+ */
+function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
+	const answerOfBlank: number[] = Array.from({ length: blankCount }, () => -1);
+
+	const tryAssign = (a: number, visited: boolean[]): boolean => {
+		for (let b = 0; b < blankCount; b++) {
+			if (!accepts[a][b] || visited[b]) continue;
+			visited[b] = true;
+			// Case libre, ou sa réponse actuelle peut se reloger ailleurs
+			if (answerOfBlank[b] === -1 || tryAssign(answerOfBlank[b], visited)) {
+				answerOfBlank[b] = a;
+				return true;
+			}
+		}
+		return false;
+	};
+
+	for (let a = 0; a < accepts.length; a++) {
+		tryAssign(
+			a,
+			Array.from({ length: blankCount }, () => false)
+		);
+	}
+
+	const matching: number[] = Array.from({ length: accepts.length }, () => -1);
+	answerOfBlank.forEach((a, b) => {
+		if (a !== -1) matching[a] = b;
+	});
+	return matching;
+}
+
+/** Order-independent matching: answers matched to blanks by maximum bipartite matching */
 function validateBlanksOrderIndependent(
 	userAnswers: string[],
 	instance: QuestionInstance,
@@ -1149,22 +1207,14 @@ function validateBlanksOrderIndependent(
 		return { isCorrect: false, status: 'empty', feedback: "Tu n'as rien répondu." };
 	}
 
-	const used = new Set<number>();
-	const matching: number[] = new Array(userAnswers.length).fill(-1);
-
-	for (let a = 0; a < userAnswers.length; a++) {
-		// Skip empty answers — they won't match anything
-		if (!userAnswers[a].trim()) continue;
-
-		for (let b = 0; b < blanks.length; b++) {
-			if (used.has(b)) continue;
-			if (validateBlankValue(userAnswers[a], blanks[b], instance)) {
-				used.add(b);
-				matching[a] = b;
-				break;
-			}
-		}
-	}
+	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
+	// Un appariement glouton (première case libre qui accepte) pouvait prendre
+	// la seule case d'une autre réponse et refuser une copie juste.
+	const accepts = userAnswers.map((answer) =>
+		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
+	);
+	const matching = maximumMatching(accepts, blanks.length);
+	const used = new Set(matching.filter((b) => b !== -1));
 
 	// Count unmatched non-empty answers
 	const unmatchedNonEmpty = userAnswers.filter((a, i) => a.trim() && matching[i] === -1).length;

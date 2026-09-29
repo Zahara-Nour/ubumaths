@@ -19,6 +19,36 @@ export const ZERO_TOLERANCE = 1e-10;
 export const EQUALITY_TOLERANCE = 1e-10;
 
 /**
+ * Écart RELATIF sous lequel deux valeurs calculées sont le même nombre
+ * (cf. `numbersAreClose`). 1e-12 : mille fois le bruit des flottants (~1e-15),
+ * et deux entiers voisins restent distincts jusqu’à 10¹² (à 1e-10, 123456789012
+ * et 123456789020 étaient confondus).
+ */
+export const RELATIVE_EQUALITY_TOLERANCE = 1e-12;
+
+/**
+ * Plancher ABSOLU de `numbersAreClose` : le bruit des flottants autour de 0
+ * (`0.1 + 0.2 - 0.3` vaut 5,5·10⁻¹⁷). Assez bas pour que 10⁻¹² ≠ 0 et que
+ * l'écriture scientifique reste distinguée (10⁻¹² ≠ 1,1·10⁻¹²) — au prix du
+ * bruit d'une compensation de grands termes (1000·tan(π/4) − 1000 ≈ −1,1·10⁻¹³).
+ */
+export const ABSOLUTE_EQUALITY_FLOOR = 1e-14;
+
+/**
+ * Deux valeurs numériques sont-elles le même nombre, au bruit des flottants
+ * près ? Tolérance relative, avec un plancher absolu minuscule.
+ *
+ * Une tolérance absolue seule (`|a − b| < 1e-10`) jugeait 10⁻¹² égal à 0, et
+ * 123456789012 différent de 123456789012,001 (écart relatif 10⁻¹⁵).
+ */
+export function numbersAreClose(a: number, b: number): boolean {
+	if (a === b) return true;
+	if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+	const scale = Math.max(Math.abs(a), Math.abs(b));
+	return Math.abs(a - b) <= Math.max(ABSOLUTE_EQUALITY_FLOOR, RELATIVE_EQUALITY_TOLERANCE * scale);
+}
+
+/**
  * Threshold above which a finite value is treated as "approaching infinity".
  * Used in numeric heuristics for limit evaluation.
  */
