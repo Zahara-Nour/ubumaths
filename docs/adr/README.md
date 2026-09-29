@@ -21,6 +21,7 @@ contourner en silence.
 | 0010 | [Pas de re-vérification serveur du Python](0010-pas-de-reverification-serveur-python.md)                             | 2026-08-27 |
 | 0011 | [Fiche d'automatismes : instances figées par une graine](0011-fiche-d-automatismes-figee-par-graine.md)              | 2026-09-28 |
 | 0012 | [Les hypothèses de l'énoncé restreignent la comparaison](0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) | 2026-09-29 |
+| 0013 | [Contrainte de forme rebranchée, défaut `strict`](0013-contrainte-de-forme-rebranchee-defaut-strict.md)              | 2026-09-29 |
 
 ## Écrire un ADR
 
