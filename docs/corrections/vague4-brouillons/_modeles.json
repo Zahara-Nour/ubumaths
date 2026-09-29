@@ -1,0 +1,5308 @@
+[
+	{
+		"id": "aeb86af9-7bf1-440a-be17-735a41b5ce46",
+		"title": "Déterminer l'opposé d'une expression",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(p)q}}"
+					}
+				],
+				"statement": "Quel est l'opposé de cette expression ?\n\n$${{eval:pq}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|x|y"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:03.617399+00:00",
+		"updated_at": "2026-09-27T09:29:03.617399+00:00",
+		"subdomain": "Opposé d'une expression",
+		"exercise_instruction": null,
+		"description": "Expression simple",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-9a"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "bonne réponse -9a",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9a"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "9a",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-(9a)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "-(9a)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "843c3186-afc6-4ccd-83f7-beab64d3e420",
+		"title": "Déterminer l'opposé d'une expression",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 2,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(p)r}}{{eval:-(q);+}}"
+					}
+				],
+				"statement": "Quel est l'opposé de cette expression ?\n\n$${{eval:pr}}{{eval:q;+}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|x|y"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:03.767496+00:00",
+		"updated_at": "2026-09-27T09:29:03.767496+00:00",
+		"subdomain": "Opposé d'une expression",
+		"exercise_instruction": null,
+		"description": "opposé d'une somme algébrique",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-9a+7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "bonne réponse -9a+7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9a-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "-9a-7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7-9a"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "7-9a",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "34e569e7-7834-456f-8e48-65b2a1183030",
+		"title": "Opposé d'une expression",
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"level": 1,
+		"status": "draft",
+		"grades": ["2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(a)x}}"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{eval:ax}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-x{{eval:-(b);+}}"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$$x{{eval:b;+}}$$\n\nL'opposé est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}+x"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{b}}-x$$\n\nL'opposé est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:42.614473+00:00",
+		"updated_at": "2026-09-27T17:22:42.614473+00:00",
+		"subdomain": "Apprivoiser",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-1",
+					"x": "x|x"
+				},
+				"description": "v0 a=-1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2x"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"description": "v0 inchangé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-x-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9-x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 ordre libre",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-x+9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 signe",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-(x+9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 parenthèses non supprimées",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9+x"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v2 signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "c32ebff9-7e10-400e-bc06-c376f6991ea8",
+		"title": "Enlever les parenthèses",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 3,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qk+rm+s}}"
+					}
+				],
+				"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:qk}}+({{eval:rm}}{{eval:s;+}})"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:qk-rm-s}}"
+					}
+				],
+				"statement": "Réécris l'expression en enlevant les parenthèses.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:qk}}-({{eval:rm}}{{eval:s;+}})"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:34:58.303474+00:00",
+		"updated_at": "2026-09-27T09:34:58.303474+00:00",
+		"subdomain": "Opposé d'une expression",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "a|b|c"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "a|b|c!k"
+				},
+				{
+					"name": "s",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4c+9b-5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "c|c",
+					"m": "b|b",
+					"q": "4",
+					"r": "9",
+					"s": "-5"
+				},
+				"description": "bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9b+4c-5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "c|c",
+					"m": "b|b",
+					"q": "4",
+					"r": "9",
+					"s": "-5"
+				},
+				"description": "ordre libre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4c+(9b-5)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["brackets", "form"]
+				},
+				"variables": {
+					"k": "c|c",
+					"m": "b|b",
+					"q": "4",
+					"r": "9",
+					"s": "-5"
+				},
+				"description": "parenthèses gardées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4c+9b+5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "c|c",
+					"m": "b|b",
+					"q": "4",
+					"r": "9",
+					"s": "-5"
+				},
+				"description": "signe faux",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3x-2y-5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "-2",
+					"s": "-5"
+				},
+				"description": "bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3x-2y+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "2",
+					"s": "-5"
+				},
+				"description": "bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-2y+3x+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "2",
+					"s": "-5"
+				},
+				"description": "ordre libre -2y+3x+5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3x-(2y-5)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "2",
+					"s": "-5"
+				},
+				"description": "parenthèses gardées",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3x-2y-5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "2",
+					"s": "-5"
+				},
+				"description": "signe de -5 non changé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3x+2y+5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "-2",
+					"s": "-5"
+				},
+				"description": "bonne réponse (termes négatifs)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3x+2y-5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"k": "x|x",
+					"m": "y|y",
+					"q": "3",
+					"r": "-2",
+					"s": "-5"
+				},
+				"description": "seul le 1er terme changé",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "a6a6c491-be89-4a81-8a9d-6412c2396f2d",
+		"title": "Développer $(a+b)(a-b)$",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}-{{b}}^2"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "(a+b)(a-b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a^2}}-{{b}}^2"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(a-b)(a+b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}^2-{{eval:a^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(b+a)(b-a)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}^2-{{eval:a^2}}"
+					}
+				],
+				"statement": "Développe et réduis :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "(b-a)(b+a)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:06.85119+00:00",
+		"updated_at": "2026-09-27T09:29:06.85119+00:00",
+		"subdomain": "Identités remarquables",
+		"exercise_instruction": null,
+		"description": "Coefficients positifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "t|x|y|z"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["49-z^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["49-z^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["z^2-49"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["z^2-49"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-z^2+49"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "ordre inversé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(7+z)(7-z)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "non développé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["49-7z+7z-z^2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "non réduit",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["49+z^2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "z|z"
+				},
+				"description": "signe faux",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ff8082bd-fe4d-4747-bddc-19eced72839f",
+		"title": "Factoriser $a^2-b^2$",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 3,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{a}}+{{c}})({{a}}-{{c}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a^2}}-{{c}}^2"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "({{c}}+{{a}})({{c}}-{{a}})"
+					}
+				],
+				"statement": "Factorise.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{c}}^2-{{eval:a^2}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:07.162432+00:00",
+		"updated_at": "2026-09-27T09:29:07.162432+00:00",
+		"subdomain": "Identités remarquables",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["(7+z)(7-z)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(z+7)(z-7)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["(7-z)(7+z)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"description": "facteurs permutés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["(7-z)^2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"description": "carré au lieu de a²−b²",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["49-z^2"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "z|z"
+				},
+				"description": "non factorisé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7410800b-83d3-40a3-8a2d-dc4b16a4679d",
+		"title": "Simplifier à l'aide d'un carré ou d'un cube",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 4,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}^2"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression littérale :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "p*p"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}^3"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression littérale :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "p*p*p"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:02.219611+00:00",
+		"updated_at": "2026-09-27T09:29:02.219611+00:00",
+		"subdomain": "Simplification d'écriture",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["y^2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "bonne réponse y^2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["y*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "expression recopiée y*y",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["y^3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "bonne réponse y^3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["y*y*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "expression recopiée y*y*y",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "d9f2003b-d028-4bcb-b5ab-2fe93933c5b4",
+		"title": "Traduire un produit en puissance",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^2"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a*a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^3"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a*a*a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^4"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a*a*a*a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^5"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a*a*a*a*a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^6"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a*a*a*a*a*a"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}^7"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide d'une puissance\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a*a*a*a*a*a*a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:01.86306+00:00",
+		"updated_at": "2026-09-28T05:47:01.86306+00:00",
+		"subdomain": "Définition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6^{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^2 attendu",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6^{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^3 attendu",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6^{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^4 attendu",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6^{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^5 attendu",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["6^{6}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^6 attendu",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["6^{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "6^7 attendu",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["c^4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "c|c"
+				},
+				"description": "lettre : c^4",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["36"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "valeur calculée 36 : forme refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2^6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "confusion base/exposant 2^6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["c\\times c^3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"a": "c|c"
+				},
+				"description": "c×c^3 : pas une seule puissance",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "3fe98dd9-7545-4287-8301-7d87e8c1976f",
+		"title": "Traduire une puissance en produit",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a^2"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a^3"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a^4"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a^5"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a^6"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}*{{a}}"
+					}
+				],
+				"statement": "Réécris cette expression à l'aide de la définition d'une puissance.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a^7"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:02.221263+00:00",
+		"updated_at": "2026-09-28T05:47:02.221263+00:00",
+		"subdomain": "Définition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 2 facteurs 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 3 facteurs 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 4 facteurs 5",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 5 facteurs 5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5\\times5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 6 facteurs 5",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5\\times5\\times5\\times5\\times5\\times5\\times5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "produit de 7 facteurs 5",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["x\\times x\\times x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "x|x"
+				},
+				"description": "lettre : x×x×x",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["125"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "valeur 125 : forme refusée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5^3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "recopie 5^3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5\\times25"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "5×25 : pas la définition",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "077c01e0-0c8a-4ff9-a57e-279ec35659ec",
+		"title": "Simplifier le symbole de multiplication",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}{{p}}"
+					}
+				],
+				"statement": "Réécris l'expression en la simplifiant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "q*p"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{q}}{{p}}"
+					}
+				],
+				"statement": "Réécris l'expression en la simplifiant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "p*q"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:01.64794+00:00",
+		"updated_at": "2026-09-27T09:29:01.64794+00:00",
+		"subdomain": "Simplification d'écriture",
+		"exercise_instruction": null,
+		"description": "Devant une lettre",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3y"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"description": "bonne réponse 3y",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3*y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"description": "expression recopiée 3*y",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3y"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"description": "bonne réponse 3y",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["y*3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "3"
+				},
+				"description": "expression recopiée y*3",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "33b1b496-0de3-47bb-b19a-ff016fd08ef5",
+		"title": "Simplifier le symbole de multiplication",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 2,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}({{p}}+{{q}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "r*(p+q)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{r}}({{p}}+{{s}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "r*(p+s)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{q}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "t*(p+q)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{s}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "t*(p+s)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{q}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "(p+q)*t"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{t}}({{p}}+{{s}})"
+					}
+				],
+				"statement": "Simplifie l'écriture de cette expression.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "(p+s)*t"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:01.883621+00:00",
+		"updated_at": "2026-09-27T09:29:01.883621+00:00",
+		"subdomain": "Simplification d'écriture",
+		"exercise_instruction": null,
+		"description": "Devant une parenthèse",
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "q",
+					"expression": "a|b|c|x|y!p"
+				},
+				{
+					"name": "r",
+					"expression": "a|b|c|x|y"
+				},
+				{
+					"name": "s",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["a(y+a)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse a(y+a)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["a*(y+a)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée a*(y+a)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["a(y+6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse a(y+6)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["a*(y+6)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée a*(y+6)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7(y+a)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse 7(y+a)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7*(y+a)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée 7*(y+a)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7(y+6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse 7(y+6)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7*(y+6)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée 7*(y+6)",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7(y+a)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse 7(y+a)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["(y+a)*7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée (y+a)*7",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7(y+6)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "bonne réponse 7(y+6)",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["(y+6)*7"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["products", "form"]
+				},
+				"variables": {
+					"p": "y|y",
+					"q": "a|a",
+					"r": "a|a",
+					"s": "6",
+					"t": "7"
+				},
+				"description": "expression recopiée (y+6)*7",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "6fbf1ab2-c476-4a6c-bd98-ce2c58d8c459",
+		"title": "Simplifier un produit par $0$ ou $1$",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 3,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{p}}"
+					}
+				],
+				"statement": "Écris plus simplement cette expression littérale :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "1{{p}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "0"
+					}
+				],
+				"statement": "Écris plus simplement cette expression littérale :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "0{{p}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"factorOne": "strict",
+				"factorZero": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:02.028311+00:00",
+		"updated_at": "2026-09-27T09:29:02.028311+00:00",
+		"subdomain": "Simplification d'écriture",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "p",
+					"expression": "a|b|c|x|y"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["y"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "bonne réponse y",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["factorOne", "form"]
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "expression recopiée 1y",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "bonne réponse 0",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0y"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["factorZero", "form"]
+				},
+				"variables": {
+					"p": "y|y"
+				},
+				"description": "expression recopiée 0y",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "294c4316-d2c9-4894-9c3c-c2b24fdffc99",
+		"title": "Trouver un facteur commun",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:04.927461+00:00",
+		"updated_at": "2026-09-27T09:29:04.927461+00:00",
+		"subdomain": "Factorisation",
+		"exercise_instruction": null,
+		"description": "Facteur commun numérique apparent ",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			],
+			"validationRules": [
+				{
+					"type": "custom",
+					"expression": "answer != 1",
+					"description": "Legacy testAnswer: &answer !=1"
+				},
+				{
+					"type": "divisor",
+					"dividend": "{{a}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7×9+7×4 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "6×5−6×7 : 2 diviseur de 6 accepté",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "1 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "9 n'est pas commun",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "e66089e0-b7bd-49fe-a968-9a8df3d325fd",
+		"title": "Trouver un facteur commun",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}*{{b}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}{{d}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}{{d}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}*{{b}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{b}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{b}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:05.266376+00:00",
+		"updated_at": "2026-09-27T09:29:05.266376+00:00",
+		"subdomain": "Factorisation",
+		"exercise_instruction": null,
+		"description": "Facteur commun apparent - littéral",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				},
+				{
+					"name": "d",
+					"expression": "x|y|z!c"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v8 bonne réponse",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v9 bonne réponse",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v10 bonne réponse",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v11 bonne réponse",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "5×9+5z : 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "z n'est pas commun",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "5z+9z : z",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["y"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "yz+5z : y refusé",
+				"variationIndex": 8
+			}
+		]
+	},
+	{
+		"id": "226e5b3b-fad4-4c99-92cb-42e123014055",
+		"title": "Calculer la valeur d'une valeur absolue",
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"level": 4,
+		"status": "draft",
+		"grades": ["2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "abs(a)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:43.222439+00:00",
+		"updated_at": "2026-09-27T17:22:43.222439+00:00",
+		"subdomain": "Apprivoiser",
+		"exercise_instruction": null,
+		"description": "Nombres entiers",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "-6"
+				},
+				"description": "|-6| = 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-6"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "-6"
+				},
+				"description": "signe gardé : -6 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "0"
+				},
+				"description": "|0| = 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "4"
+				},
+				"description": "|4| = 4",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "d540f96e-6656-434f-bdbd-72347a2232a9",
+		"title": "Calculer la valeur d'une valeur absolue",
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"level": 5,
+		"status": "draft",
+		"grades": ["2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(a/b)}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "abs(a/b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(-a/b)}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "abs(-a/b)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(sqrt(c))}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "abs(sqrt(c))"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(-sqrt(c))}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "abs(-sqrt(c))"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(d);d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "abs(d)"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:abs(-d);d}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "abs(-d)"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:43.440656+00:00",
+		"updated_at": "2026-09-27T17:22:43.440656+00:00",
+		"subdomain": "Apprivoiser",
+		"exercise_instruction": null,
+		"description": "Nombres variés",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "d",
+					"expression": "digits:1.1"
+				}
+			],
+			"conditions": ["mod(d*10, 10)!=0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "2",
+					"d": "4.6"
+				},
+				"description": "|7/9|",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{7}{9}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "2",
+					"d": "4.6"
+				},
+				"description": "|-7/9|",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-\\frac{7}{9}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "2",
+					"d": "4.6"
+				},
+				"description": "|-7/9| : signe gardé refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\sqrt{5}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|sqrt5|",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\sqrt{5}"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|-sqrt5|",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["-\\sqrt{5}"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|-sqrt5| : -sqrt5 refusé",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["4{,}6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|4,6|",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["4{,}6"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|-4,6|",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["-4{,}6"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "5",
+					"d": "4.6"
+				},
+				"description": "|-4,6| : -4,6 refusé",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "65110463-afc0-4dfd-91b3-977fd7402de7",
+		"title": "Calculer l'inverse d'un nombre",
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{{{a}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a^{-1}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "(1/a)^{-1}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				],
+				"statement": "Calcule.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "(a/b)^{-1}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:31:04.241159+00:00",
+		"updated_at": "2026-09-26T17:31:04.241159+00:00",
+		"subdomain": "Inverse",
+		"exercise_instruction": null,
+		"description": "Avec la notation puissance",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..19!cd(a)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 inverse d’un entier",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 opposé au lieu de l’inverse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7^{-1}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 écriture puissance",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "3"
+				},
+				"description": "v1 borne",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 inverse de 1/a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{7}{1}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 fraction non simplifiée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 inverse de a/b",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{7}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 même fraction",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{18}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "18"
+				},
+				"description": "v3 bornes",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "15368b02-73cc-4f0d-b978-fa0d0848eb03",
+		"title": "Définition d'une puissance à exposant négatif",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\dfrac{1}{{{a}}^{{{b}}}}"
+					}
+				],
+				"statement": "Écris la définition de cette puissance.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a^{-b}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:02.371922+00:00",
+		"updated_at": "2026-09-28T05:47:02.371922+00:00",
+		"subdomain": "Définition",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{6^3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "1/6^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{b^4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "b|b",
+					"b": "4"
+				},
+				"description": "lettre b avec exposant 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{216}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "valeur 1/216 : forme refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-6^3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "signe : -6^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{6^{-3}}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "3"
+				},
+				"description": "1/6^{-3}",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ac0e5b62-b6bc-4a82-85c4-d1b25a9d4d69",
+		"title": "Écrire un nombre entier à l'aide d'une puissance de $10$",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:{{expression1}}}}"
+					}
+				],
+				"statement": "Écris ce nombre sous la forme d'un seul nombre entier.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "b*10^{a}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:02.648916+00:00",
+		"updated_at": "2026-09-28T05:47:02.648916+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "de la forme avec puissances de $10$ à la forme décimale.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["900\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "9×10^5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "2"
+				},
+				"description": "exposant 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["900000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "un zéro de trop",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "0",
+					"b": "2"
+				},
+				"description": "10^0 lu comme 10",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "ae8ad17a-39ad-486b-aea5-6d1a61f2a885",
+		"title": "Écrire un nombre entier à l'aide d'une puissance de $10$",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}*10^{{{a}}}"
+					}
+				],
+				"statement": "Écris ce nombre à l'aide d'une puissance de $10$.\n\nExemple : $400 = 4* 10^2$\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:b*10^{a}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:02.822115+00:00",
+		"updated_at": "2026-09-28T05:47:02.822115+00:00",
+		"subdomain": "Puissances de 10",
+		"exercise_instruction": null,
+		"description": "De la forme décimale à la forme avec puissances de $10$.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9\\times10^4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"description": "90 000 = 9×10^4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\times10^{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "200 = 2×10^2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90\\,000"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"description": "recopie du nombre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90\\times10^3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"description": "90×10^3 : pas la forme de l'exemple",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\times10^5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "9"
+				},
+				"description": "exposant = nombre de chiffres",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "953574d4-e345-4a5d-9435-7faecc3ff7ac",
+		"title": "Écrire un nombre décimal à l'aide de la notation scientifique",
+		"theme": "Puissances",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}},{{c}}"
+					},
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Écris ce nombre en notation scientifique.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:(a*10^b+c)*10^(d-b);d"
+					}
+				],
+				"answerFormats": {
+					"expression1": "?*10^?"
+				}
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T05:47:02.998687+00:00",
+		"updated_at": "2026-09-28T05:47:02.998687+00:00",
+		"subdomain": "Notation scientifique",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8{,}735", "-3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "0,008 735 = 8,735×10^-3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2{,}89", "4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "89",
+					"d": "4"
+				},
+				"description": "28 900 = 2,89×10^4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28{,}9", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "89",
+					"d": "4"
+				},
+				"description": "mantisse ≥ 10 : 28,9×10^3 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}735", "3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "signe de l'exposant oublié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}8735", "-2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "3",
+					"c": "735",
+					"d": "-3"
+				},
+				"description": "0,8735×10^-2 : mantisse < 1",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+		"title": "Racine d'une fonction affine",
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"level": 1,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{a}}x{{eval:b;+}}$$\n\n$f\\left(?\\right)=0$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{b}}{{eval:a;+}}x$$\n\n$f\\left(?\\right)=0$"
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:42.204379+00:00",
+		"updated_at": "2026-09-27T21:54:11.912455+00:00",
+		"subdomain": "Equations",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "racine fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{9}{5}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{18}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "non réduite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "8"
+				},
+				"description": "racine entière",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}8"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal exact -1,8 : juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}9"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal arrondi -1,9 : faux",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "bba95c2d-033b-4648-944d-102a3c2c386d",
+		"title": "Reconnaître le tableau de signe d'une fonction affine",
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"level": 3,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-0-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-0-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "f(x)=-6x+7"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-1-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-1-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "f(x)=-9x-1"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-2-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-2-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "f(x)=-5x+9"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-3-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-3-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "f(x)=3x+3"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-4-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-4-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "f(x)=7x-8"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-5-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-5-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "f(x)=-2x-4"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-6-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-6-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "f(x)=6x+8"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-7-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-7-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "f(x)=4x+9"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-8-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-8-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "f(x)=-7x+2"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-9-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-9-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "f(x)=2x+5"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-10-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-10-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "f(x)=8x-1"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-11-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-11-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "f(x)=-4x"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-12-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-12-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "f(x)=-5x-1"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-13-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-13-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "f(x)=-x+7"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-14-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-14-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "f(x)=x-8"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-15-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-15-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "f(x)=-7x+6"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-16-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-16-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "f(x)=x"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-17-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-17-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression18}}$$",
+				"variables": [
+					{
+						"name": "expression18",
+						"expression": "f(x)=-3x+4"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-18-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-18-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression19}}$$",
+				"variables": [
+					{
+						"name": "expression19",
+						"expression": "f(x)=-5x-5"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"choices": [
+					{
+						"content": "![Choice 1](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_correct-19-600.png)"
+					},
+					{
+						"content": "![Choice 2](fonctions-affines/tableau-de-signe/tableau_de_signe_fonction_affine_uncorrect-19-600.png)"
+					}
+				],
+				"statement": "Quel est le tableau de signe correspondant à la fonction affine :\n\n$${{expression20}}$$",
+				"variables": [
+					{
+						"name": "expression20",
+						"expression": "f(x)=5x-7"
+					}
+				],
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:42.056255+00:00",
+		"updated_at": "2026-09-27T17:22:42.056255+00:00",
+		"subdomain": "Variations-Signe",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"correctChoiceIndex": ["0"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v0",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v12",
+				"variationIndex": 12,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v16",
+				"variationIndex": 16,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "tableau inversé",
+				"variationIndex": 12,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v1",
+				"variationIndex": 1,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v2",
+				"variationIndex": 2,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v3",
+				"variationIndex": 3,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v4",
+				"variationIndex": 4,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v5",
+				"variationIndex": 5,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v6",
+				"variationIndex": 6,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v7",
+				"variationIndex": 7,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v8",
+				"variationIndex": 8,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v9",
+				"variationIndex": 9,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v10",
+				"variationIndex": 10,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v11",
+				"variationIndex": 11,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v13",
+				"variationIndex": 13,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v14",
+				"variationIndex": 14,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v15",
+				"variationIndex": 15,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v17",
+				"variationIndex": 17,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v18",
+				"variationIndex": 18,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "v19",
+				"variationIndex": 19,
+				"selectedChoices": [0]
+			}
+		]
+	},
+	{
+		"id": "2d29792b-f7d7-4950-90db-9530ca3b02c4",
+		"title": "Vocabulaire des fonctions affines",
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"level": 3,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{a}}$ ?",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{a}}x{{eval:b;+}}$, comment s'appelle le nombre ${{b}}$ ?",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{a}}$ ?",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Dans la fonction affine $f(x)={{b}}{{eval:a;+}}x$, comment s'appelle le nombre ${{b}}$ ?",
+				"correctChoiceIndex": ["1"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:40.694724+00:00",
+		"updated_at": "2026-09-27T17:22:40.694724+00:00",
+		"subdomain": "Apprivoiser",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"choices": [
+				{
+					"content": "le coefficient directeur"
+				},
+				{
+					"content": "l'ordonnée à l'origine"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9!a,{{eval:-(a)}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "a = coef directeur",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "b = ordonnée à l'origine",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "v2 a",
+				"variationIndex": 2,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "v3 b",
+				"variationIndex": 3,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "-5",
+					"b": "3"
+				},
+				"description": "confusion",
+				"variationIndex": 0,
+				"selectedChoices": [1]
+			}
+		]
+	},
+	{
+		"id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+		"title": "Déterminer la limite d'une suite",
+		"theme": "Suites",
+		"domain": "Limites",
+		"level": 2,
+		"status": "draft",
+		"grades": ["T_SPE"],
+		"variations": [
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
+				"correctChoiceIndex": ["2"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
+				"correctChoiceIndex": ["3"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
+				"correctChoiceIndex": ["0"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
+				"correctChoiceIndex": ["1"]
+			},
+			{
+				"statement": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
+				"correctChoiceIndex": ["0"]
+			}
+		],
+		"type": "multiple_choice",
+		"options": {
+			"shuffleChoices": false
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-28T10:22:54.944241+00:00",
+		"updated_at": "2026-09-28T10:22:54.944241+00:00",
+		"subdomain": "Determiner une limite",
+		"exercise_instruction": null,
+		"description": "En utilisant les règles de calcul sur les limites",
+		"shared": {
+			"choices": [
+				{
+					"content": "$$+\\infty$$"
+				},
+				{
+					"content": "$$-\\infty$$"
+				},
+				{
+					"content": "$$0$$"
+				},
+				{
+					"content": "Forme indéterminée"
+				}
+			],
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v0 \\dfrac{+\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 0,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v1 \\dfrac{+\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 1,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v2 \\dfrac{-\\infty}{-\\infty} → forme indéterminée",
+				"variationIndex": 2,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v3 \\dfrac{-\\infty}{+\\infty} → forme indéterminée",
+				"variationIndex": 3,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v4 \\dfrac{0}{+\\infty} → 0",
+				"variationIndex": 4,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v5 \\dfrac{0}{-\\infty} → 0",
+				"variationIndex": 5,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v6 \\dfrac{+\\infty}{0^+} → +∞",
+				"variationIndex": 6,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v7 \\dfrac{-\\infty}{0^+} → −∞",
+				"variationIndex": 7,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v8 \\dfrac{+\\infty}{0^-} → −∞",
+				"variationIndex": 8,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v9 \\dfrac{-\\infty}{0^-} → +∞",
+				"variationIndex": 9,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v10 \\dfrac{{{a}}}{+\\infty} → 0",
+				"variationIndex": 10,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v11 \\dfrac{-{{a}}}{+\\infty} → 0",
+				"variationIndex": 11,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v12 \\dfrac{{{a}}}{-\\infty} → 0",
+				"variationIndex": 12,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v13 \\dfrac{-{{a}}}{-\\infty} → 0",
+				"variationIndex": 13,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v14 \\dfrac{+\\infty}{{{a}}} → +∞",
+				"variationIndex": 14,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v15 \\dfrac{+\\infty}{-{{a}}} → −∞",
+				"variationIndex": 15,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v16 \\dfrac{-\\infty}{{{a}}} → −∞",
+				"variationIndex": 16,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v17 \\dfrac{-\\infty}{-{{a}}} → +∞",
+				"variationIndex": 17,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v18 (+\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 18,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v19 (-\\infty)\\times 0 → forme indéterminée",
+				"variationIndex": 19,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v20 (+\\infty)\\times(+\\infty) → +∞",
+				"variationIndex": 20,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v21 (+\\infty)\\times(-\\infty) → −∞",
+				"variationIndex": 21,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v22 (-\\infty)\\times(-\\infty) → +∞",
+				"variationIndex": 22,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v23 (-\\infty)\\times(+\\infty) → −∞",
+				"variationIndex": 23,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v24 {{a}}\\times(+\\infty) → +∞",
+				"variationIndex": 24,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v25 -{{a}}\\times(+\\infty) → −∞",
+				"variationIndex": 25,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v26 {{a}}\\times(-\\infty) → −∞",
+				"variationIndex": 26,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v27 -{{a}}\\times(-\\infty) → +∞",
+				"variationIndex": 27,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v28 (+\\infty)+(+\\infty) → +∞",
+				"variationIndex": 28,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v29 (+\\infty)+(-\\infty) → forme indéterminée",
+				"variationIndex": 29,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v30 (-\\infty)+(-\\infty) → −∞",
+				"variationIndex": 30,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v31 (-\\infty)+(+\\infty) → forme indéterminée",
+				"variationIndex": 31,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v32 (+\\infty)-(+\\infty) → forme indéterminée",
+				"variationIndex": 32,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v33 (+\\infty)-(-\\infty) → +∞",
+				"variationIndex": 33,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v34 (-\\infty)-(-\\infty) → forme indéterminée",
+				"variationIndex": 34,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v35 (-\\infty)-(+\\infty) → −∞",
+				"variationIndex": 35,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v36 +\\infty+{{a}} → +∞",
+				"variationIndex": 36,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v37 -\\infty+{{a}} → −∞",
+				"variationIndex": 37,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v38 \\dfrac{{{a}}}{0^+} → +∞",
+				"variationIndex": 38,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v39 \\dfrac{-{{a}}}{0^+} → −∞",
+				"variationIndex": 39,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v40 \\dfrac{{{a}}}{0^-} → −∞",
+				"variationIndex": 40,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v41 \\dfrac{-{{a}}}{0^-} → +∞",
+				"variationIndex": 41,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v0 erreur : ∞/∞ ≠ +∞ (FI)",
+				"variationIndex": 0,
+				"selectedChoices": [0]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v1 erreur : ∞/(-∞) : FI, pas -∞",
+				"variationIndex": 1,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v18 erreur : ∞×0 : FI, pas 0",
+				"variationIndex": 18,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v29 erreur : ∞-∞ : FI, pas 0",
+				"variationIndex": 29,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v32 erreur : +∞-(+∞) : FI, pas 0",
+				"variationIndex": 32,
+				"selectedChoices": [2]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v33 erreur : +∞-(-∞) = +∞, pas FI",
+				"variationIndex": 33,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v9 erreur : -∞/0- : règle des signes",
+				"variationIndex": 9,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v41 erreur : -a/0- : règle des signes",
+				"variationIndex": 41,
+				"selectedChoices": [1]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v4 erreur : 0/∞ = 0, pas FI",
+				"variationIndex": 4,
+				"selectedChoices": [3]
+			},
+			{
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3"
+				},
+				"description": "v38 erreur : a/0+ = +∞, pas FI",
+				"variationIndex": 38,
+				"selectedChoices": [3]
+			}
+		]
+	}
+]

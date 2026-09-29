@@ -1,0 +1,27 @@
+{
+	"templateId": "65110463-afc0-4dfd-91b3-977fd7402de7",
+	"title": "Calculer l'inverse d'un nombre",
+	"classe": "N",
+	"code": "N-PUISS-NEG",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+				"$\\textcolor{{{color:primary.0}}}{{{a}}}^{-1}$ est l’inverse de $\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}^{-1} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+				"$\\left( \\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\right)^{-1}$ est l’inverse de $\\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}}$ : diviser $1$ par une fraction, c’est multiplier par son inverse.",
+				"$$\\begin{align} \\left( \\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}} \\right)^{-1} &= \\dfrac{1}{\\dfrac{1}{\\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Exposant négatif.** Pour $a \\neq 0$ : $a^{-n} = \\dfrac{1}{a^n}$. En particulier, $a^{-1} = \\dfrac{1}{a}$ est l’inverse de $a$.",
+				"$\\left( \\dfrac{{{a}}}{{{b}}} \\right)^{-1}$ est l’inverse de $\\dfrac{{{a}}}{{{b}}}$ : on échange le numérateur et le dénominateur.",
+				"$$\\begin{align} \\left( \\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{\\textcolor{{{color:primary.1}}}{{{b}}}} \\right)^{-1} &= \\dfrac{1}{\\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{\\textcolor{{{color:primary.1}}}{{{b}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

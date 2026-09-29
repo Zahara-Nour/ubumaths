@@ -1,0 +1,34 @@
+{
+	"templateId": "78feafed-650f-44e0-a2c3-1e677809722b",
+	"title": "Traduire une phrase en expression mathématique",
+	"classe": "N",
+	"code": "N-VOCAB-OP",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Vocabulaire.** Somme ($+$), différence ($-$), produit ($\\times$), quotient ($:$). L’opération nommée EN PREMIER dans la phrase est la DERNIÈRE effectuée.",
+				"La phrase commence par \\textcolor{{{color:primary.1}}}{« la somme »} : la dernière opération est une addition. Son premier terme est \\textcolor{{{color:primary.0}}}{« le produit de} $\\textcolor{{{color:primary.0}}}{{{a}}}$ \\textcolor{{{color:primary.0}}}{par} $\\textcolor{{{color:primary.0}}}{{{c}}}$\\textcolor{{{color:primary.0}}}{ »}, soit $\\textcolor{{{color:primary.0}}}{{{a}} \\times {{c}}}$ ; le second est ${{b}}$. La multiplication est prioritaire : pas de parenthèses.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Somme ($+$), différence ($-$), produit ($\\times$), quotient ($:$). L’opération nommée EN PREMIER dans la phrase est la DERNIÈRE effectuée.",
+				"La phrase commence par \\textcolor{{{color:primary.1}}}{« le produit »} : la dernière opération est une multiplication. Son second facteur est la différence $\\textcolor{{{color:primary.0}}}{{{b}} - {{c}}}$, à calculer AVANT : on la met entre parenthèses.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Somme ($+$), différence ($-$), produit ($\\times$), quotient ($:$). L’opération nommée EN PREMIER dans la phrase est la DERNIÈRE effectuée.",
+				"La phrase commence par \\textcolor{{{color:primary.1}}}{« la différence »} : la dernière opération est une soustraction. Son second terme est le quotient $\\textcolor{{{color:primary.0}}}{{{b}} : {{c}}}$ ; la division est prioritaire : pas de parenthèses.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Somme ($+$), différence ($-$), produit ($\\times$), quotient ($:$). L’opération nommée EN PREMIER dans la phrase est la DERNIÈRE effectuée.",
+				"La phrase commence par \\textcolor{{{color:primary.1}}}{« le quotient »} : la dernière opération est une division. Son dividende est la somme $\\textcolor{{{color:primary.0}}}{{{a}} + {{c}}}$, à calculer AVANT : on la met entre parenthèses.",
+				"L’expression est ${{solution}}$."
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine)."
+	]
+}

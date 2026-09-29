@@ -1,0 +1,34 @@
+{
+	"templateId": "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f",
+	"title": "Traduire une phrase en expression mathématique",
+	"classe": "N",
+	"code": "N-VOCAB-OP",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Vocabulaire.** Une somme est le résultat d’une addition, une différence celui d’une soustraction, un produit celui d’une multiplication, un quotient celui d’une division.",
+				"Une somme est le résultat d’une addition : on écrit les deux nombres dans l’ordre de la phrase.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Une somme est le résultat d’une addition, une différence celui d’une soustraction, un produit celui d’une multiplication, un quotient celui d’une division.",
+				"Un produit est le résultat d’une multiplication : on écrit les deux nombres dans l’ordre de la phrase.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Une somme est le résultat d’une addition, une différence celui d’une soustraction, un produit celui d’une multiplication, un quotient celui d’une division.",
+				"Une différence est le résultat d’une soustraction : on écrit les deux nombres dans l’ordre de la phrase.",
+				"L’expression est ${{solution}}$."
+			],
+			[
+				"**Vocabulaire.** Une somme est le résultat d’une addition, une différence celui d’une soustraction, un produit celui d’une multiplication, un quotient celui d’une division.",
+				"Un quotient est le résultat d’une division : on écrit les deux nombres dans l’ordre de la phrase.",
+				"L’expression est ${{solution}}$."
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : le modèle n’a pas de variable d’expression, le point de départ est invérifiable → rouge (relecture humaine)."
+	]
+}

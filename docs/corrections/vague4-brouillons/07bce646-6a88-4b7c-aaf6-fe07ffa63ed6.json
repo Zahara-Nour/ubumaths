@@ -1,0 +1,222 @@
+{
+	"templateId": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+	"title": "Déterminer la limite d'une suite",
+	"classe": "N",
+	"code": "N-LIM-OPS",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Quotient de deux limites infinies.** $\\dfrac{\\infty}{\\infty}$ est une forme indéterminée : on ne peut pas conclure sans transformer l’expression.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Nombre (ou $0$) divisé par une limite infinie.** Diviser un nombre fixe par une quantité infiniment grande donne une quantité qui tend vers $0$.",
+				"Le résultat tend vers $\\textcolor{{{color:primary.2}}}{0}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit d’une limite infinie par une limite nulle.** $\\infty \\times 0$ est une forme indéterminée.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit d’une limite infinie par une limite nulle.** $\\infty \\times 0$ est une forme indéterminée.",
+				"C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Produit (ou quotient) avec une limite infinie.** Le résultat est infini (sauf avec $0$) ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"Deux infinis de même signe : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"Deux infinis de signes contraires : C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"Deux infinis de même signe : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"Deux infinis de signes contraires : C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"C’est $(+\\infty) + (-\\infty)$ : C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"C’est $(+\\infty) + (+\\infty)$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"C’est $(-\\infty) + (+\\infty)$ : C’est une $\\textcolor{{{color:primary.2}}}{\\text{forme indéterminée}}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme de deux limites infinies.** Deux infinis de MÊME signe s’ajoutent (le résultat est cet infini) ; $(+\\infty) + (-\\infty)$ est une forme indéterminée. Une différence est la somme avec l’opposé : $(+\\infty) - (-\\infty) = (+\\infty) + (+\\infty)$.",
+				"C’est $(-\\infty) + (-\\infty)$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme d’une limite infinie et d’un nombre.** Ajouter un nombre fixe à une quantité infiniment grande ne change pas sa limite infinie.",
+				"Le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Somme d’une limite infinie et d’un nombre.** Ajouter un nombre fixe à une quantité infiniment grande ne change pas sa limite infinie.",
+				"Le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{-\\infty}$.",
+				"Réponse : {{solution}}"
+			],
+			[
+				"**Division par une limite nulle.** Diviser par une quantité qui tend vers $0$ en gardant un signe ($0^+$ : positive, $0^-$ : négative) donne une limite infinie ; son signe suit la règle des signes.",
+				"Les deux termes sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$ : le résultat est $\\textcolor{{{color:primary.2}}}{+\\infty}$.",
+				"Réponse : {{solution}}"
+			]
+		]
+	},
+	"notes": []
+}

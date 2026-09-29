@@ -1,0 +1,15 @@
+{
+	"templateId": "ae8ad17a-39ad-486b-aea5-6d1a61f2a885",
+	"title": "Écrire un nombre entier à l'aide d'une puissance de $10$",
+	"classe": "N",
+	"code": "N-PUISS10",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Puissances de $10$.** Pour $n \\geq 1$, $10^n$ s’écrit $1$ suivi de $n$ zéros ; $10^0 = 1$.",
+			"${{eval:b*10^a}}$ s’écrit ${{b}}$ suivi de $\\textcolor{{{color:primary.0}}}{{{a}}}$ zéro{{if:a>1|s|}} : c’est ${{b}}$ fois $\\textcolor{{{color:primary.1}}}{{{eval:10^a}}}$, et $\\textcolor{{{color:primary.1}}}{{{eval:10^a}}} = 10^{\\textcolor{{{color:primary.0}}}{{{a}}}}$.",
+			"$$\\begin{align} {{eval:b*10^a}} &= {{b}} \\times \\textcolor{{{color:primary.1}}}{{{eval:10^a}}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

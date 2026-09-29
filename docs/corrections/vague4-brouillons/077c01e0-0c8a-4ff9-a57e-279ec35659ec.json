@@ -1,0 +1,24 @@
+{
+	"templateId": "077c01e0-0c8a-4ff9-a57e-279ec35659ec",
+	"title": "Simplifier le symbole de multiplication",
+	"classe": "N",
+	"code": "N-ECRIT-PRODUIT",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"Le signe $\\textcolor{{{color:primary.0}}}{\\times}$ est devant la lettre ${{p}}$ : on le supprime.",
+				"$$\\begin{align} {{q}} \\textcolor{{{color:primary.0}}}{\\times} {{p}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"On échange les facteurs pour écrire le nombre $\\textcolor{{{color:primary.1}}}{{{q}}}$ en premier, puis on supprime le signe $\\textcolor{{{color:primary.0}}}{\\times}$.",
+				"$$\\begin{align} {{p}} \\times \\textcolor{{{color:primary.1}}}{{{q}}} &= \\textcolor{{{color:primary.1}}}{{{q}}} \\textcolor{{{color:primary.0}}}{\\times} {{p}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine)."
+	]
+}

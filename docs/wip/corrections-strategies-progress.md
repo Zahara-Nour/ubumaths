@@ -69,3 +69,16 @@ N-ESPACES, N-ZEROS, N-DIVEUCL (15ed5af4). Vérificateur 17/17 (89 281 tirages) e
 égalité à un seul « ? ») : N-POSITION ×8, N-ENCADR ×4, N-DIVISEUR, N-GRADUATION (images),
 14a51794 (deux « ? »). Pièges : `expression` interdit dans une condition ; `mod(n,1000)` lu
 comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/1000))`.
+
+## Fait (2026-09-29) — vague 4 (branche `feat/corrections-vague4`)
+
+- Lot `vague4-brouillons` (25 `draft`) : 8/25 au vérificateur (353 871 tirages), import SIMULATION 8/25.
+  Lot `vague4-publies` (3 `published`) : 1/3 (1af7263e), import SIMULATION 1/3.
+  Un exemple rendu par code : `docs/corrections/vague4-publies/RESUME.md`.
+- Rouges PAR CONSTRUCTION (le vérificateur ne lit que des nombres) : réponses littérales (opposé,
+  parenthèses, identités remarquables, écriture d'un produit, 0/1 littéral, facteur commun lettre,
+  puissances de lettres) et modèles sans variable d'expression (294c4316, e66089e0, 5d515eb1,
+  78feafed, 2bdb3db6). 953574d4 (notation scientifique) : l'exposant n'est la fin d'aucun calcul.
+  Décision attendue : un chemin « équivalence littérale » dans le vérificateur, ou relecture seule.
+- Piège : un `|` (`\left| … \right|`) hors accolades est lu comme un choix aléatoire par le
+  résolveur de correction → l'envelopper dans un groupe `{\left| … \right|}`.

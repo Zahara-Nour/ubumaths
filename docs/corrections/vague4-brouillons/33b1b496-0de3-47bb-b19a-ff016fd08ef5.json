@@ -1,0 +1,45 @@
+{
+	"templateId": "33b1b496-0de3-47bb-b19a-ff016fd08ef5",
+	"title": "Simplifier le symbole de multiplication",
+	"classe": "N",
+	"code": "N-ECRIT-PRODUIT",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"Le signe $\\textcolor{{{color:primary.0}}}{\\times}$ est devant une parenthèse : on le supprime.",
+				"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{q}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"Le signe $\\textcolor{{{color:primary.0}}}{\\times}$ est devant une parenthèse : on le supprime.",
+				"$$\\begin{align} {{r}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{s}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"Le signe $\\textcolor{{{color:primary.0}}}{\\times}$ est devant une parenthèse : on le supprime.",
+				"$$\\begin{align} {{t}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{q}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"Le signe $\\textcolor{{{color:primary.0}}}{\\times}$ est devant une parenthèse : on le supprime.",
+				"$$\\begin{align} {{t}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{s}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"On échange les facteurs pour écrire le nombre $\\textcolor{{{color:primary.1}}}{{{t}}}$ en premier, puis on supprime le signe $\\textcolor{{{color:primary.0}}}{\\times}$.",
+				"$$\\begin{align} \\left( {{p}} + {{q}} \\right) \\times \\textcolor{{{color:primary.1}}}{{{t}}} &= \\textcolor{{{color:primary.1}}}{{{t}}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{q}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Convention d'écriture.** On peut supprimer le signe $\\times$ devant une lettre ou une parenthèse ; le nombre s’écrit alors en premier.",
+				"On échange les facteurs pour écrire le nombre $\\textcolor{{{color:primary.1}}}{{{t}}}$ en premier, puis on supprime le signe $\\textcolor{{{color:primary.0}}}{\\times}$.",
+				"$$\\begin{align} \\left( {{p}} + {{s}} \\right) \\times \\textcolor{{{color:primary.1}}}{{{t}}} &= \\textcolor{{{color:primary.1}}}{{{t}}} \\textcolor{{{color:primary.0}}}{\\times} \\left( {{p}} + {{s}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine).",
+		"⚑ Modèle : variations 0-1, le facteur `r` est une LETTRE (a|b|c|x|y) — `r` peut valoir `p`."
+	]
+}

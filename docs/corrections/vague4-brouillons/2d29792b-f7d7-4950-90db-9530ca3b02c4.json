@@ -1,0 +1,28 @@
+{
+	"templateId": "2d29792b-f7d7-4950-90db-9530ca3b02c4",
+	"title": "Vocabulaire des fonctions affines",
+	"classe": "N",
+	"code": "N-VOCAB-AFF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Vocabulaire.** Dans $f(x) = ax + b$, le nombre $a$ qui multiplie $x$ est le coefficient directeur ; le nombre $b$ seul est l’ordonnée à l’origine (la valeur de $f(0)$).",
+				"Le nombre $\\textcolor{{{color:primary.0}}}{{{a}}}$ multiplie $x$ : c’est $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Vocabulaire.** Dans $f(x) = ax + b$, le nombre $a$ qui multiplie $x$ est le coefficient directeur ; le nombre $b$ seul est l’ordonnée à l’origine (la valeur de $f(0)$).",
+				"Le nombre $\\textcolor{{{color:primary.0}}}{{{b}}}$ est seul, il ne multiplie pas $x$ : c’est $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Vocabulaire.** Dans $f(x) = ax + b$, le nombre $a$ qui multiplie $x$ est le coefficient directeur ; le nombre $b$ seul est l’ordonnée à l’origine (la valeur de $f(0)$).",
+				"Le nombre $\\textcolor{{{color:primary.0}}}{{{a}}}$ multiplie $x$ (même écrit en second) : c’est $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			],
+			[
+				"**Vocabulaire.** Dans $f(x) = ax + b$, le nombre $a$ qui multiplie $x$ est le coefficient directeur ; le nombre $b$ seul est l’ordonnée à l’origine (la valeur de $f(0)$).",
+				"Le nombre $\\textcolor{{{color:primary.0}}}{{{b}}}$ est seul (même écrit en premier), il ne multiplie pas $x$ : c’est $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+			]
+		]
+	},
+	"notes": []
+}

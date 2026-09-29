@@ -1,0 +1,24 @@
+{
+	"templateId": "c32ebff9-7e10-400e-bc06-c376f6991ea8",
+	"title": "Enlever les parenthèses",
+	"classe": "N",
+	"code": "N-PARENTH",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+				"Les parenthèses sont précédées du signe $\\textcolor{{{color:primary.1}}}{+}$ : on les enlève sans changer les termes.",
+				"$$\\begin{align} {{eval:qk}} \\textcolor{{{color:primary.1}}}{+} \\left( \\textcolor{{{color:primary.0}}}{{{eval:rm}}}\\textcolor{{{color:primary.0}}}{{{eval:s;+}}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Suppression des parenthèses.** Des parenthèses précédées du signe $+$ s’enlèvent sans rien changer ; précédées du signe $-$, on les enlève en changeant le signe de chaque terme.",
+				"Les parenthèses sont précédées du signe $\\textcolor{{{color:primary.1}}}{-}$ : $\\textcolor{{{color:primary.0}}}{{{eval:rm}}}$ devient $\\textcolor{{{color:primary.2}}}{{{eval:-(r)m}}}$ et $\\textcolor{{{color:primary.0}}}{{{eval:s;+}}}$ devient $\\textcolor{{{color:primary.2}}}{{{eval:-(s);+}}}$.",
+				"$$\\begin{align} {{eval:qk}} \\textcolor{{{color:primary.1}}}{-} \\left( \\textcolor{{{color:primary.0}}}{{{eval:rm}}}\\textcolor{{{color:primary.0}}}{{{eval:s;+}}} \\right) &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine)."
+	]
+}

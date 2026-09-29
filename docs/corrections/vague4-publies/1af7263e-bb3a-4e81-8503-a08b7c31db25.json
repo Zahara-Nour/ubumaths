@@ -1,0 +1,22 @@
+{
+	"templateId": "1af7263e-bb3a-4e81-8503-a08b7c31db25",
+	"title": "Compléter une multiplication à trou",
+	"classe": "N",
+	"code": "N-NEUTRE-ABS",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Produit par $1$ ou par $0$.** Multiplier par $1$ ne change pas un nombre ($1$ est neutre) ; multiplier par $0$ donne toujours $0$ ($0$ est absorbant).",
+				"{{if:a=0|Le produit vaut $\\textcolor{{{color:primary.1}}}{0}$ alors que $50$ n’est pas nul : le nombre cherché est $\\textcolor{{{color:primary.2}}}{0}$, l’élément absorbant.|}}{{if:a=1|Le produit $\\textcolor{{{color:primary.1}}}{50}$ est égal à $50$ : on a multiplié par $\\textcolor{{{color:primary.2}}}{1}$, l’élément neutre.|}}{{if:a>1|Le produit $\\textcolor{{{color:primary.1}}}{{{eval:a*50}}}$ n’est égal ni à $0$ ni à $50$ : on cherche combien de fois $50$ il contient, par une division.|}}",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:a*50}}} : 50 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Produit par $1$ ou par $0$.** Multiplier par $1$ ne change pas un nombre ($1$ est neutre) ; multiplier par $0$ donne toujours $0$ ($0$ est absorbant).",
+				"{{if:a=0|Le produit vaut $\\textcolor{{{color:primary.1}}}{0}$ alors que $25$ n’est pas nul : le nombre cherché est $\\textcolor{{{color:primary.2}}}{0}$, l’élément absorbant.|}}{{if:a=1|Le produit $\\textcolor{{{color:primary.1}}}{25}$ est égal à $25$ : on a multiplié par $\\textcolor{{{color:primary.2}}}{1}$, l’élément neutre.|}}{{if:a>1|Le produit $\\textcolor{{{color:primary.1}}}{{{eval:a*25}}}$ n’est égal ni à $0$ ni à $25$ : on cherche combien de fois $25$ il contient, par une division.|}}",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.1}}}{{{eval:a*25}}} : 25 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

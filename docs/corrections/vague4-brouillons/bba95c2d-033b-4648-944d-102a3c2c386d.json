@@ -1,0 +1,114 @@
+{
+	"templateId": "bba95c2d-033b-4648-944d-102a3c2c386d",
+	"title": "Reconnaître le tableau de signe d'une fonction affine",
+	"classe": "N",
+	"code": "N-SIGNE-AFF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-6}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{7}{6}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{7}{6}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-9}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{1}{9}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{1}{9}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{9}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{9}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{3}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-1}$. À droite de $\\textcolor{{{color:primary.1}}}{-1}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{7}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{8}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{8}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-2}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-2}$. À droite de $\\textcolor{{{color:primary.1}}}{-2}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{6}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{4}{3}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{4}{3}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{4}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{9}{4}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{9}{4}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-7}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{2}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{2}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{2}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{5}{2}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{5}{2}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{8}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{1}{8}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{1}{8}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-4}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{0}$. À droite de $\\textcolor{{{color:primary.1}}}{0}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-\\dfrac{1}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{-\\dfrac{1}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-1}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{7}$. À droite de $\\textcolor{{{color:primary.1}}}{7}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{1}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{8}$. À droite de $\\textcolor{{{color:primary.1}}}{8}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-7}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{6}{7}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{6}{7}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{1}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{0}$. À droite de $\\textcolor{{{color:primary.1}}}{0}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-3}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{4}{3}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{4}{3}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{-5}$ est négatif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{-1}$. À droite de $\\textcolor{{{color:primary.1}}}{-1}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{négative}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{positive}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			],
+			[
+				"**Signe de $ax + b$.** La fonction s’annule en $x_0 = -\\dfrac{b}{a}$. À droite de $x_0$, $ax + b$ a le signe de $a$ ; à gauche, le signe contraire.",
+				"Ici $a = \\textcolor{{{color:primary.0}}}{5}$ est positif et $f$ s’annule en $x_0 = \\textcolor{{{color:primary.1}}}{\\dfrac{7}{5}}$. À droite de $\\textcolor{{{color:primary.1}}}{\\dfrac{7}{5}}$, $f(x)$ est $\\textcolor{{{color:primary.2}}}{\\text{positive}}$ ; à gauche, $\\textcolor{{{color:primary.2}}}{\\text{négative}}$.",
+				"Le bon tableau est donc :\n\n{{solution}}"
+			]
+		]
+	},
+	"notes": [
+		"Coefficients relus dans la variable d’expression de chaque variation (fonctions fixes)."
+	]
+}

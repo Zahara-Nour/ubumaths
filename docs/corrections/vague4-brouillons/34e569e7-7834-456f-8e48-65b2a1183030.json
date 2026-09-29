@@ -1,0 +1,29 @@
+{
+	"templateId": "34e569e7-7834-456f-8e48-65b2a1183030",
+	"title": "Opposé d'une expression",
+	"classe": "N",
+	"code": "N-OPPOSE-EXPR",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Opposé d'une expression.** On obtient l'opposé d'une expression en changeant le signe de chacun de ses termes : $-(a + b) = -a - b$.",
+				"On change le signe du terme $\\textcolor{{{color:primary.0}}}{{{eval:ax}}}$.",
+				"$$\\begin{align} -\\left( \\textcolor{{{color:primary.0}}}{{{eval:ax}}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Opposé d'une expression.** On obtient l'opposé d'une expression en changeant le signe de chacun de ses termes : $-(a + b) = -a - b$.",
+				"On change le signe de chaque terme : $\\textcolor{{{color:primary.0}}}{x}$ devient $\\textcolor{{{color:primary.1}}}{-x}$ et $\\textcolor{{{color:primary.0}}}{{{eval:b;+}}}$ devient $\\textcolor{{{color:primary.1}}}{{{eval:-(b);+}}}$.",
+				"$$\\begin{align} -\\left( \\textcolor{{{color:primary.0}}}{x}\\textcolor{{{color:primary.0}}}{{{eval:b;+}}} \\right) &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Opposé d'une expression.** On obtient l'opposé d'une expression en changeant le signe de chacun de ses termes : $-(a + b) = -a - b$.",
+				"On change le signe de chaque terme : $\\textcolor{{{color:primary.0}}}{{{b}}}$ devient $\\textcolor{{{color:primary.1}}}{{{eval:-(b)}}}$ et $\\textcolor{{{color:primary.0}}}{-x}$ devient $\\textcolor{{{color:primary.1}}}{+x}$.",
+				"$$\\begin{align} -\\left( \\textcolor{{{color:primary.0}}}{{{b}}} \\textcolor{{{color:primary.0}}}{- x} \\right) &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine)."
+	]
+}

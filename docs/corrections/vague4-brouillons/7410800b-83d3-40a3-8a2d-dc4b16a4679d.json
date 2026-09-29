@@ -1,0 +1,24 @@
+{
+	"templateId": "7410800b-83d3-40a3-8a2d-dc4b16a4679d",
+	"title": "Simplifier à l'aide d'un carré ou d'un cube",
+	"classe": "N",
+	"code": "N-PUISS-DEF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{p}}}$ est écrit $\\textcolor{{{color:primary.1}}}{2}$ fois : c’est ${{p}}^{\\textcolor{{{color:primary.1}}}{2}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{p}}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Définition d'une puissance.** Pour un entier $n \\geq 2$, $a^n = a \\times a \\times \\cdots \\times a$ : le nombre $a$ est multiplié $n$ fois par lui-même ($n$ facteurs).",
+				"Le facteur $\\textcolor{{{color:primary.0}}}{{{p}}}$ est écrit $\\textcolor{{{color:primary.1}}}{3}$ fois : c’est ${{p}}^{\\textcolor{{{color:primary.1}}}{3}}$.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{p}}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} \\times \\textcolor{{{color:primary.0}}}{{{p}}} &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"⚑ Vérificateur : réponse littérale, non lisible comme un nombre → rouge quelle que soit la rédaction (relecture humaine)."
+	]
+}
