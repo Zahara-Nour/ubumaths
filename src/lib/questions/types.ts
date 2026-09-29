@@ -30,6 +30,7 @@ import type {
 	TemplateMarkdown,
 	ResolvedMarkdown
 } from '$lib/ubumark';
+import type { AnswerAssumptions } from '$lib/math';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
@@ -504,6 +505,11 @@ export interface QuestionTemplate {
 		/** Carte de cours : recto = énoncé, verso = correction, ni case ni choix.
 		 *  Marqueur explicite, lu par `getQuestionType()` → `'course_card'`. */
 		courseCard?: boolean;
+
+		/** Hypothèses de l'énoncé (ADR 0012) sur les variables libres de la
+		 *  réponse : `{ x: 'positive', n: 'natural' }`. Transmises à
+		 *  `areEquivalent` par la correction ; jamais sur une variable tirée. */
+		answerAssumptions?: AnswerAssumptions;
 	};
 
 	// ---- Metadata (shared across all variations) ----

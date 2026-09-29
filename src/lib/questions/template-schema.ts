@@ -15,6 +15,7 @@
 
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
+import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -328,7 +329,9 @@ export const optionsSchema = z.object({
 	constraints: constraintsSchema.optional(),
 	shuffleChoices: z.boolean().optional(),
 	// Carte de cours (#617) : recto = énoncé, verso = correction
-	courseCard: z.boolean().optional()
+	courseCard: z.boolean().optional(),
+	// Hypothèses de l'énoncé (ADR 0012) : validées, jamais transmises sans contrôle
+	answerAssumptions: answerAssumptionsSchema.optional()
 });
 
 // ============================================================================
@@ -551,7 +554,8 @@ const optionsStrictZ = z
 		orderIndependent: z.boolean().optional(),
 		constraints: constraintsStrictZ.optional(),
 		shuffleChoices: z.boolean().optional(),
-		courseCard: z.boolean().optional()
+		courseCard: z.boolean().optional(),
+		answerAssumptions: answerAssumptionsSchema.optional()
 	})
 	.strict();
 
@@ -628,6 +632,8 @@ export const questionTemplateSchema = z
 			path: ['variations']
 		}
 	)
+	// Hypothèse de l'énoncé posée sur une variable tirée : refusée
+	.superRefine(refineAssumptionCollisions)
 	.superRefine((data, ctx) => {
 		// rulesSuffice sans aucune règle : toute réponse serait juste
 		data.variations.forEach((variation, variationIndex) => {

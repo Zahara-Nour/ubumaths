@@ -11,6 +11,7 @@ import type { QuestionTemplate, QuestionVariation, SharedVariationDefaults } fro
 import { getQuestionType } from '../types';
 import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
+import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 
 /**
  * Validate a question template
@@ -53,6 +54,11 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		const variationErrors = validateVariation(variation, inferredType, index, template.shared);
 		errors.push(...variationErrors);
 	});
+
+	// Hypothèses de l'énoncé : jamais sur une variable tirée (ADR 0012)
+	for (const name of findAssumptionCollisions(template.options?.answerAssumptions, template)) {
+		errors.push(assumptionCollisionMessage(name));
+	}
 
 	// Categorization fields
 	if (!template.theme || template.theme.trim() === '') {
