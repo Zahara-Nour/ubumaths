@@ -4982,7 +4982,11 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 		}
 	}
 
-	return changed ? result : terms;
+	// Combiner peut rendre deux monômes SEMBLABLES qui ne l'étaient pas :
+	// `exp(x)^2` et `exp(2x)` deviennent tous deux `exp(2x)`, `exp(x)·exp(-x)`
+	// devient une constante. Sans ce regroupement, la forme n'était plus
+	// canonique : `e^x(e^x+1) ≡ e^{2x}+e^x` rendait faux.
+	return changed ? collectLikeTerms(result) : terms;
 }
 
 /**
