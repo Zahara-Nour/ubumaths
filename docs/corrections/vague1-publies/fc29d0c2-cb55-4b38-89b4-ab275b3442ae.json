@@ -1,0 +1,18 @@
+{
+	"templateId": "fc29d0c2-cb55-4b38-89b4-ab275b3442ae",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** ${{b}}$ n'a que des unités. On décompose ${{eval:a*10+c}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*10+c)-mod(((a*10+c)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10+c)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*10+c)),10)}} - {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10+c)),10)-b}}}$.",
+				"$$\\begin{align} {{eval:a*10+c}} - {{b}} &= \\textcolor{{{color:primary.0}}}{{{eval:(a*10+c)-mod(((a*10+c)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10+c)),10)}}} - {{b}} \\\\ &= {{eval:(a*10+c)-mod(((a*10+c)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10+c)),10)-b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*10+c}} - {{b}} : unités seulement (domaine entier, 324 combinaisons)"
+	]
+}

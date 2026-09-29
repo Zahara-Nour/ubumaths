@@ -1,0 +1,18 @@
+{
+	"templateId": "fe9df9ba-2017-4027-b678-bae8196c3651",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:d*100+f*10+g}}$ selon ses rangs : ${{eval:d*100+f*10+g}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100+f*10+g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}$. On ajoute les morceaux un par un : centaines, puis dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*100 + b*10 + c}} + {{eval:d*100+f*10+g}} &= {{eval:a*100 + b*10 + c}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(((d*100+f*10+g))/100)*100}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}{{if:(floor(((d*100+f*10+g))/100)*100)*((floor(mod(((d*100+f*10+g)),100)/10)*10)+(mod(((d*100+f*10+g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100+f*10+g))/100)*100))}}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*100+f*10+g)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}|}}{{if:(floor(mod(((d*100+f*10+g)),100)/10)*10)*((mod(((d*100+f*10+g)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)+((floor(((d*100+f*10+g))/100)*100)+(floor(mod(((d*100+f*10+g)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*100+f*10+g)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*100 + b*10 + c}} + {{eval:d*100+f*10+g}} : 3 rang(s) (5000 graines : domaine > 20000 combinaisons)"
+	]
+}

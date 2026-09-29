@@ -1,0 +1,23 @@
+{
+	"templateId": "c381596f-f278-4f29-a205-5c60f748b590",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** On avance de ${{eval:c-b}}$ jusqu'à ${{c}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{c}}} - \\textcolor{{{color:primary.0}}}{{{eval:c-b}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{c}}} - \\textcolor{{{color:primary.0}}}{{{eval:c-b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** On avance de ${{eval:c-b}}$ jusqu'à ${{c}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{c}}} - \\textcolor{{{color:primary.0}}}{{{eval:c-b}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{c}}} - \\textcolor{{{color:primary.0}}}{{{eval:c-b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{eval:c-b}} à {{c}}, rangs 10 (domaine entier, 72 combinaisons)",
+		"variation 1 : bonds de {{eval:c-b}} à {{c}}, rangs 10 (domaine entier, 72 combinaisons)"
+	]
+}

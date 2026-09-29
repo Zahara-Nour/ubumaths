@@ -1,0 +1,23 @@
+{
+	"templateId": "cba5b70a-6b03-405c-955c-01554a4e55a2",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** {{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0|On avance de ${{b}}$ jusqu'à ${{eval:a*10}}$ en passant par les nombres ronds : ${{b}}{{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((b)/10)*10}}}|}} \\to {{eval:a*10}}$. Le nombre cherché est la somme des bonds.|On avance de ${{b}}$ jusqu'à ${{eval:a*10}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} - \\textcolor{{{color:primary.0}}}{{{b}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0|{{if:(ceil((b)/10)*10-(b))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((b)/10)*10-(b)}}}|}}{{if:(((a*10))-ceil((b)/10)*10)>0|{{if:(ceil((b)/10)*10-(b))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:((a*10))-ceil((b)/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} - \\textcolor{{{color:primary.0}}}{{{b}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** {{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0|On avance de ${{b}}$ jusqu'à ${{eval:a*10}}$ en passant par les nombres ronds : ${{b}}{{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((b)/10)*10}}}|}} \\to {{eval:a*10}}$. Le nombre cherché est la somme des bonds.|On avance de ${{b}}$ jusqu'à ${{eval:a*10}}$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} - \\textcolor{{{color:primary.0}}}{{{b}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((b)/10)*10-(b))*(((a*10))-ceil((b)/10)*10)>0|{{if:(ceil((b)/10)*10-(b))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((b)/10)*10-(b)}}}|}}{{if:(((a*10))-ceil((b)/10)*10)>0|{{if:(ceil((b)/10)*10-(b))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:((a*10))-ceil((b)/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} - \\textcolor{{{color:primary.0}}}{{{b}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{b}} à {{eval:a*10}}, rangs 10 (domaine entier, 416 combinaisons)",
+		"variation 1 : bonds de {{b}} à {{eval:a*10}}, rangs 10 (domaine entier, 416 combinaisons)"
+	]
+}

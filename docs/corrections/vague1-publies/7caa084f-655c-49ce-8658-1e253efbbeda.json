@@ -1,0 +1,73 @@
+{
+	"templateId": "7caa084f-655c-49ce-8658-1e253efbbeda",
+	"title": "Décomposer un entier en produit",
+	"classe": "R",
+	"code": "R-PETIT-DIV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). ${{eval:a*b}}$ est dans la table de $\\textcolor{{{color:primary.0}}}{{{a}}}$ : $\\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} = {{eval:a*b}}$.",
+				"$$\\begin{align} {{eval:a*b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). ${{eval:a*4}}$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:2*a}}} = {{eval:a*4}}$.",
+				"$$\\begin{align} {{eval:a*4}} &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:2*a}}} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). ${{eval:a*8}}$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:4*a}}} = {{eval:a*8}}$.",
+				"$$\\begin{align} {{eval:a*8}} &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:4*a}}} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). ${{eval:a*6}}$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:3*a}}} = {{eval:a*6}}$.",
+				"$$\\begin{align} {{eval:a*6}} &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{{{eval:3*a}}} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). ${{eval:a*9}}$ est dans la table de $\\textcolor{{{color:primary.0}}}{3}$ : $\\textcolor{{{color:primary.0}}}{3} \\times \\textcolor{{{color:primary.1}}}{{{eval:3*a}}} = {{eval:a*9}}$.",
+				"$$\\begin{align} {{eval:a*9}} &= \\textcolor{{{color:primary.0}}}{3} \\times \\textcolor{{{color:primary.1}}}{{{eval:3*a}}} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $32$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{16} = 32$.",
+				"$$\\begin{align} 32 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{16} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $36$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{18} = 36$.",
+				"$$\\begin{align} 36 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{18} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $48$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{24} = 48$.",
+				"$$\\begin{align} 48 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{24} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $54$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{27} = 54$.",
+				"$$\\begin{align} 54 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{27} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $64$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{32} = 64$.",
+				"$$\\begin{align} 64 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{32} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $72$ est dans la table de $\\textcolor{{{color:primary.0}}}{2}$ : $\\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{36} = 72$.",
+				"$$\\begin{align} 72 &= \\textcolor{{{color:primary.0}}}{2} \\times \\textcolor{{{color:primary.1}}}{36} \\end{align}$$"
+			],
+			[
+				"**Chercher un petit diviseur.** On essaie les petits diviseurs $2$, $3$, $5$… avec les tables et les critères de divisibilité (un nombre pair est divisible par $2$ ; si la somme de ses chiffres est dans la table de $3$, il est divisible par $3$). $81$ est dans la table de $\\textcolor{{{color:primary.0}}}{3}$ : $\\textcolor{{{color:primary.0}}}{3} \\times \\textcolor{{{color:primary.1}}}{27} = 81$.",
+				"$$\\begin{align} 81 &= \\textcolor{{{color:primary.0}}}{3} \\times \\textcolor{{{color:primary.1}}}{27} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*b}} = {{a}} × {{b}} (réponse attendue ; domaine entier, 16 combinaisons)",
+		"variation 1 : {{eval:a*4}} = 2 × {{eval:2*a}} (réponse attendue ; domaine entier, 4 combinaisons)",
+		"variation 2 : {{eval:a*8}} = 2 × {{eval:4*a}} (réponse attendue ; domaine entier, 4 combinaisons)",
+		"variation 3 : {{eval:a*6}} = 2 × {{eval:3*a}} (réponse attendue ; domaine entier, 4 combinaisons)",
+		"variation 4 : {{eval:a*9}} = 3 × {{eval:3*a}} (réponse attendue ; domaine entier, 4 combinaisons)",
+		"variation 5 : 32 = 2 × 16 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 6 : 36 = 2 × 18 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 7 : 48 = 2 × 24 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 8 : 54 = 2 × 27 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 9 : 64 = 2 × 32 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 10 : 72 = 2 × 36 (réponse attendue ; domaine entier, 1 combinaisons)",
+		"variation 11 : 81 = 3 × 27 (réponse attendue ; domaine entier, 1 combinaisons)"
+	]
+}

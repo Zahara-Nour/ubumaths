@@ -1,0 +1,16 @@
+{
+	"templateId": "61baef92-f8ff-4641-91f3-74ce63f04232",
+	"title": "Calculer un quotient entier",
+	"classe": "R",
+	"code": "R-DIV-DIZ",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Diviser des dizaines.** ${{eval:a*b*10}}$, c'est $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}}$ dizaines. Avec la table de ${{b}}$ : $\\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} = \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$, donc ${{eval:a*b*10}} : {{b}}$ fait $\\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}}$ dizaines.",
+				"$$\\begin{align} {{eval:a*b*10}} : {{b}} &= \\left( \\textcolor{{{color:primary.0}}}{{{eval:((a*b*10))/10}}} : {{b}} \\right) \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:((a*b*10))/10/(b)}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["variation 0 : {{eval:a*b*10}} : {{b}} (domaine entier, 12 combinaisons)"]
+}

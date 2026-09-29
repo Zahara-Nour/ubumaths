@@ -1,0 +1,63 @@
+{
+	"templateId": "e58b1357-6fa8-4fce-9518-91d09d9acc49",
+	"title": "Calculer un produit d'entiers",
+	"classe": "R",
+	"code": "R-DISTRIB",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Décomposer un facteur.** On décompose $25$ selon ses rangs, $25 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((25),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((25),10)}}}$, puis on multiplie chaque morceau par $4$ et on ajoute les résultats.",
+				"$$\\begin{align} 4 \\times 25 &= 4 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((25),100)/10)*10}}} + 4 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((25),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(4)*(floor(mod((25),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(4)*(mod((25),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"{{if:mod((50),100)=0|**Décomposer un facteur.** $50 = \\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}}$, puis par $100$.|**Décomposer un facteur.** $50 = \\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}}$, puis par $10$.}}",
+				"$$\\begin{align} 2 \\times 50 &= {{if:mod((50),100)=0|2 \\times \\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(2)*(50)/100}}} \\times 100|2 \\times \\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(2)*(50)/10}}} \\times 10}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $12$ selon ses rangs, $12 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((12),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((12),10)}}}$, puis on multiplie chaque morceau par $5$ et on ajoute les résultats.",
+				"$$\\begin{align} 5 \\times 12 &= 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((12),100)/10)*10}}} + 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((12),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(5)*(floor(mod((12),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(5)*(mod((12),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $15$ selon ses rangs, $15 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}}$, puis on multiplie chaque morceau par $4$ et on ajoute les résultats.",
+				"$$\\begin{align} 4 \\times 15 &= 4 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + 4 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(4)*(floor(mod((15),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(4)*(mod((15),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"{{if:mod((20),100)=0|**Décomposer un facteur.** $20 = \\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}}$, puis par $100$.|**Décomposer un facteur.** $20 = \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}}$, puis par $10$.}}",
+				"$$\\begin{align} 4 \\times 20 &= {{if:mod((20),100)=0|4 \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(4)*(20)/100}}} \\times 100|4 \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(4)*(20)/10}}} \\times 10}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $14$ selon ses rangs, $14 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((14),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((14),10)}}}$, puis on multiplie chaque morceau par $5$ et on ajoute les résultats.",
+				"$$\\begin{align} 5 \\times 14 &= 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((14),100)/10)*10}}} + 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((14),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(5)*(floor(mod((14),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(5)*(mod((14),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $18$ selon ses rangs, $18 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((18),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((18),10)}}}$, puis on multiplie chaque morceau par $5$ et on ajoute les résultats.",
+				"$$\\begin{align} 5 \\times 18 &= 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((18),100)/10)*10}}} + 5 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((18),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(5)*(floor(mod((18),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(5)*(mod((18),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $15$ selon ses rangs, $15 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}}$, puis on multiplie chaque morceau par $6$ et on ajoute les résultats.",
+				"$$\\begin{align} 6 \\times 15 &= 6 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + 6 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(6)*(floor(mod((15),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(6)*(mod((15),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"{{if:mod((20),100)=0|**Décomposer un facteur.** $20 = \\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}}$, puis par $100$.|**Décomposer un facteur.** $20 = \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}}$, puis par $10$.}}",
+				"$$\\begin{align} 6 \\times 20 &= {{if:mod((20),100)=0|6 \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/100}}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(6)*(20)/100}}} \\times 100|6 \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(6)*(20)/10}}} \\times 10}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $15$ selon ses rangs, $15 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}}$, puis on multiplie chaque morceau par $8$ et on ajoute les résultats.",
+				"$$\\begin{align} 8 \\times 15 &= 8 \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((15),100)/10)*10}}} + 8 \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((15),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(8)*(floor(mod((15),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(8)*(mod((15),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : 4 \\times 25 : 25 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 1 : 2 \\times 50 : 50 décomposé, 1 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 2 : 5 \\times 12 : 12 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 3 : 4 \\times 15 : 15 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 4 : 4 \\times 20 : 20 décomposé, 1 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 5 : 5 \\times 14 : 14 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 6 : 5 \\times 18 : 18 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 7 : 6 \\times 15 : 15 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 8 : 6 \\times 20 : 20 décomposé, 1 morceau(x) (domaine entier, 1 combinaisons)",
+		"variation 9 : 8 \\times 15 : 15 décomposé, 2 morceau(x) (domaine entier, 1 combinaisons)"
+	]
+}

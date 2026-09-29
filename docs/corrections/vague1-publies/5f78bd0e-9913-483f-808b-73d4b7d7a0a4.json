@@ -1,0 +1,18 @@
+{
+	"templateId": "5f78bd0e-9913-483f-808b-73d4b7d7a0a4",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-ECART",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer un écart.** ${{eval: a*10 + d}} - {{eval: c*10 + b}}$, c'est l'écart entre ${{eval: c*10 + b}}$ et ${{eval: a*10 + d}}$ : on avance de ${{eval: c*10 + b}}$ jusqu'à ${{eval: a*10 + d}}$ par bonds, en passant par les nombres ronds : ${{eval: c*10 + b}} \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil(((c*10 + b))/10)*10}}}{{if:(floor(((a*10 + d))/10)*10-ceil(((c*10 + b))/10)*10)*(((a*10 + d))-floor(((a*10 + d))/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:floor(((a*10 + d))/10)*10}}}|}} \\to {{eval: a*10 + d}}$. L'écart est la somme des bonds.",
+				"$$\\begin{align} {{eval: a*10 + d}} - {{eval: c*10 + b}} &= \\textcolor{{{color:primary.0}}}{{{eval:ceil(((c*10 + b))/10)*10-((c*10 + b))}}}{{if:(floor(((a*10 + d))/10)*10-ceil(((c*10 + b))/10)*10)>0| + \\textcolor{{{color:primary.0}}}{{{eval:floor(((a*10 + d))/10)*10-ceil(((c*10 + b))/10)*10}}}|}} + \\textcolor{{{color:primary.0}}}{{{eval:((a*10 + d))-floor(((a*10 + d))/10)*10}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : écart de {{eval: c*10 + b}} à {{eval: a*10 + d}}, rangs 10 (domaine entier, 1296 combinaisons)"
+	]
+}

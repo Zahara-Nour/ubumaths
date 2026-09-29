@@ -1,0 +1,23 @@
+{
+	"templateId": "0e39dbfb-cd2c-4d78-b070-7bdc1d7a62cc",
+	"title": "Multiplier par 20",
+	"classe": "R",
+	"code": "R-XDIZ",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Multiplier par un nombre de dizaines.** Multiplier par $20$, c'est multiplier par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}}$, puis par $\\textcolor{{{color:primary.0}}}{10}$.",
+				"$$\\begin{align} {{a}} \\times 20 &= {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times \\textcolor{{{color:primary.0}}}{10} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(20)/10}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Multiplier par un nombre de dizaines.** Multiplier par $20$, c'est multiplier par $\\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}}$, puis par $\\textcolor{{{color:primary.0}}}{10}$.",
+				"$$\\begin{align} 20 \\times {{a}} &= {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(20)/10}}} \\times \\textcolor{{{color:primary.0}}}{10} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(20)/10}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{a}} × 20 : 20 = dizaines (domaine entier, 10 combinaisons)",
+		"variation 1 : 20 × {{a}} : 20 = dizaines (domaine entier, 10 combinaisons)"
+	]
+}

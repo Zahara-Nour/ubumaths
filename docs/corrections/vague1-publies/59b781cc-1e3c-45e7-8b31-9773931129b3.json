@@ -1,0 +1,23 @@
+{
+	"templateId": "59b781cc-1e3c-45e7-8b31-9773931129b3",
+	"title": "Calculer un produit d'entiers",
+	"classe": "R",
+	"code": "R-DISTRIB",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"{{if:mod((50),100)=0|**Décomposer un facteur.** $50 = \\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}} \\times 100$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}}$, puis par $100$.|**Décomposer un facteur.** $50 = \\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}} \\times 10$ : on multiplie par $\\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}}$, puis par $10$.}}",
+				"$$\\begin{align} {{a}} \\times 50 &= {{if:mod((50),100)=0|{{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(50)/100}}} \\times 100 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(50)/100}}} \\times 100|{{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:(50)/10}}} \\times 10 \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(50)/10}}} \\times 10}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Décomposer un facteur.** On décompose $25$ selon ses rangs, $25 = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((25),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod((25),10)}}}$, puis on multiplie chaque morceau par ${{a}}$ et on ajoute les résultats.",
+				"$$\\begin{align} {{a}} \\times 25 &= {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:floor(mod((25),100)/10)*10}}} + {{a}} \\times \\textcolor{{{color:primary.0}}}{{{eval:mod((25),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a)*(floor(mod((25),100)/10)*10)}}} + \\textcolor{{{color:primary.1}}}{{{eval:(a)*(mod((25),10))}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{a}} \\times 50 : 50 décomposé, 1 morceau(x) (domaine entier, 5 combinaisons)",
+		"variation 1 : {{a}} \\times 25 : 25 décomposé, 2 morceau(x) (domaine entier, 5 combinaisons)"
+	]
+}

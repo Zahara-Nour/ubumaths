@@ -1,0 +1,23 @@
+{
+	"templateId": "b2ad1cc0-55cf-41be-9db7-3f24f77fc200",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** On avance de ${{b}}$ jusqu'à $100$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{b}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** On avance de ${{b}}$ jusqu'à $100$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{b}}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{b}} à 100, rangs 10 (domaine entier, 9 combinaisons)",
+		"variation 1 : bonds de {{b}} à 100, rangs 10 (domaine entier, 9 combinaisons)"
+	]
+}

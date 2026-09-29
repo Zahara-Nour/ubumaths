@@ -1,0 +1,53 @@
+{
+	"templateId": "716d5c68-4b13-4cdb-b063-bdfa07ead4db",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:c*10 + d}}$ selon ses rangs : ${{eval:c*10 + d}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}$. On ajoute les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{eval:c*10 + d}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}{{if:(floor(mod(((c*10 + d)),100)/10)*10)*((mod(((c*10 + d)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+((floor(mod(((c*10 + d)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:c*10 + d}}$ selon ses rangs : ${{eval:c*10 + d}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}$. On ajoute les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{eval:c*10 + d}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}{{if:(floor(mod(((c*10 + d)),100)/10)*10)*((mod(((c*10 + d)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+((floor(mod(((c*10 + d)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:c*10 + d}}$ selon ses rangs : ${{eval:c*10 + d}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}$. On ajoute les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{eval:c*10 + d}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}{{if:(floor(mod(((c*10 + d)),100)/10)*10)*((mod(((c*10 + d)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+((floor(mod(((c*10 + d)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** On décompose ${{eval:c*10 + d}}$ selon ses rangs : ${{eval:c*10 + d}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}$. On ajoute les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{eval:c*10 + d}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((c*10 + d)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}{{if:(floor(mod(((c*10 + d)),100)/10)*10)*((mod(((c*10 + d)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+((floor(mod(((c*10 + d)),100)/10)*10))}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((c*10 + d)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** ${{c}}$ n'a que des unités. On décompose ${{eval:a*10 + b}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*10 + b)),10)}} + {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}}$.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= \\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}} + {{c}} \\\\ &= {{eval:(a*10 + b)-mod(((a*10 + b)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** ${{c}}$ n'a que des unités. On décompose ${{eval:a*10 + b}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*10 + b)),10)}} + {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}}$.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= \\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}} + {{c}} \\\\ &= {{eval:(a*10 + b)-mod(((a*10 + b)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** ${{c}}$ n'a que des unités. On décompose ${{eval:a*10 + b}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*10 + b)),10)}} + {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}}$.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= \\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}} + {{c}} \\\\ &= {{eval:(a*10 + b)-mod(((a*10 + b)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer rang par rang.** ${{c}}$ n'a que des unités. On décompose ${{eval:a*10 + b}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*10 + b)),10)}} + {{c}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}}$.",
+				"$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= \\textcolor{{{color:primary.0}}}{{{eval:(a*10 + b)-mod(((a*10 + b)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*10 + b)),10)}}} + {{c}} \\\\ &= {{eval:(a*10 + b)-mod(((a*10 + b)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*10 + b)),10)+c}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*10 + b}} + {{eval:c*10 + d}} : 2 rang(s) (domaine entier, 54 combinaisons)",
+		"variation 1 : {{eval:a*10 + b}} + {{eval:c*10 + d}} : 2 rang(s) (domaine entier, 270 combinaisons)",
+		"variation 2 : {{eval:a*10 + b}} + {{eval:c*10 + d}} : 2 rang(s) (domaine entier, 135 combinaisons)",
+		"variation 3 : {{eval:a*10 + b}} + {{eval:c*10 + d}} : 2 rang(s) (domaine entier, 108 combinaisons)",
+		"variation 4 : {{eval:a*10 + b}} + {{c}} : unités seulement (domaine entier, 18 combinaisons)",
+		"variation 5 : {{eval:a*10 + b}} + {{c}} : unités seulement (domaine entier, 45 combinaisons)",
+		"variation 6 : {{eval:a*10 + b}} + {{c}} : unités seulement (domaine entier, 45 combinaisons)",
+		"variation 7 : {{eval:a*10 + b}} + {{c}} : unités seulement (domaine entier, 18 combinaisons)"
+	]
+}

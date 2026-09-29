@@ -1,0 +1,18 @@
+{
+	"templateId": "b0b30022-ed72-45e9-bbf9-628711470573",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** On décompose ${{eval: d*10 + f}}$ selon ses rangs : ${{eval: d*10 + f}} = \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*10 + f)),100)/10)*10}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*10 + f)),10)}}}$. On retranche les morceaux un par un : dizaines, puis unités.",
+				"$$\\begin{align} {{eval: a*100 + b*10 + c}} - {{eval: d*10 + f}} &= {{eval: a*100 + b*10 + c}} - \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((d*10 + f)),100)/10)*10}}} - \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*10 + f)),10)}}}{{if:(floor(mod(((d*10 + f)),100)/10)*10)*((mod(((d*10 + f)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10 + c)-((floor(mod(((d*10 + f)),100)/10)*10))}}} - \\textcolor{{{color:primary.0}}}{{{eval:mod(((d*10 + f)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval: a*100 + b*10 + c}} - {{eval: d*10 + f}} : 2 rang(s) (domaine entier, 10368 combinaisons)"
+	]
+}

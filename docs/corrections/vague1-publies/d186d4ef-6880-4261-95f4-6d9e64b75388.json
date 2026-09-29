@@ -1,0 +1,23 @@
+{
+	"templateId": "d186d4ef-6880-4261-95f4-6d9e64b75388",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** {{if:(ceil((a)/10)*10-(a))*(ceil((a)/100)*100-ceil((a)/10)*10)+(ceil((a)/10)*10-(a))*((1000)-ceil((a)/100)*100)+(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0|On avance de ${{a}}$ jusqu'à $1000$ en passant par les nombres ronds : ${{a}}{{if:(ceil((a)/10)*10-(a))*((1000)-ceil((a)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/10)*10}}}|}}{{if:(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/100)*100}}}|}} \\to 1000$. Le nombre cherché est la somme des bonds.|On avance de ${{a}}$ jusqu'à $1000$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{1000} - \\textcolor{{{color:primary.0}}}{{{a}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((a)/10)*10-(a))*(ceil((a)/100)*100-ceil((a)/10)*10)+(ceil((a)/10)*10-(a))*((1000)-ceil((a)/100)*100)+(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0|{{if:(ceil((a)/10)*10-(a))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/10)*10-(a)}}}|}}{{if:(ceil((a)/100)*100-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/100)*100-ceil((a)/10)*10}}}|}}{{if:((1000)-ceil((a)/100)*100)>0|{{if:(ceil((a)/10)*10-(a))+(ceil((a)/100)*100-ceil((a)/10)*10)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(1000)-ceil((a)/100)*100}}}|}}|\\textcolor{{{color:primary.0}}}{1000} - \\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** {{if:(ceil((a)/10)*10-(a))*(ceil((a)/100)*100-ceil((a)/10)*10)+(ceil((a)/10)*10-(a))*((1000)-ceil((a)/100)*100)+(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0|On avance de ${{a}}$ jusqu'à $1000$ en passant par les nombres ronds : ${{a}}{{if:(ceil((a)/10)*10-(a))*((1000)-ceil((a)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/10)*10}}}|}}{{if:(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/100)*100}}}|}} \\to 1000$. Le nombre cherché est la somme des bonds.|On avance de ${{a}}$ jusqu'à $1000$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{1000} - \\textcolor{{{color:primary.0}}}{{{a}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((a)/10)*10-(a))*(ceil((a)/100)*100-ceil((a)/10)*10)+(ceil((a)/10)*10-(a))*((1000)-ceil((a)/100)*100)+(ceil((a)/100)*100-ceil((a)/10)*10)*((1000)-ceil((a)/100)*100)>0|{{if:(ceil((a)/10)*10-(a))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/10)*10-(a)}}}|}}{{if:(ceil((a)/100)*100-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/100)*100-ceil((a)/10)*10}}}|}}{{if:((1000)-ceil((a)/100)*100)>0|{{if:(ceil((a)/10)*10-(a))+(ceil((a)/100)*100-ceil((a)/10)*10)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(1000)-ceil((a)/100)*100}}}|}}|\\textcolor{{{color:primary.0}}}{1000} - \\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{a}} à 1000, rangs 10, 100 (domaine entier, 999 combinaisons)",
+		"variation 1 : bonds de {{a}} à 1000, rangs 10, 100 (domaine entier, 999 combinaisons)"
+	]
+}

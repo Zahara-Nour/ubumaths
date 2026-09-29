@@ -1,0 +1,23 @@
+{
+	"templateId": "ff427b27-6f6c-4679-9fc7-fc6c66aaa867",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Compléter par bonds.** {{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0|On avance de ${{a}}$ jusqu'à $100$ en passant par les nombres ronds : ${{a}}{{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/10)*10}}}|}} \\to 100$. Le nombre cherché est la somme des bonds.|On avance de ${{a}}$ jusqu'à $100$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{a}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/10)*10-(a)}}}|}}{{if:((100)-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(100)-ceil((a)/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Compléter par bonds.** {{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0|On avance de ${{a}}$ jusqu'à $100$ en passant par les nombres ronds : ${{a}}{{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0| \\to \\textcolor{{{color:primary.1}}}{{{eval:ceil((a)/10)*10}}}|}} \\to 100$. Le nombre cherché est la somme des bonds.|On avance de ${{a}}$ jusqu'à $100$ d'un seul bond : le nombre cherché est l'écart $\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{a}}}$.}}",
+				"$$\\begin{align} ? &= {{if:(ceil((a)/10)*10-(a))*((100)-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0|\\textcolor{{{color:primary.0}}}{{{eval:ceil((a)/10)*10-(a)}}}|}}{{if:((100)-ceil((a)/10)*10)>0|{{if:(ceil((a)/10)*10-(a))>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:(100)-ceil((a)/10)*10}}}|}}|\\textcolor{{{color:primary.0}}}{100} - \\textcolor{{{color:primary.0}}}{{{a}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : bonds de {{a}} à 100, rangs 10 (domaine entier, 99 combinaisons)",
+		"variation 1 : bonds de {{a}} à 100, rangs 10 (domaine entier, 99 combinaisons)"
+	]
+}

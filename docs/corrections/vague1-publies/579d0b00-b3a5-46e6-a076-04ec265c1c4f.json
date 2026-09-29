@@ -1,0 +1,18 @@
+{
+	"templateId": "579d0b00-b3a5-46e6-a076-04ec265c1c4f",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-RANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"{{if:((f*10^d))<10|**Ajouter des unités.** {{if:(mod(((a*100 + b*10+c)),10))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),10))>0|On décompose ${{eval:a*100 + b*10+c}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),10)}}}$ et on calcule les unités : ${{eval:mod(((a*100 + b*10+c)),10)}} + {{eval:f*10^d}} = \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*100 + b*10+c)),10)+(f*10^d)}}}$.|On calcule directement.}}|{{if:((f*10^d))<100|**Ajouter des dizaines entières.** On ajoute ${{eval:f*10^d}}$, c'est-à-dire ${{eval:((f*10^d))/10}}$ {{if:((f*10^d))=10|dizaine|dizaines}} : {{if:(mod(((a*100 + b*10+c)),10))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),10))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),10)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)}}} + {{eval:f*10^d}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)+(f*10^d)}}}$.|on compte en dizaines.}}|**Ajouter des centaines entières.** On ajoute ${{eval:f*10^d}}$, c'est-à-dire ${{eval:((f*10^d))/100}}$ {{if:((f*10^d))=100|centaine|centaines}} : {{if:(mod(((a*100 + b*10+c)),100))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),100))>0|on met de côté $\\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),100)}}}$ et on calcule $\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),100)}}} + {{eval:f*10^d}} = \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),100)+(f*10^d)}}}$.|on compte en centaines.}}}}}}",
+				"$$\\begin{align} {{eval:a*100 + b*10+c}} + {{eval:f*10^d}} &= {{if:((f*10^d))<10|{{if:(mod(((a*100 + b*10+c)),10))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),10)}}} + {{eval:f*10^d}} \\\\ &= {{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)}} + \\textcolor{{{color:primary.1}}}{{{eval:mod(((a*100 + b*10+c)),10)+(f*10^d)}}} \\\\ &= |}}|{{if:((f*10^d))<100|{{if:(mod(((a*100 + b*10+c)),10))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),10))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)}}} + {{eval:f*10^d}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),10)+(f*10^d)}}} + {{eval:mod(((a*100 + b*10+c)),10)}} \\\\ &= |}}|{{if:(mod(((a*100 + b*10+c)),100))*((a*100 + b*10+c)-mod(((a*100 + b*10+c)),100))>0|\\textcolor{{{color:primary.0}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),100)}}} + {{eval:f*10^d}} + \\textcolor{{{color:primary.0}}}{{{eval:mod(((a*100 + b*10+c)),100)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*100 + b*10+c)-mod(((a*100 + b*10+c)),100)+(f*10^d)}}} + {{eval:mod(((a*100 + b*10+c)),100)}} \\\\ &= |}}}}}}{{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval:a*100 + b*10+c}} + {{eval:f*10^d}} : rang(s) 1, 10, 100 (5000 graines : domaine > 20000 combinaisons)"
+	]
+}

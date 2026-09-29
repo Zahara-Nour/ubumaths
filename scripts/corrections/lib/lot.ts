@@ -12,6 +12,7 @@ import type { QuestionTemplate } from '../../../src/lib/questions/types';
 import type { ProposalSteps } from './proposal';
 import { generateRInv } from './r-inv';
 import { generateRPass } from './r-pass';
+import { MENTAL_STRATEGIES } from './r-mental';
 
 // ============================================================================
 // TYPES
@@ -49,7 +50,17 @@ export const GENERATORS: Record<string, (template: QuestionTemplate) => WrittenC
 	'R-INV': (template) => {
 		const { byVariation, notes } = generateRInv(template);
 		return { steps: { byVariation }, notes };
-	}
+	},
+	// Vague 1 : calcul réfléchi (lib/r-mental.ts)
+	...Object.fromEntries(
+		Object.entries(MENTAL_STRATEGIES).map(([code, generate]) => [
+			code,
+			(template: QuestionTemplate) => {
+				const { byVariation, notes } = generate(template);
+				return { steps: { byVariation }, notes };
+			}
+		])
+	)
 };
 
 // ============================================================================

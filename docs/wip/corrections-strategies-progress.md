@@ -39,6 +39,17 @@ Branche `feat/corrections-lots-fracdec-decomp`.
   accbfd16, 7c642d2f : chiffre des unités nommé `e` (constante d'Euler dans une condition).
 - Briques communes : `scripts/corrections/lots/numeration.ts` (tableau de numération).
 
+## Fait (2026-09-29) — vague 1 : calcul réfléchi (branche `feat/corrections-vague1`)
+
+- Stratégies générées `lib/r-mental.ts` : R-COMPL, R-RANGPARRANG, R-RANG, R-DISTRIB, R-DIV-DIZ,
+  R-XDIZ, R-PETIT-DIV, R-ECART, R-POSE (enregistrées dans `GENERATORS`). Lots `lots/vague1.ts`.
+- `vague1-brouillons` : 2 modèles, 2/2 (4 536 tirages), import SIMULATION 2/2.
+- `vague1-publies` : 33 modèles **publiés**, 33/33 (113 032 tirages), import SIMULATION 33/33 ;
+  `docs/corrections/vague1-publies/RESUME.md` = un exemple rendu par stratégie, à relire.
+- Écartés (7), aucune variable d'expression (départ du calcul invérifiable) : R-QUAD 56b2737d,
+  b7cd1846, 3c79eb9c ; R-DOUBLE 022130ca, 47f97c9f ; R-DIV-DIZ 4ee04b22 ; R-COMPL 17a3c039.
+- R-POSE (313 − 126) traité en écart par bonds, pas en calcul posé : à trancher.
+
 ## En attente
 
 - Relecture de `docs/corrections/pilote/APERCU.md` par David (texte, couleurs, ton).

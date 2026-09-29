@@ -1,0 +1,18 @@
+{
+	"templateId": "810f1824-18ac-48e5-bf15-1c0b3854f78b",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-RANGPARRANG",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer rang par rang.** On décompose ${{eval: f*100 + g*10+h}}$ selon ses rangs : ${{eval: f*100 + g*10+h}} = {{if:(floor(((f*100 + g*10+h))/100)*100)>0|\\textcolor{{{color:primary.0}}}{{{eval:floor(((f*100 + g*10+h))/100)*100}}}|}}{{if:(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0|{{if:(floor(((f*100 + g*10+h))/100)*100)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((f*100 + g*10+h)),100)/10)*10}}}|}}{{if:(floor(((f*100 + g*10+h))/100)*100)+(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0| + |}}\\textcolor{{{color:primary.0}}}{{{eval:mod(((f*100 + g*10+h)),10)}}}$. On retranche les morceaux un par un : {{if:(floor(((f*100 + g*10+h))/100)*100)>0|centaines|}}{{if:(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0|{{if:(floor(((f*100 + g*10+h))/100)*100)>0|, puis |}}dizaines|}}{{if:(floor(((f*100 + g*10+h))/100)*100)+(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0|, puis |}}unités.",
+				"$$\\begin{align} {{eval: a*1000 + b*100 + c*10+d}} - {{eval: f*100 + g*10+h}} {{if:(floor(((f*100 + g*10+h))/100)*100)*(floor(mod(((f*100 + g*10+h)),100)/10)*10)+(floor(((f*100 + g*10+h))/100)*100)*(mod(((f*100 + g*10+h)),10))+(floor(mod(((f*100 + g*10+h)),100)/10)*10)*(mod(((f*100 + g*10+h)),10))>0|&= {{eval: a*1000 + b*100 + c*10+d}}{{if:(floor(((f*100 + g*10+h))/100)*100)>0| - \\textcolor{{{color:primary.0}}}{{{eval:floor(((f*100 + g*10+h))/100)*100}}}|}}{{if:(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0| - \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((f*100 + g*10+h)),100)/10)*10}}}|}} - \\textcolor{{{color:primary.0}}}{{{eval:mod(((f*100 + g*10+h)),10)}}}|}}{{if:(floor(((f*100 + g*10+h))/100)*100)*((floor(mod(((f*100 + g*10+h)),100)/10)*10)+(mod(((f*100 + g*10+h)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10+d)-((floor(((f*100 + g*10+h))/100)*100))}}}{{if:(floor(mod(((f*100 + g*10+h)),100)/10)*10)>0| - \\textcolor{{{color:primary.0}}}{{{eval:floor(mod(((f*100 + g*10+h)),100)/10)*10}}}|}} - \\textcolor{{{color:primary.0}}}{{{eval:mod(((f*100 + g*10+h)),10)}}}|}}{{if:(floor(mod(((f*100 + g*10+h)),100)/10)*10)*((mod(((f*100 + g*10+h)),10)))>0| \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*1000 + b*100 + c*10+d)-((floor(((f*100 + g*10+h))/100)*100)+(floor(mod(((f*100 + g*10+h)),100)/10)*10))}}} - \\textcolor{{{color:primary.0}}}{{{eval:mod(((f*100 + g*10+h)),10)}}}|}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : {{eval: a*1000 + b*100 + c*10+d}} - {{eval: f*100 + g*10+h}} : 3 rang(s) (5000 graines : domaine > 20000 combinaisons)"
+	]
+}
