@@ -157,6 +157,10 @@ Mémoire de Claude **du Mac mini** à revoir (section « Machine 8 Go » de
   commentaire corrigé ; (9) 8192 gardé ; (10) motifs réels dans commentaires et
   doc.
 - 2026-09-29 — **Phase 3** : scripts/configs → PR #509 ; doc → commit direct
-  sur `main` ; mémoire de Claude du Mac mini mise à jour. Hors liste, non
-  touchés : `scripts/check-barrel-exports.ts:143` et
-  `.github/workflows/bundle-analyze.yml:7` mentionnent encore « 8 Go ».
+  sur `main` ; mémoire de Claude du Mac mini mise à jour. Hors liste, corrigés ensuite
+  par la PR #511 : `scripts/check-barrel-exports.ts:143` et
+  `.github/workflows/bundle-analyze.yml:7` (workflow gardé manuel, seul le
+  motif « impossible de builder en local » retiré). Motif de l'interdiction de
+  `format` aux agents précisé dans `CLAUDE.md` : un reformatage de l'arbre
+  entier noie le vrai changement ; le pre-commit formate déjà les fichiers
+  modifiés.
