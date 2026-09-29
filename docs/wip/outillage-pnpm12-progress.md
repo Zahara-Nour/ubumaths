@@ -1,7 +1,7 @@
 # Outillage — pnpm 12, `[local_smtp]` et CLI Supabase fixée, progression
 
 > Chantier ouvert le 2026-09-29, pendant la migration du poste de dev vers le
-> Mac mini. **En cours depuis le 2026-09-29** (worktree `../ubumaths-wt-pnpm12`,
+> Mac mini. **TERMINÉ le 2026-09-29 (PR #512 mergée)** (worktree `../ubumaths-wt-pnpm12`,
 > branche `chore/outillage-pnpm12`). Sur une branche avec une PR (#512) (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
 > du code, pas de la doc).
 
@@ -184,3 +184,26 @@ supabase` partout → une seule source de vérité.
   guillemets, supabase-js refuse l'URL (reproduit en local : même message).
   Corrigé : retrait des guillemets, `pipefail`, échec explicite si
   `SUPABASE_TEST_URL` manque.
+- 2026-09-29 — **Preview Vercel impossible, indépendamment de pnpm** : le
+  build a cassé sur `"PUBLIC_SUPABASE_URL" is not exported`. Les variables
+  `PUBLIC_SUPABASE_*` n'existent que pour Production et Development dans Vercel,
+  pas pour Preview. **Décision de David** : les preuves actuelles suffisent
+  (installation sous pnpm 12.6.0 sur Vercel, `pnpm build` local sous pnpm 12
+  en 47 s, CI verte). Projet ouvert à part : `docs/wip/base-staging-progress.md`.
+- 2026-09-29 — **Workflow nocturne, 2ᵉ lancement** : 117/121. Restait deux
+  limites anciennes du workflow, invisibles tant qu'il cassait au démarrage :
+  `storage-api` exclu (2 suites l'appellent) et `$env` bidon de `ci.env`
+  (`placeholder.supabase.co`) pour le code applicatif. Corrigé : `storage-api`
+  gardé (image v1.77.0 publiée avec la CLI 2.118), `PUBLIC_SUPABASE_URL` /
+  `ANON_KEY` / `SERVICE_ROLE_KEY` exportés depuis la pile locale (Vite fait
+  primer `process.env` sur le `.env`, vérifié dans `vite/dist/node/chunks/config.js`).
+- 2026-09-29 — **3ᵉ lancement : VERT, pour la première fois de son histoire** :
+  121/121 fichiers, 1065 ✓ / 12 ignorés, CLI 2.118.0. Le cron reste désactivé :
+  sa réactivation est une décision de David.
+- 2026-09-29 — **Mergé** (#512), branche et worktree supprimés. **Premier build
+  de production sous pnpm 12.6.0 : Ready** (« Done in 9s using pnpm v12.6.0 »,
+  postinstall d'esbuild 0.28.2 exécuté, build 4 min). `chiph.re` → 200.
+  Dépôt principal réinstallé en pnpm 12 ; pile Supabase locale relancée depuis
+  le dépôt principal (Postgres 17.6.1.127, parité prod).
+- **Rappel postes** : `corepack enable` après chaque mise à jour de Node ; plus
+  besoin de CLI Supabase globale (Homebrew) pour ce projet.
