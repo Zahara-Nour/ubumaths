@@ -96,7 +96,7 @@
 		<Card.Content>
 			{#if instance}
 				<div class="text-sm">
-					<MarkdownRenderer content={convertLegacyLatexToMarkdown(previewText)} />
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(previewText)} flashMode />
 				</div>
 			{:else}
 				<div class="text-sm text-muted-foreground italic">Aperçu indisponible</div>

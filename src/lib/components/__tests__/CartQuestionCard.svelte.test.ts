@@ -51,6 +51,14 @@ describe('CartQuestionCard', () => {
 		await expect.element(card).toHaveTextContent(firstWords);
 	});
 
+	it("l'aperçu n'est pas interactif : aucun champ de saisie dans la tuile", async () => {
+		// Le modèle #139 a un trou (« Le double de 2 est … ») : il doit rester une case statique
+		const screen = await renderCard();
+		const card = screen.getByRole('button', { name: /Voir la question/ }).element();
+
+		expect(card.querySelector('math-field, input, textarea')).toBeNull();
+	});
+
 	it('affiche la durée et le nombre de répétitions sans survol', async () => {
 		await renderCard();
 
