@@ -116,7 +116,7 @@ Le **suffixe** est la seule chose qui route un test vers le bon runner. À respe
 | Real-Pyodide (`nightly-pyodide.yml`)        | `*-real.svelte.test.ts` (`RUN_PYODIDE_REAL=1`)  | nightly                                                |
 | **Intégration** (`nightly-integration.yml`) | `tests/integration/**` (démarre Supabase local) | nightly (02:17 UTC) + PR filtrées par `paths` + manuel |
 
-- **Intégration** : check **non obligatoire** dans la protection de `main` (filtré par `paths`, il ne tourne pas sur les autres PR : obligatoire, il les bloquerait). Le filtre couvre la fermeture des imports de la suite (calculée le 2026-09-29) ; un import ajouté hors du filtre n'est vu que par le cron.
+- **Intégration** : check **non obligatoire** dans la protection de `main` (filtré par `paths`, il ne tourne pas sur les autres PR : obligatoire, il les bloquerait). Le filtre couvre la fermeture des imports de la suite ; le job `paths-filter` du même workflow la recalcule à chaque run et échoue sur un fichier atteint non couvert ou un motif mort (`pnpm check:integration-paths`, #516). ⚠️ Sémantique GitHub : `?` et `+` portent sur le caractère **précédent** — ne pas vérifier un motif avec minimatch.
 - **e2e** : lancé localement / à la demande (build + preview), pas dans la boucle de push.
 - Le **gate de régression réel** = `test-server` (rapide, déterministe, node).
 

@@ -28,19 +28,20 @@ Toutes les commandes `pnpm <script>` définies dans `package.json`, par catégor
 
 ## ✅ Qualité — types, lint, format
 
-| Commande                 | Effet                                                                  | Notes                                      |
-| ------------------------ | ---------------------------------------------------------------------- | ------------------------------------------ |
-| `pnpm check`             | **Le check CI** : `svelte-check` sur `tsconfig.check.json` (heap 8 Go) | 82 s en local (2026-09-29), scope source   |
-| `pnpm check:incremental` | Même scope que la CI, **avec cache** (`--incremental`)                 | ~45 s (~80 s à froid) — le quotidien       |
-| `pnpm check:watch`       | `svelte-check` en mode watch                                           | Pendant le dev                             |
-| `pnpm check:fast`        | `tsc --noEmit --incremental`                                           | ⚠️ Meurt sur le tas Node (~4 Go), exit 134 |
-| `pnpm check:safe`        | `svelte-check` sur `tsconfig.json` (scope large)                       | Diagnostic ponctuel                        |
-| `pnpm check:changed`     | Check des fichiers modifiés (git)                                      | Voir `scripts/check-changed.sh`            |
-| `pnpm check:staged`      | Check des fichiers stagés                                              | Utilisé en pre-commit                      |
-| `pnpm format`            | `prettier --write` (passer des chemins)                                | Ex. `pnpm format "src/**/*.ts"`            |
-| `pnpm format:all`        | Prettier sur tout le repo                                              | Lourd                                      |
-| `pnpm lint`              | `eslint` (passer des chemins)                                          | Ex. `pnpm lint src/lib/x.ts`               |
-| `pnpm lint:all`          | ESLint sur tout le repo (avec cache)                                   | ~9 min à froid → en arrière-plan           |
+| Commande                       | Effet                                                                  | Notes                                      |
+| ------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------ |
+| `pnpm check`                   | **Le check CI** : `svelte-check` sur `tsconfig.check.json` (heap 8 Go) | 82 s en local (2026-09-29), scope source   |
+| `pnpm check:incremental`       | Même scope que la CI, **avec cache** (`--incremental`)                 | ~45 s (~80 s à froid) — le quotidien       |
+| `pnpm check:watch`             | `svelte-check` en mode watch                                           | Pendant le dev                             |
+| `pnpm check:fast`              | `tsc --noEmit --incremental`                                           | ⚠️ Meurt sur le tas Node (~4 Go), exit 134 |
+| `pnpm check:safe`              | `svelte-check` sur `tsconfig.json` (scope large)                       | Diagnostic ponctuel                        |
+| `pnpm check:changed`           | Check des fichiers modifiés (git)                                      | Voir `scripts/check-changed.sh`            |
+| `pnpm check:staged`            | Check des fichiers stagés                                              | Utilisé en pre-commit                      |
+| `pnpm check:integration-paths` | Le filtre `paths` de `nightly-integration.yml` couvre-t-il la suite ?  | Job `paths-filter` ; ~5 s                  |
+| `pnpm format`                  | `prettier --write` (passer des chemins)                                | Ex. `pnpm format "src/**/*.ts"`            |
+| `pnpm format:all`              | Prettier sur tout le repo                                              | Lourd                                      |
+| `pnpm lint`                    | `eslint` (passer des chemins)                                          | Ex. `pnpm lint src/lib/x.ts`               |
+| `pnpm lint:all`                | ESLint sur tout le repo (avec cache)                                   | ~9 min à froid → en arrière-plan           |
 
 > ⚠️ `check:incremental` filtre `extern/` (présent en local, absent en CI). Si une
 > erreur ressemble à un fantôme (fichier supprimé), purger le cache :
