@@ -15,7 +15,7 @@
 	import {
 		CONSTRAINT_IDS,
 		CONSTRAINT_LABELS,
-		CONSTRAINT_MODE_OPTIONS
+		constraintModeOptions
 	} from '$lib/questions/constraint-constants';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -94,7 +94,7 @@
 									<MySelect
 										type="single"
 										bind:value={constraintModes[id]}
-										items={[...CONSTRAINT_MODE_OPTIONS]}
+										items={constraintModeOptions(id)}
 									/>
 								</div>
 							{/each}

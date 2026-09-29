@@ -874,7 +874,8 @@ export type ConstraintId =
  * - 'warn': Violation results in unoptimal_form (partial credit) - just a warning
  * - 'off': Skip this check entirely - constraint disabled
  *
- * **Default: 'warn'** — When a constraint is not set in a template (undefined),
+ * **Default: 'warn'** — sauf `form`, `strict` par défaut (`DEFAULT_FORM_CONSTRAINT_MODE`, ADR 0013).
+ * When a constraint is not set in a template (undefined),
  * it defaults to 'warn'. This matches the old TinyMath behavior where checks
  * always run by default and violations cause STATUS_UNOPTIMAL_FORM (partial credit).
  * Use 'off' to explicitly disable a check, or 'strict' to make it a hard requirement.
@@ -883,6 +884,15 @@ export type ConstraintMode = 'strict' | 'warn' | 'off';
 
 /** Default constraint mode when not explicitly set in a template */
 export const DEFAULT_CONSTRAINT_MODE: ConstraintMode = 'warn';
+
+/**
+ * Défaut PROPRE à la contrainte `form` : la comparaison de fin de pipeline
+ * (réponse retouchée ≠ attendue retouchée). `strict`, comme l'étape 6 de
+ * TinyMath : avec `warn`, `400+80` serait compté juste pour `480`. `warn` ou
+ * `off` se posent question par question, quand l'élève doit TROUVER une
+ * expression et non transformer celle qu'on lui donne (ADR 0013).
+ */
+export const DEFAULT_FORM_CONSTRAINT_MODE: ConstraintMode = 'strict';
 
 /**
  * Constraint configuration for question validation.
