@@ -119,8 +119,9 @@ Plutôt que de la changer (800-1 200 lignes, écarté le 2026-09-29), trois règ
 - **Base numérique négative** (`mergeNegativeBasePowers`) : `a^{u+k} = a^u·a^k` (k entier) et
   `(a^u)^p(a^v)^q = a^{pu+qv}` (p, q entiers), vrais partout où les deux membres existent.
   `5(-2)^n ≡ -10(-2)^{n-1}`. `(-2)^{2n} ≢ 4^n` (en n = ½ : −2 contre 2).
-- **Base variable** : **aucune règle** — `x^a·x^b ≢ x^{a+b}`, `(x^2)^n ≢ x^{2n}`. Décision de David :
-  on ne suppose pas x > 0 (faux positif en x = −1, n = ½).
+- **Base variable** : **aucune règle** — `x^a·x^b ≢ x^{a+b}`, `(x^2)^n ≢ x^{2n}`. **Non tranché par
+  David** : comportement par défaut prudent choisi par Claude (supposer x > 0 donnerait un faux
+  positif en x = −1, n = ½). Question ouverte au 2026-09-29.
 
 Faux négatifs connus : `(-2)^n/(-2)^m ≢ (-2)^{n-m}`, `(-2)^n(-3)^n ≢ 6^n`, `(-8)^{x/3} ≢ (-2)^x`,
 `(√2)^x ≢ 2^{x/2}`, `(2^x+4^x)/2^x ≢ 1+2^x`, `0^x ≢ 0`. Revue adverse : 7 729 paires, 0 faux positif.
