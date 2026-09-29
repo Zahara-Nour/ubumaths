@@ -8,7 +8,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import AssessmentConfigForm from '$lib/components/assessments/AssessmentConfigForm.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import { previewCartItem } from '$lib/questions/cart-preview';
 	import type { CreateAssessmentData } from '$lib/types/assessment';
 	import type { PageData } from './$types';
 
@@ -25,37 +25,7 @@
 
 	// Cart items with instances for preview
 	let cartItemsWithInstances = $derived(
-		cartItems.map((item) => {
-			const matchingTemplates = data.templates.filter(
-				// `level` est un entier en base, pas une chaîne : l'annotation d'origine
-				// forçait une comparaison de types incompatibles, qui ne pouvait donc
-				// jamais être vraie — aucun modèle n'était retenu pour l'aperçu.
-				(t) =>
-					t.theme === item.category.theme &&
-					t.domain === item.category.domain &&
-					(t.subdomain || null) === String(item.category.subdomain || null) &&
-					t.level === Number(item.category.level)
-			);
-
-			let template = undefined;
-			let instance = undefined;
-
-			if (matchingTemplates.length > 0) {
-				const randomIndex = Math.floor(Math.random() * matchingTemplates.length);
-				template = matchingTemplates[randomIndex];
-
-				try {
-					const result = generateInstance(template);
-					if (result.success && result.instance) {
-						instance = result.instance;
-					}
-				} catch (error) {
-					console.error('Failed to generate instance:', error);
-				}
-			}
-
-			return { item, template, instance };
-		})
+		cartItems.map((item) => ({ item, ...previewCartItem(data.templates, item.category) }))
 	);
 
 	function handleBackToList() {
@@ -212,9 +182,10 @@
 					</Card.Header>
 					<Card.Content>
 						<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
+							{#each cartItemsWithInstances as { item, template, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
 								<CartQuestionCard
 									{item}
+									{template}
 									{instance}
 									onIncrementQuantity={(cat) => questionCart.incrementQuantity(cat)}
 									onDecrementQuantity={(cat) => questionCart.decrementQuantity(cat)}

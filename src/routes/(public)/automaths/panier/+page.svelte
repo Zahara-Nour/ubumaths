@@ -16,8 +16,7 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
 	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
-	import type { QuestionInstance } from '$lib/questions/types';
+	import { previewCartItem } from '$lib/questions/cart-preview';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
 
@@ -58,50 +57,7 @@
 				questionTemplatesCache.templates.length > 0
 					? questionTemplatesCache.templates
 					: data.templates;
-
-			// Find all templates matching this category
-			const matchingTemplates = templates.filter(
-				(t) =>
-					t.theme === item.category.theme &&
-					t.domain === item.category.domain &&
-					(t.subdomain || null) === item.category.subdomain &&
-					t.level === item.category.level
-			);
-
-			// Randomly select one template from matching ones
-			let template = undefined;
-			let instance: QuestionInstance | undefined;
-
-			if (matchingTemplates.length > 0) {
-				// Select random template
-				const randomIndex = Math.floor(Math.random() * matchingTemplates.length);
-				template = matchingTemplates[randomIndex];
-
-				// Generate an instance from the selected template
-				try {
-					const result = generateInstance(template);
-					if (result.success && result.instance) {
-						instance = result.instance;
-					} else {
-						const errors = 'errors' in result ? result.errors : ['Unknown error'];
-						console.error(
-							`Failed to generate instance for category ${item.category.theme}/${item.category.domain}:`,
-							errors
-						);
-					}
-				} catch (error) {
-					console.error(
-						`Exception generating instance for category ${item.category.theme}/${item.category.domain}:`,
-						error
-					);
-				}
-			}
-
-			return {
-				item,
-				template,
-				instance
-			};
+			return { item, ...previewCartItem(templates, item.category) };
 		})
 	);
 
@@ -241,9 +197,10 @@
 		<div class="space-y-6">
 			<!-- Questions grid -->
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{#each cartItemsWithInstances as { item, instance }, index (index)}
+				{#each cartItemsWithInstances as { item, template, instance }, index (index)}
 					<CartQuestionCard
 						{item}
+						{template}
 						{instance}
 						onIncrementQuantity={handleIncrementQuantity}
 						onDecrementQuantity={handleDecrementQuantity}

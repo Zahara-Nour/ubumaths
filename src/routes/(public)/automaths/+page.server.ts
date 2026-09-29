@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 import { compareCategories } from '$lib/questions/category-order';
+import { PREVIEW_SEED } from '$lib/questions/cart-preview';
 
 /**
  * Hierarchical structure for organizing questions
@@ -57,8 +58,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		};
 	}
 
-	// Generate preview instances with fixed seed for consistency
-	const PREVIEW_SEED = 12345;
+	// Aperçus à graine fixe, la même que le panier et la création d'évaluation
 	const questionsWithPreviews: QuestionWithPreview[] = [];
 
 	for (const template of templates) {
