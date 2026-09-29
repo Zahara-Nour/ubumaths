@@ -70,7 +70,10 @@ import {
 	floorRational,
 	ceilRational,
 	roundRational,
-	floatToRational
+	floatToRational,
+	divRational,
+	powRational,
+	ZERO
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
 import { preprocess, expandTrigDefinitions, expandCommensurableArcs } from './rules/index.js';
@@ -80,9 +83,10 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units/formatter';
-import { divide, euler, number, opposite, piConstant } from '../factory';
-import { isEulerConstant, isNumber, isOpposite } from '../guards';
+import { divide, euler, number, opposite, parentheses, piConstant, superscript } from '../factory';
+import { isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
+import { expandPositiveBasePowers } from './rules/general-power';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
 
 // =============================================================================
@@ -2091,14 +2095,201 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	// `exp`, ne le voyait jamais passer. Ici, et ici seulement — la forme
 	// affichée garde la notation de l'élève.
 	const withEuler = expandEulerPowers(node);
-	const withDefinitions = expandTrigDefinitions(withEuler);
+	// `2^{x}` devient `exp(x·ln 2)` : sans ça, un exposant symbolique sur une
+	// base numérique restait opaque (`2^{x+1} ≢ 2·2^{x}`). Bases rationnelles
+	// strictement positives seulement — détail dans `rules/general-power.ts`.
+	const withPositiveBases = expandPositiveBasePowers(withEuler, {
+		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
+	});
+	const withDefinitions = expandTrigDefinitions(withPositiveBases);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
 		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
 		// passe que l'interruption, jamais l'enregistreur d'étapes.
 		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx)),
 		abortChecker: ctx?.abortChecker
 	});
-	return reducePythagorasInNormalForm(normalize(withArcs, ctx), ctx);
+	const form = mergeNegativeBasePowers(normalize(withArcs, ctx), ctx);
+	return reducePythagorasInNormalForm(form, ctx);
+}
+
+// =============================================================================
+// Puissances de base négative (chemin de l'équivalence seul)
+// =============================================================================
+
+/**
+ * Regroupe, dans chaque monôme, les puissances d'une même base rationnelle
+ * NÉGATIVE à exposant non rationnel, et sort la partie entière de l'exposant
+ * dans le coefficient : `-10·(-2)^{n-1}` devient `5·(-2)^{n}`.
+ *
+ * Une telle puissance n'a pas d'écriture exponentielle réelle (contrairement
+ * aux bases positives, `rules/general-power.ts`) : elle reste un facteur opaque
+ * dont la base est le nœud `(-2)^{n-1}` tel qu'écrit. On ne s'autorise que deux
+ * identités, vraies pour toute base `a ≠ 0`, que `a^u` soit lu comme puissance
+ * réelle (dénominateur impair) ou comme valeur principale complexe :
+ *
+ * - `a^{u+k} = a^{u}·a^{k}` pour `k` ENTIER — même domaine des deux côtés ;
+ * - `(a^{u})^{p}·(a^{v})^{q} = a^{pu+qv}` pour `p`, `q` ENTIERS — le membre de
+ *   droite est défini partout où le gauche l'est, ce que la convention permet.
+ *
+ * Jamais `(a^{u})^{v} → a^{uv}` pour `v` non entier, jamais de positivité :
+ * `(-2)^{2n} ≢ 4^{n}` (en `n = 1/2`, `-2` contre `2`) reste faux.
+ *
+ * Limite assumée (faux négatif) : pas de regroupement entre numérateur et
+ * dénominateur quand les exposants diffèrent, `(-2)^{n}/(-2)^{m}` reste tel
+ * quel. À exposants égaux, la simplification de la fraction s'en charge.
+ */
+function mergeNegativeBasePowers(form: NormalForm, ctx: NormalizeContext | undefined): NormalForm {
+	const numerator = mergeNegativeBasePowersInPolynomial(form.numerator, ctx);
+	const denominator = mergeNegativeBasePowersInPolynomial(form.denominator, ctx);
+	if (numerator === null && denominator === null) return form;
+	return normalFormFromFraction(numerator ?? form.numerator, denominator ?? form.denominator);
+}
+
+/** Le polynôme réécrit, ou `null` si aucun monôme n'a bougé. */
+function mergeNegativeBasePowersInPolynomial(
+	polynomial: readonly NormalTerm[],
+	ctx: NormalizeContext | undefined
+): NormalTerm[] | null {
+	let changed = false;
+	const terms = polynomial.map((term) => {
+		const merged = mergeNegativeBasePowersInTerm(term, ctx);
+		if (merged === null) return term;
+		changed = true;
+		return merged;
+	});
+	return changed ? collectLikeTerms(terms) : null;
+}
+
+/** Une puissance opaque de base rationnelle négative, repérée dans un monôme. */
+interface NegativeBasePower {
+	readonly base: Rational;
+	/** Somme des `p·u` rencontrés pour cette base. */
+	exponent: MathNode;
+	count: number;
+}
+
+/** Le terme réécrit, ou `null` s'il n'y a rien à faire. */
+function mergeNegativeBasePowersInTerm(
+	term: NormalTerm,
+	ctx: NormalizeContext | undefined
+): NormalTerm | null {
+	const groups = new Map<string, NegativeBasePower>();
+	const others: SymbolicFactor[] = [];
+
+	for (const factor of term.monomial) {
+		const base = isSuperscript(factor.base) ? negativeRationalBase(factor.base.base, ctx) : null;
+		// Exposant du facteur ENTIER seulement : `√((-2)^{n})` ne se replie pas.
+		if (base === null || factor.exponent.d !== 1n || !isSuperscript(factor.base)) {
+			others.push(factor);
+			continue;
+		}
+		const scaled = scaleNodeByRational(factor.base.superscript, factor.exponent);
+		const key = `${base.n}/${base.d}`;
+		const group = groups.get(key);
+		if (group) {
+			group.exponent = { type: 'addition', left: group.exponent, right: scaled };
+			group.count++;
+		} else {
+			groups.set(key, { base, exponent: scaled, count: 1 });
+		}
+	}
+
+	if (groups.size === 0) return null;
+
+	let coefficient = term.coefficient;
+	const monomial = [...others];
+	for (const { base, exponent } of groups.values()) {
+		let exponentForm: NormalForm;
+		try {
+			exponentForm = normalize(exponent, arcDecompositionContext(ctx));
+		} catch (error) {
+			if (error instanceof AbortError) throw error;
+			return null;
+		}
+		const { shift, rest } = splitIntegerShift(exponentForm);
+		// Garde-fou : un décalage démesuré ferait exploser le coefficient.
+		if (shift > 1000n || shift < -1000n) return null;
+		if (shift !== 0n) {
+			coefficient = mulAlgebraic(
+				coefficient,
+				algebraicFromRational(powRational(base, Number(shift)))
+			);
+		}
+		if (rest.numerator.length === 0) continue; // a^0 = 1
+		// Un reste constant non entier (`(-2)^{n}·(-2)^{1/2-n}`) n'a de sens
+		// qu'en valeur complexe : on n'invente rien, le terme reste tel quel.
+		if (isConstantPolynomial(rest.numerator) && isConstantPolynomial(rest.denominator)) return null;
+		monomial.push(symbolicFactor(superscript(rationalBaseNode(base), denormalize(rest)), ONE));
+	}
+
+	return { coefficient, monomial: sortSymbolicFactors(monomial) };
+}
+
+/**
+ * La valeur de la base si c'est un rationnel strictement NÉGATIF, sinon
+ * `null`. Les bases positives sont déjà devenues des exponentielles.
+ */
+function negativeRationalBase(node: MathNode, ctx: NormalizeContext | undefined): Rational | null {
+	const value = exactRationalValue(node, ctx);
+	return value !== null && value.n < 0n ? value : null;
+}
+
+/**
+ * Sépare l'exposant en partie entière constante et reste : `n - 1` donne
+ * `{ shift: -1, rest: n }`. Rien n'est extrait d'un exposant fractionnaire
+ * (`(n+1)/2`) ni d'une constante non entière (`n + 1/2`).
+ */
+function splitIntegerShift(form: NormalForm): { shift: bigint; rest: NormalForm } {
+	if (!isOnePolynomial(form.denominator)) return { shift: 0n, rest: form };
+	const constantTerm = form.numerator.find((term) => term.monomial.length === 0);
+	const constant = constantTerm ? getRationalValue(constantTerm.coefficient) : null;
+	if (!constantTerm || constant === null || constant.d !== 1n) return { shift: 0n, rest: form };
+	const rest = form.numerator.filter((term) => term !== constantTerm);
+	return { shift: constant.n, rest: normalFormFromPolynomial(rest) };
+}
+
+/**
+ * Le nœud canonique d'une base rationnelle négative, écrit comme le parseur
+ * l'écrit (`(-2)`, `(-1/2)`) : les deux membres comparés doivent produire le
+ * MÊME nœud, quelle que soit l'écriture de l'élève (`-0.5` ou `-\frac{1}{2}`).
+ */
+function rationalBaseNode(base: Rational): MathNode {
+	const magnitude = number((-base.n).toString());
+	const content =
+		base.d === 1n ? magnitude : divide(magnitude, number(base.d.toString()), 'fraction');
+	return parentheses(opposite(content));
+}
+
+/**
+ * La valeur rationnelle exacte d'un nœud, ou `null` s'il n'en a pas une :
+ * variable, radical, `π`, unité imaginaire, ou normalisation impossible.
+ *
+ * Sert de garde à `expandPositiveBasePowers` : une base n'est réécrite en
+ * exponentielle que si cette valeur existe et est strictement positive.
+ */
+function exactRationalValue(node: MathNode, ctx: NormalizeContext | undefined): Rational | null {
+	let form: NormalForm;
+	try {
+		form = normalize(node, arcDecompositionContext(ctx));
+	} catch (error) {
+		// L'interruption doit remonter : l'avaler ferait tourner la suite hors
+		// budget.
+		if (error instanceof AbortError) throw error;
+		return null;
+	}
+	if (form.numerator.length === 0) return ZERO;
+	const numerator = constantRational(form.numerator);
+	const denominator = constantRational(form.denominator);
+	if (numerator === null || denominator === null || denominator.n === 0n) return null;
+	return divRational(numerator, denominator);
+}
+
+/** Le rationnel porté par un polynôme réduit à une constante, ou `null`. */
+function constantRational(polynomial: readonly NormalTerm[]): Rational | null {
+	if (polynomial.length !== 1) return null;
+	const [term] = polynomial;
+	if (term.monomial.length !== 0) return null;
+	return getRationalValue(term.coefficient);
 }
 
 /**
@@ -4982,7 +5173,11 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 		}
 	}
 
-	return changed ? result : terms;
+	// Combiner peut rendre deux monômes SEMBLABLES qui ne l'étaient pas :
+	// `exp(x)^2` et `exp(2x)` deviennent tous deux `exp(2x)`, `exp(x)·exp(-x)`
+	// devient une constante. Sans ce regroupement, la forme n'était plus
+	// canonique : `e^x(e^x+1) ≡ e^{2x}+e^x` rendait faux.
+	return changed ? collectLikeTerms(result) : terms;
 }
 
 /**
