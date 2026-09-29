@@ -2255,7 +2255,8 @@ function splitIntegerShift(form: NormalForm): { shift: bigint; rest: NormalForm 
  */
 function rationalBaseNode(base: Rational): MathNode {
 	const magnitude = number((-base.n).toString());
-	const content = base.d === 1n ? magnitude : divide(magnitude, number(base.d.toString()));
+	const content =
+		base.d === 1n ? magnitude : divide(magnitude, number(base.d.toString()), 'fraction');
 	return parentheses(opposite(content));
 }
 

@@ -72,7 +72,7 @@ function expandPositiveBasePowerAt(node: MathNode, ctx: GeneralPowerContext): Ma
 	// Exposant rationnel : la forme normale sait déjà faire, exactement.
 	if (ctx.rationalValue(node.superscript) !== null) return null;
 
-	return func('exp', [multiply(node.superscript, func('ln', [node.base]))]);
+	return func('exp', [multiply(node.superscript, func('ln', [node.base]), 'cross')]);
 }
 
 /**
