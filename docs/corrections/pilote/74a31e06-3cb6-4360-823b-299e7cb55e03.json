@@ -1,0 +1,15 @@
+{
+	"templateId": "74a31e06-3cb6-4360-823b-299e7cb55e03",
+	"title": "Déterminer le signe d'un produit",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Règle des signes.** Un produit est positif quand il a un nombre pair de facteurs négatifs, négatif quand ce nombre est impair.",
+			"Dans ${{if:a<0|\\textcolor{{{color:primary.0}}}{-}{{eval:abs(a)}}|{{a}}}} \\times {{if:b<0|\\left( \\textcolor{{{color:primary.0}}}{-}{{eval:abs(b)}} \\right)|{{b}}}} \\times {{if:c<0|\\left( \\textcolor{{{color:primary.0}}}{-}{{eval:abs(c)}} \\right)|{{c}}}}$, on compte les facteurs négatifs : il y en a $\\textcolor{{{color:primary.1}}}{{{eval:(3-a/abs(a)-b/abs(b)-c/abs(c))/2}}}$, un nombre {{if:a*b*c>0|$\\textcolor{{{color:primary.1}}}{\\text{pair}}$|$\\textcolor{{{color:primary.1}}}{\\text{impair}}$}}.",
+			"Le produit est donc $\\textcolor{{{color:primary.2}}}{\\text{{{solution}}}}$."
+		]
+	},
+	"notes": ["« il y en a 0 » est possible (tous les facteurs positifs) : 0 est pair."]
+}

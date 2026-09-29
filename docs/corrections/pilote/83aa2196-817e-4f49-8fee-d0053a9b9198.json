@@ -1,0 +1,18 @@
+{
+	"templateId": "83aa2196-817e-4f49-8fee-d0053a9b9198",
+	"title": "Calculer une différence (résultat positif)",
+	"classe": "R",
+	"code": "R-PASS",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"{{if:c=9|Retrancher $\\textcolor{{{color:primary.0}}}{9}$, c'est retrancher $\\textcolor{{{color:primary.0}}}{10}$ puis ajouter $\\textcolor{{{color:primary.0}}}{1}$.|On redescend d'abord à la dizaine : on enlève $\\textcolor{{{color:primary.0}}}{{{eval:mod((a*10+b),10)}}}$ à ${{eval:a*10+b}}$ pour arriver à $\\textcolor{{{color:primary.1}}}{{{eval:(a*10+b)-mod((a*10+b),10)}}}$. On décompose donc $\\textcolor{{{color:primary.0}}}{{{c}}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:mod((a*10+b),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:c-mod((a*10+b),10)}}}$.}}",
+				"{{if:c=9|$$\\begin{align} {{eval:a*10+b}} - \\textcolor{{{color:primary.0}}}{9} &= {{eval:a*10+b}} - \\textcolor{{{color:primary.0}}}{10} + \\textcolor{{{color:primary.0}}}{1} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10+b)-10}}} + 1 \\\\ &= {{solution}} \\end{align}$$|$$\\begin{align} {{eval:a*10+b}} - \\textcolor{{{color:primary.0}}}{{{c}}} &= {{eval:a*10+b}} - \\textcolor{{{color:primary.0}}}{{{eval:mod((a*10+b),10)}}} - \\textcolor{{{color:primary.0}}}{{{eval:c-mod((a*10+b),10)}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10+b)-mod((a*10+b),10)}}} - {{eval:c-mod((a*10+b),10)}} \\\\ &= {{solution}} \\end{align}$$}}"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression = « {{eval:a*10+b}}-{{c}} » ; branches : cas général + R = 9 (±10 ∓ 1)"
+	]
+}

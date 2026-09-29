@@ -1,0 +1,27 @@
+{
+	"templateId": "2da974f7-133c-4ad3-9053-dc18a48e4afd",
+	"title": "Calculer un produit",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif et ${{b}}$ est positif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc le produit est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. On multiplie ensuite les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) \\times {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$, donc le produit est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. On multiplie ensuite les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) \\times \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{+}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le produit de deux nombres de même signe est positif ; le produit de deux nombres de signes contraires est négatif.",
+				"${{a}}$ est positif et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc le produit est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. On multiplie ensuite les distances à zéro.",
+				"$$\\begin{align} {{a}} \\times \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["Règle rappelée, puis appliquée aux nombres de la variation."]
+}

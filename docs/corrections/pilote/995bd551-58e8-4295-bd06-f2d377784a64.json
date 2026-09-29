@@ -1,0 +1,27 @@
+{
+	"templateId": "995bd551-58e8-4295-bd06-f2d377784a64",
+	"title": "Diviser",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif et ${{b}}$ est positif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc le quotient est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. On divise ensuite les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a*b}} \\right) : {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"$\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$, donc le quotient est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. On divise ensuite les distances à zéro.",
+				"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a*b}} \\right) : \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{+}\\left( {{eval:a*b}} : {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"${{eval:a*b}}$ est positif et $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif : ils sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$, donc le quotient est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. On divise ensuite les distances à zéro.",
+				"$$\\begin{align} {{eval:a*b}} : \\left( \\textcolor{{{color:primary.0}}}{-}{{b}} \\right) &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["Règle rappelée, puis appliquée aux nombres de la variation."]
+}

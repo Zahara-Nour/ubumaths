@@ -1,0 +1,44 @@
+{
+	"templateId": "0b6d749f-95fc-4cfe-a83d-4e2c84bc0e38",
+	"title": "Compléter une division à trou",
+	"classe": "N",
+	"code": "N-SIGNES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le dividende $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif, donc le diviseur manquant est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{+}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient ${{a}}$ est positif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le dividende $\\textcolor{{{color:primary.0}}}{-}{{eval:a*b}}$ est négatif, donc le diviseur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le dividende ${{eval:a*b}}$ est positif, donc le diviseur manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a*b}} : {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le diviseur ${{b}}$ est positif, donc le dividende manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient ${{a}}$ est positif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{même signe}}$. Le diviseur $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif, donc le dividende manquant est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Règle des signes.** Le quotient de deux nombres de même signe est positif ; le quotient de deux nombres de signes contraires est négatif.",
+				"Le quotient $\\textcolor{{{color:primary.0}}}{-}{{a}}$ est négatif : le dividende et le diviseur sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. Le diviseur $\\textcolor{{{color:primary.0}}}{-}{{b}}$ est négatif, donc le dividende manquant est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$. Sa distance à zéro s'obtient par l'opération inverse.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.2}}}{+}\\left( {{a}} \\times {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Classé R-INV puis N-SIGNES (décision du 2026-09-29) : signe par la règle, distance à zéro par l’opération inverse."
+	]
+}

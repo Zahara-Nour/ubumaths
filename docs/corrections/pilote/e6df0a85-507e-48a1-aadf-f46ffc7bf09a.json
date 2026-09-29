@@ -1,0 +1,18 @@
+{
+	"templateId": "e6df0a85-507e-48a1-aadf-f46ffc7bf09a",
+	"title": "Calculer une somme",
+	"classe": "R",
+	"code": "R-PASS",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"On complète ${{eval:a*10 + b}}$ à la dizaine : il manque $\\textcolor{{{color:primary.0}}}{{{eval:10-mod((a*10 + b),10)}}}$ pour arriver à $\\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+10-mod((a*10 + b),10)}}}$. On décompose donc $\\textcolor{{{color:primary.0}}}{{{eval:c*10+d}}}$ en $\\textcolor{{{color:primary.0}}}{{{eval:10-mod((a*10 + b),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:(c*10+d)-(10-mod((a*10 + b),10))}}}$.",
+				"$$\\begin{align} {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:c*10+d}}} &= {{eval:a*10 + b}} + \\textcolor{{{color:primary.0}}}{{{eval:10-mod((a*10 + b),10)}}} + \\textcolor{{{color:primary.0}}}{{{eval:(c*10+d)-(10-mod((a*10 + b),10))}}} \\\\ &= \\textcolor{{{color:primary.1}}}{{{eval:(a*10 + b)+10-mod((a*10 + b),10)}}} + {{eval:(c*10+d)-(10-mod((a*10 + b),10))}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:a*10 + b}} +{{eval:c*10+d}} » ; branches : cas général seul"
+	]
+}
