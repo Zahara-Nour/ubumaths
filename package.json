@@ -55,7 +55,7 @@
 		"maintenance:off": "bash scripts/vercel-maintenance.sh off",
 		"maintenance:status": "bash scripts/vercel-maintenance.sh status",
 		"kill:servers": "bash scripts/kill-servers.sh",
-		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls > src/lib/types/database.ts",
+		"db:types": "pnpm supabase gen types typescript --project-id cnevnzsvixxpnurautls --schema public > src/lib/types/database.ts",
 		"check:barrels": "tsx scripts/check-barrel-exports.ts",
 		"check:await-render": "tsx scripts/check-await-render.ts",
 		"check:ubumark": "tsx scripts/check-ubumark.ts",

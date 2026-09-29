@@ -40,6 +40,10 @@ jobs:
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
+      - name: Supabase CLI version
+        # Doit afficher la version exacte de la devDependency (package.json).
+        run: pnpm exec supabase --version
+
       - name: Start Supabase (applies migrations)
         # Stack allégée : l'image storage-api renvoie "manifest unknown" (indispo sur
         # ghcr ET docker.io). Les tests d'intégration n'utilisent pas l'API HTTP
