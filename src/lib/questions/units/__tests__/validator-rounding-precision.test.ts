@@ -195,3 +195,23 @@ describe('Température décalée : significatifs jugés dans l’unité attendue
 		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
 	});
 });
+
+// Bruit flottant : 268 − 273,15 = −5,149999… en machine, mais vaut −5,15 :
+// l'arrondi au dixième (moitié loin de zéro) est −5,2, pas −5,1.
+describe('Température décalée : bruit flottant sur les moitiés', () => {
+	const TENTH: PrecisionType = { type: 'decimal', digits: 1 };
+
+	it.each([
+		['268', '-5{,}2', '-5{,}1'],
+		['273', '-0{,}2', '-0{,}1'],
+		['300', '26{,}9', '26{,}8']
+	])('%s K au dixième : %s °C juste, %s °C faux', (kelvins, right, wrong) => {
+		const expected = `${kelvins}\\unit{K}`;
+		const good = validateQuantityAnswer(`${right}\\unit{°C}`, expected, TENTH);
+		expect(good.isCorrect).toBe(true);
+		expect(good.feedback).toBeNull();
+		const bad = validateQuantityAnswer(`${wrong}\\unit{°C}`, expected, TENTH);
+		expect(bad.isCorrect).toBe(false);
+		expect(bad.feedback).toBe('Valeur incorrecte.');
+	});
+});

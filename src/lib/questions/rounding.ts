@@ -106,8 +106,16 @@ function roundHalfAwayFromZero(value: number, decimals: number): number {
 	return sign * Number(`${shifted}e${-decimals}`);
 }
 
-/** Arrondi de la valeur attendue à la précision demandée */
-export function roundToPrecision(value: number, precision: RoundingPrecision): number {
+/** Chiffres significatifs gardés pour effacer le bruit d'un calcul flottant */
+const DENOISE_DIGITS = 12;
+
+/**
+ * Arrondi de la valeur attendue à la précision demandée. La valeur est d'abord
+ * débruitée : 268 − 273,15 vaut −5,1499… en machine, et son arrondi au dixième
+ * doit être celui de −5,15 (−5,2), pas un hasard du flottant.
+ */
+export function roundToPrecision(rawValue: number, precision: RoundingPrecision): number {
+	const value = Number(rawValue.toPrecision(DENOISE_DIGITS));
 	if (precision.type === 'decimal') return roundHalfAwayFromZero(value, precision.digits);
 	if (value === 0) return 0;
 	const magnitude = Math.floor(Math.log10(Math.abs(value)));
