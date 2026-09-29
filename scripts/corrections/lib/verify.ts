@@ -70,6 +70,37 @@ export interface ProposalReport {
 	passed: boolean;
 }
 
+/**
+ * Contrôles STRUCTURELS déclarés par le lot, modèle par modèle (jamais un passe-droit
+ * global) : là où la question ne pose aucun calcul lisible, le lot dit ce qu'il faut
+ * vérifier à la place, et le vérificateur le vérifie à chaque tirage.
+ */
+export interface StructuralChecks {
+	/**
+	 * Opération posée dans la PHRASE (« le quadruple de 12 ») : forme de calcul à
+	 * variables (`4*{{a}}`). Garde-fou : chaque nombre de l'opération résolue figure
+	 * dans l'énoncé, sauf les `constants` déclarées (le 4 de « quadruple »).
+	 * Refusée si l'énoncé pose déjà une opération lisible. `operand` : le calcul
+	 * COMMENCE par ce nombre (`2.1 - 0.1 = 2`, troncature) au lieu de le valoir.
+	 */
+	posed?: { expression: string; constants?: string[]; operand?: boolean };
+	/** Le calcul part de −(A) (« opposé de ») ou de 1/A (« inverse de ») */
+	transform?: 'opposite' | 'inverse';
+	/** La réponse est UN FACTEUR du dernier membre (produit) du dernier calcul */
+	end?: 'factor';
+	/** Racine affine : lignes d'équations `L &= R`, toutes de solution la réponse */
+	equations?: 'affine-root';
+	/** Trou au dénominateur de fractions de même dénominateur : `? = réponse` suffit */
+	hole?: 'denominator';
+	/** Chiffre d'un rang : lu dans le tableau de numération de la correction */
+	digit?: { number: string; rank: number };
+	/** La réponse est une ÉCRITURE (traduire une phrase) : la conclusion l'écrit telle quelle */
+	written?: true;
+}
+
+/** Contrôles communs, ou variation par variation */
+export type EntryChecks = StructuralChecks | StructuralChecks[];
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -201,21 +232,44 @@ export function escapeRegExp(text: string): string {
 
 /** Point de départ attendu du calcul : l'opération posée par la question */
 export type PosedStart =
-	| { kind: 'value'; value: number; expression: string }
+	| { kind: 'value'; value: number; expression: string; operand?: boolean }
 	| { kind: 'hole'; expression: string }
+	| { kind: 'holes'; expression: string }
+	| { kind: 'quantity'; expression: string }
 	| { kind: 'literal'; latex: string; expression: string }
 	| { kind: 'unknown'; expression: string | null };
 
 /**
+ * Relation posée en LaTeX avec unités et case (`2~\unit{m^3} = \placeholder[0]{}~\unit{L}`)
+ * → forme de calcul (`2[m^3] = ?[L]`) ; `null` si elle contient autre chose.
+ */
+export function unitHoleForm(latex: string): string | null {
+	if (!/\\unit\{/.test(latex) || !/\\placeholder/.test(latex)) return null;
+	const form = stripDecorations(latex)
+		.replace(/\s*~?\s*\\unit\{([^{}]*)\}/g, '[$1]')
+		.replace(/\\placeholder\[\d+\]\{\}/g, '?')
+		.replace(/\{,\}/g, '.')
+		.trim();
+	return /^[\d.\s+=?[\]a-zA-Z^]+$/.test(form) ? form : null;
+}
+
+/**
  * Sans variable d'expression : l'UNIQUE bloc `$$…$$` de l'énoncé résolu, s'il se lit
- * comme une valeur (nombre ou expression littérale, sans `=` ni inconnue).
+ * comme une valeur (nombre ou expression littérale, sans `=` ni inconnue) ; ou
+ * l'unique formule de l'énoncé si c'est une égalité à trou avec unités.
  */
 function statementStart(instance: QuestionInstance): PosedStart {
-	const blocks = [...String(instance.statement ?? '').matchAll(/\$\$([\s\S]+?)\$\$/g)].map((m) =>
-		m[1].trim()
-	);
+	const statement = String(instance.statement ?? '');
+	const blocks = [...statement.matchAll(/\$\$([\s\S]+?)\$\$/g)].map((m) => m[1].trim());
+	if (blocks.length === 0) {
+		const inline = extractMath(statement);
+		const form = inline.length === 1 ? unitHoleForm(inline[0]) : null;
+		if (form) return { kind: 'hole', expression: form };
+	}
 	if (blocks.length !== 1) return { kind: 'unknown', expression: null };
 	const latex = blocks[0];
+	const form = unitHoleForm(latex);
+	if (form) return { kind: 'hole', expression: form };
 	if (latex.includes('=')) return { kind: 'unknown', expression: latex };
 	const value = numericValue(latex);
 	if (value !== null) return { kind: 'value', value, expression: latex };
@@ -223,16 +277,96 @@ function statementStart(instance: QuestionInstance): PosedStart {
 	return { kind: 'unknown', expression: latex };
 }
 
+/** Nombres d'un texte (`10\,000` → 10000, `2{,}5` → 2.5) */
+function numbersIn(text: string): number[] {
+	const plain = text
+		.replace(/\\[,;: ]|\\thinspace/g, '')
+		.replace(/\{,\}/g, '.')
+		.replace(/(\d),(\d)/g, '$1.$2');
+	return [...plain.matchAll(/\d+(?:\.\d+)?/g)].map((m) => Number(m[0]));
+}
+
 /**
- * L'opération posée : valeur de la variable d'expression, trou `?`, expression
- * littérale (convertie en LaTeX, sans évaluation), ou — sans variable
- * d'expression — le bloc mathématique unique de l'énoncé.
+ * Opération posée DÉCLARÉE par le lot (`4*{{a}}`), résolue sur le tirage : chaque
+ * nombre doit figurer dans l'énoncé ou dans les constantes déclarées.
  */
-export function posedStart(instance: QuestionInstance): PosedStart {
+function declaredStart(
+	instance: QuestionInstance,
+	posed: NonNullable<StructuralChecks['posed']>
+): PosedStart {
+	let resolved: string;
+	try {
+		resolved = resolveExpression(posed.expression, instance.resolvedVariables ?? []);
+	} catch {
+		return { kind: 'unknown', expression: `posé déclaré illisible « ${posed.expression} »` };
+	}
+	const inStatement = numbersIn(String(instance.statement ?? ''));
+	const constants = (posed.constants ?? []).map(Number);
+	const foreign = numbersIn(resolved).filter(
+		(n) => !inStatement.some((s) => sameNumber(s, n)) && !constants.some((c) => sameNumber(c, n))
+	);
+	if (foreign.length > 0) {
+		return {
+			kind: 'unknown',
+			expression: `posé déclaré « ${resolved} » : ${foreign.join(', ')} absent(s) de l'énoncé`
+		};
+	}
+	const value = evalFormValue(resolved);
+	return value === null
+		? { kind: 'unknown', expression: `posé déclaré non numérique « ${resolved} »` }
+		: { kind: 'value', value, expression: resolved, operand: posed.operand };
+}
+
+/** Premier nombre écrit d'un membre (`7.996 - 0.006` → 7.996), null s'il n'y en a pas */
+export function leadingNumber(latex: string): number | null {
+	const match = /-?\d+(?:\.\d+)?/.exec(stripDecorations(latex).replace(/\{,\}/g, '.'));
+	return match ? Number(match[0]) : null;
+}
+
+/** Le départ transformé : −A (opposé) ou 1/A (inverse) */
+function transformStart(start: PosedStart, transform: StructuralChecks['transform']): PosedStart {
+	if (!transform) return start;
+	if (start.kind === 'value') {
+		if (transform === 'inverse' && start.value === 0) return { kind: 'unknown', expression: '1/0' };
+		const value = transform === 'opposite' ? -start.value : 1 / start.value;
+		return { ...start, value, expression: `${transform}(${start.expression})` };
+	}
+	if (start.kind === 'literal') {
+		const latex =
+			transform === 'opposite' ? `-\\left(${start.latex}\\right)` : `\\dfrac{1}{${start.latex}}`;
+		return { ...start, latex };
+	}
+	return { kind: 'unknown', expression: `${transform} d'un départ ${start.kind}` };
+}
+
+/**
+ * L'opération posée : valeur de la variable d'expression, trou `?` (plusieurs :
+ * `holes`), grandeur avec unités, expression littérale (convertie en LaTeX, sans
+ * évaluation), ou — sans variable d'expression — le bloc mathématique unique de
+ * l'énoncé. Les contrôles déclarés du lot (`posed`, `transform`) s'appliquent ensuite.
+ */
+export function posedStart(instance: QuestionInstance, checks: StructuralChecks = {}): PosedStart {
+	const start = rawPosedStart(instance);
+	if (checks.posed) {
+		if (start.kind !== 'unknown') {
+			return {
+				kind: 'unknown',
+				expression: `posé déclaré alors que l'énoncé pose « ${start.expression} »`
+			};
+		}
+		return transformStart(declaredStart(instance, checks.posed), checks.transform);
+	}
+	return transformStart(start, checks.transform);
+}
+
+function rawPosedStart(instance: QuestionInstance): PosedStart {
 	const variable = (instance.resolvedVariables ?? []).find((v) => v.name.startsWith('expression'));
 	if (!variable) return statementStart(instance);
 	const expression = variable.value;
-	if (expression.includes('?')) return { kind: 'hole', expression };
+	const holes = (expression.match(/\?/g) ?? []).length;
+	if (holes >= 2) return { kind: 'holes', expression };
+	if (holes === 1) return { kind: 'hole', expression };
+	if (/\[[^\]]+\]/.test(expression)) return { kind: 'quantity', expression };
 	try {
 		const value = numericValue(resolveExpression(`{{eval:${expression}}}`, []));
 		if (value !== null) return { kind: 'value', value, expression };
@@ -269,17 +403,84 @@ function evalFormValue(expression: string): number | null {
 	}
 }
 
+// ---------------------------------------------------------------- grandeurs
+
+/** Deux grandeurs (formes `n[unité]`) sont-elles égales ? (rapport = 1, convertisseur du projet) */
+export function sameQuantity(a: string, b: string): boolean {
+	const ratio = evalFormValue(`(${a})/(${b})`);
+	return ratio !== null && sameNumber(ratio, 1);
+}
+
+// ---------------------------------------------------------------- relations posées
+
+const RELATION = /<=|>=|<|>|=/g;
+
+/**
+ * La relation posée tient-elle quand ses « ? » sont remplacés, DANS L'ORDRE, par
+ * `values` ? (`? < 2.055 < ?` avec 2.05 et 2.06 → vrai ; `2[km] = ?[m]` avec
+ * 2000 → vrai, par le convertisseur d'unités). `null` : relation illisible.
+ */
+export function relationHolds(expression: string, values: number[]): boolean | null {
+	if ((expression.match(/\?/g) ?? []).length !== values.length) return null;
+	const hasUnits = expression.includes('[');
+	let index = 0;
+	// Avec unité (`?[m]`), le nombre nu ; sinon entre parenthèses (négatifs)
+	const filled = expression.replace(/\?/g, () =>
+		hasUnits ? `${values[index++]}` : `(${values[index++]})`
+	);
+	const operators = filled.match(RELATION) ?? [];
+	const sides = filled.split(RELATION);
+	if (operators.length === 0 || sides.length !== operators.length + 1) return null;
+	for (let i = 0; i < operators.length; i++) {
+		const [left, right] = [sides[i], sides[i + 1]];
+		if (operators[i] === '=' && hasUnits) {
+			if (!sameQuantity(left, right)) return false;
+			continue;
+		}
+		const [a, b] = [evalFormValue(left), evalFormValue(right)];
+		if (a === null || b === null) return null;
+		const holds =
+			operators[i] === '='
+				? sameNumber(a, b)
+				: operators[i] === '<'
+					? a < b
+					: operators[i] === '>'
+						? a > b
+						: operators[i] === '<='
+							? a <= b
+							: a >= b;
+		if (!holds) return false;
+	}
+	return true;
+}
+
 /**
  * L'égalité posée par une question à trou tient-elle quand on remplace « ? » par
  * `value` ? `3 + ? = 10` avec 7 → vrai. `null` : l'égalité posée ne se lit pas
  * (pas exactement un « = », membre illisible).
  */
 export function holeEquationHolds(expression: string, value: number): boolean | null {
-	const sides = expression.split('=');
-	if (sides.length !== 2) return null;
-	const [left, right] = sides.map((side) => evalFormValue(side.replace(/\?/g, `(${value})`)));
-	if (left === null || right === null) return null;
-	return sameNumber(left, right);
+	if (expression.split('=').length !== 2) return null;
+	return relationHolds(expression, [value]);
+}
+
+/** Côtés sans « ? » d'une relation posée, en nombres (`? < 2.055 < ?` → [2.055]) */
+function holeFreeSides(expression: string): number[] {
+	return expression
+		.split(RELATION)
+		.filter((side) => !side.includes('?'))
+		.map(evalFormValue)
+		.filter((v): v is number => v !== null);
+}
+
+/**
+ * Trou au dénominateur (`3/? + 2/11 = 5/11`) : toutes les autres fractions ont
+ * pour dénominateur la réponse attendue — alors `? = réponse` se lit sans calcul.
+ */
+export function denominatorHoleOk(expression: string, expected: number): boolean {
+	if (!/\/\s*\?/.test(expression)) return false;
+	const others = [...expression.matchAll(/\/\s*\{?(-?\d+(?:\.\d+)?)\}?/g)].map((m) => Number(m[1]));
+	return others.length > 0 && others.every((d) => sameNumber(d, expected));
 }
 
 /**
@@ -288,9 +489,13 @@ export function holeEquationHolds(expression: string, value: number): boolean | 
  * trou, et alors le membre suivant doit valoir la réponse attendue. La première
  * chaîne part de l'opération posée (même valeur que la variable d'expression).
  */
-export function checkChains(chains: string[][], instance: QuestionInstance): string[] {
+export function checkChains(
+	chains: string[][],
+	instance: QuestionInstance,
+	checks: StructuralChecks = {}
+): string[] {
 	const reasons: string[] = [];
-	const start = posedStart(instance);
+	const start = posedStart(instance, checks);
 	const isHoleQuestion = start.kind === 'hole' && (instance.blanks?.length ?? 0) > 0;
 	chains.forEach((chain, chainIndex) => {
 		const shown = chain.map(stripDecorations).join(' = ');
@@ -341,8 +546,14 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 			) {
 				reasons.push(`« ? » doit être suivi de la réponse attendue : ${shown}`);
 			}
-			// « ? = réponse » seul ne calcule rien : au moins un calcul entre les deux
-			if (chain.length < 3) {
+			// « ? = réponse » seul ne calcule rien : au moins un calcul entre les deux —
+			// sauf trou au dénominateur déclaré, quand les autres fractions le donnent
+			const givenByDenominators =
+				checks.hole === 'denominator' &&
+				expected !== null &&
+				start.kind === 'hole' &&
+				denominatorHoleOk(start.expression, expected);
+			if (chain.length < 3 && !givenByDenominators) {
 				reasons.push(`« ? » doit être suivi d'un calcul, puis de la réponse : ${shown}`);
 			}
 			// Le calcul répond à l'égalité POSÉE : « ? » remplacé par sa valeur, elle tient
@@ -358,6 +569,18 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 			}
 		} else if (start.kind === 'hole') {
 			reasons.push(`question à trou : le calcul doit partir de « ? » : ${shown}`);
+		} else if (start.kind === 'holes') {
+			// Plusieurs trous : le calcul COMMENCE par un nombre donné par la relation posée
+			const sides = holeFreeSides(start.expression);
+			const lead = leadingNumber(chain[0]);
+			if (lead === null || !sides.some((side) => sameNumber(side, lead))) {
+				reasons.push(
+					`le calcul ne part pas d'un nombre de la relation posée « ${start.expression} » : ${shown}`
+				);
+			}
+		} else if (start.kind === 'quantity') {
+			// Grandeur posée sans trou : `\unit` est refusé par MathLive dans une correction
+			reasons.push(`grandeur posée « ${start.expression} » : départ invérifiable : ${shown}`);
 		} else if (start.kind === 'literal') {
 			if (!literallyEquivalent(chain[0], start.latex)) {
 				reasons.push(`le calcul ne part pas de l'expression posée « ${start.latex} » : ${shown}`);
@@ -366,6 +589,13 @@ export function checkChains(chains: string[][], instance: QuestionInstance): str
 			reasons.push(
 				`point de départ invérifiable (opération posée : ${start.expression ?? 'aucune'}) : ${shown}`
 			);
+		} else if (start.operand) {
+			const lead = leadingNumber(chain[0]);
+			if (lead === null || !sameNumber(lead, start.value)) {
+				reasons.push(
+					`le calcul ne commence pas par le nombre posé « ${start.expression} » : ${shown}`
+				);
+			}
 		} else if (values[0] === null || !sameNumber(values[0], start.value)) {
 			reasons.push(`le calcul ne part pas de l'opération posée « ${start.expression} » : ${shown}`);
 		}
@@ -423,8 +653,221 @@ export function givenInProse(steps: string[], expected: number): boolean {
 	);
 }
 
+// ============================================================================
+// CONTRÔLES STRUCTURELS DÉCLARÉS
+// ============================================================================
+
+/** Lignes des blocs `align` : `L &= R \\ …` → [[L, R], …] (une ligne = une équation) */
+export function alignRows(latex: string): string[][] {
+	const rows: string[][] = [];
+	for (const match of latex.matchAll(/\\begin\{align\*?\}([\s\S]*?)\\end\{align\*?\}/g)) {
+		for (const row of match[1].split('\\\\')) {
+			if (row.trim() === '') continue;
+			rows.push(row.split('&=').map((member) => member.trim()));
+		}
+	}
+	return rows;
+}
+
+/** Valeur de `L − R` quand `x` vaut `value` (null : illisible) */
+function equationGap(left: string, right: string, value: number): number | null {
+	const at = (side: string) =>
+		numericValue(
+			stripDecorations(side).replace(/(?<![a-zA-Z\\])x(?![a-zA-Z])/g, `\\left(${value}\\right)`)
+		);
+	const [l, r] = [at(left), at(right)];
+	return l === null || r === null ? null : l - r;
+}
+
+/**
+ * Racine affine : le calcul est une suite d'ÉQUATIONS `L &= R` en `x`. La première
+ * est `f(x) = 0` (f équivalente à la fonction posée), la dernière `x = réponse`, et
+ * chacune est affine non dégénérée et vérifiée par la réponse — donc de solution
+ * unique la réponse : les lignes sont équivalentes entre elles.
+ */
+export function affineRootReasons(steps: string[], instance: QuestionInstance): string[] {
+	const reasons: string[] = [];
+	const rows = steps.flatMap((step) => extractMath(step).flatMap(alignRows));
+	const expected = expectedBlankValue(instance);
+	if (expected === null) return ['racine affine : réponse attendue illisible'];
+	if (rows.length < 2) return ['racine affine : au moins deux équations alignées'];
+	const block = [...String(instance.statement ?? '').matchAll(/\$\$([\s\S]+?)\$\$/g)];
+	const posed = block.length === 1 ? block[0][1].split('=').slice(1).join('=').trim() : '';
+	if (posed === '') reasons.push('racine affine : fonction posée illisible');
+	rows.forEach((row, index) => {
+		const shown = row.map(stripDecorations).join(' = ');
+		if (row.length !== 2) {
+			reasons.push(`racine affine : « ${shown} » n'est pas une équation`);
+			return;
+		}
+		const [g0, g1, g2] = [0, 1, 2].map((k) => equationGap(row[0], row[1], expected + k));
+		if (g0 === null || g1 === null || g2 === null) {
+			reasons.push(`racine affine : équation illisible « ${shown} »`);
+		} else if (!sameNumber(g0 + 1, 1)) {
+			reasons.push(`racine affine : x = ${expected} ne vérifie pas « ${shown} »`);
+		} else if (sameNumber(g1 + 1, 1) || !sameNumber(g2 - 2 * g1 + g0 + 1, 1)) {
+			reasons.push(`racine affine : « ${shown} » n'est pas affine non dégénérée`);
+		}
+		if (index === 0 && posed !== '') {
+			if (!literallyEquivalent(row[0], posed) || numericValue(row[1]) !== 0) {
+				reasons.push(`racine affine : la première équation n'est pas f(x) = 0 : ${shown}`);
+			}
+		}
+	});
+	const last = rows.at(-1) ?? [];
+	if (stripDecorations(last[0] ?? '').trim() !== 'x') {
+		reasons.push('racine affine : la dernière équation n’isole pas x');
+	}
+	return reasons;
+}
+
+const RANK_VALUES: Record<string, number> = {
+	unités: 1,
+	dizaines: 10,
+	centaines: 100,
+	milliers: 1000,
+	'dizaines de milliers': 10000,
+	dixièmes: 0.1,
+	centièmes: 0.01,
+	millièmes: 0.001
+};
+
+/**
+ * Chiffre d'un rang : le tableau de numération de la correction RELIT le nombre
+ * posé (somme chiffre × rang), et sa colonne du rang demandé porte la réponse,
+ * qui est bien le chiffre de ce rang.
+ */
+export function digitTableReasons(
+	steps: string[],
+	instance: QuestionInstance,
+	digit: NonNullable<StructuralChecks['digit']>
+): string[] {
+	const number = evalFormValue(resolveExpression(digit.number, instance.resolvedVariables ?? []));
+	const expected = expectedBlankValue(instance);
+	if (number === null || expected === null) return ['chiffre : nombre ou réponse illisible'];
+	const truth = Math.floor(Math.round((number / digit.rank) * 1e6) / 1e6) % 10;
+	const reasons: string[] = [];
+	if (truth !== expected) {
+		reasons.push(
+			`chiffre : le chiffre de rang ${digit.rank} de ${number} est ${truth}, attendu ${expected}`
+		);
+	}
+	const table = steps
+		.flatMap(extractMath)
+		.map((latex) => /\\begin\{array\}\{[^}]*\}([\s\S]*?)\\end\{array\}/.exec(latex))
+		.find((m) => m !== null);
+	if (!table) return [...reasons, 'chiffre : aucun tableau de numération'];
+	const [head, cells] = table[1].split('\\\\').map((row) =>
+		row.split('&').map((cell) =>
+			stripDecorations(cell)
+				.replace(/\\text\{([^}]*)\}/g, '$1')
+				.trim()
+		)
+	);
+	if (!head || !cells || head.length !== cells.length)
+		return [...reasons, 'chiffre : tableau illisible'];
+	let read = 0;
+	let found: number | null = null;
+	head.forEach((label, col) => {
+		const rank = RANK_VALUES[label];
+		if (rank === undefined) return;
+		const value = cells[col] === '' ? 0 : Number(cells[col].replace(/[,.]$/, ''));
+		if (!Number.isInteger(value) || value < 0 || value > 9) {
+			reasons.push(`chiffre : cellule « ${cells[col]} » (${label})`);
+			return;
+		}
+		read += value * rank;
+		if (sameNumber(rank, digit.rank)) found = value;
+	});
+	if (!sameNumber(read, number))
+		reasons.push(`chiffre : le tableau lit ${read}, nombre posé ${number}`);
+	if (found === null || found !== expected) {
+		reasons.push(`chiffre : la colonne du rang ${digit.rank} ne porte pas la réponse ${expected}`);
+	}
+	return reasons;
+}
+
+/** Facteurs d'un produit au premier niveau : `3 \times \left( … \right)`, `2\left( … \right)` */
+export function topLevelFactors(latex: string): string[] {
+	const plain = stripDecorations(latex).trim();
+	const factors: string[] = [];
+	let depth = 0;
+	let current = '';
+	for (let i = 0; i < plain.length; i++) {
+		const rest = plain.slice(i);
+		if (rest.startsWith('\\left(') || plain[i] === '{' || plain[i] === '(') depth++;
+		if (rest.startsWith('\\right)') || plain[i] === '}' || plain[i] === ')') depth--;
+		const op = /^\\(times|cdot)(?![a-zA-Z])/.exec(rest);
+		if (depth === 0 && op) {
+			factors.push(current.trim());
+			current = '';
+			i += op[0].length - 1;
+			continue;
+		}
+		if (depth === 0 && /[+-]/.test(plain[i]) && current.trim() !== '') return [plain];
+		current += plain[i];
+	}
+	factors.push(current.trim());
+	if (factors.length > 1) return factors;
+	// Juxtaposition : un nombre devant une parenthèse (`2\left( y - x \right)`)
+	const juxtaposed = /^(\d+(?:\.\d+)?)\s*(\\left\(.*\\right\))$/.exec(plain);
+	return juxtaposed ? [juxtaposed[1], juxtaposed[2]] : [plain];
+}
+
+/**
+ * Facteur commun : le dernier membre du dernier calcul est un PRODUIT dont un
+ * facteur vaut la réponse (le calcul, parti de l'expression posée, prouve alors
+ * que la réponse est un facteur de chaque terme) ; en numérique, le reste est entier.
+ */
+export function factorEndReasons(chains: string[][], instance: QuestionInstance): string[] {
+	const last = chains.at(-1)?.at(-1);
+	const expected = expectedBlankValue(instance);
+	const expectedLatex = expectedBlankLatex(instance) ?? '';
+	if (!last || expectedLatex === '') return ['facteur : aucun calcul, ou réponse illisible'];
+	const squash = (text: string) => stripDecorations(text).replace(/\s+/g, '');
+	// Facteur numérique (même nombre) ou littéral (même écriture : `y`)
+	const isAnswer = (factor: string) =>
+		expected !== null
+			? numericValue(factor) !== null && sameNumber(numericValue(factor) as number, expected)
+			: squash(factor) === squash(expectedLatex);
+	const factors = topLevelFactors(last);
+	if (factors.length < 2 || !factors.some(isAnswer)) {
+		return [`facteur : « ${stripDecorations(last)} » n'a pas le facteur ${expectedLatex}`];
+	}
+	if (expected === null) return [];
+	const value = numericValue(last);
+	if (value !== null && !Number.isInteger(Math.round((value / expected) * 1e9) / 1e9)) {
+		return [`facteur : ${value} n'est pas un multiple de ${expected}`];
+	}
+	return [];
+}
+
+/**
+ * Réponse ÉCRITE (traduire une phrase) : la conclusion écrit la réponse attendue
+ * telle quelle (espaces près), et chacun de ses nombres figure dans l'énoncé.
+ */
+export function writtenAnswerReasons(steps: string[], instance: QuestionInstance): string[] {
+	const expected = expectedBlankLatex(instance);
+	if (!expected) return ['écriture : réponse attendue absente'];
+	const squash = (text: string) => stripDecorations(text).replace(/\s+/g, '');
+	const lastStep = steps.at(-1) ?? '';
+	const reasons: string[] = [];
+	if (!extractMath(lastStep).some((latex) => squash(latex) === squash(expected))) {
+		reasons.push(`écriture : la conclusion n'écrit pas « ${expected} »`);
+	}
+	const inStatement = numbersIn(String(instance.statement ?? ''));
+	for (const n of numbersIn(expected)) {
+		if (!inStatement.some((s) => sameNumber(s, n)))
+			reasons.push(`écriture : ${n} absent de l'énoncé`);
+	}
+	return reasons;
+}
+
 /** Contrôles d'un tirage ; rend les raisons d'échec */
-export function checkInstance(instance: QuestionInstance): { reasons: string[] } {
+export function checkInstance(
+	instance: QuestionInstance,
+	checks: StructuralChecks = {}
+): { reasons: string[] } {
 	const reasons: string[] = [];
 	const steps = (instance.correction?.steps ?? []).map(String);
 	if (steps.length === 0) return { reasons: ['aucune étape rendue'] };
@@ -449,12 +892,24 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 		}
 	});
 
+	// Racine affine déclarée : des équations, pas une chaîne d'égalités
+	if (checks.equations === 'affine-root') {
+		reasons.push(...affineRootReasons(steps, instance));
+		return { reasons };
+	}
+
 	const chains = steps.flatMap((step) => extractMath(step).flatMap(alignChains));
-	reasons.push(...checkChains(chains, instance));
+	reasons.push(...checkChains(chains, instance, checks));
 
 	// Fin du calcul : la réponse attendue (chaque case, quand il y en a plusieurs)
 	const blanks = instance.blanks ?? [];
-	if (blanks.length === 1) {
+	if (blanks.length === 1 && checks.digit) {
+		reasons.push(...digitTableReasons(steps, instance, checks.digit));
+	} else if (blanks.length === 1 && checks.end === 'factor') {
+		reasons.push(...factorEndReasons(chains, instance));
+	} else if (blanks.length === 1 && checks.written) {
+		reasons.push(...writtenAnswerReasons(steps, instance));
+	} else if (blanks.length === 1) {
 		const expected = expectedBlankValue(instance);
 		const expectedLatex = expectedBlankLatex(instance) ?? '';
 		const last = chains.at(-1)?.at(-1);
@@ -476,6 +931,19 @@ export function checkInstance(instance: QuestionInstance): { reasons: string[] }
 			}
 		}
 	} else if (blanks.length > 1) {
+		// Plusieurs trous dans UNE relation posée : elle tient, cases remplies dans l'ordre
+		const start = posedStart(instance, checks);
+		if (start.kind === 'holes') {
+			const values = blanks.map((_, index) => expectedBlankValue(instance, index));
+			const holds = values.some((v) => v === null)
+				? null
+				: relationHolds(start.expression, values as number[]);
+			if (holds !== true) {
+				reasons.push(
+					`relation posée « ${start.expression} » ${holds === null ? 'illisible' : 'fausse'} avec les réponses ${values.join(' ; ')}`
+				);
+			}
+		}
 		// Chaque case doit être la fin d'un calcul distinct
 		const ends = chains.map((chain) => numericValue(chain.at(-1) ?? ''));
 		blanks.forEach((blank, index) => {
@@ -527,7 +995,7 @@ function withoutDatabaseFields(template: QuestionTemplate): Omit<QuestionTemplat
 export function verifyProposal(
 	template: QuestionTemplate,
 	proposal: Proposal,
-	options: { seeds?: number } = {}
+	options: { seeds?: number; checks?: EntryChecks } = {}
 ): ProposalReport {
 	const report: ProposalReport = {
 		templateId: template.id,
@@ -556,6 +1024,13 @@ export function verifyProposal(
 
 	injected.variations.forEach((_, variationIndex) => {
 		const { sampling, draws } = planDraws(injected, variationIndex, options);
+		const checks = Array.isArray(options.checks)
+			? options.checks[variationIndex]
+			: (options.checks ?? {});
+		if (!checks) {
+			report.templateErrors.push(`contrôles déclarés : rien pour la variation ${variationIndex}`);
+			return;
+		}
 		report.samplings.push(sampling);
 		for (const { label, result } of draws) {
 			report.instances++;
@@ -563,7 +1038,7 @@ export function verifyProposal(
 				report.failures.push({ variationIndex, draw: label, reasons: result.errors });
 				continue;
 			}
-			const { reasons } = checkInstance(result.instance);
+			const { reasons } = checkInstance(result.instance, checks);
 			if (reasons.length > 0) report.failures.push({ variationIndex, draw: label, reasons });
 		}
 	});

@@ -1,0 +1,15 @@
+{
+	"templateId": "17a3c039-744d-4108-9b47-49f0183990b7",
+	"title": "Trouver le complément",
+	"classe": "R",
+	"code": "R-COMPL",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Compléter.** On avance par bonds : jusqu’au millier suivant, puis jusqu’à $10\\,000$.",
+			"De $\\textcolor{{{color:primary.0}}}{{{eval:10000-(c)}}}$ à $\\textcolor{{{color:primary.1}}}{{{eval:10000-a*1000}}}$, il faut $\\textcolor{{{color:primary.1}}}{{{eval:b*100}}}$ ; de $\\textcolor{{{color:primary.1}}}{{{eval:10000-a*1000}}}$ à $10\\,000$, il faut $\\textcolor{{{color:primary.1}}}{{{eval:a*1000}}}$.",
+			"$$\\begin{align} 10\\,000 - \\textcolor{{{color:primary.0}}}{{{eval:10000-(c)}}} &= \\textcolor{{{color:primary.1}}}{{{eval:b*100}}} + \\textcolor{{{color:primary.1}}}{{{eval:a*1000}}} \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

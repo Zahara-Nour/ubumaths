@@ -1,0 +1,16 @@
+{
+	"templateId": "14a51794-8825-4297-9858-083fad48ab8c",
+	"title": "Compléter l'égalité d'une division euclidienne",
+	"classe": "N",
+	"code": "N-DIVEUCL",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Division euclidienne.** $a = b \\times q + r$ avec $0 \\leq r < b$ : $q$ est le quotient, $r$ le reste.",
+			"Dans la table de $\\textcolor{{{color:primary.0}}}{{{a}}}$, le plus grand multiple qui ne dépasse pas $\\;{{eval:a*b+c}}$ est $\\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}}$ : le quotient est $q = \\textcolor{{{color:primary.1}}}{{{b}}}$.",
+			"$$\\begin{align} {{eval:a*b+c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\textcolor{{{color:primary.1}}}{{{b}}} &= {{eval:a*b+c}} - {{eval:a*b}} \\\\ &= {{c}} \\end{align}$$",
+			"Le reste est $\\textcolor{{{color:primary.2}}}{{{c}}}$ (il est bien plus petit que $\\;{{a}}$) : $$\\;{{eval:a*b+c}} = \\left( {{a}} \\times {{b}} \\right) + {{c}}$$"
+		]
+	},
+	"notes": []
+}

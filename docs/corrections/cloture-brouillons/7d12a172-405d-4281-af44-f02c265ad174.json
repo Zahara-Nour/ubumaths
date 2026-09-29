@@ -1,0 +1,44 @@
+{
+	"templateId": "7d12a172-405d-4281-af44-f02c265ad174",
+	"title": "Compléter une addition ou soustraction à trou",
+	"classe": "N",
+	"code": "N-FRAC-ADD",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Les dénominateurs sont égaux : on cherche le numérateur manquant dans l’égalité des numérateurs.",
+				"$$\\begin{align} ? &= {{eval:a+(b)}} {{if:b<0|+ {{eval:-(b)}}|- {{b}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Toutes les autres fractions ont pour dénominateur $\\textcolor{{{color:primary.1}}}{{{c}}}$ : le dénominateur manquant est le même.",
+				"$$\\begin{align} ? &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Les dénominateurs sont égaux : on cherche le numérateur manquant dans l’égalité des numérateurs.",
+				"$$\\begin{align} ? &= {{eval:a+(b)}} {{if:a<0|+ {{eval:-(a)}}|- {{a}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Toutes les autres fractions ont pour dénominateur $\\textcolor{{{color:primary.1}}}{{{c}}}$ : le dénominateur manquant est le même.",
+				"$$\\begin{align} ? &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Les dénominateurs sont égaux : on cherche le numérateur manquant dans l’égalité des numérateurs.",
+				"$$\\begin{align} ? &= {{eval:a-(b)}} {{if:b<0|- {{eval:-(b)}}|+ {{b}}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fractions de même dénominateur.** On garde le dénominateur et on ajoute (ou on soustrait) les numérateurs : $\\dfrac{a}{d} + \\dfrac{b}{d} = \\dfrac{a + b}{d}$.",
+				"Les dénominateurs sont égaux : on cherche le numérateur manquant dans l’égalité des numérateurs.",
+				"$$\\begin{align} ? &= {{if:a-(b)=0|-\\left( 0 {{if:a<0|+ {{eval:-(a)}}|- {{a}}}} \\right)|{{a}} {{if:a-(b)<0|+ {{eval:b-(a)}}|- {{eval:a-(b)}}}}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Trou au dénominateur : contrôle déclaré `hole: denominator` (les autres dénominateurs donnent la réponse)."
+	]
+}

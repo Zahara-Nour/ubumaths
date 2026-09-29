@@ -1,0 +1,8491 @@
+[
+	{
+		"id": "f96588e4-50ee-4505-9015-54f965f8ab43",
+		"title": "Connaître la position décimale",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{d}}$ ?\n\nLe chiffre des centièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{d}}$ ?\n\nLe chiffre des dixièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{d}}$ ?\n\nLe chiffre des unités est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:13.040073+00:00",
+		"updated_at": "2026-09-27T07:17:13.040073+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Des unités jusqu'aux centièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*0.01+b*0.1+c;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "Centièmes de 1,97 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "Chiffre des dixièmes à la place des centièmes : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["07"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["zeros", "form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "« 07 » : zéro inutile refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "Dixièmes de 1,97 : 9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "Centièmes à la place des dixièmes : refusé",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1"
+				},
+				"description": "Unités de 1,97 : 1",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "0"
+				},
+				"description": "Unités de 0,52 : 0",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "ce00dd64-d584-4bfc-b23c-75d895f82a37",
+		"title": "Connaître la position décimale",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{g}}$ ?\n\nLe chiffre des centièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{g}}$ ?\n\nLe chiffre des dixièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{g}}$ ?\n\nLe chiffre des unités est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dizaines** dans le nombre ${{g}}$ ?\n\nLe chiffre des dizaines est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{f}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centaines** dans le nombre ${{g}}$ ?\n\nLe chiffre des centaines est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "strict"
+			}
+		},
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:13.3287+00:00",
+		"updated_at": "2026-09-27T07:17:13.3287+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Des centaines jusqu'aux centièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "f",
+					"expression": "0..9!a,b,c,d"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a*0.01+b*0.1+c+d*10+f*100;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Centièmes de 261,97 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Dixièmes à la place des centièmes : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Dixièmes de 261,97 : 9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Unités de 261,97 : 1",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Dizaines de 261,97 : 6",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Centaines de 261,97 : 2",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "0"
+				},
+				"description": "Centaines de 61,97 : 0",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Dizaines à la place des centaines : refusé",
+				"variationIndex": 4
+			}
+		]
+	},
+	{
+		"id": "1b94c415-df9a-43ad-b48e-0cbf894c342e",
+		"title": "Connaître la position décimale",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 6,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **millièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des millièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des centièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{f}}$ ?\n\nLe chiffre des dixièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{f}}$ ?\n\nLe chiffre des unités est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:14.127034+00:00",
+		"updated_at": "2026-09-27T07:17:14.127034+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Des unités jusqu'aux millièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*0.001+b*0.01+c*0.1+d;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Millièmes de 6,197 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Centièmes à la place des millièmes : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Centièmes de 6,197 : 9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Dixièmes de 6,197 : 1",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Millièmes à la place des dixièmes : refusé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6"
+				},
+				"description": "Unités de 6,197 : 6",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "5cc22ecd-351e-4959-ab27-79883cb9c9d3",
+		"title": "Connaître la position décimale",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 7,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **millièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des millièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des centièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dixièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des dixièmes est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **unités** dans le nombre ${{j}}$ ?\n\nLe chiffre des unités est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{f}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **dizaines** dans le nombre ${{j}}$ ?\n\nLe chiffre des dizaines est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **centaines** dans le nombre ${{j}}$ ?\n\nLe chiffre des centaines est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "Quel est le chiffre des **milliers** dans le nombre ${{j}}$ ?\n\nLe chiffre des milliers est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:14.361535+00:00",
+		"updated_at": "2026-09-27T07:17:14.361535+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Des milliers jusqu'aux millièmes",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "f",
+					"expression": "0..9!a,b,c,d"
+				},
+				{
+					"name": "g",
+					"expression": "0..9!a,b,c,d,f"
+				},
+				{
+					"name": "h",
+					"expression": "0..9!a,b,c,d,f,g"
+				},
+				{
+					"name": "j",
+					"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Millièmes de 3 826,197 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Centièmes de 3 826,197 : 9",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Dixièmes : 1",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Unités : 6",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Dizaines : 2",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Centaines : 8",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Milliers : 3",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "3"
+				},
+				"description": "Centaines à la place des milliers : refusé",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "6",
+					"f": "2",
+					"g": "8",
+					"h": "0"
+				},
+				"description": "Milliers de 826,197 : 0",
+				"variationIndex": 6
+			}
+		]
+	},
+	{
+		"id": "6379fa20-672c-4771-9d48-6d167a7a922e",
+		"title": "Encadrer un nombre décimal au centième près",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+c*0.01;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+b*0.1+(c+1)*0.01;d}}"
+					}
+				],
+				"statement": "Encadre ce nombre décimal au centième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+b*0.1+c*0.01+d*0.001;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<f<?"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.796992+00:00",
+		"updated_at": "2026-09-27T07:17:16.796992+00:00",
+		"subdomain": "Encadrer",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7{,}99", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "7,99 < 7,996 < 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7.99", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}99", "8{,}00"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "8,00 accepté (zéros libres)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}995", "7{,}997"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Encadrement au millième : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "7{,}99"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6"
+				},
+				"description": "Bornes inversées : refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "32724446-558b-4eea-ad4a-13d7c6afe435",
+		"title": "Encadrer un nombre décimal au dixième près",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+b*0.1;d}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+(b+1)*0.1;d}}"
+					}
+				],
+				"statement": "Encadre ce nombre décimal au dixième près.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+b*0.1+c*0.01;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<d<?"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"zeros": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.657446+00:00",
+		"updated_at": "2026-09-27T07:17:16.657446+00:00",
+		"subdomain": "Encadrer",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7{,}9", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "7,9 < 7,99 < 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7.9", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Tapé avec un point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}9", "8{,}0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "8,0 accepté (zéros libres, comme TinyMath)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0", "0{,}1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "3"
+				},
+				"description": "0 < 0,03 < 0,1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}98", "8{,}01"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Encadrement au centième au lieu du dixième : refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "fac5225d-2dae-49ec-b449-8900e7385fe6",
+		"title": "Encadrer un nombre décimal par deux entiers consécutifs",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					},
+					{
+						"expectedAnswer": "{{eval:a+1}}"
+					}
+				],
+				"statement": "Encadre ce nombre décimal par deux entiers consécutifs.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+b*0.1;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<c<?"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.49007+00:00",
+		"updated_at": "2026-09-27T07:17:16.49007+00:00",
+		"subdomain": "Encadrer",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7", "8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "7 < 7,9 < 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "3"
+				},
+				"description": "0 < 0,3 < 1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8", "7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Bornes inversées : refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}0", "8"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "7,0 : zéro inutile, perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6", "9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "6 et 9 (non consécutifs) : refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b26e8a84-3788-40f8-baf0-23f0f96fe1f0",
+		"title": "Trouver l'entier supérieur ou inférieur le plus proche",
+		"theme": "Décimaux",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a+1}}"
+					}
+				],
+				"statement": "Quel est le plus petit entier supérieur à ${{c}}$ ?\n\nLe plus petit entier supérieur est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est le plus grand entier inférieur à ${{c}}$ ?\n\nLe plus grand entier inférieur est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:16.126468+00:00",
+		"updated_at": "2026-09-27T07:17:16.126468+00:00",
+		"subdomain": "Comparer",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+b*0.1;d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Plus petit entier supérieur à 7,9 : 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Réponse 7 (inférieur) : refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8{,}0"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "8,0 : zéro inutile, perfectible",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Plus grand entier inférieur à 7,9 : 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Réponse 8 (arrondi) : refusée",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "aeb86af9-7bf1-440a-be17-735a41b5ce46",
+		"title": "Déterminer l'opposé d'une expression",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(p)q}}"
+					}
+				],
+				"statement": "Quel est l'opposé de cette expression ?\n\n$${{eval:pq}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|x|y"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:03.617399+00:00",
+		"updated_at": "2026-09-27T09:29:03.617399+00:00",
+		"subdomain": "Opposé d'une expression",
+		"exercise_instruction": null,
+		"description": "Expression simple",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-9a"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "bonne réponse -9a",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9a"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "9a",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-(9a)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"p": "9",
+					"q": "a|a"
+				},
+				"description": "-(9a)",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "843c3186-afc6-4ccd-83f7-beab64d3e420",
+		"title": "Déterminer l'opposé d'une expression",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 2,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(p)r}}{{eval:-(q);+}}"
+					}
+				],
+				"statement": "Quel est l'opposé de cette expression ?\n\n$${{eval:pr}}{{eval:q;+}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|x|y"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:03.767496+00:00",
+		"updated_at": "2026-09-27T09:29:03.767496+00:00",
+		"subdomain": "Opposé d'une expression",
+		"exercise_instruction": null,
+		"description": "opposé d'une somme algébrique",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-9a+7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "bonne réponse -9a+7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-9a-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "-9a-7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7-9a"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"p": "9",
+					"q": "-7",
+					"r": "a|a"
+				},
+				"description": "7-9a",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "34e569e7-7834-456f-8e48-65b2a1183030",
+		"title": "Opposé d'une expression",
+		"theme": "Fonctions",
+		"domain": "Valeur absolue",
+		"level": 1,
+		"status": "draft",
+		"grades": ["2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(a)x}}"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{eval:ax}}$$\n\nL'opposé est $?$.",
+				"variables": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "-x{{eval:-(b);+}}"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$$x{{eval:b;+}}$$\n\nL'opposé est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)}}+x"
+					}
+				],
+				"statement": "Quel est l'opposé de l'expression :\n\n$${{b}}-x$$\n\nL'opposé est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:42.614473+00:00",
+		"updated_at": "2026-09-27T17:22:42.614473+00:00",
+		"subdomain": "Apprivoiser",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-2x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"description": "v0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "-1",
+					"x": "x|x"
+				},
+				"description": "v0 a=-1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2x"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2",
+					"x": "x|x"
+				},
+				"description": "v0 inchangé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-x-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-9-x"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 ordre libre",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-x+9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 signe",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-(x+9)"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v1 parenthèses non supprimées",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["x-9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9+x"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"b": "9"
+				},
+				"description": "v2 signe",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "294c4316-d2c9-4894-9c3c-c2b24fdffc99",
+		"title": "Trouver un facteur commun",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}+{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{a}}*{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{a}}*{{b}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que 1).\n\n$${{b}}*{{a}}-{{c}}*{{a}}$$\n\nUn facteur commun est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:04.927461+00:00",
+		"updated_at": "2026-09-27T09:29:04.927461+00:00",
+		"subdomain": "Factorisation",
+		"exercise_instruction": null,
+		"description": "Facteur commun numérique apparent ",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..9!a,cd(b)"
+				}
+			],
+			"validationRules": [
+				{
+					"type": "custom",
+					"expression": "answer != 1",
+					"description": "Legacy testAnswer: &answer !=1"
+				},
+				{
+					"type": "divisor",
+					"dividend": "{{a}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "7×9+7×4 : 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "6×5−6×7 : 2 diviseur de 6 accepté",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "1 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "4"
+				},
+				"description": "9 n'est pas commun",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "e66089e0-b7bd-49fe-a968-9a8df3d325fd",
+		"title": "Trouver un facteur commun",
+		"theme": "Calcul littéral",
+		"domain": "Transformation",
+		"level": 3,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}*{{b}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{a}}{{d}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}{{d}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}*{{b}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{a}}*{{b}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}+{{b}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{a}}{{c}}-{{b}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}+{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{d}}{{c}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Trouve un facteur commun (autre que $1$).\n\n$${{c}}{{d}}-{{a}}{{c}}$$\n\nUn facteur commun est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T09:29:05.266376+00:00",
+		"updated_at": "2026-09-27T09:29:05.266376+00:00",
+		"subdomain": "Factorisation",
+		"exercise_instruction": null,
+		"description": "Facteur commun apparent - littéral",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "x|y|z"
+				},
+				{
+					"name": "d",
+					"expression": "x|y|z!c"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v0 bonne réponse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v1 bonne réponse",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v2 bonne réponse",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v3 bonne réponse",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v4 bonne réponse",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v5 bonne réponse",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v6 bonne réponse",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v7 bonne réponse",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v8 bonne réponse",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v9 bonne réponse",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v10 bonne réponse",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "v11 bonne réponse",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "5×9+5z : 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "z n'est pas commun",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["z"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "5z+9z : z",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["y"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "z|z",
+					"d": "y|y"
+				},
+				"description": "yz+5z : y refusé",
+				"variationIndex": 8
+			}
+		]
+	},
+	{
+		"id": "2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+		"title": "Racine d'une fonction affine",
+		"theme": "Fonctions",
+		"domain": "Fonctions affines",
+		"level": 1,
+		"status": "draft",
+		"grades": ["3"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{a}}x{{eval:b;+}}$$\n\n$f\\left(?\\right)=0$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:-(b)/(a)}}"
+					}
+				],
+				"statement": "Pour quelle valeur de $x$ la fonction $f$ s'annule-t-elle ?\n\n$$f(x)={{b}}{{eval:a;+}}x$$\n\n$f\\left(?\\right)=0$"
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T17:22:42.204379+00:00",
+		"updated_at": "2026-09-27T21:54:11.912455+00:00",
+		"subdomain": "Equations",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blankDefaults": {
+				"acceptDecimal": true
+			}
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "racine fraction",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{9}{5}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "v1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{9}{5}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "signe",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-\\frac{18}{10}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "non réduite",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "8"
+				},
+				"description": "racine entière",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}8"],
+				"expected": {
+					"status": "correct",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal exact -1,8 : juste",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-1{,}9"],
+				"expected": {
+					"status": "incorrect",
+					"constraintViolations": []
+				},
+				"variables": {
+					"a": "5",
+					"b": "9"
+				},
+				"description": "décimal arrondi -1,9 : faux",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7d12a172-405d-4281-af44-f02c265ad174",
+		"title": "Compléter une addition ou soustraction à trou",
+		"theme": "Fractions",
+		"domain": "A trou",
+		"level": 1,
+		"status": "draft",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "?/{{c}}+{{b}}/{{c}}={{eval:a+b}}/{{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{a}}/?+{{b}}/{{c}}={{eval:a+b}}/{{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{a}}/{{c}}+?/{{c}}={{eval:a+b}}/{{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{a}}/{{c}}-{{b}}/?={{eval:a-b}}/{{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression5",
+						"expression": "?/{{c}}-{{b}}/{{c}}={{eval:a-b}}/{{c}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..{{eval:a-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{a}}/{{c}}-?/{{c}}={{eval:a-b}}/{{c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:59.569546+00:00",
+		"updated_at": "2026-09-26T17:30:59.569546+00:00",
+		"subdomain": "Addition - Soustraction",
+		"exercise_instruction": null,
+		"description": "Avec des quotients.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "7"
+				},
+				"description": "?/7+3/7=8/7 → 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "7"
+				},
+				"description": "réponse = résultat",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "7"
+				},
+				"description": "5/?+3/7=8/7 → 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "3",
+					"c": "7"
+				},
+				"description": "5/7+?/7=8/7 → 3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "9/2-7/?=2/2 → 2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "?/2-7/2=2/2 → 9 (borne)",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "soustraction au lieu d'addition",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "7",
+					"c": "2"
+				},
+				"description": "9/2-?/2=2/2 → 7",
+				"variationIndex": 5
+			}
+		]
+	},
+	{
+		"id": "86b80159-8395-4546-8d0e-2828693b6d97",
+		"title": "Compléter une addition ou soustraction à trou",
+		"theme": "Fractions",
+		"domain": "A trou",
+		"level": 2,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?/{{c}}+{{{b}}}/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{{a}}}/?+{{{b}}}/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "{{{a}}}/{{c}}+?/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "{{{a}}}/{{c}}-{{{b}}}/?={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?/{{c}}-{{{b}}}/{{c}}={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète cette égalité avec le nombre manquant.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "{{{a}}}/{{c}}-?/{{c}}={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:30:59.821951+00:00",
+		"updated_at": "2026-09-28T05:55:17.801909+00:00",
+		"subdomain": "Addition - Soustraction",
+		"exercise_instruction": null,
+		"description": "Quotients avec nombres relatifs",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..19!cd(a),cd(b)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "?/5+(-7)/5=2/5 → 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "9/?+(-7)/5 → 5",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "9/5+?/5=2/5 → -7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "oubli du signe",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["(-7)"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["brackets"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "parenthèses : perfectible",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "9/5-(-7)/? → 5",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "?/5-(-7)/5=16/5 → 9",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "-7",
+					"c": "5"
+				},
+				"description": "9/5-?/5=16/5 → -7",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "5",
+					"c": "7"
+				},
+				"description": "résultat nul : 5/7-5/?=0/7 → 7",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "4115768c-ddd5-4ecd-9436-ae3228dd9eed",
+		"title": "Calculer l'inverse d'un nombre",
+		"theme": "Fractions",
+		"domain": "Calculer",
+		"level": 1,
+		"status": "draft",
+		"grades": ["4"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{1}{{{a}}}"
+					}
+				],
+				"statement": "Quel est l'inverse de ce nombre :\n\n$${{a}}$$\n\nL'inverse de ce nombre est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Quel est l'inverse de ce nombre :\n\n$$\\dfrac{1}{{{a}}}$$\n\nL'inverse de ce nombre est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "\\frac{{{b}}}{{{a}}}"
+					}
+				],
+				"statement": "Quel est l'inverse de ce nombre :\n\n$$\\dfrac{{{a}}}{{{b}}}$$\n\nL'inverse de ce nombre est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:31:04.062959+00:00",
+		"updated_at": "2026-09-26T17:31:04.062959+00:00",
+		"subdomain": "Inverse",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..19!cd(a)"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["\\frac{1}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 inverse d’un entier",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 opposé au lieu de l’inverse",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7^{-1}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v1 écriture puissance",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["\\frac{1}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "3"
+				},
+				"description": "v1 borne",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 inverse de 1/a",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{7}{1}"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["reducedFractions"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v2 fraction non simplifiée",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["\\frac{3}{7}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 inverse de a/b",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{7}{3}"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3"
+				},
+				"description": "v3 même fraction",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{18}{19}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "19",
+					"b": "18"
+				},
+				"description": "v3 bornes",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "7a90fc45-a7e2-493b-96d5-d0963e51e136",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[km] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[hm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dam] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[dm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[cm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[mm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[kL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[hL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[daL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[dL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[mL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[kg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[hg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[dag] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.1;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "a[dg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "a[cg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression18}}$$",
+				"variables": [
+					{
+						"name": "expression18",
+						"expression": "a[mg] = ?[g]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:15.817159+00:00",
+		"updated_at": "2026-09-27T16:36:15.817159+00:00",
+		"subdomain": "Unités simples",
+		"exercise_instruction": null,
+		"description": "Conversion vers l'unité de référence",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 7\\,000 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km→m)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 700 m",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 70 m",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}7 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}07 m",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}007 m",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 7\\,000 L",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kL→L)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 700 L",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 70 L",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}7 L",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}07 L",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}007 L",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 7\\,000 g",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kg→g)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 700 g",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 70 g",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}7 g",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}07 g",
+				"variationIndex": 16
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}007 g",
+				"variationIndex": 17
+			},
+			{
+				"answers": ["7000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7000 sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "décimal au point",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[km^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[hm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dam^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.0001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[cm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[mm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[km^2] = ?[hm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[hm^2] = ?[dam^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[m^2] = ?[dm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[dm^2] = ?[cm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^2] = ?[mm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[mm^2] = ?[cm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[cm^2] = ?[dm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dm^2] = ?[m^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[m^2] = ?[dam^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "a[dam^2] = ?[hm^2]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.01;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "a[hm^2] = ?[km^2]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:16.950832+00:00",
+		"updated_at": "2026-09-27T16:36:16.950832+00:00",
+		"subdomain": "Unités composées",
+		"exercise_instruction": null,
+		"description": "Unités d'aire",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^2 = 7\\,000\\,000 m^2",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km^2→m^2)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 70\\,000 m^2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^2 = 700 m^2",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 0{,}000\\,7 m^2",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^2 = 0{,}000\\,007 m^2",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^2 = 700 hm^2",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km^2→hm^2)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 700 dam^2",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^2 = 700 dm^2",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 700 cm^2",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 700 mm^2",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^2 = 0{,}07 cm^2",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^2 = 0{,}07 dm^2",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (cm^2→dm^2)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^2 = 0{,}07 m^2",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^2 = 0{,}07 dam^2",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^2 = 0{,}07 hm^2",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^2 = 0{,}07 km^2",
+				"variationIndex": 16
+			}
+		]
+	},
+	{
+		"id": "b79d4cb7-d138-4be0-86e5-57131c8e265d",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 2,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[hm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[dam^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.000001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[cm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[km^3] = ?[hm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[hm^3] = ?[dam^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[m^3] = ?[dm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[dm^3] = ?[cm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[cm^3] = ?[mm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[mm^3] = ?[cm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[cm^3] = ?[dm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[dm^3] = ?[m^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[m^3] = ?[dam^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dam^3] = ?[hm^3]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*0.001;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[hm^3] = ?[km^3]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:17.150291+00:00",
+		"updated_at": "2026-09-27T16:36:17.150291+00:00",
+		"subdomain": "Unités composées",
+		"exercise_instruction": null,
+		"description": "Unités de volume",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000\\,000 m^3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hm^3→m^3)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 7\\,000 m^3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}000\\,007 m^3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km^3 = 7\\,000 hm^3",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 7\\,000 dam^3",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 7\\,000 dm^3",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dm^3)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 7\\,000 cm^3",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 7\\,000 mm^3",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm^3 = 0{,}007 cm^3",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm^3 = 0{,}007 dm^3",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm^3 = 0{,}007 m^3",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m^3 = 0{,}007 dam^3",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m^3→dam^3)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam^3 = 0{,}007 hm^3",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm^3 = 0{,}007 km^3",
+				"variationIndex": 14
+			}
+		]
+	},
+	{
+		"id": "c31c9d95-aaab-4086-a1bd-ef94dd8d4c3d",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 2,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "a[km] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a[km] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "a[km] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "a[km] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "a[km] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "a[km] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "a[hm] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "a[hm] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "a[hm] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "a[hm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "a[hm] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "a[dam] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "a[dam] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "a[dam] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "a[dam] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "a[m] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression17}}$$",
+				"variables": [
+					{
+						"name": "expression17",
+						"expression": "a[m] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression18}}$$",
+				"variables": [
+					{
+						"name": "expression18",
+						"expression": "a[m] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression19}}$$",
+				"variables": [
+					{
+						"name": "expression19",
+						"expression": "a[dm] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression20}}$$",
+				"variables": [
+					{
+						"name": "expression20",
+						"expression": "a[dm] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression21}}$$",
+				"variables": [
+					{
+						"name": "expression21",
+						"expression": "a[cm] = ?[mm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression22}}$$",
+				"variables": [
+					{
+						"name": "expression22",
+						"expression": "a[mm] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression23}}$$",
+				"variables": [
+					{
+						"name": "expression23",
+						"expression": "a[cm] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression24}}$$",
+				"variables": [
+					{
+						"name": "expression24",
+						"expression": "a[dm] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression25}}$$",
+				"variables": [
+					{
+						"name": "expression25",
+						"expression": "a[m] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression26}}$$",
+				"variables": [
+					{
+						"name": "expression26",
+						"expression": "a[dam] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression27}}$$",
+				"variables": [
+					{
+						"name": "expression27",
+						"expression": "a[hm] = ?[km]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression28}}$$",
+				"variables": [
+					{
+						"name": "expression28",
+						"expression": "a[mm] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression29}}$$",
+				"variables": [
+					{
+						"name": "expression29",
+						"expression": "a[cm] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression30}}$$",
+				"variables": [
+					{
+						"name": "expression30",
+						"expression": "a[dm] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression31}}$$",
+				"variables": [
+					{
+						"name": "expression31",
+						"expression": "a[m] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression32}}$$",
+				"variables": [
+					{
+						"name": "expression32",
+						"expression": "a[dam] = ?[hm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression33}}$$",
+				"variables": [
+					{
+						"name": "expression33",
+						"expression": "a[mm] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression34}}$$",
+				"variables": [
+					{
+						"name": "expression34",
+						"expression": "a[cm] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression35}}$$",
+				"variables": [
+					{
+						"name": "expression35",
+						"expression": "a[dm] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression36}}$$",
+				"variables": [
+					{
+						"name": "expression36",
+						"expression": "a[m] = ?[dam]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression37}}$$",
+				"variables": [
+					{
+						"name": "expression37",
+						"expression": "a[mm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression38}}$$",
+				"variables": [
+					{
+						"name": "expression38",
+						"expression": "a[cm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression39}}$$",
+				"variables": [
+					{
+						"name": "expression39",
+						"expression": "a[dm] = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression40}}$$",
+				"variables": [
+					{
+						"name": "expression40",
+						"expression": "a[mm] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression41}}$$",
+				"variables": [
+					{
+						"name": "expression41",
+						"expression": "a[cm] = ?[dm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression42}}$$",
+				"variables": [
+					{
+						"name": "expression42",
+						"expression": "a[mm] = ?[cm]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression43}}$$",
+				"variables": [
+					{
+						"name": "expression43",
+						"expression": "a[kg] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression44}}$$",
+				"variables": [
+					{
+						"name": "expression44",
+						"expression": "a[kg] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression45}}$$",
+				"variables": [
+					{
+						"name": "expression45",
+						"expression": "a[kg] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression46}}$$",
+				"variables": [
+					{
+						"name": "expression46",
+						"expression": "a[kg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression47}}$$",
+				"variables": [
+					{
+						"name": "expression47",
+						"expression": "a[kg] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression48}}$$",
+				"variables": [
+					{
+						"name": "expression48",
+						"expression": "a[kg] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression49}}$$",
+				"variables": [
+					{
+						"name": "expression49",
+						"expression": "a[hg] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression50}}$$",
+				"variables": [
+					{
+						"name": "expression50",
+						"expression": "a[hg] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression51}}$$",
+				"variables": [
+					{
+						"name": "expression51",
+						"expression": "a[hg] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression52}}$$",
+				"variables": [
+					{
+						"name": "expression52",
+						"expression": "a[hg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression53}}$$",
+				"variables": [
+					{
+						"name": "expression53",
+						"expression": "a[hg] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression54}}$$",
+				"variables": [
+					{
+						"name": "expression54",
+						"expression": "a[dag] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression55}}$$",
+				"variables": [
+					{
+						"name": "expression55",
+						"expression": "a[dag] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression56}}$$",
+				"variables": [
+					{
+						"name": "expression56",
+						"expression": "a[dag] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression57}}$$",
+				"variables": [
+					{
+						"name": "expression57",
+						"expression": "a[dag] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression58}}$$",
+				"variables": [
+					{
+						"name": "expression58",
+						"expression": "a[g] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression59}}$$",
+				"variables": [
+					{
+						"name": "expression59",
+						"expression": "a[g] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression60}}$$",
+				"variables": [
+					{
+						"name": "expression60",
+						"expression": "a[g] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression61}}$$",
+				"variables": [
+					{
+						"name": "expression61",
+						"expression": "a[dg] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression62}}$$",
+				"variables": [
+					{
+						"name": "expression62",
+						"expression": "a[dg] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression63}}$$",
+				"variables": [
+					{
+						"name": "expression63",
+						"expression": "a[cg] = ?[mg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression64}}$$",
+				"variables": [
+					{
+						"name": "expression64",
+						"expression": "a[mg] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression65}}$$",
+				"variables": [
+					{
+						"name": "expression65",
+						"expression": "a[cg] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression66}}$$",
+				"variables": [
+					{
+						"name": "expression66",
+						"expression": "a[dg] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression67}}$$",
+				"variables": [
+					{
+						"name": "expression67",
+						"expression": "a[g] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression68}}$$",
+				"variables": [
+					{
+						"name": "expression68",
+						"expression": "a[dag] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression69}}$$",
+				"variables": [
+					{
+						"name": "expression69",
+						"expression": "a[hg] = ?[kg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression70}}$$",
+				"variables": [
+					{
+						"name": "expression70",
+						"expression": "a[mg] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression71}}$$",
+				"variables": [
+					{
+						"name": "expression71",
+						"expression": "a[cg] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression72}}$$",
+				"variables": [
+					{
+						"name": "expression72",
+						"expression": "a[dg] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression73}}$$",
+				"variables": [
+					{
+						"name": "expression73",
+						"expression": "a[g] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression74}}$$",
+				"variables": [
+					{
+						"name": "expression74",
+						"expression": "a[dag] = ?[hg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression75}}$$",
+				"variables": [
+					{
+						"name": "expression75",
+						"expression": "a[mg] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression76}}$$",
+				"variables": [
+					{
+						"name": "expression76",
+						"expression": "a[cg] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression77}}$$",
+				"variables": [
+					{
+						"name": "expression77",
+						"expression": "a[dg] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression78}}$$",
+				"variables": [
+					{
+						"name": "expression78",
+						"expression": "a[g] = ?[dag]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression79}}$$",
+				"variables": [
+					{
+						"name": "expression79",
+						"expression": "a[mg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression80}}$$",
+				"variables": [
+					{
+						"name": "expression80",
+						"expression": "a[cg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression81}}$$",
+				"variables": [
+					{
+						"name": "expression81",
+						"expression": "a[dg] = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression82}}$$",
+				"variables": [
+					{
+						"name": "expression82",
+						"expression": "a[mg] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression83}}$$",
+				"variables": [
+					{
+						"name": "expression83",
+						"expression": "a[cg] = ?[dg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression84}}$$",
+				"variables": [
+					{
+						"name": "expression84",
+						"expression": "a[mg] = ?[cg]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression85}}$$",
+				"variables": [
+					{
+						"name": "expression85",
+						"expression": "a[kL] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression86}}$$",
+				"variables": [
+					{
+						"name": "expression86",
+						"expression": "a[kL] = ?[cL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression87}}$$",
+				"variables": [
+					{
+						"name": "expression87",
+						"expression": "a[kL] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression88}}$$",
+				"variables": [
+					{
+						"name": "expression88",
+						"expression": "a[kL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression89}}$$",
+				"variables": [
+					{
+						"name": "expression89",
+						"expression": "a[kL] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression90}}$$",
+				"variables": [
+					{
+						"name": "expression90",
+						"expression": "a[kL] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression91}}$$",
+				"variables": [
+					{
+						"name": "expression91",
+						"expression": "a[hL] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression92}}$$",
+				"variables": [
+					{
+						"name": "expression92",
+						"expression": "a[hL] = ?[cL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression93}}$$",
+				"variables": [
+					{
+						"name": "expression93",
+						"expression": "a[hL] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression94}}$$",
+				"variables": [
+					{
+						"name": "expression94",
+						"expression": "a[hL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression95}}$$",
+				"variables": [
+					{
+						"name": "expression95",
+						"expression": "a[hL] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression96}}$$",
+				"variables": [
+					{
+						"name": "expression96",
+						"expression": "a[daL] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression97}}$$",
+				"variables": [
+					{
+						"name": "expression97",
+						"expression": "a[daL] = ?[cL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression98}}$$",
+				"variables": [
+					{
+						"name": "expression98",
+						"expression": "a[daL] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression99}}$$",
+				"variables": [
+					{
+						"name": "expression99",
+						"expression": "a[daL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression100}}$$",
+				"variables": [
+					{
+						"name": "expression100",
+						"expression": "a[L] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression101}}$$",
+				"variables": [
+					{
+						"name": "expression101",
+						"expression": "a[L] = ?[cL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression102}}$$",
+				"variables": [
+					{
+						"name": "expression102",
+						"expression": "a[L] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression103}}$$",
+				"variables": [
+					{
+						"name": "expression103",
+						"expression": "a[dL] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression104}}$$",
+				"variables": [
+					{
+						"name": "expression104",
+						"expression": "a[dL] = ?[cL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression105}}$$",
+				"variables": [
+					{
+						"name": "expression105",
+						"expression": "a[cL] = ?[mL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression106}}$$",
+				"variables": [
+					{
+						"name": "expression106",
+						"expression": "a[mL] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression107}}$$",
+				"variables": [
+					{
+						"name": "expression107",
+						"expression": "a[cL] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression108}}$$",
+				"variables": [
+					{
+						"name": "expression108",
+						"expression": "a[dL] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression109}}$$",
+				"variables": [
+					{
+						"name": "expression109",
+						"expression": "a[L] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression110}}$$",
+				"variables": [
+					{
+						"name": "expression110",
+						"expression": "a[daL] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression111}}$$",
+				"variables": [
+					{
+						"name": "expression111",
+						"expression": "a[hL] = ?[kL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression112}}$$",
+				"variables": [
+					{
+						"name": "expression112",
+						"expression": "a[mL] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression113}}$$",
+				"variables": [
+					{
+						"name": "expression113",
+						"expression": "a[cL] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression114}}$$",
+				"variables": [
+					{
+						"name": "expression114",
+						"expression": "a[dL] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression115}}$$",
+				"variables": [
+					{
+						"name": "expression115",
+						"expression": "a[L] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression116}}$$",
+				"variables": [
+					{
+						"name": "expression116",
+						"expression": "a[daL] = ?[hL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression117}}$$",
+				"variables": [
+					{
+						"name": "expression117",
+						"expression": "a[mL] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression118}}$$",
+				"variables": [
+					{
+						"name": "expression118",
+						"expression": "a[cL] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression119}}$$",
+				"variables": [
+					{
+						"name": "expression119",
+						"expression": "a[dL] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression120}}$$",
+				"variables": [
+					{
+						"name": "expression120",
+						"expression": "a[L] = ?[daL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression121}}$$",
+				"variables": [
+					{
+						"name": "expression121",
+						"expression": "a[mL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression122}}$$",
+				"variables": [
+					{
+						"name": "expression122",
+						"expression": "a[cL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression123}}$$",
+				"variables": [
+					{
+						"name": "expression123",
+						"expression": "a[dL] = ?[L]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:100;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression124}}$$",
+				"variables": [
+					{
+						"name": "expression124",
+						"expression": "a[mL] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression125}}$$",
+				"variables": [
+					{
+						"name": "expression125",
+						"expression": "a[cL] = ?[dL]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:10;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n$${{expression126}}$$",
+				"variables": [
+					{
+						"name": "expression126",
+						"expression": "a[mL] = ?[cL]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:16.368916+00:00",
+		"updated_at": "2026-09-27T16:36:16.368916+00:00",
+		"subdomain": "Unités simples",
+		"exercise_instruction": null,
+		"description": "Autres conversions",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 7\\,000\\,000 mm",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (km→mm)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 700\\,000 cm",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 70\\,000 dm",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 7\\,000 m",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 700 dam",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 km = 70 hm",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 700\\,000 mm",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hm→mm)",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 70\\,000 cm",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 7\\,000 dm",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 700 m",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 70 dam",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 70\\,000 mm",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 7\\,000 cm",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (dam→cm)",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 700 dm",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 70 m",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 7\\,000 mm",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 700 cm",
+				"variationIndex": 16
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 70 dm",
+				"variationIndex": 17
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 700 mm",
+				"variationIndex": 18
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (dm→mm)",
+				"variationIndex": 18
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 70 cm",
+				"variationIndex": 19
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 70 mm",
+				"variationIndex": 20
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}000\\,007 km",
+				"variationIndex": 21
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}000\\,07 km",
+				"variationIndex": 22
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}000\\,7 km",
+				"variationIndex": 23
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 0{,}007 km",
+				"variationIndex": 24
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m→km)",
+				"variationIndex": 24
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 0{,}07 km",
+				"variationIndex": 25
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hm = 0{,}7 km",
+				"variationIndex": 26
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}000\\,07 hm",
+				"variationIndex": 27
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}000\\,7 hm",
+				"variationIndex": 28
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}007 hm",
+				"variationIndex": 29
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 0{,}07 hm",
+				"variationIndex": 30
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (m→hm)",
+				"variationIndex": 30
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dam = 0{,}7 hm",
+				"variationIndex": 31
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}000\\,7 dam",
+				"variationIndex": 32
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}007 dam",
+				"variationIndex": 33
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}07 dam",
+				"variationIndex": 34
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 m = 0{,}7 dam",
+				"variationIndex": 35
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}007 m",
+				"variationIndex": 36
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (mm→m)",
+				"variationIndex": 36
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}07 m",
+				"variationIndex": 37
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dm = 0{,}7 m",
+				"variationIndex": 38
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}07 dm",
+				"variationIndex": 39
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cm = 0{,}7 dm",
+				"variationIndex": 40
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mm = 0{,}7 cm",
+				"variationIndex": 41
+			},
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 7\\,000\\,000 mg",
+				"variationIndex": 42
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kg→mg)",
+				"variationIndex": 42
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 700\\,000 cg",
+				"variationIndex": 43
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 70\\,000 dg",
+				"variationIndex": 44
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 7\\,000 g",
+				"variationIndex": 45
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 700 dag",
+				"variationIndex": 46
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kg = 70 hg",
+				"variationIndex": 47
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 700\\,000 mg",
+				"variationIndex": 48
+			},
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hg→mg)",
+				"variationIndex": 48
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 70\\,000 cg",
+				"variationIndex": 49
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 7\\,000 dg",
+				"variationIndex": 50
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 700 g",
+				"variationIndex": 51
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 70 dag",
+				"variationIndex": 52
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 70\\,000 mg",
+				"variationIndex": 53
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 7\\,000 cg",
+				"variationIndex": 54
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (dag→cg)",
+				"variationIndex": 54
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 700 dg",
+				"variationIndex": 55
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 70 g",
+				"variationIndex": 56
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 7\\,000 mg",
+				"variationIndex": 57
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 700 cg",
+				"variationIndex": 58
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 70 dg",
+				"variationIndex": 59
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 700 mg",
+				"variationIndex": 60
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (dg→mg)",
+				"variationIndex": 60
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 70 cg",
+				"variationIndex": 61
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 70 mg",
+				"variationIndex": 62
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}000\\,007 kg",
+				"variationIndex": 63
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}000\\,07 kg",
+				"variationIndex": 64
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}000\\,7 kg",
+				"variationIndex": 65
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 0{,}007 kg",
+				"variationIndex": 66
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (g→kg)",
+				"variationIndex": 66
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 0{,}07 kg",
+				"variationIndex": 67
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hg = 0{,}7 kg",
+				"variationIndex": 68
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}000\\,07 hg",
+				"variationIndex": 69
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}000\\,7 hg",
+				"variationIndex": 70
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}007 hg",
+				"variationIndex": 71
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 0{,}07 hg",
+				"variationIndex": 72
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (g→hg)",
+				"variationIndex": 72
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dag = 0{,}7 hg",
+				"variationIndex": 73
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}000\\,7 dag",
+				"variationIndex": 74
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}007 dag",
+				"variationIndex": 75
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}07 dag",
+				"variationIndex": 76
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 g = 0{,}7 dag",
+				"variationIndex": 77
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}007 g",
+				"variationIndex": 78
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (mg→g)",
+				"variationIndex": 78
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}07 g",
+				"variationIndex": 79
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dg = 0{,}7 g",
+				"variationIndex": 80
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}07 dg",
+				"variationIndex": 81
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cg = 0{,}7 dg",
+				"variationIndex": 82
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mg = 0{,}7 cg",
+				"variationIndex": 83
+			},
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 7\\,000\\,000 mL",
+				"variationIndex": 84
+			},
+			{
+				"answers": ["70\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (kL→mL)",
+				"variationIndex": 84
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 700\\,000 cL",
+				"variationIndex": 85
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 70\\,000 dL",
+				"variationIndex": 86
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 7\\,000 L",
+				"variationIndex": 87
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 700 daL",
+				"variationIndex": 88
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 kL = 70 hL",
+				"variationIndex": 89
+			},
+			{
+				"answers": ["700\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 700\\,000 mL",
+				"variationIndex": 90
+			},
+			{
+				"answers": ["7\\,000\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (hL→mL)",
+				"variationIndex": 90
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 70\\,000 cL",
+				"variationIndex": 91
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 7\\,000 dL",
+				"variationIndex": 92
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 700 L",
+				"variationIndex": 93
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 70 daL",
+				"variationIndex": 94
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 70\\,000 mL",
+				"variationIndex": 95
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 7\\,000 cL",
+				"variationIndex": 96
+			},
+			{
+				"answers": ["70\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (daL→cL)",
+				"variationIndex": 96
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 700 dL",
+				"variationIndex": 97
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 70 L",
+				"variationIndex": 98
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 7\\,000 mL",
+				"variationIndex": 99
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 700 cL",
+				"variationIndex": 100
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 70 dL",
+				"variationIndex": 101
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 700 mL",
+				"variationIndex": 102
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (dL→mL)",
+				"variationIndex": 102
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 70 cL",
+				"variationIndex": 103
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 70 mL",
+				"variationIndex": 104
+			},
+			{
+				"answers": ["0{,}000\\,007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}000\\,007 kL",
+				"variationIndex": 105
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}000\\,07 kL",
+				"variationIndex": 106
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}000\\,7 kL",
+				"variationIndex": 107
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 0{,}007 kL",
+				"variationIndex": 108
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (L→kL)",
+				"variationIndex": 108
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 0{,}07 kL",
+				"variationIndex": 109
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 hL = 0{,}7 kL",
+				"variationIndex": 110
+			},
+			{
+				"answers": ["0{,}000\\,07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}000\\,07 hL",
+				"variationIndex": 111
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}000\\,7 hL",
+				"variationIndex": 112
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}007 hL",
+				"variationIndex": 113
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 0{,}07 hL",
+				"variationIndex": 114
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (L→hL)",
+				"variationIndex": 114
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 daL = 0{,}7 hL",
+				"variationIndex": 115
+			},
+			{
+				"answers": ["0{,}000\\,7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}000\\,7 daL",
+				"variationIndex": 116
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}007 daL",
+				"variationIndex": 117
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}07 daL",
+				"variationIndex": 118
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 L = 0{,}7 daL",
+				"variationIndex": 119
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}007 L",
+				"variationIndex": 120
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "erreur d'un rang (mL→L)",
+				"variationIndex": 120
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}07 L",
+				"variationIndex": 121
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 dL = 0{,}7 L",
+				"variationIndex": 122
+			},
+			{
+				"answers": ["0{,}07"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}07 dL",
+				"variationIndex": 123
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 cL = 0{,}7 dL",
+				"variationIndex": 124
+			},
+			{
+				"answers": ["0{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7 mL = 0{,}7 cL",
+				"variationIndex": 125
+			}
+		]
+	},
+	{
+		"id": "355bd41a-1589-4c25-be09-5f062bada81a",
+		"title": "Convertir dans une autre unité",
+		"theme": "Grandeurs",
+		"domain": "Volumes",
+		"level": 1,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{m^3} = ?~\\unit{L}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{m^3}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{dm^3} = ?~\\unit{L}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{dm^3}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{cm^3} = ?~\\unit{mL}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{mL} = ?~\\unit{cm^3}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a:1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{cm^3} = ?~\\unit{L}$"
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*1000;d}}"
+					}
+				],
+				"statement": "Convertis dans l'unité demandée.\n\n${{a}}~\\unit{L} = ?~\\unit{cm^3}$"
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:20.7584+00:00",
+		"updated_at": "2026-09-27T16:36:20.7584+00:00",
+		"subdomain": "conversions",
+		"exercise_instruction": null,
+		"description": "Unités de volume et de contenance",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v0 bonne conversion",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v1 bonne conversion",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v2 bonne conversion",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v3 bonne conversion",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v4 bonne conversion",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v5 bonne conversion",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v6 bonne conversion",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["7\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "v7 bonne conversion",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["0{,}007"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "sens de conversion inversé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["700"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "facteur 100 au lieu de 1000",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["7000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "7000 sans espace des milliers",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b6269f1e-8323-4cd4-a578-b669df1c31bb",
+		"title": "Calculer avec des unités",
+		"theme": "Grandeurs",
+		"domain": "Unités",
+		"level": 3,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[m]);d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[km]|{{a}}[hm]|{{a}}[dam]|{{a}}[dm]|{{a}}[cm]|{{a}}[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "b[m]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d = ?[m]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[g]);d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kg]|{{a}}[hg]|{{a}}[dag]|{{a}}[dg]|{{a}}[cg]|{{a}}[mg]"
+					},
+					{
+						"name": "d",
+						"expression": "b[g]"
+					},
+					{
+						"name": "expression2",
+						"expression": "c + d = ?[g]"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:(c+d)/(1[L]);d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kL]|{{a}}[hL]|{{a}}[daL]|{{a}}[dL]|{{a}}[cL]|{{a}}[mL]"
+					},
+					{
+						"name": "d",
+						"expression": "b[L]"
+					},
+					{
+						"name": "expression3",
+						"expression": "c + d = ?[L]"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T16:36:16.569872+00:00",
+		"updated_at": "2026-09-27T16:36:16.569872+00:00",
+		"subdomain": "Unités simples",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"description": "7 mm + 9 m = 9,007 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mm]"
+				},
+				"description": "addition sans conversion (16)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hm]"
+				},
+				"description": "9 hm + 2 m = 902 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"description": "7 mg + 9 g = 9,007 g",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mg]"
+				},
+				"description": "addition sans conversion (16)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hg]"
+				},
+				"description": "9 hg + 2 g = 902 g",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9{,}007"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"description": "7 mL + 9 L = 9,007 L",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[mL]"
+				},
+				"description": "addition sans conversion (16)",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["902"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "2",
+					"c": "9[hL]"
+				},
+				"description": "9 hL + 2 L = 902 L",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["7\\,009"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[km]"
+				},
+				"description": "k : 7 km + 9 m = 7 009 m",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7009"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7[km]"
+				},
+				"description": "k sans espace",
+				"variationIndex": 0
+			}
+		]
+	}
+]

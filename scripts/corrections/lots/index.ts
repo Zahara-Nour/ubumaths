@@ -3,6 +3,7 @@
  */
 
 import type { Lot } from '../lib/lot';
+import { CLOTURE_DRAFTS_LOT, CLOTURE_PUBLISHED_LOT } from './cloture';
 import { PILOT_LOT } from './pilote';
 import { N_DECOMP_LOT } from './n-decomp';
 import { N_FRACDEC_LOT } from './n-fracdec';
@@ -28,7 +29,9 @@ export const LOTS: Record<string, Lot> = {
 	[VAGUE3_BROUILLONS_LOT.name]: VAGUE3_BROUILLONS_LOT,
 	[VAGUE3_UNITES_LOT.name]: VAGUE3_UNITES_LOT,
 	[VAGUE4_DRAFTS_LOT.name]: VAGUE4_DRAFTS_LOT,
-	[VAGUE4_PUBLISHED_LOT.name]: VAGUE4_PUBLISHED_LOT
+	[VAGUE4_PUBLISHED_LOT.name]: VAGUE4_PUBLISHED_LOT,
+	[CLOTURE_DRAFTS_LOT.name]: CLOTURE_DRAFTS_LOT,
+	[CLOTURE_PUBLISHED_LOT.name]: CLOTURE_PUBLISHED_LOT
 };
 
 // ============================================================================

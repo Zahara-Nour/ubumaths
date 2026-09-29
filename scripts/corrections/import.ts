@@ -61,7 +61,7 @@ async function main(): Promise<number> {
 		}
 		const template = toQuestionTemplate(live);
 		const proposal = readProposal(lot.name, entry.templateId);
-		const report = verifyProposal(template, proposal);
+		const report = verifyProposal(template, proposal, { checks: entry.checks });
 		if (!report.passed) {
 			console.log(`  ✗ ${label} : vérification rouge (pnpm corrections:check ${lot.name})`);
 			continue;

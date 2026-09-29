@@ -1,0 +1,27 @@
+{
+	"templateId": "b6269f1e-8323-4cd4-a578-b669df1c31bb",
+	"title": "Calculer avec des unités",
+	"classe": "N",
+	"code": "N-UNITES",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Calculer avec des unités.** On convertit dans la même unité avant d’additionner.",
+				"On convertit d’abord le premier nombre en $\\text{m}$, puis on additionne.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:(c)/(1[m]);d}}} + {{b}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer avec des unités.** On convertit dans la même unité avant d’additionner.",
+				"On convertit d’abord le premier nombre en $\\text{g}$, puis on additionne.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:(c)/(1[g]);d}}} + {{b}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Calculer avec des unités.** On convertit dans la même unité avant d’additionner.",
+				"On convertit d’abord le premier nombre en $\\text{L}$, puis on additionne.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:(c)/(1[L]);d}}} + {{b}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["Égalité posée avec unités (`c + d = ?[m]`), vérifiée par le convertisseur d’unités."]
+}

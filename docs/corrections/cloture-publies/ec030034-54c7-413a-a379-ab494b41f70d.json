@@ -1,0 +1,22 @@
+{
+	"templateId": "ec030034-54c7-413a-a379-ab494b41f70d",
+	"title": "Enigme pour trouver un nombre",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Nombre de dizaines.** Un nombre de dizaines compte pour ce nombre $\\times 10$ ; on ajoute ensuite les unités.",
+				"Le nombre de dizaines est le double de $\\textcolor{{{color:primary.0}}}{{{a}}}$, soit $\\textcolor{{{color:primary.1}}}{{{eval:2*a}}}$ dizaines.",
+				"$$\\begin{align} \\left( 2 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\right) \\times 10 + \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.1}}}{{{eval:2*a}}} \\times 10 + \\textcolor{{{color:primary.0}}}{{{a}}} \\\\ &= {{eval:2*a*10}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Nombre de dizaines.** Un nombre de dizaines compte pour ce nombre $\\times 10$ ; on ajoute ensuite les unités.",
+				"Le nombre de dizaines est le triple de $\\textcolor{{{color:primary.0}}}{{{a}}}$, soit $\\textcolor{{{color:primary.1}}}{{{eval:3*a}}}$ dizaines.",
+				"$$\\begin{align} \\left( 3 \\times \\textcolor{{{color:primary.0}}}{{{a}}} \\right) \\times 10 + \\textcolor{{{color:primary.0}}}{{{a}}} &= \\textcolor{{{color:primary.1}}}{{{eval:3*a}}} \\times 10 + \\textcolor{{{color:primary.0}}}{{{a}}} \\\\ &= {{eval:3*a*10}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": []
+}

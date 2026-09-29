@@ -10,6 +10,7 @@
 
 import type { QuestionTemplate } from '../../../src/lib/questions/types';
 import type { ProposalSteps } from './proposal';
+import type { EntryChecks } from './verify';
 import { generateRInv } from './r-inv';
 import { generateRPass } from './r-pass';
 import { MENTAL_STRATEGIES } from './r-mental';
@@ -29,6 +30,8 @@ export interface LotEntry {
 	code: string;
 	/** Correction rédigée (règles N) ; absente → générée par la stratégie du code */
 	written?: (template: QuestionTemplate) => WrittenCorrection;
+	/** Contrôles structurels déclarés (verify.ts), là où la question ne pose aucun calcul lisible */
+	checks?: EntryChecks;
 }
 
 export interface Lot {

@@ -1,0 +1,26 @@
+{
+	"templateId": "2bdb3db6-8ef7-43af-aa7a-2332e34d2a01",
+	"title": "Racine d'une fonction affine",
+	"classe": "N",
+	"code": "N-RACINE-AFF",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Racine d’une fonction affine.** $f(x) = ax + b$ (avec $a \\neq 0$) s’annule pour la solution de l’équation $ax + b = 0$, c’est-à-dire $x = -\\dfrac{b}{a}$.",
+				"On résout ${{a}}x{{eval:b;+}} = 0$ : on isole $\\textcolor{{{color:primary.0}}}{x}$.",
+				"$$\\begin{align} {{a}}x{{eval:b;+}} &= 0 \\\\ {{a}}\\textcolor{{{color:primary.0}}}{x} &= {{eval:-(b)}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= \\dfrac{{{eval:-(b)}}}{{{a}}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= {{solution}} \\end{align}$$",
+				"La fonction $f$ s’annule pour $\\textcolor{{{color:primary.2}}}{x = {{solution}}}$."
+			],
+			[
+				"**Racine d’une fonction affine.** $f(x) = ax + b$ (avec $a \\neq 0$) s’annule pour la solution de l’équation $ax + b = 0$, c’est-à-dire $x = -\\dfrac{b}{a}$.",
+				"On résout ${{b}}{{eval:a;+}}x = 0$ : on isole $\\textcolor{{{color:primary.0}}}{x}$.",
+				"$$\\begin{align} {{b}}{{eval:a;+}}x &= 0 \\\\ {{a}}\\textcolor{{{color:primary.0}}}{x} &= {{eval:-(b)}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= \\dfrac{{{eval:-(b)}}}{{{a}}} \\\\ \\textcolor{{{color:primary.0}}}{x} &= {{solution}} \\end{align}$$",
+				"La fonction $f$ s’annule pour $\\textcolor{{{color:primary.2}}}{x = {{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `equations: affine-root` : chaque ligne est une équation affine vérifiée par la réponse."
+	]
+}

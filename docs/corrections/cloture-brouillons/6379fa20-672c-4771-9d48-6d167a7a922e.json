@@ -1,0 +1,17 @@
+{
+	"templateId": "6379fa20-672c-4771-9d48-6d167a7a922e",
+	"title": "Encadrer un nombre décimal au centième près",
+	"classe": "N",
+	"code": "N-ENCADR",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Encadrer.** On garde les chiffres jusqu’au rang demandé (on supprime les suivants) : c’est la borne inférieure ; on ajoute $1$ à ce rang : c’est la borne supérieure.",
+			"On garde les chiffres de $\\textcolor{{{color:primary.0}}}{{{f}}}$ jusqu’aux centièmes, puis on ajoute $\\textcolor{{{color:primary.1}}}{0.01}$.",
+			"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{f}}} - {{eval:d*0.001;d}} &= {{eval:a+b*0.1+c*0.01;d}} \\end{align}$$",
+			"$$\\begin{align} {{eval:a+b*0.1+c*0.01;d}} + \\textcolor{{{color:primary.1}}}{0.01} &= {{eval:a+b*0.1+(c+1)*0.01;d}} \\end{align}$$",
+			"Donc ${{eval:a+b*0.1+c*0.01;d}} < {{f}} < {{eval:a+b*0.1+(c+1)*0.01;d}}$."
+		]
+	},
+	"notes": []
+}

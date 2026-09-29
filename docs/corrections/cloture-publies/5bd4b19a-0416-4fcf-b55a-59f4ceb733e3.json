@@ -1,0 +1,24 @@
+{
+	"templateId": "5bd4b19a-0416-4fcf-b55a-59f4ceb733e3",
+	"title": "Connaître la position décimale",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & {{b}} \\end{array}$$",
+				"Le chiffre des dizaines est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ {{a}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+				"Le chiffre des unités est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `digit` : le tableau relit le nombre, la colonne du rang porte la réponse."
+	]
+}

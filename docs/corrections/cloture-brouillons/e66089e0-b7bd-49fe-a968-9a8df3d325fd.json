@@ -1,0 +1,84 @@
+{
+	"templateId": "e66089e0-b7bd-49fe-a968-9a8df3d325fd",
+	"title": "Trouver un facteur commun",
+	"classe": "N",
+	"code": "N-FACT-COMMUN",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} + {{c}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{c}} + {{b}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{d}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} + \\textcolor{{{color:primary.0}}}{{{a}}}{{d}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{c}} + {{d}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{d}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} - \\textcolor{{{color:primary.0}}}{{{a}}}{{d}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{c}} - {{d}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{b}} - {{c}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{a}}}{{c}}$ et dans $\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{a}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}}{{c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times \\left( {{c}} - {{b}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$ et dans ${{b}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} + {{b}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{a}} + {{b}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$ et dans ${{b}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} - {{b}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{a}} - {{b}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans ${{d}}\\textcolor{{{color:primary.0}}}{{{c}}}$ et dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} {{d}}\\textcolor{{{color:primary.0}}}{{{c}}} + {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{d}} + {{a}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{c}}}{{d}}$ et dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{c}}}{{d}} + {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{d}} + {{a}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans ${{d}}\\textcolor{{{color:primary.0}}}{{{c}}}$ et dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} {{d}}\\textcolor{{{color:primary.0}}}{{{c}}} - {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{d}} - {{a}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Facteur commun.** Un facteur commun est un facteur présent dans CHAQUE terme de la somme (ou de la différence).",
+				"Dans $\\textcolor{{{color:primary.0}}}{{{c}}}{{d}}$ et dans ${{a}}\\textcolor{{{color:primary.0}}}{{{c}}}$, le facteur $\\textcolor{{{color:primary.0}}}{{{c}}}$ apparaît dans chaque terme.",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{c}}}{{d}} - {{a}}\\textcolor{{{color:primary.0}}}{{{c}}} &= \\textcolor{{{color:primary.0}}}{{{c}}} \\times \\left( {{d}} - {{a}} \\right) \\end{align}$$",
+				"Un facteur commun est donc $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": ["Contrôle déclaré `end: factor` (facteur numérique ou lettre commune)."]
+}

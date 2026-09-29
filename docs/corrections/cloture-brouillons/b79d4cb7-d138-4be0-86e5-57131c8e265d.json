@@ -1,0 +1,105 @@
+{
+	"templateId": "b79d4cb7-d138-4be0-86e5-57131c8e265d",
+	"title": "Convertir dans une autre unité",
+	"classe": "N",
+	"code": "N-UNITES-VOL",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{hm}^3$ à $\\text{m}^3$, on passe 2 unités vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{dam}^3$ à $\\text{m}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{dm}^3$ à $\\text{m}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{cm}^3$ à $\\text{m}^3$, on passe 2 unités vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{km}^3$ à $\\text{hm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{km}^3 &  &  & \\text{hm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{hm}^3$ à $\\text{dam}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{m}^3$ à $\\text{dm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{dm}^3$ à $\\text{cm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{cm}^3$ à $\\text{mm}^3$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{cm}^3 &  &  & \\text{mm}^3 \\\\  &  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{mm}^3$ à $\\text{cm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{cm}^3 &  &  & \\text{mm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{cm}^3$ à $\\text{dm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dm}^3 &  &  & \\text{cm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{dm}^3$ à $\\text{m}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{m}^3 &  &  & \\text{dm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{m}^3$ à $\\text{dam}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{dam}^3 &  &  & \\text{m}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{dam}^3$ à $\\text{hm}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{hm}^3 &  &  & \\text{dam}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des volumes.** Trois colonnes par unité ($1~\\text{m}^3 = 1000~\\text{dm}^3$) : passer à l’unité voisine plus petite multiplie par $1000$.",
+				"De $\\text{hm}^3$ à $\\text{km}^3$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{3}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  &  & \\text{km}^3 &  &  & \\text{hm}^3 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Généré variation par variation depuis la variable d’expression `a[U1] = ?[U2]`.",
+		"Tableau : une colonne par unité (× 2 pour les aires, × 3 pour les volumes), le chiffre de `a` en orange, les zéros ajoutés en bleu."
+	]
+}

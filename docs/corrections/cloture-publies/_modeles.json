@@ -1,0 +1,1973 @@
+[
+	{
+		"id": "56b2737d-f208-4b46-a4af-80ba3a4d8c03",
+		"title": "Trouver le quadruple",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*b}}"
+					}
+				],
+				"statement": "Quel est le quadruple de ${{b}}$ ?\n\nLe quadruple de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:45.834976+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Quadruple et quart",
+		"exercise_instruction": null,
+		"description": "Dizaines entières (jusqu'à $50$)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["160"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a1": "4"
+				},
+				"description": "quadruple de 40 = 160",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a1": "4"
+				},
+				"description": "Erreur : double",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a1": "5"
+				},
+				"description": "quadruple de 50 = 200",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a1": "5"
+				},
+				"description": "Erreur : 2 000",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b7cd1846-fb2a-4d5e-8269-925887ebfb3d",
+		"title": "Trouver le quadruple",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 4,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*a}}"
+					}
+				],
+				"statement": "Quel est le quadruple de ${{a}}$ ?\n\nLe quadruple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:46.131044+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Quadruple et quart",
+		"exercise_instruction": null,
+		"description": "Nombres de $1$ à $15$, $25$, $30$, $40$, $50$ et $100$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "4×1 = 4 (borne basse)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "4×100 = 400 (borne haute)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "25"
+				},
+				"description": "Erreur : double de 25 au lieu du quadruple",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "3c79eb9c-af15-4bce-ac3a-fff675a30484",
+		"title": "Trouver le quadruple",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 5,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:4*a}}"
+					}
+				],
+				"statement": "Quel est le quadruple de ${{a}}$ ?\n\nLe quadruple de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..20|25|30|40|50|60|100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:46.342385+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Quadruple et quart",
+		"exercise_instruction": null,
+		"description": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "4×20 = 80",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1"
+				},
+				"description": "4×1 = 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "4×100 = 400",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "15"
+				},
+				"description": "Erreur : double de 15",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "022130ca-f6c1-4c78-a147-6519a15f62cd",
+		"title": "Trouver le double",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				],
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:36.630745+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "Double et moitié",
+		"exercise_instruction": null,
+		"description": "Nombres de $1$ à $15$ (sauf $10$), $25$, $30$, $40$, $50$ et $100$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "12"
+				},
+				"description": "double de 12 → 24",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "double de 100 → 200",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "25"
+				},
+				"description": "double de 25 : 40 refusé",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "47f97c9f-5117-4817-8d10-7c17777397d8",
+		"title": "Trouver le double",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				],
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				],
+				"statement": "Quel est le résultat de $2*{{a}}$ ?\n\nLe double de ${{a}}$ est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:44.462407+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "Double et moitié",
+		"exercise_instruction": null,
+		"description": "Nombres de $1$ à $15$ (sauf $10$), $25$, $30$, $40$, $50$ et $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9|11..15|25|30|40|50|100"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["80"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "40"
+				},
+				"description": "double de 40 = 80",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "40"
+				},
+				"description": "Erreur : moitié",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "2×100 = 200",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["102"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "100"
+				},
+				"description": "Erreur : 2+100",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["26"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "13"
+				},
+				"description": "double de 13 = 26",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "4ee04b22-c7c3-42a7-8cbf-26022ffbbc28",
+		"title": "Combien de fois ... dans ....",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 14,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				],
+				"statement": "Dans ${{eval:a*10*b}}$, combien de fois ${{b}}$ ?\n\nOn peut mettre $?$ fois ${{b}}$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.271113+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à 1 chiffre.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "630 = 70 × 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "Borne haute : 810 = 90 × 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 7 (oubli du zéro)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 63",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "17a3c039-744d-4108-9b47-49f0183990b7",
+		"title": "Trouver le complément",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 10,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c}}"
+					}
+				],
+				"statement": "Combien faut-il ajouter à ${{eval:10000-(c)}}$ pour obtenir $10\\,000$ ?\n\nIl faut ajouter $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*1000+b*100"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:34.246552+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "Complément",
+		"exercise_instruction": null,
+		"description": "Complément à 10 000 - description",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\,900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Bonne réponse 7\\,900",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7900"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Sans espace des milliers",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8\\,900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "7900"
+				},
+				"description": "Erreur : oubli de la retenue",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "5bd4b19a-0416-4fcf-b55a-59f4ceb733e3",
+		"title": "Connaître la position décimale",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 1,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "a"
+					}
+				],
+				"statement": "Dans le nombre ${{c}}$, le chiffre des **dizaines** est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "b"
+					}
+				],
+				"statement": "Dans le nombre ${{c}}$, le chiffre des **unités** est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:44.67665+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux dizaines.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*10+b"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"description": "47 : chiffre des dizaines = 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"description": "47 : confond dizaines et unités",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["04"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"description": "47 : zéro inutile devant 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "0"
+				},
+				"description": "90 : chiffre des dizaines = 9 (borne)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"description": "47 : chiffre des unités = 7",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7"
+				},
+				"description": "47 : confond unités et dizaines",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "0"
+				},
+				"description": "90 : chiffre des unités = 0 (borne)",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "17ed1fc1-07b6-4ec8-b140-393b5c56f55e",
+		"title": "Connaître la position décimale",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "a"
+					}
+				],
+				"statement": "Dans le nombre ${{d}}$, le chiffre des **centaines** est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "b"
+					}
+				],
+				"statement": "Dans le nombre ${{d}}$, le chiffre des **dizaines** est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "c"
+					}
+				],
+				"statement": "Dans le nombre ${{d}}$, le chiffre des **unités** est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:45.014017+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux centaines",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a*100+b*10+c"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : centaines = 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : répond le chiffre des dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : dizaines = 0 (chiffre nul)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : répond le chiffre des centaines",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : unités = 8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "0",
+					"c": "8"
+				},
+				"description": "308 : répond le chiffre des dizaines",
+				"variationIndex": 2
+			}
+		]
+	},
+	{
+		"id": "13d52989-fff8-4da6-a189-1f589cd53355",
+		"title": "Connaître la position décimale",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 4,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Dans le nombre ${{e}}$, le chiffre des milliers est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Dans le nombre ${{e}}$, le chiffre des centaines est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Dans le nombre ${{e}}$, le chiffre des dizaines est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Dans le nombre ${{e}}$, le chiffre des unités est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:45.37726+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": "Jusqu'aux milliers",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "0..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "0..9!a,b"
+				},
+				{
+					"name": "d",
+					"expression": "0..9!a,b,c"
+				},
+				{
+					"name": "e",
+					"expression": "eval:a*1000+b*100+c*10+d"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : milliers = 5",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : répond les unités",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : centaines = 0",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : répond les milliers",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : dizaines = 7",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : répond les centaines",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : unités = 2",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "0",
+					"c": "7",
+					"d": "2"
+				},
+				"description": "5072 : répond les dizaines",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "ec030034-54c7-413a-a379-ab494b41f70d",
+		"title": "Enigme pour trouver un nombre",
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"level": 9,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*21}}"
+					}
+				],
+				"statement": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le double du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*31}}"
+					}
+				],
+				"statement": "Je suis un nombre à 3 chiffres. Mon **chiffre des unités** est ${{a}}$. Le **nombre de mes dizaines** est le triple du **chiffre des unités**. Qui suis-je ?\n\nJe suis le nombre $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-26T17:02:46.165312+00:00",
+		"updated_at": "2026-09-29T18:05:37.976158+00:00",
+		"subdomain": "Ecriture",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["105"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "unités 5, 10 dizaines → 105",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1025"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "confond nombre et chiffre des dizaines (10 collé à 25)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "prend le chiffre des dizaines = 2×5 mal placé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["189"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "borne haute : 189",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["155"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "unités 5, 15 dizaines → 155",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1535"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "concatène 15 et 35",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["279"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "borne haute : 279",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "14a51794-8825-4297-9858-083fad48ab8c",
+		"title": "Compléter l'égalité d'une division euclidienne",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 3,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					},
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète l'égalité de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ :\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}=({{a}}*?)+?"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"brackets": "off"
+			}
+		},
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:56.011813+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Division euclidienne",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["10", "6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"description": "76 = (7×10)+6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6", "10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"description": "Cases inversées refusées",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9", "13"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "10",
+					"c": "6"
+				},
+				"description": "Reste ≥ diviseur refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2", "1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "Borne a = 2 : 5 = (2×2)+1",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "bd21a9d7-142a-47a0-be18-7719b58934ea",
+		"title": "Trouver un diviseur",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 1,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"rulesSuffice": true,
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Trouve un diviseur de ${{eval:a*b}}$ (autre que $1$ et ${{eval:a*b}}$), sachant que :\n\n$${{eval:a*b}}={{a}}*{{b}}$$\n\nUn diviseur est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9!a"
+					}
+				],
+				"validationRules": [
+					{
+						"type": "custom",
+						"expression": "answer != 1",
+						"description": "Legacy testAnswer: &answer!=1"
+					},
+					{
+						"type": "custom",
+						"expression": "answer != {{a}}*{{b}}",
+						"description": "Legacy testAnswer: &answer!=&1*&2"
+					},
+					{
+						"type": "divisor",
+						"dividend": "{{a}}*{{b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:54.563858+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Divisibilité",
+		"exercise_instruction": null,
+		"description": "Une décomposition est donnée",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "24 = 6×4 : 6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "24 : 4 aussi",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "24 : 8, diviseur non affiché, accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "1 refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "24 lui-même refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "4"
+				},
+				"description": "5 ne divise pas 24",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "5d515eb1-c8f8-4678-b4bd-f9ab3f34713f",
+		"title": "Traduire une phrase en expression mathématique",
+		"theme": "Entiers",
+		"domain": "Vocabulaire",
+		"level": 1,
+		"status": "published",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}+{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : la somme de ${{a}}$ et de ${{b}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : le produit de ${{a}}$ par ${{b}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}-{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : la différence entre ${{a}}$ et ${{b}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} / {{b}}"
+						},
+						"expectedAnswer": "{{a}}:{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : le quotient de ${{a}}$ par ${{b}}$\n\nL'expression est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:57.167779+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Traduire",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..{{eval:a-1}}!a"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7+6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Somme : 7+6",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6+7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Somme : 6+7 accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Somme : le résultat 13 n'est pas une expression",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\times6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Somme : produit refusé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\times6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Produit : 7×6",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7-6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Différence : 7−6",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["6-7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Différence : ordre inversé refusé",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["9:3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "Quotient : 9:3",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "Quotient : le résultat 3 n'est pas une expression",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3:9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "Quotient : ordre inversé refusé",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7:6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "6"
+				},
+				"description": "Quotient : 7:6",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{9}{3}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "quotient écrit en fraction",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["9\\div 3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "quotient avec la touche ÷",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "résultat calculé au lieu de l'expression",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{6}{2}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "3"
+				},
+				"description": "autre fraction de même valeur",
+				"variationIndex": 3
+			}
+		]
+	},
+	{
+		"id": "78feafed-650f-44e0-a2c3-1e677809722b",
+		"title": "Traduire une phrase en expression mathématique",
+		"theme": "Entiers",
+		"domain": "Vocabulaire",
+		"level": 2,
+		"status": "published",
+		"grades": ["5"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*{{c}}+{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : la somme du produit de ${{a}}$ par ${{c}}$ et de ${{b}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}*({{b}}-{{c}})"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : le produit de ${{a}}$ par la différence entre ${{b}}$ et ${{c}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "{{a}} - {{b}} / {{c}}"
+						},
+						"expectedAnswer": "{{a}}-{{b}}:{{c}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : la différence entre ${{a}}$ et le quotient de ${{b}}$ par ${{c}}$\n\nL'expression est $?$."
+			},
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "({{a}} + {{c}}) / {{b}}"
+						},
+						"expectedAnswer": "({{a}}+{{c}}):{{b}}"
+					}
+				],
+				"statement": "Traduis cette phrase par une expression mathématique : le quotient de la somme de ${{a}}$ et de ${{c}}$ par ${{b}}$\n\nL'expression est $?$."
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": {
+			"constraints": {
+				"products": "off",
+				"reducedFractions": "off"
+			}
+		},
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:57.302343+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "Traduire",
+		"exercise_instruction": null,
+		"description": null,
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "4..9!a"
+				},
+				{
+					"name": "c",
+					"expression": "2..{{eval:b-1}}!a"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7\\times8+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "7×8+9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9+7\\times8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "9+7×8 accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["65"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "Valeur 65 refusée",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\times(8+9)"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "Mauvaise structure 7×(8+9)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7\\times(9-8)"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "7×(9−8)",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7\\times9-8"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "Parenthèses oubliées refusées",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["7-9:8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "7−9:8",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["(7+8):9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "(7+8):9",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["7+8:9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "8"
+				},
+				"description": "Parenthèses oubliées refusées",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2\\times3+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "4",
+					"c": "3"
+				},
+				"description": "Borne b = 4, a = 2 : c = 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9-\\frac{4}{2}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "différence et quotient en fraction",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["\\frac{9+2}{4}"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "quotient d'une somme en fraction",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["(9+2)\\div 4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "quotient d'une somme avec ÷",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["\\frac{11}{4}"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "4",
+					"c": "2"
+				},
+				"description": "somme calculée d'abord",
+				"variationIndex": 3
+			}
+		]
+	}
+]

@@ -1,0 +1,117 @@
+{
+	"templateId": "82748db8-01fe-4c2e-86b6-4ef8c1dde805",
+	"title": "Convertir dans une autre unité",
+	"classe": "N",
+	"code": "N-UNITES-AIRE",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{km}^2$ à $\\text{m}^2$, on passe 3 unités vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|}  & \\text{km}^2 &  & \\text{hm}^2 &  & \\text{dam}^2 &  & \\text{m}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{hm}^2$ à $\\text{m}^2$, on passe 2 unités vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{4}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{10000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  & \\text{hm}^2 &  & \\text{dam}^2 &  & \\text{m}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{10000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{dam}^2$ à $\\text{m}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{dam}^2 &  & \\text{m}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{cm}^2$ à $\\text{m}^2$, on passe 2 unités vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{4}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{10000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{10000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{mm}^2$ à $\\text{m}^2$, on passe 3 unités vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{6}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{1000000}$.",
+				"$$\\begin{array}{|c|c|c|c|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 &  & \\text{cm}^2 &  & \\text{mm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{1000000} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{km}^2$ à $\\text{hm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{km}^2 &  & \\text{hm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{hm}^2$ à $\\text{dam}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{hm}^2 &  & \\text{dam}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{m}^2$ à $\\text{dm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{dm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{cm}^2$ à $\\text{mm}^2$, on passe 1 unité vers la droite du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on multiplie par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{cm}^2 &  & \\text{mm}^2 \\\\  & \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} \\times \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{mm}^2$ à $\\text{cm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{cm}^2 &  & \\text{mm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{cm}^2$ à $\\text{dm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{dm}^2 &  & \\text{cm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{dm}^2$ à $\\text{m}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{m}^2 &  & \\text{dm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{m}^2$ à $\\text{dam}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{dam}^2 &  & \\text{m}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{dam}^2$ à $\\text{hm}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{hm}^2 &  & \\text{dam}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Tableau de conversion des aires.** Deux colonnes par unité ($1~\\text{m}^2 = 100~\\text{dm}^2$) : passer à l’unité voisine plus petite multiplie par $100$.",
+				"De $\\text{hm}^2$ à $\\text{km}^2$, on passe 1 unité vers la gauche du tableau ($\\textcolor{{{color:primary.1}}}{2}$ colonnes) : on divise par $\\textcolor{{{color:primary.1}}}{100}$.",
+				"$$\\begin{array}{|c|c|c|c|}  & \\text{km}^2 &  & \\text{hm}^2 \\\\ \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.1}}}{0,} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"$$\\begin{align} ? &= {{a}} : \\textcolor{{{color:primary.1}}}{100} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Généré variation par variation depuis la variable d’expression `a[U1] = ?[U2]`.",
+		"Tableau : une colonne par unité (× 2 pour les aires, × 3 pour les volumes), le chiffre de `a` en orange, les zéros ajoutés en bleu."
+	]
+}

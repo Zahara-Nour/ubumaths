@@ -1,0 +1,15 @@
+{
+	"templateId": "bd21a9d7-142a-47a0-be18-7719b58934ea",
+	"title": "Trouver un diviseur",
+	"classe": "N",
+	"code": "N-DIVISEUR",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Diviseur.** Si $n = a \\times b$, alors $a$ et $b$ sont des diviseurs de $n$.",
+			"$$\\begin{align} {{eval:a*b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} \\end{align}$$",
+			"Donc $\\textcolor{{{color:primary.0}}}{{{a}}}$ est un diviseur de $\\;{{eval:a*b}}$ (et $\\;{{b}}$ aussi) : un diviseur est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+		]
+	},
+	"notes": []
+}

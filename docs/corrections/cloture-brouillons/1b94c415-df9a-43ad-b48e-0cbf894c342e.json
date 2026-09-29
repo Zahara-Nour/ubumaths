@@ -1,0 +1,34 @@
+{
+	"templateId": "1b94c415-df9a-43ad-b48e-0cbf894c342e",
+	"title": "Connaître la position décimale",
+	"classe": "N",
+	"code": "N-POSITION",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{d}} & , & {{c}} & {{b}} & \\textcolor{{{color:primary.0}}}{{{a}}} \\end{array}$$",
+				"Le chiffre des millièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{d}} & , & {{c}} & \\textcolor{{{color:primary.0}}}{{{b}}} & {{a}} \\end{array}$$",
+				"Le chiffre des centièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ {{d}} & , & \\textcolor{{{color:primary.0}}}{{{c}}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des dixièmes est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			],
+			[
+				"**Tableau de numération.** Chaque chiffre a un rang ; on range les chiffres du nombre dans le tableau, puis on lit la colonne demandée.",
+				"$$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{d}}} & , & {{c}} & {{b}} & {{a}} \\end{array}$$",
+				"Le chiffre des unités est $\\textcolor{{{color:primary.2}}}{{{solution}}}$."
+			]
+		]
+	},
+	"notes": [
+		"Contrôle déclaré `digit` : le tableau relit le nombre, la colonne du rang porte la réponse."
+	]
+}
