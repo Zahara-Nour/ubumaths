@@ -1,0 +1,23 @@
+{
+	"templateId": "d22731c2-d6bd-4aca-8aac-f90d4aaa3d8f",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{25} = {{eval:(a*4+b)*25}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{25}$, donne ${{eval:(a*4+b)*25}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:(a*4+b)*25}}$ par $\\textcolor{{{color:primary.0}}}{25}$.",
+				"$$\\begin{align} ? &= {{eval:(a*4+b)*25}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{25} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{25} = {{eval:a*4*25}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{25}$, donne ${{eval:a*4*25}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*4*25}}$ par $\\textcolor{{{color:primary.0}}}{25}$.",
+				"$$\\begin{align} ? &= {{eval:a*4*25}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{25} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?*25={{eval:(a*4+b)*25}} » ; trou à gauche de « * »",
+		"variation 1 : expression2 = « ?*25={{eval:a*4*25}} » ; trou à gauche de « * »"
+	]
+}

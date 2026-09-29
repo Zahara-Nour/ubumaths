@@ -13,7 +13,9 @@
  * - la ligne de prod doit être IDENTIQUE à l'instantané relu (`updated_at`) :
  *   un modèle modifié depuis est écarté (régénérer le lot) ;
  * - aucune variation ne doit déjà avoir une correction (pas d'écrasement) ;
- * - la proposition doit passer le vérificateur (50 tirages par variation).
+ * - la proposition doit passer le vérificateur (domaine entier ou 5 000 graines) ;
+ * - avec `--publier`, TOUT le lot doit être prêt : une seule entrée écartée fait
+ *   refuser le lot entier (code de sortie 1, rien n'est écrit).
  * Écriture : seule la colonne `variations` change, sous condition `updated_at`
  * inchangé ; la ligne rendue est relue (la RLS échoue en silence : 0 ligne).
  * Sauvegarde JSON des lignes visées avant écriture (dossier ignoré par git).
@@ -26,6 +28,7 @@ import { toQuestionTemplate } from '../../src/lib/types/question-template';
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { parseRows, readProposal, readSnapshotRows } from './lib/files';
 import { injectCorrection } from './lib/proposal';
+import { publishRefusal } from './lib/publish-gate';
 import { verifyProposal } from './lib/verify';
 import { findLot } from './lots';
 
@@ -72,6 +75,11 @@ async function main(): Promise<number> {
 		console.log(`  ✓ ${label} ${template.title} (${report.instances} tirages verts)`);
 	}
 	console.log(`\n${ready.length}/${lot.entries.length} modèle(s) prêt(s).`);
+	const refusal = publishRefusal(ready.length, lot.entries.length);
+	if (publish && refusal) {
+		console.error(`ÉCRITURE REFUSÉE : ${refusal}.`);
+		return 1;
+	}
 	if (!publish) {
 		console.log('Simulation : rien n’a été écrit. Ajouter --publier après feu vert.');
 		return ready.length === lot.entries.length ? 0 : 1;

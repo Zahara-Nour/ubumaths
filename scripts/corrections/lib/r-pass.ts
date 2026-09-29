@@ -6,16 +6,20 @@
  * - cas général : compléter à la dizaine puis ajouter le reste
  *   (26 + 5 = 26 + 4 + 1 = 30 + 1 = 31 ; 21 − 6 = 21 − 1 − 5 = 20 − 5 = 15) ;
  * - `R = 9` : ajouter 10 puis retrancher 1 (32 + 9 = 32 + 10 − 1 = 42 − 1 = 41) ;
- * - cas sans passage (L déjà rond, ou le reste serait ≤ 0) : calcul direct.
+ * - différence à diminuende rond (30 − 6) : il Y A passage de la dizaine, on
+ *   décompose 30 en 20 + 10 et on retranche de la dizaine (= 20 + 4 = 24) ;
+ * - cas sans passage (somme à L rond, ou reste ≤ 0) : calcul direct.
  *
- * Les deux derniers cas ne sont écrits (par `{{if:…}}`) que s'ils SURVIENNENT dans
- * les tirages du modèle : un texte n'embarque pas de branche morte.
+ * Les cas particuliers ne sont écrits (par `{{if:…}}`) que s'ils SURVIENNENT dans
+ * les tirages du modèle — sur TOUT le domaine des variables quand il est
+ * énumérable (`sampling.ts`), sinon sur 5 000 graines : un texte n'embarque pas
+ * de branche morte, et n'en oublie pas une rare.
  */
 
 import type { QuestionTemplate } from '../../../src/lib/questions/types';
-import { generateInstance } from '../../../src/lib/questions/generator/instance-generator';
 import { resolveExpression } from '../../../src/lib/questions/generator/content-resolver';
 import { alignBlock, colored, inline } from './palette';
+import { planDraws, type Sampling } from './sampling';
 import {
 	findExpressionVariable,
 	splitBinaryOperation,
@@ -31,15 +35,15 @@ import {
 export interface RPassCases {
 	/** Un tirage a `R = 9` */
 	nine: boolean;
-	/** Un tirage n'a pas de passage de la dizaine (L rond, ou reste ≤ 0) */
+	/** Un tirage n'a pas de passage de la dizaine (somme à L rond, ou reste ≤ 0) */
 	plain: boolean;
+	/** Une différence a un diminuende rond (30 − 6) : passage par la dizaine de L */
+	roundMinuend: boolean;
 }
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
-
-const DETECTION_SEEDS = 300;
 
 // ============================================================================
 // FUNCTIONS
@@ -60,7 +64,12 @@ function plainConditions(op: BinaryOperation): string[] {
 	const r = toEvalForm(op.right);
 	return op.operator === '+'
 		? [`${units(l)}=0`, `${r}-(10-${units(l)})<=0`]
-		: [`${units(l)}=0`, `${r}-${units(l)}<=0`];
+		: [`${r}-${units(l)}<=0`];
+}
+
+/** Condition « diminuende rond » (différence seulement) */
+function roundMinuendCondition(op: BinaryOperation): string {
+	return `${units(toEvalForm(op.left))}=0`;
 }
 
 /** Valeurs numériques des deux opérandes pour un tirage */
@@ -73,29 +82,34 @@ function operandValues(
 	return { left, right };
 }
 
-/** Les cas particuliers qui surviennent dans les tirages (graines 1..300) */
+/** Les cas particuliers qui surviennent sur le domaine de la variation */
 export function detectRPassCases(
 	template: QuestionTemplate,
 	variationIndex: number,
 	op: BinaryOperation
-): RPassCases {
-	const single: QuestionTemplate = {
-		...template,
-		variations: [template.variations[variationIndex]]
-	};
-	const cases: RPassCases = { nine: false, plain: false };
-	for (let seed = 1; seed <= DETECTION_SEEDS; seed++) {
-		const result = generateInstance(single, seed);
+): RPassCases & { sampling: Sampling } {
+	const { sampling, draws } = planDraws(template, variationIndex);
+	const cases: RPassCases = { nine: false, plain: false, roundMinuend: false };
+	for (const { label, result } of draws) {
 		if (!result.success) {
-			throw new Error(`tirage ${seed} impossible : ${result.errors.join(' ; ')}`);
+			throw new Error(`tirage ${label} impossible : ${result.errors.join(' ; ')}`);
 		}
 		const { left, right } = operandValues(op, result.instance.resolvedVariables ?? []);
 		const leftUnits = ((left % 10) + 10) % 10;
-		const rest = op.operator === '+' ? right - (10 - leftUnits) : right - leftUnits;
-		if (right === 9) cases.nine = true;
-		else if (leftUnits === 0 || rest <= 0) cases.plain = true;
+		if (right === 9) {
+			cases.nine = true;
+		} else if (op.operator === '+') {
+			if (leftUnits === 0 || right - (10 - leftUnits) <= 0) cases.plain = true;
+		} else if (leftUnits === 0) {
+			if (left - 10 <= 0) {
+				throw new Error(`tirage ${label} : ${left} − ${right}, diminuende ≤ 10 non traité`);
+			}
+			cases.roundMinuend = true;
+		} else if (right - leftUnits <= 0) {
+			cases.plain = true;
+		}
 	}
-	return cases;
+	return { ...cases, sampling };
 }
 
 /** Étapes du cas général : compléter (ou redescendre) à la dizaine */
@@ -160,6 +174,27 @@ function nineSteps(op: BinaryOperation): [string, string] {
 	];
 }
 
+/** Étapes d'une différence à diminuende rond : 30 − 6 = 20 + 10 − 6 = 20 + 4 */
+function roundMinuendSteps(op: BinaryOperation): [string, string] {
+	const L = toDisplayForm(op.left);
+	const R = toDisplayForm(op.right);
+	const l = toEvalForm(op.left);
+	const r = toEvalForm(op.right);
+	const below = `{{eval:${l}-10}}`;
+	const inTen = `{{eval:10-${r}}}`;
+	return [
+		`${inline(L)} n'a pas d'unités : on ne peut pas retrancher ${inline(R)} directement. ` +
+			`On décompose ${inline(colored('transformed', L))} en ` +
+			`${inline(`${colored('transformed', below)} + ${colored('transformed', '10')}`)}, ` +
+			`puis on retranche ${inline(R)} de la dizaine ${inline(colored('transformed', '10'))}.`,
+		alignBlock([
+			`${colored('transformed', L)} - ${R} &= ${colored('transformed', below)} + ${colored('transformed', '10')} - ${R}`,
+			`&= ${below} + ${colored('intermediate', inTen)}`,
+			`&= {{solution}}`
+		])
+	];
+}
+
 /** Étapes sans passage de la dizaine : calcul direct */
 function plainSteps(op: BinaryOperation): [string, string] {
 	const L = toDisplayForm(op.left);
@@ -183,12 +218,21 @@ export function buildRPassSteps(op: BinaryOperation, cases: RPassCases): string[
 	const main = completeSteps(op);
 	const nine = nineSteps(op);
 	const plain = plainSteps(op);
+	const round = roundMinuendSteps(op);
 	return main.map((mainStep, i) => {
 		let step = mainStep;
 		if (cases.plain) step = anyOf(plainConditions(op), plain[i], step);
+		if (cases.roundMinuend) step = anyOf([roundMinuendCondition(op)], round[i], step);
 		if (cases.nine) step = anyOf([nineCondition(op)], nine[i], step);
 		return step;
 	});
+}
+
+/** « domaine entier (312 combinaisons) » / « 5000 graines » : d'où viennent les branches */
+export function describeSampling(sampling: Sampling): string {
+	return sampling.mode === 'exhaustive'
+		? `domaine entier, ${sampling.size} combinaisons`
+		: `${sampling.size} graines : ${sampling.reason}`;
 }
 
 /** Étapes R-PASS de chaque variation du modèle (lève une erreur si la structure est illisible) */
@@ -209,11 +253,13 @@ export function generateRPass(template: QuestionTemplate): {
 		const cases = detectRPassCases(template, index, op);
 		const branches = [
 			cases.nine && 'R = 9 (±10 ∓ 1)',
+			cases.roundMinuend && 'diminuende rond (L = (L − 10) + 10)',
 			cases.plain && 'sans passage (calcul direct)'
 		].filter(Boolean);
 		notes.push(
 			`variation ${index} : ${variable.name} = « ${variable.expression} » ; branches : ` +
-				(branches.length > 0 ? `cas général + ${branches.join(' + ')}` : 'cas général seul')
+				(branches.length > 0 ? `cas général + ${branches.join(' + ')}` : 'cas général seul') +
+				` (${describeSampling(cases.sampling)})`
 		);
 		return buildRPassSteps(op, cases);
 	});

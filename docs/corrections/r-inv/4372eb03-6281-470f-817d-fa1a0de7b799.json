@@ -1,0 +1,53 @@
+{
+	"templateId": "4372eb03-6281-470f-817d-fa1a0de7b799",
+	"title": "Compléter une addition à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + c*10 + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + c*10 + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + c*10 + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + c*10 + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + c*10 + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + c*10 + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + c*10 + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + c*10 + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + c*10 + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + c*10 + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + c*10 + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + c*10 + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + c*10 + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + c*10 + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + c*10 + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + c*10 + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} + ? = {{eval:a*10 + b + d}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$, donne ${{eval:a*10 + b + d}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}}$ de ${{eval:a*10 + b + d}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10 + b + d}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*10 + b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}} » ; trou à droite de « + »",
+		"variation 1 : expression2 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}} » ; trou à droite de « + »",
+		"variation 2 : expression3 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}} » ; trou à droite de « + »",
+		"variation 3 : expression4 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}} » ; trou à droite de « + »",
+		"variation 4 : expression5 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}} » ; trou à droite de « + »",
+		"variation 5 : expression6 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}} » ; trou à droite de « + »",
+		"variation 6 : expression7 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}} » ; trou à droite de « + »",
+		"variation 7 : expression8 = « {{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}} » ; trou à droite de « + »"
+	]
+}

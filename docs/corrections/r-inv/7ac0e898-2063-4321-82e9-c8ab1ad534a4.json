@@ -1,0 +1,23 @@
+{
+	"templateId": "7ac0e898-2063-4321-82e9-c8ab1ad534a4",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{50} = {{eval:(a*2+1)*50}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{50}$, donne ${{eval:(a*2+1)*50}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:(a*2+1)*50}}$ par $\\textcolor{{{color:primary.0}}}{50}$.",
+				"$$\\begin{align} ? &= {{eval:(a*2+1)*50}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{50} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{50} = {{eval:a*2*50}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{50}$, donne ${{eval:a*2*50}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*2*50}}$ par $\\textcolor{{{color:primary.0}}}{50}$.",
+				"$$\\begin{align} ? &= {{eval:a*2*50}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{50} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?*50={{eval:(a*2+1)*50}} » ; trou à gauche de « * »",
+		"variation 1 : expression2 = « ?*50 = {{eval:a*2*50}} » ; trou à gauche de « * »"
+	]
+}

@@ -1,0 +1,18 @@
+{
+	"templateId": "6661b9ae-ece2-4d5c-8bcf-91f6825cf56f",
+	"title": "Compléter une addition à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*100 + b*10 + c}}} + ? = {{eval:a*100 + b*10 + c + d*100 + f*10 + g}}$. On cherche le nombre qui, ajouté à $\\textcolor{{{color:primary.0}}}{{{eval:a*100 + b*10 + c}}}$, donne ${{eval:a*100 + b*10 + c + d*100 + f*10 + g}}$. L'addition et la soustraction sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{soustrait}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*100 + b*10 + c}}}$ de ${{eval:a*100 + b*10 + c + d*100 + f*10 + g}}$.",
+				"$$\\begin{align} ? &= {{eval:a*100 + b*10 + c + d*100 + f*10 + g}} \\textcolor{{{color:primary.1}}}{-} \\textcolor{{{color:primary.0}}}{{{eval:a*100 + b*10 + c}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:a*100 + b*10 + c}} + ? = {{eval:a*100 + b*10 + c + d*100 + f*10 + g}} » ; trou à droite de « + »"
+	]
+}

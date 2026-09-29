@@ -1,0 +1,18 @@
+{
+	"templateId": "45e06ece-246e-4182-ae1f-8d04a98e6aae",
+	"title": "Compléter une division à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? : \\textcolor{{{color:primary.0}}}{{{eval:10^a}}} = {{eval:b:10^a;d}}$. On cherche le nombre qui, divisé par $\\textcolor{{{color:primary.0}}}{{{eval:10^a}}}$, donne ${{eval:b:10^a;d}}$. La division et la multiplication sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{multiplie}}$ ${{eval:b:10^a;d}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:10^a}}}$.",
+				"$$\\begin{align} ? &= {{eval:b:10^a;d}} \\textcolor{{{color:primary.1}}}{\\times} \\textcolor{{{color:primary.0}}}{{{eval:10^a}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « ?:{{eval:10^a}}={{eval:b:10^a;d}} » ; trou à gauche de « : »"
+	]
+}

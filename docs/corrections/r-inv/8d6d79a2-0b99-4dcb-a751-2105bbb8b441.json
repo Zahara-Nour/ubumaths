@@ -1,0 +1,16 @@
+{
+	"templateId": "8d6d79a2-0b99-4dcb-a751-2105bbb8b441",
+	"title": "Compléter une division à trou ",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? : \\textcolor{{{color:primary.0}}}{{{b}}} = {{a}}$. On cherche le nombre qui, divisé par $\\textcolor{{{color:primary.0}}}{{{b}}}$, donne ${{a}}$. La division et la multiplication sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{multiplie}}$ ${{a}}$ par $\\textcolor{{{color:primary.0}}}{{{b}}}$.",
+				"$$\\begin{align} ? &= {{a}} \\textcolor{{{color:primary.1}}}{\\times} \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["variation 0 : expression1 = « ?:b=a » ; trou à gauche de « : »"]
+}

@@ -1,0 +1,4651 @@
+[
+	{
+		"id": "e49b0cf8-3b48-4f0b-90ab-9687f8e37b1e",
+		"title": "Compléter une addition à trou ",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:c+g;d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:c+g;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.731139+00:00",
+		"updated_at": "2026-09-27T07:17:17.731139+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (pas de retenue)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "g",
+					"expression": "d.f"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2{,}1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "6,8 + ? = 8,9 → 2,1",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "2.1 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2{,}1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "? + 6,8 = 8,9 → 2,1",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["15{,}7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"d": "2",
+					"f": "1"
+				},
+				"description": "somme au lieu du complément : 15,7",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "c9c1966e-f644-412c-807e-b0620489a1e6",
+		"title": "Compléter une addition à trou",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:h+c;d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{h}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:h+c;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:17.888904+00:00",
+		"updated_at": "2026-09-27T07:17:17.888904+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Parties décimales à $1$ et $2$ chiffres (pas de retenue)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "1..8"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:9-a}}"
+				},
+				{
+					"name": "f",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "g",
+					"expression": "1..{{eval:9-b}}"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:d+f/10+g/100;d}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["1{,}55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "8,2 + ? = 9,75 → 1,55",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1.55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "1.55 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1{,}55"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "? + 8,2 = 9,75 → 1,55",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["1{,}5"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"d": "1",
+					"f": "5",
+					"g": "5"
+				},
+				"description": "erreur 1,5",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "421e9fc9-b141-48b8-aed8-bb3a6c35bf7a",
+		"title": "Compléter une addition à trou",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:g+c;d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:g+c;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:18.058438+00:00",
+		"updated_at": "2026-09-27T07:17:18.058438+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenue pour la partie decimale)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "1..{{eval:8-a}}"
+				},
+				{
+					"name": "f",
+					"expression": "{{eval:10-b}}..9"
+				},
+				{
+					"name": "g",
+					"expression": "d.f"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["2{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "5,9 + ? = 8,2 → 2,3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2.3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "2.3 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "? + 5,9 = 8,2 → 2,3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["3{,}3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"d": "2",
+					"f": "3"
+				},
+				"description": "retenue oubliée : 3,3",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "b4b5cf8b-32bc-4273-8c5a-20dc0e7550db",
+		"title": "Compléter une addition à trou",
+		"theme": "Décimaux",
+		"domain": "Additionner",
+		"level": 5,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{c}}+?={{eval:g+c;d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?+{{c}}={{eval:g+c;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:18.219138+00:00",
+		"updated_at": "2026-09-27T07:17:18.219138+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Partie entière et partie décimale à $1$ chiffre (avec retenues)",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "a.b"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:10-a}}..9"
+				},
+				{
+					"name": "f",
+					"expression": "{{eval:10-b}}..9"
+				},
+				{
+					"name": "g",
+					"expression": "d.f"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "7,9 + ? = 15,2 → 7,3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7.3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "7.3 au point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "? + 7,9 = 15,2 → 7,3",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["8{,}3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"d": "7",
+					"f": "3"
+				},
+				"description": "erreur 8,3",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "668b1fe6-12e2-4c51-899e-646556e69675",
+		"title": "Compléter une division à trou",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 1,
+		"status": "draft",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "0..3"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "a",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:10 = {{eval:a:10;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:27.228861+00:00",
+		"updated_at": "2026-09-27T07:17:27.228861+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Diviser par $10$",
+		"shared": {
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "? : 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18.3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}183"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "mauvais sens",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "651836d4-4caf-4318-8a19-31c193349683",
+		"title": "Compléter une division à trou",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 2,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "m",
+						"expression": "0..3"
+					},
+					{
+						"name": "q",
+						"expression": "0..1"
+					},
+					{
+						"name": "a",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:100 = {{eval:a:100;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:27.391103+00:00",
+		"updated_at": "2026-09-27T07:17:27.391103+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Diviser par $100$",
+		"shared": {
+			"conditions": ["a!=0", "mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["18{,}3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "? : 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18.3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1{,}83"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.3",
+					"m": "2",
+					"q": "1"
+				},
+				"description": "mauvais sens",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "4b1968b9-2210-4f08-a1b8-69eae735d714",
+		"title": "Compléter une division à trou",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 3,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:1000 = {{eval:b:1000;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:27.529633+00:00",
+		"updated_at": "2026-09-27T07:17:27.529633+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Diviser par $1000$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["824"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "824"
+				},
+				"description": "? : 1000 = 0,824",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0{,}824"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "824"
+				},
+				"description": "mauvais sens",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\,321"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"description": "4 321",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4321"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "4",
+					"b": "4321"
+				},
+				"description": "4321 sans espace",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "45e06ece-246e-4182-ae1f-8d04a98e6aae",
+		"title": "Compléter une division à trou",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 4,
+		"status": "draft",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "m",
+						"expression": "0..4"
+					},
+					{
+						"name": "q",
+						"expression": "0..4-a"
+					},
+					{
+						"name": "b",
+						"expression": "digits:m.q"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:{{eval:10^a}}={{eval:b:10^a;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:27.683178+00:00",
+		"updated_at": "2026-09-27T07:17:27.683178+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Diviser par $10$, $100$ ou $1000$",
+		"shared": {
+			"conditions": ["q<=4-a", "b!=0", "mod(b*10^q,10)!=0", "b>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["4\\,498{,}7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "? : 1000 = 4,4987",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4498{,}7"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "4498,7 sans espace",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4\\,498.7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4{,}498\\,7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "3",
+					"b": "4498.7",
+					"m": "4",
+					"q": "1"
+				},
+				"description": "mauvais sens",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "6632e5c2-45eb-4b6f-afff-c162bcb382e8",
+		"title": "Compléter une division à trou",
+		"theme": "Décimaux",
+		"domain": "Diviser",
+		"level": 5,
+		"status": "draft",
+		"grades": ["6"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c;d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?:{{eval:b;d}} = {{eval:c:b;d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?:{{eval:b;d}} = {{eval:a:b;d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T07:17:27.882105+00:00",
+		"updated_at": "2026-09-27T07:17:27.882105+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Diviser par $0,1$ ; $0,01$ ou $0,001$",
+		"shared": {
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2"
+				},
+				{
+					"name": "q",
+					"expression": "0..3"
+				},
+				{
+					"name": "a",
+					"expression": "digits:m.q"
+				},
+				{
+					"name": "b",
+					"expression": "0.1|0.01|0.001"
+				},
+				{
+					"name": "c1",
+					"expression": "1..9|11..99|101..999"
+				},
+				{
+					"name": "c",
+					"expression": "eval:c1:1000"
+				}
+			],
+			"conditions": ["mod(a*10^q,10)!=0", "a>=10^(m-1)"]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0{,}003"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.388",
+					"b": "0.01",
+					"m": "2",
+					"q": "3",
+					"c1": "3"
+				},
+				"description": "? : 0,01 = 0,3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0.003"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.388",
+					"b": "0.01",
+					"m": "2",
+					"q": "3",
+					"c1": "3"
+				},
+				"description": "point",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.388",
+					"b": "0.01",
+					"m": "2",
+					"q": "3",
+					"c1": "3"
+				},
+				"description": "mauvais sens : 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18{,}388"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "18.388",
+					"b": "0.01",
+					"m": "2",
+					"q": "3",
+					"c1": "3"
+				},
+				"description": "? : 0,01 = 1 838,8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["183\\,880"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "18.388",
+					"b": "0.01",
+					"m": "2",
+					"q": "3",
+					"c1": "3"
+				},
+				"description": "mauvais décalage",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "32beec3b-7d78-4d07-808b-0b0091ce89cf",
+		"title": "Compléter une addition",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 12,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10+d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:8-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10+d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:36.006458+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres (avec retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["37"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "59 + ? = 96 → 37",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "1",
+					"d": "9"
+				},
+				"description": "borne haute 79 + ? = 98 → 19",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["47"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "oubli de la retenue : 47",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["155"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5",
+					"b": "9",
+					"c": "3",
+					"d": "7"
+				},
+				"description": "somme au lieu du terme manquant",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "4372eb03-6281-470f-817d-fa1a0de7b799",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 4,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10 + d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10 + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression6",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "5..7"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression7",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "5..7"
+					},
+					{
+						"name": "d",
+						"expression": "2..{{eval:9-b}}"
+					},
+					{
+						"name": "expression8",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:34.862668+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme sans retenue,au moins un nombre à 2 chiffres",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["22"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"description": "Bonne réponse 22",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["54"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"c": "5",
+					"d": "4"
+				},
+				"description": "Bonne réponse 54",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["24"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"c": "2",
+					"d": "4"
+				},
+				"description": "Bonne réponse 24",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["52"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"c": "5",
+					"d": "2"
+				},
+				"description": "Bonne réponse 52",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"d": "2"
+				},
+				"description": "Bonne réponse 2",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "4",
+					"d": "5"
+				},
+				"description": "Bonne réponse 5",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4",
+					"d": "5"
+				},
+				"description": "Bonne réponse 5",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "7",
+					"d": "2"
+				},
+				"description": "Bonne réponse 2",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"c": "2",
+					"d": "2"
+				},
+				"description": "Erreur : seulement les unités",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["79"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "7",
+					"d": "2"
+				},
+				"description": "Erreur : recopie la somme",
+				"variationIndex": 4
+			}
+		]
+	},
+	{
+		"id": "8a843682-a849-47ac-8762-cfb098c4a4c3",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 5,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:11-b}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:34.978541+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre à deux chiffres et d’un nombre à un chiffre, avec franchissement de la dizaine.",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Bonne réponse 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Erreur : dizaine en trop",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2",
+					"c": "9"
+				},
+				"description": "Bonne réponse 9",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "1507465f-8fd9-4442-ae43-156662758d12",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 6,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:35.103455+00:00",
+		"updated_at": "2026-09-29T18:05:37.023866+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre à deux chiffres et de dizaines entières",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "Bonne réponse 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "3"
+				},
+				"description": "Erreur : dizaines au lieu du nombre",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "8",
+					"b": "2",
+					"c": "1"
+				},
+				"description": "Bonne réponse 10",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "777dc505-7be7-4675-97f4-7c1f4fbd8c41",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 8,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10+d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10+d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:35.440798+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 2 chiffres (sans retenue entre les unités et les dizaines)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["91"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "1"
+				},
+				"description": "Bonne réponse 91",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["247"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9",
+					"d": "1"
+				},
+				"description": "Erreur : addition des deux nombres",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "5",
+					"c": "1",
+					"d": "2"
+				},
+				"description": "Bonne réponse 12",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "de71495c-b88c-4b42-9cd7-3562847aedfc",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 9,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*10^d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..2"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10+c}} + ? = {{eval:a*100 + b*10+c + f*10^d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:35.586835+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"description": "Bonne réponse 30",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "1",
+					"f": "3"
+				},
+				"description": "Erreur : ordre de grandeur",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0",
+					"b": "0",
+					"c": "5",
+					"d": "2",
+					"f": "9"
+				},
+				"description": "Bonne réponse 900",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "18b7cc5c-65ed-491d-9fbc-ce217e528bd4",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 10,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{a}} + ? =  {{eval:b+a}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "? + {{b}} = {{eval:b+a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:35.71839+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme de deux termes dont le résultat est inférieur à $100$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..98"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:99-a}}"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "70",
+					"b": "28"
+				},
+				"description": "Bonne réponse 28",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["38"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "70",
+					"b": "28"
+				},
+				"description": "Erreur : erreur de retenue",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["96"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "96",
+					"b": "1"
+				},
+				"description": "Bonne réponse 96",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["98"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "96",
+					"b": "1"
+				},
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "22b8da83-a8ea-4d8e-b500-ff24e08cf260",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 11,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:g*10^f}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..3"
+					},
+					{
+						"name": "g",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*1000 + b*100+c*10+d}} + ? = {{eval:a*1000 + b*100+c*10+d + g*10^f}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:35.853389+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Somme d’un nombre ayant au plus 4 chiffres et d’un nombre ayant un seul chiffre non nul",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"description": "Bonne réponse 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "0",
+					"g": "8"
+				},
+				"description": "Erreur : retenue",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "5",
+					"f": "3",
+					"g": "6"
+				},
+				"description": "Bonne réponse 6\\,000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "9",
+					"b": "1",
+					"c": "1",
+					"d": "5",
+					"f": "3",
+					"g": "6"
+				},
+				"description": "Sans espace des milliers",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "6661b9ae-ece2-4d5c-8bcf-91f6825cf56f",
+		"title": "Compléter une addition à trou",
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"level": 13,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d*100 + f*10 + g}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "g",
+						"expression": "1..{{eval:9-c}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*100 + b*10 + c}} + ? = {{eval:a*100 + b*10 + c + d*100 + f*10 + g}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 30,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:36.132436+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Nombres entiers à 3 chiffres (sans retenue)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["316"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "682 + ? = 998 → 316",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["111"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "1",
+					"c": "1",
+					"d": "1",
+					"f": "1",
+					"g": "1"
+				},
+				"description": "bornes basses 111 + ? = 222",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["998"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "8",
+					"c": "2",
+					"d": "3",
+					"f": "1",
+					"g": "6"
+				},
+				"description": "résultat total au lieu du terme",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "8d6d79a2-0b99-4dcb-a751-2105bbb8b441",
+		"title": "Compléter une division à trou ",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 1,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "?:b=a"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:54.311929+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Trouver le dividende",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["63"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "? : 9 = 7 → 63",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2"
+				},
+				"description": "? : 2 = 2 → 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : somme au lieu du produit",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "6ca01910-6b66-4dce-91f2-7a22154282b6",
+		"title": "Compléter une division à trou ",
+		"theme": "Entiers",
+		"domain": "Diviser",
+		"level": 2,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}:?={{a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:54.432849+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Trouver le diviseur",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "63 : ? = 7 → 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "81 : ? = 9 → 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : recopie du quotient",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "31c3963e-e1e2-4fe2-bce1-83379f93b867",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 10,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*20={{eval:a*20}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*?={{eval:20*a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:48.757719+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier par $20$. Nombre à $1$ chiffre.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0"
+				},
+				"description": "?×20 = 0 : 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9"
+				},
+				"description": "?×20 = 180 : 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : 140÷10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "20×? = 100 : 5",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "9c32b3cc-f8d8-4fe8-808b-e2e021fbb146",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 11,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*20={{eval:a*20}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "20*?={{eval:20*a}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:48.877869+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier par $20$. Nombre à $2$ chiffres.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "11..20|25|30|40|50"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "11"
+				},
+				"description": "?×20 = 220 : 11",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "50"
+				},
+				"description": "?×20 = 1 000 : 50",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["32"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "16"
+				},
+				"description": "Erreur : 320÷10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "20"
+				},
+				"description": "20×? = 400 : 20",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "ee0ae544-946a-4c5a-a1cf-4761c4288cb2",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 12,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}*? = {{eval:a*10*b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*{{eval:a*10}} = {{eval:b*a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.02864+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à $1$ chiffre.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "90×? = 810 : 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 90 au lieu de 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "?×30 = 60 : 2",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "?×70 = 630 : 9",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "e4e3b16e-76f9-471a-966c-cca9a3cea9e4",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 13,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*{{b}} = {{eval:a*10*b}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "{{b}}*? = {{eval:b*a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.153304+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à $1$ chiffre.",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "9",
+					"b": "9"
+				},
+				"description": "?×9 = 810 : 90",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 7 au lieu de 70",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "3",
+					"b": "2"
+				},
+				"description": "3×? = 60 : 30",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "9×? = 630 : 70",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "a5d5a7a0-2b7f-4174-a487-4c673fee5eeb",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 15,
+		"status": "published",
+		"grades": ["CM1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10}}* ?= {{eval:a*10*b*10}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:b*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*{{eval:a*10}}={{eval:b*10*a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.389511+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplier deux multiples de $10$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "70 × 90 = 6 300",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 9 (oubli du zéro)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["90"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "? × 70 = 6 300",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9"
+				},
+				"description": "Erreur : 900",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "ae96d7af-e1f6-4390-8100-c779260e4152",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 17,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10^d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10^b}}*?= {{eval:a*10^b*c*10^d}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:c*10^d}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*{{eval:a*10^b}}= {{eval:a*10^b*c*10^d}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.766427+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Les $2$ facteurs sont des multiples de $10$, $100$ ou $1000$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["900"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3",
+					"c": "9",
+					"d": "2"
+				},
+				"description": "7 000 × 900 = 6 300 000",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,000"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "3",
+					"c": "9",
+					"d": "2"
+				},
+				"description": "Erreur : 9 000 (un zéro de trop)",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "1",
+					"c": "9",
+					"d": "3"
+				},
+				"description": "? × 70 = 630 000 : 9 000 avec espace",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["9000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "1",
+					"c": "9",
+					"d": "3"
+				},
+				"description": "9000 sans espace : perfectible",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["900"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "1",
+					"c": "9",
+					"d": "3"
+				},
+				"description": "Erreur : 900",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "883fbf29-693b-45b0-8d83-4882fa7fdde4",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 18,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "25"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*4=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "20"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*5=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "50"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "expression3",
+						"expression": "?*2=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "12"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "expression4",
+						"expression": "?*5=60"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "15"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "expression5",
+						"expression": "?*4=60"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "14"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression6}}$$",
+				"variables": [
+					{
+						"name": "expression6",
+						"expression": "?*5=70"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "18"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression7}}$$",
+				"variables": [
+					{
+						"name": "expression7",
+						"expression": "?*5=90"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "15"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression8}}$$",
+				"variables": [
+					{
+						"name": "expression8",
+						"expression": "?*6=90"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression9}}$$",
+				"variables": [
+					{
+						"name": "expression9",
+						"expression": "?*25=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression10}}$$",
+				"variables": [
+					{
+						"name": "expression10",
+						"expression": "?*20=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "2"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression11}}$$",
+				"variables": [
+					{
+						"name": "expression11",
+						"expression": "?*50=100"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression12}}$$",
+				"variables": [
+					{
+						"name": "expression12",
+						"expression": "?*12=60"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "4"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression13}}$$",
+				"variables": [
+					{
+						"name": "expression13",
+						"expression": "?*15=60"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression14}}$$",
+				"variables": [
+					{
+						"name": "expression14",
+						"expression": "?*14=70"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "5"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression15}}$$",
+				"variables": [
+					{
+						"name": "expression15",
+						"expression": "?*18=90"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "6"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression16}}$$",
+				"variables": [
+					{
+						"name": "expression16",
+						"expression": "?*15=90"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:49.920003+00:00",
+		"updated_at": "2026-09-29T18:05:35.060316+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Produits classiques",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["25"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 0 : 25",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 1 : 20",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["50"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 2 : 50",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 3 : 12",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 4 : 15",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 5 : 14",
+				"variationIndex": 5
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 6 : 18",
+				"variationIndex": 6
+			},
+			{
+				"answers": ["15"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 7 : 15",
+				"variationIndex": 7
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 8 : 4",
+				"variationIndex": 8
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 9 : 5",
+				"variationIndex": 9
+			},
+			{
+				"answers": ["2"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 10 : 2",
+				"variationIndex": 10
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 11 : 5",
+				"variationIndex": 11
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 12 : 4",
+				"variationIndex": 12
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 13 : 5",
+				"variationIndex": 13
+			},
+			{
+				"answers": ["5"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 14 : 5",
+				"variationIndex": 14
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {},
+				"description": "Variation 15 : 6",
+				"variationIndex": 15
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 20 au lieu de 25",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {},
+				"description": "Erreur : 16 au lieu de 15",
+				"variationIndex": 7
+			}
+		]
+	},
+	{
+		"id": "7ac0e898-2063-4321-82e9-c8ab1ad534a4",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 19,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*2+1}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*50={{eval:(a*2+1)*50}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*2}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*50 = {{eval:a*2*50}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:50.048453+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplication par $50$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["11"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "11 × 50 = 550",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "5"
+				},
+				"description": "Erreur : 10",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "12 × 50 = 600",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6"
+				},
+				"description": "Erreur : 6",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "d22731c2-d6bd-4aca-8aac-f90d4aaa3d8f",
+		"title": "Compléter une multiplication à trou",
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"level": 20,
+		"status": "published",
+		"grades": ["CM2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*4+b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?*25={{eval:(a*4+b)*25}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*4}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "?*25={{eval:a*4*25}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 20,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:50.173869+00:00",
+		"updated_at": "2026-09-29T18:05:33.863962+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Multiplication par $25$",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..3"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["19"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "19 × 25 = 475",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["18"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Erreur : 18",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["16"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "16 × 25 = 400",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "4",
+					"b": "3"
+				},
+				"description": "Erreur : 4",
+				"variationIndex": 1
+			}
+		]
+	},
+	{
+		"id": "e7e7662d-74c2-456f-a409-f7130c86c608",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 2,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{b}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10+c}} - ? = {{eval:a*10+c-b}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:39.433433+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, sans franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "79-?=71 : 8",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["150"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "Erreur : additionne 79+71",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "1",
+					"c": "6"
+				},
+				"description": "26-?=25 : 1",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "1e93a463-38a4-411b-8c35-31ce93b42d43",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 3,
+		"status": "published",
+		"grades": ["CP"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b*10+c}} - ? = {{eval:b*10+c - a*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 10,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:39.568738+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire des dizaines entières à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "99-?=39 : 60",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["6"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "6",
+					"b": "9",
+					"c": "9"
+				},
+				"description": "Erreur : 6 au lieu de 60",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "27bf3101-faf4-4d55-8233-ef8bb3548179",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 5,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{c}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10+b}} - ? = {{eval:a*10+b-c}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:40.69319+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire un nombre à un chiffre à un nombre à deux chiffres, avec franchissement de la dizaine",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "78-?=69 : 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["1"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "8",
+					"c": "9"
+				},
+				"description": "Erreur : écart des unités 9-8",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "caa02a8c-2af1-4e19-94f0-8df06e8467e0",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 6,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval: d*10 + f }}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:b-1}}"
+					},
+					{
+						"name": "f",
+						"expression": "0..{{eval:c-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? =  {{eval: a*100 + b*10 + c - (d*10 + f) }}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:40.84182+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire un nombre à deux chiffres à un nombre à $3$ chiffres, sans retenue",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["62"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "799-?=737 : 62",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["26"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Erreur : chiffres inversés",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "3d6def48-eefd-4015-9090-ec2396ec3483",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 7,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:d*100}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? =  {{eval:a*100 + b*10 + c - d*100}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:40.970715+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire des centaines entières à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"description": "799-?=399 : 400",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "4"
+				},
+				"description": "Erreur : 4 au lieu de 400",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "7d2d412b-843c-446f-8394-2a31856556d5",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 8,
+		"status": "published",
+		"grades": ["CE1"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval: f*100 + g*10+h }}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "0..{{eval:b-1}}"
+					},
+					{
+						"name": "g",
+						"expression": "0..{{eval:c-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..{{eval:d-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*1000 + b*100 + c*10+d}}- ? = {{eval:a*1000 + b*100 + c*10+d-(f*100 + g*10+h) }}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:41.103765+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire un nombre d'au plus $3$ chiffres à un nombre à $4$ chiffres, sans retenue",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["273"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "7",
+					"f": "2",
+					"g": "7",
+					"h": "3"
+				},
+				"description": "7997-?=7724 : 273",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["372"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "7",
+					"f": "2",
+					"g": "7",
+					"h": "3"
+				},
+				"description": "Erreur : chiffres inversés",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["23"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2",
+					"b": "2",
+					"c": "6",
+					"d": "5",
+					"f": "0",
+					"g": "2",
+					"h": "3"
+				},
+				"description": "2265-?=2242 : 23",
+				"variationIndex": 0
+			}
+		]
+	},
+	{
+		"id": "9f4cbd66-4fab-460b-8872-4a2b36d94267",
+		"title": "Compléter une soustraction à trou",
+		"theme": "Entiers",
+		"domain": "Soustraire",
+		"level": 9,
+		"status": "published",
+		"grades": ["CE2"],
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*100}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? = {{eval:a*100 + b*10 + c - f*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? = {{eval:a*100 + b*10 + c - f*10}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*1000}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression3}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression3",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d }} - ? = {{eval:a*1000 + b*100 + c*10 + d - f*1000}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*100}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression4}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression4",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d }} - ? = {{eval:a*1000 + b*100 + c*10 + d - f*100}}"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:f*10}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression5}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..9"
+					},
+					{
+						"name": "d",
+						"expression": "0..9"
+					},
+					{
+						"name": "f",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression5",
+						"expression": "{{eval: a*1000 + b*100 + c*10 + d }} - ? = {{eval:a*1000 + b*100 + c*10 + d - f*10}}"
+					}
+				]
+			}
+		],
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"delay": 15,
+		"multiple_answers": null,
+		"created_at": "2026-09-27T06:52:41.254551+00:00",
+		"updated_at": "2026-09-29T18:05:36.097742+00:00",
+		"subdomain": "A trou",
+		"exercise_instruction": null,
+		"description": "Soustraire des dizaines entières, des centaines entières ou des milliers entiers à un nombre",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["400"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "4"
+				},
+				"description": "799-?=399 : 400",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"f": "6"
+				},
+				"description": "799-?=739 : 60",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["2\\,000"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "7996-?=5996 : 2 000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["2000"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["spaces"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "2000 sans espace des milliers",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["200"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "2"
+				},
+				"description": "Erreur : 200 au lieu de 2 000",
+				"variationIndex": 2
+			},
+			{
+				"answers": ["300"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "3"
+				},
+				"description": "7996-?=7696 : 300",
+				"variationIndex": 3
+			},
+			{
+				"answers": ["30"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "3"
+				},
+				"description": "7996-?=7966 : 30",
+				"variationIndex": 4
+			},
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "9",
+					"c": "9",
+					"d": "6",
+					"f": "3"
+				},
+				"description": "Erreur : 3 au lieu de 30",
+				"variationIndex": 4
+			}
+		]
+	}
+]

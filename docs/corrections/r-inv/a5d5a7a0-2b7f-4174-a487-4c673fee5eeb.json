@@ -1,0 +1,23 @@
+{
+	"templateId": "a5d5a7a0-2b7f-4174-a487-4c673fee5eeb",
+	"title": "Compléter une multiplication à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\times ? = {{eval:a*10*b*10}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$, donne ${{eval:a*10*b*10}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:a*10*b*10}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$.",
+				"$$\\begin{align} ? &= {{eval:a*10*b*10}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"$? \\times \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} = {{eval:b*10*a*10}}$. On cherche le nombre qui, multiplié par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$, donne ${{eval:b*10*a*10}}$. La multiplication et la division sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ ${{eval:b*10*a*10}}$ par $\\textcolor{{{color:primary.0}}}{{{eval:a*10}}}$.",
+				"$$\\begin{align} ? &= {{eval:b*10*a*10}} \\textcolor{{{color:primary.1}}}{:} \\textcolor{{{color:primary.0}}}{{{eval:a*10}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"variation 0 : expression1 = « {{eval:a*10}}* ?= {{eval:a*10*b*10}} » ; trou à droite de « * »",
+		"variation 1 : expression2 = « ?*{{eval:a*10}}={{eval:b*10*a*10}} » ; trou à gauche de « * »"
+	]
+}

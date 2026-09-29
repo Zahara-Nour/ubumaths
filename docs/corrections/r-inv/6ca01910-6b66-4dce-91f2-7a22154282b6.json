@@ -1,0 +1,16 @@
+{
+	"templateId": "6ca01910-6b66-4dce-91f2-7a22154282b6",
+	"title": "Compléter une division à trou ",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$\\textcolor{{{color:primary.0}}}{{{eval:a*b}}} : ? = {{a}}$. On cherche par quel nombre diviser $\\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$ pour obtenir ${{a}}$ : on $\\textcolor{{{color:primary.1}}}{\\text{divise}}$ $\\textcolor{{{color:primary.0}}}{{{eval:a*b}}}$ par ${{a}}$.",
+				"$$\\begin{align} ? &= \\textcolor{{{color:primary.0}}}{{{eval:a*b}}} \\textcolor{{{color:primary.1}}}{:} {{a}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["variation 0 : expression1 = « {{eval:a*b}}:?={{a}} » ; trou à droite de « : »"]
+}

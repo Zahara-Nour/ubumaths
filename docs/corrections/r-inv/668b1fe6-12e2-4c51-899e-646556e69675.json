@@ -1,0 +1,16 @@
+{
+	"templateId": "668b1fe6-12e2-4c51-899e-646556e69675",
+	"title": "Compléter une division à trou",
+	"classe": "R",
+	"code": "R-INV",
+	"source": "generated",
+	"steps": {
+		"byVariation": [
+			[
+				"$? : \\textcolor{{{color:primary.0}}}{10} = {{eval:a:10;d}}$. On cherche le nombre qui, divisé par $\\textcolor{{{color:primary.0}}}{10}$, donne ${{eval:a:10;d}}$. La division et la multiplication sont des opérations inverses : on $\\textcolor{{{color:primary.1}}}{\\text{multiplie}}$ ${{eval:a:10;d}}$ par $\\textcolor{{{color:primary.0}}}{10}$.",
+				"$$\\begin{align} ? &= {{eval:a:10;d}} \\textcolor{{{color:primary.1}}}{\\times} \\textcolor{{{color:primary.0}}}{10} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["variation 0 : expression1 = « ?:10 = {{eval:a:10;d}} » ; trou à gauche de « : »"]
+}

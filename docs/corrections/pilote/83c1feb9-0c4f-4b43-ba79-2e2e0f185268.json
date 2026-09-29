@@ -13,6 +13,6 @@
 		]
 	},
 	"notes": [
-		"variation 0 : expression1 = « {{eval:b}} +{{eval:a*10-b}} » ; branches : cas général + sans passage (calcul direct)"
+		"variation 0 : expression1 = « {{eval:b}} +{{eval:a*10-b}} » ; branches : cas général + sans passage (calcul direct) (domaine entier, 259 combinaisons)"
 	]
 }
