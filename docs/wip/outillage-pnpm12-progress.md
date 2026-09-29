@@ -1,7 +1,8 @@
 # Outillage — pnpm 12, `[local_smtp]` et CLI Supabase fixée, progression
 
 > Chantier ouvert le 2026-09-29, pendant la migration du poste de dev vers le
-> Mac mini. **Rien n'est commencé.** À faire après la migration, sur une branche
+> Mac mini. **En cours depuis le 2026-09-29** (worktree `../ubumaths-wt-pnpm12`,
+> branche `chore/outillage-pnpm12`). À faire après la migration, sur une branche
 > avec une PR (`package.json`, `pnpm-lock.yaml` et `supabase/config.toml` sont
 > du code, pas de la doc).
 
@@ -109,3 +110,44 @@ Objectif : `pnpm supabase` = la même version partout (postes et CI), pour que
   ne change rien à `database.ts` hors vrai changement de schéma.
 - CI verte, y compris le workflow nocturne lancé sur la branche ; preview
   Vercel OK.
+
+## Journal
+
+- 2026-09-29 — **Vérifié dans la doc** (plus « à vérifier ») : depuis pnpm 11,
+  pnpm ne lit plus le champ `"pnpm"` de `package.json` ; les réglages vont dans
+  `pnpm-workspace.yaml`, et v12 garde ce comportement
+  (https://pnpm.io/migration). `onlyBuiltDependencies` est **supprimé** en v11,
+  remplacé par `allowBuilds` (dictionnaire `nom: true | false`) ;
+  `strictDepBuilds` est actif par défaut → `ERR_PNPM_IGNORED_BUILDS`
+  (https://pnpm.io/settings/build).
+- 2026-09-29 — **Vérifié dans le registre** : le paquet npm `supabase`
+  (2.105.0 comme 2.118.0) n'a **aucun** script `install`/`postinstall`. Le
+  binaire arrive par des `optionalDependencies` par plateforme
+  (`@supabase/cli-darwin-arm64`…, sans script non plus). Confirmé à
+  l'installation sous pnpm 12 : aucune autorisation de build demandée. L'hypothèse
+  du document était fausse : pas d'`allowBuilds` pour `supabase`.
+- 2026-09-29 — **Tâche A faite** : `pnpm-workspace.yaml` (12 overrides +
+  `allowBuilds: { esbuild: true, core-js: false }`), section `"pnpm"` retirée,
+  `packageManager` = `pnpm@12.6.0+sha512…`. Le lockfile de pnpm 12 a **deux
+  documents YAML** : le 1er épingle pnpm lui-même, le 2ᵉ est celui du projet.
+  Résolution des dépendances **identique à `main`** (aucun paquet retiré).
+  Preuve des 12 overrides : script de comparaison au lockfile de `main`, validé
+  par un **contrôle négatif** (pnpm 12 sans overrides → 13 échecs détectés :
+  esbuild 0.25.12 / 0.27.7, parse5 8.0.1, jsdom 28.1.0, fast-uri 3.1.8,
+  cookie 0.6.0, brace-expansion 1.1.21…). Branche : **0 échec**.
+- 2026-09-29 — **Tâche B faite** : `[inbucket]` → `[local_smtp]`, clés
+  identiques (vérifié sur un `supabase init` neuf de la CLI 2.118.0). Local :
+  `db:start` via la CLI du projet, 0 avertissement, Mailpit sur 54324 (HTTP 200).
+- 2026-09-29 — **Tâche C, en partie** : `supabase` **2.118.0** exact en
+  devDependency (dernière stable). Les scripts `db:*` l'utilisent sans
+  changement (`node_modules/.bin` dans le PATH de `pnpm run`).
+  `nightly-integration.yml` : `setup-cli@v3` (2.105.0) retiré, `pnpm exec
+supabase` partout → une seule source de vérité.
+- 2026-09-29 — **Vercel** : `vercel.json` → `ignoreCommand` sort en `exit 0`
+  hors production → **aucune preview de PR n'est construite** (le check
+  « Vercel » des PR passe en 0 s). La preuve du build Vercel sous pnpm 12 doit
+  passer par un autre chemin.
+- 2026-09-29 — Piège noté : le dépôt principal est **lié** à la prod
+  (`supabase/.temp/postgres-version` = 17.6.1.127) ; un worktree ne l'est pas →
+  image Postgres par défaut de la CLI (17.6.1.171). Relancer la pile depuis le
+  dépôt principal pour retrouver la parité prod.
