@@ -144,7 +144,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const { data: drafts, error: draftsError } = await applyTemplateFilters(
 			supabase.from('question_templates').select('*').eq('status', 'draft'),
 			filters
-		).order(actualSortField, { ascending: actualSortOrder });
+		)
+			.order(actualSortField, { ascending: actualSortOrder })
+			// Départage : des modèles importés en lot partagent le même created_at
+			.order('id');
 
 		if (draftsError) {
 			console.error('Error fetching draft templates:', draftsError);
@@ -163,7 +166,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			filters
 		)
 			.range(offset, offset + limit - 1)
-			.order(actualSortField, { ascending: actualSortOrder });
+			.order(actualSortField, { ascending: actualSortOrder })
+			// Départage : des modèles importés en lot partagent le même created_at
+			.order('id');
 
 		if (queryError) {
 			console.error('Error fetching templates:', queryError);

@@ -537,6 +537,7 @@
 		bulkSummary = null;
 		bulkError = null;
 		bulkProgress = { done: 0, total: ids.length };
+		let succeeded = false;
 		try {
 			bulkSummary = await changeTemplatesStatus(
 				ids,
@@ -546,7 +547,7 @@
 				},
 				status === 'published' ? groupOf : undefined
 			);
-			notifyBulkResult(bulkSummary);
+			succeeded = true;
 		} catch (err) {
 			console.error('Bulk status error:', err);
 			bulkError = err instanceof Error ? err.message : 'Erreur inconnue';
@@ -560,6 +561,8 @@
 			selectedDraftIds.delete(entry.id);
 			selectedPublishedIds.delete(entry.id);
 		}
+		// Après le nettoyage des sélections : la notification peut effacer le compte rendu
+		if (succeeded && bulkSummary) notifyBulkResult(bulkSummary);
 		questionCategoriesCache.invalidate();
 		questionTemplatesCache.invalidate();
 		try {
@@ -665,10 +668,14 @@
 											class="absolute top-2.5 right-2 h-4 w-4 animate-spin text-muted-foreground"
 										/>
 									{/if}
+									<!-- Désactivée : le serveur ne filtre pas encore sur le texte (index
+									     tsvector à créer). Active, elle laisserait croire que
+									     « Tout cocher (filtrés) » ne coche que les résultats. -->
 									<Input
 										value={searchTerm}
 										oninput={(e) => handleSearchInput(e.currentTarget.value)}
-										placeholder="Rechercher dans les énoncés..."
+										placeholder="Recherche indisponible pour l'instant"
+										disabled
 										class="pr-8 pl-8"
 									/>
 								</div>
