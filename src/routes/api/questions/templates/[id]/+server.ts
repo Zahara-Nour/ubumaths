@@ -17,6 +17,9 @@ import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/valid
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
+import type { Database } from '$lib/types/database';
+import { toQuestionTemplate } from '$lib/types/question-template';
+import { withoutDbMetadata } from '$lib/server/questions-bulk-status';
 import {
 	assumptionCollisionMessage,
 	findAssumptionCollisions
@@ -54,10 +57,95 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 };
 
+/** Clés du corps qui touchent au type recalculé (`getQuestionType`) */
+const TYPE_SOURCE_KEYS = ['variations', 'shared', 'options'] as const;
+
+type TemplateUpdate = Database['public']['Tables']['question_templates']['Update'];
+
+/** Clé présente dans le corps validé (même à `null`) */
+function isProvided(data: object, key: string): boolean {
+	return Object.hasOwn(data, key);
+}
+
+/**
+ * Modèle fusionné : la ligne en base, recouverte par chaque clé PRÉSENTE du
+ * corps. Une clé à `null` vide le champ (→ `undefined` côté modèle).
+ */
+function mergeTemplate(
+	current: QuestionTemplate,
+	provided: Record<string, unknown>
+): QuestionTemplate {
+	const merged: Record<string, unknown> = { ...current };
+	for (const [key, value] of Object.entries(provided)) {
+		merged[key] = value ?? undefined;
+	}
+	return merged as unknown as QuestionTemplate;
+}
+
+/**
+ * Objet d'écriture : uniquement les colonnes dont la clé a été envoyée.
+ * Chaque conversion reprend l'expression de l'ancienne route (PUT complet de
+ * l'éditeur → même objet qu'avant). `type` est recalculé sur le FUSIONNÉ dès
+ * que variations / shared / options sont envoyés.
+ */
+function buildTemplateUpdate(
+	data: Partial<QuestionTemplate>,
+	merged: QuestionTemplate
+): TemplateUpdate {
+	const update: TemplateUpdate = {};
+	if (TYPE_SOURCE_KEYS.some((key) => isProvided(data, key))) {
+		update.type = getQuestionType({
+			choices: merged.variations?.[0]?.choices,
+			shared: merged.shared,
+			options: merged.options
+		});
+	}
+	if (isProvided(data, 'title') && data.title !== undefined) update.title = data.title;
+	if (isProvided(data, 'description')) update.description = data.description || null;
+	if (isProvided(data, 'shared')) update.shared = toJson(data.shared ?? null);
+	if (isProvided(data, 'defaultDisplayOptions'))
+		update.default_display_options = toJson(data.defaultDisplayOptions ?? null);
+	if (isProvided(data, 'variations') && data.variations !== undefined)
+		update.variations = toJson(data.variations);
+	if (isProvided(data, 'exerciseInstruction'))
+		update.exercise_instruction = data.exerciseInstruction || null;
+	if (isProvided(data, 'options')) update.options = toJson(data.options ?? null);
+	if (isProvided(data, 'grades') && data.grades !== undefined) update.grades = data.grades;
+	// Catégorie : theme / domain / level requis, subdomain facultatif
+	if (isProvided(data, 'theme') && data.theme !== undefined) update.theme = data.theme;
+	if (isProvided(data, 'domain') && data.domain !== undefined) update.domain = data.domain;
+	if (isProvided(data, 'subdomain')) update.subdomain = data.subdomain || null;
+	if (isProvided(data, 'level') && data.level !== undefined) update.level = data.level;
+	if (isProvided(data, 'status') && data.status !== undefined) update.status = data.status;
+	if (isProvided(data, 'delay')) update.delay = data.delay || null;
+	if (isProvided(data, 'multipleAnswers')) update.multiple_answers = data.multipleAnswers ?? null;
+	if (isProvided(data, 'testSpecs')) update.test_specs = toJson(data.testSpecs ?? null);
+	return update;
+}
+
+/** Contrôles de publication sur le modèle fusionné : messages d'erreur (vide = OK) */
+function publicationErrors(merged: QuestionTemplate): string[] {
+	const validationErrors = validateTemplate(merged);
+	if (validationErrors.length > 0) return validationErrors;
+
+	const circularErrors: string[] = [];
+	(merged.variations ?? []).forEach((variation, index) => {
+		const circularResult = detectCircularDependencies(variation.variables || []);
+		if (!circularResult.valid) {
+			circularErrors.push(
+				...circularResult.errors.map((err) => `Variation ${index + 1}: ${err.message}`)
+			);
+		}
+	});
+	return circularErrors;
+}
+
 /**
  * PUT /api/questions/templates/[id]
  *
- * Update an existing template
+ * Mise à jour d'un modèle, sémantique PATCH : une clé absente du corps garde
+ * la valeur en base, une clé présente (même `null`) la remplace. Les contrôles
+ * (publication, hypothèses de l'énoncé) portent sur le modèle FUSIONNÉ.
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
@@ -80,33 +168,41 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
-		const templateData = validation.data as Partial<QuestionTemplate>;
+		// `type` n'est jamais écrit tel quel : il est recalculé (getQuestionType)
+		const { type: _ignoredType, ...provided } = validation.data;
+		const templateData = provided as Partial<QuestionTemplate>;
 
-		// Hypothèses de l'énoncé (ADR 0012) : le schéma ne voit que les variables
-		// présentes dans la requête. Mise à jour partielle sans `shared` ni
-		// `variations` → relire celles de la ligne en base, même contrôle.
-		const answerAssumptions = templateData.options?.answerAssumptions;
-		if (answerAssumptions && (!templateData.variations || templateData.shared === undefined)) {
-			const { data: stored, error: storedError } = await locals.supabase
-				.from('question_templates')
-				.select('shared, variations')
-				.eq('id', id)
-				.single();
-			if (storedError?.code === 'PGRST116' || (!storedError && !stored)) {
-				throw error(404, 'Template not found');
-			}
-			if (storedError) {
-				console.error('Error reading template for assumption check:', storedError);
-				throw error(500, 'Failed to read template');
-			}
-			const collisions = findAssumptionCollisions(answerAssumptions, {
-				shared: templateData.shared !== undefined ? templateData.shared : stored.shared,
-				variations:
-					templateData.variations ??
-					(Array.isArray(stored.variations)
-						? (stored.variations as unknown as QuestionTemplate['variations'])
-						: [])
-			});
+		// ====================================================================
+		// Ligne actuelle : absente (ou masquée par la RLS, zéro ligne) → 404
+		// ====================================================================
+		const { data: currentRow, error: readError } = await locals.supabase
+			.from('question_templates')
+			.select('*')
+			.eq('id', id)
+			.maybeSingle();
+
+		if (readError && readError.code !== 'PGRST116') {
+			console.error('Error reading template before update:', readError);
+			throw error(500, 'Failed to read template');
+		}
+		if (!currentRow) {
+			throw error(404, 'Template not found');
+		}
+
+		const merged = mergeTemplate(
+			withoutDbMetadata(toQuestionTemplate(currentRow)),
+			provided as Record<string, unknown>
+		);
+
+		const update = buildTemplateUpdate(templateData, merged);
+		if (Object.keys(update).length === 0) {
+			return json({ success: false, errors: ['Aucun champ à mettre à jour'] }, { status: 400 });
+		}
+
+		// Hypothèses de l'énoncé (ADR 0012) : jamais sur une variable tirée,
+		// vérifié sur le fusionné dès qu'une des trois sources change
+		if (TYPE_SOURCE_KEYS.some((key) => isProvided(templateData, key))) {
+			const collisions = findAssumptionCollisions(merged.options?.answerAssumptions, merged);
 			if (collisions.length > 0) {
 				return json(
 					{ success: false, errors: collisions.map(assumptionCollisionMessage) },
@@ -115,64 +211,29 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
-		// Only validate if status is 'published'
-		if (templateData.status === 'published') {
-			// Validate template structure
-			const validationErrors = validateTemplate(templateData as QuestionTemplate);
-			if (validationErrors.length > 0) {
-				return json(
-					{
-						success: false,
-						errors: validationErrors
-					},
-					{ status: 400 }
-				);
+		if (merged.status === 'published') {
+			const errors = publicationErrors(merged);
+			if (errors.length > 0) {
+				return json({ success: false, errors }, { status: 400 });
 			}
 
-			// Detect circular dependencies in each variation
-			const allCircularErrors: string[] = [];
-			if (templateData.variations) {
-				templateData.variations.forEach((variation, index) => {
-					const circularResult = detectCircularDependencies(variation.variables || []);
-					if (!circularResult.valid && circularResult.errors.length > 0) {
-						allCircularErrors.push(
-							...circularResult.errors.map((err) => `Variation ${index + 1}: ${err.message}`)
-						);
-					}
-				});
-			}
-
-			if (allCircularErrors.length > 0) {
-				return json(
-					{
-						success: false,
-						errors: allCircularErrors
-					},
-					{ status: 400 }
-				);
-			}
-		}
-
-		// Category uniqueness validation (only for published templates)
-		if (templateData.status === 'published') {
 			const categoryCheck = await checkCategoryUniqueness(
 				locals.supabase,
 				{
-					theme: templateData.theme!,
-					domain: templateData.domain!,
-					subdomain: templateData.subdomain,
-					level: templateData.level!
+					theme: merged.theme,
+					domain: merged.domain,
+					subdomain: merged.subdomain,
+					level: merged.level
 				},
 				id // Exclude current template from check
 			);
 
 			if (!categoryCheck.isUnique) {
-				// Category exists - REJECT the update
 				return json(
 					{
 						success: false,
 						errors: [
-							`Cette catégorie existe déjà (Thème: ${templateData.theme}, Domaine: ${templateData.domain}${templateData.subdomain ? ', Sous-domaine: ' + templateData.subdomain : ''}, Niveau: ${templateData.level}). Veuillez choisir un niveau différent.`
+							`Cette catégorie existe déjà (Thème: ${merged.theme}, Domaine: ${merged.domain}${merged.subdomain ? ', Sous-domaine: ' + merged.subdomain : ''}, Niveau: ${merged.level}). Veuillez choisir un niveau différent.`
 						]
 					},
 					{ status: 400 }
@@ -180,49 +241,20 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			}
 		}
 
-		// Update template (map camelCase to snake_case for database)
+		// Écriture des seules colonnes envoyées ; zéro ligne rendue = refus RLS
+		// silencieux ou ligne disparue entre-temps → 404
 		const { data: template, error: updateError } = await locals.supabase
 			.from('question_templates')
-			.update({
-				type: getQuestionType({
-					choices: templateData.variations?.[0]?.choices,
-					shared: templateData.shared,
-					options: templateData.options
-				}),
-				title: templateData.title,
-				description: templateData.description || null,
-				shared: toJson(templateData.shared ?? null),
-				default_display_options: toJson(templateData.defaultDisplayOptions ?? null),
-				variations: toJson(templateData.variations),
-				exercise_instruction: templateData.exerciseInstruction || null,
-				options: toJson(templateData.options ?? null),
-				grades: templateData.grades,
-				// Categorization fields (independent from grades)
-				// - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
-				// - domain: Specific topic (e.g., "Équations", "Triangles") [required]
-				// - subdomain: Optional sub-topic (e.g., "Linéaires") [nullable]
-				// - level: Difficulty (positive integer, 1=easy, higher=harder) [required]
-				theme: templateData.theme,
-				domain: templateData.domain,
-				subdomain: templateData.subdomain || null,
-				level: templateData.level,
-				status: templateData.status || 'published',
-				delay: templateData.delay || null,
-				multiple_answers: templateData.multipleAnswers ?? null,
-				test_specs: toJson(templateData.testSpecs ?? null)
-			})
+			.update(update)
 			.eq('id', id)
 			.select()
 			.single();
 
+		if (updateError?.code === 'PGRST116' || (!updateError && !template)) {
+			throw error(404, 'Template not found');
+		}
 		if (updateError) {
 			console.error('Error updating template:', updateError);
-
-			// Check if template exists
-			if (updateError.code === 'PGRST116') {
-				throw error(404, 'Template not found');
-			}
-
 			throw error(500, 'Failed to update template');
 		}
 
