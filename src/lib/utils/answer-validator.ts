@@ -1154,7 +1154,7 @@ function isAnswerMatch(userAns: string, correctAns: string): boolean {
  * @returns `matching[a]` = case attribuée à la réponse `a`, `-1` si aucune
  */
 function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
-	const answerOfBlank: number[] = new Array(blankCount).fill(-1);
+	const answerOfBlank: number[] = Array.from({ length: blankCount }, () => -1);
 
 	const tryAssign = (a: number, visited: boolean[]): boolean => {
 		for (let b = 0; b < blankCount; b++) {
@@ -1170,10 +1170,13 @@ function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
 	};
 
 	for (let a = 0; a < accepts.length; a++) {
-		tryAssign(a, new Array(blankCount).fill(false));
+		tryAssign(
+			a,
+			Array.from({ length: blankCount }, () => false)
+		);
 	}
 
-	const matching: number[] = new Array(accepts.length).fill(-1);
+	const matching: number[] = Array.from({ length: accepts.length }, () => -1);
 	answerOfBlank.forEach((a, b) => {
 		if (a !== -1) matching[a] = b;
 	});
