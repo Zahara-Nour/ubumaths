@@ -1,0 +1,30 @@
+{
+	"templateId": "160f782d-c2ee-4d54-a8f9-86f52418abe9",
+	"title": "Décomposer en unités, dixièmes, centièmes",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$) et le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. $$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{a}} + \\dfrac{{{b}}}{10} + \\dfrac{{{c}}}{100} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$) et le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. Il n'y a pas de dixièmes : on écrit $\\textcolor{{{color:primary.1}}}{0}$ à ce rang. $$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{a}} + \\dfrac{{{c}}}{100} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$) et le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$). On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression1}}$ dans le tableau. $$\\begin{array}{|c|c|c|} \\text{unités} &  & \\text{dixièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+				"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{a}} + \\dfrac{{{b}}}{10} \\end{align}$$"
+			]
+		]
+	},
+	"notes": [
+		"Variation à chiffre fixé à 0 : terme nul omis, 0 écrit en bleu dans le tableau.",
+		"⚑ Modèle : dans les variations à 0, la réponse attendue écrit le terme nul (5 + 0/10 + 4/100) ; la correction ne l’écrit pas."
+	]
+}

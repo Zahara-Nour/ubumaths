@@ -1,0 +1,15 @@
+{
+	"templateId": "3eedd905-1526-4c90-9005-eb1df389a9f9",
+	"title": "Décomposition décimale -> nombre entier (jusqu'aux centaines)",
+	"classe": "N",
+	"code": "N-DECOMP",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Tableau de numération.** Dans $\\left( 4 \\times 1000 \\right)$, le chiffre $4$ est au rang des milliers : le nombre qui multiplie le chiffre donne son rang. On place chaque chiffre dans la colonne de son rang ; un rang qui n'apparaît pas reçoit un $0$. On n'écrit pas de zéro à gauche du premier chiffre.",
+			"On place chaque chiffre dans la colonne de son rang. $$\\begin{array}{|c|c|c|} \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ {{if:a>0|{{if:a>0|\\textcolor{{{color:primary.0}}}{{{a}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & {{if:a+b>0|{{if:b>0|\\textcolor{{{color:primary.0}}}{{{b}}}|\\textcolor{{{color:primary.1}}}{0}}}|}} & {{if:c>0|\\textcolor{{{color:primary.0}}}{{{c}}}|\\textcolor{{{color:primary.1}}}{0}}} \\end{array}$$",
+			"$$\\begin{align} {{if:a>0|\\left( {{if:a>0|\\textcolor{{{color:primary.0}}}{{{a}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 100 \\right)|}}{{if:a+b>0|{{if:a>0| + |}}\\left( {{if:b>0|\\textcolor{{{color:primary.0}}}{{{b}}}|\\textcolor{{{color:primary.1}}}{0}}} \\times 10 \\right)|}}{{if:a+b>0|{{if:c>0| + \\textcolor{{{color:primary.0}}}{{{c}}}| + \\left( \\textcolor{{{color:primary.1}}}{0} \\times 1 \\right)}}|{{if:c>0|\\textcolor{{{color:primary.0}}}{{{c}}}|0}}}} &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

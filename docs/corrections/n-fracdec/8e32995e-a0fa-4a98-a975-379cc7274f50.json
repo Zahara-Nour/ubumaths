@@ -1,0 +1,27 @@
+{
+	"templateId": "8e32995e-a0fa-4a98-a975-379cc7274f50",
+	"title": "Définition à l'aide de fractions décimales",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$.",
+				"Chaque fraction place son numérateur au rang donné par son dénominateur : $\\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{10}$, ce sont $\\textcolor{{{color:primary.0}}}{{{b}}}$ $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ ; $\\dfrac{\\textcolor{{{color:primary.0}}}{{{c}}}}{100}$, ce sont $\\textcolor{{{color:primary.0}}}{{{c}}}$ $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. $$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} + \\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{10} + \\dfrac{\\textcolor{{{color:primary.0}}}{{{c}}}}{100} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$.",
+				"Chaque fraction place son numérateur au rang donné par son dénominateur : $\\dfrac{\\textcolor{{{color:primary.0}}}{{{c}}}}{100}$, ce sont $\\textcolor{{{color:primary.0}}}{{{c}}}$ $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$. Il n'y a pas de dixièmes : on écrit $\\textcolor{{{color:primary.1}}}{0}$ à ce rang. $$\\begin{array}{|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} + \\dfrac{\\textcolor{{{color:primary.0}}}{{{c}}}}{100} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.0\\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$.",
+				"Chaque fraction place son numérateur au rang donné par son dénominateur : $\\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{10}$, ce sont $\\textcolor{{{color:primary.0}}}{{{b}}}$ $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$. $$\\begin{array}{|c|c|c|} \\text{unités} &  & \\text{dixièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+				"$$\\begin{align} \\textcolor{{{color:primary.0}}}{{{a}}} + \\dfrac{\\textcolor{{{color:primary.0}}}{{{b}}}}{10} &= \\textcolor{{{color:primary.0}}}{{{a}}} + 0.\\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["Variation à chiffre fixé à 0 : terme nul omis, 0 écrit en bleu dans le tableau."]
+}

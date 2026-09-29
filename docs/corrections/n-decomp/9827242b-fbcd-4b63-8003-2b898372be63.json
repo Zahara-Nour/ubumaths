@@ -1,0 +1,27 @@
+{
+	"templateId": "9827242b-fbcd-4b63-8003-2b898372be63",
+	"title": "Décomposer l'écriture décimale d'un nombre",
+	"classe": "N",
+	"code": "N-DECOMP",
+	"source": "written",
+	"steps": {
+		"byVariation": [
+			[
+				"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression}}$ dans le tableau. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|c|} \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} {{expression}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 100 + \\textcolor{{{color:primary.0}}}{{{b}}} \\times 10 + \\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression}}$ dans le tableau. Le chiffre des dizaines est $\\textcolor{{{color:primary.1}}}{0}$ : il ne donne aucun terme. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|c|} \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.1}}}{0} & \\textcolor{{{color:primary.0}}}{{{c}}} \\end{array}$$",
+				"$$\\begin{align} {{expression}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 100 + \\textcolor{{{color:primary.0}}}{{{c}}} \\\\ &= {{solution}} \\end{align}$$"
+			],
+			[
+				"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+				"On place les chiffres de ${{expression}}$ dans le tableau. Le chiffre des unités est $\\textcolor{{{color:primary.1}}}{0}$ : il ne donne aucun terme. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|c|} \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.1}}}{0} \\end{array}$$",
+				"$$\\begin{align} {{expression}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 100 + \\textcolor{{{color:primary.0}}}{{{b}}} \\times 10 \\\\ &= {{solution}} \\end{align}$$"
+			]
+		]
+	},
+	"notes": ["Variations 1 et 2 : chiffre des dizaines / des unités fixé à 0, sans terme."]
+}

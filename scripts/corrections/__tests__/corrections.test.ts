@@ -21,16 +21,22 @@ import {
 	alignChains,
 	awkwardWritings,
 	escapeRegExp,
+	holeEquationHolds,
+	namesChoice,
 	numericValue,
+	proseEqualities,
 	stripDecorations,
 	verifyProposal
 } from '../lib/verify';
-import { enumerateCombinations, planDraws } from '../lib/sampling';
+import { enumerateCombinations, isRandomExpression, planDraws } from '../lib/sampling';
 import { generateInstanceWithFixedVariables } from '../../../src/lib/questions/generator/test-instance-builder';
 import { publishRefusal } from '../lib/publish-gate';
 import { readProposal, readSnapshot, withoutUserIds } from '../lib/files';
 import { PILOT_LOT } from '../lots/pilote';
 import { R_INV_LOT } from '../lots/r-inv';
+import { N_FRACDEC_LOT } from '../lots/n-fracdec';
+import { N_DECOMP_LOT } from '../lots/n-decomp';
+import { amplifier, listedFraction } from '../lots/numeration';
 import { buildCorrection } from '../lib/lot';
 import type { QuestionTemplateRow } from '../../../src/lib/types/question-template';
 
@@ -484,6 +490,145 @@ describe('verifyProposal : chaînes strictes', () => {
 });
 
 // ============================================================================
+// VÉRIFICATEUR : revue de #531
+// ============================================================================
+
+describe('verifyProposal : trou relié à l’égalité posée (a)', () => {
+	it('lit l’égalité posée, « ? » remplacé par une valeur', () => {
+		expect(holeEquationHolds('3 + ? = 10', 7)).toBe(true);
+		expect(holeEquationHolds('3 + ? = 10', 8)).toBe(false);
+		expect(holeEquationHolds('? : 4 = 2.5', 10)).toBe(true);
+		expect(holeEquationHolds('3 + ?', 7)).toBeNull();
+	});
+
+	it('rougit sur « ? = réponse » seul (aucun calcul)', () => {
+		const template = holeTemplate('{{a}} + ? = {{eval:a+b}}', '{{b}}');
+		const reasons = failureReasons(template, ['$$\\begin{align} ? &= {{solution}} \\end{align}$$']);
+		expect(reasons.some((r) => r.startsWith("« ? » doit être suivi d'un calcul"))).toBe(true);
+	});
+
+	it('rougit quand la réponse attendue du modèle ne vérifie pas l’égalité posée', () => {
+		// Réponse attendue fausse (b + 1) ; la chaîne est juste ET finit sur cette réponse
+		const template = holeTemplate('{{a}} + ? = {{eval:a+b}}', '{{eval:b+1}}');
+		const reasons = failureReasons(template, [
+			'$$\\begin{align} ? &= {{eval:a+b+1}} - {{a}} \\\\ &= {{solution}} \\end{align}$$'
+		]);
+		expect(reasons.some((r) => r.includes("ne vérifie pas l'égalité posée"))).toBe(true);
+	});
+});
+
+describe('verifyProposal : choix de QCM nommé comme un nombre entier (b)', () => {
+	/** QCM à choix fixes « 3 » et « 13 » ; `correct` = indice du bon choix */
+	function numberChoiceTemplate(correct: number): QuestionTemplate {
+		const template = signChoiceTemplate();
+		template.variations[0].choices = [
+			{ content: templateMarkdown('3') },
+			{ content: templateMarkdown('13') }
+		];
+		template.variations[0].correctChoiceIndex = [String(correct)];
+		return template;
+	}
+
+	it('« 3 » n’est nommé ni dans « 13 », ni dans « 3,5 », ni dans « 0.3 »', () => {
+		expect(namesChoice('La réponse est 13.', '3')).toBe(false);
+		expect(namesChoice('La réponse est 3,5.', '3')).toBe(false);
+		expect(namesChoice('La réponse est 0.3.', '3')).toBe(false);
+		expect(namesChoice('La réponse est 3.', '3')).toBe(true);
+		expect(namesChoice('$\\textcolor{#1}{3}$', '3')).toBe(true);
+	});
+
+	it('conclure sur « 13 » ne nomme pas le mauvais choix « 3 »', () => {
+		expect(failureReasons(numberChoiceTemplate(1), ['La réponse est donc 13.'])).toEqual([]);
+		const wrong = failureReasons(numberChoiceTemplate(0), ['La réponse est donc 13.']);
+		expect(wrong.some((r) => r.includes('ne nomme pas le bon choix « 3 »'))).toBe(true);
+	});
+});
+
+describe('sampling : aléatoire entre accolades (c)', () => {
+	it.each(['{{1..9}}', '{{2|5}}', '{{digits:2.1}}', '{{-5..5;+-}}', '1..9', 'digits:2'])(
+		'%s est aléatoire',
+		(expression) => expect(isRandomExpression(expression)).toBe(true)
+	);
+
+	it.each(['{{eval:a+b}}', '{{a}}', '{{a}} + {{b}}', 'eval:a|b'])(
+		'%s n’est pas aléatoire',
+		(expression) => expect(isRandomExpression(expression)).toBe(false)
+	);
+
+	it('énumère une variable entre accolades et la confronte au vrai générateur', () => {
+		const template = holeTemplate('{{a}} + ? = {{eval:a+b}}', '{{b}}', [
+			{ name: 'a', expression: '{{1..3}}' },
+			{ name: 'b', expression: '{{2..3;+-}}' }
+		]);
+		const plan = planDraws(template, 0);
+		expect(plan.sampling).toEqual({ mode: 'exhaustive', size: 12 });
+		const digits = holeTemplate('{{a}} + ? = {{eval:a+b}}', '{{b}}', [
+			{ name: 'a', expression: '{{digits:2.1}}' },
+			{ name: 'b', expression: '1..2' }
+		]);
+		expect(planDraws(digits, 0).sampling.mode).toBe('seeds');
+	});
+});
+
+describe('verifyProposal : hors des calculs et plusieurs cases (d)', () => {
+	const good = '$$\\begin{align} {{eval:a*10 + b}} + {{c}} &= {{solution}} \\end{align}$$';
+
+	it('rougit sur un reste de résolution dans la prose (NaN, undefined)', () => {
+		const reasons = failureReasons(sumTemplate(), [`Il manque NaN unités.`, good]);
+		expect(reasons.some((r) => r.includes('reste de résolution « NaN »'))).toBe(true);
+	});
+
+	it('rougit sur une égalité numérique fausse écrite dans la prose', () => {
+		expect(proseEqualities('2 + 2 = 5')).toHaveLength(1);
+		expect(proseEqualities('2 + 2 = 4')).toEqual([]);
+		expect(proseEqualities('3 + ? = 10')).toEqual([]);
+		const reasons = failureReasons(sumTemplate(), [`On sait que $2 + 2 = 5$.`, good]);
+		expect(reasons.some((r) => r.startsWith('étape 1 : égalité fausse hors calcul'))).toBe(true);
+	});
+
+	it('plusieurs cases : chacune doit être la fin d’un calcul', () => {
+		const template = sumTemplate();
+		template.variations[0].statement = templateMarkdown(
+			'Calcule $${{a}} + {{b}} = ?$$ et $${{a}} \\times {{b}} = ?$$'
+		);
+		template.variations[0].variables = [
+			{ name: 'a', expression: '2..5' },
+			{ name: 'b', expression: '2..5' },
+			{ name: 'expression1', expression: '{{a}} + {{b}}' }
+		];
+		template.variations[0].blanks = [
+			{ expectedAnswer: '{{eval:a+b}}' },
+			{ expectedAnswer: '{{eval:a*b}}' }
+		];
+		const sum = '$$\\begin{align} {{a}} + {{b}} &= {{solution:0}} \\end{align}$$';
+		const product = '$$\\begin{align} {{a}} \\times {{b}} &= {{solution:1}} \\end{align}$$';
+		expect(failureReasons(template, [sum, product])).toEqual([]);
+		const reasons = failureReasons(template, [sum]);
+		expect(reasons.some((r) => r.startsWith('aucun calcul ne finit sur la case 2'))).toBe(true);
+	});
+});
+
+// ============================================================================
+// NUMÉRATION (lots n-fracdec, n-decomp)
+// ============================================================================
+
+describe('numération : fractions d’une liste', () => {
+	it('amplifie jusqu’à 10, 100 ou 1000', () => {
+		expect(amplifier(2)).toBe(5);
+		expect(amplifier(4)).toBe(25);
+		expect(amplifier(1000)).toBe(1);
+		expect(amplifier(3)).toBeNull();
+	});
+
+	it('signale les cas mêlés et les fractions de même valeur (1/5 = 2/10)', () => {
+		const result = listedFraction('a', '1/2|2/10|1/5');
+		expect(result.mixed).toBe(true);
+		expect(result.collisions).toEqual(['2/10 = 1/5']);
+		expect(listedFraction('a', '1/10|3/100').mixed).toBe(false);
+	});
+});
+
+// ============================================================================
 // PUBLICATION ET INSTANTANÉ
 // ============================================================================
 
@@ -508,7 +653,7 @@ describe('instantané sans identifiant d’utilisateur', () => {
 		expect(Object.keys(withoutUserIds(row))).toEqual(['id', 'title', 'updated_at']);
 	});
 
-	it.each([PILOT_LOT.name, R_INV_LOT.name])(
+	it.each([PILOT_LOT.name, R_INV_LOT.name, N_FRACDEC_LOT.name, N_DECOMP_LOT.name])(
 		'l’instantané commité du lot %s n’en contient pas',
 		(lot) => {
 			const raw = readFileSync(`docs/corrections/${lot}/_modeles.json`, 'utf8');
@@ -536,7 +681,7 @@ describe('outils LaTeX du vérificateur', () => {
 // LOT PILOTE (instantané commité)
 // ============================================================================
 
-describe.each([PILOT_LOT, R_INV_LOT])('lot $name', (lot) => {
+describe.each([PILOT_LOT, R_INV_LOT, N_FRACDEC_LOT, N_DECOMP_LOT])('lot $name', (lot) => {
 	const templates = readSnapshot(lot.name);
 
 	it.each(lot.entries.map((entry) => [entry.code, entry.templateId, entry] as const))(

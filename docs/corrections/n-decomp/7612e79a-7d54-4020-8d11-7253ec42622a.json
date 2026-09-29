@@ -1,0 +1,15 @@
+{
+	"templateId": "7612e79a-7d54-4020-8d11-7253ec42622a",
+	"title": "Décomposer l'écriture décimale un nombre",
+	"classe": "N",
+	"code": "N-DECOMP",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+			"On place les chiffres de ${{expression}}$ dans le tableau. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|c|c|c|} \\text{dizaines de milliers} & \\text{milliers} & \\text{centaines} & \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} & \\textcolor{{{color:primary.0}}}{{{d}}} & \\textcolor{{{color:primary.0}}}{{{n}}} \\end{array}$$",
+			"$$\\begin{align} {{expression}} &= \\left( {{a}} \\times 10000 \\right) + \\left( {{b}} \\times 1000 \\right) + \\left( {{c}} \\times 100 \\right) + \\left( {{d}} \\times 10 \\right) + {{n}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

@@ -1,0 +1,15 @@
+{
+	"templateId": "ef7785cf-e448-4ee7-b588-a4e298bcc696",
+	"title": "Décomposer en unités, dixièmes, centièmes, millièmes",
+	"classe": "N",
+	"code": "N-DECOMP",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Valeur d'un chiffre.** Après la virgule, le premier chiffre est celui des dixièmes ($\\dfrac{1}{10} = 0.1$), le deuxième celui des centièmes ($\\dfrac{1}{100} = 0.01$) et le troisième celui des millièmes ($\\dfrac{1}{1000} = 0.001$). On range les chiffres du nombre dans le tableau de numération.",
+			"On place les chiffres de ${{expression1}}$ dans le tableau. $$\\begin{array}{|c|c|c|c|c|} \\text{unités} &  & \\text{dixièmes} & \\text{centièmes} & \\text{millièmes} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & , & \\textcolor{{{color:primary.0}}}{{{b}}} & \\textcolor{{{color:primary.0}}}{{{c}}} & \\textcolor{{{color:primary.0}}}{{{d}}} \\end{array}$$",
+			"$$\\begin{align} {{expression1}} &= \\textcolor{{{color:primary.0}}}{{{a}}} + \\textcolor{{{color:primary.0}}}{{{b}}} \\times 0.1 + \\textcolor{{{color:primary.0}}}{{{c}}} \\times 0.01 + \\textcolor{{{color:primary.0}}}{{{d}}} \\times 0.001 \\\\ &= {{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}

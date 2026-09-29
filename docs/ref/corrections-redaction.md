@@ -13,7 +13,11 @@ Style relevé sur les 176 corrections relues (`docs/relecture/**/*.json`) :
 
 Pièges vérifiés le 2026-09-29 : `{{expression1}}` rend l'expression **brute** (`(-3)*2`), pas du
 LaTeX — écrire le calcul à la main ; un `{{eval}}` ne s'imbrique pas dans un autre ; `mod(a*10+7,10)`
-échoue (la virgule est lue comme décimale) → `mod((a*10+7),10)`.
+échoue (la virgule est lue comme décimale) → `mod((a*10+7),10)`. Une variable `e` est la constante
+d'Euler dans un `{{if:…}}` (même écrite `{{e}}`) ; une condition qui nomme une variable
+d'expression n'est pas évaluée à la génération ; une formule `$…$` entière est relue en syntaxe
+maison (`$1/5 = …$` devient `\dfrac{1}{5}`), pas un bloc `align` ; `\hline` est refusé par
+MathLive (tableau : `\begin{array}{|c|c|}` sans `\hline`).
 
 ## Couleurs : trois rôles, pas plus
 
@@ -79,11 +83,16 @@ pnpm corrections:import pilote                    # SIMULATION ; --publier écri
   MathLive, un calcul écrit `+ 0` ou `+ -3`, une égalité d'un `align` est fausse, **un membre ne se
   lit pas comme un nombre** (seule exception : `?` en tête d'une question à trou, suivi de la réponse
   attendue), le calcul **ne part pas de l'opération posée** ou ne finit pas sur la réponse de la case,
-  ou la conclusion d'un QCM ne nomme pas le bon choix (ou en nomme un mauvais).
+  ou la conclusion d'un QCM ne nomme pas le bon choix (ou en nomme un mauvais) — comme un mot ou un
+  nombre entier : « 3 » n'est nommé ni dans « 13 » ni dans « 3,5 » ; pour un trou : `? = calcul =
+réponse`, et la valeur trouvée vérifie l'égalité posée ; plusieurs cases : chacune finit un
+  calcul ; hors calcul : ni `NaN` / `undefined`, ni égalité numérique fausse dans la prose.
 - Les branches `{{if:…}}` d'une stratégie R sont choisies sur le même domaine entier.
 - L'instantané `_modeles.json` ne contient aucun identifiant d'utilisateur (`created_by`…).
 - `corrections:import` écarte un modèle modifié en prod depuis l'instantané (`updated_at`), une
   variation qui a déjà une correction, une proposition rouge ; avec `--publier`, **une seule entrée
   écartée fait refuser le lot entier** (rien n'est écrit) ; l'écriture relit la ligne rendue.
+- Règles N rédigées : `lots/signes.ts` (N-SIGNES), `lots/numeration.ts` (N-DECOMP, N-FRACDEC :
+  tableau de numération, chiffre et valeur en orange, zéros ajoutés en bleu).
 - Stratégies générées : `R-PASS` (`lib/r-pass.ts`), `R-INV` (`lib/r-inv.ts` : `a + ? = s → ? = s − a`,
   `a × ? = s → ? = s : a`, `? : a = s → ? = s × a`…).

@@ -1,0 +1,15 @@
+{
+	"templateId": "8a3a572b-526d-4d3a-a854-bb8b9e364190",
+	"title": "Forme décimale d'une fraction",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$.",
+			"{{if:c=10|Le dénominateur est $\\textcolor{{{color:primary.1}}}{10}$ : {{if:b>9|le dernier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}$,|le chiffre $\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}$}} se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$.{{if:b<10| Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:mod((b),10)=0| Le dernier chiffre est $0$ : un zéro à la fin de la partie décimale ne change pas la valeur, on ne l'écrit pas.|}}|}}{{if:c=100|Le dénominateur est $\\textcolor{{{color:primary.1}}}{100}$ : {{if:b>9|le dernier chiffre de ${{b}}$, $\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}$,|le chiffre $\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}$}} se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$.{{if:b<100| Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:10*b<100| Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:mod((b),10)=0| Le dernier chiffre est $0$ : un zéro à la fin de la partie décimale ne change pas la valeur, on ne l'écrit pas.|}}|}}",
+			"{{if:c=10|$$\\begin{align} \\dfrac{{{if:b>9|{{eval:(b-mod((b),10))/10}}|}}\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}}{10} &= {{if:mod((b),10)=0|{{eval:floor(b/10)}}.{{eval:mod((b),10)}} \\\\ &= |}}{{solution}} \\end{align}$$|}}{{if:c=100|$$\\begin{align} \\dfrac{{{if:b>9|{{eval:(b-mod((b),10))/10}}|}}\\textcolor{{{color:primary.0}}}{{{eval:mod((b),10)}}}}{100} &= {{if:mod((b),10)=0|{{eval:floor(b/100)}}.{{if:mod((b),100)<10|0|}}{{eval:mod((b),100)}} \\\\ &= |}}{{solution}} \\end{align}$$|}}"
+		]
+	},
+	"notes": ["Numérateur à 2–4 chiffres : zéro final supprimé (4240/10 = 424.0 = 424)."]
+}

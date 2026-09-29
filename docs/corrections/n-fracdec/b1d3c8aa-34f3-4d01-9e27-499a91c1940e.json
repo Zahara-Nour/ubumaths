@@ -1,0 +1,15 @@
+{
+	"templateId": "b1d3c8aa-34f3-4d01-9e27-499a91c1940e",
+	"title": "Forme décimale d'une fraction",
+	"classe": "N",
+	"code": "N-FRACDEC",
+	"source": "written",
+	"steps": {
+		"shared": [
+			"**Fraction décimale.** Quand le dénominateur est $10$, $100$ ou $1000$, il donne le rang du dernier chiffre du numérateur : les dixièmes pour $10$, les centièmes pour $100$, les millièmes pour $1000$.",
+			"Le dénominateur est $\\textcolor{{{color:primary.1}}}{1000}$ : {{if:a>9|le dernier chiffre de ${{a}}$, $\\textcolor{{{color:primary.0}}}{{{eval:mod((a),10)}}}$,|le chiffre $\\textcolor{{{color:primary.0}}}{{{eval:mod((a),10)}}}$}} se place au rang des $\\textcolor{{{color:primary.1}}}{\\text{millièmes}}$.{{if:a<1000| Il n'y a pas d'unités : on écrit $0$ avant la virgule.|}}{{if:10*a<1000| Il manque des chiffres entre la virgule et ce rang : on les remplace par des $\\textcolor{{{color:primary.1}}}{0}$.|}}{{if:mod((a),10)=0| Le dernier chiffre est $0$ : un zéro à la fin de la partie décimale ne change pas la valeur, on ne l'écrit pas.|}}",
+			"$$\\begin{align} \\dfrac{{{if:a>9|{{eval:(a-mod((a),10))/10}}|}}\\textcolor{{{color:primary.0}}}{{{eval:mod((a),10)}}}}{1000} &= {{if:mod((a),10)=0|{{eval:floor(a/1000)}}.{{if:mod((a),1000)<10|00|{{if:mod((a),1000)<100|0|}}}}{{eval:mod((a),1000)}} \\\\ &= |}}{{solution}} \\end{align}$$"
+		]
+	},
+	"notes": []
+}
