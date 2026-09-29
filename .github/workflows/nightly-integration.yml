@@ -45,13 +45,13 @@ jobs:
         run: pnpm exec supabase --version
 
       - name: Start Supabase (applies migrations)
-        # Stack allégée : l'image storage-api renvoie "manifest unknown" (indispo sur
-        # ghcr ET docker.io). Les tests d'intégration n'utilisent pas l'API HTTP
-        # Storage (ils manipulent la table storage.objects en SQL), donc on exclut
-        # storage + les services non requis (studio, edge, analytics, mail, imgproxy).
+        # Stack allégée : on exclut les services non requis (studio, edge, analytics,
+        # mail, imgproxy). storage-api est GARDÉ : deux suites l'appellent
+        # (chapter-documents-size-limit, chat-attachment-signing). Son image était
+        # introuvable avec la CLI 2.105 ; la 2.118 utilise storage-api:v1.77.0.
         # CLI Supabase = la devDependency du projet (version exacte dans
         # package.json), la même que sur les postes : une seule source de vérité.
-        run: pnpm exec supabase start -x storage-api,imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
+        run: pnpm exec supabase start -x imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
 
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
@@ -68,6 +68,16 @@ jobs:
             | sed -E 's/^([A-Za-z0-9_]+)="(.*)"$/\1=\2/' > supabase-test.env
           grep -q '^SUPABASE_TEST_URL=http' supabase-test.env
           cat supabase-test.env >> "$GITHUB_ENV"
+          # Le code applicatif appelé par certaines suites (adminElevation, endpoint
+          # skill-attempts) lit $env : sans ça, il garde les adresses bidon de
+          # .github/ci.env (placeholder.supabase.co). Les variables du processus
+          # priment sur le .env pour Vite.
+          . ./supabase-test.env
+          {
+            echo "PUBLIC_SUPABASE_URL=$SUPABASE_TEST_URL"
+            echo "PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_TEST_ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_TEST_SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
 
       - name: Run integration tests
         run: pnpm test:integration
