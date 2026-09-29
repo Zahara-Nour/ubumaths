@@ -177,6 +177,8 @@ function getSignSuffix(sign: SignInfo | undefined): string {
 			return ' nul';
 		case 'nonzero':
 			return ' non nul';
+		case 'nonnegative':
+			return ' positif ou nul';
 		default:
 			return '';
 	}

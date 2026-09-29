@@ -15,10 +15,12 @@ import { normalize, denormalize } from '$lib/mathAST/normal';
 import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
+import type { AnswerAssumptions } from '$lib/mathAST/assumptions';
 import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
 
 // Re-export evaluateWithModifiers from mathAST (already implemented there)
 export { evaluateWithModifiers } from '$lib/mathAST/eval';
+export type { AnswerAssumptionKind, AnswerAssumptions } from '$lib/mathAST/assumptions';
 
 // Intervals (re-export for convenience)
 export * as intervals from './intervals';
@@ -129,11 +131,14 @@ export function evaluateExpression(latex: string): number | string {
  * @param options.signal - AbortSignal for cooperative interruption.
  * @param options.timeoutMs - Wall-clock budget in ms. Returns `false` (conservative)
  *                            on abort/timeout — caller cannot prove equivalence in time.
+ * @param options.assumptions - Hypothèses de l'énoncé (ADR 0012), ex.
+ *                            `{ x: 'positive', n: 'integer' }` : la comparaison se fait
+ *                            sur le domaine déclaré. Absent ou vide : rien ne change.
  */
 export function areEquivalent(
 	latex1: string,
 	latex2: string,
-	options?: { signal?: AbortSignal; timeoutMs?: number }
+	options?: { signal?: AbortSignal; timeoutMs?: number; assumptions?: AnswerAssumptions }
 ): boolean {
 	// La réponse attendue (latex2) décide du rôle des virgules nues : une
 	// attendue « (3,14) » est un couple, pas le décimal 3,14 (cf. mathAST/decimal-comma)

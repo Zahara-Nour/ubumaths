@@ -121,7 +121,27 @@ Plutôt que de la changer (800-1 200 lignes, écarté le 2026-09-29), trois règ
   `5(-2)^n ≡ -10(-2)^{n-1}`. `(-2)^{2n} ≢ 4^n` (en n = ½ : −2 contre 2).
 - **Base variable** : **aucune règle** sans hypothèse — `x^a·x^b ≢ x^{a+b}`, `(x^2)^n ≢ x^{2n}`
   (supposer x > 0 d'office donnerait un faux positif en x = −1, n = ½). Tranché par l'ADR 0012 :
-  reconnu quand le modèle déclare l'**hypothèse de l'énoncé** x > 0 (à implémenter).
+  reconnu quand le modèle déclare l'**hypothèse de l'énoncé** x > 0 (section suivante).
 
 Faux négatifs connus : `(-2)^n/(-2)^m ≢ (-2)^{n-m}`, `(-2)^n(-3)^n ≢ 6^n`, `(-8)^{x/3} ≢ (-2)^x`,
 `(√2)^x ≢ 2^{x/2}`, `(2^x+4^x)/2^x ≢ 1+2^x`, `0^x ≢ 0`. Revue adverse : 7 729 paires, 0 faux positif.
+
+## Hypothèses de l'énoncé (ADR 0012)
+
+`areEquivalent(a, b, { assumptions: { x: 'positive', n: 'integer' } })` compare sur l'intersection
+des domaines ∩ le domaine **déclaré**. Vocabulaire : `positive` (x > 0), `nonnegative` (x ≥ 0),
+`nonzero`, `integer`, `natural` (`src/lib/mathAST/assumptions.ts`, traduit en `TypeContext` de
+`numtype`). Sans hypothèse, ou `{}` : rien ne change (verdicts de la revue #521 identiques à l'octet).
+
+| hypothèse   | devient juste                                                                                             | reste faux                                         |
+| ----------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| x > 0       | `x^a·x^b ≡ x^{a+b}`, `x^{a+2} ≡ x²·x^a`, `(x^a)^b ≡ x^{ab}`, `2^x·x^x ≡ (2x)^x`, `√(x²) ≡ x`, `\|x\| ≡ x` | `x^a ≡ x^b`, `(−x)^a(−x)^b ≡ (−x)^{a+b}`, `−x ≡ x` |
+| x ≥ 0       | `√(x²) ≡ x`, `\|x\| ≡ x`                                                                                  | `x^a·x^b ≡ x^{a+b}` (0^a)                          |
+| n entier, ℕ | `(−2)^{2n} ≡ 4^n`, `(−1)^{2n} ≡ 1`, `(−1)^n(−1)^n ≡ 1`, `((−2)^n)² ≡ 4^n`                                 | `2^n ≡ 3^n`, `(−2)^n ≡ 2^n`, `(−2)^{3n} ≡ 8^n`     |
+
+Trois règles, sur le chemin de `equivalenceForm` seul, chacune gardée par un prédicat de `numtype`
+ET par la présence d'une variable déclarée dans l'expression (une hypothèse sur `y` ne change rien
+ailleurs) : base déclarée strictement positive → `exp(u·ln base)` (`rules/general-power.ts`) ;
+`|u| → u` pour `u ≥ 0` déclaré (`normalize.ts`, cas `abs`) ; `a^{2k} → |a|^{2k}` pour une base
+négative et un exposant entier pair en variables déclarées entières (`foldEvenIntegerPower`).
+Revue adverse, tirages dans le domaine déclaré seul : 11 533 paires, 0 faux positif (2026-09-29).

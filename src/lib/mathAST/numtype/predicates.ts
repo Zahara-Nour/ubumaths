@@ -253,7 +253,7 @@ export function isNonzeroType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT):
  */
 export function isNonNegativeType(node: MathNode, ctx: TypeContext = EMPTY_CONTEXT): boolean {
 	const type = inferType(node, ctx);
-	return type.sign === 'positive' || type.sign === 'zero';
+	return type.sign === 'positive' || type.sign === 'zero' || type.sign === 'nonnegative';
 }
 
 /**

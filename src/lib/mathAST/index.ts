@@ -452,6 +452,9 @@ export type { SimplifyOptions, SimplifyResult, SimplifyStep, SimplifyPhase } fro
 export { substitute, evaluate, compile, createSafeEvaluator, CompileError } from './eval';
 export type { CompiledFn } from './eval';
 export { areEquivalent } from './equivalence';
+export type { EquivalenceOptions } from './equivalence';
+export { answerAssumptionsToTypeContext } from './assumptions';
+export type { AnswerAssumptionKind, AnswerAssumptions } from './assumptions';
 export type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
 // Helper utilities for variable analysis

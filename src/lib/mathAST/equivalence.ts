@@ -3,14 +3,27 @@
  *
  * Checks if two MathNode expressions are mathematically equivalent.
  * Works on symbolic expressions (with variables) and numeric expressions alike.
+ * Le moteur vit dans `equivalence-core.ts` ; ce module y ajoute la traduction
+ * des hypothèses de l'énoncé (ADR 0012) par `numtype`.
  */
 
 import type { MathNode } from './types';
-import { equivalenceForms, type NormalizeAbortOptions } from './normal/normalize';
-import { normalFormsEquivalent } from './normal/hash';
-import { evaluate, evaluateNodeToApproximatedNumber } from './eval/evaluate';
-import { numbersAreClose } from './common/constants';
-import { AbortError, makeAbortChecker } from './common/abort';
+import type { NormalizeAbortOptions } from './normal/normalize';
+import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
+import { areEquivalentCore } from './equivalence-core';
+
+/**
+ * Options du décideur : interruption (`signal`, `timeoutMs`) et hypothèses de
+ * l'énoncé (ADR 0012).
+ */
+export interface EquivalenceOptions extends NormalizeAbortOptions {
+	/**
+	 * Hypothèses déclarées par la question (`{ x: 'positive' }`) : la
+	 * comparaison se fait sur le domaine déclaré. Absent ou vide : comportement
+	 * sans hypothèse, strictement identique.
+	 */
+	readonly assumptions?: AnswerAssumptions;
+}
 
 /**
  * Checks if two MathNodes are mathematically equivalent.
@@ -27,47 +40,16 @@ import { AbortError, makeAbortChecker } from './common/abort';
  * areEquivalent(parse('x^2 - 1'), parse('(x-1)(x+1)'))  // true
  * areEquivalent(parse('2x + 3'), parse('3 + 2x'))        // true
  * areEquivalent(parse('sqrt(2)'), parse('sqrt(2)'))       // true
+ * areEquivalent(parse('x^a x^b'), parse('x^{a+b}'), { assumptions: { x: 'positive' } }) // true
  */
-export function areEquivalent(a: MathNode, b: MathNode, options?: NormalizeAbortOptions): boolean {
-	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
-	const ctx = abortChecker ? { abortChecker } : undefined;
-
-	// Try structural equivalence via normalization
-	try {
-		const [formA, formB] = equivalenceForms(a, b, ctx);
-		return normalFormsEquivalent(formA, formB);
-	} catch (e) {
-		// On abort, return false (conservative — we couldn't prove equivalence).
-		// Any other normalization failure falls through to the numeric fallback.
-		if (e instanceof AbortError) return false;
-	}
-
-	try {
-		const evalA = evaluate(a, { mode: 'decimal' });
-		const evalB = evaluate(b, { mode: 'decimal' });
-
-		if (evalA.status === 'value' && evalB.status === 'value') {
-			const numA =
-				typeof evalA.value === 'number'
-					? evalA.value
-					: typeof evalA.value === 'object' && 'type' in evalA.value
-						? evaluateNodeToApproximatedNumber(evalA.value)
-						: NaN;
-			const numB =
-				typeof evalB.value === 'number'
-					? evalB.value
-					: typeof evalB.value === 'object' && 'type' in evalB.value
-						? evaluateNodeToApproximatedNumber(evalB.value)
-						: NaN;
-
-			if (!isNaN(numA) && !isNaN(numB)) {
-				// Tolérance relative : une absolue (1e-10) jugeait 10⁻¹² égal à 0
-				return numbersAreClose(numA, numB);
-			}
-		}
-	} catch {
-		// Numeric comparison also failed
-	}
-
-	return false;
+export function areEquivalent(a: MathNode, b: MathNode, options?: EquivalenceOptions): boolean {
+	// Liste blanche : une limite, un indice, une fonction inconnue… dans l'une des
+	// deux expressions, et les hypothèses sont ignorées (verdict sans hypothèse).
+	const assumptions =
+		isPlainAlgebra(a) && isPlainAlgebra(b) ? assumptionOracle(options?.assumptions) : undefined;
+	return areEquivalentCore(a, b, {
+		...(options?.signal && { signal: options.signal }),
+		...(options?.timeoutMs !== undefined && { timeoutMs: options.timeoutMs }),
+		...(assumptions && { assumptions })
+	});
 }

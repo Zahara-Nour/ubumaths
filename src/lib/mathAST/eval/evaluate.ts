@@ -63,7 +63,7 @@ import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
 import { mapNode } from '../transforms';
-import { areEquivalent } from '../equivalence';
+import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { compareNumericNodes } from './compare-numeric';
 
@@ -950,7 +950,7 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 
 		// Equality and inequality use semantic equivalence
 		if (rel === '=' || rel === '≡' || rel === '!=' || rel === '≢') {
-			const equal = areEquivalent(node.left, node.right);
+			const equal = areEquivalentCore(node.left, node.right);
 
 			// `areEquivalent` rend `false` aussi bien quand il a PROUVÉ la
 			// différence que quand il a ABANDONNÉ, et il ne distingue pas les
