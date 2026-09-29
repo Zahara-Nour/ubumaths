@@ -76,5 +76,7 @@
 
 ## Chantiers
 
-- [ ] Lot 1 — mathAST (`feat/hypotheses-enonce-mathast`, worktree `../ubumaths-wt-hypotheses-mathast`)
+- [x] Lot 1 — mathAST (`feat/hypotheses-enonce-mathast`, worktree `../ubumaths-wt-hypotheses-mathast`) :
+      contrat `areEquivalent(l1, l2, { assumptions })` + `AnswerAssumptions` (`$lib/math`), règles 8-12,
+      gardes 13-17, revue adverse 0 faux positif. PR à ouvrir.
 - [ ] Lot 2 — modèle + propagation + éditeur (après merge du lot 1)
