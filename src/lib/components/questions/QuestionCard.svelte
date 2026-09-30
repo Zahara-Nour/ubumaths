@@ -14,6 +14,9 @@
 
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
+	- collectOnly: évaluation notée (ADR 0015) → la réponse est COLLECTÉE sans être
+	  corrigée (l'instance n'a pas de réponse attendue ; le serveur corrige à l'envoi)
+	- unitKeys: touches d'unités fournies (évaluation), cf. FillBlanksInput
 	- instance: QuestionInstance (pre-generated)
 	- Callbacks: onAnswerSubmit, onAnswerChange
 	- Customization: size
@@ -46,6 +49,8 @@
 		onAnswerSubmit?: (answer: AnswerData) => void;
 		_onAnswerChange?: (value: string | string[]) => void;
 		size?: 'sm' | 'md' | 'lg';
+		collectOnly?: boolean;
+		unitKeys?: string[];
 	}
 
 	let {
@@ -53,7 +58,9 @@
 		instance,
 		onAnswerSubmit,
 		_onAnswerChange,
-		size = 'md'
+		size = 'md',
+		collectOnly = false,
+		unitKeys
 	}: Props = $props();
 
 	// ============================================================================
@@ -190,9 +197,22 @@
 		const answerLatex =
 			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
 
-		const validationResult = validateAnswer(answer, instance, answerLatex);
-
 		isSubmitted = true;
+
+		// Évaluation : aucune correction ici (le serveur corrige) ; le LaTeX part
+		// avec la réponse, le serveur en a besoin pour juger la forme
+		if (collectOnly) {
+			return {
+				value: answer,
+				isCorrect: false,
+				timeSpent: getTimeSpent(),
+				attempts,
+				submittedAt: new Date().toISOString(),
+				...(answerLatex && { valueLatex: [...answerLatex] })
+			};
+		}
+
+		const validationResult = validateAnswer(answer, instance, answerLatex);
 
 		return {
 			value: answer,
@@ -299,6 +319,7 @@
 								mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 									? '\\,'
 									: undefined}
+								{unitKeys}
 							/>
 						{:else if getQuestionType(instance) === 'multiple_choice'}
 							<MultipleChoiceInput

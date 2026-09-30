@@ -29,16 +29,12 @@ import type { CartItem } from '$lib/stores/questionCart.svelte';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 import type { EvaluationWithSeries } from '$lib/types/evaluation';
+import type { CorrectedQuestion, EvaluationSubmitResponse } from '$lib/types/evaluation-attempt';
 import { getAttemptsRemaining } from '$lib/types/evaluation';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
 import { toPublicQuestion, type PublicQuestion } from '$lib/questions/public-question';
-import {
-	gradeOutOf20,
-	gradeQuestion,
-	type QuestionPoints,
-	type SubmittedAnswer
-} from '$lib/questions/grading';
+import { gradeOutOf20, gradeQuestion, type SubmittedAnswer } from '$lib/questions/grading';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import {
@@ -94,28 +90,8 @@ export interface SubmitInput {
 	timeSpent: number;
 }
 
-export interface CorrectedQuestion {
-	position: number;
-	/** Instance COMPLÈTE (correction comprise) : renvoyée seulement après l'envoi */
-	instance: QuestionInstance;
-	answer: SubmittedAnswer | null;
-	status: string;
-	points: QuestionPoints;
-	isCorrect: boolean;
-	feedback?: string;
-}
-
-export interface SubmitResult {
-	attemptId: string;
-	/** Course reçue après temps limite + 30 s : note 0, aucune réponse comptée */
-	late: boolean;
-	grade: number;
-	pointsEarned: number;
-	totalQuestions: number;
-	/** Questions entièrement justes (« 7/10 questions ») */
-	correctCount: number;
-	questions: CorrectedQuestion[];
-}
+export type { CorrectedQuestion };
+export type SubmitResult = EvaluationSubmitResponse;
 
 // Constantes
 /** Tolérance réseau après la fin du chrono d'une Course (Q37) */
