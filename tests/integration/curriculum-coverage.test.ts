@@ -70,10 +70,22 @@ async function cleanupCurriculum() {
 	// est ON DELETE RESTRICT, donc un point encore tagué par une question bloque
 	// la purge du thème qui le porte. Les templates partent d'abord (leurs tags
 	// tombent en cascade), les points ensuite.
-	await service
-		.from('assessments' as never)
-		.delete()
+	// Évaluations d'abord (leur série refuse la suppression tant qu'elles existent)
+	const { data: testSeries } = await service
+		.from('series' as never)
+		.select('id')
 		.eq('grade', TEST_GRADE);
+	const seriesIds = ((testSeries ?? []) as { id: string }[]).map((s) => s.id);
+	if (seriesIds.length > 0) {
+		await service
+			.from('evaluations' as never)
+			.delete()
+			.in('series_id', seriesIds);
+		await service
+			.from('series' as never)
+			.delete()
+			.in('id', seriesIds);
+	}
 	await service
 		.from('question_templates' as never)
 		.delete()
@@ -205,20 +217,33 @@ async function makeTaggedTemplate(
 	return { id, category };
 }
 
-/** Une évaluation portant les catégories données (une par template attendu). */
+/**
+ * Une évaluation dont la SÉRIE porte les catégories données (une par template
+ * attendu). Rend l'identifiant de l'ÉVALUATION (Q29).
+ */
 async function makeAssessment(teacherId: string, categories: Category[]): Promise<string> {
-	const { data, error } = await service
-		.from('assessments' as never)
+	const { data: series, error: seriesError } = await service
+		.from('series' as never)
 		.insert({
-			title: 'Évaluation de test',
+			title: 'Série de test',
 			grade: TEST_GRADE,
 			created_by: teacherId,
-			status: 'published',
 			categories: categories.map((category) => ({ category, quantity: 1, delay: 20 }))
 		} as never)
 		.select('id')
 		.single();
-	if (error) throw new Error(`assessment: ${error.message}`);
+	if (seriesError) throw new Error(`series: ${seriesError.message}`);
+	const { data, error } = await service
+		.from('evaluations' as never)
+		.insert({
+			series_id: (series as { id: string }).id,
+			form: 'interactive',
+			status: 'published',
+			created_by: teacherId
+		} as never)
+		.select('id')
+		.single();
+	if (error) throw new Error(`evaluation: ${error.message}`);
 	return (data as { id: string }).id;
 }
 
@@ -1034,7 +1059,7 @@ describe('Assessment activities', () => {
 		const t2 = await makeTaggedTemplate([p2, p3]);
 		const assessment = await makeAssessment(ctx.teacher.id, [t1.category, t2.category]);
 
-		const activity = await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		const activity = await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
 		let cov = await coverageMap(ctx);
 		expect(cov.size).toBe(3);
 		expect(cov.get(p1)).toBe('auto');
@@ -1061,7 +1086,7 @@ describe('Assessment activities', () => {
 		const draft = await makeTaggedTemplate([p2], { status: 'draft' });
 		const assessment = await makeAssessment(ctx.teacher.id, [live.category, draft.category]);
 
-		await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
 		const cov = await coverageMap(ctx);
 		expect(cov.size).toBe(1);
 		expect(cov.get(p1)).toBe('auto');
@@ -1070,7 +1095,7 @@ describe('Assessment activities', () => {
 	it('rejects an unknown assessment (400)', async () => {
 		expect.assertions(1);
 		const ctx = await setup();
-		const res = await addActivity(ctx, { kind: 'assessment', assessment_id: crypto.randomUUID() });
+		const res = await addActivity(ctx, { kind: 'assessment', evaluation_id: crypto.randomUUID() });
 		expect(res.status).toBe(400);
 	});
 });
@@ -1101,7 +1126,7 @@ describe('Mixed sources', () => {
 			kind: 'question',
 			question_template_id: question.id
 		});
-		await addActivityId(ctx, { kind: 'assessment', assessment_id: assessment });
+		await addActivityId(ctx, { kind: 'assessment', evaluation_id: assessment });
 		await covPOST({
 			request: req({ entry_id: ctx.entryId, point_id: pm }),
 			locals: buildLocals(ctx.teacherUser)

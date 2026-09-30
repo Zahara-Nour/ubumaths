@@ -2,10 +2,10 @@
  * L'évaluation de la classe quittée (base locale requise)
  * =======================================================
  *
- * `GET /api/assessments/[id]` autorise un élève si une affectation le vise —
- * soit nommément, soit **par sa classe** :
- *
- *   .or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(…)})`)
+ * `POST /api/evaluations/assignments/[id]/start` (chantier 4 ; ex-`GET
+ * /api/assessments/[id]`) ouvre une évaluation à un élève si une affectation le
+ * vise — soit nommément, soit **par sa classe**, dont il doit être membre ACTIF
+ * (`isAssignmentRecipient`).
  *
  * Depuis le 2026-09-13, retirer un élève d'une classe l'ARCHIVE : la ligne de
  * `class_members` reste. Sans filtre de statut, `getStudentClassIds` rendait
@@ -15,11 +15,9 @@
  * ⚠️ Ce n'est pas un défaut d'affichage : c'est le contrôle d'accès de la
  * route. Et il échoue en silence — aucune erreur, juste un 200 de trop.
  *
- * ⚠️ La base, elle, dit toujours oui : la policy
- * « Students can view own assignments » et la fonction
- * `student_has_assignment_for_assessment()` lisent `class_members` sans
- * regarder `status`. Ce test garde la route ; fermer la policy est une
- * décision d'accès distincte, qui appartient à David.
+ * Les policies de `evaluation_assignments` (20260930130000) exigent aussi un
+ * membre ACTIF : la route et la base refusent toutes deux. Ce test garde la
+ * route, au cas où l'une des deux se relâcherait.
  *
  * @vitest-environment node
  */
@@ -32,7 +30,7 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
-import { GET as getAssessmentRoute } from '../../src/routes/api/assessments/[id]/+server';
+import { POST as startEvaluationRoute } from '../../src/routes/api/evaluations/assignments/[id]/start/+server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -64,7 +62,7 @@ function buildLocals(userId: string, client: SupabaseClient<Database>): App.Loca
 }
 
 describe('un élève archivé et l’évaluation de son ancienne classe', () => {
-	let assessmentId: string;
+	let assignmentId: string;
 	let activeStudentId: string;
 	let activeStudent: SupabaseClient<Database>;
 	let archivedStudentId: string;
@@ -93,31 +91,50 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 		archivedStudentId = archived.id;
 		archivedStudent = archived.client;
 
-		// L'évaluation est PUBLIÉE : c'est la condition que la route vérifie en
+		// L'évaluation est PUBLIÉE : c'est la condition que la base vérifie en
 		// plus de l'affectation.
-		const { data: assessment, error: assessmentError } = await service
-			.from('assessments')
+		const { data: series, error: seriesError } = await service
+			.from('series')
 			.insert({
 				title: 'Contrôle sur les fractions ZZ',
 				grade: '3',
-				status: 'published',
-				categories: [],
-				settings: {},
+				categories: [
+					{
+						category: { theme: 'Fractions', domain: 'Nombres', subdomain: null, level: 1 },
+						quantity: 1,
+						delay: 20
+					}
+				],
 				created_by: teacher.id
 			})
 			.select('id')
 			.single();
-		expect(assessmentError, 'le décor n’a pas pu être posé').toBeNull();
-		assessmentId = assessment!.id;
+		expect(seriesError, 'le décor n’a pas pu être posé').toBeNull();
+		const { data: evaluation, error: evaluationError } = await service
+			.from('evaluations')
+			.insert({
+				series_id: series!.id,
+				form: 'interactive',
+				status: 'published',
+				created_by: teacher.id
+			})
+			.select('id')
+			.single();
+		expect(evaluationError, 'le décor n’a pas pu être posé').toBeNull();
 
 		// Affectation À LA CLASSE — pas nominative. C'est tout l'enjeu : l'accès
 		// est hérité de l'appartenance, et celle de l'archivé a expiré.
-		const { error: assignmentError } = await service.from('assessment_assignments').insert({
-			assessment_id: assessmentId,
-			assigned_by: teacher.id,
-			class_id: klass.id
-		});
+		const { data: assignment, error: assignmentError } = await service
+			.from('evaluation_assignments')
+			.insert({
+				evaluation_id: evaluation!.id,
+				assigned_by: teacher.id,
+				class_id: klass.id
+			})
+			.select('id')
+			.single();
 		expect(assignmentError, 'le décor n’a pas pu être posé').toBeNull();
+		assignmentId = assignment!.id;
 	}, 120_000);
 
 	afterAll(async () => {
@@ -126,9 +143,9 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 
 	async function statusFor(studentId: string, client: SupabaseClient<Database>): Promise<number> {
 		try {
-			const response = await getAssessmentRoute({
+			const response = await startEvaluationRoute({
 				locals: buildLocals(studentId, client),
-				params: { id: assessmentId }
+				params: { id: assignmentId }
 			} as never);
 			return response.status;
 		} catch (thrown) {
@@ -151,10 +168,10 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 	 * ⚠️ LE cas. Avant le filtre de statut, il rendait 200.
 	 *
 	 * Deux refus possibles, et c'est voulu :
-	 * - **403** quand seule la route filtre (état du 2026-09-15, PR #305) ;
-	 * - **404** depuis que la base filtre aussi (`20260915700000`) — l'évaluation
-	 *   elle-même devient invisible, donc `getAssessment` sort avant le contrôle
-	 *   d'autorisation. Ne pas révéler l'existence est ici le meilleur refus.
+	 * - **403** quand seule la route filtre (`isAssignmentRecipient`) ;
+	 * - **404** quand la base filtre aussi (policy de `evaluation_assignments`,
+	 *   membre ACTIF) — l'assignation devient invisible. Ne pas révéler
+	 *   l'existence est ici le meilleur refus.
 	 *
 	 * Ce qui est gardé, c'est qu'il n'obtient PAS 200. Figer l'un des deux codes
 	 * ferait rougir ce test au prochain resserrement, sans qu'aucun accès n'ait
