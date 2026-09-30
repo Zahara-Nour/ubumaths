@@ -19,6 +19,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { checkTemplate } from '../check-template';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { draftTemplate, parseReviewFile } from '../review-file';
 
 // Une question lourde (#626 : 42 variations, 2100 tirages) prend quelques secondes
@@ -56,6 +57,25 @@ describe('corpus des questions relues (docs/relecture)', () => {
 		({ template }) => {
 			const report = checkTemplate(template);
 			expect(report.reasons).toEqual([]);
+		},
+		TIMEOUT_MS
+	);
+
+	// Même graine → même instance : un tirage qui échappe à la source de l'instance
+	// (Math.random, graine recalculée) rougit ici, quel que soit l'endroit du modèle
+	it.each(corpus)(
+		'$source est reproductible à graine',
+		({ template }) => {
+			for (const seed of [0, 12345]) {
+				const first = generateInstance(template, seed);
+				const second = generateInstance(template, seed);
+				expect(second.success).toBe(first.success);
+				if (!first.success || !second.success) continue;
+				expect({ ...second.instance, generatedAt: '' }).toEqual({
+					...first.instance,
+					generatedAt: ''
+				});
+			}
 		},
 		TIMEOUT_MS
 	);
