@@ -338,4 +338,4 @@ séances d'évaluation), Q39 (verdict serveur → SRS). Réponses attendues.
 - Q39 : le verdict du serveur alimente le SRS pour une évaluation.
 - Q34 (reprise de la même tentative) et Q35 (barème TinyMath : 1 point, ½ forme non optimale ou oubli
   partiel ≤ moitié des cases, 0 si une case fausse ; QCM incomplet sans erreur = ½ ; note /20 au
-  demi-point) : explications données, confirmation attendue.
+  demi-point) : **validées par David** (réponses déjà tapées non gardées au rechargement).
