@@ -47,6 +47,13 @@ export const actions: Actions = {
 		}
 
 		try {
+			// La page n'est pas une garde : un POST direct la contourne. On relit.
+			const current = await getEvaluation(locals.supabase, id);
+			if (!current) return fail(404, { message: 'Évaluation introuvable' });
+			if (current.status !== 'draft') {
+				return fail(409, { message: 'Seule une évaluation en brouillon se modifie' });
+			}
+
 			await updateEvaluation(locals.supabase, id, validation.data.settings);
 			return { success: true };
 		} catch (e) {
