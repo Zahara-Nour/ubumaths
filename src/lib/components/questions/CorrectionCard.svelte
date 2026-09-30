@@ -78,6 +78,26 @@
 	// Mode A — explicit author-written steps win over Mode B (generated) when both
 	// are present, per the design decision : explicit > implicit.
 	const hasModeASteps = $derived((answerResult.instance.correction?.steps?.length ?? 0) > 0);
+
+	/**
+	 * Réponse(s) attendue(s), en Markdown. Trous : la réponse de chaque case
+	 * (formule pour une case mathématique) ; QCM : le CONTENU des bons choix.
+	 * (Avant : `correctChoiceIndex` seul → « undefined » pour une question à trous.)
+	 */
+	const expectedAnswers = $derived.by((): string[] => {
+		const instance = answerResult.instance;
+		if (instance.blanks && instance.blanks.length > 0) {
+			return instance.blanks.map((blank) =>
+				blank.type === 'math'
+					? `$$${blank.expectedAnswerLatex ?? blank.expectedAnswer}$$`
+					: blank.expectedAnswer
+			);
+		}
+		if (instance.choices && instance.choices.length > 0) {
+			return instance.choices.filter((choice) => choice.isCorrect).map((choice) => choice.content);
+		}
+		return [];
+	});
 	const renderedSteps = $derived(answerResult.instance.correction?._renderedSteps);
 	const useGeneratedSteps = $derived(
 		!hasModeASteps && renderedSteps !== undefined && renderedSteps.length > 0
@@ -288,16 +308,16 @@
 									: 'Réponse correcte'}
 							</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(answerResult.instance.correctChoiceIndex)}
+								{#if expectedAnswers.length === 1}
+									<MarkdownRenderer content={expectedAnswers[0]} />
+								{:else if expectedAnswers.length > 1}
 									<ul class="space-y-1">
-										{#each answerResult.instance.correctChoiceIndex as ans, i (i)}
-											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
+										{#each expectedAnswers as answer, i (i)}
+											<li><MarkdownRenderer content={answer} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MarkdownRenderer
-										content={`$$${String(answerResult.instance.correctChoiceIndex)}$$`}
-									/>
+									<p class="text-sm text-muted-foreground">Aucune réponse enregistrée.</p>
 								{/if}
 							</div>
 						</div>

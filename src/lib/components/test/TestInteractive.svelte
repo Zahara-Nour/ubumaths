@@ -193,7 +193,7 @@
 							{#if assignmentId && assessmentTitle}
 								Évaluation: {assessmentTitle}
 							{:else}
-								Mode Quiz
+								Entraînement
 							{/if}
 						</h1>
 						<p class="text-sm text-muted-foreground">
