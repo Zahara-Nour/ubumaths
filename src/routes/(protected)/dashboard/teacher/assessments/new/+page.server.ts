@@ -1,47 +1,56 @@
-import { redirect, error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { toQuestionTemplate } from '$lib/types/question-template';
-import { excludeCourseCards } from '$lib/questions/course-card';
+/**
+ * Créer une évaluation depuis une série (B13, C20) : `?series=<id>`.
+ * La composition vient de la série ; la page ne règle que la forme, le temps
+ * limite (Course aux nombres), les tentatives, la date limite et l'ordre.
+ */
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(303, '/auth/signin');
+import { error, fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
+import { uuidSchema } from '$lib/server/validation/common';
+import { createEvaluationFormSchema } from '$lib/server/validation/evaluations';
+import { getSeries, SeriesError } from '$lib/server/series';
+import { createEvaluation, EvaluationError } from '$lib/server/evaluations';
+
+export const load: PageServerLoad = async ({ locals, url }) => {
+	await requireRoles(locals, ['teacher', 'admin']);
+
+	const seriesId = uuidSchema.safeParse(url.searchParams.get('series'));
+	if (!seriesId.success) {
+		// Une évaluation part toujours d'une série
+		throw redirect(303, '/dashboard/teacher/series');
 	}
 
-	// Verify user is a teacher
-	const { data: profileData, error: profileError } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profileData) {
-		throw error(403, 'Profil non trouvé');
+	try {
+		const series = await getSeries(locals.supabase, seriesId.data);
+		if (!series) throw error(404, 'Série introuvable');
+		return { series };
+	} catch (e) {
+		if (e instanceof SeriesError) throw error(e.status, e.message);
+		throw e;
 	}
+};
 
-	if (profileData.role !== 'teacher') {
-		throw redirect(303, '/dashboard');
+export const actions: Actions = {
+	default: async ({ request, locals }) => {
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
+		const formData = await request.formData();
+
+		const validation = createEvaluationFormSchema.safeParse({
+			series_id: formData.get('series_id'),
+			settings: formData.get('settings'),
+			status: formData.get('status') ?? undefined
+		});
+		if (!validation.success) {
+			return fail(400, { message: validation.error.issues[0].message });
+		}
+
+		try {
+			const evaluation = await createEvaluation(locals.supabase, validation.data, user.id);
+			return { success: true, evaluationId: evaluation.id };
+		} catch (e) {
+			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });
+			throw e;
+		}
 	}
-
-	// Fetch all published question templates
-	const { data: templates, error: templatesError } = await locals.supabase
-		.from('question_templates')
-		.select('*')
-		// Deux colonnes inexistantes rendaient cette requête invalide, donc la page
-		// de création d'évaluation n'affichait AUCUNE question : la publication se
-		// lit sur `status`, et il n'y a pas de `category` — la classification passe
-		// par `theme` puis `domain`.
-		.eq('status', 'published')
-		.order('theme', { ascending: true })
-		.order('level', { ascending: true });
-
-	if (templatesError) {
-		throw error(500, 'Erreur lors du chargement des templates');
-	}
-
-	return {
-		// Évaluation notée : jamais de carte de cours (auto-évaluée, sans réponse)
-		templates: excludeCourseCards((templates ?? []).map(toQuestionTemplate))
-	};
 };

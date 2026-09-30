@@ -9,7 +9,7 @@
  *
  * Idempotent set-reconcile: the desired auto set = union of the curriculum
  * points tagged on everything the entry references — exercises, questions, and
- * the questions an assessment designates. We delete stale `source='auto'` rows
+ * the questions an evaluation's series designates. We delete stale `source='auto'` rows
  * and insert missing ones, never touching `source='manual'` rows (the teacher's
  * explicit choices).
  *
@@ -36,7 +36,7 @@ interface ActivityRef {
 	kind: string;
 	exercise_id: string | null;
 	question_template_id: string | null;
-	assessment_id: string | null;
+	evaluation_id: string | null;
 }
 
 /** Distinct non-null references of one kind. */
@@ -49,6 +49,116 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 				.filter((id): id is string => id !== null)
 		)
 	];
+}
+
+/** Taille d'une page de `question_templates` (plafond de PostgREST) */
+const TEMPLATES_PAGE_SIZE = 1000;
+
+/** Catégorie d'une série, telle que la couverture la compare aux modèles */
+interface SeriesCategoryRef {
+	theme: string;
+	domain: string;
+	subdomain: string | null;
+	/** En texte, comme la fonction SQL remplacée (`t.level::text = … ->> 'level'`) */
+	level: string;
+}
+
+function readCategories(raw: unknown): SeriesCategoryRef[] {
+	if (!Array.isArray(raw)) return [];
+	const categories: SeriesCategoryRef[] = [];
+	for (const item of raw) {
+		const category = (item as { category?: unknown } | null)?.category as
+			| Partial<SeriesCategoryRef>
+			| undefined;
+		// Une catégorie mal formée est ignorée, pas fatale (même règle que l'ancienne
+		// fonction SQL, qui comparait en texte pour ne pas échouer en entier).
+		if (
+			!category ||
+			typeof category.theme !== 'string' ||
+			typeof category.domain !== 'string' ||
+			(typeof category.level !== 'number' && typeof category.level !== 'string')
+		) {
+			continue;
+		}
+		categories.push({
+			theme: category.theme,
+			domain: category.domain,
+			subdomain: typeof category.subdomain === 'string' ? category.subdomain : null,
+			level: String(category.level)
+		});
+	}
+	return categories;
+}
+
+/**
+ * Points du programme couverts par des évaluations : les modèles PUBLIÉS que
+ * désignent les catégories de leur série, puis leurs points.
+ *
+ * Remplace la fonction SQL `assessment_curriculum_points` (qui lisait
+ * `assessments`) : le calcul se fait ici, sur des tables lisibles par le prof.
+ * Un identifiant cité peut être celui d'une évaluation OU, dans un texte écrit
+ * avant la séparation, celui de l'ancien assessment (`legacy_assessment_id`).
+ */
+export async function evaluationCurriculumPoints(supabase: Sb, ids: string[]): Promise<string[]> {
+	const uuids = ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
+	if (uuids.length === 0) return [];
+
+	const list = uuids.join(',');
+	const { data: evaluations, error: evalErr } = await supabase
+		.from('evaluations')
+		.select('id, series:series(categories)')
+		.or(`id.in.(${list}),legacy_assessment_id.in.(${list})`);
+	if (evalErr) throw new Error(`reconcileAutoCoverage evaluations: ${evalErr.message}`);
+
+	const categories = (evaluations ?? []).flatMap((e) => readCategories(e.series?.categories));
+	if (categories.length === 0) return [];
+
+	// Paginé : PostgREST plafonne une lecture à 1000 lignes, et une page tronquée
+	// ferait disparaître des points en silence.
+	const themes = [...new Set(categories.map((c) => c.theme))];
+	const domains = [...new Set(categories.map((c) => c.domain))];
+	const templates: {
+		id: string;
+		theme: string;
+		domain: string;
+		subdomain: string | null;
+		level: number;
+	}[] = [];
+	for (let from = 0; ; from += TEMPLATES_PAGE_SIZE) {
+		const { data: page, error: tplErr } = await supabase
+			.from('question_templates')
+			.select('id, theme, domain, subdomain, level')
+			.eq('status', 'published')
+			.in('theme', themes)
+			.in('domain', domains)
+			.order('id', { ascending: true })
+			.range(from, from + TEMPLATES_PAGE_SIZE - 1);
+		if (tplErr) throw new Error(`reconcileAutoCoverage evaluation templates: ${tplErr.message}`);
+		templates.push(...(page ?? []));
+		if (!page || page.length < TEMPLATES_PAGE_SIZE) break;
+	}
+
+	const matching = templates.filter((t) =>
+		categories.some(
+			(c) =>
+				c.theme === t.theme &&
+				c.domain === t.domain &&
+				(c.subdomain ?? '') === (t.subdomain ?? '') &&
+				c.level === String(t.level)
+		)
+	);
+	if (matching.length === 0) return [];
+
+	const { data: points, error: ptsErr } = await supabase
+		.from('question_template_points')
+		.select('point_id')
+		.in(
+			'template_id',
+			matching.map((t) => t.id)
+		);
+	if (ptsErr) throw new Error(`reconcileAutoCoverage evaluation tags: ${ptsErr.message}`);
+
+	return [...new Set((points ?? []).map((p) => p.point_id))];
 }
 
 export interface ReconcileReport {
@@ -69,7 +179,7 @@ export async function reconcileAutoCoverage(
 	// 1. what this entry's tagged activities point at
 	const { data: acts, error: actErr } = await supabase
 		.from('journal_entry_activities')
-		.select('kind, exercise_id, question_template_id, assessment_id')
+		.select('kind, exercise_id, question_template_id, evaluation_id')
 		.eq('entry_id', entryId)
 		.in('kind', TAGGED_KINDS);
 	if (actErr) throw new Error(`reconcileAutoCoverage activities: ${actErr.message}`);
@@ -77,7 +187,8 @@ export async function reconcileAutoCoverage(
 	const activities = (acts ?? []) as ActivityRef[];
 	const exerciseIds = new Set(refsOf(activities, 'exercise', 'exercise_id'));
 	const templateIds = new Set(refsOf(activities, 'question', 'question_template_id'));
-	const assessmentIds = new Set(refsOf(activities, 'assessment', 'assessment_id'));
+	// Q29 : une activité « évaluation » pointe vers l'ÉVALUATION
+	const evaluationIds = new Set(refsOf(activities, 'assessment', 'evaluation_id'));
 
 	// 1bis. ce que le PROF A ÉCRIT dans la séance.
 	//
@@ -111,7 +222,7 @@ export async function reconcileAutoCoverage(
 	);
 	for (const id of referenceIdsOfKind(references, 'exercise')) exerciseIds.add(id);
 	for (const id of referenceIdsOfKind(references, 'question')) templateIds.add(id);
-	for (const id of referenceIdsOfKind(references, 'assessment')) assessmentIds.add(id);
+	for (const id of referenceIdsOfKind(references, 'assessment')) evaluationIds.add(id);
 
 	// Un exercice DE FICHE est cité par l'identifiant de la jonction : c'est ce
 	// qui permet à l'élève de savoir quelle fiche ouvrir. Pour la couverture,
@@ -170,14 +281,10 @@ export async function reconcileAutoCoverage(
 		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
 	}
 
-	if (assessmentIds.size > 0) {
-		// An assessment names question *categories*, not templates, so the
-		// resolution is a four-column join better left to the database.
-		const { data, error } = await supabase.rpc('assessment_curriculum_points', {
-			p_assessment_ids: [...assessmentIds]
-		});
-		if (error) throw new Error(`reconcileAutoCoverage assessment tags: ${error.message}`);
-		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
+	if (evaluationIds.size > 0) {
+		for (const pointId of await evaluationCurriculumPoints(supabase, [...evaluationIds])) {
+			desiredSet.add(pointId);
+		}
 	}
 
 	const desired = [...desiredSet];

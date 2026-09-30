@@ -42,7 +42,7 @@ function item(statement: string, delaySeconds: number): ClassroomItem {
 	return { instance: qcm(statement), delaySeconds, categoryKey: 'x' };
 }
 
-async function open(items: ClassroomItem[], isLoggedIn = true) {
+async function open(items: ClassroomItem[], isLoggedIn = true, inEvaluation = false) {
 	const onComplete = vi.fn<(result: TestResult) => void>();
 	const onRestart = vi.fn();
 	const onBack = vi.fn();
@@ -51,7 +51,8 @@ async function open(items: ClassroomItem[], isLoggedIn = true) {
 		isLoggedIn,
 		onComplete,
 		onRestart,
-		onBack
+		onBack,
+		inEvaluation
 	});
 	flushSync();
 	await tick();
@@ -205,6 +206,18 @@ describe('TestInteractive — Entraînement', () => {
 
 		expect(onRestart).toHaveBeenCalledTimes(1);
 		expect(onComplete).toHaveBeenCalledTimes(1);
+	});
+
+	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {
+		const { container } = await open([item('Énoncé A', 1)], true, true);
+		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
+
+		elapse(1200);
+		await tick();
+
+		expect(container.textContent).not.toContain(RESTART);
+		expect(container.textContent).not.toContain('Retour au panier');
+		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 
 	it('visiteur non connecté : averti que ses réponses ne comptent pas', async () => {

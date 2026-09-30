@@ -13,8 +13,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json, Tables } from '$lib/types/database';
+import type { Database, Tables } from '$lib/types/database';
 import type { StudentWorkInbox, WorkItem, WorkSource } from '$lib/types/student-inbox';
+import { formLabel } from '$lib/types/evaluation';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -189,11 +190,15 @@ async function fetchClassNames(
 }
 
 // ============================================================================
-// ASSESSMENTS
+// ÉVALUATIONS
 // ============================================================================
 
-type AssessmentAssignmentJoined = Tables<'assessment_assignments'> & {
-	assessment: Tables<'assessments'> | null;
+type EvaluationAssignmentJoined = Tables<'evaluation_assignments'> & {
+	evaluation:
+		| (Pick<Tables<'evaluations'>, 'id' | 'form' | 'deadline' | 'status'> & {
+				series: Pick<Tables<'series'>, 'title'> | null;
+		  })
+		| null;
 };
 
 async function fetchAssessmentItems(
@@ -201,10 +206,11 @@ async function fetchAssessmentItems(
 	userId: string,
 	classIds: string[]
 ): Promise<WorkItem[]> {
+	// La RLS ne montre à l'élève que les évaluations PUBLIÉES qui lui sont
+	// assignées ; le filtre sur le statut est redit ici par prudence.
 	let query = supabase
-		.from('assessment_assignments')
-		.select('*, assessment:assessments(*)')
-		.eq('assessment.status', 'published');
+		.from('evaluation_assignments')
+		.select('*, evaluation:evaluations(id, form, deadline, status, series:series(title))');
 
 	if (classIds.length > 0) {
 		query = query.or(`student_id.eq.${userId},class_id.in.(${classIds.join(',')})`);
@@ -213,30 +219,29 @@ async function fetchAssessmentItems(
 	}
 
 	const { data: assignmentsRaw, error: assignmentsErr } = await query;
-	logError('assessment.assignments', assignmentsErr);
-	// Supabase types the embedded `assessment` relation as `never` when a
-	// filter is applied on it (`.eq('assessment.status', ...)`); we cast to
-	// the joined shape and rely on the explicit `a.assessment !== null` filter
-	// below to handle rows where the join was rejected by that filter.
-	const assignments = (assignmentsRaw ?? []) as unknown as AssessmentAssignmentJoined[];
-	const valid = assignments.filter((a) => a.assessment !== null);
+	logError('evaluation.assignments', assignmentsErr);
+	const assignments = (assignmentsRaw ?? []) as unknown as EvaluationAssignmentJoined[];
+	const valid = assignments.filter(
+		(a) => a.evaluation !== null && a.evaluation.status === 'published' && a.evaluation.series
+	);
 	if (valid.length === 0) return [];
 
-	const assignmentIds = valid.map((a) => a.id);
+	// Tentatives : rattachées à l'ÉVALUATION (test_sessions.evaluation_id)
+	const evaluationIds = [...new Set(valid.map((a) => a.evaluation_id))];
 	const { data: sessionsRaw, error: sessionsErr } = await supabase
 		.from('test_sessions')
-		.select('assignment_id, completed_at')
-		.in('assignment_id', assignmentIds)
+		.select('evaluation_id, completed_at')
+		.in('evaluation_id', evaluationIds)
 		.eq('user_id', userId)
 		.not('completed_at', 'is', null);
-	logError('assessment.testSessions', sessionsErr);
+	logError('evaluation.testSessions', sessionsErr);
 
-	const latestCompletionByAssignment = new Map<string, string>();
+	const latestCompletionByEvaluation = new Map<string, string>();
 	for (const session of sessionsRaw ?? []) {
-		if (!session.assignment_id || !session.completed_at) continue;
-		const current = latestCompletionByAssignment.get(session.assignment_id);
+		if (!session.evaluation_id || !session.completed_at) continue;
+		const current = latestCompletionByEvaluation.get(session.evaluation_id);
 		if (!current || session.completed_at > current) {
-			latestCompletionByAssignment.set(session.assignment_id, session.completed_at);
+			latestCompletionByEvaluation.set(session.evaluation_id, session.completed_at);
 		}
 	}
 
@@ -246,38 +251,29 @@ async function fetchAssessmentItems(
 	const classNames = await fetchClassNames(supabase, referencedClassIds);
 
 	return valid.map<WorkItem>((assignment) => {
-		const assessment = assignment.assessment as Tables<'assessments'>;
-		const dueAt = extractAssessmentDeadline(assessment.settings);
-		const doneAt = latestCompletionByAssignment.get(assignment.id) ?? null;
+		const evaluation = assignment.evaluation!;
+		const doneAt = latestCompletionByEvaluation.get(evaluation.id) ?? null;
 		return {
 			source: 'assessment' satisfies WorkSource,
-			itemId: assessment.id,
+			itemId: evaluation.id,
 			assignmentId: assignment.id,
-			title: assessment.title,
+			title: evaluation.series?.title ?? 'Évaluation',
+			formLabel: formLabel(evaluation.form),
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
 			via: assignment.class_id ? 'class' : 'direct',
-			dueAt,
+			dueAt: evaluation.deadline,
 			status: doneAt ? 'done' : 'todo',
 			viewed: false,
 			doneAt,
-			// Deux erreurs se superposaient ici : la route `/dashboard/student/assessments/[id]`
-			// n'existe pas (seul `[id]/results` existe), et l'identifiant utilisé était
-			// celui de l'ÉVALUATION alors que le point d'entrée attend celui de
-			// l'ASSIGNATION. Un test assigné était donc injoignable depuis l'inbox.
-			// Même cible que le bouton « Commencer » de /dashboard/student/assessments.
+			// Point d'entrée : l'identifiant de l'ASSIGNATION. La forme vient de
+			// l'évaluation (B15), d'où l'absence de `mode` dans le lien.
 			href: doneAt
 				? `/dashboard/student/assessments/${assignment.id}/results`
-				: `/automaths/test?assignment=${assignment.id}&mode=interactive`,
+				: `/automaths/test?assignment=${assignment.id}`,
 			assignedAt: assignment.assigned_at
 		};
 	});
-}
-
-function extractAssessmentDeadline(settings: Json | null): string | null {
-	if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return null;
-	const deadline = (settings as Record<string, unknown>).deadline;
-	return typeof deadline === 'string' ? deadline : null;
 }
 
 // ============================================================================

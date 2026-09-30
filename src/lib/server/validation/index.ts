@@ -8,7 +8,7 @@ export * from './common';
 
 // Feature-specific schemas
 export * from './admin';
-export * from './assessments';
+export * from './evaluations';
 export * from './auth';
 export * from './chat';
 export * from './classes';
@@ -38,8 +38,8 @@ export * from './params';
 // consumer imports these two directly, so the pick is functionally neutral — it only
 // satisfies TypeScript.
 // NOTE (latent debt): `questionCategorySchema` is defined twice with DIFFERENT shapes
-// (./assessments has `level`, ./questions does not); `variableSchema` is defined in
+// ($lib/validation/series has `level`, ./questions does not); `variableSchema` is defined in
 // ./exercises AND in $lib/questions/template-schema (re-exported by ./questions).
 // These duplications should be consolidated to a single source of truth.
-export { questionCategorySchema } from './assessments';
+export { questionCategorySchema } from '$lib/validation/series';
 export { variableSchema } from './exercises';

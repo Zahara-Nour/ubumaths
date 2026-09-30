@@ -14,6 +14,9 @@
 	- result: TestResult - Test result data
 	- onRestart: () => void - Callback to restart test
 	- onBackToCart: () => void - Callback to return to cart
+	- inEvaluation: évaluation assignée → ni « Recommencer » ni « Retour au panier »,
+	  seulement « Mes évaluations » (une nouvelle tentative passe par la vérification
+	  des tentatives et de la date limite)
 -->
 
 <script lang="ts">
@@ -28,9 +31,10 @@
 		result: TestResult;
 		onRestart: () => void;
 		onBackToCart: () => void;
+		inEvaluation?: boolean;
 	}
 
-	let { result, onRestart, onBackToCart }: Props = $props();
+	let { result, onRestart, onBackToCart, inEvaluation = false }: Props = $props();
 
 	// Cartes de cours (#617) : comptées à part, hors score
 	const reviewedCards = $derived(result.reviewedCards ?? 0);
@@ -143,13 +147,20 @@
 
 	<!-- Actions -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
-		<Button variant="outline" onclick={onBackToCart}>
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour au panier
-		</Button>
-		<Button onclick={onRestart}>
-			<RotateCw class="mr-2 h-4 w-4" />
-			Recommencer avec de nouvelles questions
-		</Button>
+		{#if inEvaluation}
+			<Button href="/dashboard/student/assessments">
+				<ArrowLeft class="mr-2 h-4 w-4" />
+				Mes évaluations
+			</Button>
+		{:else}
+			<Button variant="outline" onclick={onBackToCart}>
+				<ArrowLeft class="mr-2 h-4 w-4" />
+				Retour au panier
+			</Button>
+			<Button onclick={onRestart}>
+				<RotateCw class="mr-2 h-4 w-4" />
+				Recommencer avec de nouvelles questions
+			</Button>
+		{/if}
 	</div>
 </div>

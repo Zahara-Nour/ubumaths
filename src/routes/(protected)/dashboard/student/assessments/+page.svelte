@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
-	import AssessmentCard from '$lib/components/assessments/AssessmentCard.svelte';
+	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { FileQuestion } from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -16,7 +16,8 @@
 	let expired = $derived(data.assignments.filter((a) => a.status === 'expired'));
 
 	function handleStart(assignmentId: string) {
-		goto(`/automaths/test?assignment=${assignmentId}&mode=interactive`).then(() => {});
+		// La forme vient de l'évaluation (B15) : pas de `mode` dans le lien
+		goto(`/automaths/test?assignment=${assignmentId}`).then(() => {});
 	}
 
 	function handleViewResults(assignmentId: string) {
@@ -43,8 +44,8 @@
 			<h2 class="mb-4 text-2xl font-semibold">À faire</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each toDo as assignment (assignment.id)}
-					<AssessmentCard
-						assessment={assignment.assessment}
+					<EvaluationCard
+						evaluation={assignment.evaluation}
 						variant="student"
 						assignmentData={assignment}
 						onStart={() => handleStart(assignment.id)}
@@ -60,8 +61,8 @@
 			<h2 class="mb-4 text-2xl font-semibold">Terminées</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each completed as assignment (assignment.id)}
-					<AssessmentCard
-						assessment={assignment.assessment}
+					<EvaluationCard
+						evaluation={assignment.evaluation}
 						variant="student"
 						assignmentData={assignment}
 						onViewResults={() => handleViewResults(assignment.id)}
@@ -77,8 +78,8 @@
 			<h2 class="mb-4 text-2xl font-semibold text-muted-foreground">Expirées</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each expired as assignment (assignment.id)}
-					<AssessmentCard
-						assessment={assignment.assessment}
+					<EvaluationCard
+						evaluation={assignment.evaluation}
 						variant="student"
 						assignmentData={assignment}
 					/>

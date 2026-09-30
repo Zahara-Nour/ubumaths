@@ -158,3 +158,25 @@ describe('WorkItemCard - done date label', () => {
 		await expect.element(page.getByText(/^Fait /)).not.toBeInTheDocument();
 	});
 });
+
+// =============================================================================
+// 6. Forme d'une évaluation (C21, chantier 4)
+// =============================================================================
+
+describe('WorkItemCard - forme d’une évaluation', () => {
+	it('affiche « Course aux nombres » pour une évaluation dans cette forme', async () => {
+		const item = makeItem('assessment', { formLabel: 'Course aux nombres' });
+		await render(WorkItemCard, { props: { item } });
+
+		await expect
+			.element(page.getByTestId('work-item-form'))
+			.toHaveTextContent('Course aux nombres');
+	});
+
+	it('n’affiche aucune forme pour un exercice', async () => {
+		const item = makeItem('exercise');
+		const { container } = await render(WorkItemCard, { props: { item } });
+
+		expect(container.querySelector('[data-testid="work-item-form"]')).toBeNull();
+	});
+});

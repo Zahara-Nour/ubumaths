@@ -5,6 +5,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ArrowLeft, TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
+	import { formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -40,7 +41,7 @@
 </script>
 
 <svelte:head>
-	<title>Mes Résultats - {data.assignment.assessment.title} | Chiphre</title>
+	<title>Mes Résultats - {data.evaluation.series.title} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -50,8 +51,8 @@
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">{data.assignment.assessment.title}</h1>
-			<p class="mt-2 text-muted-foreground">Mes résultats</p>
+			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
+			<p class="mt-2 text-muted-foreground">Mes résultats · {formLabel(data.evaluation.form)}</p>
 		</div>
 	</div>
 
@@ -98,9 +99,9 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">{data.attempts.length}</div>
-				{#if data.assignment.assessment.settings.max_attempts}
+				{#if data.evaluation.max_attempts}
 					<p class="text-xs text-muted-foreground">
-						sur {data.assignment.assessment.settings.max_attempts} max
+						sur {data.evaluation.max_attempts} max
 					</p>
 				{:else}
 					<p class="text-xs text-muted-foreground">illimitées</p>

@@ -1,110 +1,54 @@
 <script lang="ts">
-	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, Check } from '@lucide/svelte';
-	import { questionCart } from '$lib/stores/questionCart.svelte';
+	import { Badge } from '$lib/components/ui/badge';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import AssessmentConfigForm from '$lib/components/assessments/AssessmentConfigForm.svelte';
-	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
-	import { previewCartItem } from '$lib/questions/cart-preview';
-	import type { CreateAssessmentData } from '$lib/types/assessment';
+	import { submitAction } from '$lib/utils/form-action';
+	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
+	import { countSeriesQuestions, formLabel } from '$lib/types/evaluation';
+	import type { EvaluationSettingsInput } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Step state: 1 = review cart, 2 = configure, 3 = review & publish
-	let step = $state(1);
-	let formData = $state<Partial<CreateAssessmentData>>({});
+	// Réglages validés par le formulaire, en attente du choix brouillon / publier
+	let settings = $state<EvaluationSettingsInput | null>(null);
+	// Derniers réglages saisis : le formulaire les retrouve après « Retour »
+	let lastSettings = $state<EvaluationSettingsInput | undefined>(undefined);
 	let isSubmitting = $state(false);
 
-	// Cart state
-	let cartItems = $derived(questionCart.allItems);
-	let isEmpty = $derived(cartItems.length === 0);
+	let questionsCount = $derived(countSeriesQuestions(data.series.categories));
 
-	// Cart items with instances for preview
-	let cartItemsWithInstances = $derived(
-		cartItems.map((item) => ({ item, ...previewCartItem(data.templates, item.category) }))
-	);
-
-	function handleBackToList() {
-		goto('/dashboard/teacher/assessments').then(() => {});
+	function handleBack() {
+		goto('/dashboard/teacher/series').then(() => {});
 	}
 
-	function handleNextStep() {
-		if (step === 1) {
-			if (isEmpty) {
-				toaster.error('Ajoutez au moins une catégorie de questions');
+	function handleConfigSubmit(value: EvaluationSettingsInput) {
+		settings = value;
+	}
+
+	function handleEditSettings() {
+		lastSettings = settings ?? undefined;
+		settings = null;
+	}
+
+	async function handleCreate(status: 'draft' | 'published') {
+		if (!settings) return;
+		isSubmitting = true;
+		try {
+			const formData = new FormData();
+			formData.set('series_id', data.series.id);
+			formData.set('settings', JSON.stringify(settings));
+			formData.set('status', status);
+			const outcome = await submitAction('', formData);
+			if (!outcome.ok) {
+				toaster.error(outcome.message);
 				return;
 			}
-			step = 2;
-		}
-	}
-
-	function handlePreviousStep() {
-		if (step > 1) {
-			step--;
-		}
-	}
-
-	function handleConfigSubmit(data: {
-		title: string;
-		grade: string;
-		description: string;
-		settings: {
-			max_attempts: number | null;
-			time_limit: number | null;
-			deadline: string | null;
-			shuffle_questions: boolean;
-		};
-	}) {
-		formData = {
-			...data,
-			categories: cartItems
-		};
-		step = 3;
-	}
-
-	async function handlePublish(status: 'draft' | 'published') {
-		if (!formData.title || !formData.grade || !formData.settings) {
-			toaster.error('Données incomplètes');
-			return;
-		}
-
-		isSubmitting = true;
-
-		try {
-			const createData: CreateAssessmentData = {
-				title: formData.title,
-				grade: formData.grade,
-				description: formData.description,
-				categories: cartItems,
-				settings: formData.settings,
-				status
-			};
-
-			const response = await fetch('/api/assessments', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(createData)
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to create assessment');
-			}
-
-			const { assessment: _assessment } = await response.json();
-
-			// Clear cart
-			questionCart.clearCart();
-
-			toaster.success(status === 'published' ? 'Évaluation publiée !' : 'Brouillon sauvegardé');
-
+			toaster.success(status === 'published' ? 'Évaluation publiée' : 'Brouillon enregistré');
 			goto('/dashboard/teacher/assessments').then(() => {});
-		} catch (error) {
-			console.error('Failed to create assessment:', error);
-			toaster.error('Échec de la création');
 		} finally {
 			isSubmitting = false;
 		}
@@ -112,200 +56,83 @@
 </script>
 
 <svelte:head>
-	<title>Nouvelle Évaluation | Chiphre</title>
+	<title>Nouvelle évaluation | Chiphre</title>
 </svelte:head>
 
-<div class="container mx-auto max-w-6xl px-4 py-8">
-	<!-- Header -->
+<div class="container mx-auto max-w-4xl px-4 py-8">
 	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBackToList}>
+		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux séries">
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Nouvelle Évaluation</h1>
-			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos {lore.entities.class}s</p>
+			<h1 class="text-3xl font-bold tracking-tight">Nouvelle évaluation</h1>
+			<p class="mt-2 text-muted-foreground">
+				Série « {data.series.title} » · {data.series.grade} · {questionsCount} question{questionsCount >
+				1
+					? 's'
+					: ''}
+			</p>
 		</div>
 	</div>
 
-	<!-- Progress Indicator -->
-	<div class="mb-8">
-		<div class="mx-auto flex max-w-md items-center justify-between">
-			{#each [1, 2, 3] as stepNum (stepNum)}
-				<div class="flex flex-col items-center gap-2">
-					<div
-						class="flex h-10 w-10 items-center justify-center rounded-full border-2 {stepNum <= step
-							? 'border-primary bg-primary text-primary-foreground'
-							: 'border-muted bg-background text-muted-foreground'}"
-					>
-						{#if stepNum < step}
-							<Check class="h-5 w-5" />
-						{:else}
-							{stepNum}
-						{/if}
-					</div>
-					<span class="text-xs text-muted-foreground">
-						{stepNum === 1 ? 'Questions' : stepNum === 2 ? 'Configuration' : 'Révision'}
-					</span>
-				</div>
-				{#if stepNum < 3}
-					<div class="h-0.5 flex-1 {stepNum < step ? 'bg-primary' : 'bg-muted'}"></div>
-				{/if}
-			{/each}
-		</div>
-	</div>
-
-	<!-- Step 1: Review Cart -->
-	{#if step === 1}
-		<div class="space-y-6">
-			{#if isEmpty}
-				<Card.Root class="border-dashed">
-					<Card.Content class="flex min-h-96 items-center justify-center p-12">
-						<div class="text-center">
-							<p class="text-xl font-semibold">Panier vide</p>
-							<p class="mt-2 text-muted-foreground">
-								Allez dans Automaths pour ajouter des questions
-							</p>
-							<Button onclick={() => goto('/automaths').then(() => {})} class="mt-6">
-								Parcourir les questions
-							</Button>
-						</div>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Questions sélectionnées</Card.Title>
-						<Card.Description>
-							{cartItems.length} catégorie{cartItems.length > 1 ? 's' : ''} ({questionCart.totalInstances}
-							questions)
-						</Card.Description>
-					</Card.Header>
-					<Card.Content>
-						<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
-								<CartQuestionCard
-									{item}
-									{instance}
-									onIncrementQuantity={(cat) => questionCart.incrementQuantity(cat)}
-									onDecrementQuantity={(cat) => questionCart.decrementQuantity(cat)}
-									onUpdateDelay={(cat, delay) => questionCart.updateDelay(cat, delay)}
-								/>
-							{/each}
-						</div>
-					</Card.Content>
-				</Card.Root>
-
-				<div class="flex justify-between">
-					<Button variant="outline" onclick={() => goto('/automaths').then(() => {})}>
-						Ajouter des questions
-					</Button>
-					<Button onclick={handleNextStep}>Suivant</Button>
-				</div>
-			{/if}
-		</div>
-	{/if}
-
-	<!-- Step 2: Configuration -->
-	{#if step === 2}
+	{#if !settings}
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Configuration de l'évaluation</Card.Title>
-				<Card.Description>Définissez les paramètres de votre évaluation</Card.Description>
+				<Card.Title>Réglages</Card.Title>
+				<Card.Description>Forme, temps limite, tentatives et date limite</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<AssessmentConfigForm
-					initialData={formData}
+				<EvaluationConfigForm
+					initialData={lastSettings}
 					onSubmit={handleConfigSubmit}
-					onCancel={handlePreviousStep}
+					onCancel={handleBack}
 					submitLabel="Suivant"
 				/>
 			</Card.Content>
 		</Card.Root>
-	{/if}
-
-	<!-- Step 3: Review & Publish -->
-	{#if step === 3}
-		<div class="space-y-6">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Révision</Card.Title>
-					<Card.Description>Vérifiez les détails avant de publier</Card.Description>
-				</Card.Header>
-				<Card.Content class="space-y-6">
-					<!-- Summary -->
-					<div class="grid gap-4 md:grid-cols-2">
-						<div>
-							<h3 class="mb-2 font-semibold">Informations</h3>
-							<dl class="space-y-2 text-sm">
-								<div>
-									<dt class="text-muted-foreground">Titre</dt>
-									<dd class="font-medium">{formData.title}</dd>
-								</div>
-								<div>
-									<dt class="text-muted-foreground">Niveau</dt>
-									<dd class="font-medium">{formData.grade}</dd>
-								</div>
-								{#if formData.description}
-									<div>
-										<dt class="text-muted-foreground">Description</dt>
-										<dd class="font-medium">{formData.description}</dd>
-									</div>
-								{/if}
-							</dl>
-						</div>
-
-						<div>
-							<h3 class="mb-2 font-semibold">{lore.nav.settings}</h3>
-							<dl class="space-y-2 text-sm">
-								<div>
-									<dt class="text-muted-foreground">Tentatives max</dt>
-									<dd class="font-medium">
-										{formData.settings?.max_attempts || 'Illimité'}
-									</dd>
-								</div>
-								<div>
-									<dt class="text-muted-foreground">Deadline</dt>
-									<dd class="font-medium">
-										{formData.settings?.deadline
-											? new Date(formData.settings.deadline).toLocaleString('fr-FR')
-											: 'Aucune'}
-									</dd>
-								</div>
-								<div>
-									<dt class="text-muted-foreground">Ordre aléatoire</dt>
-									<dd class="font-medium">
-										{formData.settings?.shuffle_questions ? 'Oui' : 'Non'}
-									</dd>
-								</div>
-							</dl>
-						</div>
-					</div>
-
-					<!-- Questions Summary -->
+	{:else}
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Récapitulatif</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<dl class="grid gap-3 text-sm md:grid-cols-2">
 					<div>
-						<h3 class="mb-2 font-semibold">Questions</h3>
-						<p class="text-sm text-muted-foreground">
-							{cartItems.length} catégorie{cartItems.length > 1 ? 's' : ''} ({questionCart.totalInstances}
-							questions au total)
-						</p>
+						<dt class="text-muted-foreground">Forme</dt>
+						<dd class="font-medium">
+							<Badge variant="secondary">{formLabel(settings.form)}</Badge>
+							{#if settings.form === 'course' && settings.time_limit_minutes}
+								· {settings.time_limit_minutes} min
+							{/if}
+						</dd>
 					</div>
-				</Card.Content>
-			</Card.Root>
-
-			<!-- Actions -->
-			<div class="flex justify-between">
-				<Button variant="outline" onclick={handlePreviousStep} disabled={isSubmitting}>
+					<div>
+						<dt class="text-muted-foreground">Tentatives max</dt>
+						<dd class="font-medium">{settings.max_attempts ?? 'Illimité'}</dd>
+					</div>
+					<div>
+						<dt class="text-muted-foreground">Date limite</dt>
+						<dd class="font-medium">
+							{settings.deadline ? new Date(settings.deadline).toLocaleString('fr-FR') : 'Aucune'}
+						</dd>
+					</div>
+					<div>
+						<dt class="text-muted-foreground">Ordre aléatoire</dt>
+						<dd class="font-medium">{settings.shuffle_questions ? 'Oui' : 'Non'}</dd>
+					</div>
+				</dl>
+			</Card.Content>
+			<Card.Footer class="flex flex-wrap justify-between gap-3">
+				<Button variant="outline" onclick={handleEditSettings} disabled={isSubmitting}>
 					Retour
 				</Button>
 				<div class="flex gap-3">
-					<Button variant="outline" onclick={() => handlePublish('draft')} disabled={isSubmitting}>
-						Sauver comme brouillon
+					<Button variant="outline" onclick={() => handleCreate('draft')} disabled={isSubmitting}>
+						Enregistrer en brouillon
 					</Button>
-					<Button onclick={() => handlePublish('published')} disabled={isSubmitting}>
-						Publier
-					</Button>
+					<Button onclick={() => handleCreate('published')} disabled={isSubmitting}>Publier</Button>
 				</div>
-			</div>
-		</div>
+			</Card.Footer>
+		</Card.Root>
 	{/if}
 </div>

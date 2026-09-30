@@ -6,7 +6,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ArrowLeft, TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
-	import { getStatusColor, getStatusLabel } from '$lib/types/assessment';
+	import { formLabel, getStatusColor, getStatusLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Résultats - {data.assessment.title} | Chiphre</title>
+	<title>Résultats - {data.evaluation.series.title} | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
@@ -36,8 +36,10 @@
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">{data.assessment.title}</h1>
-			<p class="mt-2 text-muted-foreground">Résultats de l'évaluation</p>
+			<h1 class="text-3xl font-bold tracking-tight">{data.evaluation.series.title}</h1>
+			<p class="mt-2 text-muted-foreground">
+				Résultats de l'évaluation · {formLabel(data.evaluation.form)}
+			</p>
 		</div>
 	</div>
 
@@ -133,7 +135,7 @@
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each sortedResults as result (result.student_user_id)}
+						{#each sortedResults as result (result.student_id)}
 							<Table.Row>
 								<Table.Cell class="font-medium">
 									{result.student_firstname}

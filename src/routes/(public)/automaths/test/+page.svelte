@@ -8,7 +8,7 @@
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
-	import { AlertCircle } from '@lucide/svelte';
+	import { AlertCircle, Rocket } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 
@@ -17,6 +17,8 @@
 	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
 	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
+	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
+	import { resolveTestLaunch } from '$lib/utils/test-launch';
 	import type { TestResult } from '$lib/types/test';
 
 	let { data }: { data: PageData } = $props();
@@ -29,119 +31,146 @@
 	let error = $state<string | null>(null);
 	let assignmentId = $state<string | null>(null);
 	let assessmentTitle = $state<string | null>(null);
+	// Lien de série sans forme (C19) : la fenêtre de choix s'ouvre sur ces catégories
+	let pendingCategories = $state<CartItem[] | null>(null);
+	let modeDialogOpen = $state(false);
+
+	/** Réponse de `/api/evaluations/assignments/[id]/start` */
+	interface EvaluationStart {
+		validation: { can_attempt: boolean; reason?: string };
+		preview: boolean;
+		evaluation: {
+			id: string;
+			form: 'interactive' | 'course';
+			time_limit: number | null;
+			title: string;
+			categories: CartItem[];
+		};
+	}
 
 	/**
 	 * Parse URL parameters and initialize test session
 	 */
 	async function initializeTest() {
 		try {
-			// Get URL params
-			const url = new URL(page.url);
-			const modeParam = url.searchParams.get('mode');
-			const categoriesParam = url.searchParams.get('categories');
-			const timeParam = url.searchParams.get('time');
-			const assignmentParam = url.searchParams.get('assignment');
+			const launch = resolveTestLaunch(new URL(page.url).searchParams);
 
-			// Handle assignment mode
-			// Une évaluation assignée est TOUJOURS un Entraînement : le paramètre `mode`
-			// est ignoré, jamais de forme flash (score auto-évalué) pour une évaluation.
-			if (assignmentParam) {
-				assignmentId = assignmentParam;
+			if (launch.kind === 'error') {
+				throw new Error(launch.message);
+			}
 
-				// Validate assignment and get assessment data
-				const validationResponse = await fetch(
-					`/api/assessments/${assignmentId}/validate-attempt`,
-					{
-						method: 'POST'
-					}
-				);
+			// Évaluation assignée : forme et temps limite viennent de l'ÉVALUATION,
+			// le paramètre `mode` de l'URL est ignoré (B15). Jamais de flash-cards.
+			if (launch.kind === 'assignment') {
+				await startEvaluation(launch.assignmentId);
+				return;
+			}
 
-				if (!validationResponse.ok) {
-					throw new Error("Impossible de valider l'assignment");
-				}
-
-				const { validation } = await validationResponse.json();
-
-				if (!validation.can_attempt) {
-					throw new Error(validation.reason || 'Vous ne pouvez pas commencer cette évaluation');
-				}
-
-				// Get assessment details
-				const assessmentResponse = await fetch(`/api/assessments/${assignmentId}`);
-				if (!assessmentResponse.ok) {
-					throw new Error("Impossible de charger l'évaluation");
-				}
-
-				const { assessment } = await assessmentResponse.json();
-				assessmentTitle = assessment.title;
-
-				// Une évaluation est toujours un Entraînement : pas de limite de temps
-				// globale (Q19), chaque question a son chrono. `settings.time_limit` n'est pas lu.
-				const categories = assessment.categories;
-				const mode = 'interactive';
-
-				// Évaluation notée : les cartes de cours (auto-évaluées) sont exclues
-				seriesItems = generateSeriesItems(categories, { excludeCourseCards: true });
-
-				testSession = {
-					mode,
-					categories,
-					instances: seriesItems.map((item) => item.instance),
-					userAnswers: new Map(),
-					startTime: Date.now(),
-					currentQuestionIndex: 0,
-					isPaused: false
-				};
-
+			// Lien de série partagé, sans forme : l'élève (ou le visiteur) choisit
+			if (launch.kind === 'choose-form') {
+				pendingCategories = launch.categories;
+				modeDialogOpen = true;
 				isLoading = false;
 				return;
 			}
 
-			// Normal test mode (non-assignment)
-			// Validate mode
-			if (!modeParam || !['display', 'interactive', 'course', 'flash'].includes(modeParam)) {
-				throw new Error('Mode de test invalide');
-			}
-			const mode = modeParam as TestMode;
-
-			// Decode and parse categories
-			if (!categoriesParam) {
-				throw new Error('Aucune catégorie spécifiée');
-			}
-			const categories: CartItem[] = JSON.parse(decodeURIComponent(categoriesParam));
-
-			if (!categories || categories.length === 0) {
-				throw new Error('Le panier est vide');
-			}
-
-			// Parse time limit (for course mode)
-			const timeLimit = timeParam ? parseInt(timeParam, 10) : undefined;
-
-			// Generate instances
-			// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-			const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
-			const instances = items.map((item) => item.instance);
-			// « En classe », « Entraînement » : chaque question garde sa durée et sa catégorie
-			if (mode === 'display' || mode === 'interactive') seriesItems = items;
-
-			// Create test session
-			testSession = {
-				mode,
-				categories,
-				instances,
-				userAnswers: new Map(),
-				startTime: Date.now(),
-				timeLimit,
-				currentQuestionIndex: 0,
-				isPaused: false
-			};
-
+			startSeries(launch.mode, launch.categories, launch.timeLimit);
 			isLoading = false;
 		} catch (err) {
 			console.error('Error initializing test:', err);
 			error = err instanceof Error ? err.message : 'Erreur inconnue';
 			isLoading = false;
 		}
+	}
+
+	/**
+	 * Ouvre une évaluation assignée (B14, B15)
+	 */
+	async function startEvaluation(id: string) {
+		assignmentId = id;
+
+		const response = await fetch(`/api/evaluations/assignments/${encodeURIComponent(id)}/start`, {
+			method: 'POST'
+		});
+		const body: unknown = await response.json().catch(() => null);
+
+		if (!response.ok) {
+			const message =
+				body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
+					? body.error
+					: body &&
+						  typeof body === 'object' &&
+						  'message' in body &&
+						  typeof body.message === 'string'
+						? body.message
+						: "Impossible d'ouvrir l'évaluation";
+			throw new Error(message);
+		}
+
+		const { validation, evaluation } = body as EvaluationStart;
+		if (!validation.can_attempt) {
+			throw new Error(validation.reason || 'Vous ne pouvez pas commencer cette évaluation');
+		}
+
+		assessmentTitle = evaluation.title;
+		const categories = evaluation.categories;
+
+		// Évaluation notée : les cartes de cours (auto-évaluées) sont exclues
+		seriesItems = generateSeriesItems(categories, { excludeCourseCards: true });
+
+		testSession = {
+			mode: evaluation.form,
+			categories,
+			instances: seriesItems.map((item) => item.instance),
+			userAnswers: new Map(),
+			startTime: Date.now(),
+			// Course aux nombres : SON temps limite, fin automatique à zéro (TestCourse)
+			timeLimit: evaluation.form === 'course' ? (evaluation.time_limit ?? undefined) : undefined,
+			currentQuestionIndex: 0,
+			isPaused: false
+		};
+
+		isLoading = false;
+	}
+
+	/**
+	 * Lance une série libre (panier ou lien) sous la forme choisie
+	 */
+	function startSeries(mode: TestMode, categories: CartItem[], timeLimit?: number) {
+		// Course aux nombres : pas de carte de cours (décision 2026-09-28)
+		const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
+		const instances = items.map((item) => item.instance);
+		// « En classe », « Entraînement » : chaque question garde sa durée et sa catégorie
+		if (mode === 'display' || mode === 'interactive') seriesItems = items;
+
+		testSession = {
+			mode,
+			categories,
+			instances,
+			userAnswers: new Map(),
+			startTime: Date.now(),
+			timeLimit,
+			currentQuestionIndex: 0,
+			isPaused: false
+		};
+	}
+
+	/**
+	 * Forme choisie dans la fenêtre (lien de série sans `mode`)
+	 */
+	function handleModeSelect(mode: TestMode, timeLimit?: number) {
+		if (!pendingCategories) return;
+		try {
+			startSeries(mode, pendingCategories, timeLimit);
+			modeDialogOpen = false;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Erreur inconnue';
+			modeDialogOpen = false;
+		}
+	}
+
+	function handleOpenModeDialog() {
+		modeDialogOpen = true;
 	}
 
 	/**
@@ -208,6 +237,18 @@
 	 */
 	function handleBackToCart() {
 		goto('/automaths/panier').then(() => {});
+	}
+
+	/**
+	 * Évaluation : on revient à « Mes évaluations », jamais au panier (une
+	 * nouvelle tentative y repasse par la vérification des tentatives)
+	 */
+	function handleBack() {
+		if (assignmentId) {
+			goto('/dashboard/student/assessments').then(() => {});
+		} else {
+			handleBackToCart();
+		}
 	}
 
 	/**
@@ -319,7 +360,9 @@
 					<AlertCircle class="mx-auto mb-4 h-16 w-16 text-destructive" />
 					<h2 class="text-xl font-semibold text-destructive">Erreur</h2>
 					<p class="mt-2 text-sm text-muted-foreground">{error}</p>
-					<Button onclick={handleBackToCart} class="mt-6">Retour au panier</Button>
+					<Button onclick={handleBack} class="mt-6">
+						{assignmentId ? 'Mes évaluations' : 'Retour au panier'}
+					</Button>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -340,13 +383,19 @@
 					isLoggedIn={!!data.user}
 					onComplete={handleTestComplete}
 					onRestart={handleSeriesRestart}
-					onBack={handleBackToCart}
+					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
+					inEvaluation={!!assignmentId}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
 			<!-- Course mode -->
-			<TestCourse session={testSession} onComplete={handleTestComplete} onBack={handleBackToCart} />
+			<TestCourse
+				session={testSession}
+				onComplete={handleTestComplete}
+				onBack={handleBack}
+				inEvaluation={!!assignmentId}
+			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
 			{#key testSession.instances}
@@ -359,5 +408,25 @@
 				/>
 			{/key}
 		{/if}
+	{:else if pendingCategories}
+		<!-- Lien de série sans forme : la fenêtre de choix a été fermée sans choisir -->
+		<Card.Root>
+			<Card.Content class="flex min-h-96 items-center justify-center p-12">
+				<div class="text-center">
+					<h2 class="text-xl font-semibold">Comment veux-tu travailler cette série ?</h2>
+					<p class="mt-2 text-sm text-muted-foreground">
+						{pendingCategories.length} catégorie{pendingCategories.length > 1 ? 's' : ''} de questions
+					</p>
+					<Button onclick={handleOpenModeDialog} class="mt-6">
+						<Rocket class="mr-2 h-4 w-4" />
+						Choisir la forme
+					</Button>
+				</div>
+			</Card.Content>
+		</Card.Root>
 	{/if}
 </div>
+
+{#if pendingCategories && !testSession}
+	<TestModeDialog bind:open={modeDialogOpen} onSelect={handleModeSelect} />
+{/if}

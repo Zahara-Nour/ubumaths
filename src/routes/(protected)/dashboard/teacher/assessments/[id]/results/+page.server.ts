@@ -1,79 +1,42 @@
-import { redirect, error } from '@sveltejs/kit';
+/**
+ * Résultats d'une évaluation (professeur) : les séances sont lues par
+ * `test_sessions.evaluation_id`.
+ */
+
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
 import {
-	getAssessment,
-	getAssessmentResults,
-	getAssessmentStatistics
-} from '$lib/server/assessments';
+	computeEvaluationStatistics,
+	EvaluationError,
+	getEvaluation,
+	getEvaluationResults
+} from '$lib/server/evaluations';
 import { getTeacherTestMode } from '$lib/server/test-mode';
-import { getUserProfile } from '$lib/server/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(303, '/auth/signin');
-	}
-
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 	const id = validateUuidParam(params.id);
 
-	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
-	const profile = await getUserProfile(locals.supabase, user.id);
+	try {
+		const evaluation = await getEvaluation(locals.supabase, id);
+		if (!evaluation) throw error(404, 'Évaluation introuvable');
+		if (evaluation.created_by !== user.id && profile.role !== 'admin') {
+			throw error(403, 'Non autorisé');
+		}
 
-	if (!profile) {
-		throw error(403, 'Profil non trouvé');
-	}
+		// Mode test du professeur : élèves de test seulement, ou vrais élèves seulement
+		const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
+		const results = await getEvaluationResults(locals.supabase, evaluation, isTestMode);
 
-	if (profile.role !== 'teacher') {
-		throw redirect(303, '/dashboard');
-	}
-
-	// Fetch assessment
-	const { data: assessment, error: assessmentError } = await getAssessment(locals.supabase, id);
-
-	if (assessmentError || !assessment) {
-		throw error(404, 'Évaluation introuvable');
-	}
-
-	// Verify ownership
-	if (assessment.created_by !== user.id) {
-		throw error(403, 'Non autorisé');
-	}
-
-	// Get test mode to filter results
-	const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
-
-	// Fetch assessment results (direct DB query, no cache)
-	const { data: results, error: resultsError } = await getAssessmentResults(
-		locals.supabase,
-		id,
-		isTestMode
-	);
-
-	if (resultsError) {
-		console.error('Failed to fetch results:', resultsError);
 		return {
-			assessment,
-			results: [],
-			statistics: null
+			evaluation,
+			results,
+			statistics: computeEvaluationStatistics(evaluation.id, results)
 		};
+	} catch (e) {
+		if (e instanceof EvaluationError) throw error(e.status, e.message);
+		throw e;
 	}
-
-	// Fetch assessment statistics (direct DB query, no cache)
-	const { data: statistics, error: statisticsError } = await getAssessmentStatistics(
-		locals.supabase,
-		id,
-		isTestMode
-	);
-
-	if (statisticsError) {
-		console.error('Lecture impossible :', statisticsError);
-		throw error(500, 'Impossible de charger les données');
-	}
-
-	return {
-		assessment,
-		results: results || [],
-		statistics
-	};
 };

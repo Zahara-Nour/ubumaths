@@ -5,7 +5,7 @@
  * POST /api/teacher/curriculum/activities                   — add an activity (5 kinds)
  *
  * Adding an activity that carries curriculum tags — an exercise, a question, or
- * an assessment — reconciles the entry's AUTO coverage. Teacher/admin only.
+ * an evaluation — reconciles the entry's AUTO coverage. Teacher/admin only.
  */
 
 import { json } from '@sveltejs/kit';
@@ -18,7 +18,7 @@ import type { JournalEntryActivity } from '$lib/types/database-helpers';
 import type { TablesInsert } from '$lib/types/database';
 
 const ACTIVITY_COLS =
-	'id, entry_id, kind, exercise_id, question_template_id, assessment_id, chapter_id, textbook_ref, label, display_order, created_at';
+	'id, entry_id, kind, exercise_id, question_template_id, evaluation_id, chapter_id, textbook_ref, label, display_order, created_at';
 
 /** Kinds whose tags feed the entry's auto coverage. */
 const TAGGED_KINDS = new Set(['exercise', 'question', 'assessment']);
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} else if (input.kind === 'question') {
 		row.question_template_id = input.question_template_id;
 	} else if (input.kind === 'assessment') {
-		row.assessment_id = input.assessment_id;
+		row.evaluation_id = input.evaluation_id;
 	} else if (input.kind === 'course') {
 		row.chapter_id = input.chapter_id ?? null;
 		row.label = input.label ?? null;

@@ -394,7 +394,7 @@ describe('enregistrement d’une évaluation', () => {
 
 	it('flash : la séance est enregistrée avec le mode flash', async () => {
 		await enregistrer([reponse(MODELE_A, true, 0)], 201, 'flash');
-		expect(sessionInseree).toMatchObject({ mode: 'flash', assignment_id: null });
+		expect(sessionInseree).toMatchObject({ mode: 'flash', evaluation_id: null });
 	});
 
 	it('flash : toutes les tentatives sont en source student_self', async () => {

@@ -21,7 +21,7 @@ Educational mathematics platform API with comprehensive Zod validation.
 
 ## Features
 
-- **Assessments**: Create, manage, and grade assessments
+- **Assessments**: séries et évaluations
 - **Exercises**: Mathematical exercises with solutions
 - **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm
 - **Messages**: Internal messaging system
@@ -80,7 +80,7 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 		tags: [
 			{
 				name: 'Assessments',
-				description: 'Assessment creation, management, and grading'
+				description: 'Séries et évaluations'
 			},
 			{
 				name: 'Exercises',
@@ -175,361 +175,29 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 			}
 		],
 		paths: {
-			'/api/assessments': {
-				get: {
-					tags: ['Assessments'],
-					summary: 'List assessments',
-					description: 'List all assessments with optional filtering and pagination',
-					parameters: [
-						{
-							name: 'status',
-							in: 'query',
-							schema: {
-								type: 'string',
-								enum: ['draft', 'published', 'archived']
-							}
-						},
-						{
-							name: 'grade',
-							in: 'query',
-							schema: { $ref: '#/components/schemas/Grade' }
-						},
-						{
-							name: 'page',
-							in: 'query',
-							schema: { type: 'integer', default: 1 }
-						},
-						{
-							name: 'limit',
-							in: 'query',
-							schema: { type: 'integer', default: 50, maximum: 100 }
-						}
-					],
-					responses: {
-						'200': {
-							description: 'List of assessments',
-							content: {
-								'application/json': {
-									schema: {
-										type: 'object',
-										properties: {
-											data: { type: 'array', items: {} },
-											pagination: {
-												type: 'object',
-												properties: {
-													page: { type: 'integer' },
-													limit: { type: 'integer' },
-													total: { type: 'integer' }
-												}
-											}
-										}
-									}
-								}
-							}
-						},
-						'400': {
-							description: 'Invalid query parameters',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						},
-						'401': {
-							description: 'Unauthorized',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						}
-					}
-				},
+			'/api/series': {
 				post: {
 					tags: ['Assessments'],
-					summary: 'Create assessment',
-					description: 'Create a new assessment with question categories',
-					requestBody: {
-						required: true,
-						content: {
-							'application/json': {
-								schema: {
-									type: 'object',
-									required: ['title', 'grade', 'categories'],
-									properties: {
-										title: {
-											type: 'string',
-											minLength: 1,
-											maxLength: 200
-										},
-										grade: { $ref: '#/components/schemas/Grade' },
-										categories: {
-											type: 'array',
-											minItems: 1,
-											maxItems: 20,
-											items: {
-												type: 'object',
-												properties: {
-													category_id: { $ref: '#/components/schemas/UUID' },
-													question_count: {
-														type: 'integer',
-														minimum: 1,
-														maximum: 50
-													}
-												}
-											}
-										},
-										duration: {
-											type: 'integer',
-											minimum: 1,
-											maximum: 180
-										},
-										max_attempts: {
-											type: 'integer',
-											minimum: 1,
-											maximum: 10,
-											default: 1
-										},
-										status: {
-											type: 'string',
-											enum: ['draft', 'published', 'archived'],
-											default: 'draft'
-										}
-									}
-								}
-							}
-						}
-					},
+					summary: 'Enregistrer une série',
+					description:
+						'Enregistre le panier comme série (titre, niveau, description, 1 à 50 catégories). Prof et admin.',
 					responses: {
-						'201': {
-							description: 'Assessment created successfully',
-							content: {
-								'application/json': {
-									schema: {
-										type: 'object',
-										properties: {
-											id: { $ref: '#/components/schemas/UUID' },
-											message: { type: 'string' }
-										}
-									}
-								}
-							}
-						},
-						'400': {
-							description: 'Validation error',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						},
-						'401': {
-							description: 'Unauthorized',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						},
-						'403': {
-							description: 'Forbidden - insufficient permissions',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						}
+						'201': { description: 'Série enregistrée' },
+						'400': { description: 'Corps invalide' },
+						'403': { description: 'Réservé aux professeurs et aux administrateurs' }
 					}
 				}
 			},
-			'/api/assessments/{id}': {
-				get: {
-					tags: ['Assessments'],
-					summary: 'Get assessment',
-					description: 'Get a specific assessment by ID',
-					parameters: [
-						{
-							name: 'id',
-							in: 'path',
-							required: true,
-							schema: { $ref: '#/components/schemas/UUID' }
-						}
-					],
-					responses: {
-						'200': {
-							description: 'Assessment details'
-						},
-						'404': {
-							description: 'Assessment not found',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						}
-					}
-				},
-				put: {
-					tags: ['Assessments'],
-					summary: 'Update assessment',
-					description: 'Update an existing assessment',
-					parameters: [
-						{
-							name: 'id',
-							in: 'path',
-							required: true,
-							schema: { $ref: '#/components/schemas/UUID' }
-						}
-					],
-					requestBody: {
-						content: {
-							'application/json': {
-								schema: {
-									type: 'object',
-									properties: {
-										title: { type: 'string', maxLength: 200 },
-										grade: { $ref: '#/components/schemas/Grade' },
-										status: {
-											type: 'string',
-											enum: ['draft', 'published', 'archived']
-										}
-									}
-								}
-							}
-						}
-					},
-					responses: {
-						'200': {
-							description: 'Assessment updated successfully',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Success' }
-								}
-							}
-						},
-						'400': {
-							description: 'Validation error',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						},
-						'404': {
-							description: 'Assessment not found',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						}
-					}
-				},
-				delete: {
-					tags: ['Assessments'],
-					summary: 'Delete assessment',
-					description: 'Delete an assessment',
-					parameters: [
-						{
-							name: 'id',
-							in: 'path',
-							required: true,
-							schema: { $ref: '#/components/schemas/UUID' }
-						}
-					],
-					responses: {
-						'200': {
-							description: 'Assessment deleted successfully',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Success' }
-								}
-							}
-						},
-						'404': {
-							description: 'Assessment not found',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Error' }
-								}
-							}
-						}
-					}
-				}
-			},
-			'/api/assessments/{id}/assign': {
+			'/api/evaluations/assignments/{id}/start': {
 				post: {
 					tags: ['Assessments'],
-					summary: 'Assign assessment',
-					description: 'Assign an assessment to students or classes',
-					parameters: [
-						{
-							name: 'id',
-							in: 'path',
-							required: true,
-							schema: { $ref: '#/components/schemas/UUID' }
-						}
-					],
-					requestBody: {
-						content: {
-							'application/json': {
-								schema: {
-									type: 'object',
-									properties: {
-										class_ids: {
-											type: 'array',
-											items: { $ref: '#/components/schemas/UUID' },
-											maxItems: 50
-										},
-										student_ids: {
-											type: 'array',
-											items: { $ref: '#/components/schemas/UUID' },
-											maxItems: 200
-										}
-									}
-								}
-							}
-						}
-					},
+					summary: 'Ouvrir une évaluation assignée',
+					description:
+						"Vérifie date limite et tentatives (destinataire) ou ouvre un aperçu (propriétaire) ; rend la forme, le temps limite et les catégories de l'évaluation.",
 					responses: {
-						'200': {
-							description: 'Assessment assigned successfully',
-							content: {
-								'application/json': {
-									schema: { $ref: '#/components/schemas/Success' }
-								}
-							}
-						}
-					}
-				}
-			},
-			'/api/assessments/{id}/results': {
-				get: {
-					tags: ['Assessments'],
-					summary: 'Get assessment results',
-					description: 'Get assessment results with optional statistics',
-					parameters: [
-						{
-							name: 'id',
-							in: 'path',
-							required: true,
-							schema: { $ref: '#/components/schemas/UUID' }
-						},
-						{
-							name: 'stats',
-							in: 'query',
-							schema: { type: 'boolean' }
-						},
-						{
-							name: 'class_stats',
-							in: 'query',
-							schema: { type: 'boolean' }
-						}
-					],
-					responses: {
-						'200': {
-							description: 'Assessment results'
-						}
+						'200': { description: 'Validation et évaluation' },
+						'403': { description: 'Évaluation non assignée' },
+						'404': { description: 'Évaluation introuvable' }
 					}
 				}
 			},

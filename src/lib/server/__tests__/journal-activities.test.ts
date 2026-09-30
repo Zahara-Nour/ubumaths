@@ -27,7 +27,7 @@ describe('parsePendingActivities', () => {
 		expect(rows).toEqual([
 			{ kind: 'exercise', exercise_id: EXERCISE },
 			{ kind: 'question', question_template_id: QUESTION },
-			{ kind: 'assessment', assessment_id: ASSESSMENT }
+			{ kind: 'assessment', evaluation_id: ASSESSMENT }
 		]);
 	});
 

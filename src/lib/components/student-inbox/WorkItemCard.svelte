@@ -137,6 +137,9 @@
 					<SourceIcon class="mr-1 h-3 w-3" />
 					{meta.label}
 				</Badge>
+				{#if item.formLabel}
+					<Badge variant="outline" data-testid="work-item-form">{item.formLabel}</Badge>
+				{/if}
 				{#if showViewedDot}
 					<span
 						class="text-base leading-none text-primary/50"

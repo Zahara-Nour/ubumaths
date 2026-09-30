@@ -26,6 +26,7 @@ import {
 } from '$lib/server/journal-homework';
 import { getUpcomingSessionDates } from '$lib/server/class-sessions';
 import { z } from 'zod';
+import { formLabel } from '$lib/types/evaluation';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid('ID invalide');
@@ -107,7 +108,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		kind: string;
 		exercise_id: string | null;
 		question_template_id: string | null;
-		assessment_id: string | null;
+		evaluation_id: string | null;
 		chapter_id: string | null;
 		textbook_ref: unknown;
 		label: string | null;
@@ -128,7 +129,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		const { data: acts, error: actsError } = await locals.supabase
 			.from('journal_entry_activities')
 			.select(
-				'id, kind, exercise_id, question_template_id, assessment_id, chapter_id, textbook_ref, label, display_order'
+				'id, kind, exercise_id, question_template_id, evaluation_id, chapter_id, textbook_ref, label, display_order'
 			)
 			.eq('entry_id', entry.id)
 			.order('display_order', { ascending: true })
@@ -162,25 +163,26 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}));
 	}
 
-	// Questions and assessments selectable for this class's grade. Drafts are
+	// Questions and evaluations selectable for this class's grade. Drafts are
 	// listed too: a session records what was worked on, and a question can be
 	// worked on before it is published.
 	let questionOptions: { value: string; label: string }[] = [];
-	let assessmentOptions: { value: string; label: string }[] = [];
+	let evaluationOptions: { value: string; label: string }[] = [];
 	if (classData.grade) {
-		const [{ data: qs }, { data: assess }] = await Promise.all([
+		const [{ data: qs }, { data: evals }] = await Promise.all([
 			locals.supabase
 				.from('question_templates')
 				.select('id, title, theme, domain, level')
 				.contains('grades', [classData.grade])
 				.order('title', { ascending: true })
 				.limit(500),
+			// Q29 : une activité « évaluation » désigne l'ÉVALUATION (sa série donne
+			// le titre et le niveau)
 			locals.supabase
-				.from('assessments')
-				.select('id, title')
-				.eq('grade', classData.grade)
+				.from('evaluations')
+				.select('id, form, series:series!inner(title, grade)')
+				.eq('series.grade', classData.grade)
 				.neq('status', 'archived')
-				.order('title', { ascending: true })
 				.limit(200)
 		]);
 		questionOptions = (qs ?? []).map((q) => ({
@@ -189,7 +191,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			// catégorie est ce qui les distingue dans la liste.
 			label: `${q.title} — ${q.theme} / ${q.domain} (niv. ${q.level})`
 		}));
-		assessmentOptions = (assess ?? []).map((a) => ({ value: a.id, label: a.title }));
+		evaluationOptions = (evals ?? [])
+			.map((e) => ({
+				value: e.id,
+				label: `${e.series?.title ?? 'Évaluation'} (${formLabel(e.form)})`
+			}))
+			.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
 	}
 
 	// Travaux à faire de la séance, et les dates qu'on pourra leur donner.
@@ -217,7 +224,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		activities,
 		exerciseOptions,
 		questionOptions,
-		assessmentOptions
+		evaluationOptions
 	};
 };
 

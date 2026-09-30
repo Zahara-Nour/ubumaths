@@ -13,6 +13,8 @@ import {
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { resolveSessionEvaluation } from '$lib/server/evaluation-session';
+import { EvaluationError } from '$lib/server/evaluations';
 
 /**
  * API route to save test results to database
@@ -44,6 +46,29 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
 		// trouvé ») — tentatives `student_self`, pas d'XP.
 		const isFlash = result.mode === 'flash';
+
+		// Évaluation (B16) : la séance se rattache à l'ÉVALUATION de l'assignation,
+		// jamais à l'assignation. Forme ou catégories différentes → 400 ; date
+		// limite passée ou tentatives épuisées → 403 ; aperçu du prof → aucun
+		// rattachement (une séance rattachée verrouille la série). Résolu AVANT
+		// toute écriture.
+		let evaluationId: string | null;
+		try {
+			const resolution = await resolveSessionEvaluation(
+				supabase,
+				assignmentId,
+				result.mode,
+				user.id,
+				categories
+			);
+			if (!resolution.ok) {
+				return json({ error: resolution.error }, { status: resolution.status });
+			}
+			evaluationId = resolution.evaluationId;
+		} catch (resolutionError) {
+			if (!(resolutionError instanceof EvaluationError)) throw resolutionError;
+			return json({ error: resolutionError.message }, { status: resolutionError.status });
+		}
 
 		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
 		const templateIds = [
@@ -92,7 +117,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				time_spent: result.timeSpent,
 				time_limit: null, // Will be set from categories if needed
 				completed_at: result.completedAt,
-				assignment_id: assignmentId || null
+				evaluation_id: evaluationId
 			})
 			.select('id')
 			.single();

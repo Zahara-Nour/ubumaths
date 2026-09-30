@@ -331,7 +331,7 @@
 		if (a.kind === 'question')
 			return optionLabel(data.questionOptions, a.question_template_id, 'Question');
 		if (a.kind === 'assessment')
-			return optionLabel(data.assessmentOptions, a.assessment_id, lore.learning.exam);
+			return optionLabel(data.evaluationOptions, a.evaluation_id, lore.learning.exam);
 		if (a.kind === 'textbook')
 			return (a.textbook_ref as { label?: string } | null)?.label ?? 'Référence manuel';
 		return a.label ?? 'Point de cours';
@@ -341,7 +341,7 @@
 		if (a.kind === 'exercise')
 			return optionLabel(data.exerciseOptions, a.id, lore.learning.exercise);
 		if (a.kind === 'question') return optionLabel(data.questionOptions, a.id, 'Question');
-		return optionLabel(data.assessmentOptions, a.id, lore.learning.exam);
+		return optionLabel(data.evaluationOptions, a.id, lore.learning.exam);
 	}
 
 	function kindShort(kind: string): string {
@@ -403,7 +403,7 @@
 				? 'exercise_id'
 				: kind === 'question'
 					? 'question_template_id'
-					: 'assessment_id';
+					: 'evaluation_id';
 		const ok = await covApi('/api/teacher/curriculum/activities', 'POST', {
 			entry_id: entryId,
 			kind,
@@ -875,12 +875,12 @@
 								</Button>
 							</div>
 						{/if}
-						{#if data.assessmentOptions.length > 0}
+						{#if data.evaluationOptions.length > 0}
 							<div class="flex gap-2">
 								<MySelect
 									type="single"
 									bind:value={selectedAssessment}
-									items={data.assessmentOptions}
+									items={data.evaluationOptions}
 									placeholder="{lore.learning.exam}…"
 									triggerClass="flex-1"
 								/>

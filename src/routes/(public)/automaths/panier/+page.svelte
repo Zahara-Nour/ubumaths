@@ -3,27 +3,22 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import {
-		ShoppingCart,
-		Trash2,
-		ArrowLeft,
-		FileDown,
-		Rocket,
-		Share2,
-		ClipboardList
-	} from '@lucide/svelte';
+	import { ShoppingCart, Trash2, ArrowLeft, FileDown, Rocket, Link, Save } from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
 	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
+	import SaveSeriesDialog from '$lib/components/series/SaveSeriesDialog.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { buildSeriesLink } from '$lib/validation/series';
 	import { previewCartItem } from '$lib/questions/cart-preview';
 	import type { TestMode } from '$lib/types/test';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Check if user is a teacher
-	let isTeacher = $derived(data.userRole === 'teacher');
+	// Prof et admin enregistrent le panier comme série (C18)
+	let isTeacher = $derived(data.userRole === 'teacher' || data.userRole === 'admin');
 
 	// Initialize cache with server-loaded templates (SSR support)
 	// Or fetch from API if server load failed (e.g., offline after navigation)
@@ -45,6 +40,7 @@
 
 	// Test dialog state
 	let testDialogOpen = $state(false);
+	let saveSeriesDialogOpen = $state(false);
 
 	/**
 	 * Generate instances for cart items
@@ -137,14 +133,25 @@
 		);
 	}
 
-	function handleShare() {
-		alert(
-			'Partage - Fonctionnalité à venir !\n\nCette fonction générera un lien de partage pour cette sélection de questions.'
-		);
+	/**
+	 * Copier le lien de la série (C18) : la composition est dans l'URL, sans
+	 * forme — le lien ouvre le choix de la forme.
+	 */
+	async function handleCopyLink() {
+		try {
+			await navigator.clipboard.writeText(buildSeriesLink(window.location.origin, cartItems));
+			toaster.success('Lien copié');
+		} catch {
+			toaster.error('Impossible de copier le lien');
+		}
 	}
 
-	function handleCreateAssessment() {
-		goto('/dashboard/teacher/assessments/new').then(() => {});
+	function handleOpenSaveSeries() {
+		saveSeriesDialogOpen = true;
+	}
+
+	function handleSeriesSaved() {
+		goto('/dashboard/teacher/series').then(() => {});
 	}
 </script>
 
@@ -222,14 +229,16 @@
 				>
 					{#if isTeacher}
 						<Button
-							onclick={handleCreateAssessment}
+							onclick={handleOpenSaveSeries}
 							class="h-auto flex-col gap-2 py-6"
 							variant="default"
 						>
-							<ClipboardList class="h-6 w-6" />
+							<Save class="h-6 w-6" />
 							<div class="text-center">
-								<div class="font-semibold">Créer une évaluation</div>
-								<div class="text-xs font-normal opacity-80">Pour vos {lore.entities.class}s</div>
+								<div class="font-semibold">Enregistrer comme série</div>
+								<div class="text-xs font-normal opacity-80">
+									Pour en faire une évaluation pour vos {lore.entities.class}s
+								</div>
 							</div>
 						</Button>
 					{/if}
@@ -250,11 +259,11 @@
 						</div>
 					</Button>
 
-					<Button onclick={handleShare} class="h-auto flex-col gap-2 py-6" variant="outline">
-						<Share2 class="h-6 w-6" />
+					<Button onclick={handleCopyLink} class="h-auto flex-col gap-2 py-6" variant="outline">
+						<Link class="h-6 w-6" />
 						<div class="text-center">
-							<div class="font-semibold">Partager</div>
-							<div class="text-xs font-normal opacity-80">Générer un lien</div>
+							<div class="font-semibold">Copier le lien</div>
+							<div class="text-xs font-normal opacity-80">Pour partager cette série</div>
 						</div>
 					</Button>
 				</Card.Content>
@@ -265,3 +274,11 @@
 
 <!-- Test Mode Dialog -->
 <TestModeDialog bind:open={testDialogOpen} onSelect={handleTestModeSelect} />
+
+{#if isTeacher}
+	<SaveSeriesDialog
+		bind:open={saveSeriesDialogOpen}
+		categories={cartItems}
+		onSaved={handleSeriesSaved}
+	/>
+{/if}
