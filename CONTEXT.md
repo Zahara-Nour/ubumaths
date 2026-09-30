@@ -80,14 +80,18 @@ Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_round
 
 ## Les usages des questions
 
-| Terme                | Sens                                                                                                        | Code                                                                                                       |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Automaths**        | Entraînement libre sur les questions.                                                                       | `/automaths`                                                                                               |
-| **SRS / révision**   | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                      | `srs_*`, `docs/ref/srs/`                                                                                   |
-| **Deck**             | Paquet de cartes de révision (un chapitre peut en porter). ≠ `Deck` d'UbuSlides (diaporama).                | `srs_decks`, `chapter_decks`                                                                               |
-| **Quiz de chapitre** | Quiz d'un chapitre, sur le moteur de questions. Supprimé le 2026-09-15 (jamais servi).                      | migration `20260915340000_drop_ancien_quiz_de_chapitre`                                                    |
-| **Tentative**        | Une réponse d'élève enregistrée.                                                                            | `skill_attempts`                                                                                           |
-| **Évaluation**       | Série assignée par le prof à des élèves : les réponses sont enregistrées, vérifiées, puis donnent une note. | `assessments`, `assessment_assignments` → [ADR 0015](docs/adr/0015-evaluation-notee-correction-serveur.md) |
+| Terme                  | Sens                                                                                                                                                                                                                | Code                                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Automaths**          | Catalogue des modèles de questions publiés, où l'on compose une série (panier) avant de la lancer sous une forme.                                                                                                   | `/automaths`                                                                                                                                  |
+| **En classe**          | Forme d'une série projetée par le prof : questions une à une avec minuteur, retour en arrière possible, puis grilles des questions et des corrections.                                                              | `TestMode` `display`                                                                                                                          |
+| **Flash-cards**        | Forme d'une série en autonomie : carte retournable, l'élève dit s'il avait trouvé (alimente le SRS), sans chrono.                                                                                                   | (à créer)                                                                                                                                     |
+| **Entraînement**       | Forme d'une série en autonomie : l'élève répond question par question, correction et score à la fin.                                                                                                                | `TestMode` `interactive`                                                                                                                      |
+| **Course aux nombres** | Forme d'une série : toutes les questions à la fois, temps global, score.                                                                                                                                            | `TestMode` `course`                                                                                                                           |
+| **SRS / révision**     | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                                                                                                                              | `srs_*`, `docs/ref/srs/`                                                                                                                      |
+| **Deck**               | Paquet de cartes de révision (un chapitre peut en porter). ≠ `Deck` d'UbuSlides (diaporama).                                                                                                                        | `srs_decks`, `chapter_decks`                                                                                                                  |
+| **Quiz de chapitre**   | Quiz d'un chapitre, sur le moteur de questions. Supprimé le 2026-09-15 (jamais servi).                                                                                                                              | migration `20260915340000_drop_ancien_quiz_de_chapitre`                                                                                       |
+| **Tentative**          | Une réponse d'élève enregistrée.                                                                                                                                                                                    | `skill_attempts`                                                                                                                              |
+| **Évaluation**         | Série assignée par le prof à des élèves, sous forme d'Entraînement ou de Course aux nombres ; tirage propre à chaque élève (graine enregistrée) ; les réponses sont enregistrées, vérifiées, puis donnent une note. | `assessments`, `assessment_assignments` (futures `series` / `evaluations`) → [ADR 0015](docs/adr/0015-evaluation-notee-correction-serveur.md) |
 
 La **correction des réponses est côté client** : les statistiques sont un outil pour l'élève, jamais
 une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
@@ -133,9 +137,11 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 
 ### Termes bannis
 
-| ❌ Ne pas dire            | ✅ Dire                                        |
-| ------------------------- | ---------------------------------------------- |
-| compétence (seule)        | **compétence mathématique**, ou **composante** |
-| compétence atomique       | **composante**                                 |
-| rubrique                  | **indicateur**                                 |
-| domaine (au sens Sacoche) | **thème**                                      |
+| ❌ Ne pas dire                 | ✅ Dire                                        |
+| ------------------------------ | ---------------------------------------------- |
+| compétence (seule)             | **compétence mathématique**, ou **composante** |
+| compétence atomique            | **composante**                                 |
+| rubrique                       | **indicateur**                                 |
+| domaine (au sens Sacoche)      | **thème**                                      |
+| Mode Révision (forme de série) | **En classe** (≠ révision SRS)                 |
+| Quiz (forme de série)          | **Entraînement**                               |

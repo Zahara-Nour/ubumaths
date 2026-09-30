@@ -61,6 +61,19 @@ Une **série** (composition : catégories × répétitions × durée) s'utilise 
 6. Visiteur non averti que rien n'est enregistré (401 silencieux).
 7. Question sautée si le chrono expire dans les 300 ms qui suivent une validation.
 
-## Questions ouvertes (tour 2)
+## Décisions, tour 2 (David, 2026-09-30)
 
-Voir la conversation du 2026-09-30 ; à reporter ici une fois tranchées.
+- **Q5 — Stockage** : deux tables, `series` (la composition) et `evaluations` (l'assignation d'une
+  série : forme, réglages, dates, destinataires) ; le panier devient un brouillon de série. Migration à
+  venir : question d'accès posée à David AVANT tout SQL.
+- **Q6 — Tirage en évaluation** : propre à chaque élève, graine enregistrée (le serveur régénère la
+  copie de l'élève pour la corriger, ADR 0015).
+- **Q7 — Noms des formes** : **En classe**, **Flash-cards**, **Entraînement**, **Course aux nombres** ;
+  « Mode Révision » et « Quiz » bannis pour ces formes. Automaths redéfini (catalogue où l'on compose une
+  série) : « Entraînement » y avait un autre sens. → `CONTEXT.md`.
+- **Q8 — Ordre des chantiers** :
+  1. En classe sur UbuSlides ;
+  2. Flash-cards d'une série (réutiliser la révision SRS) ;
+  3. Entraînement : corriger les 7 défauts ;
+  4. Séparation `series` / `evaluations` ;
+  5. Évaluation notée, correction serveur.
