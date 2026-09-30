@@ -31,6 +31,12 @@
 -->
 
 <script lang="ts">
+	import {
+		choiceLetter,
+		correctOriginalChoiceIndexes,
+		isDisplayedChoiceCorrect,
+		toDisplayedChoicePosition
+	} from '$lib/questions/choices';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { Badge } from '$lib/components/ui/badge';
@@ -165,11 +171,12 @@
 			showChoices
 	);
 
-	// Answer as array (solution from QuestionInstance)
+	// Réponse attendue d'un QCM : lettres des bons choix à leur position AFFICHÉE
+	// (les choix sont mélangés ; l'indice d'origine ne désigne rien à l'écran)
 	const answerArray = $derived(
-		Array.isArray(instance.correctChoiceIndex)
-			? instance.correctChoiceIndex
-			: [instance.correctChoiceIndex]
+		correctOriginalChoiceIndexes(instance)
+			.map((index) => choiceLetter(toDisplayedChoicePosition(instance, index)))
+			.sort()
 	);
 
 	// ============================================================================
@@ -417,11 +424,7 @@
 				</div>
 				<div class="space-y-2">
 					{#each instance.shuffledChoices || [] as choice, i (i)}
-						{@const isCorrect =
-							(typeof instance.correctChoiceIndex === 'string' &&
-								instance.correctChoiceIndex === String(i)) ||
-							(Array.isArray(instance.correctChoiceIndex) &&
-								instance.correctChoiceIndex.includes(String(i)))}
+						{@const isCorrect = isDisplayedChoiceCorrect(instance, i)}
 						<div
 							class={cn(
 								'flex items-center gap-3 rounded border p-3',

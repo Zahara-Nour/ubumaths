@@ -76,3 +76,34 @@ describe('CorrectionCard — réponse correcte', () => {
 		expect(correctSection(container)).not.toContain('Lyon');
 	});
 });
+
+/**
+ * Le choix coché est enregistré en indice d'ORIGINE (correctif du 2026-10-01) ;
+ * l'élève l'a vu à une position mélangée : la lettre doit être celle qu'il a vue.
+ */
+describe('CorrectionCard — votre réponse à un QCM mélangé', () => {
+	it('lettre de la position affichée et contenu du choix coché', async () => {
+		const answerResult = result({
+			choices: [
+				{ content: resolvedMarkdown('Paris'), isCorrect: true },
+				{ content: resolvedMarkdown('Marseille'), isCorrect: false },
+				{ content: resolvedMarkdown('Lyon'), isCorrect: false }
+			],
+			// Lyon (origine 2) affiché en A
+			shuffledChoices: [
+				{ content: resolvedMarkdown('Lyon'), originalIndex: 2 },
+				{ content: resolvedMarkdown('Paris'), originalIndex: 0 },
+				{ content: resolvedMarkdown('Marseille'), originalIndex: 1 }
+			],
+			correctChoiceIndex: '0'
+		} as Partial<QuestionInstance>);
+		answerResult.userAnswer = { ...answerResult.userAnswer!, value: 2 };
+
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(CorrectionCard, { target: main, props: { answerResult } });
+
+		const answer = container.querySelector('.user-answer-section li')?.textContent ?? '';
+		expect(answer.trim().startsWith('A')).toBe(true);
+		expect(answer).toContain('Lyon');
+	});
+});
