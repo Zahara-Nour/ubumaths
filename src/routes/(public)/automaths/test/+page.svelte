@@ -7,7 +7,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance } from '$lib/questions/types';
 	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
 	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -24,8 +23,8 @@
 
 	// State
 	let testSession = $state<TestSession | null>(null);
-	// Forme « En classe » : chaque question porte sa durée et sa catégorie
-	let classroomItems = $state<ClassroomItem[]>([]);
+	// « En classe » et « Entraînement » : chaque question porte sa durée et sa catégorie
+	let seriesItems = $state<ClassroomItem[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
 	let assignmentId = $state<string | null>(null);
@@ -76,24 +75,20 @@
 				const { assessment } = await assessmentResponse.json();
 				assessmentTitle = assessment.title;
 
-				// Use assessment categories and settings
+				// Une évaluation est toujours un Entraînement : pas de limite de temps
+				// globale (Q19), chaque question a son chrono. `settings.time_limit` n'est pas lu.
 				const categories = assessment.categories;
-				const mode = 'interactive'; // Assessments are always interactive
-				const timeLimit = assessment.settings.time_limit;
+				const mode = 'interactive';
 
-				// Generate instances from assessment categories
 				// Évaluation notée : les cartes de cours (auto-évaluées) sont exclues
-				const instances = await generateInstancesFromCategories(categories, {
-					excludeCourseCards: true
-				});
+				seriesItems = generateSeriesItems(categories, { excludeCourseCards: true });
 
 				testSession = {
 					mode,
 					categories,
-					instances,
+					instances: seriesItems.map((item) => item.instance),
 					userAnswers: new Map(),
 					startTime: Date.now(),
-					timeLimit,
 					currentQuestionIndex: 0,
 					isPaused: false
 				};
@@ -126,8 +121,8 @@
 			// Course aux nombres : pas de carte de cours (décision 2026-09-28)
 			const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
 			const instances = items.map((item) => item.instance);
-			// « En classe » : chaque question garde sa durée et sa catégorie
-			if (mode === 'display') classroomItems = items;
+			// « En classe », « Entraînement » : chaque question garde sa durée et sa catégorie
+			if (mode === 'display' || mode === 'interactive') seriesItems = items;
 
 			// Create test session
 			testSession = {
@@ -172,22 +167,17 @@
 	}
 
 	/**
-	 * Instances seules (évaluation assignée : Entraînement forcé)
+	 * « En classe », « Entraînement » : Recommencer tire de nouvelles questions
+	 * (évaluation : toujours sans carte de cours)
 	 */
-	async function generateInstancesFromCategories(
-		categories: CartItem[],
-		options: { excludeCourseCards?: boolean } = {}
-	): Promise<QuestionInstance[]> {
-		return generateSeriesItems(categories, options).map((item) => item.instance);
-	}
-
-	/**
-	 * « En classe » : Recommencer tire de nouvelles questions
-	 */
-	function handleClassroomRestart() {
+	function handleSeriesRestart() {
 		if (!testSession) return;
 		try {
-			classroomItems = generateSeriesItems(testSession.categories);
+			seriesItems = generateSeriesItems(testSession.categories, {
+				excludeCourseCards: !!assignmentId
+			});
+			testSession.instances = seriesItems.map((item) => item.instance);
+			testSession.startTime = Date.now();
 		} catch (err) {
 			// Hors ligne, cache vidé : dire pourquoi rien ne se passe
 			toaster.error(
@@ -224,8 +214,8 @@
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
-		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; la forme
-		// Flash-cards l'annonce à l'écran
+		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; les formes
+		// Flash-cards et Entraînement l'annoncent à l'écran
 		if (!data.user) return;
 		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement)
 		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
@@ -338,19 +328,22 @@
 		{#if testSession.mode === 'display'}
 			<!-- Forme « En classe » -->
 			<ClassroomSeries
-				items={classroomItems}
+				items={seriesItems}
 				onBack={handleBackToCart}
-				onRestart={handleClassroomRestart}
+				onRestart={handleSeriesRestart}
 			/>
 		{:else if testSession.mode === 'interactive'}
-			<!-- Interactive mode -->
-			<TestInteractive
-				session={testSession}
-				onComplete={handleTestComplete}
-				onBack={handleBackToCart}
-				assignmentId={assignmentId || undefined}
-				assessmentTitle={assessmentTitle || undefined}
-			/>
+			<!-- Forme « Entraînement » : nouvelles questions = nouveau composant -->
+			{#key seriesItems}
+				<TestInteractive
+					items={seriesItems}
+					isLoggedIn={!!data.user}
+					onComplete={handleTestComplete}
+					onRestart={handleSeriesRestart}
+					onBack={handleBackToCart}
+					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
+				/>
+			{/key}
 		{:else if testSession.mode === 'course'}
 			<!-- Course mode -->
 			<TestCourse session={testSession} onComplete={handleTestComplete} onBack={handleBackToCart} />

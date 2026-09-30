@@ -1,131 +1,123 @@
 <!--
 	TestInteractive Component
 	=========================
-	Interactive/Quiz mode - questions one by one with validation
+	Forme « Entraînement » d'une série (spécification de David, 2026-09-30).
 
-	Features:
-	- Display questions one by one using QuestionDisplay (interactive mode)
-	- Countdown timer per question (from CartItem.delay)
-	- User answers and validates
-	- No correction shown immediately (stored for later)
-	- Auto-advance to next question after validation (300ms delay)
-	- If timer expires before answer: marks as incorrect and advances
-	- At the end: show TestResults with score and corrections
+	Une question à la fois, chacune avec SON chrono (durée portée par la
+	question, `ClassroomItem.delaySeconds`) :
+	- l'élève valide → la question suivante arrive après 300 ms ;
+	- le chrono expire → ce qui est tapé ou coché est validé (Q18) ; rien →
+	  la question compte fausse. Une seule avance par question, même si le
+	  chrono expire pendant les 300 ms qui suivent une validation.
+	Pas de chrono global (Q19). Fin : `TestResults` ; « Recommencer » demande
+	de nouvelles questions à la page (`onRestart`).
 
 	Props:
-	- session: TestSession - Active test session
-	- onComplete: (result: TestResult) => void - Callback when test completed
-	- onBack: () => void - Callback to return to cart
+	- items: ClassroomItem[] - Questions de la série, chacune avec sa durée
+	- isLoggedIn: boolean - Visiteur non connecté : message « Connecte-toi… »
+	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
+	- onRestart: () => void - Nouvelles questions (la page régénère)
+	- onBack: () => void - Retour au panier
+	- assessmentTitle?: string - Titre d'une évaluation assignée
 -->
 
 <script lang="ts">
 	import { computeTestScore } from '$lib/utils/test-score';
-	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
+	import type { ClassroomItem, TestResult, TestAnswerResult } from '$lib/types/test';
 	import type { AnswerData } from '$lib/types/question-display';
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from '@lucide/svelte';
+	import * as Card from '$lib/components/ui/card';
+	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
 
+	// Types
 	interface Props {
-		session: TestSession;
+		items: ClassroomItem[];
+		isLoggedIn: boolean;
 		onComplete: (result: TestResult) => void;
+		onRestart: () => void;
 		onBack: () => void;
-		assignmentId?: string; // If present, this is a graded assessment
-		assessmentTitle?: string; // Title to display for assignments
+		assessmentTitle?: string;
 	}
 
-	let { session, onComplete, onBack, assignmentId, assessmentTitle }: Props = $props();
+	// Constants
+	/** Pause entre une validation et la question suivante */
+	const ADVANCE_DELAY_MS = 300;
 
-	// State
+	let { items, isLoggedIn, onComplete, onRestart, onBack, assessmentTitle }: Props = $props();
+
+	// Variables
 	let currentIndex = $state(0);
 	let answers = new SvelteMap<number, AnswerData>();
-	let isCompleted = $state(false);
 	let testResult = $state<TestResult | null>(null);
-	let timerKey = $state(0); // Key to force timer remount when question changes
+	// Carte en cours : sa réponse tapée est validée à l'expiration du chrono
+	let currentCard = $state<ReturnType<typeof QuestionCard>>();
+	let pendingAdvance: ReturnType<typeof setTimeout> | undefined;
 
-	// Build a map of instance index to BASE delay (without adjustments)
-	// Each CartItem may have multiple instances (quantity > 1)
-	let instanceBaseDelays = $derived.by(() => {
-		const delays: number[] = [];
-		for (const item of session.categories) {
-			for (let i = 0; i < item.quantity; i++) {
-				delays.push(item.delay);
-			}
-		}
-		return delays;
-	});
+	const startTime = Date.now();
 
-	// Derived
-	let currentInstance = $derived(session.instances[currentIndex]);
-	let currentDelay = $derived(instanceBaseDelays[currentIndex] || 20);
-	let progressPercentage = $derived(((currentIndex + 1) / session.instances.length) * 100);
-	let isLastQuestion = $derived(currentIndex === session.instances.length - 1);
+	const currentItem = $derived(items[currentIndex]);
+	const progressPercentage = $derived(((currentIndex + 1) / items.length) * 100);
 
+	// Functions
 	/**
-	 * Handle answer submission from QuestionDisplay
+	 * Passe à la question suivante depuis `fromIndex`. Ignoré si la question a
+	 * déjà changé : validation et expiration ne font avancer qu'une fois.
 	 */
-	function handleAnswerSubmit(answerData: AnswerData) {
-		// Store answer
-		answers.set(currentIndex, answerData);
+	function advanceFrom(fromIndex: number) {
+		if (fromIndex !== currentIndex || testResult) return;
+		clearTimeout(pendingAdvance);
+		pendingAdvance = undefined;
 
-		// Advance to next question after a short delay (smooth transition)
-		setTimeout(() => {
-			advanceToNextQuestion();
-		}, 300);
+		if (currentIndex + 1 >= items.length) {
+			completeTest();
+			return;
+		}
+		currentIndex += 1;
+	}
+
+	function handleAnswerSubmit(answerData: AnswerData) {
+		const index = currentIndex;
+		if (answers.has(index)) return;
+		answers.set(index, answerData);
+		pendingAdvance = setTimeout(() => advanceFrom(index), ADVANCE_DELAY_MS);
 	}
 
 	/**
-	 * Handle timer completion - time expired without answer
+	 * Chrono écoulé : réponse déjà validée → l'avance prévue suffit ; sinon ce
+	 * qui est tapé est validé, et rien de tapé compte faux.
 	 */
 	function handleTimerComplete() {
-		// Mark question as unanswered (time expired)
-		if (!answers.has(currentIndex)) {
-			answers.set(currentIndex, {
+		const index = currentIndex;
+		if (answers.has(index)) return;
+
+		const pending = currentCard?.submitPendingAnswer() ?? null;
+		answers.set(
+			index,
+			pending ?? {
 				value: '',
 				isCorrect: false,
-				timeSpent: currentDelay,
+				timeSpent: items[index].delaySeconds,
 				attempts: 0,
 				submittedAt: new Date().toISOString()
-			});
-		}
-
-		// Advance to next question
-		advanceToNextQuestion();
+			}
+		);
+		advanceFrom(index);
 	}
 
-	/**
-	 * Advance to next question or complete test
-	 */
-	function advanceToNextQuestion() {
-		if (isLastQuestion) {
-			// Test completed - calculate results
-			completeTest();
-		} else {
-			// Move to next question
-			currentIndex += 1;
-			timerKey += 1; // Force timer remount
-		}
-	}
-
-	/**
-	 * Complete test and calculate results
-	 */
 	function completeTest() {
-		const endTime = Date.now();
-		const timeSpent = Math.round((endTime - session.startTime) / 1000);
+		const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
-		// Build answer results
-		const answerResults: TestAnswerResult[] = session.instances.map((instance, index) => {
+		const answerResults: TestAnswerResult[] = items.map((item, index) => {
 			const userAnswer = answers.get(index);
-
 			return {
 				index,
-				instance,
+				instance: item.instance,
 				userAnswer,
 				isCorrect: userAnswer?.isCorrect || false,
 				timeSpent: userAnswer?.timeSpent,
@@ -133,100 +125,110 @@
 			};
 		});
 
-		// Calculate score
 		// Les cartes de cours (auto-évaluées) sont hors score (décision 2026-09-28)
-		const {
-			correctAnswers,
-			reviewedCards,
-			score: scoreOn10,
-			scorePercentage
-		} = computeTestScore(answerResults);
-		const totalQuestions = session.instances.length;
-		const averageTime = timeSpent / totalQuestions;
+		const { correctAnswers, reviewedCards, score, scorePercentage } =
+			computeTestScore(answerResults);
+		const totalQuestions = items.length;
 
-		// Build result
 		testResult = {
 			mode: 'interactive',
-			score: scoreOn10,
+			score,
 			scorePercentage,
 			totalQuestions,
 			correctAnswers,
 			reviewedCards,
 			timeSpent,
-			averageTime,
+			averageTime: timeSpent / totalQuestions,
 			answers: answerResults,
 			completedAt: new Date().toISOString()
 		};
 
-		isCompleted = true;
-
-		// Emit completion event
 		onComplete(testResult);
 	}
 
-	/**
-	 * Handle restart test
-	 */
-	function handleRestart() {
-		// Reset state
-		currentIndex = 0;
-		answers.clear();
-		isCompleted = false;
-		testResult = null;
-		session.startTime = Date.now();
-		timerKey = 0;
-	}
+	// Une avance en attente ne doit pas survivre au composant
+	$effect(() => {
+		return () => clearTimeout(pendingAdvance);
+	});
 </script>
 
-{#if !isCompleted}
-	<!-- Interactive quiz mode -->
-	<div class="space-y-6">
+<div class="space-y-6">
+	{#if !isLoggedIn}
+		<div
+			class="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm"
+			role="note"
+		>
+			<LogIn class="h-5 w-5 flex-shrink-0 text-primary" aria-hidden="true" />
+			<p>Connecte-toi pour que tes réponses comptent dans tes révisions.</p>
+		</div>
+	{/if}
+
+	{#if testResult}
+		<TestResults result={testResult} {onRestart} onBackToCart={onBack} />
+	{:else if currentItem}
 		<!-- Header with progress -->
 		<div class="space-y-3">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<Button variant="ghost" size="icon" onclick={onBack}>
+					<Button variant="ghost" size="icon" onclick={onBack} aria-label="Retour au panier">
 						<ArrowLeft class="h-5 w-5" />
 					</Button>
 					<div>
 						<h1 class="text-2xl font-bold">
-							{#if assignmentId && assessmentTitle}
-								Évaluation: {assessmentTitle}
+							{#if assessmentTitle}
+								Évaluation : {assessmentTitle}
 							{:else}
 								Entraînement
 							{/if}
 						</h1>
-						<p class="text-sm text-muted-foreground">
-							Question {currentIndex + 1} sur {session.instances.length}
+						<p class="text-sm text-muted-foreground" data-testid="interactive-position">
+							Question {currentIndex + 1} sur {items.length}
 						</p>
 					</div>
 				</div>
 
-				<!-- Countdown Timer -->
-				{#key timerKey}
-					<TestTimer duration={currentDelay} size="md" onComplete={handleTimerComplete} />
+				<!-- Chrono de la question en cours (remonté à chaque question) -->
+				{#key currentIndex}
+					<TestTimer
+						duration={currentItem.delaySeconds}
+						size="md"
+						onComplete={handleTimerComplete}
+					/>
 				{/key}
 			</div>
 
-			<!-- Progress bar -->
 			<Progress value={progressPercentage} class="h-2" />
 		</div>
 
 		<!-- Question Display -->
 		<div class="relative min-h-[500px]">
 			{#key currentIndex}
-				<div class="absolute inset-x-0 top-0 w-full" in:slideFromRight out:slideToLeft>
+				<div
+					class="absolute inset-x-0 top-0 w-full"
+					data-testid="interactive-question"
+					in:slideFromRight
+					out:slideToLeft
+				>
 					<QuestionCard
+						bind:this={currentCard}
 						interactive={true}
-						instance={currentInstance}
+						instance={currentItem.instance}
 						onAnswerSubmit={handleAnswerSubmit}
 						size="lg"
 					/>
 				</div>
 			{/key}
 		</div>
-	</div>
-{:else if testResult}
-	<!-- Show results -->
-	<TestResults result={testResult} onRestart={handleRestart} onBackToCart={onBack} />
-{/if}
+	{:else}
+		<!-- Série vide (aucun modèle généré) : jamais un écran blanc -->
+		<Card.Root>
+			<Card.Content class="space-y-4 p-6 text-center">
+				<p class="text-muted-foreground">Aucune question à afficher pour cette série.</p>
+				<Button variant="ghost" onclick={onBack}>
+					<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
+					Retour au panier
+				</Button>
+			</Card.Content>
+		</Card.Root>
+	{/if}
+</div>
