@@ -128,24 +128,6 @@ describe('test system validation schemas', () => {
 			}
 		});
 
-		it('Q20 : garde la graine de l’instance (archivée avec la réponse)', () => {
-			const data = createValidTestData();
-			Object.assign(data.result.answers[0].instance, { seed: 123456789 });
-			const result = saveTestSchema.safeParse(data);
-			expect(result.success).toBe(true);
-			if (result.success) {
-				expect(result.data.result.answers[0].instance).toMatchObject({ seed: 123456789 });
-			}
-		});
-
-		it('Q20 : refuse une graine non entière ou hors bornes', () => {
-			for (const seed of [1.5, -1, 2 ** 31]) {
-				const data = createValidTestData();
-				Object.assign(data.result.answers[0].instance, { seed });
-				expect(saveTestSchema.safeParse(data).success).toBe(false);
-			}
-		});
-
 		it('should accept test without sessionId', () => {
 			const data = createValidTestData();
 			const { sessionId: _sessionId, ...resultWithoutSessionId } = data.result;

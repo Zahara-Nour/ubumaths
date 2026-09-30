@@ -61,7 +61,7 @@ const MAX_ANSWER_PARTS = 50;
  *
  * Ne retient que ce que la route exploite : `templateId` (référentiel, FSRS,
  * paquet Programme) et ce qu'elle archive dans `test_answers.question_instance`
- * (énoncé vu par l'élève + rangement + graine). Tout autre champ est RETIRÉ par Zod
+ * (énoncé vu par l'élève + rangement). Tout autre champ est RETIRÉ par Zod
  * (objet non strict) : ni `blanks`, ni `choices`, ni `correction` n'atteignent
  * la base. Aucun code ne relit `question_instance` à ce jour.
  *
@@ -77,14 +77,6 @@ const questionInstanceSchema = z.object({
 	level: z.number().int().min(0).max(100).nullable().optional(),
 	generatedAt: z.string().max(64).optional(),
 	selectedVariationIndex: z.number().int().min(0).max(1000).optional(),
-	// Graine de génération (Q20) : archivée pour que le serveur puisse régénérer
-	// la copie de l'élève (ADR 0015). Bornes = `MAX_QUESTION_SEED`.
-	seed: z
-		.number()
-		.int()
-		.min(0)
-		.max(2 ** 31 - 1)
-		.optional(),
 	// Marqueur `courseCard` (#617) : sert au contrôle de cohérence des compteurs ;
 	// la nature « carte » faisant foi est relue en base. Objet non strict : le
 	// reste d'`options` est retiré et n'est pas archivé.
