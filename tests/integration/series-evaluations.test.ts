@@ -67,6 +67,7 @@ let individual: Created; // publiée, assignée à A
 let viaClass: Created; // publiée, assignée à K1
 let draft: Created; // brouillon, assignée à A et à K1
 let classmate: Created; // publiée, assignée à B seul
+let k1Id: string;
 
 // Functions
 async function signIn(email: string): Promise<SupabaseClient> {
@@ -154,6 +155,7 @@ describe('séries et évaluations (20260930130000)', () => {
 		studentE = await person('student');
 
 		const k1 = await TestData.class().withName('6e A séries ZZ').create();
+		k1Id = k1.id;
 		const k2 = await TestData.class().withName('6e B séries ZZ').create();
 		const members = [
 			{ class_id: k1.id, student_id: studentB.id, status: 'active' },
@@ -698,5 +700,245 @@ describe('séries et évaluations (20260930130000)', () => {
 				.select('id');
 			expect(lockError?.code).toBe(LOCKED);
 		});
+
+		it('une séance forgée sur l’assignation d’un autre n’est pas rattachée ; celle d’un ancien membre de la classe l’est', async () => {
+			// Décor : assessment assignée nommément à D, et une autre à la classe K1
+			const legacy = async (title: string, target: { student_id?: string; class_id?: string }) => {
+				const { data: assessment, error } = await service
+					.from('assessments')
+					.insert({
+						title,
+						grade: '6',
+						categories: CATEGORIES,
+						status: 'published',
+						created_by: teacher.id
+					})
+					.select('id')
+					.single();
+				expect(error, 'décor : assessment').toBeNull();
+				const { data: assignment, error: assignmentError } = await service
+					.from('assessment_assignments')
+					.insert({ assessment_id: assessment!.id, assigned_by: teacher.id, ...target })
+					.select('id')
+					.single();
+				expect(assignmentError, 'décor : assignation').toBeNull();
+				return { assessmentId: assessment!.id, assignmentId: assignment!.id };
+			};
+			const forD = await legacy('A10 forgée', { student_id: studentD.id });
+			const forK1 = await legacy('A10 classe', { class_id: k1Id });
+
+			// A pose, avec SON client, une séance libre portant l'assignation de D :
+			// la policy INSERT historique ne regarde que user_id.
+			const { data: forged, error: forgedError } = await studentA.client
+				.from('test_sessions')
+				.insert({
+					user_id: studentA.id,
+					mode: 'interactive',
+					categories: CATEGORIES,
+					total_questions: 2,
+					assignment_id: forD.assignmentId
+				})
+				.select('id')
+				.single();
+			expect(forgedError, 'décor : séance forgée').toBeNull();
+
+			// E (sorti de K1) avait passé l'évaluation de sa classe : l'historique compte
+			const { data: history, error: historyError } = await service
+				.from('test_sessions')
+				.insert({
+					user_id: studentE.id,
+					mode: 'interactive',
+					categories: CATEGORIES,
+					total_questions: 2,
+					assignment_id: forK1.assignmentId
+				})
+				.select('id')
+				.single();
+			expect(historyError, 'décor : séance historique').toBeNull();
+
+			const { error: copyError } = await service.rpc('copy_legacy_assessments');
+			expect(copyError).toBeNull();
+
+			const { data: forgedRow } = await service
+				.from('test_sessions')
+				.select('evaluation_id')
+				.eq('id', forged!.id);
+			expect(forgedRow).toEqual([{ evaluation_id: null }]);
+
+			const { data: forgedEval } = await service
+				.from('evaluations')
+				.select('series_id')
+				.eq('legacy_assessment_id', forD.assessmentId)
+				.single();
+			const { data: stillFree, error: freeError } = await teacher.client
+				.from('series')
+				.update({ title: 'A10 forgée retouchée' })
+				.eq('id', forgedEval!.series_id)
+				.select('id');
+			expect(freeError).toBeNull();
+			expect(stillFree).toHaveLength(1);
+
+			const { data: classEval } = await service
+				.from('evaluations')
+				.select('id')
+				.eq('legacy_assessment_id', forK1.assessmentId)
+				.single();
+			const { data: historyRow } = await service
+				.from('test_sessions')
+				.select('evaluation_id')
+				.eq('id', history!.id);
+			expect(historyRow).toEqual([{ evaluation_id: classEval!.id }]);
+		});
+	});
+
+	// ── Audit : clauses propriétaire ────────────────────────────────────────
+	describe('le prof ne touche pas à ce qui n’est pas à lui', () => {
+		let adminSeriesId: string;
+		let adminEvaluationId: string;
+		let adminAssignmentId: string;
+		let ownEvaluationId: string;
+		let ownAssignmentId: string;
+
+		beforeAll(async () => {
+			const { data: series, error } = await admin.client
+				.from('series')
+				.insert({
+					title: 'Série de l’admin',
+					grade: '6',
+					categories: CATEGORIES,
+					created_by: admin.id
+				})
+				.select('id')
+				.single();
+			expect(error, 'décor : série admin').toBeNull();
+			adminSeriesId = series!.id;
+
+			const { data: evaluation, error: evalError } = await admin.client
+				.from('evaluations')
+				.insert({ series_id: adminSeriesId, form: 'interactive', created_by: admin.id })
+				.select('id')
+				.single();
+			expect(evalError, 'décor : évaluation admin').toBeNull();
+			adminEvaluationId = evaluation!.id;
+
+			const { data: assignment, error: assignError } = await admin.client
+				.from('evaluation_assignments')
+				.insert({
+					evaluation_id: adminEvaluationId,
+					assigned_by: admin.id,
+					student_id: studentD.id
+				})
+				.select('id')
+				.single();
+			expect(assignError, 'décor : assignation admin').toBeNull();
+			adminAssignmentId = assignment!.id;
+
+			const own = await createEvaluation('draft', [{ studentId: studentD.id }], 'Série du prof');
+			ownEvaluationId = own.evaluationId;
+			const { data: ownAssignment } = await service
+				.from('evaluation_assignments')
+				.select('id')
+				.eq('evaluation_id', ownEvaluationId)
+				.single();
+			ownAssignmentId = ownAssignment!.id;
+		});
+
+		it('attacher une évaluation à la série de l’admin : INSERT refusé', async () => {
+			const { error } = await teacher.client
+				.from('evaluations')
+				.insert({ series_id: adminSeriesId, form: 'interactive', created_by: teacher.id })
+				.select('id');
+			expect(error?.code).toBe('42501');
+			const { data } = await service
+				.from('evaluations')
+				.select('id')
+				.eq('series_id', adminSeriesId)
+				.eq('created_by', teacher.id);
+			expect(data).toEqual([]);
+		});
+
+		it('déplacer son évaluation sur la série de l’admin : UPDATE refusé', async () => {
+			const { error } = await teacher.client
+				.from('evaluations')
+				.update({ series_id: adminSeriesId })
+				.eq('id', ownEvaluationId)
+				.select('id');
+			expect(error?.code).toBe('42501');
+			const { data } = await service
+				.from('evaluations')
+				.select('series_id')
+				.eq('id', ownEvaluationId);
+			expect(data![0].series_id).not.toBe(adminSeriesId);
+		});
+
+		// Double garde : USING de l'UPDATE ET policy SELECT (un UPDATE ne voit que
+		// les lignes lisibles). La preuve rouge neutralise les deux.
+		it('modifier l’assignation d’une évaluation de l’admin : 0 ligne, base inchangée', async () => {
+			const { data } = await teacher.client
+				.from('evaluation_assignments')
+				.update({ student_id: studentB.id })
+				.eq('id', adminAssignmentId)
+				.select('id');
+			expect(data).toEqual([]);
+			const { data: row } = await service
+				.from('evaluation_assignments')
+				.select('student_id')
+				.eq('id', adminAssignmentId);
+			expect(row).toEqual([{ student_id: studentD.id }]);
+		});
+
+		it('déplacer sa propre assignation vers l’évaluation de l’admin : refusé', async () => {
+			// Sans `.select()` EXPRÈS : avec, la policy SELECT refuserait déjà la
+			// ligne rendue, et le WITH CHECK de l'UPDATE ne serait plus prouvé.
+			const { error } = await teacher.client
+				.from('evaluation_assignments')
+				.update({ evaluation_id: adminEvaluationId })
+				.eq('id', ownAssignmentId);
+			expect(error?.code).toBe('42501');
+			const { data: row } = await service
+				.from('evaluation_assignments')
+				.select('evaluation_id')
+				.eq('id', ownAssignmentId);
+			expect(row).toEqual([{ evaluation_id: ownEvaluationId }]);
+		});
+	});
+
+	// ── Effacement RGPD d'un élève ──────────────────────────────────────────
+	it('supprimer un élève qui a passé une évaluation : profil, séances et assignations effacés', async () => {
+		const profile = await TestData.profile().withRole('student').create();
+		const leaver: Person = { id: profile.id, client: await signIn(profile.email) };
+		const { error: memberError } = await service
+			.from('class_members')
+			.insert({ class_id: k1Id, student_id: leaver.id, status: 'active' });
+		expect(memberError, 'décor : inscription').toBeNull();
+		const passed = await createEvaluation('published', [{ studentId: leaver.id }], 'RGPD');
+		const { data: session, error: sessionError } = await insertSession(
+			leaver.client,
+			leaver.id,
+			passed.evaluationId
+		);
+		expect(sessionError, 'décor : séance').toBeNull();
+
+		const { error } = await service.auth.admin.deleteUser(leaver.id);
+		expect(error).toBeNull();
+
+		const { data: profiles } = await service.from('profiles').select('id').eq('id', leaver.id);
+		const { data: sessions } = await service
+			.from('test_sessions')
+			.select('id')
+			.eq('id', session!.id);
+		const { data: assignments } = await service
+			.from('evaluation_assignments')
+			.select('id')
+			.eq('student_id', leaver.id);
+		expect([profiles, sessions, assignments]).toEqual([[], [], []]);
+
+		// Plus aucune séance : la série redevient modifiable
+		const { data: unlocked } = await teacher.client
+			.from('series')
+			.update({ title: 'RGPD retouchée' })
+			.eq('id', passed.seriesId)
+			.select('id');
+		expect(unlocked).toHaveLength(1);
 	});
 });

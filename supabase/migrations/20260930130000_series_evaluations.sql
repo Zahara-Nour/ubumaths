@@ -37,7 +37,20 @@
 --   · evaluations.series_id : NO ACTION (= refus, Q31). Pas RESTRICT : le refus
 --     est identique pour un DELETE direct, mais NO ACTION est vérifié en fin
 --     d'instruction, ce qui laisse passer une cascade qui supprime la série ET
---     ses évaluations dans la même instruction (suppression d'un profil prof).
+--     ses évaluations dans la même instruction — tant qu'aucune séance n'y est
+--     rattachée (voir ci-dessous).
+--   ⚠️ SUPPRIMER UN PROFIL PROF propriétaire d'une série VERROUILLÉE ÉCHOUE, et
+--     c'est assumé (mono-prof) : la cascade profil → séries déclenche
+--     `series_lock_guard` (UBS01), et la clé NO ACTION de
+--     `test_sessions.evaluation_id` refuse de toute façon de perdre l'évaluation.
+--     Procédure (admin ou service_role, jamais le prof lui-même) :
+--       1. détacher les séances : update public.test_sessions set evaluation_id = null
+--          where evaluation_id in (select id from public.evaluations where created_by = <prof>);
+--          (les séances restent, elles perdent seulement leur rattachement) ;
+--       2. supprimer le profil (cascade séries, évaluations, assignations).
+--   · Supprimer un profil ÉLÈVE (effacement RGPD d'un mineur) fonctionne : ses
+--     séances partent en cascade avec auth.users, ses assignations avec son
+--     profil ; rien ne pointe vers lui en NO ACTION (testé).
 --   · test_sessions.evaluation_id : NO ACTION (refus). Une séance d'élève ne
 --     disparaît jamais (ni CASCADE), et SET NULL la transformerait en silence en
 --     entraînement libre : la tentative ne compterait plus, et la série se
@@ -63,7 +76,24 @@
 --   (une série vide n'a pas de sens ; prod 2026-09-30 : 0 cas, 1 assessment).
 --   La fonction est appelée en fin de migration ; elle disparaîtra avec l'étape 2.
 --
--- ── ROLLBACK (dans cet ordre) ────────────────────────────────────────────────
+-- ── ROLLBACK (dans cet ordre, en UNE transaction) ────────────────────────────
+--   begin;
+--   -- Garde : une ligne qui ne connaît QUE la nouvelle évaluation perdrait sa
+--   -- référence au DROP COLUMN. Si le compte n'est pas nul, on s'arrête.
+--   do $$
+--   declare v_orphans integer;
+--   begin
+--     select (select count(*) from public.journal_entry_activities
+--              where evaluation_id is not null and assessment_id is null)
+--          + (select count(*) from public.evaluation_tasks
+--              where evaluation_id is not null and assessment_id is null)
+--          + (select count(*) from public.test_sessions
+--              where evaluation_id is not null and assignment_id is null)
+--       into v_orphans;
+--     if v_orphans > 0 then
+--       raise exception 'Rollback refusé : % lignes ne référencent que la nouvelle évaluation', v_orphans;
+--     end if;
+--   end $$;
 --   drop policy if exists "test_sessions_evaluation_assignee_only" on public.test_sessions;
 --   drop trigger if exists test_sessions_evaluation_immutable on public.test_sessions;
 --   alter table public.test_sessions drop constraint if exists test_sessions_flash_sans_evaluation;
@@ -92,6 +122,7 @@
 --   drop function if exists public.series_lock_guard();
 --   drop function if exists public.evaluation_series_lock_guard();
 --   drop function if exists public.test_session_evaluation_immutable();
+--   commit;
 --   (⚠️ Les trois DROP COLUMN / DROP TABLE perdent ce qui aurait été écrit dans
 --   les nouvelles tables depuis la bascule du code : rollback sûr AVANT la PR 2.)
 
@@ -652,12 +683,24 @@ begin
 	on conflict (id) do nothing;
 	get diagnostics v_assignments = row_count;
 
+	-- ⚠️ Seulement les séances d'un DESTINATAIRE de l'assignation : la policy
+	-- INSERT historique ne vérifie que `user_id`, donc un élève a pu poser une
+	-- séance libre portant l'assignation d'un autre. La rattacher verrouillerait
+	-- la série. Destinataire = nommé, ou membre de la classe (tout statut :
+	-- l'historique compte).
 	update public.test_sessions ts
 	set evaluation_id = e.id
 	from public.assessment_assignments aa
 	join public.evaluations e on e.legacy_assessment_id = aa.assessment_id
 	where ts.assignment_id = aa.id
-		and ts.evaluation_id is null;
+		and ts.evaluation_id is null
+		and (
+			aa.student_id = ts.user_id
+			or exists (
+				select 1 from public.class_members cm
+				where cm.class_id = aa.class_id and cm.student_id = ts.user_id
+			)
+		);
 	get diagnostics v_sessions = row_count;
 
 	update public.evaluation_tasks t
@@ -726,7 +769,14 @@ begin
 	from public.test_sessions ts
 	join public.assessment_assignments aa on aa.id = ts.assignment_id
 	join public.evaluations e on e.legacy_assessment_id = aa.assessment_id
-	where ts.evaluation_id is distinct from e.id;
+	where ts.evaluation_id is distinct from e.id
+		and (
+			aa.student_id = ts.user_id
+			or exists (
+				select 1 from public.class_members cm
+				where cm.class_id = aa.class_id and cm.student_id = ts.user_id
+			)
+		);
 	if v_missing > 0 then
 		raise exception 'Recopie incomplète : % séances sans evaluation_id', v_missing;
 	end if;
