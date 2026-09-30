@@ -192,3 +192,32 @@ de cours, dans `tests/save` et `skill-attempts`), FSRS seulement, traces intacte
   évaluation étant aujourd'hui toujours en Entraînement, le champ « Temps limite total » est retiré du
   formulaire (colonne gardée). Chantier 4 : il revient, affiché seulement pour une évaluation en Course
   aux nombres.
+
+### Chantier 3 livré (#555, 2026-09-30)
+
+Durée par question, une seule avance par question, Recommencer = nouvelles questions, visiteur averti,
+réponse tapée validée à l'expiration (Q18, vérifié au vrai clavier MathLive), champ « Temps limite »
+retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée** : voir ci-dessous.
+
+### Générateur à graine : défauts mesurés (2026-09-30, étude en lecture seule)
+
+- Le tirage avec graine est recalculé depuis la graine seule (`variable-resolver.ts:627`, et
+  `frac(10000·sin(seed))` dans `src/lib/utils/random.ts:66`) : tous les tirages qui reçoivent la même
+  graine sont égaux. Chaque variable reçoit `seed + i*7919` → 0 modèle relu dégénéré entre variables ;
+  0 tirage en ligne multiple.
+- **Défaut réel** : 22 modèles tirent dans une liste avec plages (`1..9|11..15|25|…`) ; avec graine,
+  l'indice de branche et la valeur sont corrélés → 1/2 à 2/3 des valeurs n'apparaissent jamais (ex.
+  entiers/77 « Trouver le double » : 9 valeurs au lieu de 19 ; entiers/142 : 9 au lieu de 22).
+- **Touché en production** : révision SRS des élèves (graine aléatoire à chaque révision,
+  `src/lib/srs/generator.ts:32`), aperçus à `PREVIEW_SEED` (Automaths, panier, création d'évaluation :
+  en plus, tous les QCM de même taille ont la bonne réponse à la même place), aperçu admin.
+- Graine 0 non reproductible (`seed ? … : undefined`, `random-generator.ts:258`).
+- Fiches figées (ADR 0011) : texte figé en base, non touché ; seule une relance de
+  `scripts/create-automatismes-evolutions-1spe.ts` changerait les valeurs.
+- Correctif proposé : un seul générateur pseudo-aléatoire (mulberry32) initialisé par la graine et
+  consommé dans l'ordre pendant toute l'instance ; `seed !== undefined`. Décision de David attendue.
+
+### Pour le chantier 5 (audit sécurité de #555)
+
+- `max_attempts` d'une évaluation non contrôlé côté serveur (`/api/tests/save` insère sans compter).
+- La graine archivée viendrait du client : pour une évaluation notée, le serveur doit la tirer et la garder.
