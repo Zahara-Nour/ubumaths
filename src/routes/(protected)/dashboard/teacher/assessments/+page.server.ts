@@ -1,42 +1,41 @@
-import { redirect, error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { getTeacherAssessments } from '$lib/server/assessments';
+/**
+ * Page « Évaluations » (Q27) : les évaluations du professeur, chacune avec sa
+ * série et sa forme. Les séries se gèrent dans « Séries ».
+ */
+
+import { error, fail } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { requireRoles } from '$lib/server/middleware/auth';
+import { uuidSchema } from '$lib/server/validation/common';
+import {
+	EvaluationError,
+	getTeacherEvaluations,
+	setEvaluationStatus
+} from '$lib/server/evaluations';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(303, '/auth/signin');
+	const { user } = await requireRoles(locals, ['teacher', 'admin']);
+	try {
+		return { evaluations: await getTeacherEvaluations(locals.supabase, user.id) };
+	} catch (e) {
+		if (e instanceof EvaluationError) throw error(e.status, e.message);
+		throw e;
 	}
+};
 
-	// Verify user is a teacher
-	const { data: profileData, error: profileError } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+export const actions: Actions = {
+	/** Publier un brouillon */
+	publish: async ({ request, locals }) => {
+		await requireRoles(locals, ['teacher', 'admin']);
+		const id = uuidSchema.safeParse((await request.formData()).get('id'));
+		if (!id.success) return fail(400, { message: 'Évaluation invalide' });
 
-	if (profileError || !profileData) {
-		throw error(403, 'Profil non trouvé');
+		try {
+			await setEvaluationStatus(locals.supabase, id.data, 'published');
+			return { success: true };
+		} catch (e) {
+			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });
+			throw e;
+		}
 	}
-
-	if (profileData.role !== 'teacher') {
-		throw redirect(303, '/dashboard');
-	}
-
-	// Fetch all assessments (not filtered by status)
-	// NOTE: Assessment listing is NOT filtered by test mode - teachers can see all their assessments
-	// Test mode filtering only applies to students/results shown for each assessment
-	const { data: assessments, error: assessmentsError } = await getTeacherAssessments(
-		locals.supabase,
-		user.id
-	);
-
-	if (assessmentsError) {
-		console.error('Failed to fetch assessments:', assessmentsError);
-		return { assessments: [] };
-	}
-
-	return {
-		assessments: assessments || []
-	};
 };

@@ -1,131 +1,107 @@
-import { redirect, error } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
+/**
+ * Assigner une évaluation publiée à des classes ; retirer une assignation.
+ */
+
+import { error, fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
+import { uuidSchema } from '$lib/server/validation/common';
+import { classIdsFieldSchema } from '$lib/server/validation/evaluations';
+import {
+	assignEvaluation,
+	EvaluationError,
+	getEvaluation,
+	getEvaluationAssignments,
+	removeAssignment
+} from '$lib/server/evaluations';
+import { notifyNewAssessment } from '$lib/server/auto-notifications';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(303, '/auth/signin');
-	}
-
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 	const id = validateUuidParam(params.id);
 
-	// Verify user is a teacher
-	const { data: profileData, error: profileError } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	try {
+		const evaluation = await getEvaluation(locals.supabase, id);
+		if (!evaluation) throw error(404, 'Évaluation introuvable');
+		if (evaluation.created_by !== user.id && profile.role !== 'admin') {
+			throw error(403, 'Non autorisé');
+		}
+		// Seule une évaluation publiée s'assigne
+		if (evaluation.status !== 'published') {
+			throw redirect(303, '/dashboard/teacher/assessments');
+		}
 
-	if (profileError || !profileData) {
-		throw error(403, 'Profil non trouvé');
+		const [classesWithData, existingAssignments] = await Promise.all([
+			getTeacherClassesWithCounts(user.id, locals.supabase),
+			getEvaluationAssignments(locals.supabase, id)
+		]);
+
+		const classes = classesWithData.map((c) => ({
+			id: c.id,
+			name: c.name,
+			level: c.description,
+			student_count: c.student_count,
+			is_assigned: existingAssignments.some((a) => a.class_id === c.id)
+		}));
+
+		return { evaluation, classes, existingAssignments };
+	} catch (e) {
+		if (e instanceof EvaluationError) throw error(e.status, e.message);
+		throw e;
 	}
-
-	if (profileData.role !== 'teacher') {
-		throw redirect(303, '/dashboard');
-	}
-
-	// Fetch assessment
-	const { data: assessment, error: assessmentError } = await getAssessment(locals.supabase, id);
-
-	if (assessmentError || !assessment) {
-		throw error(404, 'Évaluation introuvable');
-	}
-
-	// Verify ownership
-	if (assessment.created_by !== user.id) {
-		throw error(403, 'Non autorisé');
-	}
-
-	// Must be published to assign
-	if (assessment.status !== 'published') {
-		throw redirect(303, `/dashboard/teacher/assessments/${id}`);
-	}
-
-	// Use unified helper to get classes with student counts
-	// Automatically handles test mode filtering
-	const classesWithData = await getTeacherClassesWithCounts(user.id, locals.supabase);
-
-	// Get existing assignments
-	const { data: existingAssignments, error: existingAssignmentsError } =
-		await getAssessmentAssignments(locals.supabase, id);
-
-	if (existingAssignmentsError) {
-		console.error('Lecture impossible :', existingAssignmentsError);
-		throw error(500, 'Impossible de charger les données');
-	}
-
-	// Add is_assigned field to classes
-	const formattedClasses = classesWithData.map((c) => ({
-		id: c.id,
-		name: c.name,
-		level: c.description, // Note: helper returns description, UI expects level
-		student_count: c.student_count,
-		is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
-	}));
-
-	return {
-		assessment,
-		classes: formattedClasses,
-		existingAssignments: existingAssignments || []
-	};
 };
 
 export const actions: Actions = {
 	assign: async ({ request, params, locals }) => {
-		const { user } = await requireRoles(locals, ['teacher', 'admin']);
-
+		const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 		const id = validateUuidParam(params.id);
-		const formData = await request.formData();
-		const classIdsJson = formData.get('class_ids') as string;
 
-		if (!classIdsJson) {
-			return { success: false, error: 'Aucune classe sélectionnée' };
+		const classIds = classIdsFieldSchema.safeParse((await request.formData()).get('class_ids'));
+		if (!classIds.success) {
+			return fail(400, { message: classIds.error.issues[0].message });
 		}
 
-		const classIds = JSON.parse(classIdsJson);
+		try {
+			await assignEvaluation(locals.supabase, id, { class_ids: classIds.data }, user.id);
 
-		const { error } = await assignAssessment(
-			locals.supabase,
-			{
-				assessment_id: id,
-				class_ids: classIds
-			},
-			user.id
-		);
-
-		if (error) {
-			console.error('Failed to assign assessment:', error);
-			return { success: false, error: "Échec de l'assignation" };
+			// Prévenir les élèves ; un échec de notification n'annule pas l'assignation
+			const evaluation = await getEvaluation(locals.supabase, id);
+			if (evaluation) {
+				const teacherName =
+					profile.firstname && profile.lastname
+						? `${profile.firstname} ${profile.lastname}`
+						: 'Votre professeur';
+				await notifyNewAssessment(locals.supabase, {
+					assessmentId: evaluation.id,
+					assessmentTitle: evaluation.series.title,
+					teacherName,
+					classIds: classIds.data
+				});
+			}
+			return { success: true };
+		} catch (e) {
+			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });
+			throw e;
 		}
-
-		return { success: true };
 	},
 
-	unassign: async ({ request, params: _params, locals }) => {
+	unassign: async ({ request, params, locals }) => {
 		await requireRoles(locals, ['teacher', 'admin']);
+		const id = validateUuidParam(params.id);
 
-		const formData = await request.formData();
-		const assignmentId = formData.get('assignment_id') as string;
-
-		if (!assignmentId) {
-			return { success: false, error: "ID d'assignation manquant" };
+		const assignmentId = uuidSchema.safeParse((await request.formData()).get('assignment_id'));
+		if (!assignmentId.success) {
+			return fail(400, { message: "Identifiant d'assignation manquant" });
 		}
 
-		// Remove the assignment
-		const { error } = await locals.supabase
-			.from('assessment_assignments')
-			.delete()
-			.eq('id', assignmentId);
-
-		if (error) {
-			console.error('Failed to remove assignment:', error);
-			return { success: false, error: 'Échec de la suppression' };
+		try {
+			await removeAssignment(locals.supabase, assignmentId.data, id);
+			return { success: true };
+		} catch (e) {
+			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });
+			throw e;
 		}
-
-		return { success: true };
 	}
 };

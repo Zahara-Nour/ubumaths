@@ -200,7 +200,7 @@ export const saveTestSchema = z
 	)
 	.refine(
 		// Une séance flash est auto-évaluée : jamais rattachée à une évaluation
-		// (doublé en base par la contrainte `test_sessions_flash_sans_assignation`)
+		// (doublé en base par la contrainte `test_sessions_flash_sans_evaluation`)
 		(data) => !(data.result.mode === 'flash' && data.assignmentId),
 		{
 			message: 'A flash session cannot be linked to an assignment',

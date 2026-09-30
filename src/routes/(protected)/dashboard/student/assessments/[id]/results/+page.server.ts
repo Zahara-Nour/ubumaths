@@ -1,8 +1,17 @@
+/**
+ * Résultats d'un élève pour une évaluation. `[id]` est l'identifiant de
+ * l'ASSIGNATION (celui des liens envoyés) ; les séances sont lues par
+ * `test_sessions.evaluation_id`.
+ */
+
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { assessmentSettingsSchema } from '$lib/server/validation/assessments';
-import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
+import {
+	EvaluationError,
+	getAssignmentWithEvaluation,
+	isAssignmentRecipient
+} from '$lib/server/evaluations';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -12,7 +21,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const id = validateUuidParam(params.id);
 
-	// Verify user is a student
 	const { data: profile, error: profileError } = await locals.supabase
 		.from('profiles')
 		.select('role')
@@ -30,88 +38,35 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw redirect(303, '/dashboard');
 	}
 
-	// Fetch assignment details
-	const { data: assignment, error: assignmentError } = await locals.supabase
-		.from('assessment_assignments')
-		.select(
-			`
-			*,
-			assessment:assessments(*)
-		`
-		)
-		.eq('id', id)
-		.single();
+	try {
+		const found = await getAssignmentWithEvaluation(locals.supabase, id);
+		if (!found) throw error(404, 'Évaluation introuvable');
 
-	if (assignmentError || !assignment) {
-		throw error(404, 'Assignation introuvable');
-	}
-
-	// `assessments.settings` est une colonne jsonb : son type généré est `Json`,
-	// qui ne porte aucune clé. La page lisait `settings.max_attempts` dessus.
-	// On restitue la forme déclarée (`assessmentSettingsSchema`), avec repli sur
-	// les valeurs par défaut si le contenu stocké ne la respecte pas.
-	// Une assignation sans son évaluation est une donnée corrompue : la page n'a
-	// alors ni titre ni réglages à afficher. On refuse ici plutôt que de rendre
-	// la page défensive de bout en bout.
-	if (!assignment.assessment) {
-		throw error(404, 'Évaluation introuvable pour cette assignation');
-	}
-
-	const reglages = assessmentSettingsSchema.safeParse(assignment.assessment.settings);
-	const assignationTypee = {
-		...assignment,
-		assessment: {
-			...assignment.assessment,
-			settings: reglages.success ? reglages.data : DEFAULT_ASSESSMENT_SETTINGS
-		}
-	};
-
-	// Verify student has access to this assignment
-	// Check if directly assigned or assigned via class
-	const isDirectlyAssigned = assignment.student_id === user.id;
-
-	let isAssignedViaClass = false;
-	if (assignment.class_id) {
-		const { data: membership, error: membershipError } = await locals.supabase
-			.from('class_members')
-			.select('id')
-			.eq('class_id', assignment.class_id)
-			.eq('student_id', user.id)
-			.eq('status', 'active')
-			.single();
-
-		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-		// panne doit se distinguer d'un refus mérité.
-		if (membershipError && membershipError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', membershipError);
-			throw error(500, 'Impossible de vérifier votre accès');
+		// La RLS le garantit déjà ; on ne s'en remet pas à elle seule
+		if (!(await isAssignmentRecipient(locals.supabase, found.assignment, user.id))) {
+			throw error(403, 'Non autorisé');
 		}
 
-		isAssignedViaClass = !!membership;
-	}
+		const { data: attempts, error: attemptsError } = await locals.supabase
+			.from('test_sessions')
+			.select('*')
+			.eq('evaluation_id', found.evaluation.id)
+			.eq('user_id', user.id)
+			.order('created_at', { ascending: false });
 
-	if (!isDirectlyAssigned && !isAssignedViaClass) {
-		throw error(403, 'Non autorisé');
-	}
+		// Des tentatives illisibles ne sont pas « aucune tentative »
+		if (attemptsError) {
+			console.error('[student results] Tentatives illisibles :', attemptsError);
+			throw error(500, 'Impossible de charger vos résultats');
+		}
 
-	// Fetch all attempts for this assignment
-	const { data: attempts, error: attemptsError } = await locals.supabase
-		.from('test_sessions')
-		.select('*')
-		.eq('assignment_id', id)
-		.eq('user_id', user.id)
-		.order('created_at', { ascending: false });
-
-	if (attemptsError) {
-		console.error('Failed to fetch attempts:', attemptsError);
 		return {
-			assignment: assignationTypee,
-			attempts: []
+			assignment: found.assignment,
+			evaluation: found.evaluation,
+			attempts: attempts ?? []
 		};
+	} catch (e) {
+		if (e instanceof EvaluationError) throw error(e.status, e.message);
+		throw e;
 	}
-
-	return {
-		assignment: assignationTypee,
-		attempts: attempts || []
-	};
 };

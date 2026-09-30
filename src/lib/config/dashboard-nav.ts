@@ -32,6 +32,7 @@ import {
 	Kanban,
 	ClipboardList,
 	FileCheck,
+	ListOrdered,
 	ShieldCheck,
 	Search,
 	User as UserIcon,
@@ -130,6 +131,7 @@ export function getNavLinks(
 				label: "Tâches d'évaluation",
 				icon: ClipboardList
 			},
+			{ href: '/dashboard/teacher/series', label: 'Séries', icon: ListOrdered },
 			{ href: '/dashboard/teacher/assessments', label: 'Évaluations en ligne', icon: FileCheck },
 			{ href: '/python-exercises/mine', label: 'Mes exercices Python', icon: Code },
 			{

@@ -49,7 +49,7 @@ const MAX_ACTIVITIES = 100;
 export type PendingActivityRow =
 	| { kind: 'exercise'; exercise_id: string }
 	| { kind: 'question'; question_template_id: string }
-	| { kind: 'assessment'; assessment_id: string };
+	| { kind: 'assessment'; evaluation_id: string };
 
 export function parsePendingActivities(raw: unknown): PendingActivityRow[] {
 	if (typeof raw !== 'string' || raw.trim() === '') return [];
@@ -75,7 +75,8 @@ export function parsePendingActivities(raw: unknown): PendingActivityRow[] {
 		if (v.data.kind === 'exercise') rows.push({ kind: 'exercise', exercise_id: v.data.id });
 		else if (v.data.kind === 'question')
 			rows.push({ kind: 'question', question_template_id: v.data.id });
-		else rows.push({ kind: 'assessment', assessment_id: v.data.id });
+		// Une activité « évaluation » pointe vers l'ÉVALUATION (Q29)
+		else rows.push({ kind: 'assessment', evaluation_id: v.data.id });
 	}
 	return rows;
 }

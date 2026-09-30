@@ -27,11 +27,16 @@ export type WorkStatus = 'todo' | 'done';
  */
 export interface WorkItem {
 	source: WorkSource;
-	/** Source item id (assessment.id, exercise.id, worksheet.id, python_exercise.id, python_notebook.id, python_file.id). */
+	/** Source item id (evaluation.id, exercise.id, worksheet.id, python_exercise.id, python_notebook.id, python_file.id). */
 	itemId: string;
 	/** Row id in the corresponding *_assignments table. */
 	assignmentId: string;
 	title: string;
+	/**
+	 * Forme d'une évaluation (« Entraînement », « Course aux nombres ») ; absente
+	 * pour les autres sources.
+	 */
+	formLabel?: string;
 	/**
 	 * The class this item reaches the student through, when there is one — used
 	 * for display. `null` for a purely individual assignment.

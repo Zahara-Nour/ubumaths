@@ -236,7 +236,8 @@ export const createActivitySchema = z
 		z.object({
 			entry_id: uuidSchema,
 			kind: z.literal('assessment'),
-			assessment_id: uuidSchema,
+			// Q29 : une activité « évaluation » pointe vers l'ÉVALUATION
+			evaluation_id: uuidSchema,
 			display_order: displayOrderSchema.optional()
 		})
 	])

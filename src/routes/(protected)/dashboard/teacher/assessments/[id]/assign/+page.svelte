@@ -86,7 +86,7 @@
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Assigner l'Évaluation</h1>
-			<p class="mt-2 text-muted-foreground">{data.assessment.title}</p>
+			<p class="mt-2 text-muted-foreground">{data.evaluation.series.title}</p>
 		</div>
 	</div>
 

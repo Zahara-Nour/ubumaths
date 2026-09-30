@@ -4,30 +4,45 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Plus } from '@lucide/svelte';
-	import AssessmentCard from '$lib/components/assessments/AssessmentCard.svelte';
+	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { refreshPageData, submitAction } from '$lib/utils/form-action';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Filter assessments by status
-	let drafts = $derived(data.assessments.filter((a) => a.status === 'draft'));
-	let published = $derived(data.assessments.filter((a) => a.status === 'published'));
-	let archived = $derived(data.assessments.filter((a) => a.status === 'archived'));
+	// Évaluations par statut
+	let drafts = $derived(data.evaluations.filter((a) => a.status === 'draft'));
+	let published = $derived(data.evaluations.filter((a) => a.status === 'published'));
+	let archived = $derived(data.evaluations.filter((a) => a.status === 'archived'));
 
+	// Une évaluation se crée depuis une série (page « Séries »)
 	function handleCreateNew() {
-		goto('/dashboard/teacher/assessments/new').then(() => {});
+		goto('/dashboard/teacher/series').then(() => {});
 	}
 
-	function handleEdit(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/edit`).then(() => {});
+	async function handlePublish(evaluationId: string) {
+		const formData = new FormData();
+		formData.set('id', evaluationId);
+		const outcome = await submitAction('?/publish', formData);
+		if (!outcome.ok) {
+			toaster.error(outcome.message);
+			return;
+		}
+		toaster.success('Évaluation publiée');
+		await refreshPageData();
 	}
 
-	function handleAssign(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/assign`).then(() => {});
+	function handleEdit(evaluationId: string) {
+		goto(`/dashboard/teacher/assessments/${evaluationId}/edit`).then(() => {});
 	}
 
-	function handleViewResults(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/results`).then(() => {});
+	function handleAssign(evaluationId: string) {
+		goto(`/dashboard/teacher/assessments/${evaluationId}/assign`).then(() => {});
+	}
+
+	function handleViewResults(evaluationId: string) {
+		goto(`/dashboard/teacher/assessments/${evaluationId}/results`).then(() => {});
 	}
 </script>
 
@@ -46,7 +61,7 @@
 		</div>
 		<Button onclick={handleCreateNew}>
 			<Plus class="mr-2 h-4 w-4" />
-			Nouvelle évaluation
+			Nouvelle évaluation (depuis une série)
 		</Button>
 	</div>
 
@@ -88,11 +103,12 @@
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{#each drafts as assessment (assessment.id)}
-						<AssessmentCard
-							{assessment}
+					{#each drafts as evaluation (evaluation.id)}
+						<EvaluationCard
+							{evaluation}
 							variant="teacher"
-							onEdit={() => handleEdit(assessment.id)}
+							onEdit={() => handleEdit(evaluation.id)}
+							onPublish={() => handlePublish(evaluation.id)}
 						/>
 					{/each}
 				</div>
@@ -112,12 +128,12 @@
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{#each published as assessment (assessment.id)}
-						<AssessmentCard
-							{assessment}
+					{#each published as evaluation (evaluation.id)}
+						<EvaluationCard
+							{evaluation}
 							variant="teacher"
-							onAssign={() => handleAssign(assessment.id)}
-							onViewResults={() => handleViewResults(assessment.id)}
+							onAssign={() => handleAssign(evaluation.id)}
+							onViewResults={() => handleViewResults(evaluation.id)}
 						/>
 					{/each}
 				</div>
@@ -132,8 +148,8 @@
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{#each archived as assessment (assessment.id)}
-						<AssessmentCard {assessment} variant="teacher" />
+					{#each archived as evaluation (evaluation.id)}
+						<EvaluationCard {evaluation} variant="teacher" />
 					{/each}
 				</div>
 			{/if}

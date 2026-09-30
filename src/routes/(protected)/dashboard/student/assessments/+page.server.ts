@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getStudentAssignments } from '$lib/server/assessments';
+import { EvaluationError, getStudentAssignments } from '$lib/server/evaluations';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -26,18 +26,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/dashboard');
 	}
 
-	// Fetch assigned assessments
-	const { data: assignments, error: assignmentsError } = await getStudentAssignments(
-		locals.supabase,
-		user.id
-	);
-
-	if (assignmentsError) {
-		console.error('Failed to fetch assignments:', assignmentsError);
-		return { assignments: [] };
+	// Évaluations assignées, avec les tentatives de l'élève. Une panne s'affiche :
+	// une liste vide ferait croire qu'il n'y a rien à faire.
+	try {
+		return { assignments: await getStudentAssignments(locals.supabase, user.id) };
+	} catch (e) {
+		if (e instanceof EvaluationError) throw error(e.status, e.message);
+		throw e;
 	}
-
-	return {
-		assignments: assignments || []
-	};
 };
