@@ -77,3 +77,29 @@ Une **série** (composition : catégories × répétitions × durée) s'utilise 
   3. Entraînement : corriger les 7 défauts ;
   4. Séparation `series` / `evaluations` ;
   5. Évaluation notée, correction serveur.
+
+## Chantier 1 — « En classe » sur UbuSlides (spécification validée par David, 2026-09-30)
+
+- Une question par diapositive : `FlashCard` en lecture seule, en grand, **sans bouton de retournement**
+  (Q9 : la réponse n'est pas montrée à la classe ; corrections dans la grille de fin).
+- Minuteur par question = durée de sa catégorie (20 s par défaut) ; à zéro, diapositive suivante.
+- Espace = pause / reprise ; ±5 s sur la question en cours et les suivantes de la même catégorie
+  (minimum 5 s), sans remettre le compteur à zéro.
+- Navigation ← / →, flèches à l'écran, geste. Revenir sur une question déjà passée = pause (Q3) ;
+  revenir sur la question la plus avancée = reprise de son temps restant ; avancer vers une question
+  jamais vue = son minuteur démarre.
+- Fin : grille des questions, puis (bouton) grille des corrections ; aller-retour possible.
+  « Recommencer » tire de nouvelles questions.
+- Chaque question porte sa propre durée (plus de décalage si une génération échoue).
+- **Plein écran** réel (Q10). Rien n'est enregistré, pas de SRS.
+- **Minuteur dans UbuSlides** (Q11) : `config.autoSlide` (défaut du diaporama) et `Slide.autoSlide`
+  (par diapositive, prioritaire), réactif ; pause (`store.paused`) qui gèle le compte ; signal de fin.
+
+### Tâches
+
+| #   | Tâche                                                                                                                               | Qui                                     | État     |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | -------- |
+| 1   | UbuSlides : minuteur par diapositive, pause, durée modifiable en cours, signal de fin, `hash` désactivable, filtre clavier MathLive | `svelte-expert` (Opus)                  | en cours |
+| 2   | Composant « En classe » : diaporama de flash-cards, règle de la question courante, grilles de fin                                   | `frontend-developer` (Opus)             | à faire  |
+| 3   | Branchement de la page, durée par question, suppression de `QuestionSlide`                                                          | session principale                      | à faire  |
+| 4   | Relecture + accessibilité                                                                                                           | `code-reviewer`, `accessibility-tester` | à faire  |
