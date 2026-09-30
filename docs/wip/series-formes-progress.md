@@ -267,3 +267,19 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
 - **Spécification des tests validée** (A1-A10 base, B11-B16 serveur, C17-C21 écrans ; message du
   2026-09-30). Livraison : PR 1 migration + intégration (`supabase-expert`, `security-auditor`,
   `db:migrate`, `db:types`) → PR 2 code (`fullstack-developer`, `code-reviewer`) → PR 3 DROP (arrêt).
+
+### Chantier 4, PR 2 — bascule du code (branche `feat/series-evaluations-code`)
+
+- Code sur `series` / `evaluations` / `evaluation_assignments` ; plus aucune lecture ni écriture de
+  `assessments` / `assessment_assignments` dans `src/` (hors `database.ts` généré).
+- Page « Séries » (`/dashboard/teacher/series` : verrou, Modifier, Dupliquer, Supprimer, Copier le
+  lien, Créer une évaluation) ; panier : « Enregistrer comme série » (prof/admin), « Copier le lien ».
+- Évaluation créée depuis une série (`/dashboard/teacher/assessments/new?series=<id>`), forme
+  Entraînement | Course aux nombres, temps limite 1-60 min (7 par défaut).
+- `/api/tests/save` : `evaluation_id` (forme imposée, aperçu du prof jamais rattaché) ;
+  `/api/evaluations/assignments/[id]/start` remplace `/api/assessments/**` (supprimées).
+- Couverture du cahier : `assessment_curriculum_points()` remplacée par un calcul TypeScript
+  (`evaluationCurriculumPoints`), qui accepte aussi un ancien id d'assessment cité dans un texte.
+- Reste pour la PR 3 (DROP) : vue SQL `resources` (lit `assessments`), fonctions
+  `assessment_curriculum_points`, `get_assessment_results_for_*`, vue `assessment_results`,
+  statistiques admin (`total_assessments`), colonnes `assessment_id` / `assignment_id`.

@@ -65,7 +65,7 @@ describe('Panier — série (C18)', () => {
 		for (const role of ['student', null]) {
 			const { container, unmount } = await renderPanier(role);
 			expect(container.textContent).not.toContain('Enregistrer comme série');
-			unmount();
+			await unmount();
 		}
 	});
 
