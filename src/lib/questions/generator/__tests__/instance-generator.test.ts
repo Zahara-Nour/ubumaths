@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
-import type { QuestionTemplate, ResolvedVariable } from '../../types';
+import type { GenerationResult, QuestionTemplate, ResolvedVariable } from '../../types';
 import { getQuestionType } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -1460,21 +1460,20 @@ describe('generateInstance - Shared Fields', () => {
 			created_by: 'test-user'
 		};
 
-		// Test first variation (seed 0)
-		const result0 = generateInstance(template, 0);
-		expect(result0.success).toBe(true);
-		if (!result0.success) return;
+		// La variation vient de la source pseudo-aléatoire (plus d'un modulo sur la graine) :
+		// on cherche une graine qui tombe sur chaque variation, puis on vérifie son contenu
+		const byVariation = new Map<number, GenerationResult>();
+		for (let seed = 0; seed < 50 && byVariation.size < 2; seed++) {
+			const result = generateInstance(template, seed);
+			if (result.success) byVariation.set(result.instance.selectedVariationIndex!, result);
+		}
+		const result0 = byVariation.get(0);
+		const result1 = byVariation.get(1);
+		expect(result0?.success && result1?.success).toBe(true);
+		if (!result0?.success || !result1?.success) return;
 
-		expect(result0.instance.selectedVariationIndex).toBe(0);
 		expect(result0.instance.statement).toContain('Addition');
 		expect(result0.instance.blanks![0].expectedAnswer).toBe('110');
-
-		// Test second variation (seed 1)
-		const result1 = generateInstance(template, 1);
-		expect(result1.success).toBe(true);
-		if (!result1.success) return;
-
-		expect(result1.instance.selectedVariationIndex).toBe(1);
 		expect(result1.instance.statement).toContain('Subtraction');
 		expect(result1.instance.blanks![0].expectedAnswer).toBe('80');
 	});

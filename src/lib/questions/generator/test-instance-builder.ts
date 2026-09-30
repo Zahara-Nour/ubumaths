@@ -185,7 +185,7 @@ export function generateInstanceWithFixedVariables(
 		variations: [modifiedVariation]
 	};
 
-	// Use seed 0 (deterministic, variation index will be 0 % 1 = 0)
+	// Graine 0 : reproductible ; une seule variation, donc toujours l'indice 0
 	const result = generateInstance(modifiedTemplate, 0);
 
 	// Restore original variation index in the result
