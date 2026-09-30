@@ -142,6 +142,24 @@ async function insertSession(
 		.single();
 }
 
+/**
+ * Séance d'évaluation posée par le SERVICE : depuis 20260930160000 (Q38), seul
+ * le serveur (service_role) crée une séance rattachée à une évaluation.
+ */
+async function serverSession(userId: string, evaluationId: string, mode = 'interactive') {
+	return service
+		.from('test_sessions')
+		.insert({
+			user_id: userId,
+			mode,
+			categories: CATEGORIES,
+			total_questions: 2,
+			evaluation_id: evaluationId
+		})
+		.select('id')
+		.single();
+}
+
 describe('séries et évaluations (20260930130000)', () => {
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -409,20 +427,27 @@ describe('séries et évaluations (20260930130000)', () => {
 			expect(data).toEqual([]);
 		});
 
-		it('acceptée pour sa propre évaluation publiée ; rattachement ensuite immuable', async () => {
-			const { data, error } = await insertSession(
+		// Depuis 20260930160000 (Q38) : refusée MÊME pour sa propre évaluation
+		// publiée — seul le serveur (service_role) crée la séance. Et plus aucune
+		// modification directe : le déplacement rend 0 ligne (plus de policy UPDATE).
+		it('refusée même pour sa propre évaluation publiée ; rattachement immuable', async () => {
+			const { error: ownError } = await insertSession(
 				studentC.client,
 				studentC.id,
 				viaClass.evaluationId
 			);
-			expect(error).toBeNull();
+			expect(ownError?.code).toBe('42501');
 
-			const { error: moveError } = await studentC.client
+			const { data, error } = await serverSession(studentC.id, viaClass.evaluationId);
+			expect(error, 'décor : séance posée par le serveur').toBeNull();
+
+			const { data: moved, error: moveError } = await studentC.client
 				.from('test_sessions')
 				.update({ evaluation_id: classmate.evaluationId })
 				.eq('id', data!.id)
 				.select('id');
-			expect(moveError?.code).toBe('42501');
+			expect(moveError).toBeNull();
+			expect(moved).toEqual([]);
 
 			const { data: row } = await service
 				.from('test_sessions')
@@ -432,12 +457,9 @@ describe('séries et évaluations (20260930130000)', () => {
 		});
 
 		it('une séance de flash-cards ne se rattache jamais à une évaluation', async () => {
-			const { error } = await insertSession(
-				studentB.client,
-				studentB.id,
-				classmate.evaluationId,
-				'flash'
-			);
+			// Même le serveur : c'est la contrainte, pas un droit (le client de
+			// l'élève est refusé plus tôt, par la RLS, depuis 20260930160000).
+			const { error } = await serverSession(studentB.id, classmate.evaluationId, 'flash');
 			expect(error?.code).toBe('23514');
 			expect(error?.message).toContain('test_sessions_flash_sans_evaluation');
 		});
@@ -455,11 +477,7 @@ describe('séries et évaluations (20260930130000)', () => {
 				.select('title');
 			expect(before).toEqual([{ title: 'A7 retouchée' }]);
 
-			const { error: sessionError } = await insertSession(
-				studentD.client,
-				studentD.id,
-				locked.evaluationId
-			);
+			const { error: sessionError } = await serverSession(studentD.id, locked.evaluationId);
 			expect(sessionError).toBeNull();
 
 			const { error: updateError } = await teacher.client
@@ -686,8 +704,7 @@ describe('séries et évaluations (20260930130000)', () => {
 			.insert({ class_id: k1Id, student_id: leaver.id, status: 'active' });
 		expect(memberError, 'décor : inscription').toBeNull();
 		const passed = await createEvaluation('published', [{ studentId: leaver.id }], 'RGPD');
-		const { data: session, error: sessionError } = await insertSession(
-			leaver.client,
+		const { data: session, error: sessionError } = await serverSession(
 			leaver.id,
 			passed.evaluationId
 		);

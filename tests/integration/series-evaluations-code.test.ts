@@ -14,6 +14,9 @@
  *   le dit en français ; la suppression d'une série utilisée est refusée ;
  * - l'aperçu du prof n'est jamais rattaché.
  *
+ * Depuis 20260930160000 (Q38), les séances d'évaluation sont posées par le
+ * service (le serveur) : l'élève ne les écrit plus lui-même.
+ *
  * `pnpm db:start` puis
  * `pnpm test:integration tests/integration/series-evaluations-code.test.ts`.
  *
@@ -96,9 +99,13 @@ async function person(role: 'student' | 'teacher'): Promise<Person> {
 	return { id: profile.id, client: await signIn(profile.email), isTest: !!data?.is_test };
 }
 
-/** Séance de l'élève, posée avec SON client (la policy restrictive s'applique) */
+/**
+ * Séance d'évaluation de l'élève, posée par le SERVICE : depuis 20260930160000
+ * (Q38), seul le serveur crée une séance rattachée à une évaluation. Les
+ * LECTURES testées ici passent toujours par les clients réels.
+ */
 async function studentSession(score: number) {
-	const { data, error } = await student.client
+	const { data, error } = await service
 		.from('test_sessions')
 		.insert({
 			user_id: student.id,
@@ -317,7 +324,8 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 			CATEGORIES
 		);
 		expect(first).toEqual({ ok: true, evaluationId: evaluation!.id });
-		const { error: insertError } = await student.client.from('test_sessions').insert({
+		// Séance posée par le serveur (Q38) ; `resolveSessionEvaluation` lit sous RLS
+		const { error: insertError } = await service.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'interactive',
 			categories: CATEGORIES,
