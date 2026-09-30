@@ -82,6 +82,7 @@
 		"corrections:check": "tsx scripts/corrections/check.ts",
 		"corrections:preview": "tsx scripts/corrections/preview.ts",
 		"corrections:import": "tsx scripts/corrections/import.ts",
+		"corrections:retouches": "tsx scripts/corrections/retouches.ts",
 		"migration:import": "tsx scripts/import-questions-to-db.ts",
 		"migration:import:dry": "tsx scripts/import-questions-to-db.ts --dry-run",
 		"migration:import:approved": "tsx scripts/import-questions-to-db.ts --approved-only",

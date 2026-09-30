@@ -103,3 +103,17 @@ comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/100
   proposition : 150 (c31c9d95 en compte 126). Preuves rouges sur copie : 12 neutralisations.
 - Lots `cloture-brouillons` (23) et `cloture-publies` (15) ; écartés : d6268317 (image), 64e55fc7
   (unité au choix, `\unit` refusé par MathLive) — `LEFT_OUT` dans `lots/cloture.ts`.
+
+## Fait (2026-09-30) — retouches ciblées (branche `fix/retouches-modeles`)
+
+- `pnpm corrections:retouches` (`scripts/corrections/retouches.ts`, retouches dans `lib/retouches.ts`,
+  instantané `docs/corrections/retouches/_modeles.json`) : SIMULATION 18/18 prêtes (checkTemplate +
+  vérificateur verts), `--publier` JAMAIS lancé. Sauvegarde prévue : `data/migration-output/backups/retouches-<date>.json`.
+- Appliquées : `e` renommée (accbfd16, 7c642d2f → `u` ; 13d52989 → `n`), dd7db98e (2/10 retiré),
+  160f782d et 58f7a8dd (réponse sans terme nul), 33b1b496 (r ≠ p, v1-2), ff8082bd (`b` retirée),
+  07bce646 (retitré « Opérations sur les limites »), 7 titres R-DEC-RANG (espace finale), 14a51794 et
+  bd21a9d7 (`\;` retirés).
+- Écartées : 294c4316 (`c` premier avec `b` : diviseurs de a = diviseurs communs, règle déjà juste) ;
+  579d0b00, ed5f5f52 (la description inclut les unités, spec « 7996 + 8 »).
+- Reste : accbfd16 / 7c642d2f écrivent toujours le chiffre des unités sans branche (un 0 d'unités reste
+  orange) — le rendre « branchable » changerait le rendu, à trancher.
