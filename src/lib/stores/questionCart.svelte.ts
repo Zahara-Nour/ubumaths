@@ -20,6 +20,9 @@ export interface CartItem {
 	delay: number; // Time delay in seconds (default: 20)
 }
 
+/** Questions au plus par catégorie (même borne que la série : `$lib/validation/series`) */
+const MAX_QUANTITY = 99;
+
 /**
  * Question Cart Store
  * Manages selected questions with localStorage persistence
@@ -130,11 +133,14 @@ class QuestionCartStore {
 		);
 
 		if (existingIndex !== -1) {
-			// Update existing item quantity
-			this.items[existingIndex].quantity += quantity;
+			// Même plafond que updateQuantity / incrementQuantity : 99
+			this.items[existingIndex].quantity = Math.min(
+				MAX_QUANTITY,
+				this.items[existingIndex].quantity + quantity
+			);
 		} else {
 			// Add new item with default delay
-			this.items.push({ category, quantity, delay });
+			this.items.push({ category, quantity: Math.min(MAX_QUANTITY, quantity), delay });
 		}
 
 		this.saveToStorage();
@@ -163,7 +169,7 @@ class QuestionCartStore {
 				return;
 			}
 			// Clamp quantity between 1 and 99
-			item.quantity = Math.max(1, Math.min(99, quantity));
+			item.quantity = Math.max(1, Math.min(MAX_QUANTITY, quantity));
 			this.saveToStorage();
 		}
 	}
@@ -174,7 +180,7 @@ class QuestionCartStore {
 	incrementQuantity(category: QuestionCategory) {
 		const categoryKey = this.getCategoryKey(category);
 		const item = this.items.find((i) => this.getCategoryKey(i.category) === categoryKey);
-		if (item && item.quantity < 99) {
+		if (item && item.quantity < MAX_QUANTITY) {
 			item.quantity += 1;
 			this.saveToStorage();
 		}

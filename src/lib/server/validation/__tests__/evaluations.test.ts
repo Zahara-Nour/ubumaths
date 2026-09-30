@@ -44,11 +44,17 @@ describe('createSeriesSchema (B11)', () => {
 			createSeriesSchema.safeParse({ ...valid, categories: Array(51).fill(ITEM) }).success
 		).toBe(false);
 		expect(
-			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 51 }] }).success
+			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 100 }] }).success
 		).toBe(false);
 		expect(
 			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, delay: 4000 }] }).success
 		).toBe(false);
+	});
+
+	it('99 questions pour une catégorie (plafond du panier) : enregistrable', () => {
+		expect(
+			createSeriesSchema.safeParse({ ...valid, categories: [{ ...ITEM, quantity: 99 }] }).success
+		).toBe(true);
 	});
 
 	it('niveau inconnu : refusé', () => {

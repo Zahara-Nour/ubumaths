@@ -27,7 +27,8 @@ export const cartItemSchema = z.object({
 		.number()
 		.int('Nombre de questions entier attendu')
 		.positive('Au moins une question par catégorie')
-		.max(50, 'Trop de questions pour une catégorie (50 au plus)'),
+		// Même plafond que le panier (`questionCart` : 99)
+		.max(99, 'Trop de questions pour une catégorie (99 au plus)'),
 	delay: z
 		.number()
 		.int('Durée entière attendue')

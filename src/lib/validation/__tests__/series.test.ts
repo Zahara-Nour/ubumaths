@@ -30,6 +30,10 @@ describe('seriesCategoriesSchema', () => {
 		expect(seriesCategoriesSchema.safeParse(Array(50).fill(ITEM)).success).toBe(true);
 	});
 
+	it('accepte 99 questions pour une catégorie (plafond du panier)', () => {
+		expect(seriesCategoriesSchema.safeParse([{ ...ITEM, quantity: 99 }]).success).toBe(true);
+	});
+
 	it('refuse une série vide ou de plus de 50 catégories', () => {
 		expect(seriesCategoriesSchema.safeParse([]).success).toBe(false);
 		expect(seriesCategoriesSchema.safeParse(Array(51).fill(ITEM)).success).toBe(false);
@@ -38,7 +42,7 @@ describe('seriesCategoriesSchema', () => {
 	it('refuse une quantité ou une durée hors bornes', () => {
 		for (const bad of [
 			{ ...ITEM, quantity: 0 },
-			{ ...ITEM, quantity: 51 },
+			{ ...ITEM, quantity: 100 },
 			{ ...ITEM, quantity: 2.5 },
 			{ ...ITEM, delay: -1 },
 			{ ...ITEM, delay: 3601 }

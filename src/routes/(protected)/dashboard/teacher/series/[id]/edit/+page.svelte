@@ -35,7 +35,7 @@
 
 	function handleQuantity(index: number, delta: number) {
 		const next = categories[index].quantity + delta;
-		if (next < 1 || next > 50) return;
+		if (next < 1 || next > 99) return;
 		categories[index].quantity = next;
 	}
 

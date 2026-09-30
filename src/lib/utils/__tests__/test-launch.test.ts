@@ -53,6 +53,13 @@ describe('resolveTestLaunch', () => {
 		expect(launch.kind).toBe('error');
 	});
 
+	it('une catégorie à 99 questions (plafond du panier) se lance', () => {
+		const big = { ...ITEM, quantity: 99 };
+		expect(
+			resolveTestLaunch(params({ categories: encodeCategoriesParam([big]), mode: 'interactive' }))
+		).toMatchObject({ kind: 'start', categories: [big] });
+	});
+
 	it('forme inconnue → message', () => {
 		expect(
 			resolveTestLaunch(params({ categories: encodeCategoriesParam([ITEM]), mode: 'quiz' }))
