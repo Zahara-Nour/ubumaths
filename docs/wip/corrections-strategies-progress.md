@@ -117,3 +117,26 @@ comme décimal, `mod` sur un entier > 2^31 refusé → `round(n-1000*floor(n/100
   579d0b00, ed5f5f52 (la description inclut les unités, spec « 7996 + 8 »).
 - Reste : accbfd16 / 7c642d2f écrivent toujours le chiffre des unités sans branche (un 0 d'unités reste
   orange) — le rendre « branchable » changerait le rendu, à trancher.
+
+## Dette : deux infrastructures d'étapes (consignée le 2026-09-30, décision de David)
+
+Constat : les corrections des 589 modèles sont en **mode A** (texte avec variables écrit une fois par
+`scripts/corrections/`, générateurs propres `r-pass.ts`, `r-inv.ts`, `r-mental.ts`…). Le **moteur
+pédagogique** de mathAST (`step-generator/`, `pedagogical-*`, mode B `correction.generatedSteps`,
+`GeneratedStepsCorrection.svelte`) n'est utilisé par **aucun** modèle en base (mesuré : 0 / 640). Il
+ignore le calcul réfléchi (pour `83 + 9` : « On additionne 83 et 9 ») et les rappels de règle.
+
+Décision : **on garde la situation actuelle.** Les 127 corrections de règles (N) restent en mode A dans
+tous les cas (un rappel de règle se rédige, il ne se calcule pas).
+
+**Déclencheurs** pour porter les 15 stratégies de calcul réfléchi (R, 107 modèles) dans
+`pedagogical-arithmetic` comme règles du moteur, rendues par le mode B :
+
+1. besoin de corrections **adaptées au niveau** (paliers, `schoolLevel`, `verbosity`) ;
+2. création **régulière** de nouveaux modèles de calcul réfléchi (le mode A impose de relancer l'outil) ;
+3. volonté d'un **rendu unique** pour toutes les corrections (deux styles coexistent : `align` + 3
+   couleurs en mode A, `aligned` sur deux lignes + surlignage bleu en mode B).
+
+À la migration : les textes déjà en base ne bougent pas ; le vérificateur de `scripts/corrections/`
+peut servir de banc d'essai pour les règles du moteur (même contrat : départ = opération posée, fin =
+réponse attendue, égalités prouvées).
