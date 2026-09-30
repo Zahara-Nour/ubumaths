@@ -23,7 +23,14 @@ const { instance } = previewCartItem([TEMPLATE], {
 
 async function renderTile() {
 	expect(instance).toBeDefined();
-	return await render(QuestionPreviewCard, { template: TEMPLATE, preview: instance! });
+	// Décor réel : la page place la grille dans <main>, où `app.css` impose la
+	// taille des paragraphes (`main p { … !important }`). Hors <main>, un test de
+	// taille passerait à tort.
+	const main = document.body.appendChild(document.createElement('main'));
+	return await render(QuestionPreviewCard, {
+		target: main,
+		props: { template: TEMPLATE, preview: instance! }
+	});
 }
 
 describe('QuestionPreviewCard', () => {
@@ -41,6 +48,25 @@ describe('QuestionPreviewCard', () => {
 			.element(page.getByRole('button', { name: 'Voir la correction' }).first())
 			.toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: /panier/ })).toBeInTheDocument();
+	});
+
+	it('intitulé : sous-domaine, titre et description du modèle, pas « Thème / Domaine »', async () => {
+		const screen = await renderTile();
+		const heading = screen.container.querySelector<HTMLElement>('[data-tile-heading]');
+
+		expect(heading).not.toBeNull();
+		expect(heading!.textContent).toContain(TEMPLATE.subdomain!);
+		expect(heading!.textContent).toContain(TEMPLATE.title);
+		// La description distingue les modèles d'un même sous-domaine (même titre)
+		const description = heading!.querySelector<HTMLElement>('[data-tile-description] p');
+		expect(description).not.toBeNull();
+		// Plus petite que le titre (le rendu Markdown imposait sa propre taille)
+		const title = heading!.querySelector<HTMLElement>('.tile-title p');
+		expect(parseFloat(getComputedStyle(description!).fontSize)).toBeLessThan(
+			parseFloat(getComputedStyle(title!).fontSize)
+		);
+		// Thème et domaine sont déjà affichés par la page (sélecteur, onglet)
+		expect(heading!.textContent).not.toContain(`${TEMPLATE.theme} /`);
 	});
 
 	it("un clic sur l'énoncé n'ouvre rien", async () => {
