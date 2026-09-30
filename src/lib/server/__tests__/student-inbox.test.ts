@@ -136,7 +136,7 @@ afterEach(() => {
  *
  * The aggregator calls these tables in this order on every run:
  *   - class_members (1x: active classes)
- *   - assessment_assignments (1x)
+ *   - evaluation_assignments (1x)
  *   - test_sessions (1x, only when assessment rows exist)
  *   - exercise_assignments (1x)
  *   - exercises (1x, only when exercise rows exist)
@@ -157,7 +157,7 @@ function queueEmptyBaseline(mock: MockSupabase, classIds: string[] = []) {
 		'class_members',
 		classIds.map((id) => ({ class_id: id }))
 	);
-	mock.enqueue('assessment_assignments', []);
+	mock.enqueue('evaluation_assignments', []);
 	mock.enqueue('exercise_assignments', []);
 	// Les affectations de classe passent par la JONCTION : la colonne historique
 	// `worksheet_assignments.class_id` ne portait que la première classe, et une
@@ -177,7 +177,7 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 	/** Prépare une fiche assignée à la classe, avec 2 exercices. */
 	function queueWorksheetWithTwoExercises(mock: MockSupabase, masteryRows: unknown[]) {
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		// La jonction désigne l'affectation ; la colonne historique ne décide plus.
 		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1', class_id: CLASS_A }]);
@@ -238,7 +238,7 @@ describe('getStudentWorkInbox — complétion des fiches (auto-évaluation)', ()
 	it('laisse la fiche « à faire » quand elle ne contient aucun exercice', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignment_classes', [{ assignment_id: 'wa-1', class_id: CLASS_A }]);
 		mock.enqueue('worksheet_assignments', [
@@ -286,19 +286,20 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
 
 		// Assessment via class (1 item)
-		mock.enqueue('assessment_assignments', [
+		mock.enqueue('evaluation_assignments', [
 			{
 				id: 'aa-1',
-				assessment_id: 'a-1',
+				evaluation_id: 'a-1',
 				class_id: CLASS_A,
 				student_id: null,
 				assigned_at: ISO.twoDaysAgo,
 				assigned_by: 'teacher-1',
-				assessment: {
+				evaluation: {
 					id: 'a-1',
-					title: 'Eval Algebre',
+					form: 'interactive',
 					status: 'published',
-					settings: { deadline: ISO.threeDaysFromNow }
+					deadline: ISO.threeDaysFromNow,
+					series: { title: 'Eval Algebre' }
 				}
 			}
 		]);
@@ -394,7 +395,7 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 		]);
 
 		// Each source was queried
-		expect(mock.calls('assessment_assignments')).toBe(1);
+		expect(mock.calls('evaluation_assignments')).toBe(1);
 		expect(mock.calls('exercise_assignments')).toBe(1);
 		// Worksheet path always queries class-scoped + direct-by-id (when student has direct links)
 		expect(mock.calls('worksheet_assignments')).toBe(2);
@@ -417,7 +418,7 @@ describe('getStudentWorkInbox — A2 (dedup precedence)', () => {
 	it('dedups item assigned both directly and via class, preferring the direct one', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 
 		// Same exercise assigned via class AND directly to the student.
 		mock.enqueue('exercise_assignments', [
@@ -465,18 +466,17 @@ describe('getStudentWorkInbox — A3 (exclude inactive)', () => {
 	it('excludes assessments whose embedded status is not published', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		// The DB-side filter `.eq('assessment.status', 'published')` is what RLS+filter does;
-		// the aggregator's downstream filter still rejects rows whose joined assessment is null,
-		// which is what an unmatched join produces.
-		mock.enqueue('assessment_assignments', [
+		// La RLS ne montre que les évaluations publiées ; le filtre de l'agrégateur
+		// rejette aussi une ligne dont l'évaluation jointe est nulle (jointure refusée).
+		mock.enqueue('evaluation_assignments', [
 			{
 				id: 'aa-1',
-				assessment_id: 'a-1',
+				evaluation_id: 'a-1',
 				class_id: null,
 				student_id: STUDENT,
 				assigned_at: ISO.twoDaysAgo,
 				assigned_by: 'teacher-1',
-				assessment: null
+				evaluation: null
 			}
 		]);
 		mock.enqueue('exercise_assignments', []);
@@ -499,23 +499,24 @@ describe('getStudentWorkInbox — S1 (assessment done)', () => {
 	it('marks assessment as done when at least one test_sessions row has completed_at', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', [
+		mock.enqueue('evaluation_assignments', [
 			{
 				id: 'aa-1',
-				assessment_id: 'a-1',
+				evaluation_id: 'a-1',
 				class_id: null,
 				student_id: STUDENT,
 				assigned_at: ISO.twoDaysAgo,
 				assigned_by: 'teacher-1',
-				assessment: {
+				evaluation: {
 					id: 'a-1',
-					title: 'Eval',
+					form: 'interactive',
 					status: 'published',
-					settings: { deadline: null }
+					deadline: null,
+					series: { title: 'Eval' }
 				}
 			}
 		]);
-		mock.enqueue('test_sessions', [{ assignment_id: 'aa-1', completed_at: ISO.yesterday }]);
+		mock.enqueue('test_sessions', [{ evaluation_id: 'a-1', completed_at: ISO.yesterday }]);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -528,11 +529,80 @@ describe('getStudentWorkInbox — S1 (assessment done)', () => {
 	});
 });
 
+describe('getStudentWorkInbox — évaluations (chantier 4)', () => {
+	function evaluationAssignment(form: 'interactive' | 'course') {
+		return {
+			id: 'ea-1',
+			evaluation_id: 'e-1',
+			class_id: null,
+			student_id: STUDENT,
+			assigned_at: ISO.twoDaysAgo,
+			assigned_by: 'teacher-1',
+			evaluation: {
+				id: 'e-1',
+				form,
+				status: 'published',
+				deadline: ISO.threeDaysFromNow,
+				series: { title: 'Tables de 7' }
+			}
+		};
+	}
+
+	function enqueueOthers(mock: ReturnType<typeof createMockSupabase>) {
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+	}
+
+	it('C21 : affiche la forme « Course aux nombres » et le titre de la série', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []);
+		mock.enqueue('evaluation_assignments', [evaluationAssignment('course')]);
+		mock.enqueue('test_sessions', []);
+		enqueueOthers(mock);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		expect(inbox.thisWeek).toHaveLength(1);
+		expect(inbox.thisWeek[0]).toMatchObject({
+			title: 'Tables de 7',
+			formLabel: 'Course aux nombres',
+			itemId: 'e-1',
+			assignmentId: 'ea-1',
+			dueAt: ISO.threeDaysFromNow
+		});
+	});
+
+	it('C21 : affiche « Entraînement » ; le lien ne porte pas de mode (la forme vient de l’évaluation)', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []);
+		mock.enqueue('evaluation_assignments', [evaluationAssignment('interactive')]);
+		mock.enqueue('test_sessions', []);
+		enqueueOthers(mock);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		expect(inbox.thisWeek[0].formLabel).toBe('Entraînement');
+		expect(inbox.thisWeek[0].href).toBe('/automaths/test?assignment=ea-1');
+	});
+
+	it('une évaluation non publiée n’apparaît pas', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []);
+		const draft = evaluationAssignment('interactive');
+		draft.evaluation.status = 'draft';
+		mock.enqueue('evaluation_assignments', [draft]);
+		enqueueOthers(mock);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		expect(inbox.thisWeek).toHaveLength(0);
+	});
+});
+
 describe('getStudentWorkInbox — S2 (python done)', () => {
 	it('marks python as done when at least one submission exists, regardless of is_correct', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -564,7 +634,7 @@ describe('getStudentWorkInbox — S3 (exercise done)', () => {
 	it('marks exercise as done when completed_at is non null', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', [
 			{
 				id: 'ea-1',
@@ -608,7 +678,7 @@ describe('getStudentWorkInbox — T1 (5-bucket bucketing)', () => {
 	it('places one item in each of the 5 sections given the right inputs', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		// Build 5 exercises, one per section, all direct.
 		mock.enqueue('exercise_assignments', [
 			row('ex-late', ISO.twoDaysAgo, ISO.yesterday),
@@ -659,7 +729,7 @@ describe('getStudentWorkInbox — T2 (done archived after 7 days)', () => {
 	it('drops a "done" item whose doneAt is older than 7 days', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', [
 			{
 				id: 'ea-old',
@@ -699,7 +769,7 @@ describe('getStudentWorkInbox — T3 (late archived after 30 days)', () => {
 	it('drops a "todo" item whose deadline passed more than 30 days ago', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', [
 			{
 				id: 'ea-ancient',
@@ -741,7 +811,7 @@ describe('getStudentWorkInbox — E3 (done yesterday, originally late)', () => {
 	it('moves a recently-done item out of late and into doneRecently', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', [
 			{
 				id: 'ea-1',
@@ -776,7 +846,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 	it('keeps the direct assignment when the same python exercise is also reachable via class', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -815,33 +885,35 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 	it('keeps the direct assignment when the same assessment is also reachable via class', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', [
+		mock.enqueue('evaluation_assignments', [
 			{
 				id: 'aa-class',
-				assessment_id: 'a-shared',
+				evaluation_id: 'a-shared',
 				class_id: CLASS_A,
 				student_id: null,
 				assigned_at: ISO.twoDaysAgo,
 				assigned_by: 'teacher-1',
-				assessment: {
+				evaluation: {
 					id: 'a-shared',
-					title: 'Eval partagee',
+					form: 'interactive',
 					status: 'published',
-					settings: { deadline: ISO.threeDaysFromNow }
+					deadline: ISO.threeDaysFromNow,
+					series: { title: 'Eval partagee' }
 				}
 			},
 			{
 				id: 'aa-direct',
-				assessment_id: 'a-shared',
+				evaluation_id: 'a-shared',
 				class_id: null,
 				student_id: STUDENT,
 				assigned_at: ISO.tenDaysAgo,
 				assigned_by: 'teacher-1',
-				assessment: {
+				evaluation: {
 					id: 'a-shared',
-					title: 'Eval partagee',
+					form: 'interactive',
 					status: 'published',
-					settings: { deadline: ISO.threeDaysFromNow }
+					deadline: ISO.threeDaysFromNow,
+					series: { title: 'Eval partagee' }
 				}
 			}
 		]);
@@ -866,7 +938,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		// the direct one (classId === null) must win.
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignment_classes', [
 			{ assignment_id: 'wa-class', class_id: CLASS_A }
@@ -918,7 +990,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		// PREMIÈRE classe de l'affectation, dont il pouvait n'être pas membre.
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignment_classes', [
 			{ assignment_id: 'wa-class', class_id: CLASS_A }
@@ -968,7 +1040,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		};
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignment_classes', [
 			{ assignment_id: 'wa-mixte', class_id: CLASS_A }
@@ -993,7 +1065,7 @@ describe('getStudentWorkInbox — python notebooks', () => {
 	it('surfaces a class-assigned notebook in the noDeadline bucket', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1030,7 +1102,7 @@ describe('getStudentWorkInbox — python notebooks', () => {
 	it('does not query python_notebook_assignments when the student has no classes', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []); // no classes
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1046,7 +1118,7 @@ describe('getStudentWorkInbox — python notebooks', () => {
 	it('returns empty when the class has no notebook assignments', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1066,7 +1138,7 @@ describe('getStudentWorkInbox — python files', () => {
 	it('surfaces a class-assigned file with its due_date in the thisWeek bucket', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1104,7 +1176,7 @@ describe('getStudentWorkInbox — python files', () => {
 	it('lands a file with no due_date in the noDeadline bucket', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1133,7 +1205,7 @@ describe('getStudentWorkInbox — python files', () => {
 	it('does not query python_file_assignments when the student has no classes', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', []); // no classes
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -1149,7 +1221,7 @@ describe('getStudentWorkInbox — python files', () => {
 	it('returns empty when the class has no file assignments', async () => {
 		const mock = createMockSupabase();
 		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
-		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('evaluation_assignments', []);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);

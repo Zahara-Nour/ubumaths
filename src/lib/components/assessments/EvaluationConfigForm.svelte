@@ -128,7 +128,9 @@
 	let minDeadline = $derived(toLocalInput(new Date().toISOString()));
 </script>
 
+<!-- novalidate : les bornes sont vérifiées ici, avec un message en français -->
 <form
+	novalidate
 	onsubmit={(e) => {
 		e.preventDefault();
 		handleSubmit();
