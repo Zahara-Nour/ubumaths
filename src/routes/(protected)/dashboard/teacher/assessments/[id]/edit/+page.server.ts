@@ -54,7 +54,7 @@ export const actions: Actions = {
 				return fail(409, { message: 'Seule une évaluation en brouillon se modifie' });
 			}
 
-			await updateEvaluation(locals.supabase, id, validation.data.settings);
+			await updateEvaluation(locals.supabase, current.id, validation.data.settings);
 			return { success: true };
 		} catch (e) {
 			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });

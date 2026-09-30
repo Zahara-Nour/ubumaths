@@ -63,6 +63,29 @@ beforeEach(() => {
 });
 
 describe('action « Modifier l’évaluation »', () => {
+	it('ancien lien (id d’assessment) : écrit sur l’id de l’ÉVALUATION', async () => {
+		const LEGACY = '99999999-9999-4999-8999-999999999999';
+		const fake = createFakeSupabase((table, calls) => {
+			if (table === 'profiles') return { data: { id: TEACHER, role: 'teacher' } };
+			if (calls.some((c) => c.method === 'update')) return { data: [evaluationRow('draft')] };
+			const byId = calls.some((c) => c.method === 'eq' && c.args[0] === 'id');
+			return { data: byId ? null : evaluationRow('draft') };
+		});
+		const form = new FormData();
+		form.set('settings', JSON.stringify({ form: 'interactive' }));
+		const result = await actions.default({
+			request: new Request('http://localhost', { method: 'POST', body: form }),
+			params: { id: LEGACY },
+			locals: {
+				supabase: fake.client,
+				safeGetSession: async () => ({ user: { id: TEACHER }, session: {} })
+			}
+		} as never);
+		expect(result).toEqual({ success: true });
+		const [update] = updates(fake);
+		expect(update.calls).toContainEqual({ method: 'eq', args: ['id', EVALUATION] });
+	});
+
 	it('brouillon : modifié', async () => {
 		const { promise, fake } = post('draft');
 		expect(await promise).toEqual({ success: true });

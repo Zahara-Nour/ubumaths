@@ -7,6 +7,8 @@ import {
 	computeEvaluationStatistics,
 	countAttempts,
 	createEvaluation,
+	assignEvaluation,
+	getEvaluation,
 	getEvaluationResults,
 	getStudentAssignments,
 	validateAttempt
@@ -440,5 +442,94 @@ describe('sameComposition', () => {
 		expect(sameComposition([a, b], [b, a])).toBe(true);
 		expect(sameComposition([a], [{ ...a, delay: 21 }])).toBe(false);
 		expect(sameComposition([a], [{ ...a, category: { ...a.category, subdomain: '' } }])).toBe(true);
+	});
+});
+
+describe('getEvaluation — anciens liens (legacy_assessment_id)', () => {
+	const LEGACY = 'c1d2e3f4-cccc-4ccc-8ccc-cccccccccccc';
+
+	it('id d’évaluation : trouvé directement, une seule requête', async () => {
+		const fake = createFakeSupabase(() => ({ data: evaluationRow() }));
+		expect((await getEvaluation(fake.client, EVALUATION))?.id).toBe(EVALUATION);
+		expect(fake.on('evaluations')).toHaveLength(1);
+	});
+
+	it('ancien id d’assessment : retombe sur legacy_assessment_id', async () => {
+		const fake = createFakeSupabase((_table, calls) =>
+			called({ table: 'evaluations', calls }, 'eq', 'legacy_assessment_id', LEGACY)
+				? { data: evaluationRow({ legacy_assessment_id: LEGACY }) }
+				: { data: null }
+		);
+		const evaluation = await getEvaluation(fake.client, LEGACY);
+		expect(evaluation?.id).toBe(EVALUATION);
+	});
+
+	it('introuvable des deux façons : null', async () => {
+		const fake = createFakeSupabase(() => ({ data: null }));
+		expect(await getEvaluation(fake.client, LEGACY)).toBeNull();
+		expect(fake.on('evaluations')).toHaveLength(2);
+	});
+});
+
+describe('assignEvaluation — propriétaire ou admin (comme la RLS)', () => {
+	const ADMIN = 'd1e2f3a4-dddd-4ddd-8ddd-dddddddddddd';
+	const OTHER = 'e1f2a3b4-eeee-4eee-8eee-eeeeeeeeeeee';
+	const LEGACY = 'c1d2e3f4-cccc-4ccc-8ccc-cccccccccccc';
+
+	function fake() {
+		return createFakeSupabase((table, calls) => {
+			if (table === 'evaluations') {
+				const byLegacy = called({ table, calls }, 'eq', 'legacy_assessment_id', LEGACY);
+				const byId = called({ table, calls }, 'eq', 'id', EVALUATION);
+				return { data: byLegacy || byId ? evaluationRow() : null };
+			}
+			const insert = calls.find((c) => c.method === 'insert');
+			return { data: insert ? (insert.args[0] as unknown[]) : [] };
+		});
+	}
+
+	it('admin non propriétaire : assigne, assigned_by = l’admin', async () => {
+		const f = fake();
+		const rows = await assignEvaluation(
+			f.client,
+			EVALUATION,
+			{ class_ids: [CLASS_ID] },
+			{ id: ADMIN, isAdmin: true }
+		);
+		expect(rows).toHaveLength(1);
+		const insert = f.on('evaluation_assignments')[0].calls.find((c) => c.method === 'insert')!;
+		expect((insert.args[0] as Record<string, unknown>[])[0]).toMatchObject({
+			evaluation_id: EVALUATION,
+			assigned_by: ADMIN
+		});
+	});
+
+	it('prof non propriétaire : 403', async () => {
+		await expect(
+			assignEvaluation(
+				fake().client,
+				EVALUATION,
+				{ class_ids: [CLASS_ID] },
+				{
+					id: OTHER,
+					isAdmin: false
+				}
+			)
+		).rejects.toMatchObject({ status: 403 });
+	});
+
+	it('ancien id dans l’URL : l’assignation porte l’id de l’ÉVALUATION', async () => {
+		const f = fake();
+		await assignEvaluation(
+			f.client,
+			LEGACY,
+			{ class_ids: [CLASS_ID] },
+			{
+				id: TEACHER,
+				isAdmin: false
+			}
+		);
+		const insert = f.on('evaluation_assignments')[0].calls.find((c) => c.method === 'insert')!;
+		expect((insert.args[0] as Record<string, unknown>[])[0].evaluation_id).toBe(EVALUATION);
 	});
 });

@@ -35,7 +35,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		const [classesWithData, existingAssignments] = await Promise.all([
 			getTeacherClassesWithCounts(user.id, locals.supabase),
-			getEvaluationAssignments(locals.supabase, id)
+			getEvaluationAssignments(locals.supabase, evaluation.id)
 		]);
 
 		const classes = classesWithData.map((c) => ({
@@ -64,7 +64,12 @@ export const actions: Actions = {
 		}
 
 		try {
-			await assignEvaluation(locals.supabase, id, { class_ids: classIds.data }, user.id);
+			await assignEvaluation(
+				locals.supabase,
+				id,
+				{ class_ids: classIds.data },
+				{ id: user.id, isAdmin: profile.role === 'admin' }
+			);
 
 			// Prévenir les élèves ; un échec de notification n'annule pas l'assignation
 			const evaluation = await getEvaluation(locals.supabase, id);
@@ -97,7 +102,10 @@ export const actions: Actions = {
 		}
 
 		try {
-			await removeAssignment(locals.supabase, assignmentId.data, id);
+			// L'URL peut porter un ancien id d'assessment : on retrouve l'évaluation
+			const evaluation = await getEvaluation(locals.supabase, id);
+			if (!evaluation) return fail(404, { message: 'Évaluation introuvable' });
+			await removeAssignment(locals.supabase, assignmentId.data, evaluation.id);
 			return { success: true };
 		} catch (e) {
 			if (e instanceof EvaluationError) return fail(e.status, { message: e.message });

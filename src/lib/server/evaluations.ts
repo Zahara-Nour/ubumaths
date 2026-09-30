@@ -126,21 +126,29 @@ export async function createEvaluation(
 	return toDbEvaluation(data);
 }
 
+/**
+ * Une évaluation et sa série. Un identifiant introuvable est retenté comme
+ * `legacy_assessment_id` : les anciens liens prof (`/assessments/<id>`) et la
+ * vue `resources`, tant qu'elle lit `assessments`, portent l'id d'origine.
+ */
 export async function getEvaluation(
 	supabase: TypedSupabaseClient,
 	evaluationId: string
 ): Promise<EvaluationWithSeries | null> {
-	const { data, error } = await supabase
-		.from('evaluations')
-		.select(EVALUATION_WITH_SERIES)
-		.eq('id', evaluationId)
-		.maybeSingle();
+	for (const column of ['id', 'legacy_assessment_id'] as const) {
+		const { data, error } = await supabase
+			.from('evaluations')
+			.select(EVALUATION_WITH_SERIES)
+			.eq(column, evaluationId)
+			.maybeSingle();
 
-	if (error) {
-		console.error('[getEvaluation] Lecture impossible :', error);
-		throw new EvaluationError(500, "Impossible de charger l'évaluation");
+		if (error) {
+			console.error('[getEvaluation] Lecture impossible :', error);
+			throw new EvaluationError(500, "Impossible de charger l'évaluation");
+		}
+		if (data) return toEvaluationWithSeries(data as EvaluationRowWithSeries);
 	}
-	return data ? toEvaluationWithSeries(data as EvaluationRowWithSeries) : null;
+	return null;
 }
 
 /** Évaluations d'un professeur, avec leur série et leur nombre d'assignations */
@@ -226,14 +234,22 @@ export async function setEvaluationStatus(
 // ASSIGNATIONS
 // ===========================================================================
 
+/**
+ * Assigner une évaluation publiée. Le propriétaire ou un admin (comme la RLS :
+ * `evaluation_assignments_admin_all`) ; `assigned_by` = celui qui assigne.
+ */
 export async function assignEvaluation(
 	supabase: TypedSupabaseClient,
 	evaluationId: string,
 	targets: { class_ids?: string[]; student_ids?: string[] },
-	teacherId: string
+	actor: { id: string; isAdmin: boolean }
 ): Promise<DbEvaluationAssignment[]> {
+	const teacherId = actor.id;
 	const evaluation = await getEvaluation(supabase, evaluationId);
-	if (!evaluation || evaluation.created_by !== teacherId) {
+	if (!evaluation) {
+		throw new EvaluationError(404, 'Évaluation introuvable');
+	}
+	if (evaluation.created_by !== teacherId && !actor.isAdmin) {
 		throw new EvaluationError(403, 'Cette évaluation ne vous appartient pas');
 	}
 	if (evaluation.status !== 'published') {
@@ -242,13 +258,13 @@ export async function assignEvaluation(
 
 	const rows = [
 		...(targets.class_ids ?? []).map((classId) => ({
-			evaluation_id: evaluationId,
+			evaluation_id: evaluation.id,
 			class_id: classId,
 			student_id: null,
 			assigned_by: teacherId
 		})),
 		...(targets.student_ids ?? []).map((studentId) => ({
-			evaluation_id: evaluationId,
+			evaluation_id: evaluation.id,
 			class_id: null,
 			student_id: studentId,
 			assigned_by: teacherId

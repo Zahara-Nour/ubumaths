@@ -194,6 +194,8 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 		icon: ClipboardCheck,
 		routes: {
 			// No read-only page exists; the edit page is the canonical entry point.
+			// `id` : évaluation, ou ancien assessment (la vue `resources` lit encore
+			// `assessments`) — `getEvaluation` retombe sur `legacy_assessment_id`.
 			teacher: (id) => resolve('/(protected)/dashboard/teacher/assessments/[id]/edit', { id }),
 			// Students only ever reach an assessment through its results.
 			student: (id) => resolve('/(protected)/dashboard/student/assessments/[id]/results', { id }),
