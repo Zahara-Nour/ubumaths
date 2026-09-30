@@ -75,6 +75,10 @@ export function keyboard(
 	function handleKeyDown(event: KeyboardEvent) {
 		if (!currentOptions.enabled) return;
 
+		// Touche combinée (Cmd/Ctrl/Alt) : raccourci du navigateur (recherche,
+		// impression…), on n'y touche pas. Maj reste permise (N, F…)
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+
 		// Frappe tapée dans un champ (input, textarea, contentEditable, MathLive) :
 		// elle appartient au champ, pas à la navigation
 		if (isFromEditableField(event)) return;
