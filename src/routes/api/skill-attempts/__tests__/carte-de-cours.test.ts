@@ -115,6 +115,19 @@ describe('POST /api/skill-attempts — source', () => {
 		});
 	});
 
+	it('carte de cours : FSRS garde le meilleur résultat du jour (décision 2026-09-30)', async () => {
+		optionsDuModele = { courseCard: true };
+		await poster({ template_id: MODELE, success: true });
+		const options = applyFsrsReview.mock.calls[0][7] as {
+			bestOfDay?: { now: Date };
+			skipIf?: unknown;
+			verifyWrite?: boolean;
+		};
+		expect(options.bestOfDay?.now).toBeInstanceOf(Date);
+		expect(options.skipIf).toBeUndefined();
+		expect(options.verifyWrite).toBe(true);
+	});
+
 	// Carte repassée en brouillon pendant la série (décision de David, 2026-09-28) :
 	// la trace est gardée, en auto-évaluation, au lieu d'un refus 404.
 	it('carte repassée en brouillon : trace gardée, source student_self', async () => {

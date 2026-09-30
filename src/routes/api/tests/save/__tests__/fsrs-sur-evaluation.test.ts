@@ -137,13 +137,17 @@ function reponse(templateId: string, isCorrect: boolean, index = 0) {
 	};
 }
 
-async function enregistrer(answers: ReturnType<typeof reponse>[], statutAttendu = 201) {
+async function enregistrer(
+	answers: ReturnType<typeof reponse>[],
+	statutAttendu = 201,
+	mode: 'interactive' | 'flash' = 'interactive'
+) {
 	const request = new Request('http://localhost/api/tests/save', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
 			result: {
-				mode: 'interactive',
+				mode,
 				score: 10,
 				scorePercentage: 100,
 				totalQuestions: answers.length,
@@ -282,22 +286,24 @@ describe('enregistrement d’une évaluation', () => {
 		]);
 	});
 
-	it('carte : fiche FSRS mise à jour au plus une fois par jour, écriture vérifiée', async () => {
+	it('carte : le meilleur résultat du jour seulement (décision 2026-09-30), écriture vérifiée', async () => {
 		cartesDeCours = [MODELE_B];
 		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
 
 		// Question ordinaire : appel inchangé (aucune option)
 		expect(applyFsrsReview.mock.calls[0]).toHaveLength(6);
-		// Carte : Good, garde-fou journalier + écriture vérifiée
+		// Carte : Good, « meilleur du jour » + écriture vérifiée
 		const appelCarte = applyFsrsReview.mock.calls[1];
 		expect(appelCarte.slice(2, 6)).toEqual([ELEVE, 'template', MODELE_B, Grade.GOOD]);
 		const options = appelCarte[7] as {
-			skipIf: (s: { lastReview: string | null }) => boolean;
+			bestOfDay?: { now: Date };
+			skipIf?: unknown;
 			verifyWrite: boolean;
 		};
 		expect(options.verifyWrite).toBe(true);
-		expect(options.skipIf({ lastReview: new Date().toISOString() })).toBe(true);
-		expect(options.skipIf({ lastReview: null })).toBe(false);
+		expect(options.bestOfDay?.now).toBeInstanceOf(Date);
+		// L'ancien garde-fou « premier résultat du jour » a disparu
+		expect(options.skipIf).toBeUndefined();
 	});
 
 	it('garde-fou déclenché (fiche déjà mise à jour aujourd’hui) : la trace est QUAND MÊME enregistrée', async () => {
@@ -379,5 +385,52 @@ describe('enregistrement d’une évaluation', () => {
 		expect(sessionInseree).toMatchObject({ total_questions: 1 });
 		// XP : seule la question A (la carte en est exclue)
 		expect(addBuddyXpFromTest.mock.calls[0]?.[2]).toHaveLength(1);
+	});
+
+	// ------------------------------------------------------------------------
+	// Forme « Flash-cards » (spécification de David, 2026-09-30) : l'élève
+	// retourne la carte et dit s'il avait trouvé. Tout est auto-évalué.
+	// ------------------------------------------------------------------------
+
+	it('flash : la séance est enregistrée avec le mode flash', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0)], 201, 'flash');
+		expect(sessionInseree).toMatchObject({ mode: 'flash', assignment_id: null });
+	});
+
+	it('flash : toutes les tentatives sont en source student_self', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)], 201, 'flash');
+
+		expect(attemptsInseres.map((a) => [a.template_id, a.source, a.success, a.grade])).toEqual([
+			[MODELE_A, 'student_self', true, Grade.GOOD],
+			[MODELE_B, 'student_self', false, Grade.AGAIN]
+		]);
+	});
+
+	it('flash : FSRS Good si « J’avais trouvé », Again sinon', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)], 201, 'flash');
+
+		expect(applyFsrsReview.mock.calls.map((c) => c.slice(2, 6))).toEqual([
+			[ELEVE, 'template', MODELE_A, Grade.GOOD],
+			[ELEVE, 'template', MODELE_B, Grade.AGAIN]
+		]);
+	});
+
+	it('flash : question ordinaire en « meilleur résultat du jour » (décision 2026-09-30)', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0)], 201, 'flash');
+		const options = applyFsrsReview.mock.calls[0][7] as { bestOfDay?: { now: Date } };
+		expect(options?.bestOfDay?.now).toBeInstanceOf(Date);
+	});
+
+	it('flash : aucune XP du compagnon', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)], 201, 'flash');
+		expect(addBuddyXpFromTest).not.toHaveBeenCalled();
+	});
+
+	it('flash : une carte de cours reste hors score et hors paquet', async () => {
+		cartesDeCours = [MODELE_A];
+		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, false, 1)], 201, 'flash');
+
+		expect(sessionInseree).toMatchObject({ score: 0, total_questions: 1 });
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
 	});
 });

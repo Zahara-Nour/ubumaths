@@ -20,6 +20,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { FSRS } from '$lib/srs/fsrs';
 import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
+import { reviewBestOfDay } from './best-of-day';
 
 type SB = SupabaseClient<Database>;
 
@@ -88,6 +89,12 @@ export async function loadOrInitCardStats(
 export interface ApplyFsrsOptions {
 	/** Si vrai sur la fiche existante (ou initialisée) : pas de mise à jour, rend `null`. */
 	skipIf?: (stats: CardStats) => boolean;
+	/**
+	 * Auto-évaluation (flash-cards, cartes de cours) : un seul résultat par jour et
+	 * par question, le MEILLEUR (`reviewBestOfDay`, décision de David 2026-09-30).
+	 * Rend `null` sans rien écrire si la journée a déjà un résultat au moins aussi bon.
+	 */
+	bestOfDay?: { now: Date };
 	/**
 	 * Vérifie que l'écriture a bien touché une ligne (`.select()`) : la RLS
 	 * échoue en SILENCE (0 ligne, sans erreur), cf. docs/ref/rls-echecs-silencieux.md.
@@ -188,6 +195,13 @@ export async function applyFsrsReview(
 	);
 
 	if (options.skipIf?.(stats)) return null;
+
+	if (options.bestOfDay) {
+		const best = reviewBestOfDay(fsrs, stats, grade, options.bestOfDay.now, timeSpent);
+		if (!best) return null;
+		await upsertCardStats(supabase, best, { verifyWrite: options.verifyWrite });
+		return best;
+	}
 
 	const updated = fsrs.reviewCard(stats, grade, timeSpent);
 

@@ -7,6 +7,7 @@
 	- Display (« En classe ») : projection question par question, sans score
 	- Interactive (« Entraînement ») : une question à la fois, score à la fin
 	- Course aux nombres: All questions at once with time limit
+	- Flash (« Flash-cards ») : l'élève retourne chaque carte et s'auto-évalue, sans chrono
 
 	Props:
 	- open: boolean - Dialog open state
@@ -20,7 +21,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Eye, BrainCircuit, Timer, Rocket } from '@lucide/svelte';
+	import { Eye, BrainCircuit, Timer, Rocket, Layers } from '@lucide/svelte';
 	import type { TestMode } from '$lib/types/test';
 
 	// Props
@@ -66,6 +67,17 @@
 			icon: Timer,
 			description: 'Toutes les questions en même temps avec un temps limité.',
 			features: ['Temps imparti', 'Toutes questions visibles', 'Score final']
+		},
+		{
+			mode: 'flash' as TestMode,
+			title: 'Flash-cards',
+			icon: Layers,
+			description: 'Retourne chaque carte et dis si tu avais trouvé. Sans chrono.',
+			features: [
+				'Une carte à la fois',
+				"Tu t'auto-évalues après avoir vu la réponse",
+				'Revoir les cartes non trouvées'
+			]
 		}
 	];
 
@@ -110,7 +122,7 @@
 		</Dialog.Header>
 
 		<!-- Mode selection -->
-		<div class="grid gap-4 py-4 sm:grid-cols-3">
+		<div class="grid gap-4 py-4 sm:grid-cols-2">
 			{#each modeConfigs as config (config.mode)}
 				{@const Icon = config.icon}
 				<button type="button" onclick={() => handleModeSelect(config.mode)} class="transition-all">

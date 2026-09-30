@@ -8,8 +8,7 @@ import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import {
 	CourseCardLookupError,
-	fetchCourseCardTemplateIds,
-	reviewedToday
+	fetchCourseCardTemplateIds
 } from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
@@ -41,6 +40,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const { result, categories, assignmentId } = validation.data;
+		// Forme « Flash-cards » (2026-09-30) : chaque réponse est une
+		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
+		// trouvé ») — tentatives `student_self`, pas d'XP.
+		const isFlash = result.mode === 'flash';
 
 		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
 		const templateIds = [
@@ -180,12 +183,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const grade: Grade = answer.isCorrect ? Grade.GOOD : Grade.AGAIN;
 
 			try {
-				if (courseCardIds.has(templateId)) {
-					// Carte : « Je savais » = Good, « Je ne savais pas » = Again. La fiche
-					// (clé template_id, partagée avec tout paquet qui l'ajouterait plus
-					// tard) n'est mise à jour qu'une fois par jour ; la trace, toujours.
+				if (isFlash || courseCardIds.has(templateId)) {
+					// Auto-évaluation (flash-cards, carte de cours) : « J'avais trouvé » /
+					// « Je savais » = Good, sinon Again. La fiche (clé template_id, partagée
+					// avec tout paquet) ne garde qu'UN résultat par jour, le MEILLEUR
+					// (décision de David, 2026-09-30) ; la trace, toujours.
 					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade, undefined, {
-						skipIf: (stats) => reviewedToday(stats.lastReview, now),
+						bestOfDay: { now },
 						verifyWrite: true
 					});
 				} else {
@@ -207,7 +211,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				success: answer.isCorrect,
 				// `grade` manquait aussi : la route l'enregistre, cette insertion non.
 				grade,
-				source: courseCardIds.has(templateId) ? 'student_self' : 'auto',
+				source: isFlash || courseCardIds.has(templateId) ? 'student_self' : 'auto',
 				with_help: false
 			});
 		}
@@ -243,18 +247,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Award buddy XP for each answer
 		let buddyXp = null;
-		try {
-			// Pas d'XP pour une carte de cours (décision 2026-09-28)
-			const answers = result.answers
-				.filter((answer) => !isCardAnswer(answer))
-				.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
-					isCorrect: answer.isCorrect,
-					theme: undefined as string | undefined // TODO: extract theme from categories if available
-				}));
-			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
-		} catch (buddyError) {
-			// Non-critical: buddy XP failure should not fail the test save
-			console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+		// Séance flash : auto-évaluée de bout en bout, donc sans XP (comme une carte)
+		if (!isFlash) {
+			try {
+				// Pas d'XP pour une carte de cours (décision 2026-09-28)
+				const answers = result.answers
+					.filter((answer) => !isCardAnswer(answer))
+					.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
+						isCorrect: answer.isCorrect,
+						theme: undefined as string | undefined // TODO: extract theme from categories if available
+					}));
+				buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
+			} catch (buddyError) {
+				// Non-critical: buddy XP failure should not fail the test save
+				console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+			}
 		}
 
 		return json({ sessionId: testSession.id, buddy_xp: buddyXp }, { status: 201 });

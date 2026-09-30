@@ -241,6 +241,23 @@ export interface ReviewHistoryEntry {
 	 * Time spent on this review (seconds)
 	 */
 	timeSpent?: number;
+
+	/**
+	 * État de la fiche JUSTE AVANT cette révision (auto-évaluations seulement :
+	 * flash-cards, cartes de cours). Permet de remplacer la révision du jour par
+	 * une meilleure (« le meilleur résultat du jour », décision de David, 2026-09-30).
+	 */
+	before?: ReviewSnapshot;
+}
+
+/** État FSRS d'une fiche, sans son historique */
+export interface ReviewSnapshot {
+	difficulty: number;
+	stability: number;
+	state: CardState;
+	lastReview: string | null;
+	nextReview: string;
+	totalReviews: number;
 }
 
 /**

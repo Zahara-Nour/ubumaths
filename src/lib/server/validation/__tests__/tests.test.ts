@@ -44,7 +44,7 @@ describe('test system validation schemas', () => {
 		const createValidTestData = () => ({
 			result: {
 				sessionId: '550e8400-e29b-41d4-a716-446655440000',
-				mode: 'interactive' as 'display' | 'interactive' | 'course',
+				mode: 'interactive' as 'display' | 'interactive' | 'course' | 'flash',
 				score: 7,
 				scorePercentage: 70,
 				totalQuestions: 10,
@@ -94,6 +94,24 @@ describe('test system validation schemas', () => {
 				const result = saveTestSchema.safeParse(data);
 				expect(result.success).toBe(true);
 			});
+		});
+
+		// Forme « Flash-cards » (2026-09-30) : score auto-évalué, jamais une évaluation
+		it('should accept flash mode without assignmentId', () => {
+			const { assignmentId: _assignmentId, ...data } = createValidTestData();
+			data.result.mode = 'flash';
+			const result = saveTestSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject flash mode with an assignmentId', () => {
+			const data = createValidTestData();
+			data.result.mode = 'flash';
+			const result = saveTestSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].path).toEqual(['assignmentId']);
+			}
 		});
 
 		it('should strip unknown instance fields (never stored in test_answers)', () => {

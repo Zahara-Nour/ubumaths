@@ -34,7 +34,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { attemptSourceForTemplate, reviewedToday } from '$lib/server/course-card-attempts';
+import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 // ============================================================================
@@ -113,7 +113,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				grade,
 				undefined,
 				{
-					skipIf: (stats) => reviewedToday(stats.lastReview, now),
+					// Auto-évaluation : le MEILLEUR résultat du jour (décision de David, 2026-09-30)
+					bestOfDay: { now },
 					verifyWrite: true
 				}
 			);
