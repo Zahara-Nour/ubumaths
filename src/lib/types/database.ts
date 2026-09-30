@@ -2810,6 +2810,104 @@ export type Database = {
           },
         ]
       }
+      evaluation_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          class_id: string | null
+          evaluation_id: string
+          id: string
+          student_id: string | null
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          class_id?: string | null
+          evaluation_id: string
+          id?: string
+          student_id?: string | null
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          class_id?: string | null
+          evaluation_id?: string
+          id?: string
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluation_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       evaluation_task_perimeter: {
         Row: {
           observable_id: string
@@ -2846,6 +2944,7 @@ export type Database = {
           class_id: string | null
           created_at: string
           description: string | null
+          evaluation_id: string | null
           exercise_id: string | null
           id: string
           name: string
@@ -2859,6 +2958,7 @@ export type Database = {
           class_id?: string | null
           created_at?: string
           description?: string | null
+          evaluation_id?: string | null
           exercise_id?: string | null
           id?: string
           name: string
@@ -2872,6 +2972,7 @@ export type Database = {
           class_id?: string | null
           created_at?: string
           description?: string | null
+          evaluation_id?: string | null
           exercise_id?: string | null
           id?: string
           name?: string
@@ -2896,6 +2997,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "evaluation_tasks_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "evaluation_tasks_exercise_id_fkey"
             columns: ["exercise_id"]
             isOneToOne: false
@@ -2907,6 +3015,97 @@ export type Database = {
             columns: ["worksheet_id"]
             isOneToOne: false
             referencedRelation: "worksheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evaluations: {
+        Row: {
+          academic_period_id: string | null
+          created_at: string
+          created_by: string
+          deadline: string | null
+          form: string
+          id: string
+          legacy_assessment_id: string | null
+          max_attempts: number | null
+          series_id: string
+          shuffle_questions: boolean
+          status: string
+          time_limit: number | null
+          updated_at: string
+        }
+        Insert: {
+          academic_period_id?: string | null
+          created_at?: string
+          created_by: string
+          deadline?: string | null
+          form: string
+          id?: string
+          legacy_assessment_id?: string | null
+          max_attempts?: number | null
+          series_id: string
+          shuffle_questions?: boolean
+          status?: string
+          time_limit?: number | null
+          updated_at?: string
+        }
+        Update: {
+          academic_period_id?: string | null
+          created_at?: string
+          created_by?: string
+          deadline?: string | null
+          form?: string
+          id?: string
+          legacy_assessment_id?: string | null
+          max_attempts?: number | null
+          series_id?: string
+          shuffle_questions?: boolean
+          status?: string
+          time_limit?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_academic_period_id_fkey"
+            columns: ["academic_period_id"]
+            isOneToOne: false
+            referencedRelation: "academic_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "evaluations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "evaluations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "evaluations_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
             referencedColumns: ["id"]
           },
         ]
@@ -4920,6 +5119,7 @@ export type Database = {
           created_at: string
           display_order: number
           entry_id: string
+          evaluation_id: string | null
           exercise_id: string | null
           id: string
           kind: string
@@ -4933,6 +5133,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           entry_id: string
+          evaluation_id?: string | null
           exercise_id?: string | null
           id?: string
           kind: string
@@ -4946,6 +5147,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           entry_id?: string
+          evaluation_id?: string | null
           exercise_id?: string | null
           id?: string
           kind?: string
@@ -4973,6 +5175,13 @@ export type Database = {
             columns: ["entry_id"]
             isOneToOne: false
             referencedRelation: "class_journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_activities_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
             referencedColumns: ["id"]
           },
           {
@@ -10375,6 +10584,68 @@ export type Database = {
         }
         Relationships: []
       }
+      series: {
+        Row: {
+          categories: Json
+          created_at: string
+          created_by: string
+          description: string | null
+          grade: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          categories: Json
+          created_at?: string
+          created_by: string
+          description?: string | null
+          grade: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          categories?: Json
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          grade?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "series_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "series_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "series_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "series_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       server_cache: {
         Row: {
           created_at: string | null
@@ -12265,6 +12536,7 @@ export type Database = {
           categories: Json
           completed_at: string | null
           created_at: string | null
+          evaluation_id: string | null
           id: string
           mode: string
           score: number | null
@@ -12278,6 +12550,7 @@ export type Database = {
           categories: Json
           completed_at?: string | null
           created_at?: string | null
+          evaluation_id?: string | null
           id?: string
           mode: string
           score?: number | null
@@ -12291,6 +12564,7 @@ export type Database = {
           categories?: Json
           completed_at?: string | null
           created_at?: string | null
+          evaluation_id?: string | null
           id?: string
           mode?: string
           score?: number | null
@@ -12313,6 +12587,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "assessment_results"
             referencedColumns: ["assignment_id"]
+          },
+          {
+            foreignKeyName: "test_sessions_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -15324,6 +15605,7 @@ export type Database = {
           validated_observables: Json
         }[]
       }
+      copy_legacy_assessments: { Args: never; Returns: Json }
       count_student_active_cards: {
         Args: { p_card_id: string; p_lock_row?: boolean; p_student_id: string }
         Returns: number
@@ -16307,6 +16589,10 @@ export type Database = {
         Args: { p_conversation_id: string; p_user_id: string }
         Returns: boolean
       }
+      is_evaluation_owner: {
+        Args: { p_evaluation_id: string }
+        Returns: boolean
+      }
       is_exercise_parameterized: {
         Args: { exercise_id: string }
         Returns: boolean
@@ -16334,6 +16620,7 @@ export type Database = {
         Returns: boolean
       }
       is_riddle_of_the_day: { Args: { p_riddle_id: string }; Returns: boolean }
+      is_series_owner: { Args: { p_series_id: string }; Returns: boolean }
       is_student: { Args: never; Returns: boolean }
       is_student_in_class: { Args: { p_class_id: string }; Returns: boolean }
       is_teacher_for_shared_coursework: {
@@ -16794,6 +17081,14 @@ export type Database = {
           game_number: number
           seed: string
         }[]
+      }
+      student_can_read_evaluation: {
+        Args: { p_evaluation_id: string }
+        Returns: boolean
+      }
+      student_can_read_series: {
+        Args: { p_series_id: string }
+        Returns: boolean
       }
       student_has_assignment_for_assessment: {
         Args: { p_assessment_id: string }
