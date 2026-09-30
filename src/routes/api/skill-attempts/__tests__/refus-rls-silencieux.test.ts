@@ -33,7 +33,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 	})
 }));
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireAuth: async () => ({ user: { id: STUDENT_ID } })
+	requireAuth: async () => ({ user: { id: STUDENT_ID }, profile: { role: 'student' } })
 }));
 
 import { POST } from '../+server';

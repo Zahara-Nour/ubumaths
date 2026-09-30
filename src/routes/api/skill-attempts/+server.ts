@@ -14,6 +14,8 @@
  *
  * Réponse :
  *   200 { inserted: 1, point_ids: [...points tagués...] }
+ *   200 { success: true, recorded: false } — compte non élève (admin, prof) :
+ *       rien n'est écrit (aperçu admin, pages de démo).
  *
  * Codes d'erreur :
  *   400 — JSON ou Zod invalide
@@ -40,7 +42,7 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 // ============================================================================
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
 
 	// Parse et validation Zod
 	let bodyRaw: unknown;
@@ -56,6 +58,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { template_id, success, with_help, phase_blocage } = validation.data;
+
+	// Seul un élève laisse une trace. L'aperçu admin d'un modèle et les pages de
+	// démo passent par la même `FlashCard` : un admin ou un professeur y répond
+	// sans polluer les statistiques (ni tentative, ni fiche FSRS, ni deck).
+	if (profile.role !== 'student') {
+		return json({ success: true, recorded: false });
+	}
 
 	// Vérification existence du template + récupération des points de programme tagués
 	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
