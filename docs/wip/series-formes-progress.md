@@ -293,3 +293,12 @@ worktree `../ubumaths-wt-series-code`) ; PR 2 (bascule du code) en cours.
 - Vue SQL `resources` migrée à part (#560, en production). Reste pour la PR 3 (DROP) : fonctions
   `assessment_curriculum_points`, `get_assessment_results_for_*`, vue `assessment_results`,
   statistiques admin (`total_assessments`), colonnes `assessment_id` / `assignment_id`.
+
+### Chantier 4 — PR 2 livrée (#561) et recherche du cahier (#560), 2026-09-30
+
+Code basculé sur `series` / `evaluations` / `evaluation_assignments` (fusionné) ; vue `resources`
+migrée et appliquée en production (#560). Revues : `code-reviewer` (1 bloquant — « Recommencer » pendant
+une évaluation — corrigé) et `security-auditor` (sauvegarde : destinataire, forme, composition, date
+limite et tentatives vérifiés avant écriture). `svelte-autofixer` non passé (MCP indisponible).
+Test statistique `vip-card-rarity-distribution` instable en CI (168 < 170), relancé : vert.
+Reste : PR 3 (suppression des anciennes tables, arrêt et explication à David), puis chantier 5.
