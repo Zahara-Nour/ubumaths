@@ -24,7 +24,6 @@ src/lib/components/test/TestTimer.svelte 1
 src/lib/extensions/ImageNodeView.svelte 10
 src/lib/extensions/NumberLineNodeView.svelte 14
 src/lib/extensions/VariationTableNodeView.svelte 14
-src/lib/slides/core/QuestionSlide.svelte 1
 src/lib/whiteboard/components/AnnotationToolbar.svelte 14
 src/lib/whiteboard/components/TemplatePickerModal.svelte 6
 src/routes/(protected)/dashboard/admin/docs/[...path]/+page.svelte 14

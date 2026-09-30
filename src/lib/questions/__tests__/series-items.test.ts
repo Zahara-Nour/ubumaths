@@ -1,0 +1,120 @@
+/**
+ * Génération des questions d'une série : chaque question porte SA durée et SA
+ * catégorie. Avant, les durées étaient reconstruites à part depuis le panier
+ * et se décalaient dès qu'une catégorie était sautée ou qu'une génération
+ * échouait.
+ */
+import { describe, it, expect } from 'vitest';
+import {
+	buildSeriesItems,
+	categoryKeyOf,
+	DEFAULT_QUESTION_DELAY_SECONDS
+} from '$lib/questions/series-items';
+import type { GenerationResult, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
+
+function category(domain: string, level = 1): QuestionCategory {
+	return { theme: 'Entiers', domain, subdomain: 'Somme', level };
+}
+
+function template(domain: string, id: string, overrides: Partial<QuestionTemplate> = {}) {
+	return {
+		id,
+		theme: 'Entiers',
+		domain,
+		subdomain: 'Somme',
+		level: 1,
+		...overrides
+	} as unknown as QuestionTemplate;
+}
+
+function cart(domain: string, quantity: number, delay: number): CartItem {
+	return { category: category(domain), quantity, delay };
+}
+
+/** Générateur factice : l'instance porte l'id du modèle ; `failing` échoue */
+function fakeGenerate(failing: Set<string> = new Set()) {
+	return (t: QuestionTemplate): GenerationResult =>
+		failing.has(t.id)
+			? { success: false, errors: ['échec'] }
+			: ({ success: true, instance: { templateId: t.id } as QuestionInstance } as GenerationResult);
+}
+
+describe('buildSeriesItems', () => {
+	it('une question par répétition, chacune avec la durée et la clé de sa catégorie', () => {
+		const items = buildSeriesItems(
+			[cart('Additionner', 2, 15), cart('Multiplier', 1, 30)],
+			[template('Additionner', 'add'), template('Multiplier', 'mul')],
+			{ generate: fakeGenerate() }
+		);
+
+		expect(items.map((i) => [i.instance.templateId, i.delaySeconds])).toEqual([
+			['add', 15],
+			['add', 15],
+			['mul', 30]
+		]);
+		expect(items[0].categoryKey).toBe(categoryKeyOf(category('Additionner')));
+		expect(items[2].categoryKey).not.toBe(items[0].categoryKey);
+	});
+
+	it('une catégorie sans modèle est sautée, les suivantes gardent LEUR durée', () => {
+		const items = buildSeriesItems(
+			[cart('Diviser', 2, 10), cart('Multiplier', 1, 30)],
+			[template('Multiplier', 'mul')],
+			{ generate: fakeGenerate() }
+		);
+
+		expect(items.map((i) => [i.instance.templateId, i.delaySeconds])).toEqual([['mul', 30]]);
+	});
+
+	it('une génération qui échoue est omise, sans décaler les durées suivantes', () => {
+		const items = buildSeriesItems(
+			[cart('Additionner', 1, 15), cart('Multiplier', 1, 30)],
+			[template('Additionner', 'add'), template('Multiplier', 'mul')],
+			{ generate: fakeGenerate(new Set(['add'])) }
+		);
+
+		expect(items.map((i) => [i.instance.templateId, i.delaySeconds])).toEqual([['mul', 30]]);
+	});
+
+	it('durée absente ou nulle : 20 s par défaut', () => {
+		const items = buildSeriesItems([cart('Additionner', 1, 0)], [template('Additionner', 'add')], {
+			generate: fakeGenerate()
+		});
+
+		expect(DEFAULT_QUESTION_DELAY_SECONDS).toBe(20);
+		expect(items[0].delaySeconds).toBe(20);
+	});
+
+	it('exclut les cartes de cours sur demande', () => {
+		const card = template('Additionner', 'carte', {
+			options: { courseCard: true }
+		} as Partial<QuestionTemplate>);
+		const items = buildSeriesItems([cart('Additionner', 1, 15)], [card], {
+			generate: fakeGenerate(),
+			excludeCourseCards: true
+		});
+
+		expect(items).toEqual([]);
+	});
+
+	it('niveau en chaîne (ancien panier) et sous-domaine null ≡ absent', () => {
+		const legacy: CartItem = {
+			category: {
+				theme: 'Entiers',
+				domain: 'Vocabulaire',
+				subdomain: null,
+				level: '1' as unknown as number
+			},
+			quantity: 1,
+			delay: 12
+		};
+		const items = buildSeriesItems(
+			[legacy],
+			[template('Vocabulaire', 'voc', { subdomain: undefined })],
+			{ generate: fakeGenerate() }
+		);
+
+		expect(items.map((i) => i.instance.templateId)).toEqual(['voc']);
+	});
+});
