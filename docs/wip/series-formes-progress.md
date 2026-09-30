@@ -354,3 +354,13 @@ Tests `tests/integration/evaluation-tentatives.test.ts` (29) ; 4 fichiers de tes
 d'évaluation posées par le service). ⚠️ Tant que la PR B n'est pas livrée, `/api/tests/save` ne peut plus
 enregistrer une séance d'évaluation (client de l'élève) : migrer la prod avec la PR B, ou accepter
 l'intervalle (0 assignation en prod). Reste : `security-auditor`, `db:migrate`, `db:types`.
+
+### Chantier 5 — PR A livrée (#565), 2026-10-01
+
+Migration `20260930160000_evaluation_tentatives.sql` fusionnée et **appliquée en production** :
+table `evaluation_attempt_questions` (graines, service_role seul), colonnes `grade`, `points_earned`,
+`points`, `status` ; restrictives INSERT (séances et réponses d'évaluation, verdict/note client
+interdits) ; policy UPDATE supprimée. Vérifié en prod : 7 policies attendues, graines illisibles
+(authenticated/anon). ⚠️ L'envoi d'une évaluation échoue jusqu'au déploiement de la PR B (0
+assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serveur`, worktree
+`../ubumaths-wt-eval-code`, types régénérés en premier commit.
