@@ -97,9 +97,18 @@ Une **série** (composition : catégories × répétitions × durée) s'utilise 
 
 ### Tâches
 
-| #   | Tâche                                                                                                                               | Qui                                     | État     |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | -------- |
-| 1   | UbuSlides : minuteur par diapositive, pause, durée modifiable en cours, signal de fin, `hash` désactivable, filtre clavier MathLive | `svelte-expert` (Opus)                  | en cours |
-| 2   | Composant « En classe » : diaporama de flash-cards, règle de la question courante, grilles de fin                                   | `frontend-developer` (Opus)             | à faire  |
-| 3   | Branchement de la page, durée par question, suppression de `QuestionSlide`                                                          | session principale                      | à faire  |
-| 4   | Relecture + accessibilité                                                                                                           | `code-reviewer`, `accessibility-tester` | à faire  |
+| #   | Tâche                                                                                                                                  | Qui                                     | État        |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------- |
+| 1   | UbuSlides : minuteur par diapositive, pause, durée modifiable fait (#550), signal de fin, `hash` désactivable, filtre clavier MathLive | `svelte-expert` (Opus)                  | fait (#550) |
+| 2   | Composant « En classe » : diaporama de flash-cards, règle de la question courante, grilles de fin                                      | `frontend-developer` (Opus)             | en cours    |
+| 3   | Branchement de la page, durée par question, suppression de `QuestionSlide`                                                             | session principale                      | à faire     |
+| 4   | Relecture + accessibilité                                                                                                              | `code-reviewer`, `accessibility-tester` | à faire     |
+
+### Tâche 1 livrée (#550, 2026-09-30)
+
+API UbuSlides : `Slide.autoSlide` (ms, prioritaire sur `config.autoSlide`, réactive) ; `Deck` : `onend`,
+`overlay` (snippet qui reçoit le `DeckContext`), `config.pauseOverlay` (false = pause sans écran noir) ;
+`DeckContext` : `isPaused/pause/resume/togglePause`, `getAutoSlideRemaining/getAutoSlideDuration/
+isAutoSlideRunning`, `toggleFullscreen/isFullscreen` ; touche `f`. Retour MANUEL sur une diapositive
+terminée = pause ; avance AUTOMATIQUE sur une diapositive terminée = rejouée à durée complète (choix
+de Claude, à confirmer par David). Touches combinées Cmd/Ctrl/Alt laissées au navigateur.
