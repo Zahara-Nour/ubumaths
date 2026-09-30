@@ -105,7 +105,6 @@ export async function cleanupAllTestData(): Promise<void> {
 		// Assessments & exercises
 		'assessment_responses',
 		'assessment_attempts',
-		'assessments',
 		'exercise_completions',
 		'exercise_assignments',
 		'exercises',

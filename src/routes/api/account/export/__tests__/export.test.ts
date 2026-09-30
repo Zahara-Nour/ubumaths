@@ -353,6 +353,10 @@ describe('GET /api/account/export', () => {
 			);
 			const selectArg = call?.value.select.mock.calls[0][0] as string;
 			expect(selectArg).toMatch(/test_answers\(/);
+			// `test_sessions.assignment_id` a été supprimée (20260930150000) :
+			// la citer ferait échouer toute la requête, donc l'export entier.
+			expect(selectArg).not.toMatch(/\bassignment_id\b/);
+			expect(selectArg).toMatch(/\bevaluation_id\b/);
 		});
 
 		test('communications section has correct structure', async () => {

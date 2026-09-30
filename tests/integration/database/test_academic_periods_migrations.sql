@@ -25,7 +25,7 @@ SELECT EXISTS (
 
 SELECT column_name, data_type
 FROM information_schema.columns
-WHERE table_name = 'assessments' AND column_name = 'academic_period_id';
+WHERE table_name = 'evaluations' AND column_name = 'academic_period_id';
 
 -- =============================================================================
 -- PART 2: Test Data Setup
@@ -152,165 +152,12 @@ EXCEPTION
 END $$;
 
 -- =============================================================================
--- PART 4: Auto-Assignment Testing
+-- PARTS 4-5 (retirées) : rattachement automatique des `assessments` aux périodes
 -- =============================================================================
-
-\echo '=== Part 4: Testing auto-assignment trigger ==='
-
--- Create a test class linked to the test school
-INSERT INTO classes (id, school_id, name, grade, created_at, updated_at)
-VALUES (
-  '22222222-2222-2222-2222-222222222222',
-  '00000000-0000-0000-0000-000000000001',
-  'Test Class 6eme',
-  '6eme',
-  NOW(),
-  NOW()
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Create a test teacher
-INSERT INTO profiles (id, school_id, role, first_name, last_name, created_at, updated_at)
-VALUES (
-  '33333333-3333-3333-3333-333333333333',
-  '00000000-0000-0000-0000-000000000001',
-  'teacher',
-  'Test',
-  'Teacher',
-  NOW(),
-  NOW()
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Test 5: Auto-assignment for assessment in Trimestre 1
-\echo 'Test 5: Creating assessment in Trimestre 1 (should auto-assign)...'
-INSERT INTO assessments (
-  id,
-  teacher_id,
-  class_id,
-  title,
-  max_points,
-  categories,
-  status,
-  created_at
-)
-VALUES (
-  '44444444-4444-4444-4444-444444444441',
-  '33333333-3333-3333-3333-333333333333',
-  '22222222-2222-2222-2222-222222222222',
-  'Test Assessment Trimestre 1',
-  100,
-  ARRAY['Algèbre'],
-  'published',
-  '2024-10-15 10:00:00+00'::timestamptz  -- During Trimestre 1
-)
-ON CONFLICT (id) DO UPDATE SET created_at = EXCLUDED.created_at;
-
-SELECT
-  a.title,
-  a.created_at::date AS assessment_date,
-  ap.name AS assigned_period,
-  ap.start_date,
-  ap.end_date
-FROM assessments a
-LEFT JOIN academic_periods ap ON ap.id = a.academic_period_id
-WHERE a.id = '44444444-4444-4444-4444-444444444441';
-
--- Test 6: Auto-assignment for assessment in Trimestre 2
-\echo 'Test 6: Creating assessment in Trimestre 2 (should auto-assign)...'
-INSERT INTO assessments (
-  id,
-  teacher_id,
-  class_id,
-  title,
-  max_points,
-  categories,
-  status,
-  created_at
-)
-VALUES (
-  '44444444-4444-4444-4444-444444444442',
-  '33333333-3333-3333-3333-333333333333',
-  '22222222-2222-2222-2222-222222222222',
-  'Test Assessment Trimestre 2',
-  100,
-  ARRAY['Géométrie'],
-  'published',
-  '2025-02-15 10:00:00+00'::timestamptz  -- During Trimestre 2
-)
-ON CONFLICT (id) DO UPDATE SET created_at = EXCLUDED.created_at;
-
-SELECT
-  a.title,
-  a.created_at::date AS assessment_date,
-  ap.name AS assigned_period,
-  ap.start_date,
-  ap.end_date
-FROM assessments a
-LEFT JOIN academic_periods ap ON ap.id = a.academic_period_id
-WHERE a.id = '44444444-4444-4444-4444-444444444442';
-
--- Test 7: Assessment during holidays (should be NULL or assigned to next period)
-\echo 'Test 7: Creating assessment during holidays (should be NULL)...'
-INSERT INTO assessments (
-  id,
-  teacher_id,
-  class_id,
-  title,
-  max_points,
-  categories,
-  status,
-  created_at
-)
-VALUES (
-  '44444444-4444-4444-4444-444444444443',
-  '33333333-3333-3333-3333-333333333333',
-  '22222222-2222-2222-2222-222222222222',
-  'Test Assessment During Holidays',
-  100,
-  ARRAY['Algèbre'],
-  'published',
-  '2024-12-25 10:00:00+00'::timestamptz  -- During Vacances de Noël
-)
-ON CONFLICT (id) DO UPDATE SET created_at = EXCLUDED.created_at;
-
-SELECT
-  a.title,
-  a.created_at::date AS assessment_date,
-  ap.name AS assigned_period,
-  CASE
-    WHEN ap.id IS NULL THEN 'CORRECTLY NULL (during holidays)'
-    ELSE 'ASSIGNED (unexpected)'
-  END AS result
-FROM assessments a
-LEFT JOIN academic_periods ap ON ap.id = a.academic_period_id
-WHERE a.id = '44444444-4444-4444-4444-444444444443';
-
--- =============================================================================
--- PART 5: Backfill Function Testing
--- =============================================================================
-
-\echo '=== Part 5: Testing backfill function ==='
-
--- Create assessment without auto-assignment (simulate old data)
-UPDATE assessments
-SET academic_period_id = NULL
-WHERE id = '44444444-4444-4444-4444-444444444441';
-
-\echo 'Before backfill:'
-SELECT COUNT(*) AS unassigned_count
-FROM assessments
-WHERE class_id = '22222222-2222-2222-2222-222222222222'
-  AND academic_period_id IS NULL;
-
--- Run backfill function
-SELECT link_existing_assessments_to_periods('11111111-1111-1111-1111-111111111111') AS updated_count;
-
-\echo 'After backfill:'
-SELECT COUNT(*) AS unassigned_count
-FROM assessments
-WHERE class_id = '22222222-2222-2222-2222-222222222222'
-  AND academic_period_id IS NULL;
+-- La table `assessments`, son trigger et `link_existing_assessments_to_periods`
+-- ont été supprimés (20260904090000 pour le trigger, 20260930150000 pour le
+-- reste). Les évaluations portent `evaluations.academic_period_id`, choisi par
+-- le prof.
 
 -- =============================================================================
 -- PART 6: Summary Report
@@ -322,15 +169,10 @@ SELECT
   sy.name AS school_year,
   sy.is_active,
   COUNT(DISTINCT ap.id) AS period_count,
-  COUNT(DISTINCT sh.id) AS holiday_count,
-  COUNT(DISTINCT a.id) AS assessment_count
+  COUNT(DISTINCT sh.id) AS holiday_count
 FROM school_years sy
 LEFT JOIN academic_periods ap ON ap.school_year_id = sy.id
 LEFT JOIN school_holidays sh ON sh.school_year_id = sy.id
-LEFT JOIN classes c ON c.school_id = sy.school_id
-LEFT JOIN assessments a ON a.class_id = c.id AND a.academic_period_id IN (
-  SELECT id FROM academic_periods WHERE school_year_id = sy.id
-)
 WHERE sy.school_id = '00000000-0000-0000-0000-000000000001'
 GROUP BY sy.id, sy.name, sy.is_active;
 
@@ -342,9 +184,6 @@ GROUP BY sy.id, sy.name, sy.is_active;
 -- =============================================================================
 
 -- \echo '=== Cleaning up test data ==='
--- DELETE FROM assessments WHERE teacher_id = '33333333-3333-3333-3333-333333333333';
--- DELETE FROM profiles WHERE id = '33333333-3333-3333-3333-333333333333';
--- DELETE FROM classes WHERE id = '22222222-2222-2222-2222-222222222222';
 -- DELETE FROM school_holidays WHERE school_year_id = '11111111-1111-1111-1111-111111111111';
 -- DELETE FROM academic_periods WHERE school_year_id = '11111111-1111-1111-1111-111111111111';
 -- DELETE FROM school_years WHERE id = '11111111-1111-1111-1111-111111111111';

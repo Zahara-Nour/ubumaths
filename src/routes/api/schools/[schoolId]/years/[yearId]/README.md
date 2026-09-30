@@ -1,5 +1,10 @@
 # Academic Period API Endpoints
 
+> ⚠️ **Obsolète** : l'endpoint `link-assessments` n'existe pas dans ce dossier, et la fonction SQL
+> `link_existing_assessments_to_periods` a été supprimée avec la table `assessments`
+> (migration `20260930150000_drop_assessments.sql`). Les évaluations portent
+> `evaluations.academic_period_id`.
+
 API endpoints for managing academic periods and linking assessments to periods.
 
 ## Endpoints
