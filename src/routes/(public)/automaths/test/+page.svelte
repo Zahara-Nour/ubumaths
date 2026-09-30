@@ -186,7 +186,14 @@
 	 */
 	function handleClassroomRestart() {
 		if (!testSession) return;
-		classroomItems = generateSeriesItems(testSession.categories);
+		try {
+			classroomItems = generateSeriesItems(testSession.categories);
+		} catch (err) {
+			// Hors ligne, cache vidé : dire pourquoi rien ne se passe
+			toaster.error(
+				err instanceof Error ? err.message : 'Impossible de tirer de nouvelles questions'
+			);
+		}
 	}
 
 	/**
@@ -194,10 +201,16 @@
 	 */
 	function handleFlashRestart() {
 		if (!testSession) return;
-		testSession.instances = generateSeriesItems(testSession.categories).map(
-			(item) => item.instance
-		);
-		testSession.startTime = Date.now();
+		try {
+			testSession.instances = generateSeriesItems(testSession.categories).map(
+				(item) => item.instance
+			);
+			testSession.startTime = Date.now();
+		} catch (err) {
+			toaster.error(
+				err instanceof Error ? err.message : 'Impossible de tirer de nouvelles questions'
+			);
+		}
 	}
 
 	/**

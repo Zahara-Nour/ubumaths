@@ -229,3 +229,50 @@ describe('FlashSeries — visiteur non connecté', () => {
 		expect(container.textContent).not.toContain(MESSAGE);
 	});
 });
+
+/**
+ * Relecture du 2026-09-30 : au clavier, le focus retombait sur <body> à chaque
+ * carte ; une série vide n'affichait rien.
+ */
+describe('FlashSeries — clavier et série vide', () => {
+	const flipButton = (container: HTMLElement) =>
+		container.querySelector<HTMLButtonElement>(
+			'.flip-card-front [aria-label="Voir la correction"]'
+		);
+
+	it('après retournement, le focus va sur « J’avais trouvé »', async () => {
+		const { container } = await open(threeCards());
+
+		await click(container, 'Voir la correction');
+		await tick();
+
+		expect(document.activeElement?.textContent?.trim()).toBe("J'avais trouvé");
+	});
+
+	it('après une auto-évaluation, le focus va sur le retournement de la carte suivante', async () => {
+		const { container } = await open(threeCards());
+
+		await answer(container, true);
+		await tick();
+
+		expect(document.activeElement).toBe(flipButton(container));
+	});
+
+	it('à la fin, le focus va sur le titre du bilan', async () => {
+		const { container } = await open([makeInstance('Seule carte')]);
+
+		await answer(container, true);
+		await tick();
+
+		expect(document.activeElement?.textContent?.trim()).toBe('Série terminée');
+	});
+
+	it('série vide : un message et le retour au panier', async () => {
+		const { container, onBack, onComplete } = await open([]);
+
+		expect(container.textContent).toContain('Aucune carte à afficher');
+		await click(container, 'Retour au panier');
+		expect(onBack).toHaveBeenCalledTimes(1);
+		expect(onComplete).not.toHaveBeenCalled();
+	});
+});

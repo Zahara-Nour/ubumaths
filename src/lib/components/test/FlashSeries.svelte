@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -74,8 +75,19 @@
 		return count > 1 ? pluralForm : singular;
 	}
 
+	// Clavier : le focus suit le déroulé (sinon il retombe sur <body> à chaque carte)
+	let root = $state<HTMLElement>();
+
+	async function focusIn(selector: string) {
+		await tick();
+		root?.querySelector<HTMLElement>(selector)?.focus();
+	}
+
 	function handleFlip(isFlipped: boolean) {
-		if (isFlipped) revealed = true;
+		if (isFlipped && !revealed) {
+			revealed = true;
+			void focusIn('[data-self-assess="found"]');
+		}
 	}
 
 	function handleSelfAssessment(isCorrect: boolean) {
@@ -97,6 +109,7 @@
 		}
 
 		isFinished = true;
+		void focusIn('[data-summary-title]');
 		if (isFirstRound) {
 			isFirstRound = false;
 			onComplete(buildResult());
@@ -107,6 +120,7 @@
 		revealed = false;
 		cardKey += 1;
 		cardStart = Date.now();
+		void focusIn('.flip-card-front [aria-label="Voir la correction"]');
 	}
 
 	function buildResult(): TestResult {
@@ -136,7 +150,7 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-4xl space-y-6">
+<div class="mx-auto w-full max-w-4xl space-y-6" bind:this={root}>
 	{#if !isLoggedIn}
 		<div
 			class="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm"
@@ -150,7 +164,7 @@
 	{#if isFinished}
 		<Card.Root data-testid="flash-summary">
 			<Card.Header>
-				<Card.Title class="text-2xl">Série terminée</Card.Title>
+				<Card.Title class="text-2xl" tabindex={-1} data-summary-title>Série terminée</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-6">
 				<div class="space-y-2">
@@ -199,6 +213,7 @@
 			<div class="flex flex-col justify-center gap-3 sm:flex-row">
 				<Button
 					class="bg-green-600 text-white hover:bg-green-700"
+					data-self-assess="found"
 					onclick={() => handleSelfAssessment(true)}
 				>
 					<Check class="mr-2 h-4 w-4" aria-hidden="true" />
@@ -214,5 +229,16 @@
 				Retourne la carte pour voir la réponse.
 			</p>
 		{/if}
+	{:else}
+		<!-- Série vide (aucun modèle généré) : jamais un écran blanc -->
+		<Card.Root>
+			<Card.Content class="space-y-4 p-6 text-center">
+				<p class="text-muted-foreground">Aucune carte à afficher pour cette série.</p>
+				<Button variant="ghost" onclick={onBack}>
+					<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
+					Retour au panier
+				</Button>
+			</Card.Content>
+		</Card.Root>
 	{/if}
 </div>
