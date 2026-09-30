@@ -8,8 +8,7 @@ import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import {
 	CourseCardLookupError,
-	fetchCourseCardTemplateIds,
-	reviewedToday
+	fetchCourseCardTemplateIds
 } from '$lib/server/course-card-attempts';
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
@@ -184,12 +183,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const grade: Grade = answer.isCorrect ? Grade.GOOD : Grade.AGAIN;
 
 			try {
-				if (courseCardIds.has(templateId)) {
-					// Carte : « Je savais » = Good, « Je ne savais pas » = Again. La fiche
-					// (clé template_id, partagée avec tout paquet qui l'ajouterait plus
-					// tard) n'est mise à jour qu'une fois par jour ; la trace, toujours.
+				if (isFlash || courseCardIds.has(templateId)) {
+					// Auto-évaluation (flash-cards, carte de cours) : « J'avais trouvé » /
+					// « Je savais » = Good, sinon Again. La fiche (clé template_id, partagée
+					// avec tout paquet) ne garde qu'UN résultat par jour, le MEILLEUR
+					// (décision de David, 2026-09-30) ; la trace, toujours.
 					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade, undefined, {
-						skipIf: (stats) => reviewedToday(stats.lastReview, now),
+						bestOfDay: { now },
 						verifyWrite: true
 					});
 				} else {

@@ -286,22 +286,24 @@ describe('enregistrement d’une évaluation', () => {
 		]);
 	});
 
-	it('carte : fiche FSRS mise à jour au plus une fois par jour, écriture vérifiée', async () => {
+	it('carte : le meilleur résultat du jour seulement (décision 2026-09-30), écriture vérifiée', async () => {
 		cartesDeCours = [MODELE_B];
 		await enregistrer([reponse(MODELE_A, true, 0), reponse(MODELE_B, true, 1)]);
 
 		// Question ordinaire : appel inchangé (aucune option)
 		expect(applyFsrsReview.mock.calls[0]).toHaveLength(6);
-		// Carte : Good, garde-fou journalier + écriture vérifiée
+		// Carte : Good, « meilleur du jour » + écriture vérifiée
 		const appelCarte = applyFsrsReview.mock.calls[1];
 		expect(appelCarte.slice(2, 6)).toEqual([ELEVE, 'template', MODELE_B, Grade.GOOD]);
 		const options = appelCarte[7] as {
-			skipIf: (s: { lastReview: string | null }) => boolean;
+			bestOfDay?: { now: Date };
+			skipIf?: unknown;
 			verifyWrite: boolean;
 		};
 		expect(options.verifyWrite).toBe(true);
-		expect(options.skipIf({ lastReview: new Date().toISOString() })).toBe(true);
-		expect(options.skipIf({ lastReview: null })).toBe(false);
+		expect(options.bestOfDay?.now).toBeInstanceOf(Date);
+		// L'ancien garde-fou « premier résultat du jour » a disparu
+		expect(options.skipIf).toBeUndefined();
 	});
 
 	it('garde-fou déclenché (fiche déjà mise à jour aujourd’hui) : la trace est QUAND MÊME enregistrée', async () => {
@@ -411,6 +413,12 @@ describe('enregistrement d’une évaluation', () => {
 			[ELEVE, 'template', MODELE_A, Grade.GOOD],
 			[ELEVE, 'template', MODELE_B, Grade.AGAIN]
 		]);
+	});
+
+	it('flash : question ordinaire en « meilleur résultat du jour » (décision 2026-09-30)', async () => {
+		await enregistrer([reponse(MODELE_A, true, 0)], 201, 'flash');
+		const options = applyFsrsReview.mock.calls[0][7] as { bestOfDay?: { now: Date } };
+		expect(options?.bestOfDay?.now).toBeInstanceOf(Date);
 	});
 
 	it('flash : aucune XP du compagnon', async () => {
