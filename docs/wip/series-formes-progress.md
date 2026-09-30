@@ -188,4 +188,7 @@ de cours, dans `tests/save` et `skill-attempts`), FSRS seulement, traces intacte
   tapé → fausse, comme avant).
 - **Q19** : PAS de chrono global (refus de David). La limite de temps d'une évaluation reste sans effet.
 - **Q20** : une graine tirée et enregistrée par question (prépare la correction serveur, ADR 0015).
-- **Q21** (posée) : retirer le champ « Temps limite total » du formulaire d'évaluation ?
+- **Q21** (David, 2026-09-30) : la limite de temps ne concerne que la **Course aux nombres**. Une
+  évaluation étant aujourd'hui toujours en Entraînement, le champ « Temps limite total » est retiré du
+  formulaire (colonne gardée). Chantier 4 : il revient, affiché seulement pour une évaluation en Course
+  aux nombres.
