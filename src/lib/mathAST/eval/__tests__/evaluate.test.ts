@@ -3337,6 +3337,14 @@ describe('evaluate - exact mode, fonctions à plusieurs arguments', () => {
 		expect(exactLatex(func('mod', [opposite(number('7')), number('5')]))).toBe('3');
 	});
 
+	// floor/round d'un entier ≥ 10⁴ passaient par un flottant × 10¹⁵ (> 2⁵³) : le résultat
+	// n'était plus un entier exact et mod refusait (« mod requires integer arguments »)
+	it('mod(floor(821851), 10) = 1 : floor d’un grand entier reste un entier exact', () => {
+		expect(exactLatex(func('mod', [func('floor', [number('821851')]), number('10')]))).toBe('1');
+		expect(exactLatex(func('floor', [fraction(number('821851'), number('1'))]))).toBe('821851');
+		expect(exactLatex(func('round', [number('9007199254740991')]))).toBe('9007199254740991');
+	});
+
 	it('fonction imbriquée : min(gcd(12, 18), 4) + 1/2 = 9/2', () => {
 		const ast = add(
 			func('min', [func('gcd', [number('12'), number('18')]), number('4')]),
