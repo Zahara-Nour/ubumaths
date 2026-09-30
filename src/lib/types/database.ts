@@ -139,13 +139,6 @@ export type Database = {
             foreignKeyName: "achievement_events_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "achievement_events_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -236,13 +229,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "achievements"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "achievement_progress_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "achievement_progress_student_id_fkey"
@@ -353,182 +339,6 @@ export type Database = {
           value?: string
         }
         Relationships: []
-      }
-      assessment_assignments: {
-        Row: {
-          assessment_id: string
-          assigned_at: string
-          assigned_by: string
-          class_id: string | null
-          id: string
-          student_id: string | null
-        }
-        Insert: {
-          assessment_id: string
-          assigned_at?: string
-          assigned_by: string
-          class_id?: string | null
-          id?: string
-          student_id?: string | null
-        }
-        Update: {
-          assessment_id?: string
-          assigned_at?: string
-          assigned_by?: string
-          class_id?: string | null
-          id?: string
-          student_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assessment_assignments_assessment_id_fkey"
-            columns: ["assessment_id"]
-            isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
-      }
-      assessments: {
-        Row: {
-          academic_period_id: string | null
-          categories: Json
-          created_at: string
-          created_by: string
-          description: string | null
-          grade: string
-          id: string
-          settings: Json
-          status: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          academic_period_id?: string | null
-          categories: Json
-          created_at?: string
-          created_by: string
-          description?: string | null
-          grade: string
-          id?: string
-          settings?: Json
-          status?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          academic_period_id?: string | null
-          categories?: Json
-          created_at?: string
-          created_by?: string
-          description?: string | null
-          grade?: string
-          id?: string
-          settings?: Json
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assessments_academic_period_id_fkey"
-            columns: ["academic_period_id"]
-            isOneToOne: false
-            referencedRelation: "academic_periods"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "assessments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "assessments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
       }
       audit_logs: {
         Row: {
@@ -642,13 +452,6 @@ export type Database = {
             foreignKeyName: "bonus_history_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "bonus_history_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -665,13 +468,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "bonus_history_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "bonus_history_student_id_fkey"
@@ -801,13 +597,6 @@ export type Database = {
             foreignKeyName: "bug_reports_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "bug_reports_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -824,13 +613,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "bug_reports_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "bug_reports_user_id_fkey"
@@ -887,13 +669,6 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "bug_reports_config_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "bug_reports_config_updated_by_fkey"
             columns: ["updated_by"]
@@ -1298,13 +1073,6 @@ export type Database = {
             foreignKeyName: "chapter_template_versions_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "chapter_template_versions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -1378,13 +1146,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "chapter_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "chapter_templates_created_by_fkey"
             columns: ["created_by"]
@@ -1544,13 +1305,6 @@ export type Database = {
             foreignKeyName: "class_google_classroom_links_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "class_google_classroom_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -1661,13 +1415,6 @@ export type Database = {
             foreignKeyName: "class_journal_share_tokens_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "class_journal_share_tokens_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -1719,13 +1466,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "class_members_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "class_members_student_id_fkey"
@@ -1900,13 +1640,6 @@ export type Database = {
             foreignKeyName: "construction_demo_scripts_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "construction_demo_scripts_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -1964,13 +1697,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "constructions_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "constructions_author_id_fkey"
             columns: ["author_id"]
@@ -2044,13 +1770,6 @@ export type Database = {
             foreignKeyName: "conversation_participants_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "conversation_participants_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -2114,13 +1833,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "conversations_created_by_fkey"
@@ -2193,13 +1905,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "coursework_categories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "coursework_categories_created_by_fkey"
@@ -2467,13 +2172,6 @@ export type Database = {
             foreignKeyName: "daily_game_rewards_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "daily_game_rewards_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -2552,13 +2250,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "daily_summaries_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "daily_summaries_student_id_fkey"
@@ -2694,13 +2385,6 @@ export type Database = {
             foreignKeyName: "error_logs_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "error_logs_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -2717,13 +2401,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "error_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "error_logs_user_id_fkey"
@@ -2840,13 +2517,6 @@ export type Database = {
             foreignKeyName: "evaluation_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "evaluation_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -2877,13 +2547,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "evaluations"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "evaluation_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "evaluation_assignments_student_id_fkey"
@@ -2940,7 +2603,6 @@ export type Database = {
       }
       evaluation_tasks: {
         Row: {
-          assessment_id: string | null
           class_id: string | null
           created_at: string
           description: string | null
@@ -2954,7 +2616,6 @@ export type Database = {
           worksheet_id: string | null
         }
         Insert: {
-          assessment_id?: string | null
           class_id?: string | null
           created_at?: string
           description?: string | null
@@ -2968,7 +2629,6 @@ export type Database = {
           worksheet_id?: string | null
         }
         Update: {
-          assessment_id?: string | null
           class_id?: string | null
           created_at?: string
           description?: string | null
@@ -2982,13 +2642,6 @@ export type Database = {
           worksheet_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "evaluation_tasks_assessment_id_fkey"
-            columns: ["assessment_id"]
-            isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "evaluation_tasks_class_id_fkey"
             columns: ["class_id"]
@@ -3077,13 +2730,6 @@ export type Database = {
             foreignKeyName: "evaluations_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "evaluations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3152,13 +2798,6 @@ export type Database = {
             foreignKeyName: "exercise_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "exercise_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3189,13 +2828,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "exercises"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exercise_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "exercise_assignments_student_id_fkey"
@@ -3265,13 +2897,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "exercises"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exercise_completions_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "exercise_completions_student_id_fkey"
@@ -3357,13 +2982,6 @@ export type Database = {
             foreignKeyName: "exercise_favorites_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "exercise_favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3418,13 +3036,6 @@ export type Database = {
           token?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "exercise_share_tokens_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "exercise_share_tokens_created_by_fkey"
             columns: ["created_by"]
@@ -3487,13 +3098,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "exercise_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "exercise_templates_created_by_fkey"
             columns: ["created_by"]
@@ -3580,13 +3184,6 @@ export type Database = {
             foreignKeyName: "exercises_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "exercises_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3639,13 +3236,6 @@ export type Database = {
             foreignKeyName: "friendships_addressee_id_fkey"
             columns: ["addressee_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "friendships_addressee_id_fkey"
-            columns: ["addressee_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3662,13 +3252,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "friendships_requester_id_fkey"
-            columns: ["requester_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "friendships_requester_id_fkey"
@@ -3827,13 +3410,6 @@ export type Database = {
             foreignKeyName: "game_challenge_attempts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "game_challenge_attempts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -3921,13 +3497,6 @@ export type Database = {
           view_config?: Json
         }
         Relationships: [
-          {
-            foreignKeyName: "game_challenges_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "game_challenges_created_by_fkey"
             columns: ["created_by"]
@@ -4080,13 +3649,6 @@ export type Database = {
             foreignKeyName: "game_combats_organizer_id_fkey"
             columns: ["organizer_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "game_combats_organizer_id_fkey"
-            columns: ["organizer_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -4141,13 +3703,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "game_leaderboards_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "game_leaderboards_user_id_fkey"
             columns: ["user_id"]
@@ -4234,13 +3789,6 @@ export type Database = {
             foreignKeyName: "game_monsters_defeated_by_fkey"
             columns: ["defeated_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "game_monsters_defeated_by_fkey"
-            columns: ["defeated_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -4257,13 +3805,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "game_monsters_spawned_by_fkey"
-            columns: ["spawned_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "game_monsters_spawned_by_fkey"
@@ -4326,13 +3867,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "game_achievements"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "game_player_achievements_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "game_player_achievements_user_id_fkey"
@@ -4441,13 +3975,6 @@ export type Database = {
             foreignKeyName: "game_players_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "game_players_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -4496,13 +4023,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "game_spell_decks_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "game_spell_decks_user_id_fkey"
             columns: ["user_id"]
@@ -4567,13 +4087,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "game_spells_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "game_spells_user_id_fkey"
             columns: ["user_id"]
@@ -4684,13 +4197,6 @@ export type Database = {
             foreignKeyName: "gidouilles_history_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "gidouilles_history_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -4707,13 +4213,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "gidouilles_history_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "gidouilles_history_student_id_fkey"
@@ -4785,13 +4284,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "google_classroom_courses_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "google_classroom_courses_teacher_id_fkey"
             columns: ["teacher_id"]
@@ -5086,13 +4578,6 @@ export type Database = {
             foreignKeyName: "google_integrations_teacher_id_fkey"
             columns: ["teacher_id"]
             isOneToOne: true
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "google_integrations_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: true
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5114,7 +4599,6 @@ export type Database = {
       }
       journal_entry_activities: {
         Row: {
-          assessment_id: string | null
           chapter_id: string | null
           created_at: string
           display_order: number
@@ -5128,7 +4612,6 @@ export type Database = {
           textbook_ref: Json | null
         }
         Insert: {
-          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -5142,7 +4625,6 @@ export type Database = {
           textbook_ref?: Json | null
         }
         Update: {
-          assessment_id?: string | null
           chapter_id?: string | null
           created_at?: string
           display_order?: number
@@ -5156,13 +4638,6 @@ export type Database = {
           textbook_ref?: Json | null
         }
         Relationships: [
-          {
-            foreignKeyName: "journal_entry_activities_assessment_id_fkey"
-            columns: ["assessment_id"]
-            isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "journal_entry_activities_chapter_id_fkey"
             columns: ["chapter_id"]
@@ -5314,13 +4789,6 @@ export type Database = {
             foreignKeyName: "kanban_boards_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "kanban_boards_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5364,13 +4832,6 @@ export type Database = {
             foreignKeyName: "kanban_card_assignees_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "kanban_card_assignees_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5394,13 +4855,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "kanban_cards"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "kanban_card_assignees_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "kanban_card_assignees_user_id_fkey"
@@ -5596,13 +5050,6 @@ export type Database = {
             foreignKeyName: "marketplace_chat_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "marketplace_chat_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5717,13 +5164,6 @@ export type Database = {
             foreignKeyName: "marketplace_listing_views_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "marketplace_listing_views_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5803,13 +5243,6 @@ export type Database = {
             foreignKeyName: "marketplace_listings_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "marketplace_listings_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -5862,13 +5295,6 @@ export type Database = {
           student_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "marketplace_locked_cards_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "marketplace_locked_cards_student_id_fkey"
             columns: ["student_id"]
@@ -5944,13 +5370,6 @@ export type Database = {
             foreignKeyName: "marketplace_proposals_proposer_id_fkey"
             columns: ["proposer_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "marketplace_proposals_proposer_id_fkey"
-            columns: ["proposer_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6014,13 +5433,6 @@ export type Database = {
           trade_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "marketplace_trade_offers_offered_by_fkey"
-            columns: ["offered_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "marketplace_trade_offers_offered_by_fkey"
             columns: ["offered_by"]
@@ -6126,13 +5538,6 @@ export type Database = {
             foreignKeyName: "marketplace_trades_initiator_id_fkey"
             columns: ["initiator_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "marketplace_trades_initiator_id_fkey"
-            columns: ["initiator_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6149,13 +5554,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "marketplace_trades_last_offer_by_fkey"
-            columns: ["last_offer_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "marketplace_trades_last_offer_by_fkey"
@@ -6184,13 +5582,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "marketplace_listings"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "marketplace_trades_partner_id_fkey"
-            columns: ["partner_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "marketplace_trades_partner_id_fkey"
@@ -6378,13 +5769,6 @@ export type Database = {
             foreignKeyName: "message_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_attachments_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6450,13 +5834,6 @@ export type Database = {
             foreignKeyName: "message_attachments_v2_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_attachments_v2_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6517,13 +5894,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "message_drafts_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "message_drafts_author_id_fkey"
             columns: ["author_id"]
@@ -6614,13 +5984,6 @@ export type Database = {
             foreignKeyName: "message_inbox_recipient_id_fkey"
             columns: ["recipient_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_inbox_recipient_id_fkey"
-            columns: ["recipient_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6690,13 +6053,6 @@ export type Database = {
             foreignKeyName: "message_moderation_logs_moderator_id_fkey"
             columns: ["moderator_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_moderation_logs_moderator_id_fkey"
-            columns: ["moderator_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6713,13 +6069,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "message_moderation_logs_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "message_moderation_logs_student_id_fkey"
@@ -6773,13 +6122,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "message_reactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "message_reactions_user_id_fkey"
@@ -6853,13 +6195,6 @@ export type Database = {
             foreignKeyName: "message_reports_reported_by_fkey"
             columns: ["reported_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_reports_reported_by_fkey"
-            columns: ["reported_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -6876,13 +6211,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "message_reports_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "message_reports_reviewed_by_fkey"
@@ -7005,13 +6333,6 @@ export type Database = {
             foreignKeyName: "message_template_versions_modified_by_fkey"
             columns: ["modified_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_template_versions_modified_by_fkey"
-            columns: ["modified_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -7117,13 +6438,6 @@ export type Database = {
             foreignKeyName: "message_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "message_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -7140,13 +6454,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "message_templates_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "message_templates_reviewed_by_fkey"
@@ -7230,13 +6537,6 @@ export type Database = {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -7288,13 +6588,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "migration_edits_editor_id_fkey"
-            columns: ["editor_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "migration_edits_editor_id_fkey"
             columns: ["editor_id"]
@@ -7446,13 +6739,6 @@ export type Database = {
             foreignKeyName: "migration_tracking_reviewed_by_fkey"
             columns: ["reviewed_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "migration_tracking_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -7564,13 +6850,6 @@ export type Database = {
           undo_used?: boolean
         }
         Relationships: [
-          {
-            foreignKeyName: "minesweeper_games_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "minesweeper_games_student_id_fkey"
             columns: ["student_id"]
@@ -7914,13 +7193,6 @@ export type Database = {
             foreignKeyName: "minesweeper_student_achievements_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "minesweeper_student_achievements_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8042,13 +7314,6 @@ export type Database = {
             foreignKeyName: "minesweeper_tournament_games_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "minesweeper_tournament_games_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8132,13 +7397,6 @@ export type Database = {
             foreignKeyName: "minesweeper_tournaments_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "minesweeper_tournaments_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8194,13 +7452,6 @@ export type Database = {
             foreignKeyName: "moderation_logs_moderator_id_fkey"
             columns: ["moderator_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "moderation_logs_moderator_id_fkey"
-            columns: ["moderator_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8249,13 +7500,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "notifications"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notification_reads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "notification_reads_user_id_fkey"
@@ -8342,13 +7586,6 @@ export type Database = {
           type?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "notifications_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "notifications_created_by_fkey"
             columns: ["created_by"]
@@ -8461,13 +7698,6 @@ export type Database = {
             foreignKeyName: "orphaned_documents_teacher_id_fkey"
             columns: ["teacher_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "orphaned_documents_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8541,13 +7771,6 @@ export type Database = {
             foreignKeyName: "parental_consents_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "parental_consents_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8608,13 +7831,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "parody_evaluations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "parody_evaluations_created_by_fkey"
             columns: ["created_by"]
@@ -8756,13 +7972,6 @@ export type Database = {
             foreignKeyName: "private_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "private_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8883,13 +8092,6 @@ export type Database = {
             foreignKeyName: "profiles_status_changed_by_fkey"
             columns: ["status_changed_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "profiles_status_changed_by_fkey"
-            columns: ["status_changed_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8945,13 +8147,6 @@ export type Database = {
             foreignKeyName: "python_exercise_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "python_exercise_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -8982,13 +8177,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "python_exercises"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "python_exercise_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "python_exercise_assignments_student_id_fkey"
@@ -9042,13 +8230,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "python_exercises"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "python_exercise_mastery_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "python_exercise_mastery_student_id_fkey"
@@ -9129,13 +8310,6 @@ export type Database = {
             foreignKeyName: "python_exercise_submissions_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "python_exercise_submissions_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -9206,13 +8380,6 @@ export type Database = {
             foreignKeyName: "python_exercises_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "python_exercises_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -9261,13 +8428,6 @@ export type Database = {
           instructions?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "python_file_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "python_file_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
@@ -9341,13 +8501,6 @@ export type Database = {
             foreignKeyName: "python_files_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "python_files_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -9406,13 +8559,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "python_notebooks"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "python_notebook_assignments_shared_by_fkey"
-            columns: ["shared_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "python_notebook_assignments_shared_by_fkey"
@@ -9486,13 +8632,6 @@ export type Database = {
             foreignKeyName: "python_notebook_checkpoint_runs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "python_notebook_checkpoint_runs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -9550,13 +8689,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "python_notebooks_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "python_notebooks_author_id_fkey"
             columns: ["author_id"]
@@ -9726,13 +8858,6 @@ export type Database = {
             foreignKeyName: "question_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "question_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -9837,13 +8962,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "rag_documents_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "rag_documents_teacher_id_fkey"
             columns: ["teacher_id"]
@@ -9978,13 +9096,6 @@ export type Database = {
             foreignKeyName: "reward_events_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "reward_events_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -10001,13 +9112,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "reward_events_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "reward_events_student_id_fkey"
@@ -10062,13 +9166,6 @@ export type Database = {
             foreignKeyName: "riddle_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "riddle_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -10106,13 +9203,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "riddle_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "riddle_assignments_student_id_fkey"
@@ -10193,13 +9283,6 @@ export type Database = {
             foreignKeyName: "riddle_attempts_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "riddle_attempts_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -10216,13 +9299,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "riddle_attempts_validated_by_fkey"
-            columns: ["validated_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "riddle_attempts_validated_by_fkey"
@@ -10286,13 +9362,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "riddle_of_the_day_selected_by_fkey"
-            columns: ["selected_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "riddle_of_the_day_selected_by_fkey"
@@ -10364,13 +9433,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "riddles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "riddles_created_by_fkey"
             columns: ["created_by"]
@@ -10455,13 +9517,6 @@ export type Database = {
           school_year_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "school_year_closures_closed_by_fkey"
-            columns: ["closed_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "school_year_closures_closed_by_fkey"
             columns: ["closed_by"]
@@ -10620,13 +9675,6 @@ export type Database = {
             foreignKeyName: "series_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "series_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -10746,13 +9794,6 @@ export type Database = {
             foreignKeyName: "shared_coursework_shared_by_fkey"
             columns: ["shared_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "shared_coursework_shared_by_fkey"
-            columns: ["shared_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -10812,13 +9853,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "student_coursework_view"
             referencedColumns: ["shared_coursework_id"]
-          },
-          {
-            foreignKeyName: "shared_coursework_students_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "shared_coursework_students_student_id_fkey"
@@ -10912,13 +9946,6 @@ export type Database = {
             foreignKeyName: "shared_materials_shared_by_fkey"
             columns: ["shared_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "shared_materials_shared_by_fkey"
-            columns: ["shared_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11003,13 +10030,6 @@ export type Database = {
             foreignKeyName: "skill_attempts_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "skill_attempts_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11072,13 +10092,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "spreadsheets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "spreadsheets_user_id_fkey"
             columns: ["user_id"]
@@ -11163,13 +10176,6 @@ export type Database = {
             foreignKeyName: "srs_anti_fraud_flags_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "srs_anti_fraud_flags_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11186,13 +10192,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "srs_anti_fraud_flags_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "srs_anti_fraud_flags_student_id_fkey"
@@ -11264,13 +10263,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "srs_card_stats_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "srs_card_stats_user_id_fkey"
             columns: ["user_id"]
@@ -11385,13 +10377,6 @@ export type Database = {
           source_deck_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "srs_deck_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "srs_deck_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
@@ -11519,13 +10504,6 @@ export type Database = {
             foreignKeyName: "srs_decks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "srs_decks_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11612,13 +10590,6 @@ export type Database = {
             foreignKeyName: "srs_review_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "srs_review_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11684,13 +10655,6 @@ export type Database = {
             foreignKeyName: "student_achievements_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_achievements_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11707,13 +10671,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "student_achievements_unlocked_by_fkey"
-            columns: ["unlocked_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_achievements_unlocked_by_fkey"
@@ -11799,13 +10756,6 @@ export type Database = {
             foreignKeyName: "student_buddies_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: true
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_buddies_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: true
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11860,13 +10810,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "chapter_checklist_items"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "student_checklist_progress_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_checklist_progress_student_id_fkey"
@@ -11931,13 +10874,6 @@ export type Database = {
             foreignKeyName: "student_competence_level_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_competence_level_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -11986,13 +10922,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "exercises"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "student_exercise_mastery_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_exercise_mastery_student_id_fkey"
@@ -12052,13 +10981,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "observables"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "student_observable_state_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_observable_state_student_id_fkey"
@@ -12124,13 +11046,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "curriculum_points"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "student_point_state_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_point_state_student_id_fkey"
@@ -12214,13 +11129,6 @@ export type Database = {
             foreignKeyName: "student_warnings_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_warnings_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -12242,13 +11150,6 @@ export type Database = {
             foreignKeyName: "student_warnings_deleted_by_fkey"
             columns: ["deleted_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_warnings_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -12265,13 +11166,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "student_warnings_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_warnings_student_id_fkey"
@@ -12359,13 +11253,6 @@ export type Database = {
             foreignKeyName: "template_audit_log_performed_by_fkey"
             columns: ["performed_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "template_audit_log_performed_by_fkey"
-            columns: ["performed_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -12434,13 +11321,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "message_templates"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_usage_stats_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "template_usage_stats_user_id_fkey"
@@ -12532,7 +11412,6 @@ export type Database = {
       }
       test_sessions: {
         Row: {
-          assignment_id: string | null
           categories: Json
           completed_at: string | null
           created_at: string | null
@@ -12546,7 +11425,6 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          assignment_id?: string | null
           categories: Json
           completed_at?: string | null
           created_at?: string | null
@@ -12560,7 +11438,6 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          assignment_id?: string | null
           categories?: Json
           completed_at?: string | null
           created_at?: string | null
@@ -12574,20 +11451,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "test_sessions_assignment_id_fkey"
-            columns: ["assignment_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_assignments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_sessions_assignment_id_fkey"
-            columns: ["assignment_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["assignment_id"]
-          },
           {
             foreignKeyName: "test_sessions_evaluation_id_fkey"
             columns: ["evaluation_id"]
@@ -12669,13 +11532,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tutor_conversations_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "tutor_conversations_student_id_fkey"
@@ -12775,13 +11631,6 @@ export type Database = {
             foreignKeyName: "user_favorite_templates_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "user_favorite_templates_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -12836,13 +11685,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "user_folders_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "user_folders_user_id_fkey"
             columns: ["user_id"]
@@ -12911,13 +11753,6 @@ export type Database = {
             foreignKeyName: "user_presence_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "user_presence_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -12979,13 +11814,6 @@ export type Database = {
             foreignKeyName: "user_restrictions_restricted_by_fkey"
             columns: ["restricted_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "user_restrictions_restricted_by_fkey"
-            columns: ["restricted_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13016,13 +11844,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_conversations_view"
             referencedColumns: ["conversation_id"]
-          },
-          {
-            foreignKeyName: "user_restrictions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "user_restrictions_user_id_fkey"
@@ -13070,13 +11891,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "whiteboard_templates"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_whiteboard_template_favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "user_whiteboard_template_favorites_user_id_fkey"
@@ -13236,13 +12050,6 @@ export type Database = {
             foreignKeyName: "vip_cards_activity_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "vip_cards_activity_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13303,13 +12110,6 @@ export type Database = {
           week_start?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "weekly_best_rewards_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "weekly_best_rewards_student_id_fkey"
             columns: ["student_id"]
@@ -13376,13 +12176,6 @@ export type Database = {
             foreignKeyName: "weekly_rewards_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "weekly_rewards_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13426,13 +12219,6 @@ export type Database = {
             foreignKeyName: "welcome_emails_sent_sent_by_fkey"
             columns: ["sent_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "welcome_emails_sent_sent_by_fkey"
-            columns: ["sent_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13449,13 +12235,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "welcome_emails_sent_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "welcome_emails_sent_student_id_fkey"
@@ -13556,13 +12335,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "whiteboard_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "whiteboard_templates_created_by_fkey"
             columns: ["created_by"]
@@ -13695,13 +12467,6 @@ export type Database = {
             foreignKeyName: "worksheet_assignment_students_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "worksheet_assignment_students_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13774,13 +12539,6 @@ export type Database = {
           worksheet_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "worksheet_assignments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "worksheet_assignments_created_by_fkey"
             columns: ["created_by"]
@@ -13869,13 +12627,6 @@ export type Database = {
             foreignKeyName: "worksheet_error_reports_reviewed_by_fkey"
             columns: ["reviewed_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "worksheet_error_reports_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -13892,13 +12643,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "worksheet_error_reports_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "worksheet_error_reports_student_id_fkey"
@@ -14048,13 +12792,6 @@ export type Database = {
             foreignKeyName: "worksheet_instances_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "worksheet_instances_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -14161,13 +12898,6 @@ export type Database = {
             foreignKeyName: "worksheet_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "worksheet_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -14249,13 +12979,6 @@ export type Database = {
           version?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "worksheets_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "worksheets_created_by_fkey"
             columns: ["created_by"]
@@ -14345,13 +13068,6 @@ export type Database = {
             foreignKeyName: "student_warnings_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_warnings_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -14368,13 +13084,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "student_warnings_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "student_warnings_student_id_fkey"
@@ -14500,69 +13209,6 @@ export type Database = {
         }
         Relationships: []
       }
-      assessment_results: {
-        Row: {
-          assessment_grade: string | null
-          assessment_id: string | null
-          assessment_title: string | null
-          assignment_id: string | null
-          attempts_count: number | null
-          best_score: number | null
-          class_id: string | null
-          class_name: string | null
-          last_attempt_at: string | null
-          status: string | null
-          student_firstname: string | null
-          student_id: string | null
-          student_lastname: string | null
-          student_user_id: string | null
-          total_questions: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assessment_assignments_assessment_id_fkey"
-            columns: ["assessment_id"]
-            isOneToOne: false
-            referencedRelation: "assessments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "assessment_assignments_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
-      }
       deck_stats_view: {
         Row: {
           config: Json | null
@@ -14581,13 +13227,6 @@ export type Database = {
           updated_at: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "srs_decks_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "srs_decks_owner_id_fkey"
             columns: ["owner_id"]
@@ -14678,13 +13317,6 @@ export type Database = {
           win_rate: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "minesweeper_games_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "minesweeper_games_student_id_fkey"
             columns: ["student_id"]
@@ -14780,13 +13412,6 @@ export type Database = {
             foreignKeyName: "student_achievements_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_achievements_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -14818,13 +13443,6 @@ export type Database = {
           tournament_id: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "minesweeper_tournament_games_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "minesweeper_tournament_games_student_id_fkey"
             columns: ["student_id"]
@@ -14908,13 +13526,6 @@ export type Database = {
             foreignKeyName: "riddles_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "riddles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -14970,13 +13581,6 @@ export type Database = {
             foreignKeyName: "riddle_attempts_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "riddle_attempts_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -15006,13 +13610,6 @@ export type Database = {
           total_points: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "student_achievements_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
           {
             foreignKeyName: "student_achievements_student_id_fkey"
             columns: ["student_id"]
@@ -15124,13 +13721,6 @@ export type Database = {
             foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "student_point_state_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -15176,13 +13766,6 @@ export type Database = {
             foreignKeyName: "conversation_participants_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
-          },
-          {
-            foreignKeyName: "conversation_participants_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "minesweeper_student_achievement_progress"
             referencedColumns: ["student_id"]
           },
@@ -15206,13 +13789,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "classes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "assessment_results"
-            referencedColumns: ["student_user_id"]
           },
           {
             foreignKeyName: "conversations_created_by_fkey"
@@ -15287,13 +13863,6 @@ export type Database = {
         Returns: Json
       }
       are_classmates: { Args: { p_user_id: string }; Returns: boolean }
-      assessment_curriculum_points: {
-        Args: { p_assessment_ids: string[] }
-        Returns: {
-          assessment_id: string
-          point_id: string
-        }[]
-      }
       auto_activate_scheduled_tournaments: { Args: never; Returns: number }
       auto_complete_ended_tournaments: { Args: never; Returns: number }
       auto_expire_listings: { Args: never; Returns: number }
@@ -15605,7 +14174,6 @@ export type Database = {
           validated_observables: Json
         }[]
       }
-      copy_legacy_assessments: { Args: never; Returns: Json }
       count_student_active_cards: {
         Args: { p_card_id: string; p_lock_row?: boolean; p_student_id: string }
         Returns: number
@@ -15843,66 +14411,6 @@ export type Database = {
           relationship: string
           role: string
           user_id: string
-        }[]
-      }
-      get_assessment_results_for_admin: {
-        Args: { p_assessment_id?: string }
-        Returns: {
-          assessment_grade: string
-          assessment_id: string
-          assessment_title: string
-          assignment_id: string
-          attempts_count: number
-          best_score: number
-          class_id: string
-          class_name: string
-          last_attempt_at: string
-          status: string
-          student_firstname: string
-          student_id: string
-          student_lastname: string
-          student_user_id: string
-          total_questions: number
-        }[]
-      }
-      get_assessment_results_for_student: {
-        Args: never
-        Returns: {
-          assessment_grade: string
-          assessment_id: string
-          assessment_title: string
-          assignment_id: string
-          attempts_count: number
-          best_score: number
-          class_id: string
-          class_name: string
-          last_attempt_at: string
-          status: string
-          student_firstname: string
-          student_id: string
-          student_lastname: string
-          student_user_id: string
-          total_questions: number
-        }[]
-      }
-      get_assessment_results_for_teacher: {
-        Args: { p_assessment_id?: string }
-        Returns: {
-          assessment_grade: string
-          assessment_id: string
-          assessment_title: string
-          assignment_id: string
-          attempts_count: number
-          best_score: number
-          class_id: string
-          class_name: string
-          last_attempt_at: string
-          status: string
-          student_firstname: string
-          student_id: string
-          student_lastname: string
-          student_user_id: string
-          total_questions: number
         }[]
       }
       get_assignment_completion_stats: {
@@ -16573,10 +15081,6 @@ export type Database = {
         Returns: Json
       }
       is_admin: { Args: never; Returns: boolean }
-      is_assessment_owner: {
-        Args: { p_assessment_id: string }
-        Returns: boolean
-      }
       is_assignment_creator: {
         Args: { p_assignment_id: string }
         Returns: boolean
@@ -16643,10 +15147,6 @@ export type Database = {
         Returns: Json
       }
       leave_multiplayer_queue: { Args: never; Returns: Json }
-      link_existing_assessments_to_periods: {
-        Args: { p_school_year_id: string }
-        Returns: number
-      }
       lock_cards: {
         Args: {
           p_card_ids: string[]
@@ -17088,10 +15588,6 @@ export type Database = {
       }
       student_can_read_series: {
         Args: { p_series_id: string }
-        Returns: boolean
-      }
-      student_has_assignment_for_assessment: {
-        Args: { p_assessment_id: string }
         Returns: boolean
       }
       student_has_exercise_access:
