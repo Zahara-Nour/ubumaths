@@ -316,13 +316,13 @@ Une séance du cahier de texte référence ce sur quoi elle a porté. Cinq types
 départagés par le CHECK `journal_entry_activities_kind_shape` qui impose à
 chacun sa colonne :
 
-| `kind`       | Colonne                | Tagué au programme                              |
-| ------------ | ---------------------- | ----------------------------------------------- |
-| `exercise`   | `exercise_id`          | via `exercise_curriculum_points`                |
-| `question`   | `question_template_id` | via `question_template_points`                  |
-| `assessment` | `assessment_id`        | via `assessment_curriculum_points()`, cf. infra |
-| `course`     | `chapter_id` / `label` | non                                             |
-| `textbook`   | `textbook_ref`         | non                                             |
+| `kind`       | Colonne                | Tagué au programme                      |
+| ------------ | ---------------------- | --------------------------------------- |
+| `exercise`   | `exercise_id`          | via `exercise_curriculum_points`        |
+| `question`   | `question_template_id` | via `question_template_points`          |
+| `assessment` | `evaluation_id`        | via `curriculum-coverage.ts`, cf. infra |
+| `course`     | `chapter_id` / `label` | non                                     |
+| `textbook`   | `textbook_ref`         | non                                     |
 
 `reconcileAutoCoverage()` matérialise l'union des points portés par les trois
 premiers en lignes `source='auto'`, sans jamais toucher aux lignes `manual`.
@@ -330,7 +330,7 @@ Elle est **recalculée**, jamais figée : le tagging se fait après coup, donc u
 séance de septembre doit s'allumer quand son contenu est tagué en juin. La
 fidélité à ce qui a été fait est le rôle de la couche manuelle.
 
-⚠️ `question_template_id` et `assessment_id` sont en **CASCADE**, là où
+⚠️ `question_template_id` et `evaluation_id` sont en **CASCADE**, là où
 `exercise_id` est en `SET NULL`. Ce dernier est une dette : `SET NULL` est un
 UPDATE, que le CHECK de forme réévalue — supprimer un exercice référencé par une
 séance échoue donc aujourd'hui sur une violation de contrainte.
@@ -342,16 +342,11 @@ un tableau jsonb de `{ category: {thème, domaine, sous-domaine, niveau},
 quantity, delay }`. C'est l'index unique `idx_question_templates_unique_category`
 qui garantit qu'un quadruplet ne désigne qu'un seul template **publié**.
 
-`assessment_curriculum_points(uuid[])` fait cette jointure sur quatre colonnes,
-en `security invoker`. Le niveau y est comparé **en texte** plutôt que casté :
-`categories` n'est contraint par rien, et un `level` non numérique ferait échouer
-la réconciliation entière au lieu d'ignorer la seule catégorie fautive. Une
-catégorie sans template publié est ignorée en silence.
-
-⚠️ Les politiques RLS d'`assessments` sont restées à `created_by = auth.uid()`,
-sans suivre le refactor mono-professeur qui a fait passer les autres tables à
-`is_teacher_or_admin()`. Une évaluation créée par le compte admin est donc
-invisible depuis le compte prof.
+Cette jointure (quatre colonnes, niveau comparé en texte, catégorie sans
+template publié ignorée en silence) est faite en TypeScript par
+`src/lib/server/curriculum-coverage.ts`, sur `series.categories`. L'ancienne
+fonction SQL `assessment_curriculum_points(uuid[])` a été supprimée avec la
+table `assessments` (migration `20260930150000_drop_assessments.sql`).
 
 ### Tâches d'évaluation (famille compétence)
 
@@ -364,7 +359,7 @@ invisible depuis le compte prof.
 | `class_id`                                       | `UUID` FK     | NULLable → `classes(id)` ON DELETE SET NULL.                                                               |
 | `niveau_scolaire`                                | `TEXT`        | NOT NULL.                                                                                                  |
 | `name` / `description`                           | `TEXT`        | `name` NOT NULL.                                                                                           |
-| `assessment_id` / `exercise_id` / `worksheet_id` | `UUID` FK     | NULLables, ON DELETE SET NULL. CHECK `chk_evaluation_task_source` : **au plus un** non-null (décision 71). |
+| `evaluation_id` / `exercise_id` / `worksheet_id` | `UUID` FK     | NULLables, ON DELETE SET NULL. CHECK `chk_evaluation_task_source` : **au plus un** non-null (décision 71). |
 | `task_date`                                      | `DATE`        | NULLable.                                                                                                  |
 | `created_at` / `updated_at`                      | `TIMESTAMPTZ` | Default `NOW()`.                                                                                           |
 
