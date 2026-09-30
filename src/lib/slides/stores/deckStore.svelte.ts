@@ -5,6 +5,7 @@
  * Uses Svelte 5 runes for reactivity.
  */
 
+import { untrack } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import type {
 	SlideInfo,
@@ -506,11 +507,15 @@ export function createDeckStore(): DeckStore {
 	 */
 	function setSlideAutoSlide(h: number, v: number, ms: number | undefined): void {
 		const key = `${h}-${v}`;
-		if (ms === undefined) {
-			slideAutoSlides.delete(key);
-		} else if (slideAutoSlides.get(key) !== ms) {
-			slideAutoSlides.set(key, ms);
-		}
+		// untrack : appelée depuis l'effet d'une Slide, la lecture de comparaison
+		// ne doit pas rendre cet effet dépendant de la valeur qu'il écrit
+		untrack(() => {
+			if (ms === undefined) {
+				slideAutoSlides.delete(key);
+			} else if (slideAutoSlides.get(key) !== ms) {
+				slideAutoSlides.set(key, ms);
+			}
+		});
 	}
 
 	/**

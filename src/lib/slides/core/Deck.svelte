@@ -8,7 +8,7 @@
 	 * @module slides/core/Deck
 	 */
 
-	import { onMount, setContext, type Snippet } from 'svelte';
+	import { onMount, setContext, untrack, type Snippet } from 'svelte';
 	import { mergeConfig } from './config.js';
 	import { DECK_CONTEXT_KEY } from './context.js';
 	import type {
@@ -19,6 +19,7 @@
 	} from './types.js';
 	import { TRANSITION_DURATIONS } from './types.js';
 	import { createDeckStore } from '../stores/deckStore.svelte.js';
+	import { createAutoSlideTimer } from '../stores/autoSlideTimer.svelte.js';
 	import { createHashNavigation, parseHash, syncHashEffect } from '../navigation/hash.js';
 	import { keyboard } from '../actions/keyboard.js';
 	import { swipe, createSwipeHandlers } from '../actions/swipe.js';
@@ -38,13 +39,20 @@
 		onready?: () => void;
 		/** Called when slide changes */
 		onslidechanged?: (event: SlideChangedEvent) => void;
+		/** Le compte autoSlide de la dernière diapositive est arrivé à 0 */
+		onend?: () => void;
+		/**
+		 * Couche rendue par-dessus les diapositives, dans l'élément du Deck
+		 * (donc visible en plein écran) : minuteur, boutons… Reçoit le contexte.
+		 */
+		overlay?: Snippet<[DeckContext]>;
 	}
 
 	// ==========================================================================
 	// Props
 	// ==========================================================================
 
-	let { config = {}, children, onready, onslidechanged }: Props = $props();
+	let { config = {}, children, onready, onslidechanged, onend, overlay }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -54,12 +62,26 @@
 	let viewportElement: HTMLDivElement | undefined = $state();
 	let scale = $state(1);
 	let ready = $state(false);
+	// Plein écran réel (reflète `fullscreenchange`)
+	let nativeFullscreen = $state(false);
 
 	// Create store instance for this deck
 	const store = createDeckStore();
 
 	// Merged configuration
 	const mergedConfig = $derived(mergeConfig(config));
+
+	// Minuteur du défilement automatique : à 0, diapositive suivante ;
+	// retour sur une diapositive terminée : pause
+	const autoSlideTimer = createAutoSlideTimer({
+		onexpire: handleAutoSlideExpire,
+		onrevisitfinished: () => store.setPaused(true)
+	});
+
+	// Durée de la diapositive courante : la sienne, sinon celle du deck
+	const currentAutoSlide = $derived(
+		store.getSlideAutoSlide(store.h, store.v) ?? mergedConfig.autoSlide ?? 0
+	);
 
 	// Track previous indices for slidechanged event
 	let previousH = $state(0);
@@ -76,7 +98,16 @@
 		next: () => store.next(),
 		prev: () => store.prev(),
 		getScale: () => store.scale,
-		isOverview: () => store.overview
+		isOverview: () => store.overview,
+		isPaused: () => store.paused,
+		pause: () => store.setPaused(true),
+		resume: () => store.setPaused(false),
+		togglePause: () => store.togglePause(),
+		getAutoSlideRemaining: () => autoSlideTimer.remaining,
+		getAutoSlideDuration: () => autoSlideTimer.duration,
+		isAutoSlideRunning: () => autoSlideTimer.running,
+		toggleFullscreen,
+		isFullscreen: () => nativeFullscreen
 	};
 
 	setContext(DECK_CONTEXT_KEY, context);
@@ -153,6 +184,12 @@
 			});
 		}
 
+		// Plein écran réel : suivre les entrées / sorties (y compris Échap)
+		const handleFullscreenChange = () => {
+			nativeFullscreen = document.fullscreenElement === wrapperElement;
+		};
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
+
 		// Mark as ready
 		ready = true;
 		onready?.();
@@ -160,6 +197,8 @@
 		return () => {
 			resizeObserver.disconnect();
 			cleanupHash?.();
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
+			autoSlideTimer.destroy();
 		};
 	});
 
@@ -175,6 +214,18 @@
 			fragmentInURL: mergedConfig.fragmentInURL,
 			oneBasedIndex: mergedConfig.hashOneBasedIndex
 		});
+	});
+
+	// Décrit au minuteur la diapositive courante, sa durée, pause et vue d'ensemble
+	$effect(() => {
+		const input = {
+			key: `${store.h}-${store.v}`,
+			duration: currentAutoSlide,
+			paused: store.paused,
+			overview: store.overview
+		};
+		// untrack : le minuteur peut demander la pause (écriture dans le store)
+		untrack(() => autoSlideTimer.update(input));
 	});
 
 	// Fire slidechanged event when position changes
@@ -201,6 +252,49 @@
 			previousV = v;
 		}
 	});
+
+	// ==========================================================================
+	// Défilement automatique et plein écran
+	// ==========================================================================
+
+	/**
+	 * Compte de la diapositive courante arrivé à 0 : on avance.
+	 * Un fragment restant compte comme une étape : la diapositive repart pour
+	 * sa durée. Rien à montrer après (dernière diapositive) : onend, sans boucler.
+	 */
+	function handleAutoSlideExpire(): void {
+		const { h, v, f } = store;
+		store.next();
+		if (store.h !== h || store.v !== v) return;
+		if (store.f !== f) {
+			autoSlideTimer.restartCurrent();
+		} else {
+			onend?.();
+		}
+	}
+
+	/**
+	 * Plein écran réel sur l'élément du Deck (API Fullscreen)
+	 */
+	async function toggleFullscreen(): Promise<void> {
+		if (!wrapperElement) return;
+		try {
+			if (document.fullscreenElement === wrapperElement) {
+				await document.exitFullscreen();
+			} else {
+				await wrapperElement.requestFullscreen();
+			}
+		} catch {
+			// Refus du navigateur (pas de geste utilisateur, iframe sans permission) :
+			// l'état reste celui que rapporte `fullscreenchange`
+		}
+	}
+
+	// Touches propres au Deck, en plus des raccourcis par défaut
+	const deckKeyHandlers = {
+		f: () => void toggleFullscreen(),
+		F: () => void toggleFullscreen()
+	};
 
 	// ==========================================================================
 	// Navigation Handlers (matching reveal.js behavior)
@@ -235,7 +329,8 @@
 		return `width: 100%; height: 100%;`;
 	});
 
-	const isFullscreen = $derived(mergedConfig.fullscreen ?? false);
+	// Plein écran « CSS » (position: fixed), distinct du plein écran réel
+	const fixedFullscreen = $derived(mergedConfig.fullscreen ?? false);
 	const scaleContent = $derived(mergedConfig.scaleContent ?? false);
 	const showControls = $derived(mergedConfig.controls ?? true);
 	const showProgress = $derived(mergedConfig.progress ?? true);
@@ -313,14 +408,15 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class="deck-wrapper"
-	class:fullscreen={isFullscreen}
+	class:fullscreen={fixedFullscreen}
+	class:native-fullscreen={nativeFullscreen}
 	class:overview={store.overview}
 	class:paused={store.paused}
 	bind:this={wrapperElement}
 	tabindex="0"
 	role="application"
 	aria-label="Presentation slides"
-	use:keyboard={{ store, enabled: keyboardEnabled }}
+	use:keyboard={{ store, enabled: keyboardEnabled, customHandlers: deckKeyHandlers }}
 	use:swipe={touchEnabled ? swipeHandlers : undefined}
 >
 	<!-- Backgrounds container (separate from slides for independent transitions) -->
@@ -459,6 +555,9 @@
 			<span class="pause-text">Pause</span>
 		</div>
 	{/if}
+
+	<!-- Couche fournie par le parent (minuteur…), hors des transformations du viewport -->
+	{@render overlay?.(context)}
 
 	<!-- Annotation toolbar rendered outside viewport transforms -->
 	{#if slideAnnotationStore.available}
