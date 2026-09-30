@@ -211,13 +211,25 @@ describe('durée modifiée pendant le compte', () => {
 		expect(onexpire).toHaveBeenCalledTimes(1);
 	});
 
-	it('raccourcir sous le temps écoulé : plancher 0, la diapositive se termine', () => {
+	// Raccourcir ne fait jamais expirer la diapositive sur-le-champ (un clic sur
+	// « −5 s » ne doit pas faire sauter la question affichée) : il lui reste au
+	// moins 1 s, ou son temps restant s'il est déjà plus court.
+	it('raccourcir sous le temps écoulé : la diapositive garde au moins 1 s', () => {
 		show();
-		vi.advanceTimersByTime(2000);
+		vi.advanceTimersByTime(1000);
 		show({ duration: 1500 });
-		expect(timer.remaining).toBe(0);
-		vi.advanceTimersByTime(1);
+		expect(timer.remaining).toBe(1000);
+		expect(onexpire).not.toHaveBeenCalled();
+		vi.advanceTimersByTime(1000);
 		expect(onexpire).toHaveBeenCalledTimes(1);
+	});
+
+	it('raccourcir quand il reste moins d’1 s : le temps restant ne bouge pas', () => {
+		show();
+		vi.advanceTimersByTime(2500);
+		show({ duration: 1000 });
+		expect(timer.remaining).toBe(500);
+		expect(onexpire).not.toHaveBeenCalled();
 	});
 
 	it('ajuster pendant la pause décale aussi le temps restant', () => {

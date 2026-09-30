@@ -186,7 +186,7 @@
 										variant="secondary"
 										size="icon"
 										aria-label="Réduire la durée de 5 secondes"
-										disabled={!item || delayOf(item) <= MIN_DELAY_SECONDS}
+										aria-disabled={!item || delayOf(item) <= MIN_DELAY_SECONDS}
 										onclick={() => adjustCategoryDelay(deck, -DELAY_STEP_SECONDS)}
 									>
 										<Minus class="h-5 w-5" />

@@ -147,7 +147,11 @@ describe('ClassroomSeries — projection', () => {
 
 		click(container, 'Réduire la durée de 5 secondes');
 		expect(text(container, 'classroom-duration')).toBe('5 s');
-		expect(button(container, 'Réduire la durée de 5 secondes').disabled).toBe(true);
+		// Au plancher, le bouton reste focalisable (un bouton désactivé perdrait le
+		// focus et le clavier du diaporama ne répondrait plus) : aria-disabled seulement
+		const minus = button(container, 'Réduire la durée de 5 secondes');
+		expect(minus.disabled).toBe(false);
+		expect(minus.getAttribute('aria-disabled')).toBe('true');
 
 		click(container, 'Réduire la durée de 5 secondes');
 		expect(text(container, 'classroom-duration')).toBe('5 s');
@@ -155,6 +159,15 @@ describe('ClassroomSeries — projection', () => {
 		elapse(5000);
 		expect(activeSlideText(container)).toContain('Énoncé B');
 		expect(text(container, 'classroom-duration')).toBe('10 s');
+	});
+
+	it('−5 s quand il reste 3 s ne fait pas sauter la question affichée', async () => {
+		const { container } = await open(threeItems());
+		elapse(7000);
+
+		click(container, 'Réduire la durée de 5 secondes');
+		elapse(200);
+		expect(activeSlideText(container)).toContain('Énoncé A');
 	});
 
 	it('le bouton pause gèle le minuteur, la reprise repart du temps restant', async () => {

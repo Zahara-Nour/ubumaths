@@ -12,6 +12,8 @@
 
 // Période de rafraîchissement du temps restant affiché (ms)
 const TICK_MS = 100;
+/** Raccourcir une diapositive en cours lui laisse au moins ce temps (ms) */
+const MIN_REMAINING_AFTER_SHORTEN_MS = 1000;
 
 export interface AutoSlideInput {
 	/** Identifiant de la diapositive courante (ex. « h-v ») */
@@ -128,7 +130,9 @@ export function createAutoSlideTimer(options: AutoSlideTimerOptions): AutoSlideT
 	/**
 	 * Entrée mémoire de `key` pour la durée `newDuration`.
 	 * Une durée qui a changé depuis le dernier calcul décale le temps restant
-	 * du même écart (plancher 0). Durée 0 : pas de défilement, mémoire oubliée.
+	 * du même écart. Raccourcir ne fait jamais expirer la diapositive sur-le-champ :
+	 * il lui reste au moins `MIN_REMAINING_AFTER_SHORTEN_MS`, ou son temps restant
+	 * s'il est déjà plus court. Durée 0 : pas de défilement, mémoire oubliée.
 	 */
 	function reconcile(key: string, newDuration: number): Entry | null {
 		if (newDuration <= 0) {
@@ -141,7 +145,8 @@ export function createAutoSlideTimer(options: AutoSlideTimerOptions): AutoSlideT
 			memory.set(key, e);
 		} else if (e.duration !== newDuration) {
 			if (!e.finished) {
-				e.remaining = Math.max(0, e.remaining + newDuration - e.duration);
+				const floor = Math.min(e.remaining, MIN_REMAINING_AFTER_SHORTEN_MS);
+				e.remaining = Math.max(floor, e.remaining + newDuration - e.duration);
 			}
 			e.duration = newDuration;
 		}
