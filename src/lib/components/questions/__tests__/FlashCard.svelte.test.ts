@@ -315,3 +315,35 @@ describe('FlashCard — verso allégé', () => {
 		expect(back(container).querySelector('[data-single-answer]')).toBeNull();
 	});
 });
+
+/**
+ * Projection « En classe » : la réponse ne doit pas être montrée à la classe,
+ * la carte se rend donc sans bouton de retournement (`flippable={false}`).
+ */
+describe('FlashCard — prop flippable', () => {
+	const instance = {
+		templateId: 'test',
+		statement: resolvedMarkdown('Combien font $$2 + 3$$ ?'),
+		grades: ['6'],
+		theme: 'Entiers',
+		domain: 'Additionner',
+		level: 1,
+		generatedAt: new Date().toISOString()
+	} as QuestionInstance;
+
+	it('montre le bouton de retournement par défaut', async () => {
+		const { container } = await render(FlashCard, { instance });
+
+		expect(container.querySelector('[aria-label="Voir la correction"]')).not.toBeNull();
+	});
+
+	it('ne rend aucun bouton de retournement quand flippable vaut false', async () => {
+		const { container } = await render(FlashCard, { instance, flippable: false });
+
+		expect(container.querySelector('[aria-label="Voir la correction"]')).toBeNull();
+		expect(container.querySelector('[aria-label="Retour à la question"]')).toBeNull();
+		expect(container.querySelector('.flip-button')).toBeNull();
+		// L'énoncé reste affiché
+		expect(container.textContent).toContain('Combien font');
+	});
+});

@@ -10,7 +10,7 @@
 	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
 	- Callbacks: onAnswerSubmit, onAnswerChange, onComplete, onFlip
-	- Customization: size, showCorrectionOnWrong, maxAttempts, etc.
+	- Customization: size, showCorrectionOnWrong, maxAttempts, flippable, etc.
 -->
 
 <script lang="ts">
@@ -54,6 +54,11 @@
 		 * défile dans la carte. Absente : hauteur de la plus haute des deux faces.
 		 */
 		height?: string;
+		/**
+		 * Bouton de retournement affiché (défaut true). false : la réponse ne peut
+		 * pas être montrée (projection « En classe » devant les élèves).
+		 */
+		flippable?: boolean;
 	}
 
 	let {
@@ -67,7 +72,8 @@
 		showCorrectionOnWrong = false,
 		showValidationFeedback = true,
 		maxAttempts = 0,
-		height = undefined
+		height = undefined,
+		flippable = true
 	}: Props = $props();
 
 	// ============================================================================
@@ -410,14 +416,16 @@
 					</Card.Content>
 				</Card.Root>
 
-				<button
-					class="flip-button"
-					onclick={handleFlip}
-					aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-					title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-				>
-					<RotateCw class="h-5 w-5" />
-				</button>
+				{#if flippable}
+					<button
+						class="flip-button"
+						onclick={handleFlip}
+						aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+						title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+					>
+						<RotateCw class="h-5 w-5" />
+					</button>
+				{/if}
 			</div>
 		{/snippet}
 
@@ -497,14 +505,16 @@
 					</Card.Content>
 				</Card.Root>
 
-				<button
-					class="flip-button"
-					onclick={handleFlip}
-					aria-label="Retour à la question"
-					title="Retour à la question"
-				>
-					<RotateCw class="h-5 w-5" />
-				</button>
+				{#if flippable}
+					<button
+						class="flip-button"
+						onclick={handleFlip}
+						aria-label="Retour à la question"
+						title="Retour à la question"
+					>
+						<RotateCw class="h-5 w-5" />
+					</button>
+				{/if}
 			</div>
 		{/snippet}
 	</FlipCard>
