@@ -1,6 +1,6 @@
 # 0001 — Correction des réponses côté client
 
-- **Statut** : acceptée
+- **Statut** : acceptée — restreinte par [ADR 0015](0015-evaluation-notee-correction-serveur.md) (évaluations notées : correction serveur)
 - **Date** : 2026-09-13 · **Décidée par** : David
 
 ## Contexte

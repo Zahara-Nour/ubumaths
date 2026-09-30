@@ -61,31 +61,33 @@ en avance). → [ADR 0005](docs/adr/0005-publication-par-element-acces-herite-de
 
 ## Les questions
 
-| Terme                  | Sens                                                                                                                                  | Code                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Modèle de question** | Ce que le prof rédige : énoncé paramétré, cases, correction.                                                                          | `question_templates`                                                            |
-| **Variation**          | Paramétrage alternatif d'un **même cas pédagogique** ; tirée **par élève** → difficulté équivalente exigée.                           | `question_templates.variations[]`                                               |
-| **Instance**           | La question générée qu'un élève voit (seed déterministe).                                                                             |                                                                                 |
-| **Case**               | Zone de réponse d'une question (MathLive).                                                                                            | `blanks[]`                                                                      |
-| **QCM**                | Question à choix.                                                                                                                     | type `multiple_choice`                                                          |
-| **Carte de cours**     | Question sans case ni choix : recto (énoncé) / verso (correction), auto-évaluée. Exclue des évaluations notées.                       | type `course_card` → [ADR 0009](docs/adr/0009-carte-de-cours-type-explicite.md) |
-| **Correction**         | Le texte / les étapes montrés après réponse.                                                                                          | `correction.steps`                                                              |
-| **Motif de forme**     | Contrainte sur l'**écriture** attendue (ex. « forme réduite »), au-delà de l'équivalence.                                             | `mathAST/pattern/`, `requiredForm`                                              |
-| **Série**              | Exercice d'une fiche qui regroupe plusieurs instances figées (graine fixe) de modèles de questions ; même copie pour toute la classe. | → [ADR 0011](docs/adr/0011-fiche-d-automatismes-figee-par-graine.md)            |
-| **Relecture**          | Revue des 633 questions TinyMath importées, lot par lot.                                                                              | `docs/relecture/`                                                               |
+| Terme                  | Sens                                                                                                                                                                                                         | Code                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| **Modèle de question** | Ce que le prof rédige : énoncé paramétré, cases, correction.                                                                                                                                                 | `question_templates`                                                            |
+| **Variation**          | Paramétrage alternatif d'un **même cas pédagogique** ; tirée **par élève** → difficulté équivalente exigée.                                                                                                  | `question_templates.variations[]`                                               |
+| **Instance**           | La question générée qu'un élève voit (seed déterministe).                                                                                                                                                    |                                                                                 |
+| **Case**               | Zone de réponse d'une question (MathLive).                                                                                                                                                                   | `blanks[]`                                                                      |
+| **QCM**                | Question à choix.                                                                                                                                                                                            | type `multiple_choice`                                                          |
+| **Carte de cours**     | Question sans case ni choix : recto (énoncé) / verso (correction), auto-évaluée. Exclue des évaluations notées.                                                                                              | type `course_card` → [ADR 0009](docs/adr/0009-carte-de-cours-type-explicite.md) |
+| **Correction**         | Le texte / les étapes montrés après réponse.                                                                                                                                                                 | `correction.steps`                                                              |
+| **Motif de forme**     | Contrainte sur l'**écriture** attendue (ex. « forme réduite »), au-delà de l'équivalence.                                                                                                                    | `mathAST/pattern/`, `requiredForm`                                              |
+| **Série**              | Composition de questions : des catégories de modèles, chacune avec un nombre de répétitions et une durée ; tirée à neuf à chaque usage (en classe, flash-cards, interactif, course aux nombres, évaluation). | pas de table dédiée : `assessments.categories`, panier `questionCart`           |
+| **Série figée**        | Série dont les instances sont fixées par une graine : même copie pour toute la classe (exercice d'une fiche d'automatismes).                                                                                 | → [ADR 0011](docs/adr/0011-fiche-d-automatismes-figee-par-graine.md)            |
+| **Relecture**          | Revue des 633 questions TinyMath importées, lot par lot.                                                                                                                                                     | `docs/relecture/`                                                               |
 
 Les types de question : `numerical_exact`, `numerical_decimal`, `numerical_rounded`,
 `algebraic_transform`, `fill_in_blanks`, `multiple_choice`, plus `course_card`.
 
 ## Les usages des questions
 
-| Terme                | Sens                                                                   | Code                         |
-| -------------------- | ---------------------------------------------------------------------- | ---------------------------- |
-| **Automaths**        | Entraînement libre sur les questions.                                  | `/automaths`                 |
-| **SRS / révision**   | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy. | `srs_*`, `docs/ref/srs/`     |
-| **Deck**             | Paquet de cartes de révision (un chapitre peut en porter).             | `srs_decks`, `chapter_decks` |
-| **Quiz de chapitre** | Quiz d'un chapitre, sur le moteur de questions.                        | `chapter_quiz_results`       |
-| **Tentative**        | Une réponse d'élève enregistrée.                                       | `skill_attempts`             |
+| Terme                | Sens                                                                                                        | Code                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Automaths**        | Entraînement libre sur les questions.                                                                       | `/automaths`                                                                                               |
+| **SRS / révision**   | Répétition espacée (FSRS) : decks, cartes, notes Again/Hard/Good/Easy.                                      | `srs_*`, `docs/ref/srs/`                                                                                   |
+| **Deck**             | Paquet de cartes de révision (un chapitre peut en porter). ≠ `Deck` d'UbuSlides (diaporama).                | `srs_decks`, `chapter_decks`                                                                               |
+| **Quiz de chapitre** | Quiz d'un chapitre, sur le moteur de questions. Supprimé le 2026-09-15 (jamais servi).                      | migration `20260915340000_drop_ancien_quiz_de_chapitre`                                                    |
+| **Tentative**        | Une réponse d'élève enregistrée.                                                                            | `skill_attempts`                                                                                           |
+| **Évaluation**       | Série assignée par le prof à des élèves : les réponses sont enregistrées, vérifiées, puis donnent une note. | `assessments`, `assessment_assignments` → [ADR 0015](docs/adr/0015-evaluation-notee-correction-serveur.md) |
 
 La **correction des réponses est côté client** : les statistiques sont un outil pour l'élève, jamais
 une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
