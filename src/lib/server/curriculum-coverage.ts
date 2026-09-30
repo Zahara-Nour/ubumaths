@@ -51,12 +51,16 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 	];
 }
 
+/** Taille d'une page de `question_templates` (plafond de PostgREST) */
+const TEMPLATES_PAGE_SIZE = 1000;
+
 /** Catégorie d'une série, telle que la couverture la compare aux modèles */
 interface SeriesCategoryRef {
 	theme: string;
 	domain: string;
 	subdomain: string | null;
-	level: number;
+	/** En texte, comme la fonction SQL remplacée (`t.level::text = … ->> 'level'`) */
+	level: string;
 }
 
 function readCategories(raw: unknown): SeriesCategoryRef[] {
@@ -72,7 +76,7 @@ function readCategories(raw: unknown): SeriesCategoryRef[] {
 			!category ||
 			typeof category.theme !== 'string' ||
 			typeof category.domain !== 'string' ||
-			typeof category.level !== 'number'
+			(typeof category.level !== 'number' && typeof category.level !== 'string')
 		) {
 			continue;
 		}
@@ -80,7 +84,7 @@ function readCategories(raw: unknown): SeriesCategoryRef[] {
 			theme: category.theme,
 			domain: category.domain,
 			subdomain: typeof category.subdomain === 'string' ? category.subdomain : null,
-			level: category.level
+			level: String(category.level)
 		});
 	}
 	return categories;
@@ -109,21 +113,38 @@ export async function evaluationCurriculumPoints(supabase: Sb, ids: string[]): P
 	const categories = (evaluations ?? []).flatMap((e) => readCategories(e.series?.categories));
 	if (categories.length === 0) return [];
 
-	const { data: templates, error: tplErr } = await supabase
-		.from('question_templates')
-		.select('id, theme, domain, subdomain, level')
-		.eq('status', 'published')
-		.in('theme', [...new Set(categories.map((c) => c.theme))])
-		.in('domain', [...new Set(categories.map((c) => c.domain))]);
-	if (tplErr) throw new Error(`reconcileAutoCoverage evaluation templates: ${tplErr.message}`);
+	// Paginé : PostgREST plafonne une lecture à 1000 lignes, et une page tronquée
+	// ferait disparaître des points en silence.
+	const themes = [...new Set(categories.map((c) => c.theme))];
+	const domains = [...new Set(categories.map((c) => c.domain))];
+	const templates: {
+		id: string;
+		theme: string;
+		domain: string;
+		subdomain: string | null;
+		level: number;
+	}[] = [];
+	for (let from = 0; ; from += TEMPLATES_PAGE_SIZE) {
+		const { data: page, error: tplErr } = await supabase
+			.from('question_templates')
+			.select('id, theme, domain, subdomain, level')
+			.eq('status', 'published')
+			.in('theme', themes)
+			.in('domain', domains)
+			.order('id', { ascending: true })
+			.range(from, from + TEMPLATES_PAGE_SIZE - 1);
+		if (tplErr) throw new Error(`reconcileAutoCoverage evaluation templates: ${tplErr.message}`);
+		templates.push(...(page ?? []));
+		if (!page || page.length < TEMPLATES_PAGE_SIZE) break;
+	}
 
-	const matching = (templates ?? []).filter((t) =>
+	const matching = templates.filter((t) =>
 		categories.some(
 			(c) =>
 				c.theme === t.theme &&
 				c.domain === t.domain &&
 				(c.subdomain ?? '') === (t.subdomain ?? '') &&
-				c.level === t.level
+				c.level === String(t.level)
 		)
 	);
 	if (matching.length === 0) return [];
