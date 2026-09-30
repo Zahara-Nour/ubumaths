@@ -52,6 +52,21 @@ export interface TestSession {
 }
 
 // ===========================================================================
+// SÉRIE « EN CLASSE » (projection)
+// ===========================================================================
+
+/**
+ * Une question projetée en classe (forme « En classe » d'une série)
+ */
+export interface ClassroomItem {
+	instance: QuestionInstance;
+	/** Durée de SA catégorie en secondes (déjà résolue, > 0) */
+	delaySeconds: number;
+	/** Clé de catégorie (theme|domain|subdomain|level) : ±5 s s'applique à toute la catégorie */
+	categoryKey: string;
+}
+
+// ===========================================================================
 // TEST RESULTS
 // ===========================================================================
 
