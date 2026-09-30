@@ -7,7 +7,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import CartQuestionCard from '../CartQuestionCard.svelte';
 import { previewCartItem } from '$lib/questions/cart-preview';
 import type { QuestionTemplate } from '$lib/questions/types';
@@ -88,12 +88,64 @@ describe('CartQuestionCard', () => {
 		const onUpdateDelay = vi.fn();
 		const screen = await renderCard({ onUpdateDelay });
 
-		// Geste réel : survoler la tuile, puis cliquer. L'apparition au survol
-		// (opacity Tailwind) n'est PAS vérifiée ici : les tests navigateur ne chargent
-		// pas Tailwind, le bouton y est toujours visible (un test d'opacité passait à tort).
+		// Geste réel : survoler la tuile révèle les boutons, puis cliquer
 		await screen.getByTitle('Durée par question').hover();
 		await screen.getByRole('button', { name: 'Augmenter la durée' }).click();
 
 		expect(onUpdateDelay).toHaveBeenCalledWith(ITEM.category, 30);
+	});
+
+	/**
+	 * Survol (décision de David, 2026-09-29) : durée et répétitions toujours
+	 * visibles, leurs boutons − / + seulement au survol ou au focus clavier.
+	 * Vérifiable depuis que les tests navigateur chargent Tailwind (#544).
+	 */
+	describe('boutons − / + révélés au survol', () => {
+		// La souris garde sa position d'un test à l'autre : on l'éloigne de la tuile,
+		// sinon le survol d'un test précédent rend les boutons visibles à tort.
+		async function renderAtRest() {
+			const screen = await renderCard();
+			await userEvent.unhover(screen.getByTitle('Durée par question'));
+			return screen;
+		}
+
+		const CONTROL_LABELS = [
+			'Diminuer la durée',
+			'Augmenter la durée',
+			'Diminuer le nombre de répétitions',
+			'Augmenter le nombre de répétitions'
+		];
+
+		it('au repos : boutons invisibles, valeurs visibles', async () => {
+			const screen = await renderAtRest();
+
+			for (const name of CONTROL_LABELS) {
+				await expect.element(screen.getByRole('button', { name })).toHaveStyle({ opacity: '0' });
+			}
+			await expect.element(screen.getByTitle('Durée par question')).toHaveStyle({ opacity: '1' });
+			await expect
+				.element(screen.getByTitle('Nombre de répétitions'))
+				.toHaveStyle({ opacity: '1' });
+		});
+
+		it('au survol de la tuile : les quatre boutons apparaissent', async () => {
+			const screen = await renderAtRest();
+
+			await screen.getByTitle('Durée par question').hover();
+
+			for (const name of CONTROL_LABELS) {
+				await expect.element(screen.getByRole('button', { name })).toHaveStyle({ opacity: '1' });
+			}
+		});
+
+		it('au focus clavier : les boutons apparaissent aussi', async () => {
+			const screen = await renderAtRest();
+
+			const button = screen.getByRole('button', { name: 'Augmenter la durée' });
+			await expect.element(button).toHaveStyle({ opacity: '0' });
+			(button.element() as HTMLElement).focus();
+
+			await expect.element(button).toHaveStyle({ opacity: '1' });
+		});
 	});
 });
