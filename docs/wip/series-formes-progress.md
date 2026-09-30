@@ -97,12 +97,12 @@ Une **série** (composition : catégories × répétitions × durée) s'utilise 
 
 ### Tâches
 
-| #   | Tâche                                                                                                                                  | Qui                                     | État        |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------- |
-| 1   | UbuSlides : minuteur par diapositive, pause, durée modifiable fait (#550), signal de fin, `hash` désactivable, filtre clavier MathLive | `svelte-expert` (Opus)                  | fait (#550) |
-| 2   | Composant « En classe » : diaporama de flash-cards, règle de la question courante, grilles de fin                                      | `frontend-developer` (Opus)             | en cours    |
-| 3   | Branchement de la page, durée par question, suppression de `QuestionSlide`                                                             | session principale                      | à faire     |
-| 4   | Relecture + accessibilité                                                                                                              | `code-reviewer`, `accessibility-tester` | à faire     |
+| #   | Tâche                                                                                                                                  | Qui                                     | État              |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------- |
+| 1   | UbuSlides : minuteur par diapositive, pause, durée modifiable fait (#550), signal de fin, `hash` désactivable, filtre clavier MathLive | `svelte-expert` (Opus)                  | fait (#550)       |
+| 2   | Composant « En classe » : diaporama de flash-cards, règle de la question courante, grilles de fin                                      | `frontend-developer` (Opus)             | fait (#551)       |
+| 3   | Branchement de la page, durée par question, suppression de `QuestionSlide`                                                             | session principale                      | fait (#551)       |
+| 4   | Relecture + accessibilité                                                                                                              | `code-reviewer`, `accessibility-tester` | fait (#550, #551) |
 
 ### Tâche 1 livrée (#550, 2026-09-30)
 
@@ -112,3 +112,20 @@ API UbuSlides : `Slide.autoSlide` (ms, prioritaire sur `config.autoSlide`, réac
 isAutoSlideRunning`, `toggleFullscreen/isFullscreen` ; touche `f`. Retour MANUEL sur une diapositive
 terminée = pause ; avance AUTOMATIQUE sur une diapositive terminée = rejouée à durée complète (choix
 de Claude, à confirmer par David). Touches combinées Cmd/Ctrl/Alt laissées au navigateur.
+
+### Chantier 1 livré (#551, 2026-09-30)
+
+`ClassroomSeries` (forme « En classe ») remplace `TestDisplay` ; `QuestionSlide` supprimé ;
+`buildSeriesItems` (`src/lib/questions/series-items.ts`) donne à chaque question sa durée et sa
+catégorie. Grilles de fin en flash-cards (verso pour les corrections), hauteur `TILE_CARD_HEIGHT`.
+Raccourcir une question en cours lui laisse au moins 1 s. Choix de l'agent à confirmer par David :
+les durées ajustées au ±5 s survivent à « Recommencer ».
+
+### Reste à faire, repéré en route
+
+- `CorrectionCard` affiche `instance.correctChoiceIndex` comme « Réponse correcte » → **« undefined »
+  pour toute question à trous** ; utilisé par l'écran de résultats de l'Entraînement et de la Course
+  aux nombres (probablement visible en production).
+- Fenêtre de choix du panier (`TestModeDialog`) : renommer « Mode Révision » / « Mode Quiz » en
+  « En classe » / « Entraînement » (Q7).
+- Chantier 2 : Flash-cards d'une série.
