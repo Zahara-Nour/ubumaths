@@ -56,7 +56,10 @@ export function reviewBestOfDay(
 	timeSpent?: number
 ): CardStats | null {
 	const today = schoolDay(now);
-	const isToday = (entry: ReviewHistoryEntry) => schoolDay(new Date(entry.date)) === today;
+	const isToday = (entry: ReviewHistoryEntry) => {
+		const date = new Date(entry.date);
+		return !Number.isNaN(date.getTime()) && schoolDay(date) === today;
+	};
 	const todayEntries = stats.reviewHistory.filter(isToday);
 
 	if (todayEntries.length === 0) {
@@ -65,6 +68,10 @@ export function reviewBestOfDay(
 
 	const bestToday = Math.max(...todayEntries.map((entry) => entry.grade));
 	if (grade <= bestToday) return null;
+
+	// Une révision du jour sans état mémorisé vient d'un autre chemin (question
+	// corrigée par l'application) : on ne l'efface jamais, quelle que soit sa place.
+	if (todayEntries.some((entry) => !entry.before)) return null;
 
 	// Repartir de l'état d'avant la PREMIÈRE révision du jour
 	const before = todayEntries[0].before;

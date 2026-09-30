@@ -106,4 +106,34 @@ describe('reviewBestOfDay', () => {
 		vi.setSystemTime(new Date('2026-09-30T16:00:00Z'));
 		expect(reviewBestOfDay(fsrs, other, Grade.GOOD, new Date())).toBeNull();
 	});
+
+	it('une révision corrigée (sans état mémorisé) au milieu de la journée n’est jamais effacée', async () => {
+		vi.useFakeTimers();
+		const card = cardReviewedLongAgo();
+		vi.setSystemTime(new Date('2026-09-30T08:00:00Z'));
+		const morning = reviewBestOfDay(fsrs, card, Grade.AGAIN, new Date())!;
+
+		// Midi : question corrigée par l'application (Entraînement), pas d'auto-évaluation
+		vi.setSystemTime(new Date('2026-09-30T12:00:00Z'));
+		const noon = { ...morning, ...fsrs.reviewCard(morning, Grade.AGAIN) };
+
+		// Soir : « J'avais trouvé » ne doit pas effacer la révision de midi
+		vi.setSystemTime(new Date('2026-09-30T16:00:00Z'));
+		expect(reviewBestOfDay(fsrs, noon, Grade.GOOD, new Date())).toBeNull();
+	});
+
+	it('fiche jamais révisée : mieux plus tard dans la journée repart de l’état initial', async () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date('2026-09-30T08:00:00Z'));
+		const card = freshCard();
+		const morning = reviewBestOfDay(fsrs, card, Grade.AGAIN, new Date())!;
+
+		vi.setSystemTime(new Date('2026-09-30T16:00:00Z'));
+		const evening = reviewBestOfDay(fsrs, morning, Grade.GOOD, new Date())!;
+		const onlyGood = fsrs.reviewCard(card, Grade.GOOD);
+
+		expect(evening.totalReviews).toBe(1);
+		expect(evening.stability).toBeCloseTo(onlyGood.stability, 10);
+		expect(evening.state).toBe(onlyGood.state);
+	});
 });
