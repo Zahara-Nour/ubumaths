@@ -157,3 +157,11 @@ les durées ajustées au ±5 s survivent à « Recommencer ».
 - Policy INSERT élève : ne vérifie que `user_id` ; insertion directe possible avec n'importe quel
   score / `assignment_id`, sans passer par `/api/tests/save`.
 - `GRANT ALL … TO anon` sur la table (fermé par la RLS, à révoquer par défense en profondeur).
+
+### Chantier 2 — code (branche `feat/serie-flash-cards`, non poussée)
+
+- API : `mode: 'flash'` accepté ; `flash` + `assignmentId` → 400 (refine Zod) ; tentatives
+  `student_self` ; FSRS Good/Again par `isCorrect` ; pas d'XP.
+- `FlashSeries.svelte` (carte, boutons après retournement, bilan, revoir les ratées sans
+  resauvegarde, message visiteur) ; 4ᵉ forme dans `TestModeDialog` ; page branchée.
+- À vérifier à la main : parcours réel sur le serveur de dev (non fait par l'agent).
