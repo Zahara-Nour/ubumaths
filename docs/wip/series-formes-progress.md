@@ -339,3 +339,7 @@ séances d'évaluation), Q39 (verdict serveur → SRS). Réponses attendues.
 - Q34 (reprise de la même tentative) et Q35 (barème TinyMath : 1 point, ½ forme non optimale ou oubli
   partiel ≤ moitié des cases, 0 si une case fausse ; QCM incomplet sans erreur = ½ ; note /20 au
   demi-point) : **validées par David** (réponses déjà tapées non gardées au rechargement).
+- **Spécification des tests du chantier 5 validée par David** (2026-09-30) : A1-A5 barème, B6-B9
+  démarrage, C10-C14 envoi/correction, D15-D18 base (dont : graines illisibles par l'élève), E19-E21
+  écrans. Livraison : PR A migration (`supabase-expert`, `security-auditor`, `db:migrate`, `db:types`)
+  → PR B code (`fullstack-developer`, `code-reviewer`, `security-auditor`).
