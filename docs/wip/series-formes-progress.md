@@ -364,3 +364,7 @@ interdits) ; policy UPDATE supprimée. Vérifié en prod : 7 policies attendues,
 (authenticated/anon). ⚠️ L'envoi d'une évaluation échoue jusqu'au déploiement de la PR B (0
 assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serveur`, worktree
 `../ubumaths-wt-eval-code`, types régénérés en premier commit.
+
+- **Q40 (David, 2026-10-01)** — SRS après une évaluation : une réponse en forme non optimale (½ point
+  dans la note) compte « Bien » pour la révision, comme en entraînement libre. La note juge la forme, la
+  révision juge la connaissance.
