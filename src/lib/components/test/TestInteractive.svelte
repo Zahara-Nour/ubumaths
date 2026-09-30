@@ -17,7 +17,8 @@
 	- isLoggedIn: boolean - Visiteur non connecté : message « Connecte-toi… »
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
-	- onBack: () => void - Retour au panier
+	- onBack: () => void - Retour au panier (à « Mes évaluations » pour une évaluation)
+	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
 -->
 
@@ -42,6 +43,7 @@
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
 		onBack: () => void;
+		inEvaluation?: boolean;
 		assessmentTitle?: string;
 	}
 
@@ -49,7 +51,17 @@
 	/** Pause entre une validation et la question suivante */
 	const ADVANCE_DELAY_MS = 300;
 
-	let { items, isLoggedIn, onComplete, onRestart, onBack, assessmentTitle }: Props = $props();
+	let {
+		items,
+		isLoggedIn,
+		onComplete,
+		onRestart,
+		onBack,
+		assessmentTitle,
+		inEvaluation = false
+	}: Props = $props();
+
+	let backLabel = $derived(inEvaluation ? 'Mes évaluations' : 'Retour au panier');
 
 	// Variables
 	let currentIndex = $state(0);
@@ -164,13 +176,13 @@
 	{/if}
 
 	{#if testResult}
-		<TestResults result={testResult} {onRestart} onBackToCart={onBack} />
+		<TestResults result={testResult} {onRestart} onBackToCart={onBack} {inEvaluation} />
 	{:else if currentItem}
 		<!-- Header with progress -->
 		<div class="space-y-3">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<Button variant="ghost" size="icon" onclick={onBack} aria-label="Retour au panier">
+					<Button variant="ghost" size="icon" onclick={onBack} aria-label={backLabel}>
 						<ArrowLeft class="h-5 w-5" />
 					</Button>
 					<div>
@@ -226,7 +238,7 @@
 				<p class="text-muted-foreground">Aucune question à afficher pour cette série.</p>
 				<Button variant="ghost" onclick={onBack}>
 					<ArrowLeft class="mr-2 h-4 w-4" aria-hidden="true" />
-					Retour au panier
+					{backLabel}
 				</Button>
 			</Card.Content>
 		</Card.Root>

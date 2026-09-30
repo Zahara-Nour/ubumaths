@@ -14,7 +14,9 @@
 	Props:
 	- session: TestSession - Active test session
 	- onComplete: (result: TestResult) => void - Callback when test completed
-	- onBack: () => void - Callback to return to cart
+	- onBack: () => void - Callback to return to cart (« Mes évaluations » pour une évaluation)
+	- inEvaluation: évaluation assignée → pas de « Recommencer » (une tentative de
+	  plus ne passe que par « Mes évaluations »)
 -->
 
 <script lang="ts">
@@ -33,9 +35,10 @@
 		session: TestSession;
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
+		inEvaluation?: boolean;
 	}
 
-	let { session, onComplete, onBack }: Props = $props();
+	let { session, onComplete, onBack, inEvaluation = false }: Props = $props();
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
@@ -176,7 +179,12 @@
 					<div class="flex flex-wrap items-center justify-between gap-4">
 						<!-- Left: Back button and title -->
 						<div class="flex items-center gap-3">
-							<Button variant="ghost" size="icon" onclick={onBack}>
+							<Button
+								variant="ghost"
+								size="icon"
+								onclick={onBack}
+								aria-label={inEvaluation ? 'Mes évaluations' : 'Retour au panier'}
+							>
 								<ArrowLeft class="h-5 w-5" />
 							</Button>
 							<div>
@@ -244,5 +252,5 @@
 	</div>
 {:else if testResult}
 	<!-- Show results -->
-	<TestResults result={testResult} onRestart={handleRestart} onBackToCart={onBack} />
+	<TestResults result={testResult} onRestart={handleRestart} onBackToCart={onBack} {inEvaluation} />
 {/if}

@@ -240,6 +240,18 @@
 	}
 
 	/**
+	 * Évaluation : on revient à « Mes évaluations », jamais au panier (une
+	 * nouvelle tentative y repasse par la vérification des tentatives)
+	 */
+	function handleBack() {
+		if (assignmentId) {
+			goto('/dashboard/student/assessments').then(() => {});
+		} else {
+			handleBackToCart();
+		}
+	}
+
+	/**
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
@@ -348,7 +360,9 @@
 					<AlertCircle class="mx-auto mb-4 h-16 w-16 text-destructive" />
 					<h2 class="text-xl font-semibold text-destructive">Erreur</h2>
 					<p class="mt-2 text-sm text-muted-foreground">{error}</p>
-					<Button onclick={handleBackToCart} class="mt-6">Retour au panier</Button>
+					<Button onclick={handleBack} class="mt-6">
+						{assignmentId ? 'Mes évaluations' : 'Retour au panier'}
+					</Button>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -369,13 +383,19 @@
 					isLoggedIn={!!data.user}
 					onComplete={handleTestComplete}
 					onRestart={handleSeriesRestart}
-					onBack={handleBackToCart}
+					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
+					inEvaluation={!!assignmentId}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
 			<!-- Course mode -->
-			<TestCourse session={testSession} onComplete={handleTestComplete} onBack={handleBackToCart} />
+			<TestCourse
+				session={testSession}
+				onComplete={handleTestComplete}
+				onBack={handleBack}
+				inEvaluation={!!assignmentId}
+			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
 			{#key testSession.instances}

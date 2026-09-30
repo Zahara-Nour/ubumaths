@@ -39,3 +39,29 @@ describe('TestResults — cartes de cours', () => {
 		expect(container.textContent?.replace(/\s+/g, ' ')).toContain('1 sur 4 bonnes réponses');
 	});
 });
+
+/**
+ * Évaluation (chantier 4) : ni « Recommencer » (une nouvelle tentative ne se
+ * lance que depuis « Mes évaluations », où les tentatives sont vérifiées), ni
+ * « Retour au panier ».
+ */
+describe('TestResults — évaluation', () => {
+	it('hors évaluation : « Recommencer » et « Retour au panier »', async () => {
+		const { container } = await render(TestResults, { result: result(), ...noop });
+		expect(container.textContent).toContain('Recommencer avec de nouvelles questions');
+		expect(container.textContent).toContain('Retour au panier');
+		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).toBeNull();
+	});
+
+	it('évaluation : seulement « Mes évaluations »', async () => {
+		const { container } = await render(TestResults, {
+			result: result(),
+			...noop,
+			inEvaluation: true
+		});
+		expect(container.textContent).not.toContain('Recommencer');
+		expect(container.textContent).not.toContain('Retour au panier');
+		const link = container.querySelector('a[href="/dashboard/student/assessments"]');
+		expect(link?.textContent).toContain('Mes évaluations');
+	});
+});
