@@ -4,7 +4,7 @@
  * et se décalaient dès qu'une catégorie était sautée ou qu'une génération
  * échouait.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
 	buildSeriesItems,
 	categoryKeyOf,
@@ -12,6 +12,18 @@ import {
 } from '$lib/questions/series-items';
 import type { GenerationResult, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+
+// Générateur réel remplacé : on vérifie seulement ce que `buildSeriesItems` lui passe
+vi.mock('$lib/questions/generator/instance-generator', () => ({
+	generateInstance: vi.fn(
+		(t: QuestionTemplate, seed?: number): GenerationResult =>
+			({
+				success: true,
+				instance: { templateId: t.id, seed } as QuestionInstance
+			}) as GenerationResult
+	)
+}));
 
 function category(domain: string, level = 1): QuestionCategory {
 	return { theme: 'Entiers', domain, subdomain: 'Somme', level };
@@ -116,5 +128,40 @@ describe('buildSeriesItems', () => {
 		);
 
 		expect(items.map((i) => i.instance.templateId)).toEqual(['voc']);
+	});
+
+	it('Q20 : une graine entière par question, passée à la génération', () => {
+		const seeds = [11, 22, 33];
+		const generate = vi.fn(
+			(t: QuestionTemplate, seed?: number): GenerationResult =>
+				({
+					success: true,
+					instance: { templateId: t.id, seed } as QuestionInstance
+				}) as GenerationResult
+		);
+		const items = buildSeriesItems(
+			[cart('Additionner', 2, 15), cart('Multiplier', 1, 30)],
+			[template('Additionner', 'add'), template('Multiplier', 'mul')],
+			{ generate, nextSeed: () => seeds.shift() ?? -1 }
+		);
+
+		expect(generate.mock.calls.map((call) => call[1])).toEqual([11, 22, 33]);
+		expect(items.map((i) => i.instance.seed)).toEqual([11, 22, 33]);
+	});
+
+	it('Q20 : par défaut, la graine est un entier positif tiré à chaque question', () => {
+		const mocked = vi.mocked(generateInstance);
+		mocked.mockClear();
+		const items = buildSeriesItems([cart('Additionner', 3, 15)], [template('Additionner', 'add')]);
+
+		const seeds = mocked.mock.calls.map((call) => call[1]);
+		expect(seeds).toHaveLength(3);
+		for (const seed of seeds) {
+			expect(Number.isInteger(seed)).toBe(true);
+			expect(seed).toBeGreaterThanOrEqual(0);
+			expect(seed).toBeLessThanOrEqual(2 ** 31 - 1);
+		}
+		// L'instance porte la graine avec laquelle elle a été générée
+		expect(items.map((i) => i.instance.seed)).toEqual(seeds);
 	});
 });

@@ -25,7 +25,9 @@ interface BuildOptions {
 	/** Course aux nombres, évaluation : pas de carte de cours */
 	excludeCourseCards?: boolean;
 	/** Injectable pour les tests */
-	generate?: (template: QuestionTemplate) => GenerationResult;
+	generate?: (template: QuestionTemplate, seed: number) => GenerationResult;
+	/** Injectable pour les tests : graine d'une question */
+	nextSeed?: () => number;
 	/** Injectable pour les tests : index tiré parmi `count` modèles */
 	pickIndex?: (count: number) => number;
 }
@@ -36,6 +38,9 @@ interface BuildOptions {
 
 /** Durée d'une question quand la série n'en donne pas (panier : 20 s) */
 export const DEFAULT_QUESTION_DELAY_SECONDS = 20;
+
+/** Plus grande graine tirée (entier 32 bits positif, borne du schéma de sauvegarde) */
+export const MAX_QUESTION_SEED = 2 ** 31 - 1;
 
 // ============================================================================
 // FUNCTIONS
@@ -65,17 +70,27 @@ function templatesOfCategory(
 	);
 }
 
+/** Graine entière tirée au hasard, dans [0, MAX_QUESTION_SEED] */
+function randomSeed(): number {
+	return Math.floor(Math.random() * (MAX_QUESTION_SEED + 1));
+}
+
 /**
  * Questions d'une série, dans l'ordre de la composition. Une catégorie sans
  * modèle est sautée ; une génération qui échoue est omise. Aucune des deux ne
  * décale la durée des autres questions.
+ *
+ * Chaque question est générée avec SA graine (Q20), que l'instance porte
+ * (`instance.seed`) et que la sauvegarde archive : le serveur pourra régénérer
+ * la copie de l'élève pour la corriger (ADR 0015).
  */
 export function buildSeriesItems(
 	categories: readonly CartItem[],
 	templates: readonly QuestionTemplate[],
 	options: BuildOptions = {}
 ): ClassroomItem[] {
-	const generate = options.generate ?? ((template) => generateInstance(template));
+	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
+	const nextSeed = options.nextSeed ?? randomSeed;
 	const pickIndex = options.pickIndex ?? ((count) => Math.floor(Math.random() * count));
 	const items: ClassroomItem[] = [];
 
@@ -95,7 +110,7 @@ export function buildSeriesItems(
 
 		for (let repetition = 0; repetition < cartItem.quantity; repetition++) {
 			const template = candidates[pickIndex(candidates.length)];
-			const result = generate(template);
+			const result = generate(template, nextSeed());
 			if (result.success) {
 				items.push({ instance: result.instance, delaySeconds, categoryKey });
 			} else {
