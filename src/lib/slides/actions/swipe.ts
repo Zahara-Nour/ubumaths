@@ -5,6 +5,7 @@
  */
 
 import type { Action } from 'svelte/action';
+import { isFromEditableField } from './editableTarget.js';
 
 export interface SwipeHandlers {
 	/** Called when swiping left (go to next slide) */
@@ -54,6 +55,11 @@ export const swipe: Action<HTMLElement, SwipeOptions | undefined> = (node, optio
 
 	function handleTouchStart(event: TouchEvent) {
 		if (event.touches.length !== 1) return;
+		// Geste commencé dans un champ de saisie : on le laisse au champ
+		if (isFromEditableField(event)) {
+			state = null;
+			return;
+		}
 
 		const touch = event.touches[0];
 		state = {

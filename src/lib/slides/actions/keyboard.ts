@@ -6,6 +6,7 @@
  */
 
 import type { DeckStore } from '../stores/deckStore.svelte.js';
+import { isFromEditableField } from './editableTarget.js';
 
 export interface KeyboardActionOptions {
 	/** DeckStore instance */
@@ -74,11 +75,9 @@ export function keyboard(
 	function handleKeyDown(event: KeyboardEvent) {
 		if (!currentOptions.enabled) return;
 
-		// Don't handle if inside an input or textarea
-		const target = event.target as HTMLElement;
-		if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-			return;
-		}
+		// Frappe tapée dans un champ (input, textarea, contentEditable, MathLive) :
+		// elle appartient au champ, pas à la navigation
+		if (isFromEditableField(event)) return;
 
 		const key = event.key;
 		const { store, customHandlers = {} } = currentOptions;
