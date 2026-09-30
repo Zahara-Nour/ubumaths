@@ -18,11 +18,12 @@
 -- → seules les vues d'évaluation lisent la table, par `assignment_id` (jamais par
 -- `mode`) ; une séance de flash-cards n'a pas d'assignation.
 --
--- ROLLBACK (à n'exécuter qu'après avoir retiré les séances flash, sinon refusé) :
---   delete from public.test_sessions where mode = 'flash';
+-- ROLLBACK non destructif (garde les séances flash existantes, refuse les nouvelles) :
 --   alter table public.test_sessions drop constraint test_sessions_mode_check;
 --   alter table public.test_sessions add constraint test_sessions_mode_check
---     check (mode = any (array['display'::text, 'interactive'::text, 'course'::text]));
+--     check (mode = any (array['display'::text, 'interactive'::text, 'course'::text])) not valid;
+-- (Variante destructive : `delete from public.test_sessions where mode = 'flash'` avant de
+-- recréer la contrainte validée — supprime aussi leurs test_answers en cascade.)
 
 alter table public.test_sessions drop constraint test_sessions_mode_check;
 
