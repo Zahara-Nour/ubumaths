@@ -259,3 +259,11 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
   page « Évaluations » = les évaluations seules.
 - **Q28** : étape 1 additive (nouvelles tables, recopie de l'existant, bascule du code) ; étape 2 =
   suppression des anciennes tables dans une PR à part, arrêt obligatoire et explication à David.
+- **Q29** : cahier de texte (`journal_entry_activities`) et tâches d'évaluation (`evaluation_tasks`)
+  pointent vers l'**évaluation**.
+- **Q30** : Course aux nombres → temps limite obligatoire, 1 à 60 min, 7 min par défaut ; Entraînement
+  → aucun temps limite.
+- **Q31** : une série utilisée par une évaluation ne se supprime pas.
+- **Spécification des tests validée** (A1-A10 base, B11-B16 serveur, C17-C21 écrans ; message du
+  2026-09-30). Livraison : PR 1 migration + intégration (`supabase-expert`, `security-auditor`,
+  `db:migrate`, `db:types`) → PR 2 code (`fullstack-developer`, `code-reviewer`) → PR 3 DROP (arrêt).
