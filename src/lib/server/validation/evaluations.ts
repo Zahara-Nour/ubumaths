@@ -188,3 +188,56 @@ export const classIdsFieldSchema = z
 		}
 	})
 	.pipe(z.array(uuidSchema).min(1, 'Aucune classe sélectionnée').max(50, 'Trop de classes'));
+
+// ============================================================================
+// ENVOI D'UNE TENTATIVE (chantier 5, C10)
+// ============================================================================
+
+/** Plus de questions qu'une tentative n'en porte jamais (50 catégories × 10 en pratique) */
+export const MAX_ATTEMPT_ANSWERS = 500;
+/** Cases d'une question, choix d'un QCM */
+const MAX_ANSWER_PARTS = 50;
+/** Une case, en LaTeX */
+const MAX_ANSWER_LENGTH = 2_000;
+/** Une journée : au-delà, un temps (en secondes) est forcément fabriqué */
+const MAX_SECONDS = 86_400;
+
+const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
+
+/**
+ * Réponse à UNE question : cases (valeurs + LaTeX) ou positions cochées d'un
+ * QCM. Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
+ * retiré par Zod (objet non strict) et le serveur corrige lui-même.
+ */
+const submittedAnswerSchema = z.object({
+	position: z
+		.number()
+		.int()
+		.min(0)
+		.max(MAX_ATTEMPT_ANSWERS - 1),
+	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
+	latex: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
+	choices: z
+		.array(
+			z
+				.number()
+				.int()
+				.min(0)
+				.max(MAX_ANSWER_PARTS - 1)
+		)
+		.max(MAX_ANSWER_PARTS)
+		.optional(),
+	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
+});
+
+export const submitAttemptSchema = z.object({
+	answers: z
+		.array(submittedAnswerSchema)
+		.max(MAX_ATTEMPT_ANSWERS, 'Trop de réponses')
+		.refine(
+			(answers) => new Set(answers.map((a) => a.position)).size === answers.length,
+			'Une question ne peut recevoir qu’une réponse'
+		),
+	timeSpent: z.number().int().min(0).max(MAX_SECONDS)
+});
+export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;

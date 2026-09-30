@@ -3,10 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import { Badge } from '$lib/components/ui/badge';
+	import EvaluationResultsTable from '$lib/components/assessments/EvaluationResultsTable.svelte';
 	import { ArrowLeft, TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
-	import { formLabel, getStatusColor, getStatusLabel } from '$lib/types/evaluation';
+	import { formatGrade, formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -14,15 +13,6 @@
 	function handleBack() {
 		goto('/dashboard/teacher/assessments').then(() => {});
 	}
-
-	// Sort results by name
-	let sortedResults = $derived(
-		[...data.results].sort((a, b) => {
-			const nameA = `${a.student_firstname} ${a.student_lastname}`.toLowerCase();
-			const nameB = `${b.student_firstname} ${b.student_lastname}`.toLowerCase();
-			return nameA.localeCompare(nameB);
-		})
-	);
 </script>
 
 <svelte:head>
@@ -72,18 +62,20 @@
 
 			<Card.Root>
 				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-					<Card.Title class="text-sm font-medium">Note Moyenne</Card.Title>
+					<Card.Title class="text-sm font-medium">Moyenne des meilleures notes</Card.Title>
 					<TrendingUp class="h-4 w-4 text-muted-foreground" />
 				</Card.Header>
 				<Card.Content>
 					<div class="text-2xl font-bold">
-						{data.statistics.average_score !== null
-							? `${data.statistics.average_score.toFixed(1)}/10`
-							: '-'}
+						{data.statistics.average_grade !== null
+							? formatGrade(Math.round(data.statistics.average_grade * 10) / 10)
+							: '–'}
 					</div>
-					{#if data.statistics.average_score !== null}
+					{#if data.statistics.average_grade !== null}
 						<p class="text-xs text-muted-foreground">
-							Min: {data.statistics.min_score} | Max: {data.statistics.max_score}
+							Min : {formatGrade(data.statistics.min_grade)} | Max : {formatGrade(
+								data.statistics.max_grade
+							)}
 						</p>
 					{/if}
 				</Card.Content>
@@ -111,71 +103,19 @@
 		<Card.Header>
 			<Card.Title>Détails des Résultats</Card.Title>
 			<Card.Description>
-				{sortedResults.length}
-				{lore.entities.student}{sortedResults.length > 1 ? 's' : ''}
+				{data.results.length}
+				{lore.entities.student}{data.results.length > 1 ? 's' : ''}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			{#if sortedResults.length === 0}
+			{#if data.results.length === 0}
 				<div class="py-12 text-center text-muted-foreground">
 					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucun résultat disponible</p>
 					<p class="mt-2 text-sm">Les résultats apparaîtront une fois l'évaluation assignée</p>
 				</div>
 			{:else}
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>{lore.entities.student}</Table.Head>
-							<Table.Head>{lore.entities.class}</Table.Head>
-							<Table.Head class="text-center">Statut</Table.Head>
-							<Table.Head class="text-center">Tentatives</Table.Head>
-							<Table.Head class="text-center">Meilleure Note</Table.Head>
-							<Table.Head class="text-center">Dernier Essai</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each sortedResults as result (result.student_id)}
-							<Table.Row>
-								<Table.Cell class="font-medium">
-									{result.student_firstname}
-									{result.student_lastname}
-								</Table.Cell>
-								<Table.Cell>
-									{result.class_name || '-'}
-								</Table.Cell>
-								<Table.Cell class="text-center">
-									<Badge class={getStatusColor(result.status)}>
-										{getStatusLabel(result.status)}
-									</Badge>
-								</Table.Cell>
-								<Table.Cell class="text-center">
-									{result.attempts_count}
-								</Table.Cell>
-								<Table.Cell class="text-center">
-									{#if result.best_score !== null}
-										<span
-											class="font-semibold {result.best_score >= 5
-												? 'text-green-600 dark:text-green-400'
-												: 'text-red-600 dark:text-red-400'}"
-										>
-											{result.best_score}/10
-										</span>
-									{:else}
-										<span class="text-muted-foreground">-</span>
-									{/if}
-								</Table.Cell>
-								<Table.Cell class="text-center text-sm text-muted-foreground">
-									{#if result.last_attempt_at}
-										{new Date(result.last_attempt_at).toLocaleDateString('fr-FR')}
-									{:else}
-										-
-									{/if}
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
+				<EvaluationResultsTable results={data.results} />
 			{/if}
 		</Card.Content>
 	</Card.Root>

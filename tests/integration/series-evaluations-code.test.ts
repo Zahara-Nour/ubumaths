@@ -3,16 +3,17 @@
  * =====================================================================
  *
  * Les tests unitaires simulent la base ; ici, les fonctions de
- * `$lib/server/series`, `$lib/server/evaluations` et
- * `$lib/server/evaluation-session` tournent avec les clients RÉELS du prof et
+ * `$lib/server/series` et `$lib/server/evaluations` tournent avec les clients
+ * RÉELS du prof et
  * des élèves. Ce que la RLS décide :
  *
  * - l'élève lit SA série à travers son évaluation (jointure imbriquée) ;
  * - ses tentatives se comptent par `evaluation_id` ;
  * - le prof voit les séances de ses élèves (verrou affiché, résultats) ;
  * - la base refuse la modification d'une série commencée (UBS01) et le code
- *   le dit en français ; la suppression d'une série utilisée est refusée ;
- * - l'aperçu du prof n'est jamais rattaché.
+ *   le dit en français ; la suppression d'une série utilisée est refusée.
+ * (Le rattachement d'une séance à l'évaluation est désormais le fait du
+ * serveur seul : `tests/integration/evaluation-notee-serveur.test.ts`.)
  *
  * Depuis 20260930160000 (Q38), les séances d'évaluation sont posées par le
  * service (le serveur) : l'élève ne les écrit plus lui-même.
@@ -43,7 +44,6 @@ import {
 	getStudentAssignments,
 	validateAttempt
 } from '$lib/server/evaluations';
-import { resolveSessionEvaluation } from '$lib/server/evaluation-session';
 
 // Types
 type Client = SupabaseClient<Database>;
@@ -105,6 +105,7 @@ async function person(role: 'student' | 'teacher'): Promise<Person> {
  * LECTURES testées ici passent toujours par les clients réels.
  */
 async function studentSession(score: number) {
+	// Note sur 20 écrite par le serveur à l'envoi (chantier 5) : même note, sur 20
 	const { data, error } = await service
 		.from('test_sessions')
 		.insert({
@@ -113,6 +114,7 @@ async function studentSession(score: number) {
 			categories: CATEGORIES,
 			total_questions: 2,
 			score,
+			grade: score * 2,
 			completed_at: new Date().toISOString(),
 			evaluation_id: evaluationId
 		})
@@ -189,24 +191,6 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(await getAssignmentWithEvaluation(outsider.client, assignmentId)).toBeNull();
 	});
 
-	it('B16 : l’élève destinataire est rattaché, l’aperçu du prof jamais', async () => {
-		expect(
-			await resolveSessionEvaluation(student.client, assignmentId, 'course', student.id, CATEGORIES)
-		).toEqual({ ok: true, evaluationId });
-		expect(
-			await resolveSessionEvaluation(teacher.client, assignmentId, 'course', teacher.id, CATEGORIES)
-		).toEqual({ ok: true, evaluationId: null });
-		expect(
-			await resolveSessionEvaluation(
-				student.client,
-				assignmentId,
-				'interactive',
-				student.id,
-				CATEGORIES
-			)
-		).toMatchObject({ ok: false, status: 400 });
-	});
-
 	it('avant toute séance : série non verrouillée, modifiable', async () => {
 		const [series] = await getTeacherSeries(teacher.client, teacher.id);
 		expect(series).toMatchObject({ id: seriesId, locked: false, evaluations_count: 1 });
@@ -238,9 +222,9 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		});
 	});
 
-	it('« Mes évaluations » : forme, série et meilleur score de l’élève', async () => {
+	it('« Mes évaluations » : forme, série et meilleure note de l’élève', async () => {
 		const [assignment] = await getStudentAssignments(student.client, student.id);
-		expect(assignment).toMatchObject({ id: assignmentId, attempts_count: 2, best_score: 8 });
+		expect(assignment).toMatchObject({ id: assignmentId, attempts_count: 2, best_grade: 16 });
 		expect(assignment.evaluation.form).toBe('course');
 		expect(assignment.evaluation.series.title).toBe('Tables ZZ');
 	});
@@ -253,7 +237,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 			.evaluation;
 		const results = await getEvaluationResults(teacher.client, evaluation, student.isTest);
 		expect(results).toHaveLength(1);
-		expect(results[0]).toMatchObject({ student_id: student.id, attempts_count: 2, best_score: 8 });
+		expect(results[0]).toMatchObject({ student_id: student.id, attempts_count: 2, best_grade: 16 });
 	});
 
 	it('B13 : modifier la série commencée → 409 et message français, base inchangée', async () => {
@@ -291,7 +275,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		await expect(deleteSeries(teacher.client, copy.id)).resolves.toBeUndefined();
 	});
 
-	it('B16 : au-delà de max_attempts = 1, la deuxième séance est refusée (403)', async () => {
+	it('B16 : au-delà de max_attempts = 1, la deuxième tentative est refusée', async () => {
 		const { data: series } = await teacher.client
 			.from('series')
 			.insert({ title: 'Une fois ZZ', grade: '6', categories: CATEGORIES, created_by: teacher.id })
@@ -315,16 +299,12 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 			.single();
 		expect(error, 'décor').toBeNull();
 
-		// Première tentative : acceptée et rattachée
-		const first = await resolveSessionEvaluation(
-			student.client,
-			assignment!.id,
-			'interactive',
-			student.id,
-			CATEGORIES
-		);
-		expect(first).toEqual({ ok: true, evaluationId: evaluation!.id });
-		// Séance posée par le serveur (Q38) ; `resolveSessionEvaluation` lit sous RLS
+		// Première tentative : acceptée
+		const found = await getAssignmentWithEvaluation(student.client, assignment!.id);
+		expect(found).not.toBeNull();
+		const first = await validateAttempt(student.client, found!.evaluation, student.id);
+		expect(first.can_attempt).toBe(true);
+		// Séance posée par le serveur (Q38) ; `validateAttempt` lit sous RLS
 		const { error: insertError } = await service.from('test_sessions').insert({
 			user_id: student.id,
 			mode: 'interactive',
@@ -337,13 +317,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 		expect(insertError).toBeNull();
 
 		// Deuxième : refusée
-		const second = await resolveSessionEvaluation(
-			student.client,
-			assignment!.id,
-			'interactive',
-			student.id,
-			CATEGORIES
-		);
-		expect(second).toMatchObject({ ok: false, status: 403 });
+		const second = await validateAttempt(student.client, found!.evaluation, student.id);
+		expect(second).toMatchObject({ can_attempt: false, current_attempts: 1 });
 	});
 });

@@ -5,7 +5,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ArrowLeft, TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
-	import { formLabel } from '$lib/types/evaluation';
+	import { formatGrade, formLabel } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -14,20 +14,15 @@
 		goto('/dashboard/student/assessments').then(() => {});
 	}
 
-	// Calculate stats
-	let bestScore = $derived(
-		data.attempts.length > 0
-			? Math.max(...data.attempts.map((a: { score: number | null }) => a.score || 0))
-			: null
+	// Notes sur 20 des tentatives envoyées (serveur, chantier 5) ; la meilleure compte (Q36)
+	let grades = $derived(
+		data.attempts.flatMap((a: { grade: number | null }) =>
+			a.grade === null ? [] : [Number(a.grade)]
+		)
 	);
-
-	let averageScore = $derived(
-		data.attempts.length > 0
-			? data.attempts.reduce(
-					(sum: number, a: { score: number | null }) => sum + (a.score || 0),
-					0
-				) / data.attempts.length
-			: null
+	let bestGrade = $derived(grades.length > 0 ? Math.max(...grades) : null);
+	let averageGrade = $derived(
+		grades.length > 0 ? grades.reduce((sum, g) => sum + g, 0) / grades.length : null
 	);
 
 	let totalQuestions = $derived(data.attempts.length > 0 ? data.attempts[0].total_questions : null);
@@ -64,14 +59,7 @@
 				<TrendingUp class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold">
-					{bestScore !== null ? `${bestScore}/10` : '-'}
-				</div>
-				{#if bestScore !== null && totalQuestions}
-					<p class="text-xs text-muted-foreground">
-						{Math.round((bestScore / 10) * 100)}%
-					</p>
-				{/if}
+				<div class="text-2xl font-bold" data-testid="best-grade">{formatGrade(bestGrade)}</div>
 			</Card.Content>
 		</Card.Root>
 
@@ -82,13 +70,8 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">
-					{averageScore !== null ? `${averageScore.toFixed(1)}/10` : '-'}
+					{averageGrade !== null ? formatGrade(Math.round(averageGrade * 10) / 10) : '–'}
 				</div>
-				{#if averageScore !== null}
-					<p class="text-xs text-muted-foreground">
-						{Math.round((averageScore / 10) * 100)}%
-					</p>
-				{/if}
 			</Card.Content>
 		</Card.Root>
 
@@ -156,20 +139,22 @@
 									{/if}
 								</Table.Cell>
 								<Table.Cell class="text-center">
+									<!-- `grade` : note sur 20 du serveur ; NULL tant que la tentative n'est pas envoyée -->
 									<span
-										class="text-lg font-semibold {(attempt.score ?? 0) >= 5
-											? 'text-green-600 dark:text-green-400'
-											: 'text-red-600 dark:text-red-400'}"
+										class="text-lg font-semibold {attempt.grade === null
+											? 'text-muted-foreground'
+											: Number(attempt.grade) >= 10
+												? 'text-green-600 dark:text-green-400'
+												: 'text-red-600 dark:text-red-400'}"
 									>
-										<!-- `score` est nullable : une session interrompue n'en a pas. -->
-										{attempt.score ?? '—'}/10
+										{formatGrade(attempt.grade)}
 									</span>
 								</Table.Cell>
 								<Table.Cell class="text-center">
-									<!-- `test_sessions` ne compte pas les bonnes réponses : seule la note
-									     (`score`, sur 10) et le nombre de questions sont enregistrés. La
-									     cellule affichait donc « undefined/N ». -->
-									{attempt.total_questions}
+									<!-- Points du barème (½ point possible) sur le nombre de questions -->
+									{attempt.points_earned === null
+										? attempt.total_questions
+										: `${Number(attempt.points_earned).toLocaleString('fr-FR')} / ${attempt.total_questions} pts`}
 								</Table.Cell>
 								<Table.Cell class="text-center">
 									<!-- La colonne s'appelle `time_spent`. -->

@@ -8,6 +8,7 @@ import {
 	createEvaluationFormSchema,
 	createSeriesSchema,
 	evaluationSettingsSchema,
+	submitAttemptSchema,
 	updateSeriesSchema
 } from '../evaluations';
 
@@ -192,5 +193,54 @@ describe('assignations', () => {
 		expect(classIdsFieldSchema.safeParse(JSON.stringify([CLASS_ID])).success).toBe(true);
 		expect(classIdsFieldSchema.safeParse('[]').success).toBe(false);
 		expect(classIdsFieldSchema.safeParse('pas du json').success).toBe(false);
+	});
+});
+
+describe('submitAttemptSchema (C10)', () => {
+	it('accepte cases, LaTeX, choix et temps', () => {
+		const result = submitAttemptSchema.safeParse({
+			answers: [
+				{ position: 0, values: ['7', ''], latex: ['7', ''], timeSpent: 12 },
+				{ position: 1, choices: [0, 2] }
+			],
+			timeSpent: 95
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('retire tout verdict envoyé par le navigateur', () => {
+		const result = submitAttemptSchema.safeParse({
+			answers: [{ position: 0, values: ['7'], isCorrect: true, points: 1, status: 'correct' }],
+			timeSpent: 10,
+			grade: 20,
+			score: 10
+		});
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data).not.toHaveProperty('grade');
+			expect(result.data.answers[0]).not.toHaveProperty('isCorrect');
+			expect(result.data.answers[0]).not.toHaveProperty('points');
+		}
+	});
+
+	it.each([
+		['position négative', { answers: [{ position: -1 }], timeSpent: 1 }],
+		['position hors bornes', { answers: [{ position: 500 }], timeSpent: 1 }],
+		[
+			'deux réponses à la même question',
+			{ answers: [{ position: 0 }, { position: 0 }], timeSpent: 1 }
+		],
+		['case trop longue', { answers: [{ position: 0, values: ['x'.repeat(2001)] }], timeSpent: 1 }],
+		['trop de cases', { answers: [{ position: 0, values: Array(51).fill('1') }], timeSpent: 1 }],
+		['indice de QCM hors bornes', { answers: [{ position: 0, choices: [50] }], timeSpent: 1 }],
+		['indice de QCM non entier', { answers: [{ position: 0, choices: [0.5] }], timeSpent: 1 }],
+		['temps négatif', { answers: [], timeSpent: -1 }],
+		['temps fabriqué', { answers: [], timeSpent: 86_401 }],
+		[
+			'trop de réponses',
+			{ answers: Array.from({ length: 501 }, (_, i) => ({ position: i })), timeSpent: 1 }
+		]
+	])('refuse : %s', (_label, body) => {
+		expect(submitAttemptSchema.safeParse(body).success).toBe(false);
 	});
 });

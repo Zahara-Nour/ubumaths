@@ -1,0 +1,653 @@
+/**
+ * Évaluation notée, corrigée par le serveur (chantier 5, PR B) — intégration
+ * ==========================================================================
+ *
+ * `$lib/server/evaluation-attempts` face à la VRAIE base : lectures de droits
+ * sous RLS (client de l'élève), écritures en service_role (Q38), avec de VRAIS
+ * modèles publiés (TinyMath #314, QCM, et #142, question à case), posés dans
+ * des catégories propres au test.
+ *
+ * Ce que la spécification validée par David exige ici (D) : démarrer →
+ * reprendre → envoyer ; l'élève ne reçoit jamais la graine ni la réponse ; une
+ * tentative volée → 404 ; meilleure note sur deux tentatives ; séance et
+ * réponses écrites (points, statut, note). Plus B6-B9, C10-C13.
+ *
+ * L'« oracle » du test régénère les questions depuis les graines (service_role),
+ * exactement comme le serveur, pour connaître les bonnes réponses.
+ *
+ * `pnpm test:integration tests/integration/evaluation-notee-serveur.test.ts`
+ *
+ * @vitest-environment node
+ */
+
+import { readFileSync } from 'node:fs';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
+import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
+import { TestData } from '../helpers/database/test-data-factory';
+import {
+	startEvaluationAttempt,
+	submitEvaluationAttempt,
+	type AttemptActors,
+	type StartResult
+} from '$lib/server/evaluation-attempts';
+import {
+	getEvaluationResults,
+	getStudentAssignments,
+	getEvaluation
+} from '$lib/server/evaluations';
+import { EvaluationError } from '$lib/server/evaluations';
+import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
+import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
+import type { SubmittedAnswer } from '$lib/questions/grading';
+
+// Types
+type Client = SupabaseClient<Database>;
+type Person = { id: string; client: Client; role: 'student' | 'teacher' };
+type AttemptStart = Extract<StartResult, { kind: 'attempt' }>;
+
+// Constantes
+const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
+const ANON_KEY =
+	process.env.SUPABASE_TEST_ANON_KEY ||
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+const SERVICE_KEY =
+	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+const QCM_ID = '0a11f0e0-0000-4000-8000-00000000e601';
+const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
+const THEME = 'ZZ Éval serveur';
+const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
+const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
+const CATEGORIES = [
+	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
+	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
+];
+/** Clés qui, présentes dans ce que reçoit l'élève, laisseraient tricher */
+const FORBIDDEN_KEYS = [
+	'expectedAnswer',
+	'expectedAnswerLatex',
+	'correctChoiceIndex',
+	'isCorrect',
+	'correction',
+	'seed',
+	'templateId',
+	'template_id',
+	'resolvedVariables',
+	'originalIndex'
+];
+
+// Variables
+const service = createClient<Database>(SUPABASE_URL, SERVICE_KEY, {
+	auth: { persistSession: false, autoRefreshToken: false }
+});
+
+let teacher: Person;
+let student: Person;
+let classmate: Person;
+let archived: Person;
+let classId: string;
+
+// Functions
+async function signIn(email: string): Promise<Client> {
+	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
+		auth: { persistSession: false, autoRefreshToken: false }
+	});
+	const { error } = await client.auth.signInWithPassword({
+		email,
+		password: DEFAULT_TEST_PASSWORD
+	});
+	if (error) throw new Error(`connexion impossible pour ${email} : ${error.message}`);
+	return client;
+}
+
+async function person(role: 'student' | 'teacher'): Promise<Person> {
+	const profile = await TestData.profile().withRole(role).create();
+	return { id: profile.id, client: await signIn(profile.email), role };
+}
+
+function actors(who: Person, extra: Partial<AttemptActors> = {}): AttemptActors {
+	return { userClient: who.client, service, userId: who.id, role: who.role, ...extra };
+}
+
+function fixture(path: string) {
+	return JSON.parse(readFileSync(`docs/relecture/${path}.json`, 'utf-8')).template;
+}
+
+/** Évaluation publiée (ou non) sur la série du test, assignée à la classe */
+async function createEvaluation(
+	settings: {
+		form?: 'interactive' | 'course';
+		time_limit?: number | null;
+		max_attempts?: number | null;
+		deadline?: string | null;
+		status?: 'draft' | 'published';
+	} = {}
+): Promise<{ evaluationId: string; assignmentId: string }> {
+	const { data: series, error: seriesError } = await service
+		.from('series')
+		.insert({
+			title: 'Éval serveur ZZ',
+			grade: '6',
+			categories: CATEGORIES,
+			created_by: teacher.id
+		})
+		.select('id')
+		.single();
+	expect(seriesError, 'décor : série').toBeNull();
+	const { data: evaluation, error: evaluationError } = await service
+		.from('evaluations')
+		.insert({
+			series_id: series!.id,
+			form: settings.form ?? 'interactive',
+			time_limit: settings.time_limit ?? null,
+			max_attempts: settings.max_attempts ?? null,
+			deadline: settings.deadline ?? null,
+			status: settings.status ?? 'published',
+			created_by: teacher.id
+		})
+		.select('id')
+		.single();
+	expect(evaluationError, 'décor : évaluation').toBeNull();
+	const { data: assignment, error } = await service
+		.from('evaluation_assignments')
+		.insert({ evaluation_id: evaluation!.id, assigned_by: teacher.id, class_id: classId })
+		.select('id')
+		.single();
+	expect(error, 'décor : assignation').toBeNull();
+	return { evaluationId: evaluation!.id, assignmentId: assignment!.id };
+}
+
+async function start(who: Person, assignmentId: string, extra: Partial<AttemptActors> = {}) {
+	const result = await startEvaluationAttempt(actors(who, extra), assignmentId);
+	expect(result.kind).toBe('attempt');
+	return result as AttemptStart;
+}
+
+async function statusOf(promise: Promise<unknown>): Promise<number | 'ok'> {
+	try {
+		await promise;
+		return 'ok';
+	} catch (e) {
+		if (e instanceof EvaluationError) return e.status;
+		throw e;
+	}
+}
+
+/** Oracle : les questions de la tentative, régénérées comme le serveur */
+async function oracle(attemptId: string): Promise<QuestionInstance[]> {
+	const { data: rows, error } = await service
+		.from('evaluation_attempt_questions')
+		.select('position, template_id, seed')
+		.eq('test_session_id', attemptId)
+		.order('position');
+	expect(error).toBeNull();
+	const { data: templates } = await service
+		.from('question_templates')
+		.select('*')
+		.in('id', [QCM_ID, FILL_ID]);
+	const byId = new Map(
+		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
+	);
+	return rows!.map((row) => {
+		const result = generateInstance(byId.get(row.template_id)!, row.seed);
+		if (!result.success) throw new Error(result.errors.join('; '));
+		return result.instance;
+	});
+}
+
+function rightAnswer(instance: QuestionInstance): SubmittedAnswer {
+	if (getQuestionType(instance) === 'multiple_choice') {
+		const choices = (instance.shuffledChoices ?? []).flatMap((c, position) =>
+			instance.choices![c.originalIndex].isCorrect ? [position] : []
+		);
+		return { choices };
+	}
+	const values = (instance.blanks ?? []).map((b) => b.expectedAnswer);
+	return { values, latex: values };
+}
+
+function wrongAnswer(instance: QuestionInstance): SubmittedAnswer {
+	if (getQuestionType(instance) === 'multiple_choice') {
+		const position = (instance.shuffledChoices ?? []).findIndex(
+			(c) => !instance.choices![c.originalIndex].isCorrect
+		);
+		return { choices: [position] };
+	}
+	const values = (instance.blanks ?? []).map(() => '987654');
+	return { values, latex: values };
+}
+
+function allKeys(value: unknown, keys: Set<string> = new Set()): Set<string> {
+	if (Array.isArray(value)) value.forEach((item) => allKeys(item, keys));
+	else if (value && typeof value === 'object') {
+		for (const [key, child] of Object.entries(value)) {
+			keys.add(key);
+			allKeys(child, keys);
+		}
+	}
+	return keys;
+}
+
+async function sessionRow(attemptId: string) {
+	const { data } = await service
+		.from('test_sessions')
+		.select(
+			'id, user_id, evaluation_id, mode, total_questions, completed_at, grade, points_earned, score, time_limit'
+		)
+		.eq('id', attemptId)
+		.single();
+	return data!;
+}
+
+async function answersOf(attemptId: string) {
+	const { data } = await service
+		.from('test_answers')
+		.select('template_id, is_correct, points, status, question_instance, user_answer')
+		.eq('test_session_id', attemptId);
+	return data ?? [];
+}
+
+describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		teacher = await person('teacher');
+		student = await person('student');
+		classmate = await person('student');
+		archived = await person('student');
+
+		const k1 = await TestData.class().withName('6e éval serveur ZZ').create();
+		classId = k1.id;
+		const { error: memberError } = await service.from('class_members').insert([
+			{ class_id: classId, student_id: student.id, status: 'active' },
+			{ class_id: classId, student_id: classmate.id, status: 'active' },
+			{ class_id: classId, student_id: archived.id, status: 'archived' }
+		]);
+		expect(memberError, 'décor : inscriptions').toBeNull();
+
+		// Vrais modèles TinyMath, publiés, dans les catégories du test
+		await service.from('question_templates').delete().in('id', [QCM_ID, FILL_ID]);
+		const qcm = fixture('relatifs/314');
+		const fill = fixture('entiers/142');
+		const { error: templatesError } = await service.from('question_templates').insert([
+			{
+				id: QCM_ID,
+				type: 'multiple_choice',
+				title: 'QCM ZZ éval serveur',
+				...QCM_CATEGORY,
+				grades: ['5'],
+				status: 'published',
+				shared: qcm.shared,
+				variations: qcm.variations
+			},
+			{
+				id: FILL_ID,
+				type: 'fill_in_blanks',
+				title: 'Moitié ZZ éval serveur',
+				...FILL_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				variations: fill.variations
+			}
+		]);
+		expect(templatesError, 'décor : modèles').toBeNull();
+	}, 180_000);
+
+	afterAll(async () => {
+		await cleanupAllTestData();
+		await service.from('question_templates').delete().in('id', [QCM_ID, FILL_ID]);
+	});
+
+	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
+		let evaluationId: string;
+		let assignmentId: string;
+		let first: AttemptStart;
+
+		beforeAll(async () => {
+			({ evaluationId, assignmentId } = await createEvaluation({ max_attempts: 2 }));
+		});
+
+		it('B6 : le serveur crée la séance (service_role) et tire 3 questions', async () => {
+			first = await start(student, assignmentId);
+			expect(first.resumed).toBe(false);
+			expect(first.remainingSeconds).toBeNull();
+			expect(first.questions.map((q) => q.position)).toEqual([0, 1, 2]);
+			expect(first.questions.map((q) => q.type)).toEqual([
+				'fill_in_blanks',
+				'fill_in_blanks',
+				'multiple_choice'
+			]);
+			expect(first.questions.map((q) => q.delaySeconds)).toEqual([20, 20, 15]);
+
+			const session = await sessionRow(first.attemptId);
+			expect(session).toMatchObject({
+				user_id: student.id,
+				evaluation_id: evaluationId,
+				mode: 'interactive',
+				total_questions: 3,
+				completed_at: null,
+				grade: null
+			});
+			const { data: drawn } = await service
+				.from('evaluation_attempt_questions')
+				.select('position, template_id, seed')
+				.eq('test_session_id', first.attemptId);
+			expect(drawn).toHaveLength(3);
+			for (const row of drawn!) {
+				expect(row.seed).toBeGreaterThanOrEqual(0);
+				expect(row.seed).toBeLessThanOrEqual(2 ** 31 - 1);
+			}
+		});
+
+		it('D : l’élève ne reçoit ni graine, ni modèle, ni réponse attendue, ni bon choix', async () => {
+			const json = JSON.parse(JSON.stringify(first));
+			const keys = allKeys(json);
+			for (const key of FORBIDDEN_KEYS) expect(keys.has(key), key).toBe(false);
+
+			const text = JSON.stringify(json);
+			const { data: drawn } = await service
+				.from('evaluation_attempt_questions')
+				.select('seed, template_id')
+				.eq('test_session_id', first.attemptId);
+			for (const row of drawn!) {
+				expect(text).not.toContain(row.template_id);
+				expect(text).not.toMatch(new RegExp(`[^0-9]${row.seed}[^0-9]`));
+			}
+			const instances = await oracle(first.attemptId);
+			for (const [i, instance] of instances.entries()) {
+				const pub = JSON.stringify(first.questions[i]);
+				for (const blank of instance.blanks ?? []) {
+					// La réponse n'apparaît pas en dehors de l'énoncé (la moitié de 2a est a :
+					// l'énoncé contient 2a, jamais a seul entre délimiteurs de réponse)
+					expect(first.questions[i].blanks?.some((b) => 'expectedAnswer' in b)).toBe(false);
+					expect(pub).not.toContain(`"${blank.expectedAnswer}"`);
+				}
+			}
+		});
+
+		it('D18 : l’élève ne lit pas les graines, même de sa propre tentative', async () => {
+			const { data, error } = await student.client
+				.from('evaluation_attempt_questions')
+				.select('seed')
+				.eq('test_session_id', first.attemptId);
+			expect(error?.code).toBe('42501');
+			expect(data).toBeNull();
+		});
+
+		it('B8 : la tentative compte dès son démarrage', async () => {
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId)
+				.eq('user_id', student.id);
+			expect(count).toBe(1);
+		});
+
+		it('B9 : reprendre = la MÊME tentative, mêmes questions dans le même ordre, sans en compter une', async () => {
+			const again = await start(student, assignmentId);
+			expect(again.attemptId).toBe(first.attemptId);
+			expect(again.resumed).toBe(true);
+			expect(again.questions).toEqual(first.questions);
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId)
+				.eq('user_id', student.id);
+			expect(count).toBe(1);
+		});
+
+		it('D : tentative d’un autre élève (identifiant volé) → 404, rien d’écrit', async () => {
+			const instances = await oracle(first.attemptId);
+			const status = await statusOf(
+				submitEvaluationAttempt(actors(classmate), first.attemptId, {
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
+					timeSpent: 30
+				})
+			);
+			expect(status).toBe(404);
+			expect(await answersOf(first.attemptId)).toHaveLength(0);
+			expect((await sessionRow(first.attemptId)).completed_at).toBeNull();
+		});
+
+		it('C10 : corrige, note et écrit (1 juste, 1 fausse, QCM juste → 2/3 → 13,5/20)', async () => {
+			const instances = await oracle(first.attemptId);
+			const result = await submitEvaluationAttempt(actors(student), first.attemptId, {
+				answers: [
+					{ position: 0, ...rightAnswer(instances[0]) },
+					{ position: 1, ...wrongAnswer(instances[1]) },
+					{ position: 2, ...rightAnswer(instances[2]) }
+				],
+				timeSpent: 42
+			});
+			expect(result).toMatchObject({
+				late: false,
+				grade: 13.5,
+				pointsEarned: 2,
+				totalQuestions: 3,
+				correctCount: 2
+			});
+			expect(result.questions.map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['incorrect', 0],
+				['correct', 1]
+			]);
+			// Corrections complètes APRÈS l'envoi, jamais la graine
+			expect(result.questions[0].instance.blanks?.[0].expectedAnswer).toBeTruthy();
+			expect(allKeys(JSON.parse(JSON.stringify(result))).has('seed')).toBe(false);
+
+			const session = await sessionRow(first.attemptId);
+			expect(session.completed_at).not.toBeNull();
+			expect(Number(session.grade)).toBe(13.5);
+			expect(Number(session.points_earned)).toBe(2);
+			expect(Number(session.score)).toBe(6.75);
+
+			const answers = await answersOf(first.attemptId);
+			expect(answers).toHaveLength(3);
+			expect(
+				answers
+					.map((a) => [Number(a.points), a.status, a.is_correct])
+					.sort((a, b) => String(a).localeCompare(String(b)))
+			).toEqual(
+				[
+					[1, 'correct', true],
+					[0, 'incorrect', false],
+					[1, 'correct', true]
+				].sort((a, b) => String(a).localeCompare(String(b)))
+			);
+			for (const answer of answers) {
+				expect(allKeys(answer.question_instance).has('seed')).toBe(false);
+				expect([QCM_ID, FILL_ID]).toContain(answer.template_id);
+			}
+		});
+
+		it('C14 : le verdict SERVEUR alimente le SRS (traces « auto »)', async () => {
+			const { data: traces } = await service
+				.from('skill_attempts')
+				.select('template_id, success, source')
+				.eq('student_id', student.id);
+			expect(traces).toHaveLength(3);
+			expect(traces!.every((t) => t.source === 'auto')).toBe(true);
+			expect(traces!.filter((t) => t.success)).toHaveLength(2);
+		});
+
+		it('C11 : renvoyer une tentative terminée → 409, rien d’écrit', async () => {
+			const instances = await oracle(first.attemptId);
+			const status = await statusOf(
+				submitEvaluationAttempt(actors(student), first.attemptId, {
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
+					timeSpent: 10
+				})
+			);
+			expect(status).toBe(409);
+			expect(await answersOf(first.attemptId)).toHaveLength(3);
+			expect(Number((await sessionRow(first.attemptId)).grade)).toBe(13.5);
+		});
+
+		it('C13 : deuxième tentative (tout juste) → la MEILLEURE note, côté prof et côté élève', async () => {
+			const second = await start(student, assignmentId);
+			expect(second.resumed).toBe(false);
+			expect(second.attemptId).not.toBe(first.attemptId);
+			const instances = await oracle(second.attemptId);
+			const result = await submitEvaluationAttempt(actors(student), second.attemptId, {
+				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
+				timeSpent: 20
+			});
+			expect(result.grade).toBe(20);
+
+			const evaluation = await getEvaluation(teacher.client, evaluationId);
+			const results = await getEvaluationResults(teacher.client, evaluation!, false);
+			const row = results.find((r) => r.student_id === student.id);
+			expect(row).toMatchObject({ best_grade: 20, attempts_count: 2 });
+			expect(row!.attempts.map((a) => a.grade).sort()).toEqual([13.5, 20]);
+
+			const mine = await getStudentAssignments(student.client, student.id);
+			expect(mine.find((a) => a.evaluation.id === evaluationId)).toMatchObject({
+				best_grade: 20,
+				attempts_count: 2
+			});
+		});
+
+		it('B7 : tentatives épuisées → 403', async () => {
+			expect(await statusOf(startEvaluationAttempt(actors(student), assignmentId))).toBe(403);
+		});
+	});
+
+	describe('Course aux nombres : temps restant, envoi tardif (C12)', () => {
+		let assignmentId: string;
+
+		beforeAll(async () => {
+			({ assignmentId } = await createEvaluation({ form: 'course', time_limit: 60 }));
+		});
+
+		it('B9 : reprise → temps restant = temps limite − temps écoulé', async () => {
+			const attempt = await start(classmate, assignmentId);
+			expect(attempt.remainingSeconds).toBeGreaterThanOrEqual(59);
+			const later = () => new Date(Date.now() + 20_000);
+			const resumed = await start(classmate, assignmentId, { now: later });
+			expect(resumed.attemptId).toBe(attempt.attemptId);
+			expect(resumed.remainingSeconds).toBeGreaterThanOrEqual(38);
+			expect(resumed.remainingSeconds).toBeLessThanOrEqual(40);
+		});
+
+		it('C12 : envoi reçu après temps limite + 30 s → note 0, aucune réponse comptée', async () => {
+			const attempt = await start(classmate, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const tooLate = () => new Date(Date.now() + 95_000);
+			const result = await submitEvaluationAttempt(
+				actors(classmate, { now: tooLate }),
+				attempt.attemptId,
+				{
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
+					timeSpent: 95
+				}
+			);
+			expect(result).toMatchObject({ late: true, grade: 0, pointsEarned: 0, correctCount: 0 });
+			expect(await answersOf(attempt.attemptId)).toHaveLength(0);
+			const session = await sessionRow(attempt.attemptId);
+			expect(session.completed_at).not.toBeNull();
+			expect(Number(session.grade)).toBe(0);
+		});
+
+		it('C12 : dans les 30 s de grâce → accepté et noté', async () => {
+			const attempt = await start(classmate, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			const inGrace = () => new Date(Date.now() + 80_000);
+			const result = await submitEvaluationAttempt(
+				actors(classmate, { now: inGrace }),
+				attempt.attemptId,
+				{
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
+					timeSpent: 80
+				}
+			);
+			expect(result).toMatchObject({ late: false, grade: 20 });
+		});
+	});
+
+	describe('B7 : refus avant toute écriture', () => {
+		it('brouillon → 404', async () => {
+			const { assignmentId } = await createEvaluation({ status: 'draft' });
+			expect(await statusOf(startEvaluationAttempt(actors(student), assignmentId))).toBe(404);
+		});
+
+		it('membre archivé → 404', async () => {
+			const { assignmentId } = await createEvaluation();
+			expect(await statusOf(startEvaluationAttempt(actors(archived), assignmentId))).toBe(404);
+		});
+
+		it('date limite passée → 403, aucune séance', async () => {
+			const { evaluationId, assignmentId } = await createEvaluation({
+				deadline: '2020-01-01T00:00:00Z'
+			});
+			expect(await statusOf(startEvaluationAttempt(actors(student), assignmentId))).toBe(403);
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId);
+			expect(count).toBe(0);
+		});
+
+		it('prof propriétaire : aperçu, aucune séance', async () => {
+			const { evaluationId, assignmentId } = await createEvaluation();
+			const result = await startEvaluationAttempt(actors(teacher), assignmentId);
+			expect(result.kind).toBe('preview');
+			const { count } = await service
+				.from('test_sessions')
+				.select('id', { count: 'exact', head: true })
+				.eq('evaluation_id', evaluationId);
+			expect(count).toBe(0);
+		});
+	});
+
+	it('un modèle déjà tiré ne se supprime pas (23503 ou 23514 → la route répond 409)', async () => {
+		const { error } = await service.from('question_templates').delete().eq('id', FILL_ID);
+		// 23514 dès qu'une trace SRS existe (skill_attempts.template_id → NULL refusé),
+		// 23503 sinon (evaluation_attempt_questions, NO ACTION)
+		expect(['23503', '23514']).toContain(error?.code);
+		const { data } = await service.from('question_templates').select('id').eq('id', FILL_ID);
+		expect(data).toHaveLength(1);
+	});
+
+	it('23503 seul : tiré dans une tentative en cours, sans trace SRS', async () => {
+		const { data: template } = await service
+			.from('question_templates')
+			.insert({
+				id: '0a11f0e0-0000-4000-8000-00000000e603',
+				type: 'fill_in_blanks',
+				title: 'Tiré seulement ZZ',
+				theme: 'ZZ tiré',
+				domain: 'Tiré',
+				level: 1,
+				grades: ['6'],
+				status: 'draft',
+				variations: [{ statement: '$$2+2=?$$', blanks: [{ expectedAnswer: '4' }] }]
+			})
+			.select('id')
+			.single();
+		const { data: session } = await service
+			.from('test_sessions')
+			.insert({
+				user_id: student.id,
+				mode: 'interactive',
+				categories: CATEGORIES,
+				total_questions: 1
+			})
+			.select('id')
+			.single();
+		await service.from('evaluation_attempt_questions').insert({
+			test_session_id: session!.id,
+			position: 0,
+			template_id: template!.id,
+			seed: 1,
+			delay_seconds: 20,
+			category_key: 'zz'
+		});
+		const { error } = await service.from('question_templates').delete().eq('id', template!.id);
+		expect(error?.code).toBe('23503');
+		await service.from('test_sessions').delete().eq('id', session!.id);
+		await service.from('question_templates').delete().eq('id', template!.id);
+	});
+});

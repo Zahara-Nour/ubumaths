@@ -35,6 +35,12 @@ export interface AnswerData {
 
 	/** Timestamp when answer was submitted */
 	submittedAt: string;
+
+	/**
+	 * LaTeX tapé, une entrée par case (évaluation : le serveur en a besoin pour
+	 * juger la forme ; ailleurs, la correction se fait dans le navigateur)
+	 */
+	valueLatex?: string[];
 }
 
 // ============================================================================

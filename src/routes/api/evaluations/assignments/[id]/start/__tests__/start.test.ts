@@ -1,11 +1,19 @@
 /**
- * POST /api/evaluations/assignments/[id]/start (B14, B15)
+ * POST /api/evaluations/assignments/[id]/start (chantier 5, B6-B9)
  *
- * La forme et le temps limite viennent de l'ÉVALUATION ; date limite et
- * tentatives sont vérifiées pour un destinataire ; le prof propriétaire n'a
- * qu'un aperçu.
+ * Refus AVANT toute écriture : date limite, tentatives (403), non destinataire
+ * (404). Le prof propriétaire n'a qu'un aperçu. Le parcours complet (création,
+ * reprise, questions publiques) tourne contre la vraie base :
+ * `tests/integration/evaluation-notee-serveur.test.ts`.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Le client service_role ne doit JAMAIS écrire dans ces cas : on compte ses appels
+const serviceFrom = vi.hoisted(() => vi.fn());
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ from: serviceFrom })
+}));
+
 import { POST } from '../+server';
 import { createFakeSupabase, called } from '$lib/server/__tests__/helpers/fake-supabase';
 
@@ -29,7 +37,7 @@ function setup(options: {
 	maxAttempts?: number | null;
 	deadline?: string | null;
 }) {
-	const fake = createFakeSupabase((table) => {
+	const fake = createFakeSupabase((table, calls) => {
 		if (table === 'profiles') return { data: { id: options.userId, role: options.role } };
 		if (table === 'evaluation_assignments') {
 			return {
@@ -67,7 +75,13 @@ function setup(options: {
 				}
 			};
 		}
-		if (table === 'test_sessions') return { count: options.attempts ?? 0 };
+		if (table === 'test_sessions') {
+			// Comptage des tentatives (head + count) ; sinon : tentative en cours (aucune)
+			if (calls.some((c) => JSON.stringify(c.args).includes('exact'))) {
+				return { count: options.attempts ?? 0 };
+			}
+			return { data: [] };
+		}
 		return {};
 	});
 	const call = (id = ASSIGNMENT) =>
@@ -82,24 +96,12 @@ function setup(options: {
 }
 
 beforeEach(() => {
+	serviceFrom.mockReset();
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('POST /api/evaluations/assignments/[id]/start', () => {
-	it('B15 : rend la forme et le temps limite de l’évaluation (Course, 420 s)', async () => {
-		const { call } = setup({ role: 'student', userId: STUDENT, recipient: true });
-		const response = await call();
-		expect(response.status).toBe(200);
-		const body = await response.json();
-		expect(body).toMatchObject({
-			preview: false,
-			validation: { can_attempt: true },
-			evaluation: { id: EVALUATION, form: 'course', time_limit: 420, title: 'Tables de 7' }
-		});
-		expect(body.evaluation.categories).toEqual([ITEM]);
-	});
-
-	it('B14 : tentatives comptées par evaluation_id + élève, max atteint → refus', async () => {
+	it('B7 : tentatives épuisées (comptées par evaluation_id + élève) → 403, rien d’écrit', async () => {
 		const { call, fake } = setup({
 			role: 'student',
 			userId: STUDENT,
@@ -107,35 +109,52 @@ describe('POST /api/evaluations/assignments/[id]/start', () => {
 			attempts: 2,
 			maxAttempts: 2
 		});
-		const body = await (await call()).json();
-		expect(body.validation).toMatchObject({ can_attempt: false, current_attempts: 2 });
+		const response = await call();
+		expect(response.status).toBe(403);
+		expect((await response.json()).error).toMatch(/tentatives/);
 
-		const [count] = fake.on('test_sessions');
-		expect(called(count, 'eq', 'evaluation_id', EVALUATION)).toBe(true);
-		expect(called(count, 'eq', 'user_id', STUDENT)).toBe(true);
+		const count = fake
+			.on('test_sessions')
+			.find((q) => q.calls.some((c) => JSON.stringify(c.args).includes('exact')));
+		expect(count && called(count, 'eq', 'evaluation_id', EVALUATION)).toBe(true);
+		expect(count && called(count, 'eq', 'user_id', STUDENT)).toBe(true);
+		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
-	it('B14 : date limite de l’évaluation dépassée → refus', async () => {
+	it('B7 : date limite dépassée → 403, rien d’écrit', async () => {
 		const { call } = setup({
 			role: 'student',
 			userId: STUDENT,
 			recipient: true,
 			deadline: '2020-01-01T00:00:00Z'
 		});
-		const body = await (await call()).json();
-		expect(body.validation).toMatchObject({ can_attempt: false, deadline_passed: true });
+		const response = await call();
+		expect(response.status).toBe(403);
+		expect((await response.json()).error).toMatch(/date limite/);
+		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
-	it('prof propriétaire, non destinataire : aperçu, sans compter de tentative', async () => {
+	it('prof propriétaire, non destinataire : aperçu (catégories), aucune tentative', async () => {
 		const { call, fake } = setup({ role: 'teacher', userId: TEACHER, recipient: false });
 		const body = await (await call()).json();
-		expect(body).toMatchObject({ preview: true, validation: { can_attempt: true } });
+		expect(body).toMatchObject({
+			preview: true,
+			evaluation: { id: EVALUATION, form: 'course', time_limit: 420, title: 'Tables de 7' }
+		});
+		expect(body.evaluation.categories).toEqual([ITEM]);
 		expect(fake.on('test_sessions')).toHaveLength(0);
+		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
-	it('autre prof, non destinataire : 403', async () => {
+	it('B7 : autre prof, non destinataire → 404', async () => {
 		const { call } = setup({ role: 'teacher', userId: OTHER_TEACHER, recipient: false });
-		expect((await call()).status).toBe(403);
+		expect((await call()).status).toBe(404);
+	});
+
+	it('B7 : élève non destinataire → 404', async () => {
+		const { call } = setup({ role: 'student', userId: OTHER_TEACHER, recipient: false });
+		expect((await call()).status).toBe(404);
+		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
 	it('identifiant invalide : 400', async () => {

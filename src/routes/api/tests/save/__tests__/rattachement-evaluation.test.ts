@@ -1,13 +1,12 @@
 /**
- * B16 — une séance d'évaluation se rattache à l'ÉVALUATION
- * =========================================================
+ * `/api/tests/save` ne rattache PLUS rien à une évaluation (chantier 5, ADR 0015)
+ * ==============================================================================
  *
- * - `test_sessions.evaluation_id` est renseigné (plus `assignment_id`, dont la
- *   clé vise les anciennes assessment_assignments) ;
- * - la forme envoyée doit être celle de l'évaluation (sinon 400, RIEN d'écrit) ;
- * - flash + assignation : 400 ;
- * - l'aperçu du prof n'est JAMAIS rattaché (il verrouillerait la série) ;
- * - le reste (SRS, XP) ne change pas.
+ * Une évaluation se passe désormais par le serveur (démarrage, envoi) : c'est
+ * lui qui tire, corrige et note. Une sauvegarde qui cible une évaluation
+ * (`assignmentId`) est refusée (400), RIEN n'est écrit, rien n'est lu des
+ * assignations. Entraînement libre, course libre et flash-cards : inchangés
+ * (verdict du navigateur, ADR 0001).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -149,7 +148,7 @@ async function enregistrer(options: {
 	return { response, fake };
 }
 
-describe('POST /api/tests/save — rattachement à l’évaluation (B16)', () => {
+describe('POST /api/tests/save — plus aucune évaluation', () => {
 	beforeEach(() => {
 		sessionInseree = null;
 		tentativesPassees = 0;
@@ -158,56 +157,29 @@ describe('POST /api/tests/save — rattachement à l’évaluation (B16)', () =>
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 	});
 
-	it('élève destinataire : evaluation_id renseigné, plus d’assignment_id', async () => {
+	it.each(['interactive', 'course'] as const)(
+		'%s + assignation : 400 « passe par l’envoi de l’évaluation », RIEN n’est écrit ni lu',
+		async (mode) => {
+			const { response, fake } = await enregistrer({ mode, form: mode, assignmentId: ASSIGNMENT });
+			expect(response.status).toBe(400);
+			expect((await response.json()).error).toMatch(/envoi de l.évaluation/);
+			expect(fake.on('test_sessions')).toHaveLength(0);
+			expect(fake.on('test_answers')).toHaveLength(0);
+			expect(fake.on('evaluation_assignments')).toHaveLength(0);
+			expect(applyFsrsReview).not.toHaveBeenCalled();
+			expect(addBuddyXpFromTest).not.toHaveBeenCalled();
+		}
+	);
+
+	it('aperçu du prof avec assignation : refusé aussi (l’aperçu s’enregistre sans assignation)', async () => {
 		const { response } = await enregistrer({
-			mode: 'course',
-			form: 'course',
-			assignmentId: ASSIGNMENT
-		});
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: EVALUATION, mode: 'course' });
-		expect(sessionInseree).not.toHaveProperty('assignment_id');
-	});
-
-	it('forme envoyée ≠ forme de l’évaluation : 400 et RIEN n’est écrit', async () => {
-		const { response, fake } = await enregistrer({
 			mode: 'interactive',
-			form: 'course',
+			form: 'interactive',
+			recipient: false,
+			userId: TEACHER,
 			assignmentId: ASSIGNMENT
 		});
 		expect(response.status).toBe(400);
-		expect((await response.json()).error).toBe(
-			"La forme de la séance ne correspond pas à celle de l'évaluation"
-		);
-		expect(fake.on('test_sessions')).toHaveLength(0);
-		expect(applyFsrsReview).not.toHaveBeenCalled();
-	});
-
-	it('tentatives épuisées (max_attempts = 1, une séance déjà) : 403 et RIEN n’est écrit', async () => {
-		tentativesPassees = 1;
-		const { response, fake } = await enregistrer({
-			mode: 'interactive',
-			form: 'interactive',
-			assignmentId: ASSIGNMENT
-		});
-		expect(response.status).toBe(403);
-		expect(fake.on('test_sessions').some((q) => q.calls.some((c) => c.method === 'insert'))).toBe(
-			false
-		);
-		expect(applyFsrsReview).not.toHaveBeenCalled();
-	});
-
-	it('catégories envoyées ≠ série de l’évaluation : 400 et RIEN n’est écrit', async () => {
-		const { response, fake } = await enregistrer({
-			mode: 'interactive',
-			form: 'interactive',
-			assignmentId: ASSIGNMENT,
-			categories: [{ ...CATEGORY_ITEM, quantity: 2 }]
-		});
-		expect(response.status).toBe(400);
-		expect(fake.on('test_sessions').some((q) => q.calls.some((c) => c.method === 'insert'))).toBe(
-			false
-		);
 	});
 
 	it('flash + évaluation : 400', async () => {
@@ -216,28 +188,18 @@ describe('POST /api/tests/save — rattachement à l’évaluation (B16)', () =>
 		expect(fake.on('test_sessions')).toHaveLength(0);
 	});
 
-	it('aperçu du prof (non destinataire) : séance enregistrée SANS évaluation', async () => {
-		const { response } = await enregistrer({
-			mode: 'interactive',
-			form: 'interactive',
-			recipient: false,
-			userId: TEACHER,
-			assignmentId: ASSIGNMENT
-		});
-		expect(response.status).toBe(201);
-		expect(sessionInseree).toMatchObject({ evaluation_id: null });
-	});
-
-	it('entraînement libre : evaluation_id nul, aucune lecture d’assignation', async () => {
+	it('entraînement libre : evaluation_id nul, aucune lecture d’assignation, FSRS et XP comme avant', async () => {
 		const { response, fake } = await enregistrer({ mode: 'interactive' });
 		expect(response.status).toBe(201);
 		expect(sessionInseree).toMatchObject({ evaluation_id: null });
 		expect(fake.on('evaluation_assignments')).toHaveLength(0);
-	});
-
-	it('comportement gardé : FSRS et XP comme avant pour une évaluation', async () => {
-		await enregistrer({ mode: 'interactive', form: 'interactive', assignmentId: ASSIGNMENT });
 		expect(applyFsrsReview).toHaveBeenCalledTimes(1);
 		expect(addBuddyXpFromTest).toHaveBeenCalledTimes(1);
+	});
+
+	it('course libre : enregistrée comme avant', async () => {
+		const { response } = await enregistrer({ mode: 'course' });
+		expect(response.status).toBe(201);
+		expect(sessionInseree).toMatchObject({ evaluation_id: null, mode: 'course' });
 	});
 });

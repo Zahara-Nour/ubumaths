@@ -173,6 +173,20 @@ describe('WorkItemCard - forme d’une évaluation', () => {
 			.toHaveTextContent('Course aux nombres');
 	});
 
+	it('C13 : affiche la meilleure note sur 20 d’une évaluation faite', async () => {
+		const item = makeItem('assessment', { status: 'done', bestGrade: 13.5 });
+		await render(WorkItemCard, { props: { item } });
+
+		await expect.element(page.getByTestId('work-item-grade')).toHaveTextContent('13,5/20');
+	});
+
+	it('sans note : rien', async () => {
+		const item = makeItem('assessment');
+		const { container } = await render(WorkItemCard, { props: { item } });
+
+		expect(container.querySelector('[data-testid="work-item-grade"]')).toBeNull();
+	});
+
 	it('n’affiche aucune forme pour un exercice', async () => {
 		const item = makeItem('exercise');
 		const { container } = await render(WorkItemCard, { props: { item } });

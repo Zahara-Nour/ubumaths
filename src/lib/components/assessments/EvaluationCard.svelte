@@ -27,6 +27,7 @@
 	import type { AssignmentWithDetails, EvaluationWithSeries } from '$lib/types/evaluation';
 	import {
 		countSeriesQuestions,
+		formatGrade,
 		formLabel,
 		getAttemptsRemaining,
 		getStatusColor,
@@ -114,9 +115,11 @@
 	</Card.Header>
 
 	<Card.Content>
-		{#if variant === 'student' && assignmentData && assignmentData.best_score !== null}
+		{#if variant === 'student' && assignmentData && assignmentData.best_grade !== null}
 			<div class="mb-3 rounded-lg bg-primary/10 p-4 text-center">
-				<div class="text-3xl font-bold text-primary">{assignmentData.best_score}/10</div>
+				<div class="text-3xl font-bold text-primary" data-testid="best-grade">
+					{formatGrade(assignmentData.best_grade)}
+				</div>
 				<div class="text-sm text-muted-foreground">Meilleure note</div>
 			</div>
 		{/if}
