@@ -210,6 +210,9 @@ export interface DeckConfig {
 	// Fullscreen mode (position: fixed)
 	fullscreen?: boolean;
 
+	/** Pause visible : voile « Pause » et assombrissement (défaut true). false : la pause gèle seulement */
+	pauseOverlay?: boolean;
+
 	// Content scaling
 	/** Scale content to fit container (default: true). When false, uses natural font sizes. */
 	scaleContent?: boolean;
@@ -277,6 +280,8 @@ export interface DeckStoreActions {
 	setOverview(value: boolean): void;
 	/** Toggle pause state */
 	togglePause(): void;
+	/** Fixe l'état de pause */
+	setPaused(value: boolean): void;
 	/** Set scale factor */
 	setScale(scale: number): void;
 }
@@ -299,4 +304,28 @@ export interface DeckContext {
 	getScale: () => number;
 	/** Check if deck is in overview mode */
 	isOverview: () => boolean;
+
+	// Pause (gèle aussi le défilement automatique)
+	/** Le deck est-il en pause ? */
+	isPaused: () => boolean;
+	/** Met en pause */
+	pause: () => void;
+	/** Reprend (depuis le temps restant de la diapositive courante) */
+	resume: () => void;
+	/** Bascule pause / reprise */
+	togglePause: () => void;
+
+	// Défilement automatique (autoSlide) de la diapositive courante
+	/** Temps restant en ms (0 si la diapositive ne défile pas) */
+	getAutoSlideRemaining: () => number;
+	/** Durée en ms (0 si la diapositive ne défile pas) */
+	getAutoSlideDuration: () => number;
+	/** Le compte avance-t-il ? (faux en pause, en vue d'ensemble, à 0) */
+	isAutoSlideRunning: () => boolean;
+
+	// Plein écran réel (API Fullscreen du navigateur, sur l'élément du Deck)
+	/** Entre en plein écran ou en sort */
+	toggleFullscreen: () => Promise<void>;
+	/** Le Deck est-il l'élément en plein écran ? */
+	isFullscreen: () => boolean;
 }

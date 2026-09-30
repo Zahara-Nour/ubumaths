@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+import { flushSync } from 'svelte';
 import { createDeckStore, type DeckStore } from '../deckStore.svelte.js';
 import type { SlideInfo } from '../../core/types.js';
 
@@ -536,6 +537,49 @@ describe('deckStore', () => {
 
 			store.togglePause();
 			expect(store.paused).toBe(false);
+		});
+
+		it('setPaused() fixe la pause (idempotent)', () => {
+			store.setPaused(true);
+			store.setPaused(true);
+			expect(store.paused).toBe(true);
+
+			store.setPaused(false);
+			expect(store.paused).toBe(false);
+		});
+	});
+
+	describe('durée autoSlide par diapositive', () => {
+		it('absente par défaut', () => {
+			expect(store.getSlideAutoSlide(0, 0)).toBeUndefined();
+		});
+
+		it('enregistre, remplace et oublie la durée d’une diapositive', () => {
+			store.setSlideAutoSlide(1, 0, 4000);
+			store.setSlideAutoSlide(1, 2, 0);
+			expect(store.getSlideAutoSlide(1, 0)).toBe(4000);
+			// 0 explicite est conservé (il désactive le défilement de cette diapositive)
+			expect(store.getSlideAutoSlide(1, 2)).toBe(0);
+
+			store.setSlideAutoSlide(1, 0, 6000);
+			expect(store.getSlideAutoSlide(1, 0)).toBe(6000);
+
+			store.setSlideAutoSlide(1, 0, undefined);
+			expect(store.getSlideAutoSlide(1, 0)).toBeUndefined();
+		});
+
+		it('est réactive', () => {
+			const seen: Array<number | undefined> = [];
+			const cleanup = $effect.root(() => {
+				$effect(() => {
+					seen.push(store.getSlideAutoSlide(0, 0));
+				});
+			});
+			flushSync();
+			store.setSlideAutoSlide(0, 0, 1000);
+			flushSync();
+			cleanup();
+			expect(seen).toEqual([undefined, 1000]);
 		});
 	});
 

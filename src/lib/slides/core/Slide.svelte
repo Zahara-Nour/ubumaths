@@ -228,6 +228,21 @@
 		};
 	});
 
+	// Déclare la durée autoSlide au deck (réactive), une fois la position connue :
+	// une diapositive verticale ne reçoit son index qu'au montage
+	let positioned = $state(false);
+	onMount(() => {
+		positioned = true;
+	});
+
+	$effect(() => {
+		if (!deckStore || !positioned) return;
+		const h = slideH;
+		const v = slideV;
+		deckStore.setSlideAutoSlide(h, v, autoSlide);
+		return () => deckStore.setSlideAutoSlide(h, v, undefined);
+	});
+
 	$effect(() => {
 		if (slideElement && deckStore) {
 			const slide = deckStore.getSlide(slideH, slideV);

@@ -5,6 +5,8 @@
  * Uses Svelte 5 runes for reactivity.
  */
 
+import { untrack } from 'svelte';
+import { SvelteMap } from 'svelte/reactivity';
 import type {
 	SlideInfo,
 	NavigationState,
@@ -51,6 +53,10 @@ export interface DeckStore extends DeckStoreActions {
 	registerBackground(config: SlideBackgroundConfig): void;
 	/** Unregister a slide background */
 	unregisterBackground(h: number, v?: number): void;
+	/** Durée autoSlide propre à une diapositive (ms), undefined si non déclarée */
+	getSlideAutoSlide(h: number, v?: number): number | undefined;
+	/** Déclare (ou oublie avec undefined) la durée autoSlide d'une diapositive */
+	setSlideAutoSlide(h: number, v: number, ms: number | undefined): void;
 }
 
 interface DeckStoreState {
@@ -86,6 +92,10 @@ export function createDeckStore(): DeckStore {
 	// Background registry: Map<"h-v", SlideBackgroundConfig>
 	// Stores background configuration for each slide position
 	let backgroundRegistry = $state<Map<string, SlideBackgroundConfig>>(new Map());
+
+	// Durées autoSlide déclarées par les diapositives (clé « h-v »).
+	// SvelteMap : lire une clé rend l'appelant dépendant de cette clé seulement.
+	const slideAutoSlides = new SvelteMap<string, number>();
 
 	// Counter for claiming h indices (incremented synchronously during script execution)
 	// This ensures correct ordering even when slides with vertical children need to know
@@ -478,6 +488,37 @@ export function createDeckStore(): DeckStore {
 	}
 
 	/**
+	 * Fixe l'état de pause
+	 */
+	function setPaused(value: boolean): void {
+		state.paused = value;
+	}
+
+	/**
+	 * Durée autoSlide propre à une diapositive (ms)
+	 */
+	function getSlideAutoSlide(h: number, v: number = 0): number | undefined {
+		return slideAutoSlides.get(`${h}-${v}`);
+	}
+
+	/**
+	 * Déclare la durée autoSlide d'une diapositive ; undefined l'oublie
+	 * (la durée du deck s'applique alors)
+	 */
+	function setSlideAutoSlide(h: number, v: number, ms: number | undefined): void {
+		const key = `${h}-${v}`;
+		// untrack : appelée depuis l'effet d'une Slide, la lecture de comparaison
+		// ne doit pas rendre cet effet dépendant de la valeur qu'il écrit
+		untrack(() => {
+			if (ms === undefined) {
+				slideAutoSlides.delete(key);
+			} else if (slideAutoSlides.get(key) !== ms) {
+				slideAutoSlides.set(key, ms);
+			}
+		});
+	}
+
+	/**
 	 * Set scale
 	 */
 	function setScale(scale: number): void {
@@ -545,6 +586,9 @@ export function createDeckStore(): DeckStore {
 		toggleOverview,
 		setOverview,
 		togglePause,
+		setPaused,
+		getSlideAutoSlide,
+		setSlideAutoSlide,
 		setScale
 	};
 }

@@ -25,6 +25,14 @@ export { defaultConfig, mergeConfig } from './core/config.js';
 // Store
 export { createDeckStore, type DeckStore } from './stores/deckStore.svelte.js';
 
+// Minuteur du défilement automatique (autoSlide)
+export {
+	createAutoSlideTimer,
+	type AutoSlideTimer,
+	type AutoSlideInput,
+	type AutoSlideTimerOptions
+} from './stores/autoSlideTimer.svelte.js';
+
 // Stores (existing)
 export { slideAnnotationStore } from './stores/slideAnnotationStore.svelte.js';
 
