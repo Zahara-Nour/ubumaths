@@ -191,13 +191,27 @@ All request bodies and query parameters are validated using Zod schemas. Invalid
 			'/api/evaluations/assignments/{id}/start': {
 				post: {
 					tags: ['Assessments'],
-					summary: 'Ouvrir une évaluation assignée',
+					summary: 'Démarrer ou reprendre une évaluation assignée',
 					description:
-						"Vérifie date limite et tentatives (destinataire) ou ouvre un aperçu (propriétaire) ; rend la forme, le temps limite et les catégories de l'évaluation.",
+						'Destinataire : le serveur crée (ou reprend) la tentative, tire les questions et rend leur version publique (ni réponse, ni correction, ni graine). Propriétaire ou admin : aperçu (catégories).',
 					responses: {
-						'200': { description: 'Validation et évaluation' },
-						'403': { description: 'Évaluation non assignée' },
-						'404': { description: 'Évaluation introuvable' }
+						'200': { description: 'Tentative (questions publiques) ou aperçu' },
+						'403': { description: 'Date limite passée ou tentatives épuisées' },
+						'404': { description: 'Évaluation introuvable, non assignée ou brouillon' }
+					}
+				}
+			},
+			'/api/evaluations/attempts/{id}/submit': {
+				post: {
+					tags: ['Assessments'],
+					summary: 'Envoyer une tentative d’évaluation',
+					description:
+						'Le serveur régénère les questions, corrige, applique le barème (1, ½ ou 0 point), enregistre réponses et note sur 20, et rend la correction complète.',
+					responses: {
+						'200': { description: 'Correction, points et note' },
+						'400': { description: 'Corps invalide' },
+						'404': { description: 'Tentative introuvable' },
+						'409': { description: 'Tentative déjà terminée' }
 					}
 				}
 			},

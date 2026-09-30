@@ -354,3 +354,29 @@ Tests `tests/integration/evaluation-tentatives.test.ts` (29) ; 4 fichiers de tes
 d'évaluation posées par le service). ⚠️ Tant que la PR B n'est pas livrée, `/api/tests/save` ne peut plus
 enregistrer une séance d'évaluation (client de l'élève) : migrer la prod avec la PR B, ou accepter
 l'intervalle (0 assignation en prod). Reste : `security-auditor`, `db:migrate`, `db:types`.
+
+### Chantier 5 — PR B (code), branche `feat/evaluation-notee-serveur`
+
+Livré (commits 83361daae → fin de branche), tests d'abord à chaque lot :
+
+- **A (barème)** `src/lib/questions/grading.ts` : statut PAR CASE via `blankStatuses`
+  (nouvel export de `answer-validator.ts`, même chaîne que `validateAnswer`, aucun verdict
+  existant modifié ; `orderIndependent` : un statut par réponse après appariement) ; QCM par
+  indices d'origine ; note /20 arrondie par le code (`roundToHalfPoint`).
+- **B (démarrage)** `src/lib/server/evaluation-attempts.ts` + route `start` : tirage par
+  `drawSeriesQuestions` (même règle que `buildSeriesItems`, cartes exclues), graines crypto,
+  séance + graines en service_role après vérification sous RLS ; reprise de la tentative en
+  cours (la plus ancienne si double démarrage) ; questions publiques en LISTE BLANCHE
+  (`src/lib/questions/public-question.ts`) : ni `templateId`, ni graine, ni réponse.
+- **C (envoi)** route `POST /api/evaluations/attempts/[id]/submit` (Zod borné) : régénère,
+  corrige, écrit réponses (`is_correct` = tous les points) puis clôt la séance sous condition
+  `completed_at IS NULL` (envoi concurrent → 409, réponses retirées) ; `score` = note/2 ;
+  Course + 30 s → note 0 sans réponse ; SRS par `recordSeriesReviews` (extrait de
+  `/api/tests/save`, révision ordinaire, pas de meilleur-du-jour). `/api/tests/save` refuse
+  toute assignation (400) ; `evaluation-session.ts` supprimé.
+- **Modèle déjà servi** : suppression → 409 (23503, et 23514 dès qu'une trace SRS existe :
+  `skill_attempts.template_id` → NULL refusé par `chk_attempt_regime`, mesuré).
+- **D** `tests/integration/evaluation-notee-serveur.test.ts` (21 tests, vrais modèles #314/#142).
+- **E** page `/automaths/test` (aucun modèle chargé en évaluation, `collectOnly`, envoi +
+  réessai), `EvaluationResults`, `EvaluationResultsTable` (prof), meilleure note dans « Mes
+  évaluations », résultats élève et boîte de réception.
