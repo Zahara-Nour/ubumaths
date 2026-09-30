@@ -33,6 +33,14 @@ const EVALUATION = '55555555-5555-4555-8555-555555555555';
 const CLASS_ID = '66666666-6666-4666-8666-666666666666';
 
 let sessionInseree: Record<string, unknown> | null;
+/** Séances déjà rattachées à l'évaluation (comptage des tentatives) */
+let tentativesPassees: number;
+
+const CATEGORY_ITEM = {
+	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+	quantity: 1,
+	delay: 20
+};
 
 function fakeSupabase(options: { form: 'interactive' | 'course'; recipient: boolean }) {
 	return createFakeSupabase((table, calls) => {
@@ -50,7 +58,7 @@ function fakeSupabase(options: { form: 'interactive' | 'course'; recipient: bool
 						series_id: 'serie',
 						form: options.form,
 						time_limit: options.form === 'course' ? 420 : null,
-						max_attempts: null,
+						max_attempts: 1,
 						deadline: null,
 						shuffle_questions: true,
 						academic_period_id: null,
@@ -63,7 +71,7 @@ function fakeSupabase(options: { form: 'interactive' | 'course'; recipient: bool
 							title: 'Tables',
 							description: null,
 							grade: '6',
-							categories: [],
+							categories: [CATEGORY_ITEM],
 							created_by: TEACHER,
 							created_at: '2026-09-30T10:00:00Z',
 							updated_at: '2026-09-30T10:00:00Z'
@@ -76,6 +84,9 @@ function fakeSupabase(options: { form: 'interactive' | 'course'; recipient: bool
 			return { data: options.recipient ? { id: 'membre' } : null };
 		}
 		if (table === 'test_sessions') {
+			if (calls.some((c) => c.method === 'select' && JSON.stringify(c.args).includes('exact'))) {
+				return { count: tentativesPassees };
+			}
 			const insert = calls.find((c) => c.method === 'insert');
 			sessionInseree = (insert?.args[0] as Record<string, unknown>) ?? null;
 			return { data: { id: 'session-1' } };
@@ -94,6 +105,7 @@ async function enregistrer(options: {
 	recipient?: boolean;
 	userId?: string;
 	assignmentId?: string;
+	categories?: unknown[];
 }) {
 	const answers = [
 		{
@@ -119,13 +131,7 @@ async function enregistrer(options: {
 				completedAt: new Date().toISOString(),
 				answers
 			},
-			categories: [
-				{
-					category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
-					quantity: 1,
-					delay: 20
-				}
-			],
+			categories: options.categories ?? [CATEGORY_ITEM],
 			assignmentId: options.assignmentId
 		})
 	});
@@ -146,6 +152,7 @@ async function enregistrer(options: {
 describe('POST /api/tests/save — rattachement à l’évaluation (B16)', () => {
 	beforeEach(() => {
 		sessionInseree = null;
+		tentativesPassees = 0;
 		applyFsrsReview.mockReset().mockResolvedValue(undefined);
 		addBuddyXpFromTest.mockClear();
 		vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -174,6 +181,33 @@ describe('POST /api/tests/save — rattachement à l’évaluation (B16)', () =>
 		);
 		expect(fake.on('test_sessions')).toHaveLength(0);
 		expect(applyFsrsReview).not.toHaveBeenCalled();
+	});
+
+	it('tentatives épuisées (max_attempts = 1, une séance déjà) : 403 et RIEN n’est écrit', async () => {
+		tentativesPassees = 1;
+		const { response, fake } = await enregistrer({
+			mode: 'interactive',
+			form: 'interactive',
+			assignmentId: ASSIGNMENT
+		});
+		expect(response.status).toBe(403);
+		expect(fake.on('test_sessions').some((q) => q.calls.some((c) => c.method === 'insert'))).toBe(
+			false
+		);
+		expect(applyFsrsReview).not.toHaveBeenCalled();
+	});
+
+	it('catégories envoyées ≠ série de l’évaluation : 400 et RIEN n’est écrit', async () => {
+		const { response, fake } = await enregistrer({
+			mode: 'interactive',
+			form: 'interactive',
+			assignmentId: ASSIGNMENT,
+			categories: [{ ...CATEGORY_ITEM, quantity: 2 }]
+		});
+		expect(response.status).toBe(400);
+		expect(fake.on('test_sessions').some((q) => q.calls.some((c) => c.method === 'insert'))).toBe(
+			false
+		);
 	});
 
 	it('flash + évaluation : 400', async () => {

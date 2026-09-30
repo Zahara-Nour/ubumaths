@@ -48,7 +48,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const isFlash = result.mode === 'flash';
 
 		// Évaluation (B16) : la séance se rattache à l'ÉVALUATION de l'assignation,
-		// jamais à l'assignation. Forme différente → 400 ; aperçu du prof → aucun
+		// jamais à l'assignation. Forme ou catégories différentes → 400 ; date
+		// limite passée ou tentatives épuisées → 403 ; aperçu du prof → aucun
 		// rattachement (une séance rattachée verrouille la série). Résolu AVANT
 		// toute écriture.
 		let evaluationId: string | null;
@@ -57,7 +58,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				supabase,
 				assignmentId,
 				result.mode,
-				user.id
+				user.id,
+				categories
 			);
 			if (!resolution.ok) {
 				return json({ error: resolution.error }, { status: resolution.status });

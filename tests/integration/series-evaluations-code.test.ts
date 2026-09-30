@@ -75,6 +75,7 @@ let outsider: Person;
 let seriesId: string;
 let evaluationId: string;
 let assignmentId: string;
+let classId: string;
 
 // Functions
 async function signIn(email: string): Promise<Client> {
@@ -124,6 +125,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 		const k1 = await TestData.class().withName('6e A code ZZ').create();
 		const k2 = await TestData.class().withName('6e B code ZZ').create();
+		classId = k1.id;
 		const { error } = await service.from('class_members').insert([
 			{ class_id: k1.id, student_id: student.id, status: 'active' },
 			{ class_id: k2.id, student_id: outsider.id, status: 'active' }
@@ -164,10 +166,7 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 	afterAll(async () => {
 		// Détacher les séances avant le nettoyage : la clé NO ACTION refuserait sinon
-		await service
-			.from('test_sessions')
-			.update({ evaluation_id: null })
-			.eq('evaluation_id', evaluationId);
+		await service.from('test_sessions').update({ evaluation_id: null }).eq('user_id', student.id);
 		await cleanupAllTestData();
 	});
 
@@ -185,13 +184,19 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 	it('B16 : l’élève destinataire est rattaché, l’aperçu du prof jamais', async () => {
 		expect(
-			await resolveSessionEvaluation(student.client, assignmentId, 'course', student.id)
+			await resolveSessionEvaluation(student.client, assignmentId, 'course', student.id, CATEGORIES)
 		).toEqual({ ok: true, evaluationId });
 		expect(
-			await resolveSessionEvaluation(teacher.client, assignmentId, 'course', teacher.id)
+			await resolveSessionEvaluation(teacher.client, assignmentId, 'course', teacher.id, CATEGORIES)
 		).toEqual({ ok: true, evaluationId: null });
 		expect(
-			await resolveSessionEvaluation(student.client, assignmentId, 'interactive', student.id)
+			await resolveSessionEvaluation(
+				student.client,
+				assignmentId,
+				'interactive',
+				student.id,
+				CATEGORIES
+			)
 		).toMatchObject({ ok: false, status: 400 });
 	});
 
@@ -277,5 +282,60 @@ describe('séries et évaluations : le code sous la vraie RLS', () => {
 
 		// Une série sans évaluation se supprime
 		await expect(deleteSeries(teacher.client, copy.id)).resolves.toBeUndefined();
+	});
+
+	it('B16 : au-delà de max_attempts = 1, la deuxième séance est refusée (403)', async () => {
+		const { data: series } = await teacher.client
+			.from('series')
+			.insert({ title: 'Une fois ZZ', grade: '6', categories: CATEGORIES, created_by: teacher.id })
+			.select('id')
+			.single();
+		const { data: evaluation } = await teacher.client
+			.from('evaluations')
+			.insert({
+				series_id: series!.id,
+				form: 'interactive',
+				max_attempts: 1,
+				status: 'published',
+				created_by: teacher.id
+			})
+			.select('id')
+			.single();
+		const { data: assignment, error } = await teacher.client
+			.from('evaluation_assignments')
+			.insert({ evaluation_id: evaluation!.id, class_id: classId, assigned_by: teacher.id })
+			.select('id')
+			.single();
+		expect(error, 'décor').toBeNull();
+
+		// Première tentative : acceptée et rattachée
+		const first = await resolveSessionEvaluation(
+			student.client,
+			assignment!.id,
+			'interactive',
+			student.id,
+			CATEGORIES
+		);
+		expect(first).toEqual({ ok: true, evaluationId: evaluation!.id });
+		const { error: insertError } = await student.client.from('test_sessions').insert({
+			user_id: student.id,
+			mode: 'interactive',
+			categories: CATEGORIES,
+			total_questions: 2,
+			score: 5,
+			completed_at: new Date().toISOString(),
+			evaluation_id: evaluation!.id
+		});
+		expect(insertError).toBeNull();
+
+		// Deuxième : refusée
+		const second = await resolveSessionEvaluation(
+			student.client,
+			assignment!.id,
+			'interactive',
+			student.id,
+			CATEGORIES
+		);
+		expect(second).toMatchObject({ ok: false, status: 403 });
 	});
 });
