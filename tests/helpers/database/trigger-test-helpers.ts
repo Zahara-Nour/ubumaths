@@ -6,7 +6,7 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { deleteTestAuthUsers, closePostgresClient } from './postgres-client';
+import { deleteTestAuthUsers, closePostgresClient, getPostgresClient } from './postgres-client';
 
 /**
  * Creates a Supabase client for trigger testing
@@ -89,6 +89,8 @@ export async function cleanupTestData(
  */
 export async function cleanupAllTestData(): Promise<void> {
 	const serviceClient = createServiceRoleClient();
+
+	await purgeTestSeriesAndEvaluations();
 
 	// Order matters - delete children before parents
 	const tables = [
@@ -197,6 +199,42 @@ export async function cleanupAllTestData(): Promise<void> {
 	// Clean up auth.users table using direct PostgreSQL client
 	// (Supabase client cannot access auth schema)
 	await deleteTestAuthUsers();
+}
+
+/**
+ * Séries et évaluations des profils de test (20260930130000).
+ *
+ * ⚠️ À purger AVANT les profils, et dans cet ordre : une évaluation passée
+ * (séance rattachée) ne se supprime pas (clé en NO ACTION), et une série
+ * verrouillée refuse le DELETE (trigger, SQLSTATE UBS01). Sans cela, le DELETE
+ * massif des profils échoue en entier — et sa `{ error }` n'est pas levée.
+ * En SQL direct (connexion postgres), hors `session_replication_role = replica`
+ * pour que les contraintes jouent. Tables absentes (base sans la migration) :
+ * rien à purger.
+ */
+async function purgeTestSeriesAndEvaluations(): Promise<void> {
+	const client = await getPostgresClient();
+	try {
+		await client.query(`
+			delete from public.test_sessions
+			where evaluation_id in (
+				select e.id from public.evaluations e
+				join public.profiles p on p.id = e.created_by
+				where p.email like '%@test.com%'
+			)`);
+		await client.query(`
+			delete from public.evaluations
+			where created_by in (select id from public.profiles where email like '%@test.com%')`);
+		await client.query(`
+			delete from public.series
+			where created_by in (select id from public.profiles where email like '%@test.com%')`);
+	} catch (error) {
+		const code = (error as { code?: string }).code;
+		// 42P01 = table absente : base locale sans la migration, rien à purger
+		if (code !== '42P01' && code !== '42703') {
+			console.error('[cleanupAllTestData] Purge séries/évaluations impossible :', error);
+		}
+	}
 }
 
 /**
