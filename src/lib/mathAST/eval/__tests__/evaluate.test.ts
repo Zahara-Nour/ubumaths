@@ -3343,6 +3343,10 @@ describe('evaluate - exact mode, fonctions à plusieurs arguments', () => {
 		expect(exactLatex(func('mod', [func('floor', [number('821851')]), number('10')]))).toBe('1');
 		expect(exactLatex(func('floor', [fraction(number('821851'), number('1'))]))).toBe('821851');
 		expect(exactLatex(func('round', [number('9007199254740991')]))).toBe('9007199254740991');
+		// Au-delà de 2⁵³, tout flottant fini est entier : il reste un entier exact (mod l'accepte)
+		expect(
+			exactLatex(func('mod', [func('floor', [number('100000000000000000000')]), number('10')]))
+		).toBe('0');
 	});
 
 	it('fonction imbriquée : min(gcd(12, 18), 4) + 1/2 = 9/2', () => {
