@@ -7,7 +7,8 @@
  * ne change ; l'élève lit les siennes, le prof celles de ses élèves.
  *
  * DOIVENT échouer sans les migrations 20260930120000 (contrainte `mode`) et
- * 20260930121000 (une séance flash n'est jamais rattachée à une évaluation).
+ * 20260930121000 / 20260930130000 (une séance flash n'est jamais rattachée à une
+ * évaluation ; depuis 20260930150000, par `evaluation_id` seulement).
  *
  * `pnpm db:start` puis `pnpm test:integration`.
  */
@@ -126,20 +127,37 @@ describe("séances de flash-cards (mode 'flash')", () => {
 	});
 
 	it('une séance flash rattachée à une évaluation est refusée', async () => {
+		// Depuis 20260930150000, le rattachement passe par `evaluation_id` : la
+		// contrainte `test_sessions_flash_sans_assignation` (ancienne colonne
+		// `assignment_id`, supprimée) est relayée par `test_sessions_flash_sans_evaluation`.
 		const service = createServiceRoleClient();
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const student = await TestData.profile().withRole('student').create();
-		const { data: assessment, error: assessmentError } = await service
-			.from('assessments')
-			.insert({ title: 'Évaluation test', grade: '6', categories: [], created_by: teacher.id })
+		const { data: series, error: seriesError } = await service
+			.from('series')
+			.insert({
+				title: 'Évaluation test',
+				grade: '6',
+				categories: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
+				created_by: teacher.id
+			})
 			.select('id')
 			.single();
-		expect(assessmentError).toBeNull();
-		const { data: assignment, error: assignmentError } = await service
-			.from('assessment_assignments')
-			.insert({ assessment_id: assessment!.id, assigned_by: teacher.id, student_id: student.id })
+		expect(seriesError).toBeNull();
+		const { data: evaluation, error: evaluationError } = await service
+			.from('evaluations')
+			.insert({
+				series_id: series!.id,
+				form: 'interactive',
+				status: 'published',
+				created_by: teacher.id
+			})
 			.select('id')
 			.single();
+		expect(evaluationError).toBeNull();
+		const { error: assignmentError } = await service
+			.from('evaluation_assignments')
+			.insert({ evaluation_id: evaluation!.id, assigned_by: teacher.id, student_id: student.id });
 		expect(assignmentError).toBeNull();
 
 		const client = await createAuthenticatedClient(student.email);
@@ -151,14 +169,14 @@ describe("séances de flash-cards (mode 'flash')", () => {
 				categories: [],
 				score: 10,
 				total_questions: 4,
-				assignment_id: assignment!.id,
+				evaluation_id: evaluation!.id,
 				completed_at: new Date().toISOString()
 			})
 			.select('id')
 			.single();
 		expect(error?.code).toBe('23514');
-		// La NOUVELLE contrainte, pas celle du mode (même code 23514)
-		expect(error?.message).toContain('test_sessions_flash_sans_assignation');
+		// La contrainte flash, pas celle du mode (même code 23514)
+		expect(error?.message).toContain('test_sessions_flash_sans_evaluation');
 
 		// Témoin : la même séance en Entraînement reste acceptée
 		const { error: interactiveError } = await client
@@ -169,7 +187,7 @@ describe("séances de flash-cards (mode 'flash')", () => {
 				categories: [],
 				score: 10,
 				total_questions: 4,
-				assignment_id: assignment!.id,
+				evaluation_id: evaluation!.id,
 				completed_at: new Date().toISOString()
 			})
 			.select('id')

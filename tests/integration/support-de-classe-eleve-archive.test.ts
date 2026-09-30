@@ -52,7 +52,7 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 
 describe('le support de classe et l’élève archivé', () => {
 	let classId: string;
-	let assessmentId: string;
+	let evaluationId: string;
 	let riddleId: string;
 	let actif: SupabaseClient<Database>;
 	let archive: SupabaseClient<Database>;
@@ -96,25 +96,36 @@ describe('le support de classe et l’élève archivé', () => {
 			.insert({ class_id: classId, entry_date: hier, is_published: true });
 		expect(journalError, 'le décor n’a pas pu être posé').toBeNull();
 
-		// Évaluation publiée, affectée À LA CLASSE
-		const { data: assessment, error: assessmentError } = await service
-			.from('assessments')
+		// Évaluation publiée, affectée À LA CLASSE (tables de 20260930130000 ;
+		// les anciennes `assessments` / `assessment_assignments` ont été supprimées)
+		const { data: series, error: seriesError } = await service
+			.from('series')
 			.insert({
 				title: 'Contrôle support ZZ',
 				grade: '4',
-				status: 'published',
-				categories: [],
-				settings: {},
+				categories: [{ category: 'entiers/1', quantity: 1, delay: 20 }],
 				created_by: teacher.id
 			})
 			.select('id')
 			.single();
-		expect(assessmentError, 'le décor n’a pas pu être posé').toBeNull();
-		assessmentId = assessment!.id;
+		expect(seriesError, 'le décor n’a pas pu être posé').toBeNull();
+
+		const { data: evaluation, error: evaluationError } = await service
+			.from('evaluations')
+			.insert({
+				series_id: series!.id,
+				form: 'interactive',
+				status: 'published',
+				created_by: teacher.id
+			})
+			.select('id')
+			.single();
+		expect(evaluationError, 'le décor n’a pas pu être posé').toBeNull();
+		evaluationId = evaluation!.id;
 
 		const { error: affectationError } = await service
-			.from('assessment_assignments')
-			.insert({ assessment_id: assessmentId, assigned_by: teacher.id, class_id: classId });
+			.from('evaluation_assignments')
+			.insert({ evaluation_id: evaluationId, assigned_by: teacher.id, class_id: classId });
 		expect(affectationError, 'le décor n’a pas pu être posé').toBeNull();
 
 		// Énigme affectée à la classe
@@ -153,7 +164,7 @@ describe('le support de classe et l’élève archivé', () => {
 
 	async function compte(
 		client: SupabaseClient<Database>,
-		table: 'class_schedules' | 'class_journal_entries' | 'assessment_assignments'
+		table: 'class_schedules' | 'class_journal_entries' | 'evaluation_assignments'
 	): Promise<number> {
 		const { data, error } = await client.from(table).select('id').eq('class_id', classId);
 		expect(error, `lecture de ${table} en panne`).toBeNull();
@@ -170,10 +181,10 @@ describe('le support de classe et l’élève archivé', () => {
 		});
 
 		it('l’affectation de l’évaluation, et l’évaluation elle-même', async () => {
-			expect(await compte(actif, 'assessment_assignments')).toBe(1);
+			expect(await compte(actif, 'evaluation_assignments')).toBe(1);
 
-			const { data } = await actif.from('assessments').select('id').eq('id', assessmentId);
-			expect(data, 'student_has_assignment_for_assessment refuse l’élève actif').toHaveLength(1);
+			const { data } = await actif.from('evaluations').select('id').eq('id', evaluationId);
+			expect(data, 'student_can_read_evaluation refuse l’élève actif').toHaveLength(1);
 		});
 
 		it('l’énigme affectée à sa classe', async () => {
@@ -195,9 +206,9 @@ describe('le support de classe et l’élève archivé', () => {
 		});
 
 		it('plus l’affectation, ni l’évaluation qu’elle désigne', async () => {
-			expect(await compte(archive, 'assessment_assignments')).toBe(0);
+			expect(await compte(archive, 'evaluation_assignments')).toBe(0);
 
-			const { data } = await archive.from('assessments').select('id').eq('id', assessmentId);
+			const { data } = await archive.from('evaluations').select('id').eq('id', evaluationId);
 			expect(data, 'l’évaluation de la classe quittée reste lisible').toEqual([]);
 		});
 

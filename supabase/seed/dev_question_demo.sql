@@ -45,8 +45,7 @@ BEGIN
 
     SELECT id INTO v_author FROM public.profiles WHERE email = 'admin@local.test';
     -- La série appartient au PROF et non à l'admin : les politiques RLS de
-    -- `assessments` sont restées à `created_by = auth.uid()`, contrairement aux
-    -- tables passées à `is_teacher_or_admin()` lors du refactor mono-professeur.
+    -- `series` / `evaluations` sont à `created_by = auth.uid()` (plus l'admin).
     -- Une série créée par l'admin serait donc invisible depuis le compte prof.
     SELECT id INTO v_owner FROM public.profiles WHERE email = 'teacher@local.test';
 
@@ -78,18 +77,17 @@ BEGIN
     RAISE NOTICE 'Question de démonstration : % point(s) du programme rattaché(s).', v_tagged;
 
     -- ------------------------------------------------------------------
-    -- Une série contenant cette question
+    -- Une série contenant cette question, et son évaluation publiée
     -- ------------------------------------------------------------------
     -- Sans elle, le troisième sélecteur du cahier de texte reste invisible :
-    -- il ne s'affiche que s'il a quelque chose à proposer, et la table est
-    -- vide partout — la création d'évaluation ayant toujours échoué sur le
-    -- trigger `class_id` (cf. migration 20260904090000).
+    -- il ne s'affiche que s'il a quelque chose à proposer.
     --
     -- Elle désigne sa question par CATÉGORIE et non par identifiant, comme le
     -- fait le modèle : c'est le quadruplet (thème, domaine, sous-domaine,
     -- niveau) qui pointe l'unique template publié de cette catégorie. Ce seed
-    -- exerce donc aussi `assessment_curriculum_points()`.
-    INSERT INTO public.assessments (id, title, grade, description, created_by, categories, status)
+    -- exerce donc aussi la couverture du programme (`evaluationCurriculumPoints`).
+    -- Tables `series` / `evaluations` depuis le 2026-09-30 (`assessments` supprimée).
+    INSERT INTO public.series (id, title, grade, description, created_by, categories)
     VALUES (
         '66666666-6666-4666-8666-666666666666',
         'Géométrie repérée — série de démonstration',
@@ -105,8 +103,17 @@ BEGIN
             ),
             'quantity', 3,
             'delay', 45
-        )),
-        'published'
+        ))
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO public.evaluations (id, series_id, form, status, created_by)
+    VALUES (
+        '66666666-6666-4666-8666-666666666667',
+        '66666666-6666-4666-8666-666666666666',
+        'interactive',
+        'published',
+        v_owner
     )
     ON CONFLICT (id) DO NOTHING;
 END $demo_question$;
