@@ -17,6 +17,7 @@
 	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
 	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
+	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
 	import type { TestResult } from '$lib/types/test';
 
 	let { data }: { data: PageData } = $props();
@@ -43,6 +44,8 @@
 			const assignmentParam = url.searchParams.get('assignment');
 
 			// Handle assignment mode
+			// Une évaluation assignée est TOUJOURS un Entraînement : le paramètre `mode`
+			// est ignoré, jamais de forme flash (score auto-évalué) pour une évaluation.
 			if (assignmentParam) {
 				assignmentId = assignmentParam;
 
@@ -101,7 +104,7 @@
 
 			// Normal test mode (non-assignment)
 			// Validate mode
-			if (!modeParam || !['display', 'interactive', 'course'].includes(modeParam)) {
+			if (!modeParam || !['display', 'interactive', 'course', 'flash'].includes(modeParam)) {
 				throw new Error('Mode de test invalide');
 			}
 			const mode = modeParam as TestMode;
@@ -187,6 +190,17 @@
 	}
 
 	/**
+	 * « Flash-cards » : Recommencer tire de nouvelles questions (cartes de cours comprises)
+	 */
+	function handleFlashRestart() {
+		if (!testSession) return;
+		testSession.instances = generateSeriesItems(testSession.categories).map(
+			(item) => item.instance
+		);
+		testSession.startTime = Date.now();
+	}
+
+	/**
 	 * Handle back to cart
 	 */
 	function handleBackToCart() {
@@ -197,8 +211,8 @@
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
-		// Save to database (only for interactive and course modes)
-		if (result.mode === 'interactive' || result.mode === 'course') {
+		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement)
+		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
 			try {
 				const response = await fetch('/api/tests/save', {
 					method: 'POST',
@@ -208,7 +222,8 @@
 					body: JSON.stringify({
 						result,
 						categories: testSession?.categories || [],
-						assignmentId: assignmentId || undefined
+						// Une séance flash n'est jamais rattachée à une évaluation (refusé par l'API)
+						assignmentId: result.mode === 'flash' ? undefined : assignmentId || undefined
 					})
 				});
 
@@ -323,6 +338,17 @@
 		{:else if testSession.mode === 'course'}
 			<!-- Course mode -->
 			<TestCourse session={testSession} onComplete={handleTestComplete} onBack={handleBackToCart} />
+		{:else if testSession.mode === 'flash' && !assignmentId}
+			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->
+			{#key testSession.instances}
+				<FlashSeries
+					instances={testSession.instances}
+					isLoggedIn={!!data.user}
+					onComplete={handleTestComplete}
+					onRestart={handleFlashRestart}
+					onBack={handleBackToCart}
+				/>
+			{/key}
 		{/if}
 	{/if}
 </div>
