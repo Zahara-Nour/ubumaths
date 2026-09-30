@@ -235,3 +235,27 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
   d'une question à trous affiché une seule fois.
 - **Q20 rebranchée (#558)** : graine par question dans les séries, archivée dans
   `test_answers.question_instance.seed` ; encore tirée par le client (le serveur la tirera au chantier 5).
+
+## Chantier 4 — séparation `series` / `evaluations` (décisions de David, 2026-09-30)
+
+État mesuré en prod : 1 évaluation (`assessments`, publiée), 0 assignation, 1 session de test.
+
+- **Q22 — Accès** (question d'accès tranchée) : aucun accès nouveau. Série : prof + admin ; un élève
+  ne la lit que si une évaluation PUBLIÉE qui l'utilise lui est assignée. Évaluation : prof + admin ;
+  l'élève ne lit que les siennes, publiées. Les élèves ne créent ni série ni évaluation (panier local).
+- **Q22 bis — Série à travailler sans compte** : **(a)** lien qui porte la composition dans l'URL
+  (`/automaths/test?categories=…`, comme TinyMath et comme aujourd'hui) ; bouton « Copier le lien »
+  sur le panier et sur chaque série ; le lien ouvre le choix de la forme. Pas de lien court vers une
+  série en base (aurait ouvert la lecture à quiconque a le lien).
+- **Q23** : une série peut servir à plusieurs évaluations.
+- **Q24** : une série est **verrouillée** dès qu'un élève a commencé une évaluation qui l'utilise ;
+  pour la changer, on la duplique.
+- **Q25** : série = titre, description, niveau, catégories ; évaluation = série, forme (Entraînement
+  | Course aux nombres), temps limite (Course seulement), tentatives, date limite, ordre aléatoire,
+  période, statut, destinataires. Pas de statut sur la série.
+- **Q26** : l'élève peut passer une évaluation en Course aux nombres, temps limite appliqué. Note et
+  correction serveur : chantier 5.
+- **Q27** : page « Séries » (enregistrer le panier, modifier, dupliquer, « Créer une évaluation ») ;
+  page « Évaluations » = les évaluations seules.
+- **Q28** : étape 1 additive (nouvelles tables, recopie de l'existant, bascule du code) ; étape 2 =
+  suppression des anciennes tables dans une PR à part, arrêt obligatoire et explication à David.
