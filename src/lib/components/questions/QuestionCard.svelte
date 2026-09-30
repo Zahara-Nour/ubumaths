@@ -31,7 +31,6 @@
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { cn } from '$lib/utils';
 
 	// Input components
@@ -259,16 +258,9 @@
 
 <!-- Question Display Component -->
 <div class={cn('question-card-wrapper mx-auto w-full', sizeClasses[size])}>
+	<!-- Carte allégée (2026-09-30), comme le recto de la flash-card : ni titre, ni badge,
+	     ni intitulés « Énoncé » / « Votre réponse », ni encadré -->
 	<Card.Root class="h-full">
-		<Card.Header>
-			<div class="flex items-center justify-between">
-				<Card.Title>Question</Card.Title>
-				{#if getQuestionType(instance) !== 'course_card'}
-					<Badge variant="outline">{getQuestionType(instance)}</Badge>
-				{/if}
-			</div>
-		</Card.Header>
-
 		<Card.Content class="space-y-6">
 			{#if getQuestionType(instance) === 'course_card'}
 				<!-- Carte de cours : recto → « Voir la réponse » → verso → auto-évaluation -->
@@ -282,19 +274,17 @@
 				{#if instance.exerciseInstruction}
 					<p class="text-base font-medium text-muted-foreground">{instance.exerciseInstruction}</p>
 				{/if}
-				<!-- Question Statement -->
-				<div class="statement-section">
-					<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
-					<div class="statement-content rounded-lg border bg-card p-4">
+				<!-- Énoncé seul, sauf pour une question à trous en saisie : la zone de saisie
+				     porte déjà l'énoncé (sinon il apparaissait deux fois) -->
+				{#if !interactive || getQuestionType(instance) !== 'fill_in_blanks'}
+					<div class="statement-section statement-content">
 						<MarkdownRenderer content={statementMarkdown} />
 					</div>
-				</div>
+				{/if}
 
 				<!-- Answer Input (Interactive Mode Only) -->
 				{#if interactive}
 					<div class="answer-section">
-						<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-
 						<!-- Type-specific inputs -->
 						{#if getQuestionType(instance) === 'fill_in_blanks'}
 							<FillBlanksInput
