@@ -171,6 +171,33 @@ describe('mémoire par diapositive', () => {
 	});
 });
 
+describe('avance automatique vers une diapositive terminée', () => {
+	it('elle est rejouée pour sa durée complète, sans demander la pause', () => {
+		show({ key: 'A' });
+		vi.advanceTimersByTime(3000);
+		show({ key: 'B' });
+		vi.advanceTimersByTime(3000);
+		expect(onexpire).toHaveBeenCalledTimes(2);
+
+		// A est terminée ; on y arrive par l'expiration de B
+		timer.update({ ...base, key: 'A' }, { automatic: true });
+		expect(onrevisitfinished).not.toHaveBeenCalled();
+		expect(timer.running).toBe(true);
+		expect(timer.remaining).toBe(3000);
+		vi.advanceTimersByTime(3000);
+		expect(onexpire).toHaveBeenCalledTimes(3);
+	});
+
+	it('un retour manuel sur une diapositive terminée demande toujours la pause', () => {
+		show({ key: 'A' });
+		vi.advanceTimersByTime(3000);
+		show({ key: 'B' });
+		timer.update({ ...base, key: 'A' }, { automatic: false });
+		expect(onrevisitfinished).toHaveBeenCalledTimes(1);
+		expect(timer.running).toBe(false);
+	});
+});
+
 describe('durée modifiée pendant le compte', () => {
 	it('allonger la durée ajoute l’écart au temps restant, sans remise à zéro', () => {
 		show();

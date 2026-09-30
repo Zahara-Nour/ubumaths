@@ -24,6 +24,14 @@ export interface AutoSlideInput {
 	overview: boolean;
 }
 
+export interface AutoSlideUpdateOptions {
+	/**
+	 * Le changement de diapositive vient de l'expiration du minuteur (et non de
+	 * l'utilisateur) : une diapositive déjà terminée est rejouée, sans pause
+	 */
+	automatic?: boolean;
+}
+
 export interface AutoSlideTimerOptions {
 	/** Le compte de la diapositive courante vient d'arriver à 0 */
 	onexpire: () => void;
@@ -39,7 +47,7 @@ export interface AutoSlideTimer {
 	/** Le compte avance-t-il en ce moment ? */
 	readonly running: boolean;
 	/** Décrit l'état courant du deck (idempotent) */
-	update(input: AutoSlideInput): void;
+	update(input: AutoSlideInput, updateOptions?: AutoSlideUpdateOptions): void;
 	/** Relance la diapositive courante pour sa durée complète */
 	restartCurrent(): void;
 	/** Arrête tout minuteur en cours */
@@ -140,7 +148,7 @@ export function createAutoSlideTimer(options: AutoSlideTimerOptions): AutoSlideT
 		return e;
 	}
 
-	function update(next: AutoSlideInput): void {
+	function update(next: AutoSlideInput, updateOptions: AutoSlideUpdateOptions = {}): void {
 		stop();
 
 		const keyChanged = input === null || input.key !== next.key;
@@ -150,7 +158,11 @@ export function createAutoSlideTimer(options: AutoSlideTimerOptions): AutoSlideT
 		input = { ...next };
 
 		if (entry?.finished) {
-			if (keyChanged) {
+			if (keyChanged && updateOptions.automatic) {
+				// Avance automatique sur une diapositive terminée : rejouée en entier
+				entry.remaining = entry.duration;
+				entry.finished = false;
+			} else if (keyChanged) {
 				// Retour sur une diapositive terminée : pause, pas d'avance immédiate
 				publish();
 				options.onrevisitfinished();
