@@ -166,7 +166,29 @@ jobs:
 
       - name: Supabase CLI version
         # Doit afficher la version exacte de la devDependency (package.json).
-        run: pnpm exec supabase --version
+        # La version sert aussi de clé au cache des images Docker (étape suivante).
+        id: supabase-cli
+        run: |
+          version="$(pnpm exec supabase --version)"
+          echo "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Cache des images Docker de la stack Supabase (2026-09-30). Sans lui, chaque
+      # run les retélécharge depuis public.ecr.aws et ghcr.io, dont le quota par IP
+      # est partagé entre tous les runners GitHub : `toomanyrequests: Rate exceeded`
+      # faisait échouer le job avant le premier test (#562). Les versions d'images
+      # sont fixées par la CLI et par `supabase/config.toml` : la clé en dépend.
+      # `v1` : à incrémenter si la liste des services exclus (-x) change.
+      - name: Restore Supabase Docker images
+        id: supabase-images
+        uses: actions/cache/restore@v6
+        with:
+          path: /tmp/supabase-images.tar.zst
+          key: supabase-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
+
+      - name: Load Supabase Docker images
+        if: steps.supabase-images.outputs.cache-hit == 'true'
+        run: zstd -dc /tmp/supabase-images.tar.zst | docker load
 
       - name: Start Supabase (applies migrations)
         # Stack allégée : on exclut les services non requis (studio, edge, analytics,
@@ -176,6 +198,25 @@ jobs:
         # CLI Supabase = la devDependency du projet (version exacte dans
         # package.json), la même que sur les postes : une seule source de vérité.
         run: pnpm exec supabase start -x imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
+
+      - name: Save Supabase Docker images
+        # Seulement si le cache manquait et que la stack a démarré : les images
+        # présentes sont alors exactement celles de cette version de la CLI.
+        if: steps.supabase-images.outputs.cache-hit != 'true'
+        run: |
+          set -o pipefail
+          images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
+          echo "$images"
+          test -n "$images"
+          docker save $images | zstd -T0 -3 -o /tmp/supabase-images.tar.zst
+          ls -lh /tmp/supabase-images.tar.zst
+
+      - name: Upload Supabase Docker images to the cache
+        if: steps.supabase-images.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: /tmp/supabase-images.tar.zst
+          key: ${{ steps.supabase-images.outputs.cache-primary-key }}
 
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
