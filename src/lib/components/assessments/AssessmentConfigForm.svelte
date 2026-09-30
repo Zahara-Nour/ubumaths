@@ -54,9 +54,6 @@
 	let maxAttempts = $state<number | null>(
 		init?.settings?.max_attempts ?? DEFAULT_ASSESSMENT_SETTINGS.max_attempts
 	);
-	let timeLimit = $state<number | null>(
-		init?.settings?.time_limit ?? DEFAULT_ASSESSMENT_SETTINGS.time_limit
-	);
 	let deadline = $state<string>(init?.settings?.deadline ?? '');
 	let shuffleQuestions = $state(
 		init?.settings?.shuffle_questions ?? DEFAULT_ASSESSMENT_SETTINGS.shuffle_questions
@@ -64,7 +61,6 @@
 
 	// Input values for optional fields (string for input binding)
 	let maxAttemptsInput = $state(maxAttempts?.toString() || '');
-	let timeLimitInput = $state(timeLimit?.toString() || '');
 
 	// Validation
 	let errors = $state<Record<string, string>>({});
@@ -84,10 +80,6 @@
 			errors.maxAttempts = 'Le nombre de tentatives doit être au moins 1';
 		}
 
-		if (timeLimitInput && parseInt(timeLimitInput) < 1) {
-			errors.timeLimit = 'Le temps limite doit être au moins 1 minute';
-		}
-
 		return Object.keys(errors).length === 0;
 	}
 
@@ -96,11 +88,12 @@
 
 		// Parse optional numeric fields
 		const parsedMaxAttempts = maxAttemptsInput ? parseInt(maxAttemptsInput) : null;
-		const parsedTimeLimit = timeLimitInput ? parseInt(timeLimitInput) * 60 : null; // Convert minutes to seconds
 
 		const settings: AssessmentSettings = {
 			max_attempts: parsedMaxAttempts,
-			time_limit: parsedTimeLimit,
+			// Pas de limite globale (Q19, 2026-09-30) : une évaluation est un
+			// Entraînement, chaque question a son chrono. Réglage gardé en base, à null.
+			time_limit: null,
 			deadline: deadline || null,
 			shuffle_questions: shuffleQuestions
 		};
@@ -198,25 +191,6 @@
 				<p class="text-sm text-red-500">{errors.maxAttempts}</p>
 			{/if}
 			<p class="text-xs text-muted-foreground">Laisser vide pour des tentatives illimitées</p>
-		</div>
-
-		<!-- Time Limit -->
-		<div class="space-y-2">
-			<Label for="timeLimit">Temps limite total en minutes (optionnel)</Label>
-			<Input
-				id="timeLimit"
-				type="number"
-				bind:value={timeLimitInput}
-				placeholder="Aucune limite"
-				min="1"
-				class={errors.timeLimit ? 'border-red-500' : ''}
-			/>
-			{#if errors.timeLimit}
-				<p class="text-sm text-red-500">{errors.timeLimit}</p>
-			{/if}
-			<p class="text-xs text-muted-foreground">
-				Temps total alloué pour compléter toute l'évaluation
-			</p>
 		</div>
 
 		<!-- Shuffle Questions -->
