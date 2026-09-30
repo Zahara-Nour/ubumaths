@@ -15,13 +15,13 @@
 
 <script lang="ts">
 	import type { ActionReturn } from 'svelte/action';
-	import type { ClassroomItem, TestAnswerResult } from '$lib/types/test';
+	import type { ClassroomItem } from '$lib/types/test';
 	import type { DeckContext } from '$lib/slides/core/types';
 	import Deck from '$lib/slides/core/Deck.svelte';
 	import Slide from '$lib/slides/core/Slide.svelte';
 	import { isFromEditableField } from '$lib/slides/actions/editableTarget';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
-	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
+	import { TILE_CARD_HEIGHT } from '$lib/components/questions/tile-card';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 	import {
@@ -121,15 +121,15 @@
 		run += 1;
 		onRestart();
 	}
-
-	// CorrectionCard sans réponse d'élève (rien n'est saisi en classe)
-	function toAnswerResult(item: ClassroomItem, index: number): TestAnswerResult {
-		return { index, instance: item.instance, userAnswer: undefined, isCorrect: false };
-	}
 </script>
 
 {#if phase === 'slides'}
-	<div class="h-[calc(100dvh-8rem)] min-h-96 w-full" onkeydowncapture={handleKeydownCapture}>
+	<!-- Projection : texte agrandi (--font-scale, relu par app.css et la FlashCard) -->
+	<div
+		class="classroom-projection h-[calc(100dvh-8rem)] min-h-96 w-full"
+		style:--font-scale="2"
+		onkeydowncapture={handleKeydownCapture}
+	>
 		{#key items}
 			{#key run}
 				<Deck
@@ -316,18 +316,32 @@
 				{#each items as item, index (index)}
 					<li class="min-w-0">
 						<h2 class="mb-2 text-lg font-semibold">Question {index + 1}</h2>
-						<FlashCard instance={item.instance} interactive={false} size="sm" flippable={false} />
+						<FlashCard
+							instance={item.instance}
+							interactive={false}
+							size="sm"
+							flippable={false}
+							height={TILE_CARD_HEIGHT}
+						/>
 					</li>
 				{/each}
 			</ol>
 		{:else}
-			<ol class="grid list-none gap-6 p-0 lg:grid-cols-2" data-testid="classroom-corrections-grid">
+			<ol
+				class="grid list-none gap-4 p-0 sm:grid-cols-2 xl:grid-cols-3"
+				data-testid="classroom-corrections-grid"
+			>
 				{#each items as item, index (index)}
 					<li class="min-w-0">
-						<CorrectionCard
-							answerResult={toAnswerResult(item, index)}
-							questionNumber={index + 1}
-							size="md"
+						<h2 class="mb-2 text-lg font-semibold">Question {index + 1}</h2>
+						<!-- Verso de la flash-card : réponse (en grand si une seule case) + explication -->
+						<FlashCard
+							instance={item.instance}
+							interactive={false}
+							size="sm"
+							flippable={false}
+							startFlipped
+							height={TILE_CARD_HEIGHT}
 						/>
 					</li>
 				{/each}
@@ -335,3 +349,11 @@
 		{/if}
 	</div>
 {/if}
+
+<style>
+	/* Le Deck reçoit le focus pour ses raccourcis : pas de cadre autour de la projection */
+	.classroom-projection :global([role='application']:focus),
+	.classroom-projection :global([role='application']:focus-visible) {
+		outline: none;
+	}
+</style>

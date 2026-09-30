@@ -59,6 +59,8 @@
 		 * pas être montrée (projection « En classe » devant les élèves).
 		 */
 		flippable?: boolean;
+		/** Carte présentée côté verso dès l'affichage (grille des corrections) */
+		startFlipped?: boolean;
 	}
 
 	let {
@@ -73,7 +75,8 @@
 		showValidationFeedback = true,
 		maxAttempts = 0,
 		height = undefined,
-		flippable = true
+		flippable = true,
+		startFlipped = false
 	}: Props = $props();
 
 	// ============================================================================
@@ -95,7 +98,9 @@
 	let answerHistory = $state<AnswerData[]>([]);
 
 	// Flip state
-	let isFlipped = $state(false);
+	// Valeur initiale seulement : la carte reste retournable ensuite (si `flippable`)
+	// svelte-ignore state_referenced_locally
+	let isFlipped = $state(startFlipped);
 
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);

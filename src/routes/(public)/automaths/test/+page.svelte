@@ -2,20 +2,19 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { generateInstance } from '$lib/questions/generator/instance-generator';
-	import { excludeCourseCards } from '$lib/questions/course-card';
+	import { buildSeriesItems } from '$lib/questions/series-items';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
-	import type { TestMode, TestSession } from '$lib/types/test';
+	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
 	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 
 	// Import test components
-	import TestDisplay from '$lib/components/test/TestDisplay.svelte';
+	import ClassroomSeries from '$lib/components/test/ClassroomSeries.svelte';
 	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
 	import type { TestResult } from '$lib/types/test';
@@ -24,6 +23,8 @@
 
 	// State
 	let testSession = $state<TestSession | null>(null);
+	// Forme « En classe » : chaque question porte sa durée et sa catégorie
+	let classroomItems = $state<ClassroomItem[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
 	let assignmentId = $state<string | null>(null);
@@ -120,9 +121,10 @@
 
 			// Generate instances
 			// Course aux nombres : pas de carte de cours (décision 2026-09-28)
-			const instances = await generateInstancesFromCategories(categories, {
-				excludeCourseCards: mode === 'course'
-			});
+			const items = generateSeriesItems(categories, { excludeCourseCards: mode === 'course' });
+			const instances = items.map((item) => item.instance);
+			// « En classe » : chaque question garde sa durée et sa catégorie
+			if (mode === 'display') classroomItems = items;
 
 			// Create test session
 			testSession = {
@@ -145,75 +147,43 @@
 	}
 
 	/**
-	 * Generate instances from categories
+	 * Questions d'une série, chacune avec sa durée et sa catégorie
+	 * (`buildSeriesItems`) ; source des modèles : cache, sinon données serveur.
+	 */
+	function generateSeriesItems(
+		categories: CartItem[],
+		options: { excludeCourseCards?: boolean } = {}
+	): ClassroomItem[] {
+		const templates =
+			questionTemplatesCache.templates.length > 0
+				? questionTemplatesCache.templates
+				: data.templates;
+
+		// Aucun modèle du tout (hors ligne, sans cache) : échec explicite
+		if (templates.length === 0) {
+			throw new Error(
+				'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
+			);
+		}
+		return buildSeriesItems(categories, templates, options);
+	}
+
+	/**
+	 * Instances seules (évaluation assignée : Entraînement forcé)
 	 */
 	async function generateInstancesFromCategories(
 		categories: CartItem[],
 		options: { excludeCourseCards?: boolean } = {}
 	): Promise<QuestionInstance[]> {
-		const instances: QuestionInstance[] = [];
+		return generateSeriesItems(categories, options).map((item) => item.instance);
+	}
 
-		for (const cartItem of categories) {
-			// Find matching templates from cache (or fallback to data.templates)
-			const usingCache = questionTemplatesCache.templates.length > 0;
-			const templates = usingCache ? questionTemplatesCache.templates : data.templates;
-
-			// If we have no templates at all (offline + no cache), fail early
-			if (templates.length === 0) {
-				throw new Error(
-					'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
-				);
-			}
-
-			const inCategory = templates.filter(
-				(t) =>
-					t.theme === cartItem.category.theme &&
-					t.domain === cartItem.category.domain &&
-					(t.subdomain || null) === cartItem.category.subdomain &&
-					t.level === cartItem.category.level
-			);
-			const matchingTemplates = options.excludeCourseCards
-				? excludeCourseCards(inCategory)
-				: inCategory;
-
-			if (matchingTemplates.length === 0) {
-				console.warn(
-					`No templates found for category: ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level})`
-				);
-				console.warn(`Available templates count: ${templates.length}`);
-				console.warn(
-					`Searching in:`,
-					templates.map((t) => `${t.theme}/${t.domain}/${t.subdomain || 'null'} (L${t.level})`)
-				);
-				continue;
-			}
-
-			// Log success when templates are found
-			console.log(
-				`✓ Found ${matchingTemplates.length} template(s) for ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level}) - Source: ${usingCache ? 'cache' : 'server data'}`
-			);
-
-			// Generate required quantity of instances
-			for (let i = 0; i < cartItem.quantity; i++) {
-				// Randomly select a template
-				const randomTemplate =
-					matchingTemplates[Math.floor(Math.random() * matchingTemplates.length)];
-
-				// Generate instance
-				const result = generateInstance(randomTemplate);
-
-				if (result.success && result.instance) {
-					instances.push(result.instance);
-				} else {
-					console.error(
-						`Failed to generate instance for template ${randomTemplate.id}:`,
-						'errors' in result ? result.errors : 'Unknown error'
-					);
-				}
-			}
-		}
-
-		return instances;
+	/**
+	 * « En classe » : Recommencer tire de nouvelles questions
+	 */
+	function handleClassroomRestart() {
+		if (!testSession) return;
+		classroomItems = generateSeriesItems(testSession.categories);
 	}
 
 	/**
@@ -335,8 +305,12 @@
 	{:else if testSession}
 		<!-- Test content -->
 		{#if testSession.mode === 'display'}
-			<!-- Display mode -->
-			<TestDisplay session={testSession} onBack={handleBackToCart} />
+			<!-- Forme « En classe » -->
+			<ClassroomSeries
+				items={classroomItems}
+				onBack={handleBackToCart}
+				onRestart={handleClassroomRestart}
+			/>
 		{:else if testSession.mode === 'interactive'}
 			<!-- Interactive mode -->
 			<TestInteractive

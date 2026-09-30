@@ -256,4 +256,43 @@ describe('ClassroomSeries — fin de série', () => {
 		click(container, 'Retour au panier');
 		expect(onBack).toHaveBeenCalledTimes(1);
 	});
+
+	/**
+	 * Correctifs vus en capture (2026-09-30) : la grille des corrections passait
+	 * par `CorrectionCard`, qui affiche « undefined » pour une question à trous ;
+	 * elle montre désormais le verso de la flash-card. Les deux grilles ont des
+	 * cartes de même hauteur (celle des tuiles).
+	 */
+	it('grille des corrections : la réponse attendue d’une question à trou, jamais « undefined »', async () => {
+		const withBlank = item('Calcule 2 × 80.', 5, 'x');
+		withBlank.instance.blanks = [
+			{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }
+		] as QuestionInstance['blanks'];
+		const { container } = await open([withBlank]);
+		elapse(5000);
+		await tick();
+
+		click(container, 'Voir les corrections');
+		const corrections = container.querySelector<HTMLElement>(
+			'[data-testid="classroom-corrections-grid"]'
+		);
+		const answer = corrections?.querySelector<HTMLElement>('.flip-card-back [data-single-answer]');
+		expect(answer?.textContent).toContain('160');
+		expect(corrections?.textContent).not.toContain('undefined');
+		// Le verso est la face montrée (non inerte)
+		expect(corrections?.querySelector<HTMLElement>('.flip-card-back')?.inert).toBe(false);
+	});
+
+	it('les cartes des deux grilles ont la même hauteur', async () => {
+		const { container } = await openFinished();
+		const heights = () =>
+			[...container.querySelectorAll<HTMLElement>('.flip-card')].map((card) => card.style.height);
+
+		expect(new Set(heights()).size).toBe(1);
+		expect(heights()[0]).not.toBe('');
+
+		click(container, 'Voir les corrections');
+		expect(new Set(heights()).size).toBe(1);
+		expect(heights()[0]).not.toBe('');
+	});
 });
