@@ -211,6 +211,9 @@
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
+		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; la forme
+		// Flash-cards l'annonce à l'écran
+		if (!data.user) return;
 		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement)
 		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
 			try {
