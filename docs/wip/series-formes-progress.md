@@ -233,4 +233,5 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
   aucun exercice `per_student`/`per_group` en base (315 `on_demand`) ; fiches en base inchangées.
 - `QuestionCard` allégée : ni titre, ni badge, ni « Énoncé » / « Votre réponse », ni encadré ; énoncé
   d'une question à trous affiché une seule fois.
-- **Q20 (graine par question dans les séries) peut maintenant être rebranchée.**
+- **Q20 rebranchée (#558)** : graine par question dans les séries, archivée dans
+  `test_answers.question_instance.seed` ; encore tirée par le client (le serveur la tirera au chantier 5).
