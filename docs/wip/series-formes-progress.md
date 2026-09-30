@@ -268,6 +268,16 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
   2026-09-30). Livraison : PR 1 migration + intégration (`supabase-expert`, `security-auditor`,
   `db:migrate`, `db:types`) → PR 2 code (`fullstack-developer`, `code-reviewer`) → PR 3 DROP (arrêt).
 
+### Chantier 4 — PR 1 livrée (#559, 2026-09-30)
+
+Migration `20260930130000_series_evaluations.sql` fusionnée et **appliquée en production** (`db:migrate`) ;
+32 tests d'intégration (rouges sans la migration, clauses neutralisées une à une) ; `security-auditor` :
+0 bloquant, 2 importants corrigés (recopie limitée aux destinataires ; suppression d'un profil prof
+propriétaire d'une série verrouillée = refusée, assumé, procédure dans l'en-tête). Prod après recopie :
+1 série, 1 évaluation (Entraînement, publiée, `legacy_assessment_id`), 0 assignation, aucun droit anon.
+Types régénérés en tête de la branche de la PR 2 (`feat/series-evaluations-code`,
+worktree `../ubumaths-wt-series-code`) ; PR 2 (bascule du code) en cours.
+
 ### Chantier 4, PR 2 — bascule du code (branche `feat/series-evaluations-code`)
 
 - Code sur `series` / `evaluations` / `evaluation_assignments` ; plus aucune lecture ni écriture de
@@ -280,6 +290,6 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
   `/api/evaluations/assignments/[id]/start` remplace `/api/assessments/**` (supprimées).
 - Couverture du cahier : `assessment_curriculum_points()` remplacée par un calcul TypeScript
   (`evaluationCurriculumPoints`), qui accepte aussi un ancien id d'assessment cité dans un texte.
-- Reste pour la PR 3 (DROP) : vue SQL `resources` (lit `assessments`), fonctions
+- Vue SQL `resources` migrée à part (#560, en production). Reste pour la PR 3 (DROP) : fonctions
   `assessment_curriculum_points`, `get_assessment_results_for_*`, vue `assessment_results`,
   statistiques admin (`total_assessments`), colonnes `assessment_id` / `assignment_id`.
