@@ -264,14 +264,6 @@
 									</dd>
 								</div>
 								<div>
-									<dt class="text-muted-foreground">Temps limite</dt>
-									<dd class="font-medium">
-										{formData.settings?.time_limit
-											? `${formData.settings.time_limit / 60} min`
-											: 'Aucune'}
-									</dd>
-								</div>
-								<div>
 									<dt class="text-muted-foreground">Deadline</dt>
 									<dd class="font-medium">
 										{formData.settings?.deadline

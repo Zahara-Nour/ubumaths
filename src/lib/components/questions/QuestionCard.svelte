@@ -17,6 +17,10 @@
 	- instance: QuestionInstance (pre-generated)
 	- Callbacks: onAnswerSubmit, onAnswerChange
 	- Customization: size
+
+	Exports:
+	- submitPendingAnswer(): AnswerData | null - valide la réponse en cours
+	  (chrono écoulé) ; null si rien n'a été tapé ni coché
 -->
 
 <script lang="ts">
@@ -158,37 +162,70 @@
 	// ============================================================================
 
 	/**
-	 * Handle answer submission
+	 * L'élève a-t-il commencé à répondre ? Un trou pré-rempli ne compte pas :
+	 * il n'a pas été tapé par l'élève.
 	 */
-	function handleSubmit() {
-		if (!canSubmit || isSubmitting) return;
+	function hasStartedAnswer(): boolean {
+		switch (getQuestionType(instance)) {
+			case 'fill_in_blanks':
+				return fillBlankValues.some(
+					(value, index) => !instance.blanks?.[index]?.prefilled && value.trim().length > 0
+				);
 
-		isSubmitting = true;
+			case 'multiple_choice':
+				return selectedChoices.length > 0;
+
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Valide la réponse en cours (même validation que le bouton « Valider ») et
+	 * fige la carte. Ne prévient pas `onAnswerSubmit` : l'appelant décide.
+	 */
+	function validateCurrentAnswer(): AnswerData {
 		attempts += 1;
 
 		const answer = prepareAnswerValue();
 		const answerLatex =
 			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
 
-		// Validate answer
 		const validationResult = validateAnswer(answer, instance, answerLatex);
-		const isCorrect = validationResult.isCorrect;
 
-		// Create answer data
-		const answerData: AnswerData = {
+		isSubmitted = true;
+
+		return {
 			value: answer,
-			isCorrect,
+			isCorrect: validationResult.isCorrect,
 			timeSpent: getTimeSpent(),
 			attempts,
 			submittedAt: new Date().toISOString()
 		};
+	}
 
-		// Mark as submitted
-		isSubmitted = true;
+	/**
+	 * Handle answer submission
+	 */
+	function handleSubmit() {
+		if (!canSubmit || isSubmitting) return;
+
+		isSubmitting = true;
+		const answerData = validateCurrentAnswer();
 		isSubmitting = false;
 
-		// Emit event
 		onAnswerSubmit?.(answerData);
+	}
+
+	/**
+	 * Temps écoulé (Entraînement, Q18) : ce que l'élève a tapé ou coché sans
+	 * valider est validé comme par le bouton. Rend `null` si rien n'a été
+	 * commencé, ou si la réponse a déjà été validée.
+	 * Appelée par le parent via `bind:this`.
+	 */
+	export function submitPendingAnswer(): AnswerData | null {
+		if (!interactive || isSubmitted || !hasStartedAnswer()) return null;
+		return validateCurrentAnswer();
 	}
 
 	/**
