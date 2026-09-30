@@ -52,4 +52,4 @@ alter table public.evaluation_attempt_questions
 	);
 
 comment on column public.evaluation_attempt_questions.instance is
-	'Instance complète de la question figée au démarrage (énoncé, cases, réponses attendues, correction, choix mélangés), écrite par le serveur. Reprise et correction s''en servent. service_role SEULEMENT : contient les réponses attendues. NULL = tentative antérieure à Q42.';
+	'Instance complète de la question figée au démarrage (énoncé, cases, réponses attendues, correction, choix mélangés), écrite par le serveur. Reprise et correction s''en servent. service_role SEULEMENT : contient les réponses attendues. NULL = tentative antérieure à Q42. PIÈGE : les privilèges par défaut du schéma public donnent SELECT à anon/authenticated sur tout nouvel objet — une vue qui lirait cette colonne serait lisible par les clients sans REVOKE explicite.';
