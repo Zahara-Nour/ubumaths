@@ -33,8 +33,10 @@
 --   Aucune policy des tables gardées n'est touchée (aucune ne citait les
 --   colonnes supprimées). `admin_content_stats` est `security_invoker` : chacun
 --   y compte les évaluations que la RLS de `evaluations` lui montre déjà (admin :
---   toutes ; prof : les siennes ; élève : les publiées qui lui sont assignées) ;
---   anon reste refusé (42501). En miroir, perdu : les lectures des tables
+--   toutes ; prof : les siennes ; élève : les publiées qui lui sont assignées).
+--   anon : il avait SELECT sur la vue (GRANT de la baseline) et n'en était
+--   écarté que par accident (droits des tables lues). Ce droit est RETIRÉ
+--   (REVOKE, §2) : anon est refusé par la vue elle-même. En miroir, perdu : les lectures des tables
 --   supprimées, que le code n'utilise plus.
 --
 -- Garde-fous (§1) : la migration ÉCHOUE, sans rien supprimer, si une donnée
@@ -298,8 +300,11 @@
 --      LEFT JOIN profiles p ON p.id = COALESCE(aa.student_id, NULL::uuid)
 --      LEFT JOIN test_sessions ts ON ts.assignment_id = aa.id AND ts.user_id = p.id
 --   WHERE a.status <> 'archived'::text
---   GROUP BY aa.id, aa.assessment_id, a.title, a.grade, aa.class_id, aa.student_id, p.id, p.firstname, p.lastname, c.name;;
+--   GROUP BY aa.id, aa.assessment_id, a.title, a.grade, aa.class_id, aa.student_id, p.id, p.firstname, p.lastname, c.name;
 --
+-- GRANT ALL ON TABLE public.assessment_results TO anon;
+-- GRANT ALL ON TABLE public.assessment_results TO authenticated;
+-- GRANT ALL ON TABLE public.assessment_results TO service_role;
 -- CREATE OR REPLACE VIEW public.admin_content_stats WITH (security_invoker = true) AS
 -- SELECT (SELECT count(*) FROM public.exercises) AS total_exercises,
 --     (SELECT count(*) FROM public.assessments) AS total_assessments,
@@ -309,6 +314,8 @@
 --         WHERE exercise_assignments.assigned_at > (now() - '24:00:00'::interval)) AS assignments_24h,
 --     (SELECT count(*) FROM public.exercise_completions
 --         WHERE exercise_completions.completed_at > (now() - '24:00:00'::interval)) AS completions_24h;
+--
+-- GRANT ALL ON TABLE public.admin_content_stats TO anon; -- droit de la baseline, retiré par cette migration
 --
 -- -- R6. Autres fonctions (pg_get_functiondef) et droits d'exécution d'origine
 --
@@ -630,6 +637,8 @@
 -- Toute la migration est une transaction : une exception ici annule tout,
 -- rien n'est supprimé.
 
+-- Délimiteurs lus par tests/integration/drop-assessments.test.ts :
+-- <garde-fous>
 do $$
 declare
 	v_missing integer;
@@ -679,8 +688,19 @@ begin
 	if v_missing > 0 then
 		raise exception 'DROP refusé : % journal_entry_activities avec assessment_id sans evaluation_id', v_missing;
 	end if;
+
+	-- Aucun tag ne désigne un assessment : il deviendrait orphelin (resource_tags
+	-- n'a pas de clé étrangère vers la ressource taguée).
+	select count(*) into v_missing
+	from public.resource_tags rt
+	where rt.resource_kind = 'assessment'
+		and exists (select 1 from public.assessments a where a.id = rt.resource_id);
+	if v_missing > 0 then
+		raise exception 'DROP refusé : % resource_tags désignent encore un assessment', v_missing;
+	end if;
 end
 $$;
+-- </garde-fous>
 
 -- ============================================================================
 -- 2. Vues
@@ -702,6 +722,10 @@ select
 		where exercise_assignments.assigned_at > (now() - '24:00:00'::interval)) as assignments_24h,
 	(select count(*) from public.exercise_completions
 		where exercise_completions.completed_at > (now() - '24:00:00'::interval)) as completions_24h;
+
+-- Statistique d'administration : anon n'a rien à y lire. Son refus ne dépend
+-- plus des droits des tables comptées.
+revoke all on public.admin_content_stats from anon;
 
 -- ============================================================================
 -- 3. Fonctions qui lisent les anciennes tables (sans dépendance déclarée :

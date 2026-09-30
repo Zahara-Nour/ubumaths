@@ -8,8 +8,12 @@
  *   · les contraintes recréées ne citent plus les colonnes supprimées ;
  *   · `admin_content_stats.total_assessments` compte désormais les ÉVALUATIONS ;
  *   · question d'accès : AUCUNE lecture nouvelle sur `admin_content_stats`
- *     (vue `security_invoker`, mêmes droits) — l'élève ne compte que les
- *     évaluations publiées qui lui sont assignées, anon reste refusé.
+ *     pour les connectés (vue `security_invoker`) — l'élève ne compte que les
+ *     évaluations publiées qui lui sont assignées ; anon, qui avait SELECT sur
+ *     la vue (baseline), le perd : il est refusé par la vue elle-même (REVOKE) ;
+ *   · les garde-fous du §1 refusent la migration quand une donnée ancienne n'a
+ *     pas son pendant (rejoués dans une transaction annulée, sur des tables
+ *     fantômes qui imitent l'ancien schéma).
  *
  * DOIT échouer sans la migration (catalogue, compte des évaluations).
  * `pnpm db:start` puis
@@ -18,6 +22,7 @@
  * @vitest-environment node
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
@@ -54,6 +59,11 @@ const DROPPED_FUNCTIONS = [
 	'update_assessments_updated_at',
 	'copy_legacy_assessments'
 ];
+
+const MIGRATION_PATH = new URL(
+	'../../supabase/migrations/20260930150000_drop_assessments.sql',
+	import.meta.url
+);
 
 // Variables
 const service = createClient(SUPABASE_URL, SERVICE_KEY, {
@@ -206,7 +216,7 @@ describe('suppression des anciennes tables assessments (20260930150000)', () => 
 	});
 
 	describe('admin_content_stats', () => {
-		it('garde security_invoker et ses droits (aucun GRANT nouveau)', async () => {
+		it('garde security_invoker ; authenticated lit, anon n’a plus aucun droit', async () => {
 			const pg = await getPostgresClient();
 			const { rows } = await pg.query(
 				`select c.reloptions::text as options,
@@ -216,7 +226,7 @@ describe('suppression des anciennes tables assessments (20260930150000)', () => 
 			);
 			expect(rows[0]).toEqual({
 				options: '{security_invoker=true}',
-				anon_select: true,
+				anon_select: false,
 				auth_select: true
 			});
 		});
@@ -238,10 +248,109 @@ describe('suppression des anciennes tables assessments (20260930150000)', () => 
 			expect(await totalAssessments(student.client)).toBe(1);
 		});
 
-		it('anon reste refusé', async () => {
+		it('anon est refusé par la vue elle-même (REVOKE)', async () => {
 			const { data, error } = await anon.from('admin_content_stats').select('total_assessments');
 			expect(data).toBeNull();
 			expect(error?.code).toBe('42501');
+			expect(error?.message).toContain('admin_content_stats');
+		});
+	});
+
+	describe('garde-fous du §1 (transaction annulée, tables fantômes)', () => {
+		let classId: string;
+
+		beforeAll(async () => {
+			const klass = await TestData.class().withName('Garde-fous drop ZZ').create();
+			classId = klass.id;
+		});
+
+		/**
+		 * Recrée dans une transaction ANNULÉE ce que les garde-fous lisent de
+		 * l'ancien schéma, pose `seed`, puis exécute le bloc DO de la migration
+		 * (lu entre ses délimiteurs). Rend le message d'erreur, ou null.
+		 */
+		async function runGuards(seed: string): Promise<string | null> {
+			const migration = readFileSync(MIGRATION_PATH, 'utf8');
+			const guards = migration.split('-- <garde-fous>')[1]?.split('-- </garde-fous>')[0];
+			expect(guards, 'délimiteurs des garde-fous introuvables').toBeTruthy();
+			const pg = await getPostgresClient();
+			await pg.query('begin');
+			try {
+				await pg.query(`
+					create table public.assessments (id uuid primary key, title text, categories jsonb);
+					create table public.assessment_assignments (id uuid primary key);
+					alter table public.test_sessions add column assignment_id uuid;
+					alter table public.evaluation_tasks add column assessment_id uuid;
+					alter table public.journal_entry_activities add column assessment_id uuid;
+				`);
+				await pg.query(seed);
+				await pg.query(guards!);
+				return null;
+			} catch (error) {
+				return (error as Error).message;
+			} finally {
+				await pg.query('rollback');
+			}
+		}
+
+		it('témoin : sans écart, les garde-fous laissent passer', async () => {
+			expect(await runGuards('select 1')).toBeNull();
+		});
+
+		const cases: [label: string, seed: () => string, message: RegExp][] = [
+			[
+				'un assessment sans évaluation recopiée',
+				() => `insert into public.assessments values (gen_random_uuid(), 'Orpheline', '[]')`,
+				/assessments sans évaluation recopiée/
+			],
+			[
+				'une assignation sans pendant de même id',
+				() => `insert into public.assessment_assignments values (gen_random_uuid())`,
+				/assessment_assignments sans evaluation_assignment/
+			],
+			[
+				'une séance qui ne connaît que assignment_id',
+				() => `insert into public.test_sessions (mode, categories, total_questions, assignment_id)
+				       values ('interactive', '[]', 1, gen_random_uuid())`,
+				/test_sessions avec assignment_id sans evaluation_id/
+			],
+			[
+				'une tâche qui ne connaît que assessment_id',
+				() => `insert into public.evaluation_tasks (niveau_scolaire, name, assessment_id)
+				       values ('6', 'Garde', gen_random_uuid())`,
+				/evaluation_tasks avec assessment_id sans evaluation_id/
+			],
+			[
+				'une activité du cahier qui ne connaît que assessment_id',
+				() => `with e as (
+				         insert into public.class_journal_entries (class_id, entry_date)
+				         values ('${classId}', current_date) returning id)
+				       insert into public.journal_entry_activities (entry_id, kind, label, assessment_id)
+				       select id, 'course', 'Garde', gen_random_uuid() from e`,
+				/journal_entry_activities avec assessment_id sans evaluation_id/
+			],
+			[
+				'un tag qui deviendrait orphelin',
+				() => `with a as (
+				         insert into public.assessments
+				         values (gen_random_uuid(), 'Taguée', '[{"category":"entiers/1","quantity":1,"delay":20}]')
+				         returning id),
+				       e as (
+				         insert into public.series (title, grade, categories, created_by)
+				         select 'Taguée', '6', '[{"category":"entiers/1","quantity":1,"delay":20}]', id
+				         from public.profiles limit 1 returning id, created_by),
+				       ev as (
+				         insert into public.evaluations (series_id, form, created_by, legacy_assessment_id)
+				         select e.id, 'interactive', e.created_by, a.id from e, a returning id),
+				       t as (insert into public.tags (name) values ('Garde drop ZZ ' || gen_random_uuid()) returning id)
+				       insert into public.resource_tags (resource_kind, resource_id, tag_id)
+				       select 'assessment', a.id, t.id from a, t, ev`,
+				/resource_tags désignent encore un assessment/
+			]
+		];
+
+		it.each(cases)('refuse : %s', async (_label, seed, message) => {
+			expect(await runGuards(seed())).toMatch(message);
 		});
 	});
 });
