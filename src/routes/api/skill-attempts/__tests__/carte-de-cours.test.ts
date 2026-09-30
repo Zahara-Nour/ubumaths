@@ -14,7 +14,7 @@ const ensureProgrammeDeckCard = vi.hoisted(() => vi.fn());
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard }));
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireAuth: async () => ({ user: { id: ELEVE } })
+	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
 }));
 // Le serveur lit la nature du modèle avec ses propres droits : il voit aussi
 // les brouillons, que la RLS cache à l'élève.
