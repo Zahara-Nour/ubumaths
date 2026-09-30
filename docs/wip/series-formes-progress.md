@@ -128,6 +128,17 @@ les durées ajustées au ±5 s survivent à « Recommencer ».
 - Formes renommées dans l'interface : « En classe », « Entraînement » (fenêtre de choix, en-tête,
   résultats) ; descriptions conformes au comportement réel.
 
-### Suite
+## Chantier 2 — Flash-cards d'une série (spécification validée par David, 2026-09-30)
 
-- Chantier 2 : Flash-cards d'une série (spécification à valider).
+- Nouvelle forme « Flash-cards » dans la fenêtre de choix du panier.
+- Une carte à la fois (recto) ; le retournement montre le verso allégé ; après retournement
+  seulement, « J'avais trouvé » / « Je n'avais pas trouvé » (→ Good / Again FSRS, Q4) ; clic = carte
+  suivante. Carte de cours : même principe.
+- Fin : « k cartes trouvées sur n », « Revoir celles que je n'avais pas trouvées », « Recommencer avec
+  de nouvelles questions » (Q15).
+- **Q12 — option A** : nouvelle valeur `flash` pour `test_sessions.mode` (migration additive) ; même
+  sauvegarde que l'Entraînement (séance, réponses, FSRS, tentatives). Question d'accès posée à David le
+  2026-09-30, réponse attendue avant tout SQL.
+- **Q13** : sans UbuSlides (enchaînement simple réutilisant `FlashCard`, comme la révision SRS).
+- **Q14** : visiteur non connecté → utilisable, message visible « Connecte-toi pour que tes réponses
+  comptent dans tes révisions ».
