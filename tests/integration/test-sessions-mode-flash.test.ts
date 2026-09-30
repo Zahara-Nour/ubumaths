@@ -157,6 +157,8 @@ describe("séances de flash-cards (mode 'flash')", () => {
 			.select('id')
 			.single();
 		expect(error?.code).toBe('23514');
+		// La NOUVELLE contrainte, pas celle du mode (même code 23514)
+		expect(error?.message).toContain('test_sessions_flash_sans_assignation');
 
 		// Témoin : la même séance en Entraînement reste acceptée
 		const { error: interactiveError } = await client

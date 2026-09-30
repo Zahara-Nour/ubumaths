@@ -18,7 +18,9 @@
 -- → seules les vues d'évaluation lisent la table, par `assignment_id` (jamais par
 -- `mode`) ; une séance de flash-cards n'a pas d'assignation.
 --
--- ROLLBACK non destructif (garde les séances flash existantes, refuse les nouvelles) :
+-- ROLLBACK — jouer D'ABORD celui de 20260930121000 (contrainte « flash sans assignation »).
+-- Non destructif (garde les séances flash existantes, refuse les nouvelles ; tout UPDATE
+-- ultérieur d'une séance flash serait alors refusé) :
 --   alter table public.test_sessions drop constraint test_sessions_mode_check;
 --   alter table public.test_sessions add constraint test_sessions_mode_check
 --     check (mode = any (array['display'::text, 'interactive'::text, 'course'::text])) not valid;
