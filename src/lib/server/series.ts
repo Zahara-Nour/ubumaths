@@ -26,7 +26,7 @@ export const SERIES_LOCKED_UPDATE_MESSAGE =
 export const SERIES_LOCKED_DELETE_MESSAGE =
 	'Cette série a déjà été commencée par un élève : elle ne peut plus être supprimée';
 export const SERIES_IN_USE_MESSAGE =
-	"Cette série est utilisée par une évaluation : elle ne peut pas être supprimée. Supprime d'abord l'évaluation, ou garde la série.";
+	'Cette série est utilisée par une évaluation : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.';
 export const SERIES_NOT_FOUND_MESSAGE = 'Série introuvable';
 
 const MAX_TITLE_LENGTH = 200;

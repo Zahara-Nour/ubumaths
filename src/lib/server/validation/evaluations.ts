@@ -29,7 +29,8 @@ const seriesDescriptionSchema = z
 	.max(2000, 'Description trop longue (2000 caractères au plus)')
 	.nullable()
 	.optional()
-	.transform((value) => (value ? value : null));
+	// Absente : on ne touche pas à la description ; vide : effacée
+	.transform((value) => (value === undefined ? undefined : value || null));
 
 /** Enregistrer le panier comme série (B11) */
 export const createSeriesSchema = z.object({

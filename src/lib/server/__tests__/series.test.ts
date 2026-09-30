@@ -179,7 +179,22 @@ describe('updateSeries (B13 — verrou)', () => {
 	});
 });
 
+describe('updateSeries — description', () => {
+	it('n’écrit pas la description quand le champ n’est pas fourni', async () => {
+		const fake = createFakeSupabase(() => ({ data: [seriesRow({ title: 'Nouveau' })] }));
+		await updateSeries(fake.client, SERIES_ID, { title: 'Nouveau' });
+		const update = fake.on('series')[0].calls.find((c) => c.method === 'update')!;
+		expect(update.args[0]).toEqual({ title: 'Nouveau' });
+	});
+});
+
 describe('deleteSeries (Q31)', () => {
+	it('le message d’une série utilisée propose une action qui existe (dupliquer)', () => {
+		expect(SERIES_IN_USE_MESSAGE).toBe(
+			'Cette série est utilisée par une évaluation : elle ne peut pas être supprimée. Duplique-la pour en faire une autre.'
+		);
+	});
+
 	it('série utilisée par une évaluation (23503) : 409 et message clair', async () => {
 		const fake = createFakeSupabase(() => ({
 			error: { code: '23503', message: 'violates foreign key constraint' }

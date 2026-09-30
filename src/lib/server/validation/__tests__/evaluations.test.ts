@@ -27,7 +27,8 @@ describe('createSeriesSchema (B11)', () => {
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.data.title).toBe('Tables de 7');
-			expect(result.data.description).toBeNull();
+			// Absente : createSeries l'enregistre à null
+			expect(result.data.description ?? null).toBeNull();
 		}
 	});
 
@@ -72,8 +73,15 @@ describe('updateSeriesSchema', () => {
 	it('refuse une modification vide', () => {
 		expect(updateSeriesSchema.safeParse({}).success).toBe(false);
 	});
-	it('accepte un nouveau titre seul', () => {
-		expect(updateSeriesSchema.safeParse({ title: 'Nouveau' }).success).toBe(true);
+	it('accepte un nouveau titre seul, sans toucher à la description', () => {
+		const result = updateSeriesSchema.safeParse({ title: 'Nouveau' });
+		expect(result.success).toBe(true);
+		if (result.success) expect(result.data.description).toBeUndefined();
+	});
+
+	it('description vide fournie : effacée (null)', () => {
+		const result = updateSeriesSchema.safeParse({ title: 'Nouveau', description: '  ' });
+		expect(result.success && result.data.description).toBeNull();
 	});
 });
 
