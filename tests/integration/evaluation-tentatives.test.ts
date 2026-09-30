@@ -336,6 +336,25 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 				.eq('test_session_id', evaluationSessionId);
 			expect((rows ?? []).map((r) => r.status).sort()).toEqual(['correct', 'unoptimal_form']);
 		});
+		it('l’élève ne se fabrique pas de verdict sur une séance libre (INSERT refusé)', async () => {
+			for (const patch of [
+				{ points: 1 },
+				{ status: 'correct' },
+				{ points: 1, status: 'correct' }
+			]) {
+				const { error } = await student.client
+					.from('test_answers')
+					.insert(answerRow(freeSessionId, patch))
+					.select('id');
+				expect(error?.code).toBe('42501');
+			}
+			const { data } = await service
+				.from('test_answers')
+				.select('id')
+				.eq('test_session_id', freeSessionId)
+				.or('points.not.is.null,status.not.is.null');
+			expect(data).toEqual([]);
+		});
 	});
 
 	// ── D16 ─────────────────────────────────────────────────────────────────
@@ -501,6 +520,17 @@ describe('tentatives d’évaluation (20260930160000)', () => {
 					.eq('id', evaluationSessionId);
 				expect(error).toBeNull();
 			}
+		});
+
+		it('numeric arrondit AVANT le CHECK : 12.46 est stocké 12.5 (le serveur doit arrondir)', async () => {
+			const { data, error } = await service
+				.from('test_sessions')
+				.update({ grade: 12.46 })
+				.eq('id', evaluationSessionId)
+				.select('grade');
+			expect(error).toBeNull();
+			expect(Number(data![0].grade)).toBe(12.5);
+			await service.from('test_sessions').update({ grade: 15 }).eq('id', evaluationSessionId);
 		});
 
 		it('une note sur une séance non terminée → refusée', async () => {

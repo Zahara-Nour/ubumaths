@@ -46,6 +46,18 @@
 --     (DELETE /api/questions/templates/[id] → 500) ; le passer en brouillon reste
 --     possible. Ne gêne ni l'effacement d'un élève ni celui d'une séance.
 --
+-- ── DÉTACHER LES SÉANCES D'UN PROF (procédure de l'en-tête de 130000) ────────
+--   `update test_sessions set evaluation_id = null …` transforme la séance en
+--   entraînement libre, qui GARDE sa note (grade, points_earned), ses verdicts et
+--   ses graines (evaluation_attempt_questions). Une tentative EN COURS détachée
+--   deviendrait une séance libre porteuse de graines. Avant de détacher : clore
+--   les tentatives en cours (ou supprimer leurs lignes d'evaluation_attempt_questions),
+--   et remettre grade / points_earned à NULL si la note ne doit pas survivre.
+--
+-- ── ARRONDI ──────────────────────────────────────────────────────────────────
+--   numeric(3,1) / numeric(2,1) ARRONDISSENT avant le CHECK : 12.46 est stocké
+--   12.5 (accepté), 0.45 → 0.5. Le serveur doit arrondir lui-même (testé).
+--
 -- ── IMMUABILITÉ DU RATTACHEMENT (130000) ─────────────────────────────────────
 --   Le trigger `test_sessions_evaluation_immutable` reste : sans policy UPDATE,
 --   aucun client ne peut plus changer `evaluation_id` (0 ligne), et le trigger
@@ -181,4 +193,8 @@ create policy "test_answers_insert_not_evaluation" on public.test_answers
 			where ts.id = test_answers.test_session_id
 				and ts.evaluation_id is null
 		)
+		-- Symétrique de grade/points_earned : pas de verdict fabriqué par le client
+		-- (/api/tests/save n'écrit ni points ni status, vérifié)
+		and test_answers.points is null
+		and test_answers.status is null
 	);
