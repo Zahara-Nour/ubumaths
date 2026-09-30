@@ -16,8 +16,9 @@ import type { AnswerData } from '$lib/types/question-display';
  * - display: Slideshow mode for revision/memorization (no scoring)
  * - interactive: Quiz mode with answer validation and scoring
  * - course: "Course aux nombres" - all questions displayed at once with time limit
+ * - flash: « Flash-cards » - l'élève retourne chaque carte et s'auto-évalue, sans chrono
  */
-export type TestMode = 'display' | 'interactive' | 'course';
+export type TestMode = 'display' | 'interactive' | 'course' | 'flash';
 
 // ===========================================================================
 // TEST CONFIGURATION

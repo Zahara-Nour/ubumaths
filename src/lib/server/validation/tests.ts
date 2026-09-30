@@ -137,7 +137,8 @@ const testAnswerResultSchema = z.object({
  */
 const testResultSchema = z.object({
 	sessionId: uuidSchema.optional(),
-	mode: z.enum(['display', 'interactive', 'course']),
+	// `flash` : forme « Flash-cards », score auto-évalué par l'élève (2026-09-30)
+	mode: z.enum(['display', 'interactive', 'course', 'flash']),
 	score: z.number().min(0).max(10, 'Score must be between 0 and 10'),
 	scorePercentage: z.number().min(0).max(100, 'Score percentage must be between 0 and 100'),
 	totalQuestions: z.number().int().positive('Total questions must be positive').max(500),
@@ -187,6 +188,15 @@ export const saveTestSchema = z
 		},
 		{
 			message: 'Correct answers count mismatch'
+		}
+	)
+	.refine(
+		// Une séance flash est auto-évaluée : jamais rattachée à une évaluation
+		// (doublé en base par la contrainte `test_sessions_flash_sans_assignation`)
+		(data) => !(data.result.mode === 'flash' && data.assignmentId),
+		{
+			message: 'A flash session cannot be linked to an assignment',
+			path: ['assignmentId']
 		}
 	);
 

@@ -41,6 +41,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const { result, categories, assignmentId } = validation.data;
+		// Forme « Flash-cards » (2026-09-30) : chaque réponse est une
+		// auto-évaluation de l'élève (« J'avais trouvé » / « Je n'avais pas
+		// trouvé ») — tentatives `student_self`, pas d'XP.
+		const isFlash = result.mode === 'flash';
 
 		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
 		const templateIds = [
@@ -207,7 +211,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				success: answer.isCorrect,
 				// `grade` manquait aussi : la route l'enregistre, cette insertion non.
 				grade,
-				source: courseCardIds.has(templateId) ? 'student_self' : 'auto',
+				source: isFlash || courseCardIds.has(templateId) ? 'student_self' : 'auto',
 				with_help: false
 			});
 		}
@@ -243,18 +247,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Award buddy XP for each answer
 		let buddyXp = null;
-		try {
-			// Pas d'XP pour une carte de cours (décision 2026-09-28)
-			const answers = result.answers
-				.filter((answer) => !isCardAnswer(answer))
-				.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
-					isCorrect: answer.isCorrect,
-					theme: undefined as string | undefined // TODO: extract theme from categories if available
-				}));
-			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
-		} catch (buddyError) {
-			// Non-critical: buddy XP failure should not fail the test save
-			console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+		// Séance flash : auto-évaluée de bout en bout, donc sans XP (comme une carte)
+		if (!isFlash) {
+			try {
+				// Pas d'XP pour une carte de cours (décision 2026-09-28)
+				const answers = result.answers
+					.filter((answer) => !isCardAnswer(answer))
+					.map((answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
+						isCorrect: answer.isCorrect,
+						theme: undefined as string | undefined // TODO: extract theme from categories if available
+					}));
+				buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);
+			} catch (buddyError) {
+				// Non-critical: buddy XP failure should not fail the test save
+				console.error('⚠️ [API] Error awarding buddy XP:', buddyError);
+			}
 		}
 
 		return json({ sessionId: testSession.id, buddy_xp: buddyXp }, { status: 201 });
