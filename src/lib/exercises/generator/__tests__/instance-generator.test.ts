@@ -1221,3 +1221,47 @@ describe('Integration Tests', () => {
 		}
 	});
 });
+
+/**
+ * Choix de la variation (2026-09-30) : tiré dans la même source pseudo-aléatoire
+ * que les variables (plus de `Math.abs(seed) % n`, qui faisait tourner les
+ * variations en cycle pour des graines consécutives — cas des fiches, `seed + position`).
+ */
+describe('generateExerciseInstance — choix de la variation', () => {
+	const exercise = createExercise({
+		variations: [
+			{ label: 'A', statement_md: 'Variation A', solution_md: 'A' },
+			{ label: 'B', statement_md: 'Variation B', solution_md: 'B' }
+		]
+	});
+
+	function variationOf(seed: number, variationIndex?: number): string | undefined {
+		const result = generateExerciseInstance(exercise, { seed, variationIndex });
+		return result.success ? result.instance.statement_md : undefined;
+	}
+
+	it('même graine → même variation', () => {
+		for (const seed of [0, 1, 42, 12345]) {
+			expect(variationOf(seed)).toBe(variationOf(seed));
+		}
+	});
+
+	it('les deux variations sont atteintes', () => {
+		const seen = new Set(Array.from({ length: 40 }, (_, seed) => variationOf(seed)));
+		expect(seen).toEqual(new Set(['Variation A', 'Variation B']));
+	});
+
+	it('des graines consécutives ne font pas tourner les variations en cycle', () => {
+		const sequence = Array.from({ length: 20 }, (_, seed) => variationOf(seed));
+		const alternating = sequence.every(
+			(value, i) => value === (i % 2 === 0 ? 'Variation A' : 'Variation B')
+		);
+		expect(alternating).toBe(false);
+	});
+
+	it('une variation imposée par le prof est respectée', () => {
+		for (const seed of [0, 1, 2, 3]) {
+			expect(variationOf(seed, 1)).toBe('Variation B');
+		}
+	});
+});

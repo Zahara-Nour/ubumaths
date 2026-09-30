@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseColorExpression, resolveColorReferences } from '../color-parser';
 import { COLOR_PALETTES } from '../../colors';
+import { createRandomSource } from '$lib/utils/random';
 
 describe('parseColorExpression', () => {
 	it('should parse palette name only (random selection)', () => {
@@ -48,11 +49,11 @@ describe('parseColorExpression', () => {
 	});
 
 	it('should use seed for reproducible colors', () => {
-		const result1 = parseColorExpression('primary', 42);
-		const result2 = parseColorExpression('primary', 42);
+		const result1 = parseColorExpression('primary', createRandomSource(42));
+		const result2 = parseColorExpression('primary', createRandomSource(42));
 		expect(result1.color).toBe(result2.color);
 
-		const result3 = parseColorExpression('primary', 43);
+		const result3 = parseColorExpression('primary', createRandomSource(43));
 		// Different seed might produce different color (not guaranteed but likely)
 		expect(result3.success).toBe(true);
 	});
@@ -109,26 +110,28 @@ describe('resolveColorReferences', () => {
 
 	it('should use seed for reproducible colors', () => {
 		const text = 'Color: {#color:primary}';
-		const result1 = resolveColorReferences(text, 42);
-		const result2 = resolveColorReferences(text, 42);
+		const result1 = resolveColorReferences(text, createRandomSource(42));
+		const result2 = resolveColorReferences(text, createRandomSource(42));
 		expect(result1).toBe(result2);
 	});
 
 	it('should vary colors when multiple random colors are requested', () => {
 		const text = 'Color 1: {#color:primary}, Color 2: {#color:primary}';
-		const result = resolveColorReferences(text, 42);
+		const result = resolveColorReferences(text, createRandomSource(42));
 
 		// Extract the colors from result
 		const colorMatches = result.match(/#[A-F0-9]{6}/gi);
 		expect(colorMatches).toHaveLength(2);
 
-		// With seed, each occurrence gets a different effective seed
-		// so colors might be different (though not guaranteed)
-		// At least verify both are valid colors from the palette
+		// Chaque couleur tirée fait avancer la source : deux tirages indépendants
 		if (colorMatches) {
 			expect(COLOR_PALETTES.primary).toContain(colorMatches[0]);
 			expect(COLOR_PALETTES.primary).toContain(colorMatches[1]);
 		}
+		const differing = Array.from({ length: 20 }, (_, seed) =>
+			resolveColorReferences(text, createRandomSource(seed)).match(/#[A-F0-9]{6}/gi)
+		).filter((colors) => colors !== null && colors[0] !== colors[1]).length;
+		expect(differing).toBeGreaterThan(10);
 	});
 
 	it('should handle contrast pairs in text', () => {

@@ -11,7 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
-import type { QuestionTemplate, ResolvedVariable } from '../../types';
+import type { GenerationResult, QuestionTemplate, ResolvedVariable } from '../../types';
 import { getQuestionType } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -866,7 +866,7 @@ describe('generateInstance - Real-World Templates', () => {
 });
 
 describe('generateInstance - Variation Selection', () => {
-	it('should select first variation with seed 0', () => {
+	it('should resolve the statement of the variation drawn from the seed', () => {
 		const template: QuestionTemplate = {
 			id: 'test-24',
 
@@ -899,58 +899,24 @@ describe('generateInstance - Variation Selection', () => {
 			created_by: 'test-user'
 		};
 
-		const result = generateInstance(template, 0);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.selectedVariationIndex).toBe(0);
-		expect(result.instance.statement).toContain('Addition');
+		// La variation est le premier tirage de la source de l'instance (plus graine modulo
+		// nombre de variations) : même graine → même variation, les deux variations sortent
+		const seen = new Set<number>();
+		for (let seed = 0; seed < 20; seed++) {
+			const result = generateInstance(template, seed);
+			expect(result.success).toBe(true);
+			if (!result.success) return;
+			const index = result.instance.selectedVariationIndex;
+			seen.add(index!);
+			expect(result.instance.statement).toContain(index === 0 ? 'Addition' : 'Subtraction');
+			const again = generateInstance(template, seed);
+			if (!again.success) return;
+			expect(again.instance.selectedVariationIndex).toBe(index);
+		}
+		expect(seen).toEqual(new Set([0, 1]));
 	});
 
-	it('should select second variation with seed 1', () => {
-		const template: QuestionTemplate = {
-			id: 'test-25',
-
-			title: 'Test Question',
-			status: 'draft' as const,
-			variations: [
-				{
-					statement: templateMarkdown('Addition: ${{a}} + {{b}} = ?$'),
-					variables: [
-						{ name: 'a', expression: '{{random:1..10}}' },
-						{ name: 'b', expression: '{{random:1..10}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:a + b}}' }]
-				},
-				{
-					statement: templateMarkdown('Subtraction: ${{a}} - {{b}} = ?$'),
-					variables: [
-						{ name: 'a', expression: '{{random:10..20}}' },
-						{ name: 'b', expression: '{{random:1..9}}' }
-					],
-					blanks: [{ expectedAnswer: '{{eval:a - b}}' }]
-				}
-			],
-			grades: ['6'],
-			theme: 'Arithmétique',
-			domain: 'Opérations',
-			level: 1,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			created_by: 'test-user'
-		};
-
-		const result = generateInstance(template, 1);
-
-		expect(result.success).toBe(true);
-		if (!result.success) return;
-
-		expect(result.instance.selectedVariationIndex).toBe(1);
-		expect(result.instance.statement).toContain('Subtraction');
-	});
-
-	it('should handle variation selection with modulo (4 variations)', () => {
+	it('should reach every variation (4 variations)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-26',
 
@@ -987,34 +953,17 @@ describe('generateInstance - Variation Selection', () => {
 			created_by: 'test-user'
 		};
 
-		// Test seeds 0-3 map to variations 0-3
-		const result0 = generateInstance(template, 0);
-		const result1 = generateInstance(template, 1);
-		const result2 = generateInstance(template, 2);
-		const result3 = generateInstance(template, 3);
-
-		expect(result0.success).toBe(true);
-		expect(result1.success).toBe(true);
-		expect(result2.success).toBe(true);
-		expect(result3.success).toBe(true);
-		if (!result0.success || !result1.success || !result2.success || !result3.success) return;
-
-		expect(result0.instance.selectedVariationIndex).toBe(0);
-		expect(result1.instance.selectedVariationIndex).toBe(1);
-		expect(result2.instance.selectedVariationIndex).toBe(2);
-		expect(result3.instance.selectedVariationIndex).toBe(3);
-
-		// Test seed 4 wraps around to variation 0 (4 % 4 = 0)
-		const result4 = generateInstance(template, 4);
-		expect(result4.success).toBe(true);
-		if (!result4.success) return;
-		expect(result4.instance.selectedVariationIndex).toBe(0);
-
-		// Test seed 100 maps to variation 0 (100 % 4 = 0)
-		const result100 = generateInstance(template, 100);
-		expect(result100.success).toBe(true);
-		if (!result100.success) return;
-		expect(result100.instance.selectedVariationIndex).toBe(0);
+		// Chaque variation est atteinte, et la case attendue est celle de la variation tirée
+		const seen = new Set<number>();
+		for (let seed = 0; seed < 60; seed++) {
+			const result = generateInstance(template, seed);
+			expect(result.success).toBe(true);
+			if (!result.success) return;
+			const index = result.instance.selectedVariationIndex!;
+			seen.add(index);
+			expect(result.instance.blanks![0].expectedAnswer).toBe(String(index + 1));
+		}
+		expect(seen).toEqual(new Set([0, 1, 2, 3]));
 	});
 
 	it('should validate variations independently', () => {
@@ -1511,21 +1460,20 @@ describe('generateInstance - Shared Fields', () => {
 			created_by: 'test-user'
 		};
 
-		// Test first variation (seed 0)
-		const result0 = generateInstance(template, 0);
-		expect(result0.success).toBe(true);
-		if (!result0.success) return;
+		// La variation vient de la source pseudo-aléatoire (plus d'un modulo sur la graine) :
+		// on cherche une graine qui tombe sur chaque variation, puis on vérifie son contenu
+		const byVariation = new Map<number, GenerationResult>();
+		for (let seed = 0; seed < 50 && byVariation.size < 2; seed++) {
+			const result = generateInstance(template, seed);
+			if (result.success) byVariation.set(result.instance.selectedVariationIndex!, result);
+		}
+		const result0 = byVariation.get(0);
+		const result1 = byVariation.get(1);
+		expect(result0?.success && result1?.success).toBe(true);
+		if (!result0?.success || !result1?.success) return;
 
-		expect(result0.instance.selectedVariationIndex).toBe(0);
 		expect(result0.instance.statement).toContain('Addition');
 		expect(result0.instance.blanks![0].expectedAnswer).toBe('110');
-
-		// Test second variation (seed 1)
-		const result1 = generateInstance(template, 1);
-		expect(result1.success).toBe(true);
-		if (!result1.success) return;
-
-		expect(result1.instance.selectedVariationIndex).toBe(1);
 		expect(result1.instance.statement).toContain('Subtraction');
 		expect(result1.instance.blanks![0].expectedAnswer).toBe('80');
 	});

@@ -8,6 +8,7 @@
 
 import { convertTinyCASToNew } from '../../migration/syntax-converter';
 import { resolveExpression } from '../generator/content-resolver';
+import { createRandomSource } from '$lib/utils/random';
 import { COLOR_PALETTES, getColor, getAllColors } from '../colors';
 
 // ============================================================================
@@ -88,9 +89,9 @@ console.log('---');
 // Resolve random colors with seed
 const template2 = 'Random shape color: {#color:shapes}';
 console.log('Template:', template2);
-console.log('Resolved (seed 42):', resolveExpression(template2, [], 42));
-console.log('Resolved (seed 42):', resolveExpression(template2, [], 42)); // Same
-console.log('Resolved (seed 123):', resolveExpression(template2, [], 123)); // Different
+console.log('Resolved (seed 42):', resolveExpression(template2, [], createRandomSource(42)));
+console.log('Resolved (seed 42):', resolveExpression(template2, [], createRandomSource(42))); // Same
+console.log('Resolved (seed 123):', resolveExpression(template2, [], createRandomSource(123))); // Different
 console.log('---');
 
 // Resolve contrast pairs
@@ -122,7 +123,7 @@ console.log('\nSTEP 2 - Converted to New Syntax:');
 console.log(converted.converted?.trim());
 
 console.log('\nSTEP 3 - Resolved with Seed 42:');
-const resolved = resolveExpression(converted.converted!, [], 42);
+const resolved = resolveExpression(converted.converted!, [], createRandomSource(42));
 console.log(resolved.trim());
 
 console.log('\nConversion Statistics:');
@@ -143,7 +144,7 @@ In this diagram:
 - The {#color:text.0} labels show the dimensions
 `;
 console.log('Geometry Question:');
-console.log(resolveExpression(geometryTemplate, [], 42));
+console.log(resolveExpression(geometryTemplate, [], createRandomSource(42)));
 
 // Use Case 2: Data visualization with contrast colors
 const dataTemplate = `
@@ -154,7 +155,7 @@ Notice how the {#color:contrast.0.0} line trends upward
 while the {#color:contrast.0.1} line remains stable.
 `;
 console.log('\nData Comparison:');
-console.log(resolveExpression(dataTemplate, [], 42));
+console.log(resolveExpression(dataTemplate, [], createRandomSource(42)));
 
 // Use Case 3: Rainbow spectrum for physics
 const physicsTemplate = `
@@ -164,7 +165,7 @@ The visible light spectrum:
 - {#color:rainbow.2} light is in the middle of the spectrum
 `;
 console.log('\nPhysics Spectrum:');
-console.log(resolveExpression(physicsTemplate, [], 42));
+console.log(resolveExpression(physicsTemplate, [], createRandomSource(42)));
 
 // ============================================================================
 // 6. PROGRAMMATIC ACCESS
@@ -175,7 +176,7 @@ console.log('\n=== PROGRAMMATIC ACCESS ===\n');
 // Get specific colors
 console.log('First primary color:', getColor('primary.0'));
 console.log('Random shapes color:', getColor('shapes')); // Random each time
-console.log('Seeded random text color:', getColor('text', 42)); // Same with seed 42
+console.log('Seeded random text color:', getColor('text', createRandomSource(42))); // Same with seed 42
 
 // Get all colors from a palette
 console.log('\nAll primary colors:', getAllColors('primary'));

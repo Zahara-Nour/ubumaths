@@ -1,118 +1,72 @@
 /**
- * Seeded Pseudo-Random Number Generator
- * ======================================
+ * Source de hasard des générateurs de questions
+ * =============================================
  *
- * Simple sine-based PRNG for reproducible random number generation.
- * Used for generating consistent question variations from the same seed.
+ * Une instance de question tire tout son hasard d'UNE source, consommée dans l'ordre :
+ * choix de variation, variables, tirages en ligne, couleurs, mélange des choix, nouveaux
+ * essais. Avec une graine, la source est un générateur pseudo-aléatoire (mulberry32)
+ * initialisé par la graine : même graine → même suite de tirages → même instance.
+ * Sans graine, la source est `Math.random` : même chemin, pas de branche séparée.
  *
- * ⚠️ **NOT cryptographically secure** - use only for:
- * - Educational content generation
- * - Deterministic question variations
- * - Reproducible test scenarios
+ * On ne recalcule JAMAIS un tirage depuis la graine (`f(seed)`, `f(seed + i)`) : deux
+ * tirages qui reçoivent la même graine seraient égaux, et deux tirages successifs
+ * (branche d'une liste, puis valeur de la sous-plage) seraient corrélés.
  *
- * ❌ **DO NOT use for**:
- * - Security tokens
- * - Password generation
- * - Cryptographic operations
+ * ⚠️ Pas cryptographique : contenu pédagogique seulement.
  *
  * @module utils/random
- *
- * @example Basic usage
- * ```typescript
- * import { seededRandom } from '$lib/utils/random';
- *
- * const seed = 12345;
- * const random1 = seededRandom(seed);     // Always returns same value
- * const random2 = seededRandom(seed + 1); // Different but reproducible
- * ```
- *
- * @example Generate random integer
- * ```typescript
- * import { randomInt } from '$lib/utils/random';
- *
- * const dice = randomInt(1, 6, seed);           // Random dice roll (1-6)
- * const random = randomInt(1, 100);             // Non-seeded random (1-100)
- * ```
  */
 
+/** Rend un réel de [0, 1[ à chaque appel ; chaque appel fait avancer la source */
+export type RandomSource = () => number;
+
 /**
- * Seeded pseudo-random number generator
- *
- * Generates a reproducible pseudo-random number between 0 and 1 based on a seed.
- * Uses a simple sine-based algorithm for reproducibility across sessions.
- *
- * **Algorithm**: Based on sin(seed) to create pseudo-random distribution
- *
- * **Why this algorithm?**
- * - Simple and fast (single Math.sin call)
- * - Deterministic (same seed always produces same output)
- * - Good distribution for educational use cases
- * - No state management needed
- *
- * **Important**: This is NOT a cryptographically secure random number generator.
- * The sine function creates predictable patterns. This is intentional for
- * educational content where reproducibility is more important than unpredictability.
- *
- * @param seed - Integer seed value (any number, typically positive)
- * @returns Pseudo-random number between 0 (inclusive) and 1 (exclusive)
- *
- * @example
- * ```typescript
- * seededRandom(12345);  // Always returns ~0.929
- * seededRandom(12345);  // Always returns ~0.929 (reproducible)
- * seededRandom(12346);  // Returns different value
- * ```
+ * Source d'une instance : pseudo-aléatoire reproductible avec une graine
+ * (0 comprise), `Math.random` sans graine.
  */
-export function seededRandom(seed: number): number {
-	const x = Math.sin(seed) * 10000;
-	return x - Math.floor(x);
+export function createRandomSource(seed?: number): RandomSource {
+	return seed === undefined ? Math.random : mulberry32(seedToState(seed));
+}
+
+/** Entier uniforme de [min, max] (bornes comprises), un tirage consommé */
+export function randomInt(min: number, max: number, random: RandomSource): number {
+	return Math.floor(random() * (max - min + 1)) + min;
+}
+
+/** Indice uniforme de [0, length[, un tirage consommé */
+export function randomIndex(length: number, random: RandomSource): number {
+	return Math.floor(random() * length);
+}
+
+/** Mélange de Fisher-Yates dans une copie ; `length - 1` tirages consommés */
+export function shuffled<T>(items: readonly T[], random: RandomSource): T[] {
+	const result = [...items];
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = randomIndex(i + 1, random);
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
 }
 
 /**
- * Generate random integer with optional seed
- *
- * Generates a random integer in the range [min, max] (inclusive).
- * If seed is provided, result is reproducible. Otherwise uses Math.random().
- *
- * @param min - Minimum value (inclusive)
- * @param max - Maximum value (inclusive)
- * @param seed - Optional seed for reproducibility
- * @returns Random integer between min and max (inclusive)
- *
- * @example Seeded random
- * ```typescript
- * randomInt(1, 6, 12345);  // Reproducible dice roll
- * randomInt(1, 6, 12345);  // Same result as above
- * ```
- *
- * @example Non-seeded random
- * ```typescript
- * randomInt(1, 100);  // Random number 1-100 (different each call)
- * ```
+ * Graine quelconque (négative, au-delà de 2³²) → état 32 bits.
+ * Les deux moitiés de la graine sont mêlées : 1 et 2³² + 1 ne donnent pas la même suite.
  */
-export function randomInt(min: number, max: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	return Math.floor(random * (max - min + 1)) + min;
+function seedToState(seed: number): number {
+	const integer = Math.trunc(seed);
+	const low = integer >>> 0;
+	const high = Math.floor(integer / 0x100000000) >>> 0;
+	return (low ^ Math.imul(high, 0x9e3779b9)) >>> 0;
 }
 
-/**
- * Generate random float with optional seed
- *
- * Generates a random floating-point number in the range [min, max).
- * If seed is provided, result is reproducible. Otherwise uses Math.random().
- *
- * @param min - Minimum value (inclusive)
- * @param max - Maximum value (exclusive)
- * @param seed - Optional seed for reproducibility
- * @returns Random float between min and max
- *
- * @example
- * ```typescript
- * randomFloat(0, 1, 12345);  // Reproducible 0-1 float
- * randomFloat(5.0, 10.0);    // Random 5.0-10.0 (non-seeded)
- * ```
- */
-export function randomFloat(min: number, max: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	return random * (max - min) + min;
+/** mulberry32 : état 32 bits, période 2³², bonne répartition pour des graines voisines */
+function mulberry32(initialState: number): RandomSource {
+	let state = initialState;
+	return () => {
+		state = (state + 0x6d2b79f5) >>> 0;
+		let t = state;
+		t = Math.imul(t ^ (t >>> 15), t | 1);
+		t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+	};
 }

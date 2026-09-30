@@ -15,6 +15,7 @@
  * @module questions/generator/correction-resolver
  */
 
+import type { RandomSource } from '$lib/utils/random';
 import type { ResolvedVariable, InstanceBlank } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown } from '$lib/ubumark';
@@ -241,14 +242,14 @@ export function buildCorrectionContext(
  * @param template - Correction template markdown
  * @param resolvedVariables - Resolved question variables
  * @param context - Correction context (solutions, expression)
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved markdown with pseudo-variables replaced and client placeholders preserved
  */
 export function resolveCorrectionContent(
 	template: TemplateMarkdown,
 	resolvedVariables: ResolvedVariable[],
 	context: CorrectionContext,
-	seed?: number
+	random: RandomSource = Math.random
 ): ResolvedMarkdown {
 	// Step 0: conditions sur les variables tirées résolues ici ; les autres restent au client
 	const withoutVariableConditionals = resolveVariableConditionals(
@@ -268,7 +269,11 @@ export function resolveCorrectionContent(
 	const enrichedVariables = buildEnrichedVariables(resolvedVariables, context);
 
 	// Step 4: Resolve via standard pipeline
-	const resolved = resolveMarkdownContent(templateMarkdown(preprocessed), enrichedVariables, seed);
+	const resolved = resolveMarkdownContent(
+		templateMarkdown(preprocessed),
+		enrichedVariables,
+		random
+	);
 
 	// Step 5: Restore client placeholders
 	const restored = restoreClientPlaceholders(String(resolved), answerMatches, ifMatches);

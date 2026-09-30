@@ -5,14 +5,14 @@
  * Generates random numbers based on RandomSpec with support for:
  * - Variable resolution in bounds and digits
  * - Complex exclusion patterns
- * - Seeded random for reproducibility
+ * - Reproducible draws from a random source (`createRandomSource(seed)`)
  * - Integer and decimal generation
  *
  * @module questions/generator/random-generator
  */
 
 import type { RandomSpec, NumberOrVariable, ResolvedVariable } from '../types';
-import { seededRandom } from '$lib/utils/random';
+import { randomIndex, type RandomSource } from '$lib/utils/random';
 import { evalResultToNumber } from '$lib/mathAST/eval';
 
 /**
@@ -70,14 +70,14 @@ export function resolveNumberOrVariable(
  *
  * @param spec - Random specification
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for reproducibility
+ * @param random - Source de hasard (consommée), Math.random par défaut
  * @returns Generated random number
  * @throws Error if generation fails or validation fails
  *
  * @example
  * ```typescript
  * // Simple integer
- * generateRandomNumber({ type: 'integer', min: 1, max: 10, exclusions: [] }, [], 42)
+ * generateRandomNumber({ type: 'integer', min: 1, max: 10, exclusions: [] }, [], createRandomSource(42))
  *
  * // With variable bounds
  * const vars = [{ name: 'max', value: '20' }];
@@ -90,7 +90,7 @@ export function resolveNumberOrVariable(
 export function generateRandomNumber(
 	spec: RandomSpec,
 	resolvedVariables: VariableContext,
-	seed?: number
+	random: RandomSource = Math.random
 ): number {
 	// Handle discrete-list separately (returns string, use shared parameterization module)
 	if (spec.type === 'discrete-list') {
@@ -191,20 +191,17 @@ export function generateRandomNumber(
 	let attempts = 0;
 	const MAX_ATTEMPTS = 10000;
 
+	// Chaque nouvel essai consomme la source : pas de graine recalculée
 	do {
 		if (spec.type === 'integer') {
-			value = randomInt(min!, max!, seed ? seed + attempts : undefined);
+			value = randomInt(min!, max!, random);
 		} else if (spec.type === 'relative-integer') {
-			value = randomRelativeInt(min!, max!, seed ? seed + attempts : undefined);
+			value = randomRelativeInt(min!, max!, random);
 		} else if (spec.type === 'decimal-by-digits') {
-			value = randomDecimalByDigits(
-				digitsBefore!,
-				digitsAfter!,
-				seed ? seed + attempts : undefined
-			);
+			value = randomDecimalByDigits(digitsBefore!, digitsAfter!, random);
 		} else {
 			// spec.type === 'decimal-range'
-			value = randomDecimalByRange(min!, max!, spec.step, seed ? seed + attempts : undefined);
+			value = randomDecimalByRange(min!, max!, spec.step, random);
 		}
 
 		attempts++;
@@ -224,12 +221,11 @@ export function generateRandomNumber(
  *
  * @param min - Minimum value (inclusive)
  * @param max - Maximum value (inclusive)
- * @param seed - Optional seed for reproducibility
+ * @param random - Source de hasard (consommée), Math.random par défaut
  * @returns Random integer
  */
-export function randomInt(min: number, max: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	return Math.floor(random * (max - min + 1)) + min;
+export function randomInt(min: number, max: number, random: RandomSource = Math.random): number {
+	return Math.floor(random() * (max - min + 1)) + min;
 }
 
 /**
@@ -240,7 +236,7 @@ export function randomInt(min: number, max: number, seed?: number): number {
  *
  * @param min - Minimum absolute value (must be positive)
  * @param max - Maximum absolute value (must be >= min)
- * @param seed - Optional seed for reproducibility
+ * @param random - Source de hasard (consommée), Math.random par défaut
  * @returns Random non-zero integer in [-max,-min] ∪ [min,max]
  *
  * @example
@@ -248,14 +244,17 @@ export function randomInt(min: number, max: number, seed?: number): number {
  * randomRelativeInt(2, 9)  // Returns value from {-9..-2} ∪ {2..9}
  * ```
  */
-export function randomRelativeInt(min: number, max: number, seed?: number): number {
+export function randomRelativeInt(
+	min: number,
+	max: number,
+	random: RandomSource = Math.random
+): number {
 	// Range size for one side (e.g., min=2, max=9 → 8 values per side)
 	const rangeSize = max - min + 1;
 	// Total values: both negative and positive ranges
 	const totalValues = rangeSize * 2;
 
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	const index = Math.floor(random * totalValues);
+	const index = randomIndex(totalValues, random);
 
 	if (index < rangeSize) {
 		// Negative range: -max to -min
@@ -271,7 +270,7 @@ export function randomRelativeInt(min: number, max: number, seed?: number): numb
  *
  * @param digitsBefore - Number of digits before decimal point
  * @param digitsAfter - Number of digits after decimal point
- * @param seed - Optional seed
+ * @param random - Source de hasard (deux tirages consommés), Math.random par défaut
  * @returns Random decimal
  *
  * @example
@@ -283,10 +282,10 @@ export function randomRelativeInt(min: number, max: number, seed?: number): numb
 export function randomDecimalByDigits(
 	digitsBefore: number,
 	digitsAfter: number,
-	seed?: number
+	random: RandomSource = Math.random
 ): number {
-	const random1 = seed !== undefined ? seededRandom(seed) : Math.random();
-	const random2 = seed !== undefined ? seededRandom(seed + 1) : Math.random();
+	const random1 = random();
+	const random2 = random();
 
 	// Generate digits before decimal point
 	const maxBefore = Math.pow(10, digitsBefore) - 1;
@@ -306,7 +305,7 @@ export function randomDecimalByDigits(
  * @param min - Minimum value
  * @param max - Maximum value
  * @param step - Step between values
- * @param seed - Optional seed
+ * @param random - Source de hasard (consommée), Math.random par défaut
  * @returns Random decimal
  *
  * @example
@@ -318,10 +317,9 @@ export function randomDecimalByRange(
 	min: number,
 	max: number,
 	step: number,
-	seed?: number
+	random: RandomSource = Math.random
 ): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
 	const steps = Math.floor((max - min) / step);
-	const selectedStep = Math.floor(random * (steps + 1));
+	const selectedStep = randomIndex(steps + 1, random);
 	return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
 }

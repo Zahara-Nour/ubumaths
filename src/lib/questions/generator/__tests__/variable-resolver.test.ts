@@ -8,6 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { resolveVariables } from '../variable-resolver';
+import { createRandomSource } from '$lib/utils/random';
 import type { QuestionVariable, ResolvedVariable } from '../../types';
 
 /**
@@ -223,7 +224,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 			{ name: 'random', expression: '{{random:1..10!{{exclude}}}}' }
 		];
 
-		const resolved = resolveVariables(variables, 12345);
+		const resolved = resolveVariables(variables, createRandomSource(12345));
 		const result = toObject(resolved);
 
 		expect(Number(result.random)).not.toBe(5);
@@ -238,7 +239,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 			{ name: 'random', expression: '{{random:1..15!{{excludeMin}}..{{excludeMax}}}}' }
 		];
 
-		const resolved = resolveVariables(variables, 54321);
+		const resolved = resolveVariables(variables, createRandomSource(54321));
 		const result = toObject(resolved);
 
 		expect(Number(result.random) < 5 || Number(result.random) > 8).toBe(true);
@@ -251,7 +252,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 			{ name: 'random', expression: '{{random:1..10!{{a}},{{b}}}}' }
 		];
 
-		const resolved = resolveVariables(variables, 11111);
+		const resolved = resolveVariables(variables, createRandomSource(11111));
 		const result = toObject(resolved);
 
 		expect(Number(result.random)).not.toBe(3);
@@ -266,8 +267,8 @@ describe('resolveVariables - Seeded Random', () => {
 			{ name: 'b', expression: '{{random:1..100}}' }
 		];
 
-		const resolved1 = resolveVariables(variables, 99999);
-		const resolved2 = resolveVariables(variables, 99999);
+		const resolved1 = resolveVariables(variables, createRandomSource(99999));
+		const resolved2 = resolveVariables(variables, createRandomSource(99999));
 		const result1 = toObject(resolved1);
 		const result2 = toObject(resolved2);
 
@@ -278,8 +279,8 @@ describe('resolveVariables - Seeded Random', () => {
 	it('should produce different results with different seeds', () => {
 		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:1..1000}}' }];
 
-		const resolved1 = resolveVariables(variables, 11111);
-		const resolved2 = resolveVariables(variables, 22222);
+		const resolved1 = resolveVariables(variables, createRandomSource(11111));
+		const resolved2 = resolveVariables(variables, createRandomSource(22222));
 		const result1 = toObject(resolved1);
 		const result2 = toObject(resolved2);
 
@@ -295,8 +296,8 @@ describe('resolveVariables - Seeded Random', () => {
 			{ name: 'random', expression: '{{random:{{sum}}..100}}' }
 		];
 
-		const resolved1 = resolveVariables(variables, 77777);
-		const resolved2 = resolveVariables(variables, 77777);
+		const resolved1 = resolveVariables(variables, createRandomSource(77777));
+		const resolved2 = resolveVariables(variables, createRandomSource(77777));
 
 		expect(resolved1).toEqual(resolved2);
 	});
@@ -362,7 +363,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'answer', expression: '{{eval:({{num1}}+{{num2}})/{{den}};d}}' }
 		];
 
-		const resolved = resolveVariables(variables, 12345);
+		const resolved = resolveVariables(variables, createRandomSource(12345));
 		const result = toObject(resolved);
 
 		expect(Number(result.den)).toBeGreaterThanOrEqual(2);
@@ -388,7 +389,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'answer', expression: '{{eval:{{num}}/{{den}};d}}' }
 		];
 
-		const resolved = resolveVariables(variables, 54321);
+		const resolved = resolveVariables(variables, createRandomSource(54321));
 		const result = toObject(resolved);
 
 		expect(Number(result.gcd)).toBeGreaterThanOrEqual(2);
@@ -409,7 +410,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'discriminant', expression: '{{eval:{{b}}^2 - 4*{{a}}*{{c}}}}' }
 		];
 
-		const resolved = resolveVariables(variables, 99999);
+		const resolved = resolveVariables(variables, createRandomSource(99999));
 		const result = toObject(resolved);
 
 		expect(result.discriminant).toBe(
@@ -425,7 +426,7 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'final', expression: '{{eval:{{price}} - {{reduction}};d}}' }
 		];
 
-		const resolved = resolveVariables(variables, 33333);
+		const resolved = resolveVariables(variables, createRandomSource(33333));
 		const result = toObject(resolved);
 
 		expect(Number(result.reduction)).toBeCloseTo(

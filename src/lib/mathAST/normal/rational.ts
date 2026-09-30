@@ -587,6 +587,12 @@ export function floatToRational(x: number, precision: number = 15): Rational {
 
 	if (x === 0) return ZERO;
 
+	// Entier exact (floor, round, min… d'un entier) : sans passer par x × 10¹⁵, qui dépasse
+	// 2⁵³ dès x ≥ 10⁴ et ne redonne plus un entier (mod refusait alors l'argument).
+	// `isInteger` et non `isSafeInteger` : au-delà de 2⁵³ tout flottant fini est entier,
+	// et `BigInt(x)` en donne la valeur exacte (infini et NaN : false)
+	if (Number.isInteger(x)) return rational(BigInt(x), 1n);
+
 	// Adjust scale based on magnitude to preserve precision for very small numbers.
 	// For x = 1e-100 with precision 15, a fixed 10^15 scale would round to 0.
 	// Instead, use 10^(precision - min(0, magnitude)) so the scaled value has

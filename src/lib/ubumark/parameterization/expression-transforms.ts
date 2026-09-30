@@ -38,25 +38,7 @@ import { parseCustom } from '$lib/mathAST/parser/custom';
 import { removeNullTermsAST } from '$lib/mathAST/transforms';
 import type { MathNode } from '$lib/mathAST';
 import type { DisplayOptions } from './display-options';
-
-// ============================================================================
-// FISHER-YATES SHUFFLE
-// ============================================================================
-
-/**
- * Fisher-Yates shuffle algorithm for fair random permutation
- *
- * Creates a new array with elements in random order.
- * Does not modify the original array.
- */
-function fisherYatesShuffle<T>(array: readonly T[]): T[] {
-	const result = [...array];
-	for (let i = result.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[result[i], result[j]] = [result[j], result[i]];
-	}
-	return result;
-}
+import { shuffled, type RandomSource } from '$lib/utils/random';
 
 // ============================================================================
 // EXPRESSION SHUFFLERS
@@ -65,43 +47,43 @@ function fisherYatesShuffle<T>(array: readonly T[]): T[] {
 /**
  * Shuffle terms in a sum at the top level only
  */
-function shuffleTermsShallow(ast: MathNode): MathNode {
+function shuffleTermsShallow(ast: MathNode, random: RandomSource): MathNode {
 	const terms = flattenSumShallow(ast);
 	if (terms.length <= 1) return ast;
-	return unflattenSum(fisherYatesShuffle([...terms])) ?? ast;
+	return unflattenSum(shuffled(terms, random)) ?? ast;
 }
 
 /**
  * Shuffle terms in sums recursively (bottom-up via mapNode)
  */
-function shuffleTermsDeep(ast: MathNode): MathNode {
+function shuffleTermsDeep(ast: MathNode, random: RandomSource): MathNode {
 	return mapNode(ast, (node) => {
 		if (node.type !== 'addition' && node.type !== 'subtraction') return node;
 		const terms = flattenSumShallow(node);
 		if (terms.length <= 1) return node;
-		return unflattenSum(fisherYatesShuffle([...terms])) ?? node;
+		return unflattenSum(shuffled(terms, random)) ?? node;
 	});
 }
 
 /**
  * Shuffle factors in a product at the top level only
  */
-function shuffleFactorsShallow(ast: MathNode): MathNode {
+function shuffleFactorsShallow(ast: MathNode, random: RandomSource): MathNode {
 	if (ast.type !== 'multiplication') return ast;
 	const factors = flattenProductShallow(ast);
 	if (factors.length <= 1) return ast;
-	return unflattenProduct(fisherYatesShuffle([...factors])) ?? ast;
+	return unflattenProduct(shuffled(factors, random)) ?? ast;
 }
 
 /**
  * Shuffle factors in products recursively (bottom-up via mapNode)
  */
-function shuffleFactorsDeep(ast: MathNode): MathNode {
+function shuffleFactorsDeep(ast: MathNode, random: RandomSource): MathNode {
 	return mapNode(ast, (node) => {
 		if (node.type !== 'multiplication') return node;
 		const factors = flattenProductShallow(node);
 		if (factors.length <= 1) return node;
-		return unflattenProduct(fisherYatesShuffle([...factors])) ?? node;
+		return unflattenProduct(shuffled(factors, random)) ?? node;
 	});
 }
 
@@ -117,8 +99,15 @@ function shuffleFactorsDeep(ast: MathNode): MathNode {
  * 2. Apply structural transforms (shuffle terms/factors)
  * 3. Apply removeNullTerms / removeUnnecessaryBrackets
  * 4. Serialize back to LaTeX
+ *
+ * Les mélanges tirent dans `random` : la source de l'instance, pour qu'une graine
+ * redonne le même affichage (Math.random par défaut).
  */
-export function applyDisplayTransforms(expr: string, options: Required<DisplayOptions>): string {
+export function applyDisplayTransforms(
+	expr: string,
+	options: Required<DisplayOptions>,
+	random: RandomSource = Math.random
+): string {
 	// Guard: empty or whitespace-only input
 	if (!expr || !expr.trim()) {
 		return expr;
@@ -140,12 +129,12 @@ export function applyDisplayTransforms(expr: string, options: Required<DisplayOp
 
 		// Apply term shuffles
 		if (doShuffleTerms) {
-			ast = deepTerms ? shuffleTermsDeep(ast) : shuffleTermsShallow(ast);
+			ast = deepTerms ? shuffleTermsDeep(ast, random) : shuffleTermsShallow(ast, random);
 		}
 
 		// Apply factor shuffles
 		if (doShuffleFactors) {
-			ast = deepFactors ? shuffleFactorsDeep(ast) : shuffleFactorsShallow(ast);
+			ast = deepFactors ? shuffleFactorsDeep(ast, random) : shuffleFactorsShallow(ast, random);
 		}
 
 		// Step 3: Apply cleanup transforms

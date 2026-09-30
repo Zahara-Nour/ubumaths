@@ -15,6 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseRandomSpec } from '../../../parameterization/parser/random-parser';
 import { generateRandomNumber } from '../../../parameterization/resolver/random-generator';
+import { createRandomSource } from '$lib/utils/random';
 import type { RandomSpec, ResolvedVariable } from '../../../types';
 
 // ============================================================================
@@ -36,7 +37,7 @@ function draws(token: string, vars: ResolvedVariable[] = []): Set<number> {
 	const parsed = spec(token);
 	const values = new Set<number>();
 	for (let seed = 1; seed <= 300; seed++) {
-		values.add(Number(generateRandomNumber(parsed, vars, seed)));
+		values.add(Number(generateRandomNumber(parsed, vars, createRandomSource(seed))));
 	}
 	return values;
 }
@@ -112,9 +113,9 @@ describe('generateRandomNumber — exclusions arithmétiques', () => {
 	});
 
 	it('tout est exclu : erreur explicite qui nomme les exclusions, pas de boucle infinie', () => {
-		expect(() => generateRandomNumber(spec('{{2..4!m(2),m(3)}}'), [], 1)).toThrow(
-			/multiple-of\(2\), multiple-of\(3\)/
-		);
+		expect(() =>
+			generateRandomNumber(spec('{{2..4!m(2),m(3)}}'), [], createRandomSource(1))
+		).toThrow(/multiple-of\(2\), multiple-of\(3\)/);
 	});
 
 	it('m(x) sur un tirage décimal : juste malgré les flottants (0,3 est multiple de 0,1)', () => {

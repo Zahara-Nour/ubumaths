@@ -7,7 +7,7 @@
  *
  * Process:
  * 1. Check if exercise uses variations system or legacy format
- * 2. For variations: select variation based on seed, merge shared/per-variation variables
+ * 2. For variations: select variation from the seeded random source, merge shared/per-variation variables
  * 3. Resolve variables using shared library
  * 4. Resolve {{}} syntax in markdown content (statement_md, solution_md)
  * 5. Optionally parse markdown to AST
@@ -109,6 +109,7 @@ import {
 	detectCircularDependencies,
 	parseMarkdown
 } from '$lib/ubumark';
+import { createRandomSource, randomIndex } from '$lib/utils/random';
 
 // ============================================================================
 // MAIN GENERATOR
@@ -254,7 +255,11 @@ function generateVariationsInstance(
 	seed: number,
 	options: GenerateInstanceOptions
 ): InstanceGenerationResult {
-	// 1. Variation selection (R3): Use forced index if provided, otherwise seed-based
+	// Une seule source pseudo-aléatoire pour tout l'exercice, consommée dans l'ordre
+	// (choix de la variation, puis variables) — comme `generateInstance` des questions
+	const random = createRandomSource(seed);
+
+	// 1. Variation selection (R3): Use forced index if provided, otherwise drawn from the source
 	const variationCount = exercise.variations!.length;
 	let variationIndex: number;
 
@@ -262,8 +267,8 @@ function generateVariationsInstance(
 		// Teacher-forced variation (clamped to valid range)
 		variationIndex = Math.max(0, Math.min(options.variationIndex, variationCount - 1));
 	} else {
-		// Seed-based selection (deterministic per student)
-		variationIndex = Math.abs(seed) % variationCount;
+		// Tirée dans la source (reproductible par graine, donc par élève)
+		variationIndex = randomIndex(variationCount, random);
 	}
 
 	const selectedVariation = exercise.variations![variationIndex];
@@ -290,7 +295,7 @@ function generateVariationsInstance(
 	let resolvedVariables: Array<{ name: string; value: string }> = [];
 	try {
 		resolvedVariables = resolvedVariation.variables?.length
-			? resolveVariables(resolvedVariation.variables, seed)
+			? resolveVariables(resolvedVariation.variables, random)
 			: [];
 	} catch (error) {
 		return {

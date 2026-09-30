@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { convertTinyCASToNew } from '../../../migration/syntax-converter';
 import { resolveExpression } from '../../generator/content-resolver';
 import { COLOR_PALETTES } from '../../colors';
+import { createRandomSource } from '$lib/utils/random';
 
 describe('Color Template System - End to End', () => {
 	it('should convert old syntax and resolve to actual colors', () => {
@@ -16,7 +17,7 @@ describe('Color Template System - End to End', () => {
 		);
 
 		// Step 2: Resolve the colors during instance generation
-		const resolved = resolveExpression(conversionResult.converted!, [], 42);
+		const resolved = resolveExpression(conversionResult.converted!, [], createRandomSource(42));
 
 		// Should contain actual hex colors
 		expect(resolved).toMatch(/#[A-F0-9]{6}/i);
@@ -36,7 +37,7 @@ describe('Color Template System - End to End', () => {
 		`;
 
 		// Resolve during instance generation
-		const resolved = resolveExpression(template, [], 42);
+		const resolved = resolveExpression(template, [], createRandomSource(42));
 
 		// Verify each color is resolved
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
@@ -51,12 +52,12 @@ describe('Color Template System - End to End', () => {
 		const template = 'Random color: {#color:primary}';
 
 		// Same seed should produce same color
-		const resolved1 = resolveExpression(template, [], 42);
-		const resolved2 = resolveExpression(template, [], 42);
+		const resolved1 = resolveExpression(template, [], createRandomSource(42));
+		const resolved2 = resolveExpression(template, [], createRandomSource(42));
 		expect(resolved1).toBe(resolved2);
 
 		// Different seed should (likely) produce different color
-		const resolved3 = resolveExpression(template, [], 123);
+		const resolved3 = resolveExpression(template, [], createRandomSource(123));
 		// Both should be valid colors from the palette
 		expect(resolved1).toMatch(/#[A-F0-9]{6}/i);
 		expect(resolved3).toMatch(/#[A-F0-9]{6}/i);
@@ -75,7 +76,11 @@ describe('Color Template System - End to End', () => {
 
 		// Provide a resolved variable 'a' to test the integration
 		const resolvedVariables = [{ name: 'a', value: '7' }];
-		const resolved = resolveExpression(conversionResult.converted!, resolvedVariables, 42);
+		const resolved = resolveExpression(
+			conversionResult.converted!,
+			resolvedVariables,
+			createRandomSource(42)
+		);
 
 		// Should contain the resolved color
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
@@ -93,7 +98,7 @@ describe('Color Template System - End to End', () => {
 		// Now produces pure Markdown syntax {{...}}
 		expect(conversionResult.converted).toBe('La couleur {{color:primary.0}} est belle');
 
-		const resolved = resolveExpression(conversionResult.converted!, [], 42);
+		const resolved = resolveExpression(conversionResult.converted!, [], createRandomSource(42));
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
 	});
 
@@ -105,7 +110,7 @@ describe('Color Template System - End to End', () => {
 			and a {#color:shapes.2} rectangle
 		`;
 
-		const resolved = resolveExpression(template, [], 42);
+		const resolved = resolveExpression(template, [], createRandomSource(42));
 
 		// Should use pastel colors from shapes palette
 		expect(resolved).toContain(COLOR_PALETTES.shapes[0]);
@@ -124,7 +129,7 @@ describe('Color Template System - End to End', () => {
 			with the {#color:contrast.0.1} group
 		`;
 
-		const resolved = resolveExpression(template, [], 42);
+		const resolved = resolveExpression(template, [], createRandomSource(42));
 
 		// Should use contrasting colors
 		const [color1, color2] = COLOR_PALETTES.contrast[0];

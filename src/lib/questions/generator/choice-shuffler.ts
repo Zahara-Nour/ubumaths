@@ -9,7 +9,7 @@
  */
 
 import type { ResolvedMarkdown } from '$lib/ubumark';
-import { randomInt } from '$lib/utils/random';
+import { randomInt, type RandomSource } from '$lib/utils/random';
 
 /**
  * Shuffled choice with original index
@@ -23,7 +23,8 @@ export interface ShuffledChoice {
  * Shuffle choices using Fisher-Yates algorithm
  *
  * @param choices - Array of choices with resolved markdown content and isCorrect flags
- * @param seed - Optional seed for reproducible shuffling
+ * @param random - Source de hasard de l'instance : le mélange la poursuit, il ne dépend donc
+ *   pas que de la graine et du nombre de choix (Math.random par défaut)
  * @returns Array of shuffled choices with original indices
  *
  * @example
@@ -45,7 +46,7 @@ export interface ShuffledChoice {
  */
 export function shuffleChoices(
 	choices: { content: ResolvedMarkdown; isCorrect: boolean }[],
-	seed?: number
+	random: RandomSource = Math.random
 ): ShuffledChoice[] {
 	// Create array with original indices
 	const indexed = choices.map((choice, index) => ({
@@ -55,7 +56,7 @@ export function shuffleChoices(
 
 	// Fisher-Yates shuffle
 	for (let i = indexed.length - 1; i > 0; i--) {
-		const j = randomInt(0, i, seed ? seed + i : undefined);
+		const j = randomInt(0, i, random);
 		[indexed[i], indexed[j]] = [indexed[j], indexed[i]];
 	}
 

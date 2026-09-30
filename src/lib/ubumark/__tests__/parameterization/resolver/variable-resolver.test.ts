@@ -21,6 +21,7 @@ import {
 	resolveExpression
 } from '../../../parameterization/resolver/variable-resolver';
 import type { Variable } from '../../../types';
+import { createRandomSource } from '$lib/utils/random';
 
 describe('resolveVariables', () => {
 	// ============================================================================
@@ -136,7 +137,7 @@ describe('resolveVariables', () => {
 	describe('Stage 2: Random generation', () => {
 		it('should generate random integers', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..10}}' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(10);
@@ -145,15 +146,15 @@ describe('resolveVariables', () => {
 
 		it('should generate same value with same seed', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..100}}' }];
-			const resolved1 = resolveVariables(variables, 42);
-			const resolved2 = resolveVariables(variables, 42);
+			const resolved1 = resolveVariables(variables, createRandomSource(42));
+			const resolved2 = resolveVariables(variables, createRandomSource(42));
 			expect(resolved1[0].value).toBe(resolved2[0].value);
 		});
 
 		it('should generate different values with different seeds', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..1000}}' }];
-			const resolved1 = resolveVariables(variables, 42);
-			const resolved2 = resolveVariables(variables, 43);
+			const resolved1 = resolveVariables(variables, createRandomSource(42));
+			const resolved2 = resolveVariables(variables, createRandomSource(43));
 			expect(resolved1[0].value).not.toBe(resolved2[0].value);
 		});
 
@@ -163,7 +164,7 @@ describe('resolveVariables', () => {
 				{ name: 'max', expression: '15' },
 				{ name: 'rand', expression: '{{random:{{min}}..{{max}}}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[2].value);
 			expect(value).toBeGreaterThanOrEqual(5);
 			expect(value).toBeLessThanOrEqual(15);
@@ -171,7 +172,7 @@ describe('resolveVariables', () => {
 
 		it('should generate random decimals by digits', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: 'digits:2.3' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseFloat(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10); // min 2 digits before
 			expect(value).toBeLessThan(100); // max 2 digits before
@@ -182,7 +183,7 @@ describe('resolveVariables', () => {
 		it('should handle exclusions', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..5!3}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
-				const resolved = resolveVariables(variables, i);
+				const resolved = resolveVariables(variables, createRandomSource(i));
 				return parseInt(resolved[0].value);
 			});
 			expect(values).not.toContain(3);
@@ -192,7 +193,7 @@ describe('resolveVariables', () => {
 		it('should handle range exclusions', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..10!5..7}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
-				const resolved = resolveVariables(variables, i);
+				const resolved = resolveVariables(variables, createRandomSource(i));
 				return parseInt(resolved[0].value);
 			});
 			expect(values).not.toContain(5);
@@ -203,7 +204,7 @@ describe('resolveVariables', () => {
 		it('should handle multiple exclusions', () => {
 			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..10!3,5,7}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
-				const resolved = resolveVariables(variables, i);
+				const resolved = resolveVariables(variables, createRandomSource(i));
 				return parseInt(resolved[0].value);
 			});
 			expect(values).not.toContain(3);
@@ -217,7 +218,7 @@ describe('resolveVariables', () => {
 				{ name: 'rand', expression: '{{random:1..10!{{excluded}}}}' }
 			];
 			const values = Array.from({ length: 50 }, (_, i) => {
-				const resolved = resolveVariables(variables, i);
+				const resolved = resolveVariables(variables, createRandomSource(i));
 				return parseInt(resolved[1].value);
 			});
 			expect(values).not.toContain(5);
@@ -228,7 +229,7 @@ describe('resolveVariables', () => {
 				{ name: 'a', expression: '{{random:1..100}}' },
 				{ name: 'b', expression: '{{random:1..100}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			// Each variable gets a unique seed, so they generate different values
 			const valueA = parseInt(resolved[0].value);
 			const valueB = parseInt(resolved[1].value);
@@ -242,7 +243,7 @@ describe('resolveVariables', () => {
 
 		it('should handle random in text context', () => {
 			const variables: Variable[] = [{ name: 'text', expression: 'Value is {{random:1..10}}' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			expect(resolved[0].value).toMatch(/^Value is \d+$/);
 		});
 	});
@@ -390,7 +391,7 @@ describe('resolveVariables', () => {
 				{ name: 'rand', expression: '{{random:{{min}}..{{max}}}}' },
 				{ name: 'doubled', expression: '{{eval:2*2}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const randValue = parseInt(resolved[2].value);
 			expect(randValue).toBeGreaterThanOrEqual(1);
 			expect(randValue).toBeLessThanOrEqual(10);
@@ -402,7 +403,7 @@ describe('resolveVariables', () => {
 				{ name: 'base', expression: '5' },
 				{ name: 'multiplier', expression: '{{random:1..10}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			expect(resolved[0].value).toBe('5');
 			const multiplier = parseInt(resolved[1].value);
 			expect(multiplier).toBeGreaterThanOrEqual(1);
@@ -416,7 +417,7 @@ describe('resolveVariables', () => {
 				{ name: 'a', expression: '{{random:{{min}}..{{max}}}}' },
 				{ name: 'b', expression: '{{random:{{min}}..{{max}}!{{a}}}}' }
 			];
-			const resolved = resolveVariables(variables, 12345);
+			const resolved = resolveVariables(variables, createRandomSource(12345));
 			const a = parseInt(resolved[2].value);
 			const b = parseInt(resolved[3].value);
 			expect(a).toBeGreaterThanOrEqual(1);
@@ -432,7 +433,7 @@ describe('resolveVariables', () => {
 				{ name: 'rand', expression: '{{random:1..10}}' },
 				{ name: 'text', expression: 'Constant: {{constant}}, Random: {{rand}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			expect(resolved[2].value).toMatch(/^Constant: \d+, Random: \d+$/);
 			expect(resolved[2].value).toContain('5');
 		});
@@ -459,7 +460,7 @@ describe('resolveVariables', () => {
 	describe('Digits generation', () => {
 		it('should generate single digit number', () => {
 			const variables: Variable[] = [{ name: 'a', expression: 'digits:1' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(9);
@@ -467,7 +468,7 @@ describe('resolveVariables', () => {
 
 		it('should generate two digit number', () => {
 			const variables: Variable[] = [{ name: 'a', expression: 'digits:2' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThanOrEqual(99);
@@ -475,7 +476,7 @@ describe('resolveVariables', () => {
 
 		it('should generate number with digit range', () => {
 			const variables: Variable[] = [{ name: 'a', expression: 'digits:1..3' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(999);
@@ -483,7 +484,7 @@ describe('resolveVariables', () => {
 
 		it('should work with legacy {{digits:...}} syntax', () => {
 			const variables: Variable[] = [{ name: 'a', expression: '{{digits:2}}' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThanOrEqual(99);
@@ -495,7 +496,7 @@ describe('resolveVariables', () => {
 				{ name: 'max', expression: '3' },
 				{ name: 'num', expression: 'digits:min..max' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[2].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(999);
@@ -507,7 +508,7 @@ describe('resolveVariables', () => {
 				{ name: 'm', expression: '4' },
 				{ name: 'num', expression: 'digits:{{n}}..{{m}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[2].value);
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThanOrEqual(9999);
@@ -518,7 +519,7 @@ describe('resolveVariables', () => {
 				{ name: 'd', expression: '3' },
 				{ name: 'num', expression: 'digits:d' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseInt(resolved[1].value);
 			expect(value).toBeGreaterThanOrEqual(100);
 			expect(value).toBeLessThanOrEqual(999);
@@ -526,13 +527,15 @@ describe('resolveVariables', () => {
 
 		it('should throw for undefined variable in digits spec', () => {
 			const variables: Variable[] = [{ name: 'num', expression: 'digits:unknown' }];
-			expect(() => resolveVariables(variables, 42)).toThrow(/Variable "unknown" not found/);
+			expect(() => resolveVariables(variables, createRandomSource(42))).toThrow(
+				/Variable "unknown" not found/
+			);
 		});
 
 		// Decimal by digits tests (digits:X.Y format)
 		it('should generate decimal with digits:X.Y format', () => {
 			const variables: Variable[] = [{ name: 'dec', expression: 'digits:2.3' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseFloat(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThan(100);
@@ -542,7 +545,7 @@ describe('resolveVariables', () => {
 
 		it('should generate decimal with 0 integer digits (digits:0.2)', () => {
 			const variables: Variable[] = [{ name: 'dec', expression: 'digits:0.2' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseFloat(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(0);
 			expect(value).toBeLessThan(1);
@@ -555,7 +558,7 @@ describe('resolveVariables', () => {
 				{ name: 'after', expression: '2' },
 				{ name: 'dec', expression: 'digits:before.after' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseFloat(resolved[2].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThan(10);
@@ -569,7 +572,7 @@ describe('resolveVariables', () => {
 				{ name: 'a', expression: '3' },
 				{ name: 'dec', expression: 'digits:{{b}}.{{a}}' }
 			];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			const value = parseFloat(resolved[2].value);
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThan(100);
@@ -654,7 +657,7 @@ describe('resolveVariables', () => {
 	describe('Discrete lists', () => {
 		it('should select random item from literal list', () => {
 			const variables: Variable[] = [{ name: 'color', expression: '{{rouge|vert|bleu}}' }];
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 			expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
 		});
 
@@ -666,7 +669,9 @@ describe('resolveVariables', () => {
 			];
 
 			// Generate multiple times to verify all possibilities
-			const results = Array.from({ length: 100 }, (_, i) => resolveVariables(variables, i));
+			const results = Array.from({ length: 100 }, (_, i) =>
+				resolveVariables(variables, createRandomSource(i))
+			);
 
 			const choiceValues = results.map((r) => r[2].value);
 			expect(choiceValues.some((v) => v === '10')).toBe(true); // 'a' resolved
@@ -677,7 +682,9 @@ describe('resolveVariables', () => {
 		it('should handle exclusions in discrete list', () => {
 			const variables: Variable[] = [{ name: 'choice', expression: '{{a|b|c|d!b,d}}' }];
 
-			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const results = Array.from({ length: 50 }, (_, i) =>
+				resolveVariables(variables, createRandomSource(i))
+			);
 			const values = results.map((r) => r[0].value);
 
 			// Should only contain 'a' and 'c'
@@ -694,7 +701,9 @@ describe('resolveVariables', () => {
 				{ name: 'choice', expression: '{{a|b|c!b}}' }
 			];
 
-			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const results = Array.from({ length: 50 }, (_, i) =>
+				resolveVariables(variables, createRandomSource(i))
+			);
 			const values = results.map((r) => r[3].value);
 
 			// 'b' is excluded (resolves to '20')
@@ -708,7 +717,7 @@ describe('resolveVariables', () => {
 				{ name: 'text', expression: 'La couleur est {{color}}' }
 			];
 
-			const resolved = resolveVariables(variables, 123);
+			const resolved = resolveVariables(variables, createRandomSource(123));
 			expect(resolved[1].value).toMatch(/^La couleur est (rouge|vert|bleu)$/);
 		});
 
@@ -719,7 +728,9 @@ describe('resolveVariables', () => {
 			];
 
 			// Generate multiple times to ensure we get both operators
-			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const results = Array.from({ length: 50 }, (_, i) =>
+				resolveVariables(variables, createRandomSource(i))
+			);
 			const values = results.map((r) => r[1].value);
 
 			// Should have both 8 (+) and 2 (-)
@@ -734,7 +745,7 @@ describe('resolveVariables', () => {
 				{ name: 'largest', expression: '{{a|b}}' }
 			];
 
-			const resolved = resolveVariables(variables, 42);
+			const resolved = resolveVariables(variables, createRandomSource(42));
 
 			// 'largest' should be either value of 'a' or 'b'
 			expect([resolved[0].value, resolved[1].value]).toContain(resolved[2].value);
@@ -748,7 +759,7 @@ describe('resolveVariables', () => {
 				{ name: 'text', expression: 'Chosen: {{choice}}' }
 			];
 
-			const resolved = resolveVariables(variables, 789);
+			const resolved = resolveVariables(variables, createRandomSource(789));
 
 			// choice should be value of x or y
 			expect([resolved[0].value, resolved[1].value]).toContain(resolved[2].value);
@@ -941,7 +952,7 @@ describe('resolveVariables', () => {
 		describe('Random (without {{}})', () => {
 			it('should generate random from simplified range', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: '1..10' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const value = parseInt(resolved[0].value);
 				expect(value).toBeGreaterThanOrEqual(1);
 				expect(value).toBeLessThanOrEqual(10);
@@ -949,7 +960,7 @@ describe('resolveVariables', () => {
 
 			it('should handle range with sign modifier', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: '2..9;+-' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const value = parseInt(resolved[0].value);
 				expect(Math.abs(value)).toBeGreaterThanOrEqual(2);
 				expect(Math.abs(value)).toBeLessThanOrEqual(9);
@@ -957,7 +968,7 @@ describe('resolveVariables', () => {
 
 			it('should handle decimal range', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: '1.5..3.5;0.5' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const value = parseFloat(resolved[0].value);
 				expect(value).toBeGreaterThanOrEqual(1.5);
 				expect(value).toBeLessThanOrEqual(3.5);
@@ -965,7 +976,7 @@ describe('resolveVariables', () => {
 
 			it('should handle decimal by digits with digits: prefix', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: 'digits:2.3' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const value = parseFloat(resolved[0].value);
 				expect(value).toBeGreaterThanOrEqual(10);
 				expect(value).toBeLessThan(100);
@@ -976,7 +987,7 @@ describe('resolveVariables', () => {
 			it('should handle exclusions', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: '1..5!3' }];
 				const values = Array.from({ length: 100 }, (_, i) => {
-					const resolved = resolveVariables(variables, i);
+					const resolved = resolveVariables(variables, createRandomSource(i));
 					return parseInt(resolved[0].value);
 				});
 				expect(values).not.toContain(3);
@@ -1010,19 +1021,21 @@ describe('resolveVariables', () => {
 		describe('Discrete list (without {{}})', () => {
 			it('should select from simplified discrete list', () => {
 				const variables: Variable[] = [{ name: 'color', expression: 'rouge|vert|bleu' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
 			});
 
 			it('should handle operator list', () => {
 				const variables: Variable[] = [{ name: 'op', expression: '+|-' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				expect(['+', '-']).toContain(resolved[0].value);
 			});
 
 			it('should handle exclusions in list', () => {
 				const variables: Variable[] = [{ name: 'choice', expression: 'a|b|c|d!b,d' }];
-				const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+				const results = Array.from({ length: 50 }, (_, i) =>
+					resolveVariables(variables, createRandomSource(i))
+				);
 				const values = results.map((r) => r[0].value);
 				expect(values.every((v) => ['a', 'c'].includes(v))).toBe(true);
 			});
@@ -1065,7 +1078,7 @@ describe('resolveVariables', () => {
 		describe('Backward compatibility', () => {
 			it('should still accept legacy {{random:...}} syntax', () => {
 				const variables: Variable[] = [{ name: 'rand', expression: '{{random:1..10}}' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const value = parseInt(resolved[0].value);
 				expect(value).toBeGreaterThanOrEqual(1);
 				expect(value).toBeLessThanOrEqual(10);
@@ -1079,7 +1092,7 @@ describe('resolveVariables', () => {
 
 			it('should still accept legacy {{...}} discrete list', () => {
 				const variables: Variable[] = [{ name: 'color', expression: '{{rouge|vert|bleu}}' }];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
 			});
 
@@ -1198,7 +1211,7 @@ describe('resolveVariables', () => {
 					{ name: 'b', expression: '1..10' },
 					{ name: 'sum', expression: 'eval:a+b' }
 				];
-				const resolved = resolveVariables(variables, 42);
+				const resolved = resolveVariables(variables, createRandomSource(42));
 				const a = parseInt(resolved[0].value);
 				const b = parseInt(resolved[1].value);
 				const sum = parseInt(resolved[2].value);
@@ -1212,7 +1225,7 @@ describe('resolveVariables', () => {
 				];
 				// Run multiple seeds to verify b is always < a
 				for (let seed = 0; seed < 50; seed++) {
-					const resolved = resolveVariables(variables, seed);
+					const resolved = resolveVariables(variables, createRandomSource(seed));
 					const a = parseInt(resolved[0].value);
 					const b = parseInt(resolved[1].value);
 					expect(b).toBeGreaterThanOrEqual(1);
@@ -1226,7 +1239,7 @@ describe('resolveVariables', () => {
 					{ name: 'b', expression: '{{random:1..{{eval:a-1}}}}' }
 				];
 				for (let seed = 0; seed < 50; seed++) {
-					const resolved = resolveVariables(variables, seed);
+					const resolved = resolveVariables(variables, createRandomSource(seed));
 					const a = parseInt(resolved[0].value);
 					const b = parseInt(resolved[1].value);
 					expect(b).toBeGreaterThanOrEqual(1);
@@ -1241,10 +1254,14 @@ describe('resolveVariables', () => {
 					{ name: 'expression1', expression: 'a-b' }
 				];
 				for (let seed = 0; seed < 20; seed++) {
-					const resolved = resolveVariables(variables, seed);
+					const resolved = resolveVariables(variables, createRandomSource(seed));
 					const a = parseInt(resolved[0].value);
 					const b = parseInt(resolved[1].value);
-					const answer = resolveExpression('{{eval:{{expression1}}}}', resolved, seed);
+					const answer = resolveExpression(
+						'{{eval:{{expression1}}}}',
+						resolved,
+						createRandomSource(seed)
+					);
 					expect(parseInt(answer)).toBe(a - b);
 				}
 			});
@@ -1254,7 +1271,9 @@ describe('resolveVariables', () => {
 					{ name: 'op', expression: '+|-' },
 					{ name: 'result', expression: '{{eval:5{{op}}3}}' }
 				];
-				const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+				const results = Array.from({ length: 50 }, (_, i) =>
+					resolveVariables(variables, createRandomSource(i))
+				);
 				const values = results.map((r) => r[1].value);
 				expect(values).toContain('8'); // 5+3
 				expect(values).toContain('2'); // 5-3
@@ -1267,7 +1286,7 @@ describe('resolveVariables', () => {
 // elle doit rester utilisable dans un calcul et comme borne de tirage.
 describe('resolveVariables — valeur exacte réutilisée', () => {
 	const valueOf = (variables: Variable[], name: string, seed?: number) =>
-		resolveVariables(variables, seed).find((v) => v.name === name)!.value;
+		resolveVariables(variables, createRandomSource(seed)).find((v) => v.name === name)!.value;
 
 	it('produit implicite : 2{{c}}', () => {
 		const vars: Variable[] = [

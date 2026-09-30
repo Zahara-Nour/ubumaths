@@ -45,6 +45,7 @@ import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variab
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
 import { evaluateConditions } from './condition-evaluator';
+import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
 
 // ============================================================================
 // SHARED DEFAULTS MERGING
@@ -134,14 +135,14 @@ function resolveVariationWithShared(
 function resolveRequiredForm(
 	requiredForm: RequiredForm | undefined,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random: RandomSource
 ): RequiredForm | undefined {
 	if (!requiredForm || typeof requiredForm === 'string') return requiredForm;
 	// Chaque marqueur remplacé par sa valeur ; tout ce qui n'est pas un nombre positif est
 	// parenthésé (`9 / (-3)` reconnaît `9:(-3)` ; une formule `a+1` reste un seul opérande)
 	const resolve = (pattern: string) =>
 		pattern.replace(MARKER_REGEX, (marker) => {
-			const value = resolveExpression(marker, resolvedVariables, seed).trim();
+			const value = resolveExpression(marker, resolvedVariables, random).trim();
 			return /^\d+(?:\.\d+)?$/.test(value) ? value : `(${value})`;
 		});
 	return requiredForm.acceptable === undefined
@@ -156,7 +157,8 @@ const MARKER_REGEX = /\{\{(?:[^{}]|\{\{[^{}]*\}\})*\}\}/g;
  * Generate a question instance from a template
  *
  * @param template - Question template
- * @param seed - Optional seed for reproducible generation
+ * @param seed - Graine facultative (0 comprise) : elle initialise UNE source de hasard,
+ *   consommée dans l'ordre par toute la génération ; sans graine, Math.random.
  * @returns Generation result (success with instance or failure with errors)
  *
  * @example
@@ -192,11 +194,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			};
 		}
 
-		// 2. Select a variation (random or based on seed)
-		const variationIndex =
-			seed !== undefined
-				? Math.abs(seed) % template.variations.length
-				: Math.floor(Math.random() * template.variations.length);
+		// 2. Une seule source de hasard pour toute l'instance, consommée dans l'ordre :
+		//    variation, variables (et nouveaux essais), énoncé, réponses, choix, corrigé.
+		//    Aucun tirage n'est recalculé depuis la graine.
+		const random = createRandomSource(seed);
+
+		// Select a variation
+		const variationIndex = randomIndex(template.variations.length, random);
 		const selectedVariation = template.variations[variationIndex];
 
 		// 3. Merge shared defaults with variation-specific values
@@ -215,7 +219,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 
 		// 5. Resolve variables in declaration order (with condition retry loop)
 		const MAX_CONDITION_RETRIES = 100;
-		let resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
+		let resolvedVariables = resolveVariables(resolvedVariation.variables || [], random);
 		let conditionRetryCount = 0;
 
 		if (resolvedVariation.conditions?.length) {
@@ -224,8 +228,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				conditionRetryCount < MAX_CONDITION_RETRIES
 			) {
 				conditionRetryCount++;
-				const effectiveSeed = seed !== undefined ? seed + conditionRetryCount * 7919 : undefined;
-				resolvedVariables = resolveVariables(resolvedVariation.variables || [], effectiveSeed);
+				// Nouvel essai : la source continue, les tirages sont donc neufs
+				resolvedVariables = resolveVariables(resolvedVariation.variables || [], random);
 			}
 
 			if (conditionRetryCount >= MAX_CONDITION_RETRIES) {
@@ -254,7 +258,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
 			statementTemplate,
 			resolvedVariables,
-			seed
+			random
 		);
 
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
@@ -265,7 +269,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			const withConditions = Array.isArray(rawIndex)
 				? rawIndex.map((value) => resolveConditionalChoice(value, resolvedVariables))
 				: resolveConditionalChoice(rawIndex, resolvedVariables);
-			resolvedCorrectChoiceIndex = resolveSolution(withConditions, resolvedVariables, seed);
+			resolvedCorrectChoiceIndex = resolveSolution(withConditions, resolvedVariables, random);
 		} else if (resolvedVariation.choices) {
 			// Derive from isCorrect flags on choices
 			const correctIndexes = resolvedVariation.choices
@@ -300,7 +304,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					).length;
 					const rawFormat =
 						resolvedVariation.answerFormats?.[exprName] ?? '?'.repeat(Math.max(1, holes));
-					resolvedAnswerFormats[exprName] = resolveAnswerFormat(rawFormat, resolvedVariables, seed);
+					resolvedAnswerFormats[exprName] = resolveAnswerFormat(
+						rawFormat,
+						resolvedVariables,
+						random
+					);
 				}
 			}
 
@@ -337,7 +345,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const isMathBlank = blankResult.blankTypes[i] === 'math';
 				const normalized = isMathBlank ? normalizeExpression(rawExpected) : rawExpected;
 				const expectedAnswer = normalized.includes('{{')
-					? resolveExpression(normalized, resolvedVariables, seed)
+					? resolveExpression(normalized, resolvedVariables, random)
 					: normalized;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
@@ -356,7 +364,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							resolvedVariation.blankDefaults?.requiredForm ??
 							resolvedVariation.requiredForm,
 						resolvedVariables,
-						seed
+						random
 					),
 					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
@@ -373,7 +381,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					resolved.prefilled = resolveExpression(
 						normalizeExpression(blank.prefilled),
 						resolvedVariables,
-						seed
+						random
 					);
 					const hasRemoveSpaces =
 						blank.removeSpaces ??
@@ -434,7 +442,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			resolvedChoices = resolvedVariation.choices.map((choice, i) => {
 				const content = choice.content;
 				const resolvedContent: ResolvedMarkdown = content.includes('{{')
-					? resolveMarkdownContent(content, resolvedVariables, seed)
+					? resolveMarkdownContent(content, resolvedVariables, random)
 					: resolvedMarkdown(content);
 				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
 				const isCorrect =
@@ -446,7 +454,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			});
 
 			// Shuffle choices
-			shuffledChoices = shuffleChoices(resolvedChoices, seed);
+			shuffledChoices = shuffleChoices(resolvedChoices, random);
 		}
 
 		// 7c. Resolve correction with pseudo-variables (AFTER blanks and choices)
@@ -476,7 +484,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.correct,
 						resolvedVariables,
 						correctionContext,
-						seed
+						random
 					);
 				}
 				if (feedback.incorrect) {
@@ -484,7 +492,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.incorrect,
 						resolvedVariables,
 						correctionContext,
-						seed
+						random
 					);
 				}
 				if (feedback.partial) {
@@ -492,14 +500,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.partial,
 						resolvedVariables,
 						correctionContext,
-						seed
+						random
 					);
 				}
 			}
 
 			if (steps) {
 				resolvedCorrection.steps = steps.map((step) =>
-					resolveCorrectionContent(step, resolvedVariables, correctionContext, seed)
+					resolveCorrectionContent(step, resolvedVariables, correctionContext, random)
 				);
 			}
 		}
@@ -524,7 +532,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			choices: resolvedChoices,
 			shuffledChoices,
 			multipleAnswers: template.multipleAnswers,
-			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, seed),
+			requiredForm: resolveRequiredForm(resolvedVariation.requiredForm, resolvedVariables, random),
 			generatedAt: new Date().toISOString(),
 			seed,
 			selectedVariationIndex: variationIndex

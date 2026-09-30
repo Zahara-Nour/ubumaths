@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { COLOR_PALETTES, getColor, getColorByIndex, getRandomColor, getAllColors } from '../colors';
+import { createRandomSource } from '$lib/utils/random';
 
 describe('COLOR_PALETTES', () => {
 	it('should define primary palette with 8 colors', () => {
@@ -107,45 +108,50 @@ describe('getColorByIndex', () => {
 
 describe('getRandomColor', () => {
 	it('should return reproducible color with same seed', () => {
-		const color1 = getRandomColor('primary', 42);
-		const color2 = getRandomColor('primary', 42);
+		const color1 = getRandomColor('primary', createRandomSource(42));
+		const color2 = getRandomColor('primary', createRandomSource(42));
 		expect(color1).toBe(color2);
 	});
 
 	it('should return different colors with different seeds', () => {
-		const color1 = getRandomColor('primary', 42);
-		const color2 = getRandomColor('primary', 123);
-		expect(color1).not.toBe(color2);
+		// Deux graines peuvent tomber sur la même couleur (1 chance sur 8) : on regarde 20 graines
+		const colors = new Set(
+			Array.from({ length: 20 }, (_, seed) => getRandomColor('primary', createRandomSource(seed)))
+		);
+		expect(colors.size).toBeGreaterThan(3);
 	});
 
 	it('should return valid hex color from primary palette', () => {
-		const color = getRandomColor('primary', 42);
+		const color = getRandomColor('primary', createRandomSource(42));
 		expect(COLOR_PALETTES.primary).toContain(color);
 	});
 
 	it('should return valid hex color from shapes palette', () => {
-		const color = getRandomColor('shapes', 42);
+		const color = getRandomColor('shapes', createRandomSource(42));
 		expect(COLOR_PALETTES.shapes).toContain(color);
 	});
 
 	it('should return valid hex color from text palette', () => {
-		const color = getRandomColor('text', 42);
+		const color = getRandomColor('text', createRandomSource(42));
 		expect(COLOR_PALETTES.text).toContain(color);
 	});
 
 	it('should return first color of contrast pair', () => {
-		const color = getRandomColor('contrast', 0);
-		expect(color).toBe('#FF5722');
+		const color = getRandomColor('contrast', createRandomSource(0));
+		expect(COLOR_PALETTES.contrast.map((pair) => pair[0])).toContain(color);
 	});
 
-	it('should use seed modulo for palette selection', () => {
-		const color1 = getRandomColor('primary', 0);
-		const color2 = getRandomColor('primary', 8); // 8 colors in palette
-		expect(color1).toBe(color2);
+	it('should draw the palette index from the random source', () => {
+		// Le tirage lit la source (et non plus graine modulo taille) : bornes de [0, 1[
+		expect(getRandomColor('primary', () => 0)).toBe(COLOR_PALETTES.primary[0]);
+		expect(getRandomColor('primary', () => 0.999)).toBe(
+			COLOR_PALETTES.primary[COLOR_PALETTES.primary.length - 1]
+		);
+		expect(getRandomColor('contrast', () => 0)).toBe('#FF5722');
 	});
 
 	it('should return valid color from rainbow palette', () => {
-		const color = getRandomColor('rainbow', 42);
+		const color = getRandomColor('rainbow', createRandomSource(42));
 		expect(COLOR_PALETTES.rainbow).toContain(color);
 	});
 });
@@ -205,8 +211,8 @@ describe('getColor', () => {
 		});
 
 		it('should return seeded random from palette', () => {
-			const color1 = getColor('primary', 42);
-			const color2 = getColor('primary', 42);
+			const color1 = getColor('primary', createRandomSource(42));
+			const color2 = getColor('primary', createRandomSource(42));
 			expect(color1).toBe(color2);
 		});
 	});
@@ -232,8 +238,8 @@ describe('getColor', () => {
 		});
 
 		it('should use seed with random syntax', () => {
-			const color1 = getColor('primary.random', 42);
-			const color2 = getColor('primary.random', 42);
+			const color1 = getColor('primary.random', createRandomSource(42));
+			const color2 = getColor('primary.random', createRandomSource(42));
 			expect(color1).toBe(color2);
 		});
 	});
@@ -257,8 +263,8 @@ describe('getColor', () => {
 
 		it('should use seed for random pair selection', () => {
 			// Test that same seed produces consistent results
-			const color1 = getColor('contrast', 42);
-			const color2 = getColor('contrast', 42);
+			const color1 = getColor('contrast', createRandomSource(42));
+			const color2 = getColor('contrast', createRandomSource(42));
 			expect(color1).toBe(color2); // Same seed = same color
 
 			// Verify it's a valid contrast color
@@ -266,7 +272,7 @@ describe('getColor', () => {
 			expect(allContrastColors).toContain(color1);
 
 			// Different seeds can produce different colors
-			const color3 = getColor('contrast', 123);
+			const color3 = getColor('contrast', createRandomSource(123));
 			expect(allContrastColors).toContain(color3);
 		});
 
@@ -289,8 +295,8 @@ describe('getColor', () => {
 		});
 
 		it('should return random rainbow color with seed', () => {
-			const color1 = getColor('rainbow', 42);
-			const color2 = getColor('rainbow', 42);
+			const color1 = getColor('rainbow', createRandomSource(42));
+			const color2 = getColor('rainbow', createRandomSource(42));
 			expect(color1).toBe(color2);
 			expect(COLOR_PALETTES.rainbow).toContain(color1);
 		});
@@ -318,7 +324,7 @@ describe('getColor', () => {
 			const palettes = ['primary', 'shapes', 'text', 'contrast', 'rainbow'] as const;
 
 			palettes.forEach((palette) => {
-				const color = getColor(palette, 42);
+				const color = getColor(palette, createRandomSource(42));
 				expect(color).toBeDefined();
 				expect(color).toMatch(/^#[0-9A-F]{6}$/i);
 			});

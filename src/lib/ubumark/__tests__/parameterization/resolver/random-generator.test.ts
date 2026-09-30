@@ -13,6 +13,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateRandomNumber } from '../../../parameterization/resolver/random-generator';
+import { createRandomSource } from '$lib/utils/random';
 import type { RandomSpec, ResolvedVariable } from '../../../types';
 
 describe('generateRandomNumber', () => {
@@ -28,7 +29,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 10 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(10);
 			expect(Number.isInteger(value)).toBe(true);
@@ -41,8 +42,8 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 100 },
 				exclusions: []
 			};
-			const value1 = generateRandomNumber(spec, [], 42);
-			const value2 = generateRandomNumber(spec, [], 42);
+			const value1 = generateRandomNumber(spec, [], createRandomSource(42));
+			const value2 = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value1).toBe(value2);
 		});
 
@@ -53,8 +54,8 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 1000 },
 				exclusions: []
 			};
-			const value1 = generateRandomNumber(spec, [], 42);
-			const value2 = generateRandomNumber(spec, [], 43);
+			const value1 = generateRandomNumber(spec, [], createRandomSource(42));
+			const value2 = generateRandomNumber(spec, [], createRandomSource(43));
 			expect(value1).not.toBe(value2);
 		});
 
@@ -65,7 +66,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBe(5);
 		});
 
@@ -76,7 +77,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 1000000 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(1000000);
 		});
@@ -88,7 +89,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: -1 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(-10);
 			expect(value).toBeLessThanOrEqual(-1);
 		});
@@ -100,7 +101,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(-5);
 			expect(value).toBeLessThanOrEqual(5);
 		});
@@ -112,7 +113,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 1 },
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'Invalid range: min (10) must be less than or equal to max (1)'
 			);
 		});
@@ -134,7 +135,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'min', value: '5' },
 				{ name: 'max', value: '15' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(5);
 			expect(value).toBeLessThanOrEqual(15);
 		});
@@ -147,7 +148,7 @@ describe('generateRandomNumber', () => {
 				exclusions: []
 			};
 			const resolved: ResolvedVariable[] = [{ name: 'max', value: '20' }];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(20);
 		});
@@ -159,7 +160,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 10 },
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'Variable "undefined" not found or not yet resolved'
 			);
 		});
@@ -172,7 +173,7 @@ describe('generateRandomNumber', () => {
 				exclusions: []
 			};
 			const resolved: ResolvedVariable[] = [{ name: 'notNumber', value: 'text' }];
-			expect(() => generateRandomNumber(spec, resolved, 42)).toThrow(
+			expect(() => generateRandomNumber(spec, resolved, createRandomSource(42))).toThrow(
 				'Variable "notNumber" does not resolve to a number'
 			);
 		});
@@ -188,7 +189,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'min', value: '5.7' },
 				{ name: 'max', value: '10.3' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(5);
 			expect(value).toBeLessThanOrEqual(11);
 		});
@@ -206,7 +207,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: [{ type: 'value', value: { type: 'number', value: 3 } }]
 			};
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 			expect(values).not.toContain(3);
 			expect(values.some((v) => v === 1 || v === 2 || v === 4 || v === 5)).toBe(true);
 		});
@@ -222,7 +225,9 @@ describe('generateRandomNumber', () => {
 					{ type: 'value', value: { type: 'number', value: 7 } }
 				]
 			};
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 			expect(values).not.toContain(3);
 			expect(values).not.toContain(5);
 			expect(values).not.toContain(7);
@@ -241,7 +246,9 @@ describe('generateRandomNumber', () => {
 					}
 				]
 			};
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 			expect(values).not.toContain(5);
 			expect(values).not.toContain(6);
 			expect(values).not.toContain(7);
@@ -255,7 +262,9 @@ describe('generateRandomNumber', () => {
 				exclusions: [{ type: 'value', value: { type: 'variable', name: 'excluded' } }]
 			};
 			const resolved: ResolvedVariable[] = [{ name: 'excluded', value: '5' }];
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 			expect(values).not.toContain(5);
 		});
 
@@ -276,7 +285,9 @@ describe('generateRandomNumber', () => {
 				{ name: 'excludeMin', value: '8' },
 				{ name: 'excludeMax', value: '12' }
 			];
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 			for (let i = 8; i <= 12; i++) {
 				expect(values).not.toContain(i);
 			}
@@ -293,7 +304,7 @@ describe('generateRandomNumber', () => {
 					{ type: 'value', value: { type: 'number', value: 3 } }
 				]
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'Unable to generate random number with given exclusions'
 			);
 		});
@@ -311,7 +322,7 @@ describe('generateRandomNumber', () => {
 					}
 				]
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'Invalid exclusion range: min (7) must be less than max (5)'
 			);
 		});
@@ -329,7 +340,7 @@ describe('generateRandomNumber', () => {
 				digitsAfter: { type: 'number', value: 3 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(10); // min 2 digits before
 			expect(value).toBeLessThan(100); // max 2 digits before
 			const str = value.toString();
@@ -344,7 +355,7 @@ describe('generateRandomNumber', () => {
 				digitsAfter: { type: 'number', value: 2 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(0);
 			expect(value).toBeLessThan(10);
 			const decimals = value.toString().split('.')[1];
@@ -358,7 +369,7 @@ describe('generateRandomNumber', () => {
 				digitsAfter: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			const decimals = value.toString().split('.')[1];
 			expect(decimals).toHaveLength(5);
 		});
@@ -372,7 +383,7 @@ describe('generateRandomNumber', () => {
 			};
 			// Generate multiple values to ensure padding works
 			const values = Array.from({ length: 20 }, (_, i) => {
-				const value = generateRandomNumber(spec, [], i);
+				const value = generateRandomNumber(spec, [], createRandomSource(i));
 				return value.toString().split('.')[1];
 			});
 			// Most should have exactly 4 decimal places (trailing zeros may be removed)
@@ -396,7 +407,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'before', value: '2' },
 				{ name: 'after', value: '3' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(10);
 			expect(value).toBeLessThan(100);
 			const decimals = value.toString().split('.')[1];
@@ -410,7 +421,7 @@ describe('generateRandomNumber', () => {
 				digitsAfter: { type: 'number', value: 2 },
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'digitsBefore must be a non-negative integer'
 			);
 		});
@@ -422,7 +433,7 @@ describe('generateRandomNumber', () => {
 				digitsAfter: { type: 'number', value: 3 },
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'digitsBefore must be a non-negative integer'
 			);
 		});
@@ -441,7 +452,7 @@ describe('generateRandomNumber', () => {
 				step: 0.5,
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(0.5);
 			expect(value).toBeLessThanOrEqual(2.5);
 		});
@@ -454,7 +465,7 @@ describe('generateRandomNumber', () => {
 				step: 0.5,
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42) as number;
+			const value = generateRandomNumber(spec, [], createRandomSource(42)) as number;
 			const offset = value - 0.5;
 			expect(offset % 0.5).toBeCloseTo(0, 5);
 		});
@@ -467,7 +478,7 @@ describe('generateRandomNumber', () => {
 				step: 0.01,
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42) as number;
+			const value = generateRandomNumber(spec, [], createRandomSource(42)) as number;
 			expect(value).toBeGreaterThanOrEqual(0);
 			expect(value).toBeLessThanOrEqual(1);
 			// Check it's a multiple of 0.01
@@ -486,7 +497,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'min', value: '0.5' },
 				{ name: 'max', value: '5.0' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42));
 			expect(value).toBeGreaterThanOrEqual(0.5);
 			expect(value).toBeLessThanOrEqual(5.0);
 		});
@@ -499,7 +510,9 @@ describe('generateRandomNumber', () => {
 				step: 0,
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow('Step must be positive');
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
+				'Step must be positive'
+			);
 		});
 
 		it('should throw error for negative step', () => {
@@ -510,7 +523,9 @@ describe('generateRandomNumber', () => {
 				step: -0.5,
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow('Step must be positive');
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
+				'Step must be positive'
+			);
 		});
 	});
 
@@ -526,8 +541,8 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 1000 },
 				exclusions: []
 			};
-			const value1 = generateRandomNumber(spec, [], 12345);
-			const value2 = generateRandomNumber(spec, [], 12345);
+			const value1 = generateRandomNumber(spec, [], createRandomSource(12345));
+			const value2 = generateRandomNumber(spec, [], createRandomSource(12345));
 			expect(value1).toBe(value2);
 		});
 
@@ -538,8 +553,12 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 1000000 },
 				exclusions: []
 			};
-			const values1 = Array.from({ length: 10 }, (_, i) => generateRandomNumber(spec, [], i));
-			const values2 = Array.from({ length: 10 }, (_, i) => generateRandomNumber(spec, [], i + 100));
+			const values1 = Array.from({ length: 10 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
+			const values2 = Array.from({ length: 10 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i + 100))
+			);
 
 			// At least one value should be different (very likely with large range)
 			expect(values1).not.toEqual(values2);
@@ -552,7 +571,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 10 },
 				exclusions: []
 			};
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 
 			// Check we got variety (not all the same value)
 			const unique = new Set(values);
@@ -586,7 +607,7 @@ describe('generateRandomNumber', () => {
 				exclusions: []
 			};
 			const values = Array.from({ length: 100 }, (_, i) =>
-				generateRandomNumber(spec, [], i)
+				generateRandomNumber(spec, [], createRandomSource(i))
 			) as number[];
 
 			// Should have both positive and negative values
@@ -614,7 +635,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 9 },
 				exclusions: []
 			};
-			const values = Array.from({ length: 200 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 200 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 			expect(values).not.toContain(0);
 		});
 
@@ -625,7 +648,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 9 },
 				exclusions: [{ type: 'value', value: { type: 'number', value: 5 } }]
 			};
-			const values = Array.from({ length: 200 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 200 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 
 			// Should exclude both +5 and -5
 			expect(values).not.toContain(5);
@@ -643,7 +668,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'minVal', value: '3' },
 				{ name: 'maxVal', value: '7' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42) as number;
+			const value = generateRandomNumber(spec, resolved, createRandomSource(42)) as number;
 			if (value > 0) {
 				expect(value).toBeGreaterThanOrEqual(3);
 				expect(value).toBeLessThanOrEqual(7);
@@ -661,7 +686,7 @@ describe('generateRandomNumber', () => {
 				exclusions: []
 			};
 			const values = Array.from({ length: 500 }, (_, i) =>
-				generateRandomNumber(spec, [], i)
+				generateRandomNumber(spec, [], createRandomSource(i))
 			) as number[];
 
 			// Count positive and negative values
@@ -682,7 +707,7 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'Relative integer min must be positive'
 			);
 		});
@@ -699,7 +724,7 @@ describe('generateRandomNumber', () => {
 				items: ['rouge', 'vert', 'bleu'],
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], createRandomSource(42));
 			expect(['rouge', 'vert', 'bleu']).toContain(value);
 		});
 
@@ -709,8 +734,8 @@ describe('generateRandomNumber', () => {
 				items: ['a', 'b', 'c', 'd', 'e'],
 				exclusions: []
 			};
-			const value1 = generateRandomNumber(spec, [], 12345);
-			const value2 = generateRandomNumber(spec, [], 12345);
+			const value1 = generateRandomNumber(spec, [], createRandomSource(12345));
+			const value2 = generateRandomNumber(spec, [], createRandomSource(12345));
 			expect(value1).toBe(value2);
 		});
 
@@ -726,7 +751,9 @@ describe('generateRandomNumber', () => {
 			];
 
 			// Generate many values to check all possibilities
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 
 			// Should only contain resolved values ('10', '20') or literal 'literal'
 			const uniqueValues = [...new Set(values)];
@@ -746,7 +773,9 @@ describe('generateRandomNumber', () => {
 			};
 			const resolved: ResolvedVariable[] = [{ name: 'a', value: '100' }];
 
-			const values = Array.from({ length: 50 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 50 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 
 			// 'a' should be resolved to '100'
 			// 'b' and 'c' have no variables, so treated as literals
@@ -761,7 +790,9 @@ describe('generateRandomNumber', () => {
 				exclusions: ['b', 'd']
 			};
 
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 
 			// Should only contain 'a' and 'c'
 			expect(values.every((v) => ['a', 'c'].includes(String(v)))).toBe(true);
@@ -783,7 +814,9 @@ describe('generateRandomNumber', () => {
 				{ name: 'c', value: '30' }
 			];
 
-			const values = Array.from({ length: 50 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 50 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 
 			// 'b' is excluded, which resolves to '20'
 			// Should only contain '10' (from 'a') and '30' (from 'c')
@@ -798,7 +831,7 @@ describe('generateRandomNumber', () => {
 				exclusions: ['a', 'b', 'c']
 			};
 
-			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+			expect(() => generateRandomNumber(spec, [], createRandomSource(42))).toThrow(
 				'All items excluded from discrete list'
 			);
 		});
@@ -814,7 +847,9 @@ describe('generateRandomNumber', () => {
 				{ name: 'var2', value: 'value2' }
 			];
 
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, resolved, createRandomSource(i))
+			);
 
 			// Should contain: 'literal1', 'value2', 'literal2'
 			// Should NOT contain: 'value1' (var1 excluded)
@@ -832,7 +867,9 @@ describe('generateRandomNumber', () => {
 				exclusions: []
 			};
 
-			const values = Array.from({ length: 300 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 300 }, (_, i) =>
+				generateRandomNumber(spec, [], createRandomSource(i))
+			);
 			const counts = {
 				a: values.filter((v) => v === 'a').length,
 				b: values.filter((v) => v === 'b').length,

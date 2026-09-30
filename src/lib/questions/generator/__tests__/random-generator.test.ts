@@ -7,6 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateRandomNumber } from '../random-generator';
+import { createRandomSource } from '$lib/utils/random';
 import type { RandomSpec, NumberOrVariable } from '../../types';
 
 // Helper functions for constructing test specifications
@@ -42,8 +43,8 @@ describe('generateRandomNumber - Integer Ranges', () => {
 			exclusions: []
 		};
 
-		const result1 = generateRandomNumber(spec, {}, 12345);
-		const result2 = generateRandomNumber(spec, {}, 12345);
+		const result1 = generateRandomNumber(spec, {}, createRandomSource(12345));
+		const result2 = generateRandomNumber(spec, {}, createRandomSource(12345));
 
 		expect(result1).toBe(result2);
 	});
@@ -56,8 +57,8 @@ describe('generateRandomNumber - Integer Ranges', () => {
 			exclusions: []
 		};
 
-		const result1 = generateRandomNumber(spec, {}, 11111);
-		const result2 = generateRandomNumber(spec, {}, 22222);
+		const result1 = generateRandomNumber(spec, {}, createRandomSource(11111));
+		const result2 = generateRandomNumber(spec, {}, createRandomSource(22222));
 
 		// With large range, very unlikely to be same
 		expect(result1).not.toBe(result2);
@@ -167,8 +168,8 @@ describe('generateRandomNumber - Decimal Ranges', () => {
 			exclusions: []
 		};
 
-		const result1 = generateRandomNumber(spec, {}, 54321);
-		const result2 = generateRandomNumber(spec, {}, 54321);
+		const result1 = generateRandomNumber(spec, {}, createRandomSource(54321));
+		const result2 = generateRandomNumber(spec, {}, createRandomSource(54321));
 
 		expect(result1).toBe(result2);
 	});
@@ -240,7 +241,7 @@ describe('generateRandomNumber - Value Exclusions', () => {
 
 		// Generate many times to ensure 3 is never chosen
 		for (let i = 0; i < 50; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			expect(result).not.toBe(3);
 			expect([1, 2, 4, 5]).toContain(result);
 		}
@@ -259,7 +260,7 @@ describe('generateRandomNumber - Value Exclusions', () => {
 		};
 
 		for (let i = 0; i < 50; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			expect([3, 5, 7]).not.toContain(result);
 		}
 	});
@@ -274,7 +275,7 @@ describe('generateRandomNumber - Value Exclusions', () => {
 		};
 
 		for (let i = 0; i < 30; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			expect(result).not.toBe(2.5);
 		}
 	});
@@ -290,7 +291,7 @@ describe('generateRandomNumber - Range Exclusions', () => {
 		};
 
 		for (let i = 0; i < 50; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			expect(result < 10 || result > 15).toBe(true);
 		}
 	});
@@ -307,7 +308,7 @@ describe('generateRandomNumber - Range Exclusions', () => {
 		};
 
 		for (let i = 0; i < 50; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			const inFirstRange = result >= 5 && result <= 10;
 			const inSecondRange = result >= 20 && result <= 25;
 			expect(inFirstRange || inSecondRange).toBe(false);
@@ -323,7 +324,7 @@ describe('generateRandomNumber - Range Exclusions', () => {
 		};
 
 		for (let i = 0; i < 30; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			expect(result).toBeGreaterThan(5);
 			expect(result).toBeLessThanOrEqual(10);
 		}
@@ -387,7 +388,7 @@ describe('generateRandomNumber - Variable Resolution', () => {
 		const context = { excluded: 5 };
 
 		for (let i = 0; i < 30; i++) {
-			const result = generateRandomNumber(spec, context, i);
+			const result = generateRandomNumber(spec, context, createRandomSource(i));
 			expect(result).not.toBe(5);
 		}
 	});
@@ -409,7 +410,7 @@ describe('generateRandomNumber - Variable Resolution', () => {
 		const context = { excludeMin: 8, excludeMax: 12 };
 
 		for (let i = 0; i < 30; i++) {
-			const result = generateRandomNumber(spec, context, i);
+			const result = generateRandomNumber(spec, context, createRandomSource(i));
 			expect(result < 8 || result > 12).toBe(true);
 		}
 	});
@@ -474,7 +475,7 @@ describe('generateRandomNumber - Edge Cases', () => {
 		};
 
 		for (let i = 0; i < 20; i++) {
-			const result = generateRandomNumber(spec, {}, i);
+			const result = generateRandomNumber(spec, {}, createRandomSource(i));
 			// Should only generate odd numbers
 			expect(result % 2).toBe(1);
 		}

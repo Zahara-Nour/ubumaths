@@ -15,6 +15,7 @@ import type { QuestionWithMigration } from '../old-question-types';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { resolveVariables } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { createRandomSource } from '$lib/utils/random';
 
 const questions = JSON.parse(
 	readFileSync(resolve(process.cwd(), '.claude/old-questions.json'), 'utf-8')
@@ -52,7 +53,7 @@ describe('exclusions', () => {
 		);
 		for (let seed = 1; seed <= 40; seed++) {
 			const v = Object.fromEntries(
-				resolveVariables(variables, seed).map((r) => [r.name, Number(r.value)])
+				resolveVariables(variables, createRandomSource(seed)).map((r) => [r.name, Number(r.value)])
 			);
 			expect(Math.abs(v.b)).not.toBe(v.a);
 			expect(Math.abs(v.c)).not.toBe(v.a);
