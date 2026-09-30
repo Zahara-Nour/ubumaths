@@ -4,8 +4,8 @@
 	Dialog for selecting test mode from the cart page
 
 	Modes:
-	- Display: Slideshow mode for revision (no scoring)
-	- Interactive: Quiz mode with scoring
+	- Display (« En classe ») : projection question par question, sans score
+	- Interactive (« Entraînement ») : une question à la fois, score à la fin
 	- Course aux nombres: All questions at once with time limit
 
 	Props:
@@ -44,17 +44,21 @@
 	const modeConfigs = [
 		{
 			mode: 'display' as TestMode,
-			title: 'Mode Révision',
+			title: 'En classe',
 			icon: Eye,
-			description: 'Les questions défilent automatiquement. Idéal pour mémoriser.',
-			features: ['Défilement automatique', 'Pas de score', 'Pause disponible']
+			description: 'Les questions défilent une à une, à projeter devant la classe.',
+			features: [
+				'Minuteur par question, pause',
+				'Retour en arrière possible',
+				'Grilles des questions et des corrections'
+			]
 		},
 		{
 			mode: 'interactive' as TestMode,
-			title: 'Mode Quiz',
+			title: 'Entraînement',
 			icon: BrainCircuit,
-			description: 'Répondez aux questions une par une. Score à la fin.',
-			features: ['Validation des réponses', 'Score sur 10', 'Correction détaillée']
+			description: 'Répondez aux questions une par une, chacune chronométrée.',
+			features: ['Une question à la fois', 'Score sur 10', 'Correction détaillée à la fin']
 		},
 		{
 			mode: 'course' as TestMode,
