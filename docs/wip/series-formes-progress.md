@@ -221,3 +221,16 @@ retiré du formulaire d'évaluation (Q21). **Q20 (graine par question) retirée*
 
 - `max_attempts` d'une évaluation non contrôlé côté serveur (`/api/tests/save` insère sans compter).
 - La graine archivée viendrait du client : pour une évaluation notée, le serveur doit la tirer et la garder.
+
+### Générateur corrigé (#557) et carte d'Entraînement allégée (#556), 2026-09-30
+
+- `createRandomSource(seed?)` (`src/lib/utils/random.ts`, mulberry32) : UNE source par instance,
+  consommée dans l'ordre (variation, variables, conditions, énoncé, cases, choix, corrigé, couleurs) ;
+  graine 0 valide ; exercices alignés (variation tirée dans la source, plus de cycle `seed % n`).
+  Corpus relu : reproductibilité à graine 486 échecs → 0. `floatToRational` : tout entier flottant reste
+  un entier exact.
+- Effet : pour une même graine, les valeurs changent (aperçus, 14 `worksheet_error_reports` rejoués) ;
+  aucun exercice `per_student`/`per_group` en base (315 `on_demand`) ; fiches en base inchangées.
+- `QuestionCard` allégée : ni titre, ni badge, ni « Énoncé » / « Votre réponse », ni encadré ; énoncé
+  d'une question à trous affiché une seule fois.
+- **Q20 (graine par question dans les séries) peut maintenant être rebranchée.**
