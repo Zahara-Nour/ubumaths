@@ -302,3 +302,23 @@ une évaluation — corrigé) et `security-auditor` (sauvegarde : destinataire, 
 limite et tentatives vérifiés avant écriture). `svelte-autofixer` non passé (MCP indisponible).
 Test statistique `vip-card-rarity-distribution` instable en CI (168 < 170), relancé : vert.
 Reste : PR 3 (suppression des anciennes tables, arrêt et explication à David), puis chantier 5.
+
+### Chantier 4 terminé (#562, #563, #564), 2026-09-30
+
+- **#562** : anciennes tables `assessments` / `assessment_assignments`, vue `assessment_results`, 9
+  fonctions et 3 colonnes supprimées ; garde-fous (la migration échoue si une donnée n'est pas
+  recopiée, 6 cas testés). **Appliquée en production** et vérifiée. Leçon : le seed
+  `dev_question_demo.sql` écrivait encore dans `assessments` — invisible sur une base locale jamais
+  recréée, révélé par la CI sur base neuve (et reproduit sur une 2ᵉ pile locale, ports 553xx).
+- **#563** : images Docker de Supabase gardées en cache dans la CI d'intégration (quota
+  `toomanyrequests` des registres) ; le run planifié sur `main` remplit le cache.
+- **#564** : types régénérés.
+- Tests instables vus en route : `vip-card-rarity-distribution` (seuil statistique),
+  `chapter-worksheet-publish-distributes` (1 échec sur 6 en local).
+
+## Chantier 5 — évaluation notée, correction serveur (questions posées à David, 2026-09-30)
+
+Q32 (le serveur tire les questions, énoncés sans réponse), Q33 (tentative comptée au démarrage),
+Q34 (reprise de la même tentative), Q35 (barème, note sur 20), Q36 (meilleure note), Q37 (temps
+limite + 30 s, date limite), Q38 (question d'accès en miroir : plus d'écriture directe élève sur les
+séances d'évaluation), Q39 (verdict serveur → SRS). Réponses attendues.
