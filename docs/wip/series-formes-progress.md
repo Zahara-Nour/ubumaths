@@ -343,3 +343,14 @@ séances d'évaluation), Q39 (verdict serveur → SRS). Réponses attendues.
   démarrage, C10-C14 envoi/correction, D15-D18 base (dont : graines illisibles par l'élève), E19-E21
   écrans. Livraison : PR A migration (`supabase-expert`, `security-auditor`, `db:migrate`, `db:types`)
   → PR B code (`fullstack-developer`, `code-reviewer`, `security-auditor`).
+
+### Chantier 5 — PR A (base), branche `feat/evaluation-tentatives-db`
+
+Migration `20260930160000_evaluation_tentatives.sql` (appliquée en LOCAL seulement) : table
+`evaluation_attempt_questions` (service_role seul, D18), `test_sessions.grade` / `points_earned`,
+`test_answers.points` / `status` ; Q38 : restrictives INSERT (`evaluation_id IS NULL` sur les séances,
+séance parente libre sur les réponses), policy UPDATE « Users can update own test sessions » supprimée.
+Tests `tests/integration/evaluation-tentatives.test.ts` (29) ; 4 fichiers de tests adaptés (séances
+d'évaluation posées par le service). ⚠️ Tant que la PR B n'est pas livrée, `/api/tests/save` ne peut plus
+enregistrer une séance d'évaluation (client de l'élève) : migrer la prod avec la PR B, ou accepter
+l'intervalle (0 assignation en prod). Reste : `security-auditor`, `db:migrate`, `db:types`.

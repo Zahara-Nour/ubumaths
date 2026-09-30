@@ -160,8 +160,20 @@ describe("séances de flash-cards (mode 'flash')", () => {
 			.insert({ evaluation_id: evaluation!.id, assigned_by: teacher.id, student_id: student.id });
 		expect(assignmentError).toBeNull();
 
+		// Depuis 20260930160000 (Q38), seul le serveur (service_role) crée une
+		// séance d'évaluation : la contrainte se prouve donc avec le service (le
+		// client de l'élève est refusé plus tôt, par la RLS, en 42501).
 		const client = await createAuthenticatedClient(student.email);
-		const { error } = await client
+		const { error: studentError } = await client.from('test_sessions').insert({
+			user_id: student.id,
+			mode: 'flash' as 'interactive',
+			categories: [],
+			total_questions: 4,
+			evaluation_id: evaluation!.id
+		});
+		expect(studentError?.code).toBe('42501');
+
+		const { error } = await service
 			.from('test_sessions')
 			.insert({
 				user_id: student.id,
@@ -178,8 +190,8 @@ describe("séances de flash-cards (mode 'flash')", () => {
 		// La contrainte flash, pas celle du mode (même code 23514)
 		expect(error?.message).toContain('test_sessions_flash_sans_evaluation');
 
-		// Témoin : la même séance en Entraînement reste acceptée
-		const { error: interactiveError } = await client
+		// Témoin : la même séance en Entraînement reste acceptée (par le serveur)
+		const { error: interactiveError } = await service
 			.from('test_sessions')
 			.insert({
 				user_id: student.id,
