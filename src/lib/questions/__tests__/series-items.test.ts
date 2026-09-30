@@ -8,6 +8,7 @@ import { describe, it, expect, vi } from 'vitest';
 import {
 	buildSeriesItems,
 	categoryKeyOf,
+	drawSeriesQuestions,
 	DEFAULT_QUESTION_DELAY_SECONDS
 } from '$lib/questions/series-items';
 import type { GenerationResult, QuestionInstance, QuestionTemplate } from '$lib/questions/types';
@@ -163,5 +164,40 @@ describe('buildSeriesItems', () => {
 		}
 		// L'instance porte la graine avec laquelle elle a été générée
 		expect(items.map((i) => i.instance.seed)).toEqual(seeds);
+	});
+});
+
+describe('drawSeriesQuestions (évaluation : le serveur tire modèle + graine)', () => {
+	it('même règle que buildSeriesItems : un tirage par répétition, durée et clé de catégorie', () => {
+		const seeds = [5, 6, 7];
+		const draws = drawSeriesQuestions(
+			[cart('Additionner', 2, 15), cart('Absent', 1, 50), cart('Multiplier', 1, 0)],
+			[template('Additionner', 'add'), template('Multiplier', 'mul')],
+			{ nextSeed: () => seeds.shift() ?? -1, pickIndex: () => 0 }
+		);
+		expect(draws.map((d) => [d.template.id, d.seed, d.delaySeconds, d.categoryKey])).toEqual([
+			['add', 5, 15, categoryKeyOf(category('Additionner'))],
+			['add', 6, 15, categoryKeyOf(category('Additionner'))],
+			['mul', 7, DEFAULT_QUESTION_DELAY_SECONDS, categoryKeyOf(category('Multiplier'))]
+		]);
+	});
+
+	it('cartes de cours exclues sur demande', () => {
+		const card = template('Additionner', 'carte', {
+			options: { courseCard: true }
+		} as Partial<QuestionTemplate>);
+		const draws = drawSeriesQuestions(
+			[cart('Additionner', 2, 15)],
+			[card, template('Additionner', 'add')],
+			{ excludeCourseCards: true }
+		);
+		expect(draws.map((d) => d.template.id)).toEqual(['add', 'add']);
+	});
+
+	it('ne génère rien (tirage seul)', () => {
+		const mocked = vi.mocked(generateInstance);
+		mocked.mockClear();
+		drawSeriesQuestions([cart('Additionner', 2, 15)], [template('Additionner', 'add')]);
+		expect(mocked).not.toHaveBeenCalled();
 	});
 });
