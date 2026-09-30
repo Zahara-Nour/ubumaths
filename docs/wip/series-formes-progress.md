@@ -121,11 +121,13 @@ catégorie. Grilles de fin en flash-cards (verso pour les corrections), hauteur 
 Raccourcir une question en cours lui laisse au moins 1 s. Choix de l'agent à confirmer par David :
 les durées ajustées au ±5 s survivent à « Recommencer ».
 
-### Reste à faire, repéré en route
+### Faits en route (#552, 2026-09-30)
 
-- `CorrectionCard` affiche `instance.correctChoiceIndex` comme « Réponse correcte » → **« undefined »
-  pour toute question à trous** ; utilisé par l'écran de résultats de l'Entraînement et de la Course
-  aux nombres (probablement visible en production).
-- Fenêtre de choix du panier (`TestModeDialog`) : renommer « Mode Révision » / « Mode Quiz » en
-  « En classe » / « Entraînement » (Q7).
-- Chantier 2 : Flash-cards d'une série.
+- `CorrectionCard` : la « Réponse correcte » montre la réponse attendue de chaque case (formule si
+  mathématique) et le contenu des bons choix d'un QCM (fini l'« undefined »).
+- Formes renommées dans l'interface : « En classe », « Entraînement » (fenêtre de choix, en-tête,
+  résultats) ; descriptions conformes au comportement réel.
+
+### Suite
+
+- Chantier 2 : Flash-cards d'une série (spécification à valider).
