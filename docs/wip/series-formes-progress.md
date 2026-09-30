@@ -178,3 +178,14 @@ de cours, dans `tests/save` et `skill-attempts`), FSRS seulement, traces intacte
 3. Entraînement : corriger les 7 défauts (liste plus haut).
 4. Séparation `series` / `evaluations`.
 5. Évaluation notée, correction serveur (ADR 0015) + fermer les policies INSERT/UPDATE élève.
+
+## Chantier 3 — Entraînement (spécification validée par David, 2026-09-30)
+
+- Durée par question portée par la question (comme « En classe ») ; plus de question sautée si le chrono
+  expire dans les 300 ms après une validation ; « Recommencer » tire de nouvelles questions ; visiteur
+  averti, pas d'appel de sauvegarde.
+- **Q18** : à l'expiration du chrono d'une question, ce qui est tapé est validé automatiquement (rien
+  tapé → fausse, comme avant).
+- **Q19** : PAS de chrono global (refus de David). La limite de temps d'une évaluation reste sans effet.
+- **Q20** : une graine tirée et enregistrée par question (prépare la correction serveur, ADR 0015).
+- **Q21** (posée) : retirer le champ « Temps limite total » du formulaire d'évaluation ?
