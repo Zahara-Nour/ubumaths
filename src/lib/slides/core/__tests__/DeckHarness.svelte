@@ -11,9 +11,11 @@
 		config?: Partial<DeckConfig>;
 		onend?: () => void;
 		onprobe: (context: DeckContext) => void;
+		/** Nombre de fragments de chaque diapositive (0 par défaut) */
+		fragments?: number[];
 	}
 
-	let { durations, config = {}, onend, onprobe }: Props = $props();
+	let { durations, config = {}, onend, onprobe, fragments = [] }: Props = $props();
 </script>
 
 <div style="width: 800px; height: 450px;">
@@ -21,6 +23,9 @@
 		{#each durations as duration, index (index)}
 			<Slide autoSlide={duration}>
 				<p>Diapositive {index}</p>
+				{#each { length: fragments[index] ?? 0 }, fragmentIndex (fragmentIndex)}
+					<span class="fragment">Fragment {fragmentIndex}</span>
+				{/each}
 				{#if index === 0}
 					<ContextProbe {onprobe} />
 				{/if}

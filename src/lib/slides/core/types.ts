@@ -210,6 +210,9 @@ export interface DeckConfig {
 	// Fullscreen mode (position: fixed)
 	fullscreen?: boolean;
 
+	/** Pause visible : voile « Pause » et assombrissement (défaut true). false : la pause gèle seulement */
+	pauseOverlay?: boolean;
+
 	// Content scaling
 	/** Scale content to fit container (default: true). When false, uses natural font sizes. */
 	scaleContent?: boolean;

@@ -19,7 +19,7 @@
 	} from './types.js';
 	import { TRANSITION_DURATIONS } from './types.js';
 	import { createDeckStore } from '../stores/deckStore.svelte.js';
-	import { createAutoSlideTimer } from '../stores/autoSlideTimer.svelte.js';
+	import { createAutoSlideTimer, type AutoSlideInput } from '../stores/autoSlideTimer.svelte.js';
 	import { createHashNavigation, parseHash, syncHashEffect } from '../navigation/hash.js';
 	import { keyboard } from '../actions/keyboard.js';
 	import { swipe, createSwipeHandlers } from '../actions/swipe.js';
@@ -216,14 +216,19 @@
 		});
 	});
 
-	// Décrit au minuteur la diapositive courante, sa durée, pause et vue d'ensemble
-	$effect(() => {
-		const input = {
+	// Diapositive courante, sa durée, pause et vue d'ensemble, pour le minuteur
+	function readAutoSlideInput(): AutoSlideInput {
+		return {
 			key: `${store.h}-${store.v}`,
 			duration: currentAutoSlide,
 			paused: store.paused,
 			overview: store.overview
 		};
+	}
+
+	// Décrit au minuteur tout changement (navigation de l'utilisateur comprise)
+	$effect(() => {
+		const input = readAutoSlideInput();
 		// untrack : le minuteur peut demander la pause (écriture dans le store)
 		untrack(() => autoSlideTimer.update(input));
 	});
@@ -265,7 +270,12 @@
 	function handleAutoSlideExpire(): void {
 		const { h, v, f } = store;
 		store.next();
-		if (store.h !== h || store.v !== v) return;
+		if (store.h !== h || store.v !== v) {
+			// Changement venu du minuteur : dit tel quel avant que l'effet ne le voie
+			// (une diapositive terminée est alors rejouée, pas mise en pause)
+			autoSlideTimer.update(readAutoSlideInput(), { automatic: true });
+			return;
+		}
 		if (store.f !== f) {
 			autoSlideTimer.restartCurrent();
 		} else {
@@ -331,6 +341,8 @@
 
 	// Plein écran « CSS » (position: fixed), distinct du plein écran réel
 	const fixedFullscreen = $derived(mergedConfig.fullscreen ?? false);
+	// Pause visible (voile + assombrissement) ; false : la pause ne fait que geler
+	const showPauseOverlay = $derived(mergedConfig.pauseOverlay ?? true);
 	const scaleContent = $derived(mergedConfig.scaleContent ?? false);
 	const showControls = $derived(mergedConfig.controls ?? true);
 	const showProgress = $derived(mergedConfig.progress ?? true);
@@ -411,7 +423,7 @@
 	class:fullscreen={fixedFullscreen}
 	class:native-fullscreen={nativeFullscreen}
 	class:overview={store.overview}
-	class:paused={store.paused}
+	class:paused={store.paused && showPauseOverlay}
 	bind:this={wrapperElement}
 	tabindex="0"
 	role="application"
@@ -550,7 +562,7 @@
 	{/if}
 
 	<!-- Pause overlay -->
-	{#if store.paused}
+	{#if store.paused && showPauseOverlay}
 		<div class="pause-overlay" aria-label="Présentation en pause">
 			<span class="pause-text">Pause</span>
 		</div>

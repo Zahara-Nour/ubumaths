@@ -62,6 +62,9 @@ export const defaultConfig: DeckConfig = {
 	// Fullscreen mode
 	fullscreen: false,
 
+	// Pause visible (voile + assombrissement)
+	pauseOverlay: true,
+
 	// Content scaling - false = use natural font sizes
 	scaleContent: false
 };

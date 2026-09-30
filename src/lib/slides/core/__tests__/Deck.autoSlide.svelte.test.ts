@@ -13,6 +13,7 @@ interface Setup {
 	durations: Array<number | undefined>;
 	config?: Partial<DeckConfig>;
 	onend?: () => void;
+	fragments?: number[];
 }
 
 async function open(setup: Setup) {
@@ -157,6 +158,86 @@ describe('défilement automatique', () => {
 	});
 });
 
+describe('avance automatique, fragments et démontage', () => {
+	beforeEach(() => {
+		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+	});
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it('seul un retour manuel met en pause ; l’avance automatique rejoue une diapositive terminée', async () => {
+		const { deck } = await open({ durations: [1000, 1000, 5000] });
+		elapse(1000);
+		elapse(1000);
+		expect(deck.getIndices().h).toBe(2);
+		elapse(2000);
+		expect(deck.getAutoSlideRemaining()).toBe(3000);
+
+		// Retour à la main sur A (terminée) : pause
+		deck.slide(0);
+		flushSync();
+		expect(deck.isPaused()).toBe(true);
+
+		deck.resume();
+		flushSync();
+		elapse(1000);
+		// Avance automatique sur B (terminée) : rejouée, sans pause
+		expect(deck.getIndices().h).toBe(1);
+		expect(deck.isPaused()).toBe(false);
+		expect(deck.getAutoSlideRemaining()).toBe(1000);
+
+		elapse(1000);
+		// C n'était pas terminée : elle reprend son temps restant
+		expect(deck.getIndices().h).toBe(2);
+		expect(deck.isPaused()).toBe(false);
+		expect(deck.getAutoSlideRemaining()).toBe(3000);
+	});
+
+	it('une diapositive à fragments : chaque expiration montre le fragment suivant, durée complète', async () => {
+		const { deck } = await open({ durations: [1000, 1000], fragments: [2, 0] });
+		elapse(1000);
+		expect(deck.getIndices()).toMatchObject({ h: 0, f: 0 });
+		expect(deck.getAutoSlideRemaining()).toBe(1000);
+		elapse(1000);
+		expect(deck.getIndices()).toMatchObject({ h: 0, f: 1 });
+		elapse(999);
+		expect(deck.getIndices().h).toBe(0);
+		elapse(1);
+		expect(deck.getIndices().h).toBe(1);
+	});
+
+	it('après démontage du Deck : plus aucune avance ni onend', async () => {
+		const onend = vi.fn();
+		const { deck, unmount } = await open({ durations: [1000, 1000], onend });
+		const store = deck.getStore();
+		const next = vi.spyOn(store, 'next');
+		elapse(500);
+		await unmount();
+		elapse(10_000);
+		expect(next).not.toHaveBeenCalled();
+		expect(onend).not.toHaveBeenCalled();
+	});
+});
+
+describe('pause sans écran noir (config pauseOverlay)', () => {
+	it.each([
+		[undefined, true],
+		[true, true],
+		[false, false]
+	])('pauseOverlay = %s : voile de pause affiché = %s', async (pauseOverlay, shown) => {
+		const config = pauseOverlay === undefined ? {} : { pauseOverlay };
+		const { container, deck } = await open({ durations: [undefined], config });
+		deck.pause();
+		flushSync();
+		const wrapper = container.querySelector<HTMLElement>('.deck-wrapper')!;
+
+		expect(deck.isPaused()).toBe(true);
+		expect(container.querySelector('.pause-overlay') !== null).toBe(shown);
+		expect(getComputedStyle(wrapper).filter !== 'none').toBe(shown);
+	});
+});
+
 describe('plein écran réel', () => {
 	let fullscreenElement: Element | null = null;
 
@@ -206,6 +287,31 @@ describe('plein écran réel', () => {
 		expect(exit).toHaveBeenCalledTimes(1);
 		expect(deck.isFullscreen()).toBe(false);
 	});
+
+	it.each([
+		['metaKey', 'Cmd+F'],
+		['ctrlKey', 'Ctrl+F'],
+		['altKey', 'Alt+F']
+	] as const)(
+		'%s : %s reste au navigateur (ni plein écran ni preventDefault)',
+		async (modifier) => {
+			const request = vi.spyOn(HTMLElement.prototype, 'requestFullscreen').mockResolvedValue();
+			const { container } = await open({ durations: [undefined] });
+			const wrapper = container.querySelector<HTMLElement>('.deck-wrapper')!;
+
+			const event = new KeyboardEvent('keydown', {
+				key: 'f',
+				[modifier]: true,
+				bubbles: true,
+				cancelable: true
+			});
+			wrapper.dispatchEvent(event);
+			await tick();
+
+			expect(request).not.toHaveBeenCalled();
+			expect(event.defaultPrevented).toBe(false);
+		}
+	);
 
 	it('reflète une sortie du plein écran faite par le navigateur (Échap)', async () => {
 		const { container, deck } = await open({ durations: [undefined] });
