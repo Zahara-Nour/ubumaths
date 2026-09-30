@@ -277,6 +277,8 @@ export interface DeckStoreActions {
 	setOverview(value: boolean): void;
 	/** Toggle pause state */
 	togglePause(): void;
+	/** Fixe l'état de pause */
+	setPaused(value: boolean): void;
 	/** Set scale factor */
 	setScale(scale: number): void;
 }
