@@ -165,3 +165,16 @@ les durées ajustées au ±5 s survivent à « Recommencer ».
 - `FlashSeries.svelte` (carte, boutons après retournement, bilan, revoir les ratées sans
   resauvegarde, message visiteur) ; 4ᵉ forme dans `TestModeDialog` ; page branchée.
 - À vérifier à la main : parcours réel sur le serveur de dev (non fait par l'agent).
+
+### Chantier 2 livré (#554, 2026-09-30)
+
+Forme « Flash-cards » en production : `FlashSeries`, sauvegarde `mode: 'flash'` (jamais d'évaluation,
+tentatives `student_self`, pas d'XP), focus clavier, visiteur averti et pas d'appel de sauvegarde.
+Décisions Q16-Q17 : « le meilleur résultat du jour » pour toute auto-évaluation (flash-cards ET cartes
+de cours, dans `tests/save` et `skill-attempts`), FSRS seulement, traces intactes → ADR 0016.
+
+### Suite (ordre Q8)
+
+3. Entraînement : corriger les 7 défauts (liste plus haut).
+4. Séparation `series` / `evaluations`.
+5. Évaluation notée, correction serveur (ADR 0015) + fermer les policies INSERT/UPDATE élève.

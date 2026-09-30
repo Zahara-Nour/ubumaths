@@ -24,6 +24,7 @@ contourner en silence.
 | 0013 | [Contrainte de forme rebranchée, défaut `strict`](0013-contrainte-de-forme-rebranchee-defaut-strict.md)              | 2026-09-29 |
 | 0014 | [Acquisition sur le verdict du client (à réétudier)](0014-acquisition-sur-verdict-client-a-reetudier.md)             | 2026-09-30 |
 | 0015 | [Évaluation notée : correction côté serveur](0015-evaluation-notee-correction-serveur.md)                            | 2026-09-30 |
+| 0016 | [Auto-évaluation : le meilleur résultat du jour](0016-auto-evaluation-meilleur-resultat-du-jour.md)                  | 2026-09-30 |
 
 ## Écrire un ADR
 
