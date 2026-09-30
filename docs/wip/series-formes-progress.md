@@ -322,3 +322,20 @@ Q32 (le serveur tire les questions, énoncés sans réponse), Q33 (tentative com
 Q34 (reprise de la même tentative), Q35 (barème, note sur 20), Q36 (meilleure note), Q37 (temps
 limite + 30 s, date limite), Q38 (question d'accès en miroir : plus d'écriture directe élève sur les
 séances d'évaluation), Q39 (verdict serveur → SRS). Réponses attendues.
+
+**Décisions de David (2026-09-30)** : Q32, Q33, Q36, Q37, Q38, Q39 validées telles que recommandées :
+
+- Q32 : le serveur tire les questions (modèle + graine) ; le navigateur reçoit les énoncés sans réponse
+  attendue ni correction ; corrections renvoyées après l'envoi.
+- Q33 : une tentative compte dès son démarrage (enregistrée par le serveur).
+- Q36 : plusieurs tentatives → la **meilleure** note.
+- Q37 : Course → réponses envoyées après temps limite + 30 s ignorées ; tentative commencée avant la date
+  limite peut finir après.
+- Q38 (question d'accès, miroir) : pour une évaluation, plus aucune écriture directe élève (séances,
+  réponses) — tout passe par le serveur ; la modification directe de ses propres séances disparaît pour
+  tous (à vérifier sur les données avant SQL) ; entraînement libre, course libre, flash-cards inchangés ;
+  le prof voit toujours séances et réponses de ses élèves.
+- Q39 : le verdict du serveur alimente le SRS pour une évaluation.
+- Q34 (reprise de la même tentative) et Q35 (barème TinyMath : 1 point, ½ forme non optimale ou oubli
+  partiel ≤ moitié des cases, 0 si une case fausse ; QCM incomplet sans erreur = ½ ; note /20 au
+  demi-point) : explications données, confirmation attendue.
