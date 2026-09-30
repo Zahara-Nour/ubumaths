@@ -2,12 +2,14 @@
  * Choice Shuffler Tests
  * ======================
  *
- * Tests for Fisher-Yates shuffling algorithm with seed support.
+ * Tests for Fisher-Yates shuffling algorithm driven by a random source
+ * (`createRandomSource(seed)` : même graine → même mélange).
  * Updated to work with ResolvedMarkdown instead of ContentField[]
  */
 
 import { describe, it, expect } from 'vitest';
 import { shuffleChoices, type ShuffledChoice } from '../choice-shuffler';
+import { createRandomSource } from '$lib/utils/random';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import { resolvedMarkdown } from '$lib/ubumark';
 
@@ -97,8 +99,8 @@ describe('shuffleChoices - Seeded Random', () => {
 
 		const seed = 12345;
 
-		const result1 = shuffleChoices(choices, seed);
-		const result2 = shuffleChoices(choices, seed);
+		const result1 = shuffleChoices(choices, createRandomSource(seed));
+		const result2 = shuffleChoices(choices, createRandomSource(seed));
 
 		expect(result1.map((r) => r.originalIndex)).toEqual(result2.map((r) => r.originalIndex));
 		expect(result1.map((r) => r.content)).toEqual(result2.map((r) => r.content));
@@ -116,7 +118,7 @@ describe('shuffleChoices - Seeded Random', () => {
 
 		const results: ShuffledChoice[][] = [];
 		for (let i = 0; i < 10; i++) {
-			results.push(shuffleChoices(choices, seed));
+			results.push(shuffleChoices(choices, createRandomSource(seed)));
 		}
 
 		// All should be identical
@@ -151,7 +153,7 @@ describe('shuffleChoices - Edge Cases', () => {
 			{ content: markdownChoice('B'), isCorrect: false }
 		];
 
-		const result = shuffleChoices(choices, 12345);
+		const result = shuffleChoices(choices, createRandomSource(12345));
 
 		expect(result).toHaveLength(2);
 		const contents = result.map((r) => r.content).sort();
@@ -174,7 +176,7 @@ describe('shuffleChoices - Edge Cases', () => {
 			isCorrect: i === 42
 		}));
 
-		const result = shuffleChoices(choices, 55555);
+		const result = shuffleChoices(choices, createRandomSource(55555));
 
 		expect(result).toHaveLength(100);
 		// All original indices should be present
@@ -194,7 +196,7 @@ describe('shuffleChoices - Edge Cases', () => {
 			}
 		];
 
-		const result = shuffleChoices(choices, 77777);
+		const result = shuffleChoices(choices, createRandomSource(77777));
 
 		expect(result).toHaveLength(2);
 		expect(result.every((r) => r.content.includes('!['))).toBe(true);
@@ -251,7 +253,7 @@ describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 		];
 
 		const originalJson = JSON.stringify(choices);
-		shuffleChoices(choices, 12345);
+		shuffleChoices(choices, createRandomSource(12345));
 		const afterJson = JSON.stringify(choices);
 
 		expect(afterJson).toBe(originalJson);
@@ -267,7 +269,7 @@ describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 		// Generate multiple shuffles with different seeds
 		const permutations = new Set<string>();
 		for (let seed = 0; seed < 100; seed++) {
-			const result = shuffleChoices(choices, seed);
+			const result = shuffleChoices(choices, createRandomSource(seed));
 			const perm = result.map((r) => r.content).join('');
 			permutations.add(perm);
 		}
@@ -285,7 +287,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 			{ content: markdownChoice('$$x = \\frac{-b \\pm \\sqrt{b^2+4ac}}{2a}$$'), isCorrect: false }
 		];
 
-		const result = shuffleChoices(choices, 11111);
+		const result = shuffleChoices(choices, createRandomSource(11111));
 
 		expect(result).toHaveLength(3);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
@@ -300,7 +302,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 			{ content: markdownChoice('Troisième erreur'), isCorrect: false }
 		];
 
-		const result = shuffleChoices(choices, 22222);
+		const result = shuffleChoices(choices, createRandomSource(22222));
 
 		expect(result).toHaveLength(4);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
@@ -315,7 +317,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 			{ content: markdownChoice('Wrong 2'), isCorrect: false }
 		];
 
-		const result = shuffleChoices(choices, 33333);
+		const result = shuffleChoices(choices, createRandomSource(33333));
 
 		const correctIndices = result
 			.filter((r) => [0, 2].includes(r.originalIndex))
@@ -343,7 +345,7 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 			{ content: markdownChoice('12'), isCorrect: false }
 		];
 
-		const shuffled = shuffleChoices(resolvedChoices, 12345);
+		const shuffled = shuffleChoices(resolvedChoices, createRandomSource(12345));
 
 		// Find where the correct answer ended up
 		const correctOriginalIndex = 0;
@@ -362,7 +364,7 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 			{ content: markdownChoice('9'), isCorrect: false }
 		];
 
-		const shuffled = shuffleChoices(choices, 54321);
+		const shuffled = shuffleChoices(choices, createRandomSource(54321));
 
 		// Find indices of correct answers in shuffled array
 		const correctIndices = shuffled
@@ -384,7 +386,7 @@ describe('shuffleChoices - Performance', () => {
 
 		const startTime = Date.now();
 		for (let i = 0; i < 1000; i++) {
-			shuffleChoices(choices, i);
+			shuffleChoices(choices, createRandomSource(i));
 		}
 		const duration = Date.now() - startTime;
 
@@ -398,7 +400,7 @@ describe('shuffleChoices - Performance', () => {
 			isCorrect: i === 500
 		}));
 
-		const result = shuffleChoices(choices, 99999);
+		const result = shuffleChoices(choices, createRandomSource(99999));
 
 		expect(result).toHaveLength(1000);
 		const indices = new Set(result.map((r) => r.originalIndex));

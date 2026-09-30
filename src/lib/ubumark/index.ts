@@ -25,7 +25,7 @@
  * ];
  *
  * const template = templateMarkdown('{{a}} + {{b}} = {{sum}}');
- * const resolved = resolveVariables(variables, 12345);
+ * const resolved = resolveVariables(variables, createRandomSource(12345));
  * const text = resolveText(template, resolved);
  * ```
  *

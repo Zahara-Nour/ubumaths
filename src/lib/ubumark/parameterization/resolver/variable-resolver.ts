@@ -23,6 +23,7 @@ import { parseRandomSpec } from '../parser/random-parser';
 import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { normalizeExpression } from '../parser/expression-normalizer';
 import { generateRandomNumber } from './random-generator';
+import { randomInt, type RandomSource } from '$lib/utils/random';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
 import {
@@ -212,13 +213,14 @@ function braceWrap(value: string): string {
  * Process:
  * 1. For each variable in order:
  *    a. Replace variable references with resolved values
- *    b. Generate random numbers with optional seed
+ *    b. Generate random numbers, drawn in order from the random source
  *    c. Evaluate mathematical expressions
  * 2. Build array of resolved variables
  * 3. Return resolved variables for use in text resolution
  *
  * @param variables - Variable definitions to resolve
- * @param seed - Optional seed for reproducible random generation
+ * @param random - Source de hasard de l'instance, consommée dans l'ordre de déclaration
+ *   (`createRandomSource(seed)` pour un tirage reproductible), Math.random par défaut
  * @returns Array of resolved variables in declaration order
  * @throws Error if circular dependency or undefined reference detected
  *
@@ -244,8 +246,8 @@ function braceWrap(value: string): string {
  * ```typescript
  * resolveVariables([
  *   { name: 'rand', expression: '{{random:1..10}}' }
- * ], 12345)
- * // -> [{ name: 'rand', value: '7' }] (deterministic with seed)
+ * ], createRandomSource(12345))
+ * // -> [{ name: 'rand', value: '7' }] (reproducible with the same seed)
  * ```
  *
  * @example Eval expressions
@@ -266,13 +268,13 @@ function braceWrap(value: string): string {
  *   { name: 'a', expression: '{{random:{{min}}..{{max}}}}' },
  *   { name: 'b', expression: '{{random:{{min}}..{{max}}!{{a}}}}' },
  *   { name: 'sum', expression: '{{eval:a+b}}' }
- * ], 12345)
+ * ], createRandomSource(12345))
  * // -> All variables resolved with random values and calculated sum
  * ```
  */
 export function resolveVariables(
 	variables: Variable[],
-	seed?: number,
+	random: RandomSource = Math.random,
 	templateDisplayDefaults?: DisplayOptions
 ): ResolvedVariable[] {
 	if (!variables || variables.length === 0) {
@@ -284,10 +286,8 @@ export function resolveVariables(
 	for (let i = 0; i < variables.length; i++) {
 		const variable = variables[i];
 		try {
-			// Use a unique seed for each variable to ensure different random values
-			// Multiply by a large prime to spread seeds apart and avoid collisions
-			const variableSeed = seed !== undefined ? seed + i * 7919 : undefined;
-			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, variableSeed);
+			// Une seule source pour toutes les variables : chaque tirage la fait avancer
+			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, random);
 
 			// Build the resolved variable
 			const resolved: ResolvedVariable = {
@@ -316,7 +316,7 @@ export function resolveVariables(
 					displayOptions.removeUnnecessaryBrackets;
 
 				if (hasActiveTransforms && canTransform(resolvedValue)) {
-					displayValue = applyDisplayTransforms(resolvedValue, displayOptions);
+					displayValue = applyDisplayTransforms(resolvedValue, displayOptions, random);
 					changed = displayValue !== resolvedValue;
 				}
 
@@ -350,13 +350,13 @@ export function resolveVariables(
  *
  * @param expression - Variable expression string
  * @param alreadyResolved - Variables already resolved
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved value as string
  */
 export function resolveExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
-	seed: number | undefined,
+	random: RandomSource = Math.random,
 	options?: { useDisplayValue?: boolean }
 ): string {
 	// Check if this is an explicit text literal (text:...) BEFORE normalization
@@ -418,9 +418,10 @@ export function resolveExpression(
 			const generatedValue = generateRandomNumber(
 				spec,
 				alreadyResolved,
-				seed,
-				// Resolve sub-expressions in discrete list items (e.g., "1..9" in "0|1..9")
-				(subExpr) => resolveExpression(subExpr, alreadyResolved, seed)
+				random,
+				// Resolve sub-expressions in discrete list items (e.g., "1..9" in "0|1..9"),
+				// en poursuivant la même source
+				(subExpr) => resolveExpression(subExpr, alreadyResolved, random)
 			);
 			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
 		} catch (error) {
@@ -437,7 +438,7 @@ export function resolveExpression(
 	for (let i = digitsTokens.length - 1; i >= 0; i--) {
 		const token = digitsTokens[i];
 		try {
-			const generatedValue = generateDigitsNumber(token.inner, alreadyResolved, seed);
+			const generatedValue = generateDigitsNumber(token.inner, alreadyResolved, random);
 			result = result.slice(0, token.start) + String(generatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(
@@ -543,7 +544,7 @@ export function resolveExpression(
  *   - "2.3" (decimal: 2 integer digits, 3 decimal digits)
  *   - "a.b" (decimal with variable digit counts)
  * @param alreadyResolved - Variables already resolved for variable lookups
- * @param seed - Optional seed for reproducible random generation
+ * @param random - Source de hasard de l'instance (consommée)
  * @returns Generated number as string (to preserve decimal formatting)
  *
  * @example Integer specs
@@ -558,7 +559,7 @@ export function resolveExpression(
 function generateDigitsNumber(
 	spec: string,
 	alreadyResolved: ResolvedVariable[],
-	seed: number | undefined
+	random: RandomSource
 ): string {
 	// Check for decimal-by-digits format: X.Y (single dot, not double dot ..)
 	// Must distinguish "2.3" (decimal) from "1..3" (integer range)
@@ -573,7 +574,7 @@ function generateDigitsNumber(
 		const digitsBefore = resolveDigitValue(beforeStr, alreadyResolved);
 		const digitsAfter = resolveDigitValue(afterStr, alreadyResolved);
 
-		return generateDecimalByDigits(digitsBefore, digitsAfter, seed);
+		return generateDecimalByDigits(digitsBefore, digitsAfter, random);
 	}
 
 	// Integer mode: "2", "1..3", "a..b"
@@ -614,23 +615,7 @@ function generateDigitsNumber(
 	// Adjust minValue for single digit to exclude 0
 	const adjustedMin = minDigits === 1 ? 1 : minValue;
 
-	// Generate random number in range
-	const range = maxValue - adjustedMin + 1;
-
-	// Use seeded random if seed provided
-	let randomValue: number;
-	if (seed !== undefined) {
-		// Simple LCG for seeded random
-		const a = 1103515245;
-		const c = 12345;
-		const m = 2147483648;
-		const seededRandom = ((a * seed + c) % m) / m;
-		randomValue = Math.floor(seededRandom * range) + adjustedMin;
-	} else {
-		randomValue = Math.floor(Math.random() * range) + adjustedMin;
-	}
-
-	return String(randomValue);
+	return String(randomInt(adjustedMin, maxValue, random));
 }
 
 /**
@@ -638,13 +623,13 @@ function generateDigitsNumber(
  *
  * @param digitsBefore - Number of digits before decimal point (0 = "0.xxx")
  * @param digitsAfter - Number of digits after decimal point
- * @param seed - Optional seed for reproducible random generation
+ * @param random - Source de hasard de l'instance (consommée : partie entière, puis décimale)
  * @returns Formatted decimal string (e.g., "45.123")
  */
 function generateDecimalByDigits(
 	digitsBefore: number,
 	digitsAfter: number,
-	seed: number | undefined
+	random: RandomSource
 ): string {
 	if (digitsBefore < 0 || digitsAfter < 0) {
 		throw new Error(`Digit counts must be non-negative: ${digitsBefore}.${digitsAfter}`);
@@ -657,17 +642,7 @@ function generateDecimalByDigits(
 	} else {
 		const minInt = digitsBefore === 1 ? 1 : Math.pow(10, digitsBefore - 1);
 		const maxInt = Math.pow(10, digitsBefore) - 1;
-		const rangeInt = maxInt - minInt + 1;
-
-		if (seed !== undefined) {
-			const a = 1103515245;
-			const c = 12345;
-			const m = 2147483648;
-			const seededRandom = ((a * seed + c) % m) / m;
-			integerPart = Math.floor(seededRandom * rangeInt) + minInt;
-		} else {
-			integerPart = Math.floor(Math.random() * rangeInt) + minInt;
-		}
+		integerPart = randomInt(minInt, maxInt, random);
 	}
 
 	// Generate decimal part
@@ -675,21 +650,7 @@ function generateDecimalByDigits(
 	if (digitsAfter === 0) {
 		return String(integerPart);
 	} else {
-		const minDec = 0;
-		const maxDec = Math.pow(10, digitsAfter) - 1;
-		const rangeDec = maxDec - minDec + 1;
-
-		// Use different seed for decimal part to avoid correlation
-		const decimalSeed = seed !== undefined ? seed + 7919 : undefined;
-		if (decimalSeed !== undefined) {
-			const a = 1103515245;
-			const c = 12345;
-			const m = 2147483648;
-			const seededRandom = ((a * decimalSeed + c) % m) / m;
-			decimalPart = Math.floor(seededRandom * rangeDec) + minDec;
-		} else {
-			decimalPart = Math.floor(Math.random() * rangeDec) + minDec;
-		}
+		decimalPart = randomInt(0, Math.pow(10, digitsAfter) - 1, random);
 	}
 
 	// Format with leading zeros for decimal part
@@ -759,7 +720,6 @@ function resolveDigitValue(str: string, alreadyResolved: ResolvedVariable[]): nu
  *
  * @param text - The expression string (after Stage 1 variable resolution)
  * @param alreadyResolved - Variables already resolved
- * @param seed - Optional seed for random generation
  * @returns The string with all embedded {{eval:...}} tokens resolved
  */
 function resolveEmbeddedEvals(text: string, alreadyResolved: ResolvedVariable[]): string {

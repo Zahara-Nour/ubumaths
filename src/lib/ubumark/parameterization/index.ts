@@ -29,7 +29,7 @@
  * ];
  *
  * // Resolve variables
- * const resolved = resolveVariables(variables, 12345); // with seed
+ * const resolved = resolveVariables(variables, createRandomSource(12345)); // with seed
  *
  * // Resolve text
  * const text = 'The sum of {{a}} and {{b}} is {{sum}}';

@@ -28,6 +28,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
+	import { createRandomSource } from '$lib/utils/random';
 	import type {
 		QuestionVariable,
 		RequiredForm,
@@ -172,16 +173,18 @@
 			const allVariables = [...sharedVars, ...variationVars];
 
 			// Resolve variables
-			const resolved = resolveVariables(allVariables, previewSeed);
+			// Une seule source pour tout l'aperçu : variables, énoncé, réponse, choix
+			const random = createRandomSource(previewSeed);
+			const resolved = resolveVariables(allVariables, random);
 
 			// Resolve statement
 			const statement = currentVariation.statement
-				? resolveExpression(currentVariation.statement, resolved, previewSeed)
+				? resolveExpression(currentVariation.statement, resolved, random)
 				: '';
 
 			// Resolve solution
 			const solution = currentVariation.correctChoiceIndex
-				? resolveSolution(currentVariation.correctChoiceIndex, resolved, previewSeed)
+				? resolveSolution(currentVariation.correctChoiceIndex, resolved, random)
 				: '';
 
 			// Resolve choices
@@ -192,7 +195,7 @@
 
 			const choices = rawChoices
 				? rawChoices.map((c, index) => ({
-						content: resolveExpression(c.content, resolved, previewSeed),
+						content: resolveExpression(c.content, resolved, random),
 						isCorrect: correctIndices.includes(index)
 					}))
 				: null;

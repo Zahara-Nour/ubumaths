@@ -23,6 +23,7 @@ import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
 } from '$lib/ubumark';
+import type { RandomSource } from '$lib/utils/random';
 
 /**
  * Resolve a single variable expression
@@ -33,13 +34,13 @@ import {
  *
  * @param expression - Variable expression string (should already be in Markdown syntax)
  * @param alreadyResolved - Variables already resolved
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved value as string (LaTeX format)
  *
  * @example
  * ```typescript
  * // Simple random (Markdown syntax)
- * resolveVariableExpression('{{random:1..10}}', [], 42)  // → "7"
+ * resolveVariableExpression('{{random:1..10}}', [], createRandomSource(42))  // → "7"
  *
  * // Reference to other variable
  * const resolved = [{ name: 'a', value: '5' }];
@@ -52,12 +53,12 @@ import {
 export function resolveVariableExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
-	seed?: number,
+	random: RandomSource = Math.random,
 	options?: { useDisplayValue?: boolean }
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
 	// NOTE: expression should already be in Markdown syntax at this point
-	return sharedResolveExpression(expression, alreadyResolved, seed, options);
+	return sharedResolveExpression(expression, alreadyResolved, random, options);
 }
 
 /**
@@ -67,7 +68,7 @@ export function resolveVariableExpression(
  * allowing later variables to reference earlier ones.
  *
  * @param variables - Variable definitions
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Array of resolved variables
  *
  * @example
@@ -78,7 +79,7 @@ export function resolveVariableExpression(
  *   { name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }
  * ];
  *
- * const resolved = resolveVariables(variables, 42);
+ * const resolved = resolveVariables(variables, createRandomSource(42));
  * // → [
  * //   { name: 'a', value: '7' },
  * //   { name: 'b', value: '7 + 5' },
@@ -88,7 +89,7 @@ export function resolveVariableExpression(
  */
 export function resolveVariables(
 	variables: QuestionVariable[] | undefined,
-	seed?: number
+	random: RandomSource = Math.random
 ): ResolvedVariable[] {
 	if (!variables || variables.length === 0) {
 		return [];
@@ -96,7 +97,7 @@ export function resolveVariables(
 
 	// Database now stores pure markdown syntax ({{...}}) directly
 	// No conversion needed anymore - use variables as-is
-	const result = sharedResolveVariables(variables, seed);
+	const result = sharedResolveVariables(variables, random);
 
 	if (result === null) {
 		throw new Error('Failed to resolve variables');

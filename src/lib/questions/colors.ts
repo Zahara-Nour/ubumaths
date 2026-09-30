@@ -62,20 +62,22 @@ export const COLOR_PALETTES = {
 
 export type PaletteName = keyof typeof COLOR_PALETTES;
 
+import { randomIndex, type RandomSource } from '$lib/utils/random';
+
 /**
  * Resolves a color reference to an actual hex color code
  *
  * @param colorRef - Color reference in format: "paletteName" or "paletteName.index" or "paletteName.random"
- * @param seed - Optional seed for reproducible random selection
+ * @param random - Source de hasard de l'instance (consommée si la couleur est tirée)
  * @returns Hex color code (e.g., "#FF5722")
  *
  * @example
  * getColor('primary') // Random from primary palette
  * getColor('primary.0') // First color in primary palette
- * getColor('primary.random', 42) // Seeded random selection
+ * getColor('primary.random', createRandomSource(42)) // Reproducible random selection
  * getColor('contrast.0.0') // First color of first contrast pair
  */
-export function getColor(colorRef: string, seed?: number): string {
+export function getColor(colorRef: string, random: RandomSource = Math.random): string {
 	const parts = colorRef.split('.');
 	const paletteName = parts[0] as PaletteName;
 
@@ -89,11 +91,7 @@ export function getColor(colorRef: string, seed?: number): string {
 
 	// Handle contrast pairs (special case)
 	if (paletteName === 'contrast') {
-		const pairIndex = parts[1]
-			? parseInt(parts[1])
-			: seed
-				? seed % palette.length
-				: Math.floor(Math.random() * palette.length);
+		const pairIndex = parts[1] ? parseInt(parts[1]) : randomIndex(palette.length, random);
 		const pair = palette[pairIndex % palette.length];
 		const colorIndex = parts[2] ? parseInt(parts[2]) : 0;
 		return pair[colorIndex % pair.length];
@@ -109,13 +107,9 @@ export function getColor(colorRef: string, seed?: number): string {
 		}
 	}
 
-	// Handle random selection (with optional seed)
+	// Couleur tirée dans la source de l'instance
 	const colors = palette as readonly string[];
-	if (seed !== undefined) {
-		return colors[seed % colors.length];
-	}
-
-	return colors[Math.floor(Math.random() * colors.length)];
+	return colors[randomIndex(colors.length, random)];
 }
 
 /**
@@ -132,16 +126,15 @@ export function getColorByIndex(paletteName: PaletteName, index: number): string
 }
 
 /**
- * Gets a random color from a palette using a seed
+ * Gets a random color from a palette, drawn from the given random source
  */
-export function getRandomColor(paletteName: PaletteName, seed: number): string {
+export function getRandomColor(paletteName: PaletteName, random: RandomSource): string {
 	const palette = COLOR_PALETTES[paletteName];
 	if (paletteName === 'contrast') {
-		const pair = palette[seed % palette.length];
-		return pair[0];
+		return palette[randomIndex(palette.length, random)][0];
 	}
 	const colors = palette as readonly string[];
-	return colors[seed % colors.length];
+	return colors[randomIndex(colors.length, random)];
 }
 
 /**

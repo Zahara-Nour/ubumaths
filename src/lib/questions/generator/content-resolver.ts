@@ -20,6 +20,7 @@ import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
+import type { RandomSource } from '$lib/utils/random';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 
@@ -210,13 +211,13 @@ function textQuantities(text: string): string {
  *
  * @param markdown - Template markdown containing placeholders
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved markdown ready for rendering
  */
 export function resolveMarkdownContent(
 	markdown: TemplateMarkdown,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random: RandomSource = Math.random
 ): ResolvedMarkdown {
 	// Stage 0: conditions sur les variables tirées (`{{if:…}}`) → branche retenue
 	const withoutConditionals = resolveVariableConditionals(String(markdown), resolvedVariables);
@@ -226,13 +227,13 @@ export function resolveMarkdownContent(
 	// Sans aucun marqueur `{{…}}`, le résolveur remplacerait les noms de variables écrits
 	// en clair (prévu pour `a^b*a^c`) : dans un texte, « Il a gagné » deviendrait « Il 4 gagné »
 	let resolvedContent = withoutConditionals.includes('{{')
-		? resolveVariableExpression(withoutConditionals, resolvedVariables, seed, {
+		? resolveVariableExpression(withoutConditionals, resolvedVariables, random, {
 				useDisplayValue: true
 			})
 		: withoutConditionals;
 
 	// Stage 2: Resolve color references
-	resolvedContent = resolveColorReferences(resolvedContent, seed);
+	resolvedContent = resolveColorReferences(resolvedContent, random);
 
 	// Stage 3: Convert math zones ($...$, $$...$$) from custom to LaTeX
 	// Note: ~...~ and ~~...~~ remain in custom syntax
@@ -249,19 +250,19 @@ export function resolveMarkdownContent(
  *
  * @param expression - Expression string
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved string
  */
 export function resolveExpression(
 	expression: string,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random: RandomSource = Math.random
 ): string {
 	// Database now stores pure markdown syntax ({{...}}) directly
 	// No conversion needed anymore
-	let resolved = resolveVariableExpression(expression, resolvedVariables, seed);
+	let resolved = resolveVariableExpression(expression, resolvedVariables, random);
 	// Also resolve color references
-	resolved = resolveColorReferences(resolved, seed);
+	resolved = resolveColorReferences(resolved, random);
 	return resolved;
 }
 
@@ -299,17 +300,17 @@ export function insertExpressionMarkers(content: string, expressionNames: Set<st
  *
  * @param answerFormat - Answer format template string
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved answerFormat in LaTeX with ? markers preserved
  */
 export function resolveAnswerFormat(
 	answerFormat: string,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random: RandomSource = Math.random
 ): string {
 	// Stage 1: Resolve variables and color references
-	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, seed);
-	resolved = resolveColorReferences(resolved, seed);
+	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, random);
+	resolved = resolveColorReferences(resolved, random);
 
 	// Stage 2: Convert to LaTeX
 	// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
@@ -446,29 +447,29 @@ export function resolveConditionalChoice(
  *
  * @param solution - correctChoiceIndex from template (expected answer index)
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Resolved correctChoiceIndex, or undefined if input is undefined
  */
 export function resolveSolution(
 	solution: string | string[],
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random?: RandomSource
 ): string | string[];
 export function resolveSolution(
 	solution: string | string[] | undefined,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random?: RandomSource
 ): string | string[] | undefined;
 export function resolveSolution(
 	solution: string | string[] | undefined,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number
+	random: RandomSource = Math.random
 ): string | string[] | undefined {
 	if (solution === undefined) return undefined;
 
 	if (Array.isArray(solution)) {
-		return solution.map((sol) => resolveExpression(sol, resolvedVariables, seed));
+		return solution.map((sol) => resolveExpression(sol, resolvedVariables, random));
 	}
 
-	return resolveExpression(solution, resolvedVariables, seed);
+	return resolveExpression(solution, resolvedVariables, random);
 }

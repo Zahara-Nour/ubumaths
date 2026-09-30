@@ -3,7 +3,7 @@
  * ===============================================================
  *
  * Generates random numbers according to RandomSpec with:
- * - Optional seed for reproducibility
+ * - Reproducible draws from the instance's random source
  * - Variable bound resolution
  * - Exclusion pattern support
  * - Multiple decimal formats
@@ -17,7 +17,7 @@ import type {
 	ResolvedVariable,
 	NumberOrVariable
 } from '../../types';
-import { seededRandom } from '$lib/utils/random';
+import { randomIndex, type RandomSource } from '$lib/utils/random';
 import { evalResultToNumber } from '$lib/mathAST/eval';
 import { detectExpressionType } from '../parser/expression-normalizer';
 
@@ -43,11 +43,11 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  * - Discrete lists: {{a|b|c}} with variable resolution
  * - Variable bounds: min/max from resolved variables
  * - Exclusion patterns: single values, ranges, variables
- * - Seeded generation for reproducibility
+ * - Reproducible generation: every draw comes from the instance's random source
  *
  * @param spec - Random specification to generate from
  * @param resolvedVariables - Previously resolved variables (for bounds and exclusions)
- * @param seed - Optional seed for reproducibility
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Generated random number or string (for discrete lists)
  * @throws Error if spec is invalid or no valid values remain after exclusions
  *
@@ -56,9 +56,9 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  * generateRandomNumber(
  *   { type: 'integer', min: {type:'number',value:1}, max: {type:'number',value:10}, exclusions: [] },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
- * // -> 7 (deterministic with seed)
+ * // -> 7 (reproducible with the same source)
  * ```
  *
  * @example Decimal by digits
@@ -66,7 +66,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  * generateRandomNumber(
  *   { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3}, exclusions: [] },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> 47.391 (2 digits before decimal, 3 after)
  * ```
@@ -76,7 +76,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  * generateRandomNumber(
  *   { type: 'decimal-range', min: {type:'number',value:0.5}, max: {type:'number',value:9.99}, step: 0.01, exclusions: [] },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> 5.37 (multiples of 0.01 between 0.5 and 9.99)
  * ```
@@ -86,7 +86,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  * generateRandomNumber(
  *   { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> 'vert' (random selection from list)
  * ```
@@ -104,7 +104,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  *     ]
  *   },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> Returns 1,2,3,4,6, or 10 (excludes 5,7,8,9)
  * ```
@@ -122,7 +122,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  *     { name: 'min', value: '5' },
  *     { name: 'max', value: '20' }
  *   ],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> Random number between 5 and 20
  * ```
@@ -139,7 +139,7 @@ const RESOLVABLE_EXPR_TYPES = new Set([
  *     ]
  *   },
  *   [{ name: 'a', value: '5' }],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> Random number 1-10 excluding 5
  * ```
@@ -147,12 +147,12 @@ const RESOLVABLE_EXPR_TYPES = new Set([
 export function generateRandomNumber(
 	spec: RandomSpec,
 	resolvedVariables: ResolvedVariable[],
-	seed?: number,
+	random: RandomSource = Math.random,
 	resolveSubExpression?: (expr: string) => string
 ): number | string {
 	// Handle discrete lists separately (returns string)
 	if (spec.type === 'discrete-list') {
-		return generateFromDiscreteList(spec, resolvedVariables, seed, resolveSubExpression);
+		return generateFromDiscreteList(spec, resolvedVariables, random, resolveSubExpression);
 	}
 
 	// 1. Resolve variables in bounds/digits
@@ -253,24 +253,16 @@ export function generateRandomNumber(
 	let attempts = 0;
 	const MAX_ATTEMPTS = 10000;
 
+	// Chaque nouvel essai consomme la source : pas de graine recalculée
 	do {
 		if (spec.type === 'integer') {
-			value = randomInt(min!, max!, seed ? seed + attempts : undefined);
+			value = randomInt(min!, max!, random);
 		} else if (spec.type === 'relative-integer') {
-			value = randomRelativeInt(min!, max!, seed ? seed + attempts : undefined);
+			value = randomRelativeInt(min!, max!, random);
 		} else if (spec.type === 'decimal-by-digits') {
-			value = randomDecimalByDigits(
-				digitsBefore!,
-				digitsAfter!,
-				seed ? seed + attempts : undefined
-			);
+			value = randomDecimalByDigits(digitsBefore!, digitsAfter!, random);
 		} else {
-			value = randomDecimalByRange(
-				min!,
-				max!,
-				spec.step || 0.01,
-				seed ? seed + attempts : undefined
-			);
+			value = randomDecimalByRange(min!, max!, spec.step || 0.01, random);
 		}
 
 		attempts++;
@@ -347,9 +339,8 @@ function resolveNumberOrVariable(
 /**
  * Generate a random integer between min and max (inclusive)
  */
-function randomInt(min: number, max: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	return Math.floor(random * (max - min + 1)) + min;
+function randomInt(min: number, max: number, random: RandomSource): number {
+	return Math.floor(random() * (max - min + 1)) + min;
 }
 
 /**
@@ -357,13 +348,12 @@ function randomInt(min: number, max: number, seed?: number): number {
  *
  * Example: min=2, max=9 -> picks from {-9,-8,-7,-6,-5,-4,-3,-2, 2,3,4,5,6,7,8,9}
  */
-function randomRelativeInt(min: number, max: number, seed?: number): number {
+function randomRelativeInt(min: number, max: number, random: RandomSource): number {
 	// Total values: (max - min + 1) * 2 (negative range + positive range)
 	const rangeSize = max - min + 1;
 	const totalValues = rangeSize * 2;
 
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	const index = Math.floor(random * totalValues);
+	const index = randomIndex(totalValues, random);
 
 	if (index < rangeSize) {
 		// Negative range: -max to -min
@@ -377,9 +367,14 @@ function randomRelativeInt(min: number, max: number, seed?: number): number {
 /**
  * Generate a random decimal with specified digits before and after decimal point
  */
-function randomDecimalByDigits(digitsBefore: number, digitsAfter: number, seed?: number): number {
-	const random1 = seed !== undefined ? seededRandom(seed) : Math.random();
-	const random2 = seed !== undefined ? seededRandom(seed + 1) : Math.random();
+function randomDecimalByDigits(
+	digitsBefore: number,
+	digitsAfter: number,
+	random: RandomSource
+): number {
+	// Deux tirages successifs de la source : partie entière, puis partie décimale
+	const random1 = random();
+	const random2 = random();
 
 	// Generate digits before decimal point
 	const maxBefore = Math.pow(10, digitsBefore) - 1;
@@ -396,10 +391,14 @@ function randomDecimalByDigits(digitsBefore: number, digitsAfter: number, seed?:
 /**
  * Generate a random decimal in a range with a step
  */
-function randomDecimalByRange(min: number, max: number, step: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
+function randomDecimalByRange(
+	min: number,
+	max: number,
+	step: number,
+	random: RandomSource
+): number {
 	const steps = Math.floor((max - min) / step);
-	const selectedStep = Math.floor(random * (steps + 1));
+	const selectedStep = randomIndex(steps + 1, random);
 	return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
 }
 
@@ -413,7 +412,7 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
  *
  * @param spec - DiscreteListSpec with items and exclusions
  * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for reproducibility
+ * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @returns Selected item value
  * @throws Error if all items are excluded
  *
@@ -422,7 +421,7 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
  * generateFromDiscreteList(
  *   { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] },
  *   [],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> 'vert' (random selection)
  * ```
@@ -432,7 +431,7 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
  * generateFromDiscreteList(
  *   { type: 'discrete-list', items: ['a', 'b', 'literal'], exclusions: [] },
  *   [{ name: 'a', value: '10' }, { name: 'b', value: '20' }],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> '10', '20', or 'literal'
  * // Note: 'a' and 'b' are resolved to their variable values
@@ -444,7 +443,7 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
  * generateFromDiscreteList(
  *   { type: 'discrete-list', items: ['a', 'b', 'c'], exclusions: ['b'] },
  *   [{ name: 'a', value: '10' }, { name: 'b', value: '20' }, { name: 'c', value: '30' }],
- *   12345
+ *   createRandomSource(12345)
  * )
  * // -> '10' or '30' (excludes 'b' which resolves to '20')
  * ```
@@ -452,7 +451,7 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
 export function generateFromDiscreteList(
 	spec: { type: 'discrete-list'; items: string[]; exclusions: string[] },
 	resolvedVariables: ResolvedVariable[],
-	seed?: number,
+	random: RandomSource = Math.random,
 	resolveSubExpression?: (expr: string) => string
 ): string {
 	// 1. Resolve each item: variable name → value, or mark as literal
@@ -479,13 +478,13 @@ export function generateFromDiscreteList(
 	}
 
 	// 4. Random selection
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	const index = Math.floor(random * availableItems.length);
-	const selected = availableItems[index];
+	const selected = availableItems[randomIndex(availableItems.length, random)];
 
 	// 5. If selected item is a literal (not from a variable) and looks like a
 	//    sub-expression (range, eval, digits, etc.), resolve it recursively.
 	//    This handles cases like "0|1..9" where "1..9" is a range, not a literal.
+	//    La sous-expression tire dans la MÊME source, après le choix de la branche :
+	//    branche et valeur sont indépendantes.
 	if (selected.isLiteral && resolveSubExpression) {
 		const exprType = detectExpressionType(selected.value);
 		if (RESOLVABLE_EXPR_TYPES.has(exprType)) {

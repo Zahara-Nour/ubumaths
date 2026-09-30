@@ -109,6 +109,7 @@ import {
 	detectCircularDependencies,
 	parseMarkdown
 } from '$lib/ubumark';
+import { createRandomSource } from '$lib/utils/random';
 
 // ============================================================================
 // MAIN GENERATOR
@@ -290,7 +291,7 @@ function generateVariationsInstance(
 	let resolvedVariables: Array<{ name: string; value: string }> = [];
 	try {
 		resolvedVariables = resolvedVariation.variables?.length
-			? resolveVariables(resolvedVariation.variables, seed)
+			? resolveVariables(resolvedVariation.variables, createRandomSource(seed))
 			: [];
 	} catch (error) {
 		return {

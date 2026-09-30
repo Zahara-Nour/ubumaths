@@ -1,4 +1,5 @@
 import { getColor, COLOR_PALETTES } from '../colors';
+import type { RandomSource } from '$lib/utils/random';
 
 export interface ColorParseResult {
 	success: boolean;
@@ -16,9 +17,12 @@ export interface ColorParseResult {
  * - {#color:contrast.0.0} - First color of first contrast pair
  *
  * @param colorExpression - Expression after "#color:" (e.g., "primary.0")
- * @param seed - Optional seed for reproducible randomization
+ * @param random - Source de hasard de l'instance (consommée si la couleur est tirée)
  */
-export function parseColorExpression(colorExpression: string, seed?: number): ColorParseResult {
+export function parseColorExpression(
+	colorExpression: string,
+	random: RandomSource = Math.random
+): ColorParseResult {
 	try {
 		// Validate format
 		if (!colorExpression || colorExpression.trim().length === 0) {
@@ -40,7 +44,7 @@ export function parseColorExpression(colorExpression: string, seed?: number): Co
 		}
 
 		// Get color
-		const color = getColor(colorExpression, seed);
+		const color = getColor(colorExpression, random);
 
 		return {
 			success: true,
@@ -62,24 +66,18 @@ export function parseColorExpression(colorExpression: string, seed?: number): Co
  * - Markdown: {{color:...}} (double brace)
  *
  * @param text - Text containing color patterns
- * @param seed - Optional seed for reproducible colors
+ * @param random - Source de hasard de l'instance : chaque couleur tirée la fait avancer
  * @returns Text with color references replaced by hex codes
  */
-export function resolveColorReferences(text: string, seed?: number): string {
+export function resolveColorReferences(text: string, random: RandomSource = Math.random): string {
 	// Support both legacy {#color:...} and new {{color:...}} syntax
 	const colorPattern = /\{#color:([^}]+)\}|\{\{color:([^}]+)\}\}/g;
-
-	// Track color counter for seeding to ensure different colors get different seeds
-	let colorCounter = 0;
 
 	return text.replace(colorPattern, (match, legacyGroup, markdownGroup) => {
 		// Use whichever group matched (legacy or markdown syntax)
 		const colorExpression = legacyGroup || markdownGroup;
 
-		// If seed is provided, modify it for each color occurrence to get variety
-		const effectiveSeed = seed !== undefined ? seed + colorCounter++ : undefined;
-
-		const result = parseColorExpression(colorExpression, effectiveSeed);
+		const result = parseColorExpression(colorExpression, random);
 		if (result.success && result.color) {
 			return result.color;
 		}
