@@ -142,3 +142,18 @@ les durées ajustées au ±5 s survivent à « Recommencer ».
 - **Q13** : sans UbuSlides (enchaînement simple réutilisant `FlashCard`, comme la révision SRS).
 - **Q14** : visiteur non connecté → utilisable, message visible « Connecte-toi pour que tes réponses
   comptent dans tes révisions ».
+
+### Chantier 2 — migration livrée (#553, appliquée en production le 2026-09-30)
+
+- `test_sessions.mode` accepte `flash` ; contrainte `test_sessions_flash_sans_assignation` : une
+  séance flash (score auto-évalué) n'est jamais rattachée à une évaluation. Vérifié en production
+  (`pg_constraint`). `db:types` : aucun changement.
+- Reste : PR du code (forme Flash-cards, sauvegarde `mode: 'flash'`, tentatives `student_self`).
+
+### Risques existants relevés par l'audit (à fermer avec l'ADR 0015, évaluations notées)
+
+- Policy UPDATE élève sur `test_sessions` sans `WITH CHECK` ni restriction de colonnes : l'élève peut
+  réécrire `score`, `assignment_id`, `completed_at`, `mode` de ses propres séances (PostgREST direct).
+- Policy INSERT élève : ne vérifie que `user_id` ; insertion directe possible avec n'importe quel
+  score / `assignment_id`, sans passer par `/api/tests/save`.
+- `GRANT ALL … TO anon` sur la table (fermé par la RLS, à révoquer par défense en profondeur).
