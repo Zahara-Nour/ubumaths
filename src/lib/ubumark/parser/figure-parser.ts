@@ -63,6 +63,30 @@ export function isFigureBlockStart(line: string): boolean {
  * avant toute clôture nue) : il s'arrête avant la première ligne vide qui suit
  * le script, pour ne pas avaler la suite du document.
  */
+/** Mots qui ouvrent une instruction du langage des figures */
+const FIGURE_STATEMENT_START = /^(pour|si|sinon|macro|retourne)\b/;
+
+/**
+ * Le corps d'une figure contient-il du markdown, signe qu'un bloc NON FERMÉ
+ * déborde sur le document ? Seules comptent les lignes qui ouvrent un
+ * paragraphe (après une ligne vide) :
+ * - `## Titre` (deux `#` ou plus) : un titre — un seul `#` est un commentaire
+ *   du langage des figures ;
+ * - un item de liste, un `$$` ;
+ * - une ligne de texte sans `=`, `(` ni `:`, qui n'ouvre pas une instruction.
+ */
+function containsMarkdown(body: readonly string[]): boolean {
+	return body.some((raw, k) => {
+		const line = raw.trim();
+		const opensParagraph = k === 0 || body[k - 1].trim() === '';
+		if (line === '' || !opensParagraph || raw.startsWith(' ') || raw.startsWith('\t')) return false;
+		if (/^#{2,}\s/.test(line) || /^([-*+]|\d+\.)\s/.test(line) || line.startsWith('$$'))
+			return true;
+		if (line.startsWith('#') || line === '---' || FIGURE_STATEMENT_START.test(line)) return false;
+		return !/[=(:]/.test(line);
+	});
+}
+
 export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 	const blocks: FigureBlockRange[] = [];
 	let i = 0;
@@ -74,7 +98,14 @@ export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 		const startIndex = i;
 		let j = i + 1;
 		while (j < lines.length && !lines[j].startsWith('```')) j++;
-		if (j < lines.length && BLOCK_END_REGEX.test(lines[j])) {
+		// ⚠️ Un ``` plus loin ne ferme la figure que si rien de markdown ne les
+		// sépare (Q25) : sinon il avalait le texte, et ouvrait un bloc de code
+		// jamais refermé
+		if (
+			j < lines.length &&
+			BLOCK_END_REGEX.test(lines[j]) &&
+			!containsMarkdown(lines.slice(startIndex + 1, j))
+		) {
 			blocks.push({ startIndex, endIndex: j, closed: true });
 			i = j + 1;
 			continue;
