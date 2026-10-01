@@ -2399,6 +2399,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\vdots/g, 'dots.v');
 	result = result.replace(/\\ddots/g, 'dots.down');
 	result = result.replace(/\\ldots/g, '...');
+	// \dots (et \dotsc, \dotsb, \dotsm d'amsmath) : sortait en texte « dots »
+	result = result.replace(/\\dots[cbmio]?(?![a-zA-Z])/g, '...');
 
 	// Convert arithmetic operators (using helper to add space before digits)
 	result = replaceLatexCmd(result, 'cdot', 'dot.c');

@@ -1603,6 +1603,15 @@ describe('convertLatexToTypstMath - Matrix environments', () => {
 });
 
 describe('convertLatexToTypstMath - Ellipsis (Dots)', () => {
+	it('\\dots comme \\ldots : points de suspension, pas le texte « dots »', () => {
+		expect(convertLatexToTypstMath('1+2+\\dots+n')).toBe('1+2+...+n');
+		expect(convertLatexToTypstMath('u_0, \\dots, u_n')).toBe(
+			convertLatexToTypstMath('u_0, \\ldots, u_n')
+		);
+		// \dotsc, \dotsb (amsmath) : mêmes points
+		expect(convertLatexToTypstMath('1+\\dotsb+n')).toBe('1+...+n');
+	});
+
 	it('should convert \\ldots to ...', () => {
 		expect(convertLatexToTypstMath('\\ldots')).toBe('...');
 	});
