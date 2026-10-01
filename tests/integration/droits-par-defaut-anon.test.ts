@@ -153,6 +153,23 @@ describe('privilèges par défaut du schéma public — aucun droit pour anon', 
 	});
 
 	describe('objets existants : inchangés', () => {
+		// Garde : un futur DROP + CREATE de ces RPC publiques (appelées sans
+		// connexion) perdrait EXECUTE pour anon sans GRANT explicite.
+		it.each([
+			'public.get_consent_info(uuid)',
+			'public.get_worksheet_by_share_token(text, uuid)',
+			'public.get_class_journal_by_share_token(text)',
+			'public.get_exercise_by_share_token(text)',
+			'public.grant_parental_consent(uuid, inet, text)'
+		])('anon exécute toujours la RPC publique %s', async (signature) => {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ granted: boolean }>(
+				`select has_function_privilege('anon', $1, 'EXECUTE') as granted`,
+				[signature]
+			);
+			expect(rows[0].granted).toBe(true);
+		});
+
 		it.each(TABLES_EXISTANTES_LISIBLES)('anon lit toujours %s', async (table) => {
 			expect(await hasTablePrivilege('anon', `public.${table}`, 'SELECT')).toBe(true);
 		});

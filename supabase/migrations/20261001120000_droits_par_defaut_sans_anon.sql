@@ -33,6 +33,14 @@
 --     sans EXECUTE pour PUBLIC → `grant execute` explicite si elles sont
 --     appelées par `authenticated` / `anon`.
 --   - Fonctions existantes : inchangées.
+--   - Rôles de service Supabase : `supabase_auth_admin` et
+--     `supabase_storage_admin` avaient eux aussi EXECUTE via PUBLIC. Un futur
+--     trigger posé sur `auth.*` ou `storage.*` qui appelle une NOUVELLE
+--     fonction de `public`, ou un futur hook Auth, doit donc soit être
+--     `SECURITY DEFINER`, soit recevoir un `grant execute on function ... to
+--     supabase_auth_admin;` (ou `supabase_storage_admin`) explicite. Sans
+--     cela, l'inscription casse. `handle_new_user` est SECURITY DEFINER et
+--     existe déjà : non concernée.
 --
 -- RÈGLE POUR L'AVENIR : une table (ou séquence) qu'une page publique doit lire
 -- SANS connexion demande un GRANT explicite dans sa migration, PLUS une policy :
