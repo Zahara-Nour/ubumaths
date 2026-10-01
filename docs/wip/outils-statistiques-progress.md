@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : phase 0 — tour 1 tranché, tour 2 posé (aucun code écrit)
+## État : phase 0 — tours 1-2 tranchés, spécification TDD du lot 1 soumise (aucun code écrit)
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -50,6 +50,29 @@ Tour 1 (2026-10-01) — toutes les recommandations suivies :
    grapheur garde nuage et ajustement.
 7. **Pas de simulation** dans ce chantier.
 
+Tour 2 (2026-10-01) — toutes les recommandations suivies :
+
+8. **Syntaxe** : `clé:` = option, `donnée = effectif` = donnée, `;` séparateur, `{{a}}` résolues
+   avant ; une option l'emporte sur une catégorie homonyme (documenté). Blocs `barres`,
+   `circulaire` (`étiquettes:` pourcentages | effectifs | angles | aucune), `histogramme`
+   (`[a ; b[ = n`, aire ∝ effectif, `légende: 1 carreau = 2 élèves`), `frequences-cumulees`
+   (`sens:`, `lecture: médiane`), `tableau-croise` (`lignes:`, `colonnes:`, `?` = case vide,
+   `totaux:`, `afficher:`).
+9. **Virgule décimale acceptée** (`12,5` et `12.5`) : la virgule n'y est jamais séparatrice
+   (règle `;` de #520). Contexte vérifié : `parseCustom` lit `3,14` décimal (hors matrices) ;
+   bloc `figure` REFUSE la virgule (88e7ba2ae) ; `variation` = séparateur. Affichage selon la
+   langue du document (#448). `45,120` → erreur « effectif non entier ».
+10. **Effectifs entiers ≥ 0 OU pourcentages**, jamais mélangés (erreur d'auteur). Série brute
+    (`données:`) plus tard.
+11. **`indicateurs:`** en option, au lot 3.
+12. **Lot 1** : quartiles/déciles/EIQ (brut + effectifs), effectifs/fréquences/cumulées
+    (croissantes, décroissantes), classes (moyenne aux centres, classe médiane, médiane par
+    interpolation), rebrancher `describeList` + `.stats`, corriger la doc `n − 1`.
+13. **Arrondis d'affichage** : entier exact ; sinon ≈ à 2 décimales ; % à 1 décimale ; angles au
+    degré ; `arrondi: N` ; calcul interne jamais arrondi.
+
 ## Questions ouvertes
 
-Tour 2 (posé le 2026-10-01) : syntaxe des blocs des lots 2-4, contenu du lot 1, arrondis.
+- Spécification TDD du lot 1 (ci-dessous) : en attente de validation.
+- `.linreg` = 3ᵉ implémentation (ajustement recalculé, `web-repl-engine.ts` ~l.1780) : le
+  rebrancher sur `fitAffine` au lot 1 ? (reco : oui)
