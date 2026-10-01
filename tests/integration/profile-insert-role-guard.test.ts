@@ -111,22 +111,24 @@ describe('création de profil et rôle', () => {
 		expect(error).not.toBeNull();
 	});
 
-	it('mais il peut se créer un profil ÉLÈVE', async () => {
-		// Le témoin qui compte : l'inscription ne doit pas casser. C'est le rôle
-		// par défaut de la colonne, et celui que `handle_new_user` code en dur.
+	it('ni même un profil ÉLÈVE : le compte ne crée plus son profil (20261001200000)', async () => {
+		// Depuis la migration 20261001200000, « Allow profile creation » ne vise plus
+		// que service_role : la connexion Google crée le profil manquant avec le client
+		// service (profil-cree-par-le-serveur.test.ts). Le compte lui-même est refusé.
 		const { id, client } = await compteSansProfil();
 
 		const { error } = await client
 			.from('profiles')
 			.insert({ id, email: `${id}@test.com`, role: 'student' });
 
-		expect(error).toBeNull();
+		expect(error?.code).toBe('42501');
 	});
 
-	it('et sans préciser de rôle non plus', async () => {
-		const { id, client } = await compteSansProfil();
+	it('le client service crée toujours un profil élève, sans préciser de rôle', async () => {
+		// Le témoin qui compte : la connexion Google ne doit pas casser.
+		const { id } = await compteSansProfil();
 
-		const { error } = await client.from('profiles').insert({ id, email: `${id}@test.com` });
+		const { error } = await service.from('profiles').insert({ id, email: `${id}@test.com` });
 
 		expect(error).toBeNull();
 		const { data } = await service.from('profiles').select('role').eq('id', id).single();

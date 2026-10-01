@@ -1,0 +1,23 @@
+-- Profil : créé par la base ou par le serveur, plus par le compte lui-même
+-- =========================================================================
+--
+-- Faille (préexistante, signalée par l'audit de la PR #596) : la policy « Allow
+-- profile creation » (INSERT, TO authenticated) n'exigeait que auth.uid() = id.
+-- Un compte resté sans profil (handle_new_user avale ses erreurs) pouvait donc
+-- créer le sien depuis le navigateur en choisissant status = 'approved', son
+-- school_id (frontière sociale), is_test, bonus, gidouilles…
+--
+-- Correctif (accès tranché par David le 2026-10-01) : la policy ne vise plus que
+-- service_role. Les deux chemins légitimes ne dépendent pas d'elle :
+--   * handle_new_user (trigger SECURITY DEFINER sur auth.users) ;
+--   * la connexion Google (src/routes/(public)/auth/callback/+server.ts), qui crée
+--     désormais le profil manquant avec le client service et des valeurs imposées
+--     (élève, en attente, sans école).
+--
+-- Qui perd quoi : un compte connecté ne peut plus créer son propre profil par
+-- l'API. Personne ne gagne rien. Aucune donnée touchée.
+--
+-- ROLLBACK :
+--   alter policy "Allow profile creation" on public.profiles to authenticated;
+
+alter policy "Allow profile creation" on public.profiles to service_role;

@@ -43,6 +43,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Cleanup endpoints
 	'/api/cleanup/',
 	'/api/errors/cleanup',
+	// Profil créé à la connexion Google : valeurs imposées par le serveur
+	'/auth/callback',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
