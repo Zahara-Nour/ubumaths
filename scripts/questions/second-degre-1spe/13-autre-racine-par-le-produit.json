@@ -1,0 +1,308 @@
+{
+	"title": "Trouver l'autre racine avec le produit des racines",
+	"description": "Une racine connue, l'autre par x₁x₂ = c/a",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Racines",
+	"level": 6,
+	"delay": 40,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le nombre ${{r}}$ est une racine du polynôme $P(x)={{eval:ax^2+bx+c}}$. À l'aide du produit des racines, détermine l'autre racine.\n\n$x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "1"
+				},
+				{
+					"name": "s",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/(a*r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $x_1$ et $x_2$ sont les racines de $ax^2+bx+c$, alors $x_1\\times x_2=\\dfrac{c}{a}$. Ici $x_1={{r}}$, $a={{a}}$ et $c={{c}}$.",
+					"$$\\begin{align}{{r}}\\times x_2 &= \\dfrac{ {{c}} }{ {{a}} } \\\\ x_2 &= \\dfrac{ {{c}} }{ {{a}}\\times{{eval:r;()}} } = {{eval:c/(a*r)}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre ${{r}}$ est une racine du polynôme $P(x)={{eval:ax^2+bx+c}}$. À l'aide du produit des racines, détermine l'autre racine.\n\n$x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r != s && r != -s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/(a*r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $x_1$ et $x_2$ sont les racines de $ax^2+bx+c$, alors $x_1\\times x_2=\\dfrac{c}{a}$. Ici $x_1={{r}}$, $a={{a}}$ et $c={{c}}$.",
+					"$$\\begin{align}{{r}}\\times x_2 &= \\dfrac{ {{c}} }{ {{a}} } \\\\ x_2 &= \\dfrac{ {{c}} }{ {{a}}\\times{{eval:r;()}} } = {{eval:c/(a*r)}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Le nombre ${{r}}$ est une racine du polynôme $P(x)={{eval:ax^2+bx+c}}$. À l'aide du produit des racines, détermine l'autre racine.\n\n$x_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2|3"
+				},
+				{
+					"name": "r",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(a*r+q)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:q*r"
+				}
+			],
+			"conditions": ["mod(q,a) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/(a*r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $x_1$ et $x_2$ sont les racines de $ax^2+bx+c$, alors $x_1\\times x_2=\\dfrac{c}{a}$. Ici $x_1={{r}}$, $a={{a}}$ et $c={{c}}$.",
+					"$$\\begin{align}{{r}}\\times x_2 &= \\dfrac{ {{c}} }{ {{a}} } \\\\ x_2 &= \\dfrac{ {{c}} }{ {{a}}\\times{{eval:r;()}} } = {{eval:c/(a*r)}}\\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x^2+4x-6, racine 1 : x2 = −3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"s": "-3",
+				"b": "4",
+				"c": "-6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x2 = c (division par a oubliée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"s": "-3",
+				"b": "4",
+				"c": "-6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x2 = −c/a (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1",
+				"s": "-3",
+				"b": "4",
+				"c": "-6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-x^2+x+6, racine 3 : x2 = −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "3",
+				"s": "-2",
+				"b": "1",
+				"c": "6"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c/a sans diviser par la racine connue",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"r": "3",
+				"s": "-2",
+				"b": "1",
+				"c": "6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x^2-6x-24, racine −2 : x2 = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"r": "-2",
+				"s": "4",
+				"b": "-6",
+				"c": "-24"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3x^2-5x-2, racine 2 : x2 = −1/3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"q": "-1",
+				"b": "-5",
+				"c": "-2"
+			},
+			"answers": ["-\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "non réduite −2/6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"q": "-1",
+				"b": "-5",
+				"c": "-2"
+			},
+			"answers": ["-\\frac{2}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "valeur approchée −0,33",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"r": "2",
+				"q": "-1",
+				"b": "-5",
+				"c": "-2"
+			},
+			"answers": ["-0{,}33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x^2+x-15, racine −3 : x2 = 5/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"q": "5",
+				"b": "1",
+				"c": "-15"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5/2 écrit 2,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"q": "5",
+				"b": "1",
+				"c": "-15"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
