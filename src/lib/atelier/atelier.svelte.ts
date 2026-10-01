@@ -299,6 +299,11 @@ export class Atelier {
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
 		this.charts.delete(name);
+		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
+		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
+		for (const [list, chart] of [...this.charts]) {
+			if (chart.partner === name) this.charts.delete(list);
+		}
 		this.recomputeAll();
 
 		return { ok: true, broken };

@@ -80,7 +80,8 @@ describe('écarts voulus par rapport à l’ancien moteur', () => {
 		const result = new WebReplEngine().execute(command);
 
 		expect(result.success).toBe(false);
-		expect(result.output).toBe('Erreur: certaines valeurs ne sont pas des nombres valides');
+		// Le message de `.stats` ajoute depuis le lot 5 comment séparer les valeurs
+		expect(result.output).toMatch(/^Erreur: certaines valeurs ne sont pas des nombres valides/);
 	});
 
 	it('.linreg ajuste des abscisses petites mais distinctes', () => {
@@ -126,6 +127,25 @@ describe('`.stats` en français', () => {
 
 		expect(output).toContain('Effectif : 17');
 		expect(describeModule.summarizeTable).toHaveBeenCalledWith([1, 2, 3], [5, 8, 4]);
+	});
+
+	// Revue du lot 5 : ces trois écritures donnaient des statistiques FAUSSES, sans erreur
+	it.each(['.stats 1,2,3 ; 4', '.stats 3abc ; 4', '.stats 12 15 9'])('%s : refusé', (command) => {
+		expect(new WebReplEngine().execute(command).success).toBe(false);
+	});
+
+	// `3,4` après « : » était lu 3 et 4 alors que la virgule est décimale à gauche
+	it('un « ; » fixe la convention pour tout l’argument, effectifs compris', () => {
+		expect(lines('.stats 1 ; 2 : 3,5 ; 4')).toContain('Effectif : 7,5');
+		// 3,4 est UN effectif (décimal) : un seul pour deux valeurs, refusé
+		expect(new WebReplEngine().execute('.stats 1 ; 2 : 3,4').success).toBe(false);
+	});
+
+	it('le message d’usage montre « ; » et les effectifs', () => {
+		const usage = new WebReplEngine().execute('.stats').output;
+
+		expect(usage).toContain('12 ; 15 ; 9');
+		expect(usage).toContain(':');
 	});
 
 	it('valeurs et effectifs de longueurs différentes : refusé', () => {

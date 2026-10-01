@@ -171,7 +171,11 @@
 		// leur partenaire (`scatter:M`), et `action.id === 'scatter'` ne
 		// répondait plus jamais (outils statistiques, Q39).
 		const root = action.id.split(':')[0];
-		activeView = root === 'scatter' ? 'graphe' : root === 'chart' ? 'donnees' : 'calcul';
+		// Retirer un diagramme ne mène nulle part : on reste où l'on est
+		const chartShown = root === 'chart' && atelier.chartOf(object.name) !== undefined;
+		if (root === 'scatter') activeView = 'graphe';
+		else if (chartShown) activeView = 'donnees';
+		else if (root !== 'chart') activeView = 'calcul';
 
 		if (root === 'chart') {
 			announce(

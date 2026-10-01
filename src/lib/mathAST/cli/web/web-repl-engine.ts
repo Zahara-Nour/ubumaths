@@ -1535,11 +1535,11 @@ export class WebReplEngine {
 		if (!args.trim()) {
 			return {
 				success: false,
-				output: 'Usage: .stats n1, n2, n3, ...',
+				output: 'Usage : .stats 12 ; 15 ; 9 (valeurs : effectifs → .stats 1 ; 2 : 5 ; 8)',
 				outputHtml: formatErrorHtml({
 					code: 'INVALID_OPTIONS',
-					message: 'Usage: .stats n1, n2, n3, ...',
-					suggestion: 'Entrez une liste de nombres separes par des virgules'
+					message: 'Usage : .stats 12 ; 15 ; 9',
+					suggestion: 'Des effectifs après « : » : .stats 1 ; 2 : 5 ; 8'
 				}),
 				error: {
 					code: 'INVALID_OPTIONS',
@@ -1552,7 +1552,23 @@ export class WebReplEngine {
 		const parts = args.split(':');
 		if (parts.length > 2)
 			return this.statsFailure('Un seul « : », entre les valeurs et les effectifs');
-		const parsed = parts.map((part) => parseStatsNumbers(part));
+		// One convention for the whole argument: a « ; » anywhere makes every comma decimal
+		const decimalComma = args.includes(';');
+		const maybe = parts.map((part) => parseStatsNumbers(part, decimalComma));
+		if (maybe.some((numbers) => numbers === null)) {
+			return {
+				success: false,
+				output:
+					'Erreur: certaines valeurs ne sont pas des nombres valides (séparer par « ; » : .stats 12 ; 15 ; 9)',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Certaines valeurs ne sont pas des nombres valides',
+					suggestion: 'Séparer les valeurs par « ; » : .stats 12 ; 15 ; 9'
+				}),
+				error: { code: 'PARSE_ERROR', message: 'Invalid numbers in input' }
+			};
+		}
+		const parsed = maybe as number[][];
 
 		// SECURITY: Limit number of values to prevent DoS
 		const MAX_STATS_VALUES = 1000;
@@ -1867,13 +1883,19 @@ export class WebReplEngine {
 }
 
 /**
- * Numbers of a `.stats` argument. With `;` the comma is DECIMAL (the atelier's
- * convention: `12,5 ; 3`); without, the legacy comma-separated form is kept
- * (`12,15,9`).
+ * Numbers of one side of a `.stats` argument, or null if a token is not a plain
+ * number. With `decimalComma` (a `;` somewhere in the argument) the comma is
+ * DECIMAL — the atelier's convention, `12,5 ; 3`; otherwise the legacy
+ * comma-separated form (`12,15,9`).
+ *
+ * ⚠️ Strict on purpose: `parseFloat` read `1.2,3` as 1.2, `3abc` as 3, and
+ * `12 15 9` as 12 — wrong statistics, displayed as a success.
  */
-function parseStatsNumbers(part: string): number[] {
-	const separated = part.includes(';')
-		? part.split(';').map((s) => s.trim().replace(',', '.'))
-		: part.split(',').map((s) => s.trim());
-	return separated.filter((s) => s.length > 0).map((s) => parseFloat(s));
+function parseStatsNumbers(part: string, decimalComma: boolean): number[] | null {
+	const tokens = (decimalComma ? part.split(';') : part.split(','))
+		.map((s) => s.trim())
+		.filter((s) => s.length > 0);
+	const plain = decimalComma ? /^-?\d+(?:[.,]\d+)?$/ : /^-?\d+(?:\.\d+)?$/;
+	if (!tokens.every((token) => plain.test(token))) return null;
+	return tokens.map((token) => Number(token.replace(',', '.')));
 }

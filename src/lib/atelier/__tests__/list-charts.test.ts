@@ -61,6 +61,17 @@ describe('actions d’une liste', () => {
 		);
 	});
 
+	// Revue du lot 5 : une action qui ne peut qu'échouer dit pourquoi AVANT le clic
+	it('partenaire de longueur différente : actions « avec effectifs » désactivées, avec la raison', () => {
+		const atelier = atelierWith({ L: '1 ; 2', N: '3 ; 4 ; 5' });
+		const actions = actionsFor(atelier.get('L')!, atelier);
+
+		for (const id of ['stats:N', 'chart:N']) {
+			expect(actions.find((a) => a.id === id)?.disabledReason).toMatch(/2.*3|3.*2/);
+		}
+		expect(actions.find((a) => a.id === 'scatter:N')?.disabledReason).toBeUndefined();
+	});
+
 	it('le bouton du diagramme bascule : « Retirer le diagramme »', () => {
 		const atelier = atelierWith({ L: '1 ; 2' });
 		const desk = new CalcDesk(atelier);
@@ -188,11 +199,46 @@ describe('diagramme en bâtons', () => {
 		expect(atelier.chartOf('L')).toBeUndefined();
 	});
 
-	// Q37 : rien de nouveau dans la sauvegarde ni dans le lien de partage
-	it('n’est pas enregistré', () => {
+	// Q37 : rien de nouveau dans la sauvegarde ni dans le lien de partage. Revue
+	// du lot 5 : comparer la sauvegarde ENTIÈRE, pas chercher un mot-clé
+	it('n’est pas enregistré, et ne déclenche aucun enregistrement', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '3 ; 4' });
+		const before = atelier.serialize();
+		const revision = atelier.revision;
+
 		new CalcDesk(atelier).runFromPanel('chart:M', 'L');
 
-		expect(JSON.stringify(atelier.serialize())).not.toMatch(/chart/i);
+		expect(atelier.chartOf('L')).toEqual({ partner: 'M' });
+		expect(atelier.serialize()).toEqual(before);
+		expect(atelier.revision).toBe(revision);
+	});
+
+	// Revue du lot 5 : la liste en erreur bloquait le bouton qui retire son diagramme
+	it('se retire même quand la liste est en erreur', () => {
+		const atelier = atelierWith({ L: '1 ; 2' });
+		atelier.toggleChart('L', null);
+		atelier.update('L', '1 ; zz');
+
+		const remove = actionsFor(atelier.get('L')!, atelier).find((a) => a.id === 'chart');
+		expect(remove?.label).toBe('Retirer le diagramme');
+		expect(remove?.disabledReason).toBeUndefined();
+	});
+
+	it('supprimer la partenaire retire les diagrammes qui en dépendaient', () => {
+		const atelier = atelierWith({ L: '1 ; 2', M: '3 ; 4' });
+		atelier.toggleChart('L', 'M');
+
+		atelier.remove('M');
+
+		expect(atelier.chartOf('L')).toBeUndefined();
+	});
+
+	it('vivant aussi pour la partenaire : ses effectifs sont relus', () => {
+		const atelier = atelierWith({ L: '1 ; 2', M: '3 ; 4' });
+		atelier.toggleChart('L', 'M');
+
+		atelier.update('M', '5 ; 6');
+
+		expect(nodeOf(atelier, 'L', 'M').spec?.data.map((d) => d.value)).toEqual([5, 6]);
 	});
 });

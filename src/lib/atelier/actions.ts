@@ -116,12 +116,42 @@ function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[]
 	// cliquer ce qui va être tracé.
 	// Outils statistiques, lot 5 (Q35) : la partenaire peut aussi donner les
 	// EFFECTIFS des valeurs de cette liste
-	return partners.flatMap((partner) => [
-		{ id: `stats:${partner.name}`, label: `Statistiques avec effectifs ${partner.name}` },
-		{ id: `chart:${partner.name}`, label: `Diagramme avec effectifs ${partner.name}` },
-		{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
-		{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
-	]);
+	return partners.flatMap((partner) => {
+		const reason = countsProblem(object, partner);
+		const withCounts = (action: ObjectAction): ObjectAction =>
+			reason === undefined ? action : { ...action, disabledReason: reason };
+		return [
+			withCounts({
+				id: `stats:${partner.name}`,
+				label: `Statistiques avec effectifs ${partner.name}`
+			}),
+			withCounts({
+				id: `chart:${partner.name}`,
+				label: `Diagramme avec effectifs ${partner.name}`
+			}),
+			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
+			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
+		];
+	});
+}
+
+/**
+ * Pourquoi `partner` ne peut pas donner les effectifs de `object`, s'il ne le
+ * peut pas. Une action qui ne ferait qu'échouer le dit AVANT le clic (revue
+ * du lot 5 des outils statistiques).
+ *
+ * ⚠️ Seulement pour les effectifs : un nuage ou un ajustement utilisent les
+ * paires complètes et disent ce qu'ils écartent (§4 L1).
+ */
+function countsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
+	if (!isList(object) || !isList(partner)) return undefined;
+	if (partner.status !== 'ok') {
+		return partner.message ?? `« ${partner.name} » ne peut pas donner d'effectifs pour le moment.`;
+	}
+	if (object.values.length !== partner.values.length) {
+		return `${object.name} a ${object.values.length} valeur(s) et ${partner.name} ${partner.values.length} : il faut un effectif par valeur.`;
+	}
+	return undefined;
 }
 
 /** Pourquoi un objet ne peut rien produire, s'il ne peut rien produire. */
@@ -162,8 +192,11 @@ export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectActi
 		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
 		// qui l'a affiché le retire
 		const [root, partner] = action.id.split(':');
-		if (root === 'chart' && atelier?.chartOf(object.name)?.partner === (partner ?? null)) {
-			action = { ...action, label: 'Retirer le diagramme' };
+		const removesChart =
+			root === 'chart' && atelier?.chartOf(object.name)?.partner === (partner ?? null);
+		if (removesChart) {
+			// Retirer reste possible quoi qu'il arrive à la liste ou à sa partenaire
+			return { id: action.id, label: 'Retirer le diagramme' };
 		}
 		// D4 : un curseur sur une grandeur n'a pas de sens — on le dit plutôt que
 		// de faire disparaître l'action, sinon l'élève cherche pourquoi.
