@@ -16,3 +16,4 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://forge.apps.education.fr/sesamath/mathgraph.git
 - https://github.com/dgpad/dgpad.git
 - https://github.com/OpenBoard-org/OpenBoard.git
+- https://forge.apps.education.fr/coopmaths/mathalea.git
