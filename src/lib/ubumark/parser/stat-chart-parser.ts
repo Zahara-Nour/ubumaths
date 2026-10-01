@@ -770,7 +770,10 @@ function checkIndicators(
 		}
 	}
 	if (!isClasses) {
-		const notNumber = data.find((d) => !PLAIN_NUMBER_REGEX.test(d.label));
+		// Un nombre, ou une fraction d'entiers (catégorie `1/3` venue de l'atelier, Q45)
+		const notNumber = data.find(
+			(d) => !PLAIN_NUMBER_REGEX.test(d.label) && !/^-?\d+\/\d+$/.test(d.label)
+		);
 		if (notNumber) {
 			return `indicateurs : toutes les catégories doivent être des nombres (« ${notNumber.label} » n'en est pas un)`;
 		}

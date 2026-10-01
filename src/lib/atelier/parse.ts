@@ -181,6 +181,27 @@ export function readNumber(raw: string): number | null {
 	return Number.isFinite(n) ? n : null;
 }
 
+/** `1/6`, `-3/4`, `12/5` : une fraction d'entiers */
+const INTEGER_FRACTION = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
+
+/**
+ * Lire une valeur de liste : un nombre écrit à la française, ou une fraction
+ * d'entiers (Q45, 2026-10-02 : sans elle, un dé ne pouvait pas être saisi en
+ * sixièmes). La valeur gardée est le décimal ; le texte de l'élève reste tel
+ * quel dans le champ.
+ *
+ * ⚠️ Fractions d'ENTIERS seulement : `1,5/2` ou `1/2/3` restent écartés, et
+ * aucune expression générale (`2^3`, `sqrt(2)`) n'est lue ici.
+ */
+export function readListValue(raw: string): number | null {
+	const fraction = INTEGER_FRACTION.exec(raw);
+	if (fraction) {
+		const denominator = Number(fraction[2]);
+		return denominator === 0 ? null : Number(fraction[1]) / denominator;
+	}
+	return readNumber(raw);
+}
+
 /**
  * L'élève a-t-il séparé ses valeurs par des virgules ? Si oui, le message.
  *
@@ -233,7 +254,7 @@ export function parseDefinition(
 		const values: number[] = [];
 		let skipped = 0;
 		for (const part of parts) {
-			const n = readNumber(part);
+			const n = readListValue(part);
 			if (n === null) skipped++;
 			else values.push(n);
 		}
