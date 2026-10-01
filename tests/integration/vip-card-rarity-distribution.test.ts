@@ -303,13 +303,25 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 				'[test] Expected: legendary ~500 (50%), common ~200 (20%), rare ~150 (15%), epic ~150 (15%)'
 			);
 
-			// Legendary should be ~500 (50% of 1000), allow ±15% variance (1000 cards = smaller sample)
-			expect(rarityCounts.legendary).toBeGreaterThanOrEqual(425);
-			expect(rarityCounts.legendary).toBeLessThanOrEqual(575);
+			// Tirage aléatoire sur 1 000 cartes : bornes à ±4,5 écarts-types de la loi
+			// binomiale (échec par hasard < 1 sur 100 000). L'ancienne borne « commune
+			// ±15 % » (170-230) ne valait que ±2,4 écarts-types : la CI échouait environ
+			// une fois sur 60, sans bug (168 tirées le 2026-09-30).
+			const binomialBounds = (p: number): [number, number] => {
+				const mean = sampleSize * p;
+				const margin = 4.5 * Math.sqrt(sampleSize * p * (1 - p));
+				return [Math.floor(mean - margin), Math.ceil(mean + margin)];
+			};
 
-			// Common should be ~200 (20% of 1000), allow ±15% variance (1000 cards = smaller sample)
-			expect(rarityCounts.common).toBeGreaterThanOrEqual(170);
-			expect(rarityCounts.common).toBeLessThanOrEqual(230);
+			// Légendaire ~500 (50 %)
+			const [legendaryMin, legendaryMax] = binomialBounds(0.5);
+			expect(rarityCounts.legendary).toBeGreaterThanOrEqual(legendaryMin);
+			expect(rarityCounts.legendary).toBeLessThanOrEqual(legendaryMax);
+
+			// Commune ~200 (20 %)
+			const [commonMin, commonMax] = binomialBounds(0.2);
+			expect(rarityCounts.common).toBeGreaterThanOrEqual(commonMin);
+			expect(rarityCounts.common).toBeLessThanOrEqual(commonMax);
 
 			console.log(`[test] Legendary cards: ${rarityCounts.legendary}/1000 (expected ~500)`);
 			console.log(`[test] Common cards: ${rarityCounts.common}/1000 (expected ~200)`);
