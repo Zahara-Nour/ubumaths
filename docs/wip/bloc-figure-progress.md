@@ -151,3 +151,36 @@ marque="carre")`. `mtexte`/`rtexte` refusés : leur LaTeX n'a pas d'équivalent 
   message situé) — défaut préexistant du DSL, hors périmètre.
 - Les étiquettes peuvent chevaucher les traits (placement fixe, comme geometry-core).
 - Export LaTeX : non (le générateur LaTeX ignore le bloc).
+
+## Relecture (2026-10-01) — corrections
+
+Chaque correctif des points 1 à 4 a sa preuve rouge (correctif neutralisé → échec constaté →
+restauré depuis une copie).
+
+1. **Couleurs** (bloquant) : la scène résout toute couleur (trait, remplissage) en hexadécimal
+   3/4/6/8 chiffres (ce que `rgb()` de Typst accepte — 5 chiffres l'aurait fait échouer) ; noms
+   courants FR/EN en table ; sinon erreur située (ligne de la chaîne). Défense en profondeur :
+   `exportToTypst` écrit `black` pour toute couleur non hexadécimale. Le tokenizer de
+   geometry-core prenait le `#` d'une chaîne pour un commentaire : `couleur="#2563eb"` était
+   impossible à écrire → corrigé (commentaire retiré HORS chaînes seulement).
+2. **Nombres non finis** (bloquant) : coordonnées, rayons, angles d'arc, composantes de
+   vecteur, positions de texte, épaisseur, taille → finis et |x| ≤ 10^9 (au-delà, notation
+   exponentielle), sinon erreur située (ligne `A = …`). Export : toute ligne avec `NaN` /
+   `Infinity` hors chaîne est omise.
+3. **Injection CSS** : fermée par 1 ; défense à l'écran (`figureToSvg` : non hexadécimal →
+   couleur par défaut). Test navigateur : la couleur hostile n'apparaît jamais dans le DOM.
+   **Bloc courbe vérifié** : couleurs = liste fermée, nombres déjà bornés (test
+   `courbe-relecture-bornes.test.ts`, vert sans correctif — rien à corriger).
+4. **Budget par document** (`components/markdown/render-budget.ts`) : `MarkdownRenderer` pose un
+   budget partagé (rendus imbriqués compris) par les blocs figure ET courbe : au plus 20 blocs et
+   100 ms de calcul cumulé ; au-delà, cadre neutre (message pour le prof). Mesuré au navigateur :
+   126 blocs `polygone_regulier(K,1,10^7)` (10 000 caractères) 2 785 ms → < 300 ms ; 70 blocs
+   `intersection` 1 909 ms → < 300 ms.
+5. `markdownToTypst` inscrit lui-même le rendu (import dynamique, chunk Markdown inchangé) ; le
+   test du registre repère aussi les imports renommés ; `point(2,5 ; 1)` → « virgule décimale :
+   écrire 2.5 ou 2{,}5 ». Filtre nightly : `src/lib/geometry-core/**` (les producteurs de PDF
+   importent désormais l'interpréteur).
+
+Fiche en conditions de production avec les cas 1 et 2 (couleurs anglaises normalisées, couleur
+hostile, `0/0`, `10^400`) : FR/EN, énoncé + corrigé, **4/4 compilées**, cadres neutres, aucun
+`NaN` ni `rgb("` non hexadécimal dans le Typst.
