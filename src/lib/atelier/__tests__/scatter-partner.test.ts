@@ -43,38 +43,37 @@ describe('avec deux listes, rien ne change', () => {
 });
 
 describe('avec trois listes, l’élève choisit', () => {
-	it('propose un nuage par partenaire', () => {
+	// Q46 (2026-10-02) : l'élève CHOISIT la partenaire (menu de la carte) ; le
+	// catalogue n'en montre qu'une à la fois, au lieu d'une action par partenaire
+	it('propose le nuage avec la partenaire choisie, M ou N', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '2 ; 4', N: '3 ; 6' });
 
-		const ids = idsOf(atelier, 'L');
-
-		expect(ids).toContain('scatter:M');
-		expect(ids).toContain('scatter:N');
+		expect(idsOf(atelier, 'L')).toContain('scatter:M');
+		expect(actionsFor(atelier.get('L')!, atelier, 'N').map((a) => a.id)).toContain('scatter:N');
 	});
 
 	it('ne se propose jamais elle-même comme ordonnées', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '2 ; 4', N: '3 ; 6' });
 
 		expect(idsOf(atelier, 'L')).not.toContain('scatter:L');
+		expect(actionsFor(atelier.get('L')!, atelier, 'L').map((a) => a.id)).not.toContain('scatter:L');
 	});
 
 	it('fait pareil pour l’ajustement', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '2 ; 4', N: '3 ; 6' });
 
-		const ids = idsOf(atelier, 'L');
-
-		expect(ids).toContain('fit:M');
-		expect(ids).toContain('fit:N');
+		expect(idsOf(atelier, 'L')).toContain('fit:M');
+		expect(actionsFor(atelier.get('L')!, atelier, 'N').map((a) => a.id)).toContain('fit:N');
 	});
 
-	it('distingue les libellés', () => {
+	it('nomme la partenaire dans le libellé', () => {
 		const atelier = atelierWith({ L: '1 ; 2', M: '2 ; 4', N: '3 ; 6' });
 
-		const labels = actionsFor(atelier.get('L')!, atelier)
+		const labels = actionsFor(atelier.get('L')!, atelier, 'N')
 			.filter((a) => a.id.startsWith('scatter'))
 			.map((a) => a.label);
 
-		expect(new Set(labels).size).toBe(2);
+		expect(labels).toEqual(['Nuage avec N']);
 	});
 });
 

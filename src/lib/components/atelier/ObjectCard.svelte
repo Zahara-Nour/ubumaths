@@ -6,7 +6,8 @@
 	 * menus globale — c'est ce qui fait la progressivité 6ᵉ → terminale (§3).
 	 */
 	import type { AtelierObject } from '$lib/atelier/types';
-	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { actionsFor, defaultPartner, partnersOf, type ObjectAction } from '$lib/atelier/actions';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { useAtelier } from '$lib/atelier/context';
 
 	interface Props {
@@ -26,7 +27,19 @@
 	 * effectifs M ») comme la bascule « Retirer le diagramme » n'atteignaient
 	 * jamais l'écran (constaté au lot 5 des outils statistiques).
 	 */
-	const actions = $derived(actionsFor(object, atelier));
+	/** La liste partenaire choisie sur CETTE carte (Q46) ; null = celle par défaut */
+	let chosenPartner = $state<string | null>(null);
+	const partners = $derived(partnersOf(object, atelier));
+	const partner = $derived(
+		chosenPartner !== null && partners.includes(chosenPartner)
+			? chosenPartner
+			: defaultPartner(object, atelier)
+	);
+
+	const actions = $derived(actionsFor(object, atelier, partner ?? undefined));
+	/** Les actions de l'objet lui-même, puis celles faites avec la partenaire */
+	const ownActions = $derived(actions.filter((a) => a.partner === undefined));
+	const partnerActions = $derived(actions.filter((a) => a.partner !== undefined));
 
 	/** Les libellés français des types — l'interface ne parle pas anglais. */
 	const KIND_LABELS: Record<AtelierObject['kind'], string> = {
@@ -67,7 +80,7 @@
 
 	{#if selected}
 		<div class="actions">
-			{#each actions as action (action.id)}
+			{#each ownActions as action (action.id)}
 				<!--
 					`aria-disabled` et non `disabled` : un bouton désactivé sort de
 					l'ordre de tabulation, donc sa raison n'est jamais lue au clavier ni
@@ -94,6 +107,58 @@
 					</span>
 				{/if}
 			{/each}
+			<!-- Une partenaire à la fois (Q46) : au plus 9 boutons, quel que soit le
+			     nombre de listes. Avec plusieurs listes, l'élève la choisit ici. -->
+			{#if partner !== null}
+				<!-- Un groupe NOMMÉ : le lecteur d'écran sait avec quelle liste agissent
+				     ces boutons (audit a11y, WCAG 1.3.1) -->
+				<div class="partenaire" role="group" aria-label={`Avec la liste ${partner}`}>
+					<div class="avec">
+						{#if partners.length === 1}
+							<span>Avec la liste {partner}</span>
+						{:else}
+							<span aria-hidden="true">Avec la liste</span>
+							<!-- Le nom du bouton contient la liste CHOISIE (WCAG 4.1.2) -->
+							<MySelect
+								type="single"
+								triggerAriaLabel={`Avec la liste ${partner}`}
+								value={partner}
+								onValueChange={(name) => (chosenPartner = name)}
+								items={partners.map((name) => ({ value: name, label: name }))}
+								placeholder="Liste partenaire"
+								fitContent
+							/>
+						{/if}
+					</div>
+					{#each partnerActions as action (action.id)}
+						<!--
+					`aria-disabled` et non `disabled` : un bouton désactivé sort de
+					l'ordre de tabulation, donc sa raison n'est jamais lue au clavier ni
+					par un lecteur d'écran — or c'est justement elle qui dit à l'élève ce
+					qui lui manque. Il reste atteignable, et le geste ne fait rien.
+				-->
+						<button
+							type="button"
+							class="action"
+							aria-disabled={action.disabledReason !== undefined}
+							aria-describedby={action.disabledReason
+								? `${object.name}-${action.id.replace(':', '-')}-raison`
+								: undefined}
+							onclick={() => {
+								if (action.disabledReason !== undefined) return;
+								onAction?.(action, object);
+							}}
+						>
+							{action.label}
+						</button>
+						{#if action.disabledReason}
+							<span id="{object.name}-{action.id.replace(':', '-')}-raison" class="raison">
+								{action.disabledReason}
+							</span>
+						{/if}
+					{/each}
+				</div>
+			{/if}
 		</div>
 	{/if}
 </article>
@@ -166,6 +231,23 @@
 		flex-wrap: wrap;
 		gap: 0.25rem;
 	}
+	.partenaire {
+		display: flex;
+		flex-wrap: wrap;
+		gap: inherit;
+		flex-basis: 100%;
+	}
+
+	.avec {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		flex-basis: 100%;
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		color: var(--color-muted-foreground);
+	}
+
 	.action {
 		font-size: 0.75rem;
 		/* Cible d'au moins 28 px : les actions se multiplient avec les listes

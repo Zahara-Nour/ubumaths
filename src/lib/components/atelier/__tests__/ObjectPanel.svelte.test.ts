@@ -7,7 +7,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
+import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 
 /** Les libellés des boutons d'action visibles. */
@@ -118,5 +120,73 @@ describe('panneau d’objets', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		expect(container.textContent).toContain('En attente');
+	});
+});
+
+// =============================================================================
+// Q46 (2026-10-02) : une partenaire à la fois, choisie sur la carte
+// =============================================================================
+
+describe('actions avec une autre liste', () => {
+	async function settle() {
+		await new Promise((r) => setTimeout(r, 0));
+		await new Promise((r) => setTimeout(r, 0));
+	}
+
+	async function cardOf(lists: string[]) {
+		const atelier = new Atelier();
+		for (const name of lists) atelier.create({ kind: 'list', name, definition: '1 ; 2' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === lists[0]
+		) as HTMLElement;
+		(carte.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		return { container, carte, atelier };
+	}
+
+	const labels = (carte: HTMLElement) =>
+		[...carte.querySelectorAll('.action')].map((b) => b.textContent?.trim());
+
+	it('une seule partenaire : son nom est écrit, pas de menu', async () => {
+		const { carte } = await cardOf(['L', 'M']);
+
+		expect(carte.textContent).toContain('Avec la liste M');
+		expect(carte.querySelector('[aria-haspopup="listbox"]')).toBeNull();
+		expect(labels(carte)).toContain('Nuage avec M');
+	});
+
+	it('plusieurs partenaires : un menu, au plus 9 boutons, et le choix change les actions', async () => {
+		const { carte, atelier } = await cardOf(['L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']);
+		const trigger = carte.querySelector('[aria-haspopup="listbox"]') as HTMLButtonElement;
+
+		// Audit a11y : le bouton annonce la liste CHOISIE, pas seulement « Liste partenaire »
+		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste M');
+		const group = carte.querySelector('[role="group"]');
+		expect(group?.getAttribute('aria-label')).toBe('Avec la liste M');
+		expect(labels(carte).length).toBeLessThanOrEqual(9);
+		expect(labels(carte)).toContain('Nuage avec M');
+
+		// Un vrai clic : bits-ui réagit aux événements de pointeur, pas à `.click()`
+		await userEvent.click(trigger);
+		await settle();
+		const option = [...document.querySelectorAll('[role="option"]')].find((o) =>
+			o.textContent?.trim().startsWith('N')
+		) as HTMLElement;
+		await userEvent.click(option);
+		await settle();
+
+		expect(labels(carte)).toContain('Nuage avec N');
+		expect(labels(carte)).not.toContain('Nuage avec M');
+		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste N');
+
+		// Le geste part bien avec N, pas seulement le libellé (revue)
+		const nuage = [...carte.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Nuage avec N'
+		) as HTMLButtonElement;
+		nuage.click();
+		await settle();
+		expect(atelier.get('L')?.plottedWith).toBe('N');
 	});
 });

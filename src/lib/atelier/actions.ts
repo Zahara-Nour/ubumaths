@@ -27,6 +27,8 @@ export interface ObjectAction {
 	readonly label: string;
 	/** Renseignée quand l'action est visible mais indisponible ici. */
 	readonly disabledReason?: string;
+	/** La liste partenaire avec laquelle l'action est faite (Q46), sinon absente */
+	readonly partner?: string;
 }
 
 /** Ce qu'on répond quand la vue qui rendrait l'action n'existe pas encore. */
@@ -89,19 +91,71 @@ const NOT_YET: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Les nuages et ajustements possibles, une action par partenaire.
+ * Les listes partenaires d'une liste et celle retenue par défaut (Q46).
  *
- * ⚠️ C'est le catalogue lui-même qui porte le choix, plutôt qu'un écran de
- * sélection : le mécanisme du §3 sert exactement à ça — une action apparaît si
- * elle a un sens. Avec deux listes il n'y a qu'un partenaire, donc rien ne
- * change pour l'élève ; à trois, « la suivante » aurait été un choix arbitraire
- * fait à sa place.
+ * ⚠️ UNE partenaire à la fois : une action par partenaire donnait 5 boutons par
+ * autre liste, illisible dès trois listes. La carte affiche donc un choix de
+ * partenaire, et `actionsFor` ne rend que les actions faites avec elle.
  *
- * L'identifiant porte le nom de la partenaire (`scatter:M`) : c'est lui que
- * l'exécution relit, donc rien n'est redeviné au moment du clic.
+ * L'identifiant porte toujours le nom de la partenaire (`scatter:M`) : c'est
+ * lui que l'exécution relit, donc rien n'est redeviné au moment du clic.
  */
-function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[] {
-	const partners = atelier.objects.filter((o) => isList(o) && o.name !== object.name);
+/** Les listes partenaires possibles d'une liste : les autres, dans l'ordre du panneau. */
+export function partnersOf(object: AtelierObject, atelier: Atelier): string[] {
+	if (!isList(object)) return [];
+	return atelier.objects.filter((o) => isList(o) && o.name !== object.name).map((o) => o.name);
+}
+
+/**
+ * La partenaire proposée d'abord (Q46) : celle du diagramme affiché, pour que
+ * « Retirer le diagramme » reste sous la main ; sinon la liste suivante du
+ * panneau, en revenant au début ; null sans partenaire.
+ */
+export function defaultPartner(object: AtelierObject, atelier: Atelier): string | null {
+	const partners = partnersOf(object, atelier);
+	if (partners.length === 0) return null;
+	const shown = atelier.chartOf(object.name)?.partner;
+	if (shown != null && partners.includes(shown)) return shown;
+	const lists = atelier.objects.filter(isList).map((o) => o.name);
+	const index = lists.indexOf(object.name);
+	return lists.slice(index + 1).find((n) => partners.includes(n)) ?? partners[0];
+}
+
+/**
+ * Un diagramme est affiché avec une AUTRE partenaire que celle choisie : son
+ * « Retirer le diagramme » rejoint les actions de la liste, sinon il faudrait
+ * rechoisir cette partenaire pour le retirer (revue de la PR Q46).
+ */
+function otherChartRemoval(
+	object: AtelierObject,
+	atelier: Atelier,
+	chosen: string | undefined
+): ObjectAction[] {
+	const shown = atelier.chartOf(object.name)?.partner;
+	if (shown == null || shown === chosenPartner(object, atelier, chosen)) return [];
+	return [{ id: `chart:${shown}`, label: 'Retirer le diagramme' }];
+}
+
+/** La partenaire effectivement utilisée : celle choisie si elle existe, sinon celle par défaut. */
+function chosenPartner(
+	object: AtelierObject,
+	atelier: Atelier,
+	chosen: string | undefined
+): string | null {
+	const names = partnersOf(object, atelier);
+	return chosen !== undefined && names.includes(chosen) ? chosen : defaultPartner(object, atelier);
+}
+
+function partnerActions(
+	object: AtelierObject,
+	atelier: Atelier,
+	chosen: string | undefined
+): ObjectAction[] {
+	// ⚠️ UNE partenaire à la fois (Q46) : une action par partenaire donnait
+	// 2 + 5 × (n − 1) boutons, 37 avec 8 listes (revue de code et audit a11y)
+	const names = partnersOf(object, atelier);
+	const wanted = chosenPartner(object, atelier, chosen);
+	const partners = atelier.objects.filter((o) => o.name === wanted && names.includes(o.name));
 
 	if (partners.length === 0) {
 		const reason = 'Il faut deux listes : crée-en une seconde dans « Mes objets ».';
@@ -120,7 +174,7 @@ function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[]
 		const reason = countsProblem(object, partner);
 		const withCounts = (action: ObjectAction): ObjectAction =>
 			reason === undefined ? action : { ...action, disabledReason: reason };
-		return [
+		const actions: ObjectAction[] = [
 			withCounts({
 				id: `stats:${partner.name}`,
 				label: `Statistiques avec effectifs ${partner.name}`
@@ -134,6 +188,8 @@ function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[]
 			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
 		];
+		// Le nom de la partenaire voyage avec l'action : la carte les regroupe dessus
+		return actions.map((action) => ({ ...action, partner: partner.name }));
 	});
 }
 
@@ -176,13 +232,22 @@ function blockedBy(object: AtelierObject): string | undefined {
  *
  * @param object - L'objet tel que l'atelier le connaît, statut compris
  */
-export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectAction[] {
+export function actionsFor(
+	object: AtelierObject,
+	atelier?: Atelier,
+	partner?: string
+): ObjectAction[] {
 	const blocked = blockedBy(object);
 
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
 		isList(object) && atelier !== undefined
-			? [BY_KIND.list[0], BY_KIND.list[1], ...partnerActions(object, atelier)]
+			? [
+					BY_KIND.list[0],
+					BY_KIND.list[1],
+					...otherChartRemoval(object, atelier, partner),
+					...partnerActions(object, atelier, partner)
+				]
 			: BY_KIND[object.kind];
 
 	const specific = catalogue.map((action) => {
@@ -198,7 +263,11 @@ export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectActi
 			root === 'chart' && atelier?.chartOf(object.name)?.partner === (partner ?? null);
 		if (removesChart) {
 			// Retirer reste possible quoi qu'il arrive à la liste ou à sa partenaire
-			return { id: action.id, label: 'Retirer le diagramme' };
+			return {
+				id: action.id,
+				label: 'Retirer le diagramme',
+				...(action.partner !== undefined && { partner: action.partner })
+			};
 		}
 		// D4 : un curseur sur une grandeur n'a pas de sens — on le dit plutôt que
 		// de faire disparaître l'action, sinon l'élève cherche pourquoi.
