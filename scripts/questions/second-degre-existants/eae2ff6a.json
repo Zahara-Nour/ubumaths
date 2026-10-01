@@ -1,0 +1,436 @@
+{
+	"id": "eae2ff6a-5e46-445b-bfa6-02cadb6d956a",
+	"title": "Déterminer les racines d'un polynôme du second degré.",
+	"description": "Graphiquement",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 7,
+	"delay": 15,
+	"status": "published",
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-3"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-0-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-3$ et $1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-0-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-3"
+				},
+				{
+					"expectedAnswer": "-1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-1-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-3$ et $-1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-1-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-2-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $1$ et $3$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-2-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-2"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-3-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-2$ et $0$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-3-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-4-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $1$ et $2$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-4-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-5-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $0$ et $2$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-5-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "2"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-6-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-1$ et $2$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-6-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "2"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-7-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $2$ et $3$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-7-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-8-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $0$ et $3$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-8-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-9-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $0$ et $1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-9-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-2"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-10-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-2$ et $1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-10-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-11-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-1$ et $0$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-11-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-12-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-1$ et $1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-12-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-1"
+				},
+				{
+					"expectedAnswer": "3"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-13-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-1$ et $3$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-13-600.png)"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-2"
+				},
+				{
+					"expectedAnswer": "-1"
+				}
+			],
+			"statement": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n![Parabole](polynome-second-degre/trouver-racines/trouver_racines-14-600.png)\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Les racines sont les abscisses des points d'intersection de la parabole avec l'axe des abscisses : $-2$ et $-1$.",
+					"![Correction](polynome-second-degre/trouver-racines/correction_trouver_racines-14-600.png)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-3", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v0 racines",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3", "-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v1 racines",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v2 racines",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-2", "0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v3 racines",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["1", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v4 racines",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v5 racines",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v6 racines",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["2", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v7 racines",
+			"variationIndex": 7
+		},
+		{
+			"answers": ["0", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v8 racines",
+			"variationIndex": 8
+		},
+		{
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v9 racines",
+			"variationIndex": 9
+		},
+		{
+			"answers": ["-2", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v10 racines",
+			"variationIndex": 10
+		},
+		{
+			"answers": ["-1", "0"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v11 racines",
+			"variationIndex": 11
+		},
+		{
+			"answers": ["-1", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v12 racines",
+			"variationIndex": 12
+		},
+		{
+			"answers": ["-1", "3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v13 racines",
+			"variationIndex": 13
+		},
+		{
+			"answers": ["-2", "-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v14 racines",
+			"variationIndex": 14
+		},
+		{
+			"answers": ["1", "-3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "v0 ordre inversé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-3", "-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v0 lecture de l'ordonnée à l'origine",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1", "-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "v2 signes inversés",
+			"variationIndex": 2
+		}
+	]
+}
