@@ -1,0 +1,229 @@
+{
+	"id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+	"title": "Déterminer les racines d'un polynôme du second degré",
+	"description": "À l'aide de la forme factorisée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 2,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$P(x)={{eval:a(x-r)(x-s)}}$$\n\nLes racines sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..6"
+				},
+				{
+					"name": "s",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["r != s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{s}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul{{if:a!=1| (le coefficient ${{a}}$ n'est pas nul)}} :",
+					"$${{eval:x-r}} = 0 \\iff x = {{r}} \\qquad \\text{ou} \\qquad {{eval:x-s}} = 0 \\iff x = {{s}}$$",
+					"Les racines sont donc ${{r}}$ et ${{s}}$. $P(x)$ est du signe de $a = {{a}}$ à l'extérieur des racines, et du signe contraire entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(r,s)}}, {{eval:max(r,s)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(r,s)}}: {{if:a>0|+|-}}\n  {{eval:min(r,s)}}: z\n  {{eval:min(r,s)}},{{eval:max(r,s)}}: {{if:a>0|-|+}}\n  {{eval:max(r,s)}}: z\n  {{eval:max(r,s)}},+inf: {{if:a>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$P(x)={{eval:(px-q)(x-s)}}$$\n\nLes racines sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "s",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["mod((q),p) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/p}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{s}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul :",
+					"$${{eval:px-q}} = 0 \\iff x = {{eval:q/p}} \\qquad \\text{ou} \\qquad {{eval:x-s}} = 0 \\iff x = {{s}}$$",
+					"Les racines sont donc ${{eval:q/p}}$ et ${{s}}$. En développant, le coefficient de $x^2$ est $a = {{p}}$, positif : $P(x)$ est positif à l'extérieur des racines et négatif entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(q/p,s)}}, {{eval:max(q/p,s)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(q/p,s)}}: +\n  {{eval:min(q/p,s)}}: z\n  {{eval:min(q/p,s)}},{{eval:max(q/p,s)}}: -\n  {{eval:max(q/p,s)}}: z\n  {{eval:max(q/p,s)}},+inf: +\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "racines dans l'ordre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "-5",
+				"s": "-2"
+			},
+			"answers": ["-5", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racines dans l'autre ordre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "-5",
+				"s": "-2"
+			},
+			"answers": ["-2", "-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur de signe",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "-5",
+				"s": "-2"
+			},
+			"answers": ["5", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "racine répétée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "1",
+				"s": "-4"
+			},
+			"answers": ["1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a=1 : (x-3)(x+2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "3",
+				"s": "-2"
+			},
+			"answers": ["3", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x(x-4) : 0 et 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "0",
+				"s": "4"
+			},
+			"answers": ["0", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racine rationnelle (2x-3)(x+1) : 3/2 et -1",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["\\frac{3}{2}", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racine rationnelle en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["-1", "1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racine rationnelle : -3 lu dans 2x-3 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["3", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "racine rationnelle : fraction inversée refusée",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["\\frac{2}{3}", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

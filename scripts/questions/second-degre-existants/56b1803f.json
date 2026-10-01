@@ -1,0 +1,335 @@
+{
+	"id": "56b1803f-f707-49a9-a0b7-3e6b8220f2d7",
+	"title": "Déterminer les coordonnées du sommet",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 5,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Détermine les coordonnées du sommet $S$ de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:a(x-h)^2+k}}$$\n\n$S\\left( \\, ? \\, ; \\, ? \\, \\right)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{k}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme canonique $a(x-\\alpha)^2+\\beta$ avec $a = {{a}}$, $\\alpha = {{h}}$ et $\\beta = {{k}}$.",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut et $f$ admet un minimum|négatif, la parabole est tournée vers le bas et $f$ admet un maximum}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nvariation: f(x)\n  {{h}}: {{k}}, {{if:a>0|bottom|top}}\n```",
+					"Le sommet de la parabole est $S\\left( \\textcolor{{{color:primary.0}}}{{{h}}} \\,;\\, \\textcolor{{{color:primary.0}}}{{{k}}} \\right)$."
+				]
+			}
+		},
+		{
+			"statement": "Détermine les coordonnées du sommet $S$ de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:ax^2+bx+c}}$$\n\n$S\\left( \\, ? \\, ; \\, ? \\, \\right)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "h",
+					"expression": "-4..4"
+				},
+				{
+					"name": "k",
+					"expression": "-6..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{k}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme développée $ax^2+bx+c$ avec $a = {{a}}$, $b = {{b}}$ et $c = {{c}}$. L'abscisse du sommet est :",
+					"$$\\alpha = \\dfrac{-b}{2a} = \\dfrac{ {{eval:-b}} }{ {{eval:2*a}} } = {{h}}$$",
+					"Son ordonnée est l'image de $\\alpha$ : $\\beta = f({{h}}) = {{a}} \\times {{eval:h;()}}^2 {{if:b!=0|{{eval:b;+}} \\times {{eval:h;()}}}} {{if:c!=0|{{eval:c;+}}}} = {{k}}$.",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut et $f$ admet un minimum|négatif, la parabole est tournée vers le bas et $f$ admet un maximum}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nvariation: f(x)\n  {{h}}: {{k}}, {{if:a>0|bottom|top}}\n```",
+					"Le sommet de la parabole est $S\\left( \\textcolor{{{color:primary.0}}}{{{h}}} \\,;\\, \\textcolor{{{color:primary.0}}}{{{k}}} \\right)$."
+				]
+			}
+		},
+		{
+			"statement": "Détermine les coordonnées du sommet $S$ de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:a(x-r)(x-s)}}$$\n\n$S\\left( \\, ? \\, ; \\, ? \\, \\right)$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "h",
+					"expression": "-4..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "r",
+					"expression": "eval:h-d"
+				},
+				{
+					"name": "s",
+					"expression": "eval:h+d"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:-a*d^2}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme factorisée $a(x-x_1)(x-x_2)$ : les racines sont $x_1 = {{r}}$ et $x_2 = {{s}}$. Le sommet est sur l'axe de symétrie, à mi-chemin des racines :",
+					"$$\\alpha = \\dfrac{x_1+x_2}{2} = \\dfrac{ {{r}} {{if:s!=0|{{eval:s;+}}}} }{2} = {{h}}$$",
+					"Son ordonnée est l'image de $\\alpha$ : $\\beta = f({{h}}) = {{a}} \\times {{eval:h-r;()}} \\times {{eval:h-s;()}} = {{eval:-a*d^2}}$.",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut et $f$ admet un minimum|négatif, la parabole est tournée vers le bas et $f$ admet un maximum}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nvariation: f(x)\n  {{h}}: {{eval:-a*d^2}}, {{if:a>0|bottom|top}}\n```",
+					"Le sommet de la parabole est $S\\left( \\textcolor{{{color:primary.0}}}{{{h}}} \\,;\\, \\textcolor{{{color:primary.0}}}{{{eval:-a*d^2}}} \\right)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "forme canonique : sommet juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "5"
+			},
+			"answers": ["-5", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique, a<0 : sommet juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"h": "5",
+				"k": "1"
+			},
+			"answers": ["5", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique : erreur de signe sur l'abscisse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "5"
+			},
+			"answers": ["5", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme canonique : coordonnées inversées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"h": "4",
+				"k": "-2"
+			},
+			"answers": ["-2", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme canonique, a=1 et α=0 : f(x)=x²-3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "-3"
+			},
+			"answers": ["0", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique, a=-1 et β=0 : f(x)=-(x-2)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"h": "2",
+				"k": "0"
+			},
+			"answers": ["2", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée : α=-b/2a, β=f(α)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"h": "1",
+				"k": "-3",
+				"b": "-4",
+				"c": "-1"
+			},
+			"answers": ["1", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée : β pris égal à c refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"h": "1",
+				"k": "-3",
+				"b": "-4",
+				"c": "-1"
+			},
+			"answers": ["1", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme développée, a=-1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"h": "-2",
+				"k": "5",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["-2", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée, b=0 : sommet sur l'axe des ordonnées",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"h": "0",
+				"k": "-6",
+				"b": "0",
+				"c": "-6"
+			},
+			"answers": ["0", "-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme factorisée : milieu des racines puis image",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"h": "1",
+				"d": "3",
+				"r": "-2",
+				"s": "4"
+			},
+			"answers": ["1", "-18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme factorisée : β oublié (0)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"h": "1",
+				"d": "3",
+				"r": "-2",
+				"s": "4"
+			},
+			"answers": ["1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme factorisée, a=-1 : x(x-4) au signe près",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"h": "2",
+				"d": "2",
+				"r": "0",
+				"s": "4"
+			},
+			"answers": ["2", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
