@@ -137,3 +137,19 @@ clics réels sur les touches de l'onglet, chiffres tapés au clavier physique :
 Toutes relues juste par `judgeIntervalAnswer`. Test navigateur (vitest + Playwright, frappes
 `userEvent.keyboard` réelles) : `FillBlanksInput-intervals-keyboard.svelte.test.ts` — rouge avant le
 réglage `smartFence` (le champ restait `true`), vert après.
+
+## Relecture du 2026-10-01 — corrigée
+
+- **1 (DoS)** : borne > 60 caractères, ou > 4 niveaux (accolades, parenthèses, radicaux, fractions,
+  puissances, factorielles), refusée AVANT toute évaluation (`isBoundTooComplex`, lecteur ET
+  réponse entière) → « Réponse illisible : une borne est trop longue… ». Preuve rouge : 12 radicaux
+  2 220 ms, 50 radicaux > 5 min (run tué) ; après : < 200 ms (test de durée).
+- **Cases « expression » ordinaires (non corrigé ici, PR séparée)** — mesuré dans ce worktree (chemin
+  identique à `main`), `gradeQuestion` : `\sqrt` ×10 → 12 ms, ×12 → 107 ms, ×13 → 330 ms, ×14 à ×60 →
+  ~500 ms (plafond) ; `validateAnswer` ≈ 2× `gradeQuestion` (×12 : 213 ms) ; `2^{9999999}` → 764 ms,
+  `2^{99999999}` → 544 ms, `\sqrt{2^{9999999}}` → 757 ms ; factorielles, `10^{10^{10}}`, `\frac`
+  imbriqués → < 1 ms.
+- 2 réunion qui garde les points exclus · 3 `{0,5}` = un point · 4 `orderIndependent` (branche dans
+  `matchedAnswerForm`) · 5 messages (point oublié, singleton avec sa valeur, corrigé sans parenthèses)
+  · 6 test 30 = `validateAnswer` contre `gradeQuestion` · 7 `smartFence` limité au champ et restauré ·
+  8 aucune exception (try/catch dans `judgeIntervalAnswer`).
