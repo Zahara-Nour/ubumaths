@@ -217,6 +217,29 @@ class QuestionCartStore {
 	}
 
 	/**
+	 * Remplace tout le panier par une série (lien de série, Q45). Les éléments
+	 * sont supposés validés (`parseCategoriesParam`) ; la quantité reste bornée.
+	 */
+	replaceWith(items: readonly CartItem[]) {
+		this.items = items.map((item) => ({
+			category: { ...item.category },
+			quantity: Math.max(1, Math.min(MAX_QUANTITY, item.quantity)),
+			delay: item.delay
+		}));
+		this.saveToStorage();
+	}
+
+	/**
+	 * Ajoute une série au panier (Q45) : une catégorie déjà présente voit sa
+	 * quantité augmenter (99 au plus) et garde sa durée ; les autres s'ajoutent.
+	 */
+	mergeItems(items: readonly CartItem[]) {
+		for (const item of items) {
+			this.addToCart({ ...item.category }, item.quantity, item.delay);
+		}
+	}
+
+	/**
 	 * Clear all items from cart
 	 */
 	clearCart() {

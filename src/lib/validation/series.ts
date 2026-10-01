@@ -3,11 +3,12 @@
  *
  * Une série est une liste de `CartItem` (catégorie, quantité, durée). Les mêmes
  * bornes valent pour l'enregistrement d'une série (serveur, B11) et pour un lien
- * `/automaths/test?categories=…` relu par le navigateur (C19) : un lien abîmé ou
+ * `/automaths/panier?categories=…` relu par le navigateur (C19, Q45) : un lien abîmé ou
  * fabriqué ne doit jamais faire planter la page.
  */
 
 import { z } from 'zod';
+import type { TestMode } from '$lib/types/test';
 
 /** Nombre de catégories d'une série */
 export const MAX_SERIES_CATEGORIES = 50;
@@ -127,11 +128,32 @@ export function encodeCategoriesParam(categories: SeriesCategories): string {
 	return encodeURIComponent(JSON.stringify(categories));
 }
 
+/** Forme portée par un lien de série (Q44) ; `timeLimit` en secondes, Course seulement */
+export interface SeriesLinkForm {
+	mode: TestMode;
+	timeLimit?: number;
+}
+
 /**
- * Lien public vers une série : la composition est DANS l'URL (Q22 bis). Sans
- * `mode`, la page ouvre le choix de la forme.
+ * Lien public vers une série : la composition est DANS l'URL.
+ *
+ * - sans forme : ouvre le PANIER du destinataire, qui y met la série (Q44, Q45) ;
+ * - avec une forme : lance directement la série sous cette forme ; une Course
+ *   aux nombres porte son temps limite.
  */
-export function buildSeriesLink(origin: string, categories: SeriesCategories): string {
+export function buildSeriesLink(
+	origin: string,
+	categories: SeriesCategories,
+	form?: SeriesLinkForm
+): string {
 	const params = new URLSearchParams({ categories: encodeCategoriesParam(categories) });
+	if (!form) {
+		return `${origin}/automaths/panier?${params.toString()}`;
+	}
+
+	params.set('mode', form.mode);
+	if (form.mode === 'course' && form.timeLimit !== undefined) {
+		params.set('time', String(form.timeLimit));
+	}
 	return `${origin}/automaths/test?${params.toString()}`;
 }

@@ -4,6 +4,7 @@
  * Hors évaluation : les modèles publiés, comme avant.
  */
 import { describe, it, expect, vi } from 'vitest';
+import { isRedirect } from '@sveltejs/kit';
 import { load } from '../+page.server';
 
 function locals() {
@@ -35,5 +36,22 @@ describe('/automaths/test — chargement', () => {
 		} as never);
 		expect(result).toEqual({ templates: [{ id: 'm1' }] });
 		expect(from).toHaveBeenCalledWith('question_templates');
+	});
+
+	it('Q46 : lien de série SANS forme → redirection vers le panier, aucune lecture', async () => {
+		const { from, supabase } = locals();
+		const categories = encodeURIComponent('[{"a":1}]');
+		const query = new URLSearchParams({ categories }).toString();
+
+		const thrown = await load({
+			locals: { supabase },
+			url: new URL(`http://localhost/automaths/test?${query}`)
+		} as never).catch((e: unknown) => e);
+
+		expect(isRedirect(thrown)).toBe(true);
+		const location = new URL((thrown as { location: string }).location, 'http://localhost');
+		expect(location.pathname).toBe('/automaths/panier');
+		expect(location.searchParams.get('categories')).toBe(categories);
+		expect(from).not.toHaveBeenCalled();
 	});
 });

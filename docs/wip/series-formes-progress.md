@@ -434,3 +434,28 @@ assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serv
   prod — `published_at` écrit à l'horloge de Node, comparé à `now()` de Postgres. Trigger
   `published_at_horloge_base` sur 5 tables (appliqué en prod, vérifié) ; filtres `lte.now` / `gt.now`
   évalués par la base (fiches distribuées, boîte de réception, notifications). Déployé.
+
+### Lien de série avec forme (Q44-Q46), branche `feat/lien-serie-forme`, 2026-10-01
+
+Décisions de David (remplacent Q22 bis) :
+
+- **Q44** — à côté de « Copier le lien », un menu (MySelect) choisit la forme du lien : « Sans forme
+  (ouvre le panier) » (défaut), « En classe », « Entraînement », « Course aux nombres » (temps limite
+  en minutes, 5 par défaut, 1 à 60 — les réglages de la fenêtre du panier), « Flash-cards ». Avec une
+  forme → `/automaths/test?categories=…&mode=…[&time=…]` (démarrage direct) ; sans forme →
+  `/automaths/panier?categories=…`.
+- **Q45** — panier ouvert par un lien : panier vide → série chargée ; non vide → « Remplacer ton panier
+  par cette série ? » Remplacer / Ajouter (fusion, 99 au plus par catégorie, la durée déjà en place est
+  gardée) / Annuler (fermer = Annuler). Puis `categories` retiré de l'URL (`replaceState`). Lien abîmé →
+  message, panier inchangé.
+- **Q46** — même menu sur la page « Séries » ; `/automaths/test?categories=…` SANS `mode` redirige
+  (307, dans le `load` serveur ; filet `goto` côté client) vers le panier, paramètre intact. Plus de
+  fenêtre de choix de forme pour un lien.
+
+Livré : `buildSeriesLink(origin, categories, form?)` (`$lib/validation/series`), `resolveTestLaunch`
+(`kind: 'cart'` remplace `choose-form`), `questionCart.replaceWith` / `mergeItems`, composant partagé
+`src/lib/components/series/SeriesLinkShare.svelte` (panier + page « Séries »). Tests rouges d'abord
+(10 unitaires, 13 navigateur), puis verts.
+
+- Écart : la fusion « Ajouter » ne plafonne pas le NOMBRE de catégories (le panier n'en a pas) ; un
+  panier de plus de 50 catégories donne un lien que le destinataire verra refusé (« 50 au plus »).

@@ -8,7 +8,7 @@
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { ClassroomItem, TestMode, TestSession } from '$lib/types/test';
-	import { AlertCircle, Rocket } from '@lucide/svelte';
+	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 
@@ -17,7 +17,6 @@
 	import TestInteractive from '$lib/components/test/TestInteractive.svelte';
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
 	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
-	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
 	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 	import { resolveTestLaunch } from '$lib/utils/test-launch';
 	import type { TestResult } from '$lib/types/test';
@@ -38,9 +37,6 @@
 	let error = $state<string | null>(null);
 	let assignmentId = $state<string | null>(null);
 	let assessmentTitle = $state<string | null>(null);
-	// Lien de série sans forme (C19) : la fenêtre de choix s'ouvre sur ces catégories
-	let pendingCategories = $state<CartItem[] | null>(null);
-	let modeDialogOpen = $state(false);
 
 	// Évaluation notée (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note.
 	// La page ne reçoit que des questions publiques ; la correction arrive à l'envoi.
@@ -74,11 +70,10 @@
 				return;
 			}
 
-			// Lien de série partagé, sans forme : l'élève (ou le visiteur) choisit
-			if (launch.kind === 'choose-form') {
-				pendingCategories = launch.categories;
-				modeDialogOpen = true;
-				isLoading = false;
+			// Ancien lien de série sans forme : le serveur redirige déjà vers le
+			// panier (Q46) ; filet pour une navigation qui ne passerait pas par lui
+			if (launch.kind === 'cart') {
+				await goto(launch.href, { replaceState: true });
 				return;
 			}
 
@@ -192,24 +187,6 @@
 			currentQuestionIndex: 0,
 			isPaused: false
 		};
-	}
-
-	/**
-	 * Forme choisie dans la fenêtre (lien de série sans `mode`)
-	 */
-	function handleModeSelect(mode: TestMode, timeLimit?: number) {
-		if (!pendingCategories) return;
-		try {
-			startSeries(mode, pendingCategories, timeLimit);
-			modeDialogOpen = false;
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Erreur inconnue';
-			modeDialogOpen = false;
-		}
-	}
-
-	function handleOpenModeDialog() {
-		modeDialogOpen = true;
 	}
 
 	/**
@@ -532,25 +509,5 @@
 				/>
 			{/key}
 		{/if}
-	{:else if pendingCategories}
-		<!-- Lien de série sans forme : la fenêtre de choix a été fermée sans choisir -->
-		<Card.Root>
-			<Card.Content class="flex min-h-96 items-center justify-center p-12">
-				<div class="text-center">
-					<h2 class="text-xl font-semibold">Comment veux-tu travailler cette série ?</h2>
-					<p class="mt-2 text-sm text-muted-foreground">
-						{pendingCategories.length} catégorie{pendingCategories.length > 1 ? 's' : ''} de questions
-					</p>
-					<Button onclick={handleOpenModeDialog} class="mt-6">
-						<Rocket class="mr-2 h-4 w-4" />
-						Choisir la forme
-					</Button>
-				</div>
-			</Card.Content>
-		</Card.Root>
 	{/if}
 </div>
-
-{#if pendingCategories && !testSession}
-	<TestModeDialog bind:open={modeDialogOpen} onSelect={handleModeSelect} />
-{/if}

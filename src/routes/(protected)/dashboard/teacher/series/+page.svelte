@@ -3,10 +3,10 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Copy, FileEdit, Link, Lock, Plus, ShoppingCart, Trash2 } from '@lucide/svelte';
+	import { Copy, FileEdit, Lock, Plus, ShoppingCart, Trash2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction, refreshPageData } from '$lib/utils/form-action';
-	import { buildSeriesLink } from '$lib/validation/series';
+	import SeriesLinkShare from '$lib/components/series/SeriesLinkShare.svelte';
 	import { countSeriesQuestions } from '$lib/types/evaluation';
 	import type { SeriesWithUsage } from '$lib/types/evaluation';
 	import type { PageData } from './$types';
@@ -48,17 +48,6 @@
 	function handleDelete(series: SeriesWithUsage) {
 		if (!confirm(`Supprimer la série « ${series.title} » ?`)) return;
 		runAction('delete', series).then(() => {});
-	}
-
-	async function handleCopyLink(series: SeriesWithUsage) {
-		try {
-			await navigator.clipboard.writeText(
-				buildSeriesLink(window.location.origin, series.categories)
-			);
-			toaster.success('Lien copié');
-		} catch {
-			toaster.error('Impossible de copier le lien');
-		}
 	}
 </script>
 
@@ -147,10 +136,6 @@
 							<Copy class="mr-2 h-4 w-4" />
 							Dupliquer
 						</Button>
-						<Button size="sm" variant="outline" onclick={() => handleCopyLink(series)}>
-							<Link class="mr-2 h-4 w-4" />
-							Copier le lien
-						</Button>
 						<Button
 							size="sm"
 							variant="outline"
@@ -160,6 +145,8 @@
 							<Trash2 class="mr-2 h-4 w-4" />
 							Supprimer
 						</Button>
+						<!-- Lien de la série, avec ou sans forme (Q44, Q46) -->
+						<SeriesLinkShare categories={series.categories} compact />
 					</Card.Footer>
 				</Card.Root>
 			{/each}
