@@ -117,10 +117,39 @@ describe('privilèges par défaut du schéma public — aucun droit pour anon', 
 			expect(rows[0]).toEqual({ auth: true, service: true });
 		});
 
-		// Hors portée de la migration : le défaut câblé de Postgres donne EXECUTE
-		// à PUBLIC (donc à anon) sur toute fonction neuve — mesuré en local et en
-		// prod le 2026-10-01. Décision séparée à prendre avant d'activer ce test.
-		it.todo('anon et PUBLIC n’ont pas EXECUTE sur une fonction neuve');
+		it('anon et PUBLIC n’ont pas EXECUTE sur une fonction neuve', async () => {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ anon: boolean; public: boolean }>(
+				`select has_function_privilege('anon', p.oid, 'EXECUTE') as anon,
+				        exists (
+				          select 1 from aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a
+				          where a.grantee = 0 and a.privilege_type = 'EXECUTE'
+				        ) as public
+				   from pg_proc p where p.oid = $1::regprocedure`,
+				[FONCTION]
+			);
+			expect(rows[0]).toEqual({ anon: false, public: false });
+		});
+
+		it('le défaut du schéma storage garde EXECUTE pour anon et authenticated', async () => {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ acl: string }>(
+				`select defaclacl::text as acl from pg_default_acl
+				  where defaclrole = 'postgres'::regrole
+				    and defaclnamespace = 'storage'::regnamespace and defaclobjtype = 'f'`
+			);
+			expect(rows).toHaveLength(1);
+			expect(rows[0].acl).toContain('anon=X/postgres');
+			expect(rows[0].acl).toContain('authenticated=X/postgres');
+		});
+
+		it('une fonction existante garde EXECUTE pour anon (get_consent_info)', async () => {
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ granted: boolean }>(
+				`select has_function_privilege('anon', 'public.get_consent_info(uuid)', 'EXECUTE') as granted`
+			);
+			expect(rows[0].granted).toBe(true);
+		});
 	});
 
 	describe('objets existants : inchangés', () => {

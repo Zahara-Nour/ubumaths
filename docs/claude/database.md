@@ -92,7 +92,7 @@ seule `using (true)` annule toutes les autres.
 
 **Bonnes pratiques policies** : RLS activé sur **toute** table ; une policy **par opération** (SELECT/INSERT/UPDATE/DELETE) ; `auth.uid()` pour l'identité ; `SECURITY DEFINER` pour l'autorisation complexe ; commenter l'intention (`COMMENT ON FUNCTION/POLICY`).
 
-**Visiteur non connecté (`anon`) : aucun droit par défaut** (depuis `20261001120000`). Une nouvelle table ou séquence de `public` ne donne rien à `anon` ; une page publique qui doit la lire sans connexion demande, dans sa migration, un GRANT explicite **et** une policy : `grant select on table public.ma_table to anon;` + `create policy "ma_table_select_anon" on public.ma_table for select to anon using (…);`. ⚠️ Les **fonctions** neuves restent exécutables par `anon` via PUBLIC (défaut câblé de Postgres) : `revoke execute on function … from public, anon;` à la main.
+**Visiteur non connecté (`anon`) : aucun droit par défaut** (depuis `20261001120000`). Une nouvelle table ou séquence de `public` ne donne rien à `anon` ; une page publique qui doit la lire sans connexion demande, dans sa migration, un GRANT explicite **et** une policy : `grant select on table public.ma_table to anon;` + `create policy "ma_table_select_anon" on public.ma_table for select to anon using (…);`. Idem pour les **fonctions** neuves (défaut global : plus d'EXECUTE pour PUBLIC) : une fonction appelée par `anon` (page publique, ou policy évaluée pour `anon`) demande `grant execute on function public.ma_fonction(…) to anon;` explicite. `authenticated` et `service_role` gardent EXECUTE dans `public`.
 
 ---
 
