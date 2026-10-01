@@ -10,3 +10,5 @@ a la forme d'une ligne du bloc (courbe, statistiques) ou ne contient pas de mark
   (`textWithUnclosedBlocks`, `markdown-parser.ts`), plus de texte brut ni de ``` dans le PDF.
 - Empreinte : 51 blocs dans les 84 fichiers suivis du dépôt → 0 changement de fermeture ; témoin
   (le cas visé) bien détecté. Production NON mesurée : MCP Supabase non autorisé dans la session.
+- Limite connue (préexistante sur `main`) : dans un item de liste, un bloc spécial suivi plus
+  loin d'un ``` est encore lu par l'ancienne regex des blocs de code.

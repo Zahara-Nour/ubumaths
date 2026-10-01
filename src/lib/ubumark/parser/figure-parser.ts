@@ -22,6 +22,7 @@
  * @module ubumark/parser/figure-parser
  */
 
+import { bodyOpensParagraph } from './block-closure';
 import type {
 	FigureBlockRange,
 	FigureHeader,
@@ -66,25 +67,10 @@ export function isFigureBlockStart(line: string): boolean {
 /** Mots qui ouvrent une instruction du langage des figures */
 const FIGURE_STATEMENT_START = /^(pour|si|sinon|macro|retourne)\b/;
 
-/**
- * Le corps d'une figure contient-il du markdown, signe qu'un bloc NON FERMÉ
- * déborde sur le document ? Seules comptent les lignes qui ouvrent un
- * paragraphe (après une ligne vide) :
- * - `## Titre` (deux `#` ou plus) : un titre — un seul `#` est un commentaire
- *   du langage des figures ;
- * - un item de liste, un `$$` ;
- * - une ligne de texte sans `=`, `(` ni `:`, qui n'ouvre pas une instruction.
- */
-function containsMarkdown(body: readonly string[]): boolean {
-	return body.some((raw, k) => {
-		const line = raw.trim();
-		const opensParagraph = k === 0 || body[k - 1].trim() === '';
-		if (line === '' || !opensParagraph || raw.startsWith(' ') || raw.startsWith('\t')) return false;
-		if (/^#{2,}\s/.test(line) || /^([-*+]|\d+\.)\s/.test(line) || line.startsWith('$$'))
-			return true;
-		if (line.startsWith('#') || line === '---' || FIGURE_STATEMENT_START.test(line)) return false;
-		return !/[=(:]/.test(line);
-	});
+/** Une ligne qui est sûrement du langage des figures, et jamais du texte */
+function looksLikeFigureLine(line: string): boolean {
+	const trimmed = line.trim();
+	return trimmed === '---' || FIGURE_STATEMENT_START.test(trimmed);
 }
 
 export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
@@ -104,7 +90,7 @@ export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 		if (
 			j < lines.length &&
 			BLOCK_END_REGEX.test(lines[j]) &&
-			!containsMarkdown(lines.slice(startIndex + 1, j))
+			!bodyOpensParagraph(lines.slice(startIndex + 1, j), looksLikeFigureLine)
 		) {
 			blocks.push({ startIndex, endIndex: j, closed: true });
 			i = j + 1;
