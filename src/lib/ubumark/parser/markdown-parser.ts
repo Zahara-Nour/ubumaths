@@ -62,10 +62,21 @@ import { findVariationBlocks, parseVariationTable } from './variation-table-pars
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
-import { findCourbeBlocks, parseCourbe, parseCourbeContent } from './courbe-parser';
-import { findFigureBlocks, parseFigure, parseFigureContent } from './figure-parser';
+import {
+	findCourbeBlocks,
+	isCourbeBlockStart,
+	parseCourbe,
+	parseCourbeContent
+} from './courbe-parser';
+import {
+	findFigureBlocks,
+	isFigureBlockStart,
+	parseFigure,
+	parseFigureContent
+} from './figure-parser';
 import {
 	findStatChartBlocks,
+	isStatChartBlockStart,
 	isStatChartKind,
 	parseStatChart,
 	parseStatChartContent
@@ -1487,6 +1498,56 @@ function parseTextFormatting(text: string): InlineNode[] {
  * @param options - Parse options
  * @returns Array of block nodes
  */
+/**
+ * Le texte d'un item de liste entre deux blocs de code : paragraphes, mais
+ * aussi blocs ```courbe / ```figure / statistiques NON FERMÉS — le motif des
+ * blocs de code exige une clôture, et sans ce repérage leur texte s'affichait
+ * brut, ``` compris (Q25). Ils deviennent un nœud en erreur « bloc non
+ * fermé », comme au premier niveau.
+ */
+function textWithUnclosedBlocks(
+	text: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const lines = text.split('\n');
+	const opens = (line: string) =>
+		isCourbeBlockStart(line.trim()) ||
+		isFigureBlockStart(line.trim()) ||
+		isStatChartBlockStart(line.trim()) !== null;
+	const start = lines.findIndex(opens);
+
+	const paragraph = (raw: string): BlockNode[] => {
+		const trimmed = raw.trim();
+		if (!trimmed) return [];
+		return [{ type: 'paragraph', children: parseInlineContent(trimmed, placeholders, options) }];
+	};
+	if (start === -1) return paragraph(text);
+
+	// Le bloc et ce qui suit, formules rendues à leur texte (comme un bloc fermé)
+	const rest = lines.slice(start).map((line) => restoreMathPlaceholders(line.trim(), placeholders));
+	const opener = rest[0];
+	let node: BlockNode;
+	let endIndex: number;
+	if (isCourbeBlockStart(opener)) {
+		endIndex = findCourbeBlocks(rest)[0]?.endIndex ?? 0;
+		node = parseCourbe(rest, 0, endIndex);
+	} else if (isFigureBlockStart(opener)) {
+		endIndex = findFigureBlocks(rest)[0]?.endIndex ?? 0;
+		node = parseFigure(rest, 0, endIndex);
+	} else {
+		endIndex = findStatChartBlocks(rest)[0]?.endIndex ?? 0;
+		node = parseStatChart(rest, 0, endIndex);
+	}
+
+	const after = lines.slice(start + endIndex + 1).join('\n');
+	return [
+		...paragraph(lines.slice(0, start).join('\n')),
+		node,
+		...textWithUnclosedBlocks(after, placeholders, options)
+	];
+}
+
 function parseContentWithCodeBlocks(
 	content: string,
 	placeholders: MathPlaceholder[],
@@ -1508,14 +1569,9 @@ function parseContentWithCodeBlocks(
 	while ((match = codeBlockRegex.exec(content)) !== null) {
 		// Add paragraph for content before this code block
 		if (match.index > lastIndex) {
-			const beforeText = content.slice(lastIndex, match.index).trim();
-			if (beforeText) {
-				const parsedInline = parseInlineContent(beforeText, placeholders, options);
-				blocks.push({
-					type: 'paragraph',
-					children: parsedInline
-				});
-			}
+			blocks.push(
+				...textWithUnclosedBlocks(content.slice(lastIndex, match.index), placeholders, options)
+			);
 		}
 
 		const language = match[2] || undefined;
@@ -1570,14 +1626,7 @@ function parseContentWithCodeBlocks(
 
 	// Add paragraph for remaining content after last code block
 	if (lastIndex < content.length) {
-		const afterText = content.slice(lastIndex).trim();
-		if (afterText) {
-			const parsedInline = parseInlineContent(afterText, placeholders, options);
-			blocks.push({
-				type: 'paragraph',
-				children: parsedInline
-			});
-		}
+		blocks.push(...textWithUnclosedBlocks(content.slice(lastIndex), placeholders, options));
 	}
 
 	return blocks;

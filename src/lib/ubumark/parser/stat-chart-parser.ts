@@ -35,6 +35,7 @@
  * @module ubumark/parser/stat-chart-parser
  */
 
+import { bodyOpensParagraph } from './block-closure';
 import {
 	CLASS_CHART_KINDS,
 	CROSS_TABLE_DISPLAYS,
@@ -257,7 +258,11 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 		const startIndex = i;
 		let j = i + 1;
 		while (j < lines.length && !lines[j].startsWith('```')) j++;
-		if (j < lines.length && BLOCK_END_REGEX.test(lines[j])) {
+		// ⚠️ Un ``` plus loin ne ferme le bloc que si TOUT ce qui les sépare a la
+		// forme d'une ligne de bloc (Q25) : sinon il avalait le texte intermédiaire
+		const body = lines.slice(startIndex + 1, j);
+		const closes = !bodyOpensParagraph(body, looksLikeStatChartLine);
+		if (j < lines.length && BLOCK_END_REGEX.test(lines[j]) && closes) {
 			blocks.push({ kind, startIndex, endIndex: j, closed: true });
 			i = j + 1;
 			continue;

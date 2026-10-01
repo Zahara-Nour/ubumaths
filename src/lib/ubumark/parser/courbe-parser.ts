@@ -29,6 +29,7 @@
  * @module ubumark/parser/courbe-parser
  */
 
+import { bodyOpensParagraph } from './block-closure';
 import type {
 	CourbeArea,
 	CourbeAsymptote,
@@ -140,7 +141,12 @@ export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 			let j = i + 1;
 			while (j < lines.length && !BLOCK_END_REGEX.test(lines[j]) && !lines[j].startsWith('```'))
 				j++;
-			if (j < lines.length && BLOCK_END_REGEX.test(lines[j])) {
+			// ⚠️ Un ``` plus loin ne ferme le bloc que si TOUT ce qui les sépare a
+			// la forme d'une ligne de courbe : sinon il avalait le texte, et ouvrait
+			// un bloc de code jamais refermé (Q25, revue du lot 2).
+			const body = lines.slice(startIndex + 1, j);
+			const closes = !bodyOpensParagraph(body, looksLikeCourbeLine);
+			if (j < lines.length && BLOCK_END_REGEX.test(lines[j]) && closes) {
 				blocks.push({ startIndex, endIndex: j, closed: true });
 				i = j + 1;
 				continue;

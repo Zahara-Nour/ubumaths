@@ -22,6 +22,7 @@
  * @module ubumark/parser/figure-parser
  */
 
+import { bodyOpensParagraph } from './block-closure';
 import type {
 	FigureBlockRange,
 	FigureHeader,
@@ -63,6 +64,15 @@ export function isFigureBlockStart(line: string): boolean {
  * avant toute clôture nue) : il s'arrête avant la première ligne vide qui suit
  * le script, pour ne pas avaler la suite du document.
  */
+/** Mots qui ouvrent une instruction du langage des figures */
+const FIGURE_STATEMENT_START = /^(pour|si|sinon|macro|retourne)\b/;
+
+/** Une ligne qui est sûrement du langage des figures, et jamais du texte */
+function looksLikeFigureLine(line: string): boolean {
+	const trimmed = line.trim();
+	return trimmed === '---' || FIGURE_STATEMENT_START.test(trimmed);
+}
+
 export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 	const blocks: FigureBlockRange[] = [];
 	let i = 0;
@@ -74,7 +84,14 @@ export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 		const startIndex = i;
 		let j = i + 1;
 		while (j < lines.length && !lines[j].startsWith('```')) j++;
-		if (j < lines.length && BLOCK_END_REGEX.test(lines[j])) {
+		// ⚠️ Un ``` plus loin ne ferme la figure que si rien de markdown ne les
+		// sépare (Q25) : sinon il avalait le texte, et ouvrait un bloc de code
+		// jamais refermé
+		if (
+			j < lines.length &&
+			BLOCK_END_REGEX.test(lines[j]) &&
+			!bodyOpensParagraph(lines.slice(startIndex + 1, j), looksLikeFigureLine)
+		) {
 			blocks.push({ startIndex, endIndex: j, closed: true });
 			i = j + 1;
 			continue;
