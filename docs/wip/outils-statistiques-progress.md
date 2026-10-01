@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-4 livrés ; lot 5 (atelier) revu, corrigé, PR ouverte
+## État : lots 1-5 livrés ; lot 6 revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -359,7 +359,50 @@ actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Do
   (10 avec 3 listes, 30 avec 8). Signalé par la revue de code ET l'audit a11y. Piste :
   regrouper par partenaire (« Avec M » dépliable).
 
-## Reste à faire (hors lots 2-5)
+## Lot 6 — variable aléatoire finie (1re spé)
+
+Worktree `../ubumaths-wt-stats-lot6`, branche `feat/stats-variable-aleatoire`.
+
+Tour 9 (2026-10-01) — recommandations suivies :
+
+40. **Calcul exact en fractions** (probabilités `1/6`, `0,25`, `25 %`) : E et V en fraction
+    irréductible (+ « = 3,5 » si décimal exact, « ≈ 2,92 » sinon) ; σ approché, sauf racine
+    exacte. Petite arithmétique de fractions dans le module statistique.
+41. Bloc ```loi : `G = -2 ; 0 ; 5`, `P = 1/2 ; 3/10 ; 1/5`, `indicateurs: espérance ;
+    variance ; écart type`, `titre:`; tableau horizontal`gᵢ`/`P(G = gᵢ)` ; somme
+    EXACTEMENT 1, probabilités dans [0 ; 1], valeurs distinctes, ≤ 12 valeurs.
+42. `masquer: 5` (probabilité connue, cachée, « case à compléter ») ; `?` = inconnue et cachée,
+    indicateurs alors refusés.
+43. Pas de diagramme de la loi dans ce lot.
+44. Atelier léger : action par partenaire « Loi avec probabilités M » → E, V, σ dans l'historique.
+
+### Lot 6 — fait
+
+- `statistics/fraction.ts` (`Fraction` en bigint, `parse`, `fromNumber`, `sqrt` exact),
+  `statistics/random-variable.ts` (`randomVariable`, König-Huygens), `formatLawIndicators`.
+- Bloc ```loi (genre `loi`du nœud`stat-chart`) : parseur `checkLaw`, scène `LawScene`,
+Typst (en-têtes `$g_i$`, `$P(G = g_i)$`, case à compléter `box(width: 1.2cm)`), `<table>`
+  accessible à l'écran.
+- Atelier : action `law:M` « Loi avec probabilités M » (E, V, σ dans l'historique).
+- Preuves : tests (module : import seulement ; bloc et atelier : assertions) puis verts ;
+  5 275 tests serveur + 309 client ; `check:incremental` 0 ; PDF compile-prod 4/4 (jeu, dé,
+  `masquer:`, `?` en liste, bloc en erreur « somme 5/6 »), page relue (cases à compléter
+  élargies après relecture).
+
+- Revue de code : **quasi bloquant** — `exactSqrt` corrigeait son estimation de 1 en 1
+  (72 s mesurés pour une racine ~10^26, onglet figé au-delà) → Newton en bigint ; ≤ 15
+  chiffres par nombre ; `fromNumber` borné (ni minuscule changé en 0, ni > 10^15). Avec un
+  `?` : doublons, somme connue > 1 et somme connue = 1 refusés. Valeur vide ou en %
+  refusée ; `masquer:`/`indicateurs:` répétés dédoublonnés ; `LawIndicator` défini une fois.
+
+### Question ouverte pour David (atelier)
+
+- ⚠️ Hypothèse de la spécification FAUSSE : une liste de l'atelier n'accepte que des nombres
+  écrits en clair ; `1/6` y est IGNORÉ (liste vide, 6 valeurs écartées). Le dé ne peut donc
+  pas y être saisi en fractions, et 0,1667 donne une somme 1,0002 → loi refusée. Piste :
+  laisser les listes accepter des fractions (`1/6`) — touche la saisie de TOUTES les listes.
+
+## Reste à faire (hors lots 2-6)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.

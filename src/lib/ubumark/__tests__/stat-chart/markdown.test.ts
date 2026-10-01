@@ -93,6 +93,18 @@ describe('reconnus par parseMarkdown', () => {
 		]);
 	});
 
+	it('```loi en retrait sous un item de liste', () => {
+		const md = [
+			'1. Compléter :',
+			'',
+			...indent(['```loi', 'X = 0 ; 1', 'P = 1/2 ; ?', '```']),
+			'2. Suite.'
+		].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(charts(list.items[0].children as BlockNode[]).map((c) => c.kind)).toEqual(['loi']);
+	});
+
 	it('un bloc de code ordinaire dont le langage a un tiret reste un bloc de code', () => {
 		const md = ['1. Code :', '', ...indent(['```objective-c', 'int x = 1;', '```'])].join('\n');
 		const list = parseMarkdown(md).children[0] as ListNode;
@@ -154,7 +166,8 @@ describe('aller-retour de l’éditeur riche', () => {
 		];
 		const histogram = ['```histogramme', '[0 ; 10[ = 12', '```'];
 		const polygon = ['```frequences-cumulees', 'lecture: médiane', '[0 ; 10[ = 12', '```'];
-		for (const block of [BARS, PIE, histogram, polygon, table]) {
+		const law = ['```loi', 'X = 1 ; 2', 'P = 1/2 ; 1/2', '```'];
+		for (const block of [BARS, PIE, histogram, polygon, table, law]) {
 			const md = block.join('\n');
 			const json = markdownToTipTap(md);
 

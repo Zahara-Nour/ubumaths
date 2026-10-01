@@ -19,7 +19,9 @@ import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
-import { formatSummary } from '$lib/statistics/format';
+import { formatLawIndicators, formatSummary } from '$lib/statistics/format';
+import { Fraction } from '$lib/statistics/fraction';
+import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -178,6 +180,50 @@ export class CalcDesk {
 		this.#push({
 			label: `Statistiques ${name}`,
 			text: formatSummary(outcome.value, 'fr').join('\n'),
+			failed: false
+		});
+	}
+
+	/**
+	 * Espérance, variance et écart type d'une variable aléatoire : valeurs dans
+	 * une liste, probabilités dans une autre (lot 6, Q44).
+	 *
+	 * ⚠️ Une liste contient des décimaux de la machine (1/6 y vaut 0,1666…) : ils
+	 * repassent en fractions (dénominateur ≤ 10 000) pour que la somme fasse
+	 * EXACTEMENT 1 et que E(X) s'écrive 7/2.
+	 */
+	#law(name: string, partner: string): void {
+		const label = `Loi de ${name} avec probabilités ${partner}`;
+		const values = this.#listNamed(name);
+		const probabilities = this.#listNamed(partner);
+		if (values === null || probabilities === null) {
+			this.#push({
+				label,
+				text: 'Il faut deux listes : les valeurs et leurs probabilités.',
+				failed: true
+			});
+			return;
+		}
+		const asFractions = (numbers: readonly number[]) => numbers.map((n) => Fraction.fromNumber(n));
+		const xs = asFractions(values.values);
+		const ps = asFractions(probabilities.values);
+		if ([...xs, ...ps].some((f) => f === null)) {
+			this.#push({
+				label,
+				text: 'Une valeur ne s’écrit pas comme une fraction simple : la loi ne peut pas être calculée exactement.',
+				failed: true
+			});
+			return;
+		}
+		const outcome = randomVariable(xs as Fraction[], ps as Fraction[]);
+		if (outcome === null || !outcome.ok) {
+			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
+			this.#push({ label, text, failed: true });
+			return;
+		}
+		this.#push({
+			label,
+			text: formatLawIndicators(name, outcome.value, 'fr').join('\n'),
 			failed: false
 		});
 	}
@@ -366,6 +412,10 @@ export class CalcDesk {
 		}
 		// Le diagramme vit dans la vue Données, sous la liste : on bascule son
 		// affichage, sans ligne d'historique (Q36)
+		if (root === 'law' && partner !== undefined) {
+			this.#law(name, partner);
+			return 'ok';
+		}
 		if (root === 'chart') {
 			this.atelier.toggleChart(name, partner ?? null);
 			return 'ok';

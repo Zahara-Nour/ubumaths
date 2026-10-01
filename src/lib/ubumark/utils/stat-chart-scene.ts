@@ -37,7 +37,9 @@ import {
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 import { crossTable } from '$lib/statistics/cross-table';
-import { formatApproxValue } from '$lib/statistics/format';
+import { formatApproxValue, formatLawIndicators } from '$lib/statistics/format';
+import { Fraction } from '$lib/statistics/fraction';
+import { randomVariable } from '$lib/statistics/random-variable';
 
 // ============================================================================
 // TYPES
@@ -215,7 +217,20 @@ export interface CrossTableScene extends SceneCommon {
 	rows: { header: string; cells: SceneCell[] }[];
 }
 
+export interface LawScene extends SceneCommon {
+	kind: 'loi';
+	/** Lettre de la variable (`G`) : en-têtes `gᵢ` et `P(G = gᵢ)` */
+	variable: string;
+	/** Valeurs telles qu'écrites, vrai signe moins, séparateur selon la langue */
+	values: string[];
+	/** Probabilités telles qu'écrites ; vides et marquées si à compléter */
+	probabilities: SceneCell[];
+	/** Ce qu'annonce une case à compléter, dans la langue du document */
+	hiddenLabel: string;
+}
+
 export type StatChartScene =
+	| LawScene
 	| BarScene
 	| PieScene
 	| HistogramScene
@@ -850,6 +865,53 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 }
 
 // ============================================================================
+// LOI D'UNE VARIABLE ALÉATOIRE
+// ============================================================================
+
+/** Un nombre tel qu'écrit par l'auteur : vrai signe moins, séparateur selon la langue. */
+function asWritten(text: string, locale: ContentLocale): string {
+	const minus = text.replace(/^-/, '−');
+	if (minus.includes('/')) return minus;
+	return locale === 'en' ? minus.replace(',', '.') : minus.replace('.', ',');
+}
+
+function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
+	const law = spec.law;
+	if (law === null) throw new Error('Loi sans données');
+	const spoken = CROSS_TABLE_SPOKEN[locale];
+
+	let indicators: string[] = [];
+	if (law.indicators.length > 0) {
+		// Le parseur a refusé les indicateurs avec une probabilité « ? »
+		const values = law.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO);
+		const probabilities = law.probabilities.map((p) => Fraction.parse(p ?? '') ?? Fraction.ZERO);
+		const outcome = randomVariable(values, probabilities);
+		if (outcome === null || !outcome.ok) {
+			throw new Error(`Loi invalide : ${outcome?.ok === false ? outcome.message : 'vide'}`);
+		}
+		indicators = formatLawIndicators(law.variable, outcome.value, locale, law.indicators);
+	}
+
+	const title = locale === 'en' ? `Distribution of ${law.variable}` : `Loi de ${law.variable}`;
+	return {
+		kind: 'loi',
+		title: spec.title,
+		accessibleTitle: title,
+		description: title,
+		pixelSize: { width: 0, height: 0 },
+		indicators,
+		variable: law.variable,
+		values: law.values.map((v) => asWritten(v, locale)),
+		probabilities: law.probabilities.map((p, i) =>
+			p === null || law.masked.includes(i)
+				? { text: '', hidden: true, srText: null }
+				: { text: asWritten(p, locale), hidden: false, srText: null }
+		),
+		hiddenLabel: spoken.hidden
+	};
+}
+
+// ============================================================================
 // SCÈNE
 // ============================================================================
 
@@ -869,5 +931,7 @@ export function buildStatChartScene(
 			return buildCumulativeScene(spec, locale);
 		case 'tableau-croise':
 			return buildCrossTableScene(spec, locale);
+		case 'loi':
+			return buildLawScene(spec, locale);
 	}
 }

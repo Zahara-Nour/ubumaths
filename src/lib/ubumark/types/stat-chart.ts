@@ -16,6 +16,7 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
+import type { LawIndicator } from '$lib/statistics/format';
 
 // ============================================================================
 // VALEURS
@@ -27,7 +28,8 @@ export const STAT_CHART_KINDS = [
 	'circulaire',
 	'histogramme',
 	'frequences-cumulees',
-	'tableau-croise'
+	'tableau-croise',
+	'loi'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -63,6 +65,24 @@ export interface CrossTableData {
 	masked: { row: string; column: string }[];
 	/** Coin haut-gauche (`coin: Sexe \ Régime`) */
 	corner: string | null;
+}
+
+/** Indicateurs d'une variable aléatoire (lot 6) : le type du module statistique */
+export type { LawIndicator };
+
+/**
+ * Loi d'une variable aléatoire finie (lot 6, Q41) : valeurs et probabilités
+ * TELLES QU'ÉCRITES par l'auteur (`1/6` reste `1/6`).
+ */
+export interface LawData {
+	/** Une lettre majuscule, autre que P */
+	variable: string;
+	values: string[];
+	/** `null` : probabilité `?`, inconnue et cachée */
+	probabilities: (string | null)[];
+	/** Indices des valeurs dont la probabilité est à compléter (`masquer:`) */
+	masked: number[];
+	indicators: LawIndicator[];
 }
 
 /** Indicateurs affichables sous la figure (Q28) */
@@ -131,6 +151,8 @@ export interface StatChartSpec {
 	indicators: StatChartIndicator[];
 	/** Tableau croisé : ses lignes, colonnes et cases (`data` reste vide), sinon null */
 	table: CrossTableData | null;
+	/** Loi d'une variable aléatoire (`data` reste vide), sinon null */
+	law: LawData | null;
 }
 
 // ============================================================================
@@ -191,6 +213,8 @@ export const STAT_CHART_LIMITS = {
 	classes: 20,
 	/** Lignes, et colonnes, d'un tableau croisé (Q34) */
 	tableSize: 8,
+	/** Valeurs d'une variable aléatoire (Q41) */
+	lawValues: 12,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

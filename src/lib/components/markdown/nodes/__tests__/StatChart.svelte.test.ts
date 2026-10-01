@@ -230,6 +230,33 @@ describe('StatChart — tableau croisé (lot 4)', () => {
 	});
 });
 
+describe('StatChart — loi d’une variable aléatoire (lot 6)', () => {
+	const GAME = 'G = -2 ; 0 ; 5\nP = 1/2 ; 3/10 ; 1/5';
+
+	it('un tableau de deux lignes : gᵢ et P(G = gᵢ), en-têtes de ligne', async () => {
+		const node = parseStatChartContent('loi', `${GAME}\nindicateurs: espérance`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+		const headers = [...table.querySelectorAll('th[scope="row"]')].map((th) => th.textContent);
+
+		expect(headers).toEqual(['gi', 'P(G = gi)']);
+		expect(
+			[...table.querySelectorAll('tr')[0].querySelectorAll('td')].map((td) => td.textContent)
+		).toEqual(['−2', '0', '5']);
+		expect(table.querySelector('caption')?.textContent).toBe('Loi de G');
+		expect(screen.container.querySelector('.stat-indicateurs li')?.textContent).toBe('E(G) = 0');
+	});
+
+	it('probabilité masquée : case à compléter annoncée, et assez large', async () => {
+		const node = parseStatChartContent('loi', `${GAME}\nmasquer: 5`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cell = screen.container.querySelector<HTMLTableCellElement>('td.stat-case-vide')!;
+
+		expect(cell.textContent?.trim()).toBe('case à compléter');
+		expect(cell.getBoundingClientRect().width).toBeGreaterThanOrEqual(50);
+	});
+});
+
 // =============================================================================
 // Accessibilité
 // =============================================================================

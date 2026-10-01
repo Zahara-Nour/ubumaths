@@ -129,6 +129,8 @@ function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[]
 				id: `chart:${partner.name}`,
 				label: `Diagramme avec effectifs ${partner.name}`
 			}),
+			// Lot 6 (Q44) : la partenaire donne les PROBABILITÉS d'une variable aléatoire
+			withCounts({ id: `law:${partner.name}`, label: `Loi avec probabilités ${partner.name}` }),
 			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
 		];
