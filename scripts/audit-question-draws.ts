@@ -53,6 +53,8 @@ const TEXT_DEFECTS: { kind: string; regex: RegExp }[] = [
 	// `+ 0` en fin de terme (pas `+ 0{,}5`, ni `+ 0.5`, ni `+ 05`)
 	{ kind: 'terme nul', regex: /[+-]\s*0(?![\d.,{])/ },
 	{ kind: 'coefficient nul', regex: /(?<![\d.,{])0\s*[xyz](?![a-z])/ },
+	// `-8 0` : un `{{eval:s;+}}` qui vaut 0 n'écrit pas de signe
+	{ kind: 'nombres juxtaposés', regex: /(?<![\^\d{.,])\d+\s+\d/ },
 	{ kind: 'gabarit non résolu', regex: /\{\{(?!solution|color)|<<(?!expr:)/ },
 	{ kind: 'valeur indéfinie', regex: /NaN|undefined|Infinity/ }
 ];
@@ -98,6 +100,15 @@ function templatesFromArgs(): Promise<{ name: string; template: QuestionTemplate
 	throw new Error('Préciser --file, --dir ou --template');
 }
 
+/** Valeur d'une abscisse de tableau : `-inf`, entier, décimal, `-\\dfrac{7}{4}` (NaN sinon) */
+function numericValue(point: string): number {
+	if (point === '-inf') return -Infinity;
+	if (point === '+inf') return Infinity;
+	const fraction = /^(-?)\\d?frac\{(\d+)\}\{(\d+)\}$/.exec(point);
+	if (fraction) return (fraction[1] ? -1 : 1) * (Number(fraction[2]) / Number(fraction[3]));
+	return Number(point);
+}
+
 /** Défauts d'un texte rendu (énoncé, choix, étape de corrigé) */
 function textDefects(text: string): { kind: string; excerpt: string }[] {
 	const found: { kind: string; excerpt: string }[] = [];
@@ -111,9 +122,28 @@ function textDefects(text: string): { kind: string; excerpt: string }[] {
 		}
 	}
 	for (const block of text.matchAll(VARIATION_BLOCK)) {
-		const { errors } = parseVariationTableContent(block[1].split('\n'));
+		const lines = block[1].split('\n');
+		const { errors } = parseVariationTableContent(lines);
 		if (errors.length > 0) {
 			found.push({ kind: 'tableau illisible', excerpt: errors.map((e) => e.message).join('; ') });
+		}
+		// Le parseur accepte une ligne dont l'abscisse n'est pas dans `domain` : elle disparaît
+		const domain = lines
+			.find((l) => l.trim().startsWith('domain:'))
+			?.replace(/^\s*domain:\s*/, '')
+			.split(',')
+			.map((p) => p.trim().replace(/^[\][]|[\][]$/g, ''));
+		// Abscisses strictement croissantes (deux racines égales = tableau faux)
+		const values = (domain ?? []).map(numericValue);
+		if (values.some((v, i) => i > 0 && !(v > values[i - 1]))) {
+			found.push({ kind: 'domaine non croissant', excerpt: domain?.join(' ; ') ?? '' });
+		}
+		for (const line of lines.filter((l) => /^\s{2,}\S/.test(l))) {
+			const key = line.slice(0, line.indexOf(':')).trim();
+			const unknown = key.split(',').filter((p) => !domain?.includes(p.trim()));
+			if (unknown.length > 0) {
+				found.push({ kind: 'abscisse hors domaine', excerpt: `${key} ∉ {${domain?.join(' ; ')}}` });
+			}
 		}
 	}
 	if (VARIATION_BLOCK.test(text)) {

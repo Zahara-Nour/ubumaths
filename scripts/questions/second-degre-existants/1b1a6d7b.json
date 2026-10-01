@@ -42,9 +42,10 @@
 			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$({{a}}x{{eval:a*(b);+}})(x{{eval:c;+}})$$\n\nLes racines sont $?$ et $?$.",
 			"correction": {
 				"steps": [
-					"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le premier facteur, $({{a}}x{{eval:a*(b);+}}) = {{a}}(x{{eval:b;+}})$.",
-					"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
-					"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul. On résout chaque équation du premier degré, sans avoir besoin de factoriser davantage :",
+					"$${{a}}x{{eval:a*b;+}} = 0 \\iff x = \\dfrac{ {{eval:-a*b}} }{ {{a}} } = {{eval:-b}} \\qquad \\text{ou} \\qquad x{{eval:c;+}} = 0 \\iff x = {{eval:-c}}$$",
+					"Les racines sont donc ${{eval:-b}}$ et ${{eval:-c}}$. $P(x)$ est du signe de son coefficient de $x^2$, ${{eval:a}}$, à l'extérieur des racines, et du signe contraire entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(-b,-c)}}, {{eval:max(-b,-c)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(-b,-c)}}: {{if:a>0|+|-}}\n  {{eval:min(-b,-c)}}: z\n  {{eval:min(-b,-c)}},{{eval:max(-b,-c)}}: {{if:a>0|-|+}}\n  {{eval:max(-b,-c)}}: z\n  {{eval:max(-b,-c)}},+inf: {{if:a>0|+|-}}\n```"
 				]
 			}
 		},
@@ -60,9 +61,71 @@
 			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$(x{{eval:b;+}})({{a}}x{{eval:a*(c);+}})$$\n\nLes racines sont $?$ et $?$.",
 			"correction": {
 				"steps": [
-					"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le second facteur, $({{a}}x{{eval:a*(c);+}}) = {{a}}(x{{eval:c;+}})$.",
-					"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
-					"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul. On résout chaque équation du premier degré, sans avoir besoin de factoriser davantage :",
+					"$$x{{eval:b;+}} = 0 \\iff x = {{eval:-b}} \\qquad \\text{ou} \\qquad {{a}}x{{eval:a*c;+}} = 0 \\iff x = \\dfrac{ {{eval:-a*c}} }{ {{a}} } = {{eval:-c}}$$",
+					"Les racines sont donc ${{eval:-b}}$ et ${{eval:-c}}$. $P(x)$ est du signe de son coefficient de $x^2$, ${{eval:a}}$, à l'extérieur des racines, et du signe contraire entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(-b,-c)}}, {{eval:max(-b,-c)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(-b,-c)}}: {{if:a>0|+|-}}\n  {{eval:min(-b,-c)}}: z\n  {{eval:min(-b,-c)}},{{eval:max(-b,-c)}}: {{if:a>0|-|+}}\n  {{eval:max(-b,-c)}}: z\n  {{eval:max(-b,-c)}},+inf: {{if:a>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$P(x)=x({{a}}x{{eval:a*b;+}})$$\n\nLes racines sont $?$ et $?$.",
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:-b}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul. On résout chaque équation du premier degré, sans avoir besoin de factoriser davantage :",
+					"$$x = 0 \\qquad \\text{ou} \\qquad {{a}}x{{eval:a*b;+}} = 0 \\iff x = \\dfrac{ {{eval:-a*b}} }{ {{a}} } = {{eval:-b}}$$",
+					"Les racines sont donc $0$ et ${{eval:-b}}$. $P(x)$ est du signe de son coefficient de $x^2$, ${{eval:a}}$, à l'extérieur des racines, et du signe contraire entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(0,-b)}}, {{eval:max(0,-b)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(0,-b)}}: {{if:a>0|+|-}}\n  {{eval:min(0,-b)}}: z\n  {{eval:min(0,-b)}},{{eval:max(0,-b)}}: {{if:a>0|-|+}}\n  {{eval:max(0,-b)}}: z\n  {{eval:max(0,-b)}},+inf: {{if:a>0|+|-}}\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$P(x)=({{eval:k*p}}x{{eval:-k*q;+}})(x{{eval:-s;+}})$$\n\nLes racines sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "s",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["mod((q),p) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q/p}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{s}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul. On résout chaque équation du premier degré, sans avoir besoin de factoriser davantage :",
+					"$${{eval:k*p}}x{{eval:-k*q;+}} = 0 \\iff x = \\dfrac{ {{eval:k*q}} }{ {{eval:k*p}} } = {{eval:q/p}} \\qquad \\text{ou} \\qquad x{{eval:-s;+}} = 0 \\iff x = {{s}}$$",
+					"Les racines sont donc ${{eval:q/p}}$ et ${{s}}$. $P(x)$ est du signe de son coefficient de $x^2$, ${{eval:k*p}}$, à l'extérieur des racines, et du signe contraire entre elles :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:min(q/p,s)}}, {{eval:max(q/p,s)}}, +inf\n\nsign: P(x)\n  -inf,{{eval:min(q/p,s)}}: {{if:k*p>0|+|-}}\n  {{eval:min(q/p,s)}}: z\n  {{eval:min(q/p,s)}},{{eval:max(q/p,s)}}: {{if:k*p>0|-|+}}\n  {{eval:max(q/p,s)}}: z\n  {{eval:max(q/p,s)}},+inf: {{if:k*p>0|+|-}}\n```"
 				]
 			}
 		}
@@ -119,6 +182,84 @@
 			},
 			"description": "v2 erreur de signe",
 			"variationIndex": 1
+		},
+		{
+			"description": "v3 x(3x-6) : 0 et 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 x(3x-6) : -6 lu dans le facteur refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1"
+			},
+			"answers": ["0", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 racine rationnelle (4x-6)(x+1) : 3/2 et -1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "2",
+				"k": "2",
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["\\frac{3}{2}", "-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 racine non simplifiée 6/4 : perfectible",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "2",
+				"k": "2",
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["\\frac{6}{4}", "-1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v4 racine en décimal",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "2",
+				"k": "2",
+				"p": "2",
+				"q": "3",
+				"s": "-1"
+			},
+			"answers": ["1.5", "-1"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	]
 }

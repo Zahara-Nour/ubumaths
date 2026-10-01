@@ -24,6 +24,10 @@
 			"statement": "Est-ce que ${{c}}$ est racine de ce polynôme ?\n\n$${{expression1}}$$",
 			"variables": [
 				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
 					"name": "a",
 					"expression": "1..3;±"
 				},
@@ -37,10 +41,7 @@
 				},
 				{
 					"name": "expression1",
-					"expression": "x^2{{eval:-(a+(b));+}}x{{eval:(a)*(b);+}}",
-					"displayOptions": {
-						"removeNullTerms": true
-					}
+					"expression": "eval:x^2-(a+b)x+ab"
 				}
 			],
 			"correction": {
@@ -56,6 +57,10 @@
 			"statement": "Est-ce que ${{c}}$ est racine de ce polynôme ?\n\n$${{expression1}}$$",
 			"variables": [
 				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
 					"name": "a",
 					"expression": "1..3;±"
 				},
@@ -69,10 +74,7 @@
 				},
 				{
 					"name": "expression1",
-					"expression": "x^2{{eval:-(a+(b));+}}x{{eval:(a)*(b);+}}",
-					"displayOptions": {
-						"removeNullTerms": true
-					}
+					"expression": "eval:x^2-(a+b)x+ab"
 				}
 			],
 			"correction": {
@@ -137,6 +139,32 @@
 			"description": "c racine : Non refusé",
 			"variationIndex": 1,
 			"selectedChoices": [1]
+		},
+		{
+			"description": "a+b=-1 (énoncé x²+x-2, sans « 1x ») : 1 est racine",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a+b=1 (énoncé x²-x-2) : 3 n'est pas racine",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "2",
+				"c": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	]
 }
