@@ -6,7 +6,7 @@
  * @module mathAST/domain/validation/types
  */
 
-import type { Domain } from '../types';
+import type { Domain, Interval } from '../types';
 
 // =============================================================================
 // Validation Result Types
@@ -133,6 +133,31 @@ export type StudentInputFormat =
  */
 export type ParseStudentDomainResult =
 	| { success: true; domain: Domain; format: StudentInputFormat }
+	| { success: false; error: string; position?: number };
+
+/**
+ * Un morceau de la réponse, tel qu'écrit : un intervalle d'une réunion, un
+ * intervalle privé de points, un ensemble (`{3}`, `ℝ`, `∅`), une condition.
+ */
+export interface StudentDomainPiece {
+	/** Le morceau (normalisé) */
+	readonly source: string;
+	/** L'ensemble qu'il désigne */
+	readonly domain: Domain;
+	/** Intervalle tel qu'écrit (bornes NON réordonnées), pour un intervalle seul */
+	readonly interval?: Interval;
+	/** Bornes telles qu'écrites, pour un intervalle seul */
+	readonly bounds?: readonly [string, string];
+}
+
+/** `ParseStudentDomainResult` avec les morceaux tels qu'écrits */
+export type ParseStudentDomainPiecesResult =
+	| {
+			success: true;
+			domain: Domain;
+			format: StudentInputFormat;
+			pieces: readonly StudentDomainPiece[];
+	  }
 	| { success: false; error: string; position?: number };
 
 // =============================================================================

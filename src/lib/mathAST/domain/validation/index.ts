@@ -16,6 +16,8 @@ export type {
 	DomainComparison,
 	StudentInputFormat,
 	ParseStudentDomainResult,
+	ParseStudentDomainPiecesResult,
+	StudentDomainPiece,
 	HintLevel,
 	HintOptions
 } from './types';
@@ -26,7 +28,7 @@ export type { DomainMistakeType, DomainMistake } from './mistake-types';
 // Student Domain Parsing
 // =============================================================================
 
-export { parseStudentDomain } from './parse-student-domain';
+export { parseStudentDomain, parseStudentDomainPieces } from './parse-student-domain';
 
 // =============================================================================
 // Domain Comparison
