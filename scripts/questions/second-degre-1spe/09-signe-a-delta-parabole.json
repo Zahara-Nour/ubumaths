@@ -1,0 +1,646 @@
+{
+	"title": "Lire le signe de a et de Δ sur une parabole",
+	"description": "Ouverture de la parabole → signe de a ; points communs avec l'axe des abscisses → signe de Δ",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Signe et inéquations",
+	"level": 1,
+	"delay": 20,
+	"shared": {
+		"choices": [
+			{
+				"content": "$a>0$ et $\\Delta>0$"
+			},
+			{
+				"content": "$a>0$ et $\\Delta=0$"
+			},
+			{
+				"content": "$a>0$ et $\\Delta<0$"
+			},
+			{
+				"content": "$a<0$ et $\\Delta>0$"
+			},
+			{
+				"content": "$a<0$ et $\\Delta=0$"
+			},
+			{
+				"content": "$a<0$ et $\\Delta<0$"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-2 ; {{k}}*{{d}}^2/2+4\nf(x) = {{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["k*d^2 >= 2", "k*d^2 <= 16"],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le haut** (ses branches montent) : le coefficient $a$ est **positif**, $a>0$.",
+					"La parabole **coupe l'axe des abscisses en deux points**, $A$ et $B$ : leurs abscisses sont les deux racines de $P$. Un polynôme du second degré a deux racines distinctes exactement quand $\\Delta>0$.",
+					"```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-2 ; {{k}}*{{d}}^2/2+4\nf(x) = {{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\npoints: A({{al}}-{{d}} ; 0), B({{al}}+{{d}} ; 0), S({{al}} ; f({{al}}))\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a>0$ et $\\Delta>0$."
+				]
+			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; 8\nf(x) = {{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le haut** (ses branches montent) : le coefficient $a$ est **positif**, $a>0$.",
+					"La parabole **touche l'axe des abscisses en un seul point**, son sommet $S$ : le polynôme a une seule racine (racine double), l'abscisse de $S$. C'est le cas exactement quand $\\Delta=0$.",
+					"```courbe\nx: -6 ; 6\ny: -3 ; 8\nf(x) = {{k}}/2*(x-{{al}})^2   bleu   nom=C_f\npoints: S({{al}} ; 0)\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a>0$ et $\\Delta=0$."
+				]
+			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -3 ; {{h}}+6\nf(x) = ({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..4"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le haut** (ses branches montent) : le coefficient $a$ est **positif**, $a>0$.",
+					"La parabole **ne coupe pas l'axe des abscisses** : son sommet $S$ est au-dessus de l'axe et la courbe s'en éloigne des deux côtés. Le polynôme n'a donc aucune racine réelle, ce qui arrive exactement quand $\\Delta<0$.",
+					"```courbe\nx: -6 ; 6\ny: -3 ; {{h}}+6\nf(x) = ({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\npoints: S({{al}} ; f({{al}}))\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a>0$ et $\\Delta<0$."
+				]
+			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-4 ; {{k}}*{{d}}^2/2+2\nf(x) = -{{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-2..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["k*d^2 >= 2", "k*d^2 <= 16"],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le bas** (ses branches descendent) : le coefficient $a$ est **négatif**, $a<0$.",
+					"La parabole **coupe l'axe des abscisses en deux points**, $A$ et $B$ : leurs abscisses sont les deux racines de $P$. Un polynôme du second degré a deux racines distinctes exactement quand $\\Delta>0$.",
+					"```courbe\nx: -6 ; 6\ny: -{{k}}*{{d}}^2/2-4 ; {{k}}*{{d}}^2/2+2\nf(x) = -{{k}}/2*((x-{{al}})^2-{{d}}^2)   bleu   nom=C_f\npoints: A({{al}}-{{d}} ; 0), B({{al}}+{{d}} ; 0), S({{al}} ; f({{al}}))\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a<0$ et $\\Delta>0$."
+				]
+			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -8 ; 3\nf(x) = -{{k}}/2*(x-{{al}})^2   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				}
+			],
+			"correctChoiceIndex": ["4"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le bas** (ses branches descendent) : le coefficient $a$ est **négatif**, $a<0$.",
+					"La parabole **touche l'axe des abscisses en un seul point**, son sommet $S$ : le polynôme a une seule racine (racine double), l'abscisse de $S$. C'est le cas exactement quand $\\Delta=0$.",
+					"```courbe\nx: -6 ; 6\ny: -8 ; 3\nf(x) = -{{k}}/2*(x-{{al}})^2   bleu   nom=C_f\npoints: S({{al}} ; 0)\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a<0$ et $\\Delta=0$."
+				]
+			}
+		},
+		{
+			"statement": "La parabole ci-dessous représente un polynôme $P(x)=ax^2+bx+c$, de discriminant $\\Delta$. Que peut-on dire des signes de $a$ et de $\\Delta$ ?\n\n```courbe\nx: -6 ; 6\ny: -{{h}}-6 ; 3\nf(x) = -({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1|2|4"
+				},
+				{
+					"name": "al",
+					"expression": "-4..4"
+				},
+				{
+					"name": "h",
+					"expression": "1..4"
+				}
+			],
+			"correctChoiceIndex": ["5"],
+			"correction": {
+				"steps": [
+					"La parabole est **tournée vers le bas** (ses branches descendent) : le coefficient $a$ est **négatif**, $a<0$.",
+					"La parabole **ne coupe pas l'axe des abscisses** : son sommet $S$ est en dessous de l'axe et la courbe s'en éloigne des deux côtés. Le polynôme n'a donc aucune racine réelle, ce qui arrive exactement quand $\\Delta<0$.",
+					"```courbe\nx: -6 ; 6\ny: -{{h}}-6 ; 3\nf(x) = -({{k}}/2*(x-{{al}})^2+{{h}})   bleu   nom=C_f\npoints: S({{al}} ; f({{al}}))\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```",
+					"Conclusion : $a<0$ et $\\Delta<0$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ>0 » accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ=0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a>0 et Δ<0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ>0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ=0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (a>0 et Δ>0) : « a<0 et Δ<0 » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"d": "2"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ>0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ=0 » accepté",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a>0 et Δ<0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ>0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ=0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (a>0 et Δ=0) : « a<0 et Δ<0 » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"al": "-2"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ>0 » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ=0 » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a>0 et Δ<0 » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ>0 » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ=0 » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a>0 et Δ<0) : « a<0 et Δ<0 » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2",
+				"al": "1",
+				"h": "3"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ>0 » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ=0 » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a>0 et Δ<0 » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ>0 » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ=0 » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a<0 et Δ>0) : « a<0 et Δ<0 » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "4",
+				"al": "-1",
+				"d": "1"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ>0 » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ=0 » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a>0 et Δ<0 » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ>0 » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ=0 » accepté",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 (a<0 et Δ=0) : « a<0 et Δ<0 » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"k": "2",
+				"al": "3"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ>0 » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ=0 » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a>0 et Δ<0 » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ>0 » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ=0 » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (a<0 et Δ<0) : « a<0 et Δ<0 » accepté",
+			"variationIndex": 5,
+			"variables": {
+				"k": "1",
+				"al": "0",
+				"h": "2"
+			},
+			"selectedChoices": [5],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
