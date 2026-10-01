@@ -3,16 +3,25 @@ import { shouldAskAgeQuestion, describeAgeDeclaration } from '../age-declaration
 
 describe('shouldAskAgeQuestion', () => {
 	it('élève de 2nde sans réponse → vrai', () => {
-		expect(shouldAskAgeQuestion({ role: 'student', grade: '2', age_declaration: null })).toBe(true);
+		expect(
+			shouldAskAgeQuestion({
+				role: 'student',
+				grade: '2',
+				age_declaration: null,
+				consent_required: true
+			})
+		).toBe(true);
 	});
 
 	it.each([
-		[{ role: 'student', grade: '2', age_declaration: '15_plus' }],
-		[{ role: 'student', grade: '2', age_declaration: 'under_15' }],
-		[{ role: 'student', grade: '3', age_declaration: null }],
-		[{ role: 'student', grade: '1_SPE', age_declaration: null }],
-		[{ role: 'student', grade: null, age_declaration: null }],
-		[{ role: 'teacher', grade: '2', age_declaration: null }]
+		[{ role: 'student', grade: '2', age_declaration: '15_plus', consent_required: true }],
+		[{ role: 'student', grade: '2', age_declaration: 'under_15', consent_required: true }],
+		[{ role: 'student', grade: '3', age_declaration: null, consent_required: true }],
+		[{ role: 'student', grade: '1_SPE', age_declaration: null, consent_required: true }],
+		[{ role: 'student', grade: null, age_declaration: null, consent_required: true }],
+		[{ role: 'teacher', grade: '2', age_declaration: null, consent_required: true }],
+		// Q74 : élève de 2nde déjà dispensé par le professeur
+		[{ role: 'student', grade: '2', age_declaration: null, consent_required: false }]
 	])('%o → faux', (profile) => {
 		expect(shouldAskAgeQuestion(profile)).toBe(false);
 	});

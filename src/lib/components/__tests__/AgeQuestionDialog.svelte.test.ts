@@ -29,7 +29,12 @@ describe('AgeQuestionDialog', () => {
 	});
 
 	it('B7 — s’affiche pour un élève de 2nde sans réponse', async () => {
-		await render(AgeQuestionDialog, { role: 'student', grade: '2', ageDeclaration: null });
+		await render(AgeQuestionDialog, {
+			role: 'student',
+			grade: '2',
+			ageDeclaration: null,
+			consentRequired: true
+		});
 		await expect.element(page.getByText(QUESTION)).toBeVisible();
 		await expect.element(page.getByText(/accord de tes parents/)).toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'Oui' })).toBeVisible();
@@ -37,10 +42,17 @@ describe('AgeQuestionDialog', () => {
 	});
 
 	it.each([
-		['autre niveau', { role: 'student', grade: '3', ageDeclaration: null }],
-		['1re', { role: 'student', grade: '1_SPE', ageDeclaration: null }],
-		['déjà répondu', { role: 'student', grade: '2', ageDeclaration: '15_plus' }],
-		['professeur', { role: 'teacher', grade: '2', ageDeclaration: null }]
+		['autre niveau', { role: 'student', grade: '3', ageDeclaration: null, consentRequired: true }],
+		['1re', { role: 'student', grade: '1_SPE', ageDeclaration: null, consentRequired: true }],
+		[
+			'déjà répondu',
+			{ role: 'student', grade: '2', ageDeclaration: '15_plus', consentRequired: true }
+		],
+		['professeur', { role: 'teacher', grade: '2', ageDeclaration: null, consentRequired: true }],
+		[
+			'déjà dispensé (Q74)',
+			{ role: 'student', grade: '2', ageDeclaration: null, consentRequired: false }
+		]
 	])('B7 — ne s’affiche pas (%s)', async (_label, props) => {
 		await render(AgeQuestionDialog, props);
 		// Laisse le temps à un éventuel portail de s'ouvrir.
@@ -54,6 +66,7 @@ describe('AgeQuestionDialog', () => {
 			role: 'student',
 			grade: '2',
 			ageDeclaration: null,
+			consentRequired: true,
 			onAnswered
 		});
 		await page.getByRole('button', { name: 'Oui' }).click();
@@ -67,7 +80,12 @@ describe('AgeQuestionDialog', () => {
 	});
 
 	it('B9 — Non envoie fifteenOrOlder: false', async () => {
-		await render(AgeQuestionDialog, { role: 'student', grade: '2', ageDeclaration: null });
+		await render(AgeQuestionDialog, {
+			role: 'student',
+			grade: '2',
+			ageDeclaration: null,
+			consentRequired: true
+		});
 		await page.getByRole('button', { name: 'Non' }).click();
 		await expect.poll(() => fetchMock.mock.calls.length).toBe(1);
 		const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
@@ -75,7 +93,12 @@ describe('AgeQuestionDialog', () => {
 	});
 
 	it('B10 — Échap ferme sans rien envoyer', async () => {
-		await render(AgeQuestionDialog, { role: 'student', grade: '2', ageDeclaration: null });
+		await render(AgeQuestionDialog, {
+			role: 'student',
+			grade: '2',
+			ageDeclaration: null,
+			consentRequired: true
+		});
 		await expect.element(page.getByText(QUESTION)).toBeVisible();
 		await userEvent.keyboard('{Escape}');
 		await expect.poll(() => page.getByText(QUESTION).query()).toBeNull();
@@ -83,7 +106,12 @@ describe('AgeQuestionDialog', () => {
 	});
 
 	it('B10 — un clic hors de la fenêtre ferme sans rien envoyer', async () => {
-		await render(AgeQuestionDialog, { role: 'student', grade: '2', ageDeclaration: null });
+		await render(AgeQuestionDialog, {
+			role: 'student',
+			grade: '2',
+			ageDeclaration: null,
+			consentRequired: true
+		});
 		await expect.element(page.getByText(QUESTION)).toBeVisible();
 		const overlay = document.querySelector('[data-slot="dialog-overlay"]');
 		expect(overlay).not.toBeNull();

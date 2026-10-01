@@ -9,7 +9,8 @@
  *   (« il reste soumis », même un ancien profil resté à false) ; sans consentement ni
  *   délai de grâce en cours, un délai de 30 jours s'ouvre.
  *
- * Accès : élève de 2nde (grade '2') seulement → sinon 403. Une seule réponse → 409.
+ * Accès : élève de 2nde (grade '2') soumis au consentement → sinon 403. Une seule
+ * réponse → 409. Un élève dispensé par le professeur n'est pas concerné (Q74).
  *
  * L'écriture passe par le client service : la base refuse à l'élève l'écriture de
  * ces champs (garde guard_profile_consent_fields, 42501). Le profil, le niveau et
@@ -49,6 +50,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (profile.age_declaration !== null) {
 		throw error(409, 'Tu as déjà répondu à cette question');
+	}
+
+	// Élève déjà dispensé par le professeur : la question ne le concerne pas (Q74),
+	// et un « Non » ne doit pas faire sauter la dispense.
+	if (!profile.consent_required) {
+		throw error(403, 'Cette question ne te concerne pas');
 	}
 
 	const declaration: AgeDeclaration = validation.data.fifteenOrOlder ? '15_plus' : 'under_15';

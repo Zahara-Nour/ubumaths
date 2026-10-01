@@ -108,6 +108,7 @@
 	role={data.profile.role}
 	grade={data.profile.grade}
 	ageDeclaration={data.profile.age_declaration}
+	consentRequired={data.profile.consent_required}
 	onAnswered={handleAgeAnswered}
 />
 
