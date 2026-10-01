@@ -181,7 +181,7 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		);
 	}
 
-	// Escaliers : y = x, courbe de la relation (noir), rappels, escalier, rangs
+	// Escaliers : y = x, courbe de la relation, rappels, escalier, rangs
 	for (const seq of scene.sequences) {
 		const st = seq.staircase;
 		if (!st) continue;
@@ -194,7 +194,9 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		}
 		for (const poly of st.curve) {
 			lines.push(`  // relation ${seq.name}`);
-			lines.push(`  line(${path(poly)}, stroke: (paint: black, thickness: 1.1pt, join: "round"))`);
+			lines.push(
+				`  line(${path(poly)}, stroke: (paint: ${TYPST_COLORS[st.relationColor]}, thickness: 1.1pt, join: "round"))`
+			);
 		}
 		for (const g of st.guides) {
 			lines.push(`  // rappel ${seq.name}`);

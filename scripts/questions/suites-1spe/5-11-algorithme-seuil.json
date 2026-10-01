@@ -1,0 +1,310 @@
+{
+	"title": "Valeur renvoyée par une fonction Python de seuil",
+	"description": "Boucle while : premier rang où la condition devient fausse",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Algorithmes",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef seuil(A):\n    n = 0\n    u = {{a}}\n    while u <= A:\n        n = n + 1\n        u = {{q}} * u\n    return n\n```\n\nQue renvoie `seuil({{A}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "A",
+					"expression": "50..400"
+				},
+				{
+					"name": "N",
+					"expression": "eval:floor(log(A/a)/log(q)+0.000001)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable `u` contient $u_n={{a}}\\times{{q}}^n$ quand `n` vaut $n$. La boucle continue tant que $u_n\\leqslant{{A}}$ : la fonction renvoie le plus petit $n$ tel que $u_n>{{A}}$.",
+					"$u_{ {{eval:N-1}} }={{a}}\\times{{q}}^{ {{eval:N-1}} }={{eval:a*q^(N-1)}}\\leqslant{{A}}$ et $u_{ {{N}} }={{a}}\\times{{q}}^{ {{N}} }={{eval:a*q^N}}>{{A}}$.",
+					"La fonction renvoie $\\mathbf{ {{N}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef seuil(A):\n    n = 0\n    u = {{a}}\n    while u > A:\n        n = n + 1\n        u = u - {{r}}\n    return n\n```\n\nQue renvoie `seuil({{A}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "100..200"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "A",
+					"expression": "10..60"
+				},
+				{
+					"name": "N",
+					"expression": "eval:ceil((a-A)/r)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable `u` contient $u_n={{a}}-{{r}}n$ quand `n` vaut $n$. La boucle continue tant que $u_n>{{A}}$ : la fonction renvoie le plus petit $n$ tel que $u_n\\leqslant{{A}}$.",
+					"$$\\begin{align*}{{a}}-{{r}}n\\leqslant{{A}}&\\iff -{{r}}n\\leqslant{{eval:A-a}}\\\\&\\iff n\\geqslant\\dfrac{ {{eval:a-A}} }{ {{r}} }\\end{align*}$$",
+					"$u_{ {{eval:N-1}} }={{eval:a-r*(N-1)}}>{{A}}$ et $u_{ {{N}} }={{eval:a-r*N}}\\leqslant{{A}}$ : la fonction renvoie $\\mathbf{ {{N}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef seuil(A):\n    n = 0\n    u = {{a}}\n    while u < A:\n        n = n + 1\n        u = u + {{r}}\n    return n\n```\n\nQue renvoie `seuil({{A}})` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "A",
+					"expression": "100..250"
+				},
+				{
+					"name": "N",
+					"expression": "eval:ceil((A-a)/r)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variable `u` contient $u_n={{a}}+{{r}}n$ quand `n` vaut $n$. La boucle continue tant que $u_n<{{A}}$ : la fonction renvoie le plus petit $n$ tel que $u_n\\geqslant{{A}}$.",
+					"$$\\begin{align*}{{a}}+{{r}}n\\geqslant{{A}}&\\iff {{r}}n\\geqslant{{eval:A-a}}\\\\&\\iff n\\geqslant\\dfrac{ {{eval:A-a}} }{ {{r}} }\\end{align*}$$",
+					"$u_{ {{eval:N-1}} }={{eval:a+r*(N-1)}}<{{A}}$ et $u_{ {{N}} }={{eval:a+r*N}}\\geqslant{{A}}$ : la fonction renvoie $\\mathbf{ {{N}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u ← 2u depuis 3, A=96 : u5 = 96 n'est pas > 96 → 6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"A": "96",
+				"N": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lu comme while u < A : 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2",
+				"A": "96",
+				"N": "6"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← 3u depuis 2, A=100 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"A": "100",
+				"N": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u ← 3u depuis 4, A=108 = 4·3³ : u3 n'est pas > 108 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"q": "3",
+				"A": "108",
+				"N": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "la valeur de u renvoyée au lieu de n : 162",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"A": "100",
+				"N": "4"
+			},
+			"answers": ["162"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "dernier n où u ≤ A : 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"q": "3",
+				"A": "100",
+				"N": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← u−5 depuis 150, A=50 : u20 = 50 arrête la boucle → 20",
+			"variationIndex": 1,
+			"variables": {
+				"a": "150",
+				"r": "5",
+				"A": "50",
+				"N": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lu comme while u >= A : 21",
+			"variationIndex": 1,
+			"variables": {
+				"a": "150",
+				"r": "5",
+				"A": "50",
+				"N": "20"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← u−6 depuis 137, A=25 : 19",
+			"variationIndex": 1,
+			"variables": {
+				"a": "137",
+				"r": "6",
+				"A": "25",
+				"N": "19"
+			},
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "partie entière 18",
+			"variationIndex": 1,
+			"variables": {
+				"a": "137",
+				"r": "6",
+				"A": "25",
+				"N": "19"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← u+7 depuis 10, A=150 : u20 = 150 arrête la boucle → 20",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"r": "7",
+				"A": "150",
+				"N": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lu comme while u <= A : 21",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"r": "7",
+				"A": "150",
+				"N": "20"
+			},
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← u+9 depuis 4, A=200 : 22",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"r": "9",
+				"A": "200",
+				"N": "22"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "valeur de u au lieu de n : 202",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"r": "9",
+				"A": "200",
+				"N": "22"
+			},
+			"answers": ["202"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

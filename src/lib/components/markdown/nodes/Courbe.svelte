@@ -212,14 +212,18 @@
 				{/each}
 			{/each}
 
-			<!-- Escaliers : droite y = x, relation (noir), rappels, escalier, rangs u_k -->
+			<!-- Escaliers : droite y = x, relation, rappels, escalier, rangs u_k -->
 			{#each scene.sequences as seq, s (s)}
 				{#if seq.staircase}
 					{#each seq.staircase.diagonal as poly, i (i)}
 						<polyline class="courbe-diagonale" points={pointsAttr(poly)} />
 					{/each}
 					{#each seq.staircase.curve as poly, i (i)}
-						<polyline class="courbe-relation" points={pointsAttr(poly)} />
+						<polyline
+							class="courbe-relation"
+							points={pointsAttr(poly)}
+							style:stroke={COLOR_VAR[seq.staircase.relationColor]}
+						/>
 					{/each}
 					{#each seq.staircase.guides as g, i (i)}
 						<line

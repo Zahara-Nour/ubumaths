@@ -159,3 +159,19 @@ Décision David : corriger`FillBlanksInput`, ou faire ces modèles en QCM.
 - 2026-10-01 : spec validée par David ; #601 (escalier), #602 (`\textcolor` dans le PDF), #603
   (questions) mergées ; 9 modèles publiés corrigés, 35 modèles neufs en brouillon ; 5
   sous-domaines renommés en base (accents) par `rename-question-subdomains.ts --publier`, relus.
+
+## Décisions de David (2026-10-01, « je suis tes reco »)
+
+1. Python : corriger l'affichage → `StaticBlockNode` dans `FillBlanksInput` (#607 : courbe,
+   tableau, code, liste étaient INVISIBLES dans l'énoncé d'une question à trous — y compris deux
+   modèles publiés du second degré, `87140df3` et `eae2ff6a`). Modèles 5-10 et 5-11 (à trous) créés
+   en brouillon ; réponses recalculées en exécutant le code Python tiré.
+2. 2-08 : `form: warn` + `requiredForm: {pattern: "a * b^c"}` — u_p × q^(n−p) et u_0 × qⁿ justes,
+   calcul inachevé (`5\times3^n\div9`) refusé ; brouillon mis à jour.
+3. 3-08 : « ni croissante, ni décroissante » validé. 4. « Limites » en dernier, validé.
+4. Plusieurs escaliers : chaque relation (et son nom) prend la couleur de son escalier ; noir pour
+   un escalier seul.
+
+Nouveau défaut (non corrigé) : dans une série de fiche (`buildSerie`), à partir de la question 10,
+les lignes sont décalées de 4 espaces et un bloc ```python n'est plus reconnu : il s'imprime en
+texte brut entre guillemets (le PDF compile). Questions 1 à 9 correctes.
