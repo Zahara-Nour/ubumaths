@@ -24,6 +24,8 @@
 	import type { TestAnswerResult } from '$lib/types/test';
 	import { getQuestionType } from '$lib/questions/types';
 	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
+	import { choiceLetter, toDisplayedChoicePosition } from '$lib/questions/choices';
+	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -98,6 +100,18 @@
 		}
 		return [];
 	});
+	/**
+	 * Choix coché, enregistré en indice d'ORIGINE : lettre de sa position AFFICHÉE
+	 * (les choix sont mélangés) et son contenu.
+	 */
+	function describeChosen(originalIndex: number): { letter: string; content?: ResolvedMarkdown } {
+		const instance = answerResult.instance;
+		return {
+			letter: choiceLetter(toDisplayedChoicePosition(instance, originalIndex)),
+			content: instance.choices?.[originalIndex]?.content
+		};
+	}
+
 	const renderedSteps = $derived(answerResult.instance.correction?._renderedSteps);
 	const useGeneratedSteps = $derived(
 		!hasModeASteps && renderedSteps !== undefined && renderedSteps.length > 0
@@ -276,15 +290,15 @@
 										</p>
 									{:else if getQuestionType(answerResult.instance) === 'multiple_choice'}
 										<ul class="space-y-1">
-											{#if Array.isArray(answerResult.userAnswer.value)}
-												{#each answerResult.userAnswer.value as index (index)}
-													<li class="font-medium">{String.fromCharCode(65 + Number(index))}</li>
-												{/each}
-											{:else}
-												<li class="font-medium">
-													{String.fromCharCode(65 + Number(answerResult.userAnswer.value))}
+											{#each [answerResult.userAnswer.value].flat() as index (index)}
+												{@const choice = describeChosen(Number(index))}
+												<li class="flex items-center gap-2 font-medium">
+													<span>{choice.letter}</span>
+													{#if choice.content}
+														<MarkdownRenderer content={choice.content} />
+													{/if}
 												</li>
-											{/if}
+											{/each}
 										</ul>
 									{:else if Array.isArray(answerResult.userAnswer.value)}
 										<ul class="space-y-1">

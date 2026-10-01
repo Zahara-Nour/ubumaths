@@ -38,6 +38,7 @@ import { extractUnitFromLatex } from '$lib/questions/units/parser';
 import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
 import { CONSTRAINT_FEEDBACK, FORGOTTEN_PERCENT_SIGN } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
+import { choiceLetter, toDisplayedChoicePosition } from '$lib/questions/choices';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
@@ -421,10 +422,13 @@ export function validateAnswer(
 			return { isCorrect: true };
 		}
 
+		// `userAnswer` : indices d'ORIGINE (cf. `toOriginalChoiceIndexes`). La lettre du
+		// message, elle, désigne la position AFFICHÉE : c'est celle que l'élève voit.
 		const result: ValidationResult = validateChoice(
 			userAnswer as number | number[],
 			correctChoiceIndex as string | string[],
-			instance.multipleAnswers
+			instance.multipleAnswers,
+			(originalIndex) => choiceLetter(toDisplayedChoicePosition(instance, originalIndex))
 		);
 
 		// Apply required form check (multiple_choice only; fill_in_blanks uses per-blank)
@@ -1466,12 +1470,14 @@ function orderIndependentStatuses(
  * @param userAnswer - Selected choice index(es)
  * @param correctAnswer - Correct choice index(es) from instance
  * @param multipleAnswers - Whether multiple answers are allowed
+ * @param letterOf - Lettre d'un indice d'origine dans le message (défaut : sans mélange)
  * @returns Validation result
  */
 export function validateChoice(
 	userAnswer: number | number[],
 	correctAnswer: string | string[],
-	multipleAnswers?: boolean
+	multipleAnswers?: boolean,
+	letterOf: (originalIndex: number) => string = choiceLetter
 ): ValidationResult {
 	// Normalize answers to arrays of numbers
 	const userIndexes = Array.isArray(userAnswer) ? userAnswer : [userAnswer];
@@ -1494,7 +1500,7 @@ export function validateChoice(
 		feedback: isCorrect
 			? undefined
 			: multipleAnswers
-				? `Les choix corrects sont: ${correctIndexes.map((i) => String.fromCharCode(65 + i)).join(', ')}`
-				: `Le choix correct est: ${String.fromCharCode(65 + correctIndexes[0])}`
+				? `Les choix corrects sont: ${correctIndexes.map(letterOf).sort().join(', ')}`
+				: `Le choix correct est: ${letterOf(correctIndexes[0])}`
 	};
 }
