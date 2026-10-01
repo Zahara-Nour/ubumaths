@@ -153,15 +153,18 @@ describe('actions avec une autre liste', () => {
 		const { carte } = await cardOf(['L', 'M']);
 
 		expect(carte.textContent).toContain('Avec la liste M');
-		expect(carte.querySelector('[aria-label="Liste partenaire"]')).toBeNull();
+		expect(carte.querySelector('[aria-haspopup="listbox"]')).toBeNull();
 		expect(labels(carte)).toContain('Nuage avec M');
 	});
 
 	it('plusieurs partenaires : un menu, au plus 9 boutons, et le choix change les actions', async () => {
 		const { carte } = await cardOf(['L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']);
-		const trigger = carte.querySelector('[aria-label="Liste partenaire"]') as HTMLButtonElement;
+		const trigger = carte.querySelector('[aria-haspopup="listbox"]') as HTMLButtonElement;
 
-		expect(trigger).not.toBeNull();
+		// Audit a11y : le bouton annonce la liste CHOISIE, pas seulement « Liste partenaire »
+		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste M');
+		const group = carte.querySelector('[role="group"]');
+		expect(group?.getAttribute('aria-label')).toBe('Avec la liste M');
 		expect(labels(carte).length).toBeLessThanOrEqual(9);
 		expect(labels(carte)).toContain('Nuage avec M');
 
@@ -176,5 +179,6 @@ describe('actions avec une autre liste', () => {
 
 		expect(labels(carte)).toContain('Nuage avec N');
 		expect(labels(carte)).not.toContain('Nuage avec M');
+		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste N');
 	});
 });

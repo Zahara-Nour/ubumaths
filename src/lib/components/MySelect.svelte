@@ -18,6 +18,12 @@
 		id?: string;
 		/** If true, the trigger width adapts to the widest item label */
 		fitContent?: boolean;
+		/**
+		 * Accessible name of the trigger, defaults to `placeholder`. ⚠️ The
+		 * placeholder alone never announces the CHOSEN value (a11y audit,
+		 * 2026-10-02) : give a name that includes it, e.g. « Avec la liste M ».
+		 */
+		triggerAriaLabel?: string;
 	};
 
 	type SingleSelectProps = BaseProps & {
@@ -49,6 +55,7 @@
 		onchange,
 		type = 'single',
 		fitContent = false,
+		triggerAriaLabel,
 		...restProps
 	}: Props = $props();
 
@@ -144,7 +151,7 @@
 			>
 				<Select.Trigger
 					class="{computedTriggerClass} col-start-1 row-start-1"
-					aria-label={placeholder}
+					aria-label={triggerAriaLabel ?? placeholder}
 				>
 					{selectedLabel}
 				</Select.Trigger>
@@ -159,7 +166,7 @@
 			>
 				<Select.Trigger
 					class="{computedTriggerClass} col-start-1 row-start-1"
-					aria-label={placeholder}
+					aria-label={triggerAriaLabel ?? placeholder}
 				>
 					{selectedLabel}
 				</Select.Trigger>
@@ -176,7 +183,7 @@
 			onValueChange={handleMultipleValueChange}
 			{...restProps}
 		>
-			<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
+			<Select.Trigger class={computedTriggerClass} aria-label={triggerAriaLabel ?? placeholder}>
 				{selectedLabel}
 			</Select.Trigger>
 			{@render selectContent()}
@@ -188,7 +195,7 @@
 			onValueChange={handleSingleValueChange}
 			{...restProps}
 		>
-			<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
+			<Select.Trigger class={computedTriggerClass} aria-label={triggerAriaLabel ?? placeholder}>
 				{selectedLabel}
 			</Select.Trigger>
 			{@render selectContent()}
