@@ -179,6 +179,13 @@ describe('erreurs situées', () => {
 		expect(error.message).toMatch(/=/);
 	});
 
+	it('« Vélo : 3 » : la piste du signe =, pas « option inconnue »', () => {
+		const [error] = errorsOf('barres', 'Vélo : 3');
+
+		expect(error.message).toMatch(/Vélo = 3/);
+		expect(error.message).not.toMatch(/option/);
+	});
+
 	it('effectif non entier, avec la piste du séparateur', () => {
 		const [error] = errorsOf('barres', 'Fille = 45,120');
 

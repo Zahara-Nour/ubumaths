@@ -308,6 +308,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 			const separator = content.lastIndexOf('=');
 			if (separator === -1) {
+				// `Vélo : 3` : un deux-points à la place du signe =
+				if (kv && NUMBER_REGEX.test(kv[2].trim())) {
+					throw new LineError(`écrire « ${kv[1]} = ${kv[2].trim()} » (catégorie = effectif)`);
+				}
 				if (kv) {
 					throw new LineError(
 						`option « ${kv[1]} » inconnue (options : titre, axes, description, taille, valeurs, couleur, étiquettes)`

@@ -113,6 +113,15 @@ describe('diagramme en barres', () => {
 		expect(bars('Football = 1\nDanse = 2').longestLabel).toBe(8);
 	});
 
+	// Revue du lot 2 : « A = 1 ; B = 2 ; C = 3 » graduait en 0,5 un axe « Effectif »
+	it('des effectifs ont des graduations entières', () => {
+		for (const source of ['A = 1\nB = 2\nC = 3', 'A = 1', 'A = 0\nB = 0']) {
+			for (const tick of bars(source).ticks) {
+				expect(Number.isInteger(tick.value), `${source} → ${tick.value}`).toBe(true);
+			}
+		}
+	});
+
 	it('série toute nulle : un axe quand même', () => {
 		const scene = bars('A = 0\nB = 0');
 

@@ -115,7 +115,8 @@ export interface StatChartSceneOptions {
 /** Couleurs des secteurs, dans cet ordre, reprises au-delà (Q21) */
 export const PIE_PALETTE_SIZE = 7;
 
-const ASPECT_RATIO = 3 / 4;
+/** Hauteur / largeur du cadre des barres : partagé avec le Typst */
+export const STAT_CHART_ASPECT_RATIO = 3 / 4;
 
 /** Écart visé entre deux graduations, en px */
 const TICK_TARGET_PX = 40;
@@ -126,8 +127,11 @@ const BAR_WIDTH = 0.6;
 /** Au-delà, les noms de catégories sont inclinés */
 const FLAT_LABELS_MAX = 6;
 
-/** Largeur moyenne d'un caractère à 11 px, pour savoir si un nom tient à plat */
-const CHAR_PX = 6.5;
+/**
+ * Largeur moyenne d'un caractère à 11 px, pour savoir si un nom tient à plat ;
+ * partagée avec `StatChart.svelte`, qui en déduit la place d'un nom incliné.
+ */
+export const STAT_CHART_CHAR_PX = 6.5;
 
 /** Pas d'échantillonnage des arcs, en degrés */
 const ARC_STEP_DEGREES = 3;
@@ -159,11 +163,14 @@ function formatValue(value: number, unit: StatChartUnit, locale: ContentLocale):
 
 function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const width = COURBE_PIXEL_WIDTH[spec.size];
-	const height = width * ASPECT_RATIO;
+	const height = width * STAT_CHART_ASPECT_RATIO;
 	const values = spec.data.map((d) => d.value);
 	const maxValue = Math.max(...values) || 1;
 
-	const step = computeGridStep(height / maxValue, { targetPx: TICK_TARGET_PX }).major || maxValue;
+	const automatic = computeGridStep(height / maxValue, { targetPx: TICK_TARGET_PX }).major;
+	// Un effectif est entier : un axe « Effectif » gradué en 0,5 serait faux
+	// (revue du lot 2). Les pas automatiques valent 1, 2 ou 5 × 10^k : au moins 1 reste propre.
+	const step = spec.unit === 'effectifs' ? Math.max(1, automatic || 1) : automatic || maxValue;
 	const tickCount = Math.ceil(maxValue / step - 1e-9);
 	const yMax = tickCount * step;
 	const ticks: SceneTick[] = Array.from({ length: tickCount + 1 }, (_, i) => ({
@@ -182,7 +189,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 
 	const bandPx = width / spec.data.length;
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
-	const rotateLabels = spec.data.length > FLAT_LABELS_MAX || longest * CHAR_PX > bandPx;
+	const rotateLabels = spec.data.length > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
 
 	const listed = spec.data.map((d) => `${d.label} ${formatValue(d.value, spec.unit, locale)}`);
 
@@ -246,7 +253,7 @@ function legendText(
 }
 
 function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
-	const width = COURBE_PIXEL_WIDTH[spec.size] * ASPECT_RATIO;
+	const width = COURBE_PIXEL_WIDTH[spec.size] * STAT_CHART_ASPECT_RATIO;
 	const outcome = categoryFrequencies(spec.data.map((d) => d.value));
 	// Le parseur garantit un total > 0 ; une défaillance ici est un bug
 	if (outcome === null || !outcome.ok) {

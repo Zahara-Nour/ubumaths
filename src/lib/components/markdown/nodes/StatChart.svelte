@@ -18,7 +18,11 @@
 <script lang="ts">
 	import type { CourbeColor } from '$lib/ubumark/types/courbe';
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { buildStatChartScene, type ScenePoint } from '$lib/ubumark/utils/stat-chart-scene';
+	import {
+		STAT_CHART_CHAR_PX,
+		buildStatChartScene,
+		type ScenePoint
+	} from '$lib/ubumark/utils/stat-chart-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
@@ -42,8 +46,6 @@
 	const PAD_BOTTOM_FLAT = 26;
 	const AXIS_TITLE_PX = 18;
 
-	/** Largeur moyenne d'un caractère à 11 px : un nom incliné à 45° descend de ~0,7 × sa longueur */
-	const CHAR_PX = 6.5;
 	const SIN_45 = Math.SQRT1_2;
 
 	/** Marge autour du disque, en px */
@@ -96,7 +98,9 @@
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
 	/** Étendue d'un nom incliné, horizontale comme verticale */
-	let rotatedExtent = $derived(bars?.rotateLabels ? bars.longestLabel * CHAR_PX * SIN_45 : 0);
+	let rotatedExtent = $derived(
+		bars?.rotateLabels ? bars.longestLabel * STAT_CHART_CHAR_PX * SIN_45 : 0
+	);
 	let padBottom = $derived(
 		(bars?.rotateLabels ? 16 + rotatedExtent : PAD_BOTTOM_FLAT) +
 			(bars?.axisTitles.x ? AXIS_TITLE_PX : 0)

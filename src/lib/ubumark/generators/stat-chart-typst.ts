@@ -19,7 +19,9 @@
 
 import type { CourbeColor, CourbeSize } from '../types/courbe';
 import type { StatChartNode } from '../types/stat-chart';
+import { WIDTH_CM } from './courbe-typst';
 import {
+	STAT_CHART_ASPECT_RATIO,
 	buildStatChartScene,
 	type BarScene,
 	type PieScene,
@@ -38,15 +40,6 @@ export interface StatChartTypstOptions {
 // ============================================================================
 // CONSTANTES
 // ============================================================================
-
-/** Largeur du cadre en cm, comme ```courbe ; une colonne de fiche fait ~8,7 cm. */
-const WIDTH_CM: Record<CourbeSize, number> = {
-	petite: 4.5,
-	moyenne: 6.5,
-	grande: 7.6
-};
-
-const ASPECT_RATIO = 3 / 4;
 
 /** Teintes du thème clair de l'écran, comme ```courbe */
 const TYPST_COLORS: Record<CourbeColor, string> = {
@@ -105,7 +98,7 @@ function titleBlock(title: string | null): string {
 
 function barsTypst(scene: BarScene, size: CourbeSize): string {
 	const W = WIDTH_CM[size];
-	const H = W * ASPECT_RATIO;
+	const H = W * STAT_CHART_ASPECT_RATIO;
 	const n = scene.bars.length;
 	const X = (x: number) => fmt((x / n) * W);
 	const Y = (y: number) => fmt((y / scene.yMax) * H);
@@ -192,10 +185,15 @@ export function generateStatChartTypst(
 ): string {
 	if (!node.spec) return UNAVAILABLE;
 
-	const scene = buildStatChartScene(node.spec, {
-		locale: options.language === 'en' ? 'en' : 'fr'
-	});
-	return scene.kind === 'barres'
-		? barsTypst(scene, node.spec.size)
-		: pieTypst(scene, node.spec.size);
+	// Une exception ici ferait échouer TOUTE la fiche : le cadre neutre vaut mieux
+	try {
+		const scene = buildStatChartScene(node.spec, {
+			locale: options.language === 'en' ? 'en' : 'fr'
+		});
+		return scene.kind === 'barres'
+			? barsTypst(scene, node.spec.size)
+			: pieTypst(scene, node.spec.size);
+	} catch {
+		return UNAVAILABLE;
+	}
 }

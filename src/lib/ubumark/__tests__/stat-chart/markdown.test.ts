@@ -72,6 +72,14 @@ describe('reconnus par parseMarkdown', () => {
 		expect(doc.children[doc.children.length - 1].type).toBe('paragraph');
 	});
 
+	it('dans une liste aussi, un nom avec une formule garde son texte brut', () => {
+		const md = ['1. Voir :', '', ...indent(['```barres', '$x$ positif = 3', '```'])].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+		const [node] = charts(list.items[0].children as BlockNode[]);
+
+		expect(node.spec?.data[0].label).toBe('$x$ positif');
+	});
+
 	it('un nom de catégorie avec une formule garde son texte brut', () => {
 		const md = ['```barres', '$x$ positif = 3', '```'].join('\n');
 		const [node] = charts(parseMarkdown(md).children);
@@ -122,7 +130,6 @@ describe('aller-retour de l’éditeur riche', () => {
 		const md = ['1. Voir :', '', ...indent(BARS)].join('\n');
 		const back = tipTapToMarkdown(markdownToTipTap(md));
 
-		expect(back).toContain('```barres');
-		expect(back).toContain('Football = 12');
+		expect(back.trim()).toBe(md);
 	});
 });
