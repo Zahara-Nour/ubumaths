@@ -17,6 +17,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { insertSystemNotification } from '$lib/server/notifications';
+import { escapeHtml } from '$lib/utils/html-escape';
 
 /**
  * Create notification when someone makes a proposal on user's listing
@@ -102,7 +103,7 @@ export async function notifyProposalRejected(
 ): Promise<void> {
 	try {
 		const message = rejectionMessage
-			? `Votre proposition pour "${listingTitle}" a été refusée. Message: ${rejectionMessage}`
+			? `Votre proposition pour "${listingTitle}" a été refusée. Message: ${escapeHtml(rejectionMessage)}`
 			: `Votre proposition pour "${listingTitle}" a été refusée.`;
 
 		const { error: insertError } = await insertSystemNotification({

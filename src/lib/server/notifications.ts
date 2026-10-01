@@ -179,7 +179,13 @@ export async function insertSystemNotification(
 ): Promise<{ error: { message: string } | null }> {
 	const { error } = await createServiceRoleClient()
 		.from('notifications')
-		.insert({ ...row, is_system: true, created_by: null });
+		.insert({
+			...row,
+			// Défense en profondeur : le message peut contenir un texte saisi par un élève.
+			message: sanitizeNotificationHtml(row.message),
+			is_system: true,
+			created_by: null
+		});
 	return { error };
 }
 
@@ -194,14 +200,9 @@ export async function createSystemNotification(
 	try {
 		const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-		// SECURITY: Sanitize message HTML even for system notifications (defense-in-depth)
-		// System messages are controlled by code, but sanitization adds an extra security layer
-		// in case of bugs or future changes that introduce user-controlled content.
-		const sanitizedMessage = sanitizeNotificationHtml(data.message);
-
 		const { error: insertError } = await insertSystemNotification({
 			title: data.title,
-			message: sanitizedMessage, // Use sanitized message
+			message: data.message, // nettoyé par insertSystemNotification
 			type: data.type,
 			priority: data.priority,
 			action_label: data.action_label || null,

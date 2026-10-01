@@ -187,6 +187,28 @@ describe('notifications système réservées au serveur', () => {
 		expect(await lignesAvecTitre('anon-all')).toBe(0);
 	});
 
+	it('un élève ne peut ni modifier ni masquer une notification système qui le cible', async () => {
+		const id = await insert('notifications', {
+			...diffusionSysteme('cible-élève'),
+			target_type: 'users',
+			target_user_ids: [eleveId]
+		});
+		const { data, error } = await eleve
+			.from('notifications')
+			.update({ target_type: 'all', deleted_at: new Date().toISOString() })
+			.eq('id', id)
+			.select('id');
+		// Refus RLS d'un UPDATE : zéro ligne, sans erreur.
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+		const { data: apres } = await service
+			.from('notifications')
+			.select('target_type, deleted_at')
+			.eq('id', id)
+			.single();
+		expect(apres).toEqual({ target_type: 'users', deleted_at: null });
+	});
+
 	// --------------------------------------------------------------------------
 	// 3. Non-régression
 	// --------------------------------------------------------------------------
