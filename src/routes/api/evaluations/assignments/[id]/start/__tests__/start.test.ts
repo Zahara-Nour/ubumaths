@@ -157,6 +157,24 @@ describe('POST /api/evaluations/assignments/[id]/start', () => {
 		expect(serviceFrom).not.toHaveBeenCalled();
 	});
 
+	it('9 : au-delà de 20 démarrages par minute → 429', async () => {
+		const { call } = setup({
+			role: 'teacher',
+			userId: '88888888-8888-4888-8888-888888888888',
+			recipient: false
+		});
+		const statuses: number[] = [];
+		for (let i = 0; i < 21; i++) {
+			statuses.push(
+				await call()
+					.then((r) => r.status)
+					.catch((e: { status?: number }) => e.status ?? 0)
+			);
+		}
+		expect(statuses.slice(0, 20).every((s) => s !== 429)).toBe(true);
+		expect(statuses[20]).toBe(429);
+	});
+
 	it('identifiant invalide : 400', async () => {
 		const { call } = setup({ role: 'student', userId: STUDENT, recipient: true });
 		expect((await call('pas-un-uuid')).status).toBe(400);

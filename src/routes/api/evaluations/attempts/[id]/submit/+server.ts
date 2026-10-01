@@ -7,10 +7,12 @@
  * questions depuis modèles + graines, corrige, note, enregistre (service_role)
  * et alimente le SRS avec SON verdict. Tout verdict du navigateur est ignoré.
  *
- * Corps (Zod) : { answers: [{ position, values?, latex?, choices?, timeSpent? }], timeSpent }
+ * Corps (Zod) : { answers: [{ position, values?, choices?, timeSpent? }] }. La
+ * forme est jugée sur `values` (le LaTeX tapé), la durée mesurée par le serveur.
  * Réponse : { attemptId, late, grade, pointsEarned, totalQuestions, correctCount, questions }
  * Erreurs : 400 (corps invalide), 404 (tentative inconnue ou d'un autre),
- * 409 (déjà terminée, rien n'est écrit).
+ * 409 (déjà terminée, rien n'est écrit) avec `result` : la copie DÉJÀ notée,
+ * reconstruite depuis la base (null si impossible), 429 (trop d'envois).
  */
 
 import { json } from '@sveltejs/kit';
@@ -19,11 +21,17 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { submitAttemptSchema } from '$lib/server/validation/evaluations';
 import { EvaluationError } from '$lib/server/evaluations';
-import { submitEvaluationAttempt } from '$lib/server/evaluation-attempts';
+import {
+	AttemptAlreadySubmittedError,
+	submitEvaluationAttempt
+} from '$lib/server/evaluation-attempts';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireAuth(locals);
+	// Corriger coûte (régénération + validation de chaque question)
+	rateLimit(`evaluation-submit:${user.id}`, 10, 60_000);
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
@@ -49,6 +57,9 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		);
 		return json(result);
 	} catch (e) {
+		if (e instanceof AttemptAlreadySubmittedError) {
+			return json({ error: e.message, result: e.result }, { status: 409 });
+		}
 		if (e instanceof EvaluationError) return json({ error: e.message }, { status: e.status });
 		throw e;
 	}

@@ -26,9 +26,12 @@ import { uuidSchema } from '$lib/server/validation/common';
 import { EvaluationError } from '$lib/server/evaluations';
 import { startEvaluationAttempt } from '$lib/server/evaluation-attempts';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
 	const { user, profile } = await requireAuth(locals);
+	// Démarrer tire et génère toutes les questions : pas de rafale
+	rateLimit(`evaluation-start:${user.id}`, 20, 60_000);
 
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {

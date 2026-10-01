@@ -14,18 +14,20 @@
  */
 
 import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
-import { blankStatuses, validateAnswer } from '$lib/utils/answer-validator';
-import type { ValidationResult } from '$lib/types/question-display';
+import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
 
 // Types
 export type QuestionPoints = 0 | 0.5 | 1;
 
 /** Réponse d'un élève à une question, telle que l'envoi la transmet */
 export interface SubmittedAnswer {
-	/** Question à cases : une valeur par case (chaîne vide = case vide) */
+	/**
+	 * Question à cases : une valeur par case (chaîne vide = case vide). Pour une
+	 * case math, c'est le LaTeX tapé (MathLive) : il sert AUSSI à juger la forme.
+	 * Aucun LaTeX séparé n'est accepté du navigateur : un LaTeX « trompeur »
+	 * contournerait la forme exigée (audit de sécurité, chantier 5).
+	 */
 	values?: string[];
-	/** LaTeX tapé, une entrée par case (formes, contraintes cosmétiques) */
-	latex?: string[];
 	/** QCM : positions COCHÉES dans l'ordre affiché (`shuffledChoices`) */
 	choices?: number[];
 }
@@ -42,6 +44,14 @@ export interface QuestionVerdict {
 }
 
 // Functions
+/**
+ * « Su » pour le SRS (décision Q40 de David, 2026-10-01) : une forme non
+ * optimale (½ point) compte « Bien », comme en entraînement libre.
+ */
+export function isKnownForSrs(status: ValidationStatus): boolean {
+	return status === 'correct' || status === 'unoptimal_form';
+}
+
 export function pointsOfStatus(status: ValidationStatus): QuestionPoints {
 	if (status === 'correct') return 1;
 	if (status === 'unoptimal_form') return 0.5;
@@ -136,23 +146,16 @@ function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): Quest
 	if (values.length !== blanks.length) {
 		return { status: 'incorrect', points: 0, isCorrect: false };
 	}
-	const latex = answer.latex && answer.latex.length === values.length ? answer.latex : undefined;
-
-	const status = statusFromBlankStatuses(blankStatuses(values, instance, latex));
-	// Messages : ceux de la correction habituelle (même chaîne)
-	let result: ValidationResult | undefined;
-	try {
-		result = validateAnswer(values, instance, latex);
-	} catch {
-		result = undefined;
-	}
+	// Forme jugée sur la valeur elle-même (cf. `SubmittedAnswer.values`)
+	const { result, statuses } = validateBlanksDetailed(values, instance, values);
+	const status = statusFromBlankStatuses(statuses);
 	const points = pointsOfStatus(status);
 	return {
 		status,
 		points,
 		isCorrect: points === 1,
-		...(result?.feedback && { feedback: result.feedback }),
-		...(result?.blankFeedback && { blankFeedback: result.blankFeedback })
+		...(result.feedback && { feedback: result.feedback }),
+		...(result.blankFeedback && { blankFeedback: result.blankFeedback })
 	};
 }
 

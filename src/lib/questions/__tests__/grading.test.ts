@@ -15,6 +15,7 @@ import {
 	statusFromBlankStatuses,
 	statusFromChoices
 } from '../grading';
+import type { SubmittedAnswer } from '../grading';
 import type { InstanceBlank, QuestionInstance } from '../types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -216,6 +217,26 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 	it('nombre de cases différent de l’attendu → 0, jamais une exception', () => {
 		const verdict = gradeQuestion(blanksInstance([math('7'), math('8')]), { values: ['7'] });
 		expect(verdict.points).toBe(0);
+	});
+
+	describe('forme exigée jugée sur la VALEUR envoyée, jamais sur un LaTeX fourni à part (audit)', () => {
+		const factorise = () =>
+			blanksInstance([{ ...math('(x+1)(x+2)'), requiredForm: 'product' }], {
+				constraints: { form: 'off' }
+			});
+
+		it('forme factorisée : 1 point', () => {
+			expect(gradeQuestion(factorise(), { values: ['(x+1)(x+2)'] }).points).toBe(1);
+		});
+
+		it('forme développée, sans LaTeX : pas 1 point', () => {
+			expect(gradeQuestion(factorise(), { values: ['x^2+3x+2'] }).points).toBe(0);
+		});
+
+		it('forme développée, LaTeX trompeur (factorisé) : pas 1 point', () => {
+			const lying = { values: ['x^2+3x+2'], latex: ['(x+1)(x+2)'] } as SubmittedAnswer;
+			expect(gradeQuestion(factorise(), lying).points).toBe(0);
+		});
 	});
 
 	it('orderIndependent : statut par réponse, cases trouvées par appariement', () => {

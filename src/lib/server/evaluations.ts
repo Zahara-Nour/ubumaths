@@ -25,6 +25,7 @@ import type {
 import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { toDbSeries } from '$lib/server/series';
+import { savedSeriesCategoriesSchema } from '$lib/validation/series';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -105,6 +106,23 @@ export async function createEvaluation(
 	input: { series_id: string; settings: EvaluationSettings; status: 'draft' | 'published' },
 	userId: string
 ): Promise<DbEvaluation> {
+	// Bornes de la série (durée, 500 questions) : une série enregistrée avant
+	// qu'elles existent ne devient pas une évaluation impossible à passer
+	const { data: series, error: seriesError } = await supabase
+		.from('series')
+		.select('categories')
+		.eq('id', input.series_id)
+		.maybeSingle();
+	if (seriesError) {
+		console.error('[createEvaluation] Série illisible :', seriesError);
+		throw new EvaluationError(500, 'Impossible de vérifier la série');
+	}
+	if (!series) throw new EvaluationError(404, 'Série introuvable');
+	const categories = savedSeriesCategoriesSchema.safeParse(series.categories);
+	if (!categories.success) {
+		throw new EvaluationError(400, categories.error.issues[0].message);
+	}
+
 	const { data, error } = await supabase
 		.from('evaluations')
 		.insert({
@@ -529,7 +547,7 @@ export async function getStudentAssignments(
 
 	return assignments.map(({ assignment, evaluation }) => {
 		const attempts = attemptsByEvaluation.get(evaluation.id) ?? [];
-		const lastAttemptAt = attempts[attempts.length - 1]?.completed_at || null;
+		const lastAttemptAt = latestCompletion(attempts);
 		return {
 			...assignment,
 			evaluation,
@@ -544,6 +562,24 @@ export async function getStudentAssignments(
 // ===========================================================================
 // RÉSULTATS (professeur)
 // ===========================================================================
+
+/**
+ * Dernière tentative TERMINÉE (null s'il n'y en a aucune). Une tentative
+ * ouverte puis abandonnée après une tentative terminée ne rend pas l'élève
+ * « en cours » à jamais : il a composé, sa meilleure note compte. (Avant : on
+ * lisait la dernière ligne, et `completed_at` DESC range les NULL en tête.)
+ */
+export function latestCompletion(
+	attempts: ReadonlyArray<{ completed_at: string | null }>
+): string | null {
+	let latest: string | null = null;
+	for (const attempt of attempts) {
+		if (attempt.completed_at && (!latest || attempt.completed_at > latest)) {
+			latest = attempt.completed_at;
+		}
+	}
+	return latest;
+}
 
 /**
  * Meilleure note sur 20 (Q36) parmi les tentatives NOTÉES ; null s'il n'y en a
@@ -671,7 +707,7 @@ export async function getEvaluationResults(
 		if (!target) continue;
 		const attempts = attemptsByStudent.get(student.id) ?? [];
 		const lastAttempt = attempts[0];
-		const lastAttemptAt = lastAttempt?.completed_at || null;
+		const lastAttemptAt = latestCompletion(attempts);
 		results.push({
 			assignment_id: target.assignmentId,
 			evaluation_id: evaluation.id,

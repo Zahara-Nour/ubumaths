@@ -135,7 +135,11 @@ describe('countAttempts / validateAttempt (B14)', () => {
 
 describe('createEvaluation (B13)', () => {
 	it('écrit forme et temps limite (secondes) de la Course aux nombres', async () => {
-		const fake = createFakeSupabase(() => ({ data: evaluationRow({ series: undefined }) }));
+		const fake = createFakeSupabase((table) =>
+			table === 'series'
+				? { data: { categories: SERIES.categories } }
+				: { data: evaluationRow({ series: undefined }) }
+		);
 		await createEvaluation(
 			fake.client,
 			{
@@ -161,8 +165,41 @@ describe('createEvaluation (B13)', () => {
 		});
 	});
 
+	it('série de plus de 500 questions : 400 avec message clair, rien d’inséré', async () => {
+		const big = Array.from({ length: 6 }, () => ({
+			category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+			quantity: 99,
+			delay: 20
+		}));
+		const fake = createFakeSupabase((table) =>
+			table === 'series' ? { data: { categories: big } } : { data: evaluationRow() }
+		);
+		await expect(
+			createEvaluation(
+				fake.client,
+				{
+					series_id: SERIES_ID,
+					settings: {
+						form: 'interactive',
+						time_limit: null,
+						max_attempts: null,
+						deadline: null,
+						shuffle_questions: true
+					},
+					status: 'draft'
+				},
+				TEACHER
+			)
+		).rejects.toMatchObject({ status: 400, message: expect.stringMatching(/500 au plus/) });
+		expect(fake.on('evaluations')).toHaveLength(0);
+	});
+
 	it('contrainte forme/temps violée (23514) : 400', async () => {
-		const fake = createFakeSupabase(() => ({ error: { code: '23514', message: 'check' } }));
+		const fake = createFakeSupabase((table) =>
+			table === 'series'
+				? { data: { categories: SERIES.categories } }
+				: { error: { code: '23514', message: 'check' } }
+		);
 		await expect(
 			createEvaluation(
 				fake.client,
@@ -217,7 +254,11 @@ describe('getStudentAssignments', () => {
 			id: ASSIGNMENT,
 			attempts_count: 3,
 			// C13 : la MEILLEURE note, pas la dernière
-			best_grade: 16
+			best_grade: 16,
+			// Une tentative terminée suffit : la 3ᵉ, ouverte puis abandonnée, n'en fait
+			// pas un « en cours » perpétuel
+			status: 'completed',
+			last_attempt_at: '2026-09-30T12:00:00Z'
 		});
 		expect(assignment.evaluation).toMatchObject({ form: 'course', time_limit: 420 });
 		expect(assignment.evaluation.series.title).toBe('Tables de 7');
@@ -260,6 +301,15 @@ describe('getEvaluationResults', () => {
 			classes: { data: [{ id: CLASS_ID, name: '6e A' }] },
 			test_sessions: {
 				data: [
+					// Tri completed_at DESC : Postgres met les NULL EN PREMIER
+					{
+						user_id: STUDENT,
+						grade: null,
+						points_earned: null,
+						created_at: '2026-10-01T09:00:00Z',
+						completed_at: null,
+						total_questions: 4
+					},
 					{
 						user_id: STUDENT,
 						grade: 9.5,
@@ -291,13 +341,22 @@ describe('getEvaluationResults', () => {
 		expect(results[0]).toMatchObject({
 			student_id: STUDENT,
 			class_name: '6e A',
-			attempts_count: 2,
 			// C13 : la MEILLEURE note (15), pas la dernière (9,5)
 			best_grade: 15,
+			attempts_count: 3,
+			status: 'completed',
+			last_attempt_at: '2026-09-30T12:00:00Z',
 			title: 'Tables de 7'
 		});
 		// E21 : détail des tentatives
 		expect(results[0].attempts).toEqual([
+			{
+				grade: null,
+				points_earned: null,
+				total_questions: 4,
+				created_at: '2026-10-01T09:00:00Z',
+				completed_at: null
+			},
 			{
 				grade: 9.5,
 				points_earned: 2,

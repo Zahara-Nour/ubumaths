@@ -1067,6 +1067,19 @@ export function validateBlanks(
 		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
 	}
 
+	return aggregateOrderedBlanks(
+		blanks.map((blank, i) =>
+			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+		)
+	);
+}
+
+type SingleBlankResult = ReturnType<typeof validateSingleBlank>;
+
+/** Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case */
+function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): ValidationResult {
+	// Seul le nombre de cases sert ici
+	const blanks = results;
 	// Ordered: per-blank pipeline
 	let worstStatus: ValidationStatus | undefined;
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
@@ -1079,8 +1092,8 @@ export function validateBlanks(
 	let emptyCount = 0;
 	let anyIncorrectValue = false;
 
-	for (let i = 0; i < blanks.length; i++) {
-		const result = validateSingleBlank(userAnswers[i], blanks[i], userAnswersLatex?.[i], instance);
+	for (let i = 0; i < results.length; i++) {
+		const result = results[i];
 
 		if (result.status === 'empty') {
 			emptyCount++;
@@ -1388,14 +1401,49 @@ export function blankStatuses(
 	instance: QuestionInstance,
 	userAnswersLatex?: string[]
 ): ValidationStatus[] {
+	return validateBlanksDetailed(userAnswers, instance, userAnswersLatex).statuses;
+}
+
+/**
+ * Verdict global (celui de `validateAnswer`) ET statut de chaque case, en UNE
+ * validation par case (le barème d'une évaluation a besoin des deux).
+ * `orderIndependent` : l'appariement est refait pour les statuts (cas rare).
+ */
+export function validateBlanksDetailed(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): { result: ValidationResult; statuses: ValidationStatus[] } {
 	const blanks = instance.blanks ?? [];
-	if (userAnswers.length !== blanks.length) return blanks.map(() => 'incorrect');
+	if (blanks.length === 0) {
+		return { result: { isCorrect: userAnswers.length === 0 }, statuses: [] };
+	}
+	if (userAnswers.length !== blanks.length) {
+		return {
+			result: { isCorrect: false, message: 'Nombre de réponses incorrect' },
+			statuses: blanks.map(() => 'incorrect')
+		};
+	}
 
 	if (!instance.options?.orderIndependent) {
-		return blanks.map((blank, i) =>
-			singleBlankStatus(validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance))
+		const results = blanks.map((blank, i) =>
+			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
 		);
+		return { result: aggregateOrderedBlanks(results), statuses: results.map(singleBlankStatus) };
 	}
+
+	return {
+		result: validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex),
+		statuses: orderIndependentStatuses(userAnswers, instance, userAnswersLatex)
+	};
+}
+
+function orderIndependentStatuses(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): ValidationStatus[] {
+	const blanks = instance.blanks ?? [];
 
 	const accepts = userAnswers.map((answer) =>
 		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))

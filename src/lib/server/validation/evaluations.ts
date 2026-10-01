@@ -7,7 +7,13 @@
 
 import { z } from 'zod';
 import { gradeSchema, uuidSchema } from './common';
-import { seriesCategoriesSchema } from '$lib/validation/series';
+import { savedSeriesCategoriesSchema } from '$lib/validation/series';
+import {
+	MAX_ANSWER_LENGTH,
+	MAX_ANSWER_PARTS,
+	MAX_ANSWER_SECONDS as MAX_SECONDS,
+	MAX_ATTEMPT_ANSWERS
+} from '$lib/questions/submission';
 import {
 	COURSE_TIME_LIMIT_MAX_MINUTES,
 	COURSE_TIME_LIMIT_MIN_MINUTES
@@ -37,7 +43,7 @@ export const createSeriesSchema = z.object({
 	title: seriesTitleSchema,
 	grade: gradeSchema,
 	description: seriesDescriptionSchema,
-	categories: seriesCategoriesSchema
+	categories: savedSeriesCategoriesSchema
 });
 
 export type CreateSeriesInput = z.infer<typeof createSeriesSchema>;
@@ -48,7 +54,7 @@ export const updateSeriesSchema = z
 		title: seriesTitleSchema.optional(),
 		grade: gradeSchema.optional(),
 		description: seriesDescriptionSchema,
-		categories: seriesCategoriesSchema.optional()
+		categories: savedSeriesCategoriesSchema.optional()
 	})
 	.refine(
 		(data) => data.title !== undefined || data.grade !== undefined || data.categories !== undefined,
@@ -193,19 +199,11 @@ export const classIdsFieldSchema = z
 // ENVOI D'UNE TENTATIVE (chantier 5, C10)
 // ============================================================================
 
-/** Plus de questions qu'une tentative n'en porte jamais (50 catégories × 10 en pratique) */
-export const MAX_ATTEMPT_ANSWERS = 500;
-/** Cases d'une question, choix d'un QCM */
-const MAX_ANSWER_PARTS = 50;
-/** Une case, en LaTeX */
-const MAX_ANSWER_LENGTH = 2_000;
-/** Une journée : au-delà, un temps (en secondes) est forcément fabriqué */
-const MAX_SECONDS = 86_400;
-
+// Bornes partagées avec la page, qui tronque avant d'envoyer ($lib/questions/submission)
 const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
 
 /**
- * Réponse à UNE question : cases (valeurs + LaTeX) ou positions cochées d'un
+ * Réponse à UNE question : cases (valeurs, le LaTeX tapé) ou positions cochées d'un
  * QCM. Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
  * retiré par Zod (objet non strict) et le serveur corrige lui-même.
  */
@@ -216,7 +214,6 @@ const submittedAnswerSchema = z.object({
 		.min(0)
 		.max(MAX_ATTEMPT_ANSWERS - 1),
 	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
-	latex: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
 	choices: z
 		.array(
 			z
@@ -237,7 +234,7 @@ export const submitAttemptSchema = z.object({
 		.refine(
 			(answers) => new Set(answers.map((a) => a.position)).size === answers.length,
 			'Une question ne peut recevoir qu’une réponse'
-		),
-	timeSpent: z.number().int().min(0).max(MAX_SECONDS)
+		)
+	// Pas de durée totale : le serveur la mesure (démarrage → envoi)
 });
 export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;

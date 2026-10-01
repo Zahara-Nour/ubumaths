@@ -34,7 +34,14 @@ import { getAttemptsRemaining } from '$lib/types/evaluation';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
 import { toPublicQuestion, type PublicQuestion } from '$lib/questions/public-question';
-import { gradeOutOf20, gradeQuestion, type SubmittedAnswer } from '$lib/questions/grading';
+import {
+	gradeOutOf20,
+	gradeQuestion,
+	isKnownForSrs,
+	type SubmittedAnswer
+} from '$lib/questions/grading';
+import type { ValidationStatus } from '$lib/questions/types';
+import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import {
@@ -87,7 +94,6 @@ export type StartResult =
 
 export interface SubmitInput {
 	answers: Array<SubmittedAnswer & { position: number; timeSpent?: number }>;
-	timeSpent: number;
 }
 
 export type { CorrectedQuestion };
@@ -96,6 +102,61 @@ export type SubmitResult = EvaluationSubmitResponse;
 // Constantes
 /** Tolérance réseau après la fin du chrono d'une Course (Q37) */
 export const COURSE_GRACE_SECONDS = 30;
+
+const VALIDATION_STATUSES: readonly ValidationStatus[] = [
+	'correct',
+	'unoptimal_form',
+	'bad_form',
+	'incorrect',
+	'empty'
+];
+
+/**
+ * Tentative déjà envoyée (409) : porte la copie DÉJÀ notée, reconstruite depuis
+ * la base, pour qu'un élève dont la réponse s'est perdue en route voie sa note.
+ */
+export class AttemptAlreadySubmittedError extends EvaluationError {
+	constructor(public readonly result: SubmitResult | null) {
+		super(409, 'Cette tentative est déjà terminée');
+		this.name = 'AttemptAlreadySubmittedError';
+	}
+}
+
+/**
+ * Q40 (David, 2026-10-01) : le SRS reçoit « su » dès que le statut est correct
+ * ou en forme non optimale (½ point), comme en entraînement libre ; la note ne
+ * compte `is_correct` qu'à 1 point.
+ */
+export function srsReviewsOf(
+	questions: ReadonlyArray<{ status: ValidationStatus; isCorrect: boolean }>,
+	templateIds: readonly string[]
+): SeriesReview[] {
+	return questions.map((question, index) => ({
+		templateId: templateIds[index],
+		success: isKnownForSrs(question.status),
+		selfAssessed: false
+	}));
+}
+
+/** Supprime des lignes en service_role, avec contrôle : la RLS n'y est pour rien, une panne si */
+async function deleteRows(
+	service: Db,
+	table: 'test_sessions' | 'test_answers',
+	ids: string[],
+	context: string
+): Promise<boolean> {
+	if (ids.length === 0) return true;
+	const { data, error } = await service.from(table).delete().in('id', ids).select('id');
+	if (error || (data?.length ?? 0) !== ids.length) {
+		console.error(`[evaluation-attempts] ${context} : suppression incomplète dans ${table}`, {
+			ids,
+			deleted: data?.length ?? 0,
+			error
+		});
+		return false;
+	}
+	return true;
+}
 
 // Functions
 function cryptoRandomInt(max: number): number {
@@ -227,6 +288,8 @@ async function findOpenAttempt(userClient: Db, evaluationId: string, userId: str
 		.eq('user_id', userId)
 		.is('completed_at', null)
 		.order('created_at', { ascending: true })
+		// Égalité de date (même milliseconde) : un départage stable
+		.order('id', { ascending: true })
 		.limit(1);
 
 	if (error) {
@@ -366,7 +429,7 @@ export async function startEvaluationAttempt(
 	if (questionsError || (written?.length ?? 0) !== rows.length) {
 		console.error('[evaluation-attempts] Questions non enregistrées :', questionsError);
 		// Une séance sans questions ne doit pas coûter une tentative
-		await service.from('test_sessions').delete().eq('id', session.id);
+		await deleteRows(service, 'test_sessions', [session.id], 'questions non enregistrées');
 		throw new EvaluationError(
 			500,
 			"Impossible de commencer l'évaluation, réessaie dans un instant"
@@ -377,7 +440,12 @@ export async function startEvaluationAttempt(
 	// tentative en cours l'emporte, la nôtre s'efface (graines comprises, CASCADE)
 	const oldest = await findOpenAttempt(userClient, evaluation.id, userId);
 	if (oldest && oldest.id !== session.id) {
-		await service.from('test_sessions').delete().eq('id', session.id);
+		if (!(await deleteRows(service, 'test_sessions', [session.id], 'double démarrage'))) {
+			throw new EvaluationError(
+				500,
+				"Impossible de commencer l'évaluation, réessaie dans un instant"
+			);
+		}
 		const questions = await regenerateAttempt(service, oldest.id);
 		return {
 			kind: 'attempt',
@@ -412,8 +480,7 @@ function storedUserAnswer(
 		isCorrect,
 		timeSpent: timeSpent ?? 0,
 		attempts: 1,
-		submittedAt,
-		...(answer.latex && { valueLatex: answer.latex })
+		submittedAt
 	};
 }
 
@@ -447,7 +514,7 @@ export async function submitEvaluationAttempt(
 		throw new EvaluationError(404, 'Tentative introuvable');
 	}
 	if (session.completed_at) {
-		throw new EvaluationError(409, 'Cette tentative est déjà terminée');
+		throw new AttemptAlreadySubmittedError(await readSubmittedCopy(actors, attemptId));
 	}
 
 	const questions = await regenerateAttempt(service, attemptId);
@@ -475,7 +542,6 @@ export async function submitEvaluationAttempt(
 			answer: answer
 				? {
 						...(answer.values && { values: answer.values }),
-						...(answer.latex && { latex: answer.latex }),
 						...(answer.choices && { choices: answer.choices })
 					}
 				: null,
@@ -519,10 +585,15 @@ export async function submitEvaluationAttempt(
 		insertedIds = (written ?? []).map((row) => row.id);
 		if (answersError || insertedIds.length !== rows.length) {
 			console.error('[evaluation-attempts] Réponses non enregistrées :', answersError);
-			if (insertedIds.length > 0) await service.from('test_answers').delete().in('id', insertedIds);
+			await deleteRows(service, 'test_answers', insertedIds, 'réponses partielles');
 			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
 		}
 	}
+
+	// Durée : mesurée par le SERVEUR (démarrage → envoi), jamais déclarée par le navigateur
+	const timeSpent = session.created_at
+		? Math.max(0, Math.round((now.getTime() - new Date(session.created_at).getTime()) / 1000))
+		: null;
 
 	const { data: closed, error: closeError } = await service
 		.from('test_sessions')
@@ -532,7 +603,7 @@ export async function submitEvaluationAttempt(
 			grade,
 			// Note sur 10 des écrans existants : la même note, sur 10
 			score: grade / 2,
-			time_spent: Math.round(input.timeSpent)
+			time_spent: timeSpent
 		})
 		.eq('id', attemptId)
 		.eq('user_id', userId)
@@ -541,12 +612,12 @@ export async function submitEvaluationAttempt(
 
 	if (closeError || !closed || closed.length === 0) {
 		// Envoi concurrent déjà passé (0 ligne) ou panne : on retire NOS réponses
-		if (insertedIds.length > 0) await service.from('test_answers').delete().in('id', insertedIds);
+		await deleteRows(service, 'test_answers', insertedIds, 'envoi concurrent');
 		if (closeError) {
 			console.error('[evaluation-attempts] Séance non close :', closeError);
 			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
 		}
-		throw new EvaluationError(409, 'Cette tentative est déjà terminée');
+		throw new AttemptAlreadySubmittedError(await readSubmittedCopy(actors, attemptId));
 	}
 
 	if (!late) {
@@ -555,11 +626,10 @@ export async function submitEvaluationAttempt(
 		await recordSeriesReviews(
 			userClient,
 			userId,
-			corrected.map((q, index) => ({
-				templateId: questions[index].stored.template_id,
-				success: q.isCorrect,
-				selfAssessed: false
-			})),
+			srsReviewsOf(
+				corrected,
+				questions.map(({ stored }) => stored.template_id)
+			),
 			{ logLabel: '[evaluation-attempts]' }
 		);
 		try {
@@ -582,4 +652,82 @@ export async function submitEvaluationAttempt(
 		correctCount,
 		questions: corrected
 	};
+}
+
+/** Réponse enregistrée (`test_answers.user_answer`) → réponse envoyée */
+function submittedAnswerOf(userAnswer: unknown): SubmittedAnswer | null {
+	if (!userAnswer || typeof userAnswer !== 'object' || !('value' in userAnswer)) return null;
+	const value = (userAnswer as { value: unknown }).value;
+	if (Array.isArray(value) && value.every((v) => typeof v === 'number')) {
+		return { choices: value as number[] };
+	}
+	if (Array.isArray(value)) return { values: value.map(String) };
+	return null;
+}
+
+/**
+ * Copie DÉJÀ notée, reconstruite depuis la base : note de la séance, verdicts
+ * de `test_answers` (lus sous RLS, ce sont ceux de l'élève), questions
+ * régénérées depuis les graines pour l'ordre et la correction. `null` si elle
+ * ne se reconstruit pas (la page renvoie alors aux résultats).
+ */
+export async function readSubmittedCopy(
+	actors: AttemptActors,
+	attemptId: string
+): Promise<SubmitResult | null> {
+	const { userClient, service, userId } = actors;
+	try {
+		const { data: session, error: sessionError } = await userClient
+			.from('test_sessions')
+			.select('id, user_id, grade, points_earned, completed_at')
+			.eq('id', attemptId)
+			.maybeSingle();
+		if (sessionError || !session || session.user_id !== userId || !session.completed_at) {
+			return null;
+		}
+
+		const { data: rows, error: answersError } = await userClient
+			.from('test_answers')
+			.select('template_id, question_instance, user_answer, is_correct, points, status')
+			.eq('test_session_id', attemptId);
+		if (answersError) return null;
+
+		const questions = await regenerateAttempt(service, attemptId);
+		const remaining = [...(rows ?? [])];
+		const corrected: CorrectedQuestion[] = questions.map(({ stored, instance: full }) => {
+			const { seed: _seed, ...instance } = full;
+			// Une ligne par question : même modèle, même énoncé (instances déterministes)
+			const index = remaining.findIndex(
+				(row) =>
+					row.template_id === stored.template_id &&
+					(row.question_instance as { statement?: unknown } | null)?.statement ===
+						instance.statement
+			);
+			const row = index === -1 ? null : remaining.splice(index, 1)[0];
+			const status = VALIDATION_STATUSES.find((s) => s === row?.status) ?? 'empty';
+			const points = Number(row?.points ?? 0);
+			return {
+				position: stored.position,
+				instance,
+				answer: submittedAnswerOf(row?.user_answer),
+				status,
+				points: points === 1 ? 1 : points === 0.5 ? 0.5 : 0,
+				isCorrect: row?.is_correct === true
+			};
+		});
+
+		return {
+			attemptId,
+			// Aucune réponse écrite pour une tentative close : Course reçue trop tard
+			late: (rows ?? []).length === 0,
+			grade: Number(session.grade ?? 0),
+			pointsEarned: Number(session.points_earned ?? 0),
+			totalQuestions: questions.length,
+			correctCount: corrected.filter((q) => q.isCorrect).length,
+			questions: corrected
+		};
+	} catch (e) {
+		console.error('[evaluation-attempts] Copie notée non reconstruite :', e);
+		return null;
+	}
 }

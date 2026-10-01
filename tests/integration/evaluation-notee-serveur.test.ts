@@ -28,6 +28,7 @@ import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
+	AttemptAlreadySubmittedError,
 	startEvaluationAttempt,
 	submitEvaluationAttempt,
 	type AttemptActors,
@@ -236,7 +237,7 @@ async function sessionRow(attemptId: string) {
 	const { data } = await service
 		.from('test_sessions')
 		.select(
-			'id, user_id, evaluation_id, mode, total_questions, completed_at, grade, points_earned, score, time_limit'
+			'id, user_id, evaluation_id, mode, total_questions, created_at, completed_at, grade, points_earned, score, time_limit, time_spent'
 		)
 		.eq('id', attemptId)
 		.single();
@@ -403,8 +404,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			const instances = await oracle(first.attemptId);
 			const status = await statusOf(
 				submitEvaluationAttempt(actors(classmate), first.attemptId, {
-					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
-					timeSpent: 30
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 				})
 			);
 			expect(status).toBe(404);
@@ -419,8 +419,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 					{ position: 0, ...rightAnswer(instances[0]) },
 					{ position: 1, ...wrongAnswer(instances[1]) },
 					{ position: 2, ...rightAnswer(instances[2]) }
-				],
-				timeSpent: 42
+				]
 			});
 			expect(result).toMatchObject({
 				late: false,
@@ -440,6 +439,11 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 			const session = await sessionRow(first.attemptId);
 			expect(session.completed_at).not.toBeNull();
+			// 9 : durée mesurée par le serveur (démarrage → envoi), jamais déclarée
+			const measured = Math.round(
+				(new Date(session.completed_at!).getTime() - new Date(session.created_at!).getTime()) / 1000
+			);
+			expect(session.time_spent).toBe(measured);
 			expect(Number(session.grade)).toBe(13.5);
 			expect(Number(session.points_earned)).toBe(2);
 			expect(Number(session.score)).toBe(6.75);
@@ -473,15 +477,33 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(traces!.filter((t) => t.success)).toHaveLength(2);
 		});
 
-		it('C11 : renvoyer une tentative terminée → 409, rien d’écrit', async () => {
+		it('C11 : renvoyer une tentative terminée → 409 AVEC la copie déjà notée, rien d’écrit', async () => {
 			const instances = await oracle(first.attemptId);
+			let copy: Awaited<ReturnType<typeof submitEvaluationAttempt>> | null = null;
 			const status = await statusOf(
 				submitEvaluationAttempt(actors(student), first.attemptId, {
-					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
-					timeSpent: 10
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
+				}).catch((e) => {
+					if (e instanceof AttemptAlreadySubmittedError) copy = e.result;
+					throw e;
 				})
 			);
 			expect(status).toBe(409);
+			// Réponse perdue en route : la copie reconstruite depuis la base, pas la nouvelle
+			expect(copy).toMatchObject({
+				attemptId: first.attemptId,
+				late: false,
+				grade: 13.5,
+				pointsEarned: 2,
+				totalQuestions: 3,
+				correctCount: 2
+			});
+			expect(copy!.questions.map((q) => [q.position, q.status, q.points])).toEqual([
+				[0, 'correct', 1],
+				[1, 'incorrect', 0],
+				[2, 'correct', 1]
+			]);
+			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 			expect(await answersOf(first.attemptId)).toHaveLength(3);
 			expect(Number((await sessionRow(first.attemptId)).grade)).toBe(13.5);
 		});
@@ -492,8 +514,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(second.attemptId).not.toBe(first.attemptId);
 			const instances = await oracle(second.attemptId);
 			const result = await submitEvaluationAttempt(actors(student), second.attemptId, {
-				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
-				timeSpent: 20
+				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 			});
 			expect(result.grade).toBe(20);
 
@@ -540,8 +561,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				actors(classmate, { now: tooLate }),
 				attempt.attemptId,
 				{
-					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
-					timeSpent: 95
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 				}
 			);
 			expect(result).toMatchObject({ late: true, grade: 0, pointsEarned: 0, correctCount: 0 });
@@ -559,8 +579,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				actors(classmate, { now: inGrace }),
 				attempt.attemptId,
 				{
-					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) })),
-					timeSpent: 80
+					answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
 				}
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
