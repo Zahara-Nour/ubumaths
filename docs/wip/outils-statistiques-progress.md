@@ -2,7 +2,9 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-5 livrés ; lot 6 revu, corrigé, PR ouverte
+## État : ✅ chantier TERMINÉ — lots 1 à 6 livrés (#595, #598, #600, #604, #610, #612)
+
+Restent hors chantier : la PR « blocs non fermés » (Q25), et deux questions d'atelier pour David (regrouper les actions par partenaire ; fractions dans les listes).
 
 ## Existant vérifié dans le code (2026-10-01)
 
