@@ -153,10 +153,9 @@ export const actions: Actions = {
 			});
 		}
 
-		// Log successful consent grant for audit
-		console.log(
-			`[consent grant] Success - Student: ${validatedData.student_name || 'unknown'}, IP: ${clientIp}, Token: ${token.slice(0, 8)}...`
-		);
+		// Trace sans donnée personnelle (nom de l'élève mineur, IP du parent) : la preuve
+		// complète est dans parental_consents.
+		console.log(`[consent grant] Success - Token: ${token.slice(0, 8)}...`);
 
 		// Redirect to success page
 		throw redirect(303, '/consent/success');
