@@ -84,6 +84,11 @@ describe('création de profil et rôle', () => {
 		await cleanupAllTestData();
 	});
 
+	// ⚠️ Depuis 20261001200000, la RLS refuse toute création de profil par le compte
+	// (« Allow profile creation » ne vise plus que service_role) : les deux tests
+	// ci-dessous échouent désormais AVANT guard_profile_role_on_insert. Ils prouvent
+	// qu'on ne se crée pas un profil privilégié, plus que la garde de rôle fonctionne :
+	// celle-ci reste une seconde barrière, sans test qui l'atteigne par le client.
 	it('un utilisateur ne peut pas se créer un profil ADMIN', async () => {
 		// Le cœur du sujet : `trg_enforce_single_teacher` ne se déclenche que sur
 		// `teacher`, et la garde de changement de rôle ne couvre que l'UPDATE.
