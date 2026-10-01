@@ -36,6 +36,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
@@ -117,15 +118,20 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 		if (!existingProfile) {
 			// Extract avatar URL from Google OAuth metadata
 			// Google uses 'picture' field (standard), but check 'avatar_url' as fallback
-			const { error: insertError } = await supabase.from('profiles').insert({
-				id: user.id,
-				email: user.email!,
-				full_name: user.user_metadata?.full_name || null,
-				avatar_url: user.user_metadata?.picture || user.user_metadata?.avatar_url || null,
-				role: 'student', // Default role for new users
-				school_id: null,
-				status: 'pending' // New users must be approved by admin
-			});
+			// Créé par le client service : la base ne laisse plus un compte connecté créer
+			// lui-même son profil (il aurait pu choisir son statut ou son école). Les
+			// valeurs sensibles sont donc imposées ici, côté serveur.
+			const { error: insertError } = await createServiceRoleClient()
+				.from('profiles')
+				.insert({
+					id: user.id,
+					email: user.email!,
+					full_name: user.user_metadata?.full_name || null,
+					avatar_url: user.user_metadata?.picture || user.user_metadata?.avatar_url || null,
+					role: 'student', // Default role for new users
+					school_id: null,
+					status: 'pending' // New users must be approved by admin
+				});
 
 			if (insertError) {
 				logger.error('Failed to create profile:', insertError);

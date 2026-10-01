@@ -227,27 +227,9 @@ describe('consentement parental décidé par le niveau', () => {
 		expect(p.consent_required).toBe(true);
 	});
 
-	it('B13 — un compte sans profil ne peut pas créer le sien avec un consentement forgé', async () => {
-		const autre = await TestData.profile().withRole('student').create();
-		const client = await clientFor(autre.email);
-		// Simule un compte resté sans profil (handle_new_user avale ses erreurs).
-		const { error: errSuppr } = await service.from('profiles').delete().eq('id', autre.id);
-		expect(errSuppr).toBeNull();
-		const { error } = await client.from('profiles').insert({
-			id: autre.id,
-			email: autre.email,
-			role: 'student',
-			grade: '6',
-			consent_granted_at: new Date().toISOString(),
-			age_declaration: '15_plus',
-			age_declared_at: new Date().toISOString()
-		} as never);
-		expect(error).toBeNull();
-		const p = await lire(autre.id);
-		expect(p.consent_granted_at).toBeNull();
-		expect(p.age_declaration).toBeNull();
-		expect(p.consent_required).toBe(true);
-	});
+	// Le cas « compte sans profil qui crée le sien » est désormais refusé en amont par
+	// la policy (20261001200000, profil-cree-par-le-serveur.test.ts). La neutralisation
+	// dans apply_consent_rule_by_grade reste une seconde barrière.
 
 	// --------------------------------------------------------------------------
 	// C16. Annulation par le professeur
