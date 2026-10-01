@@ -206,8 +206,8 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		: 'Un eleve';
 
 	// Notify both participants
-	await notifyTradeCompleted(supabase, trade.initiator_id, partnerName, tradeId);
-	await notifyTradeCompleted(supabase, trade.partner_id, initiatorName, tradeId);
+	await notifyTradeCompleted(trade.initiator_id, partnerName, tradeId);
+	await notifyTradeCompleted(trade.partner_id, initiatorName, tradeId);
 
 	// Get the updated trade to return
 	const { data: completedTrade, error: completedTradeError } = await supabase

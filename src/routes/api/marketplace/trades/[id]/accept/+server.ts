@@ -141,8 +141,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		: 'Un élève';
 
 	// Notify both participants
-	await notifyTradeCompleted(supabase, trade.initiator_id, partnerName, trade_id);
-	await notifyTradeCompleted(supabase, trade.partner_id, initiatorName, trade_id);
+	await notifyTradeCompleted(trade.initiator_id, partnerName, trade_id);
+	await notifyTradeCompleted(trade.partner_id, initiatorName, trade_id);
 
 	// Invalidate caches for both participants
 	// TODO: Implement cache invalidation

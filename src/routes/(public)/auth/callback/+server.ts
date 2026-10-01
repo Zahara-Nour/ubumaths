@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 			// Notify admins of the new pending user
 			const fullName = user.user_metadata?.full_name || null;
-			await notifyAdminsOfPendingUser(supabase, user.email!, fullName);
+			await notifyAdminsOfPendingUser(user.email!, fullName);
 			logger.info('New user pending approval:', user.email);
 
 			// Redirect new users to pending approval page

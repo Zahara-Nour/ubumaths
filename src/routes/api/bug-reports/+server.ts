@@ -204,7 +204,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Notify admins of new report
 		try {
-			await notifyAdminsOfNewBugReport(locals.supabase, {
+			await notifyAdminsOfNewBugReport({
 				reportId: report.id,
 				userName: profile.full_name || profile.email || 'Utilisateur',
 				category: data.category,

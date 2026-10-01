@@ -326,7 +326,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Create notification for partner
-	await createMarketplaceNotification(supabase, partner_id, 'trade_offer', {
+	await createMarketplaceNotification(partner_id, 'trade_offer', {
 		trade_id: trade.id,
 		initiator_id: userId
 	});

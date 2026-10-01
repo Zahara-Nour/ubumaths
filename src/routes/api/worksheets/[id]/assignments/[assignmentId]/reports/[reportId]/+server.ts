@@ -533,13 +533,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 		// Step 7: Create notification for student
 		if (newStatus === 'fixed') {
-			await notifyErrorReportValidated(locals.supabase, {
+			await notifyErrorReportValidated({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
 				exercisePosition: displayNumber
 			});
 		} else {
-			await notifyErrorReportRejected(locals.supabase, {
+			await notifyErrorReportRejected({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
 				exercisePosition: displayNumber,
