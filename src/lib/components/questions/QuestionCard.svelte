@@ -28,6 +28,7 @@
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
+	import { toOriginalChoiceIndexes } from '$lib/questions/choices';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -148,8 +149,12 @@
 			case 'fill_in_blanks':
 				return fillBlankValues;
 
-			case 'multiple_choice':
-				return instance.multipleAnswers ? selectedChoices : selectedChoices[0];
+			case 'multiple_choice': {
+				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
+				// compare `validateAnswer` et ceux qui sont enregistrés.
+				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
+				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
+			}
 
 			default:
 				return userAnswer;

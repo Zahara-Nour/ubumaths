@@ -14,6 +14,11 @@
 -->
 
 <script lang="ts">
+	import {
+		choiceLetter,
+		correctOriginalChoiceIndexes,
+		toDisplayedChoicePosition
+	} from '$lib/questions/choices';
 	import { page } from '$app/state';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -65,8 +70,12 @@
 			}));
 		}
 		if (instance.correctChoiceIndex !== undefined) {
-			const indexes = [instance.correctChoiceIndex].flat();
-			return [{ label: 'Choix correct', value: indexes.join(', ') }];
+			// Lettres AFFICHÉES : les choix sont mélangés, l'indice d'origine ne désigne rien à l'écran
+			const current = instance;
+			const letters = correctOriginalChoiceIndexes(current)
+				.map((index) => choiceLetter(toDisplayedChoicePosition(current, index)))
+				.sort();
+			return [{ label: 'Choix correct', value: letters.join(', ') }];
 		}
 		return [];
 	});

@@ -18,6 +18,7 @@
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
+	import { isDisplayedChoiceCorrect, toOriginalChoiceIndexes } from '$lib/questions/choices';
 	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
 	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -121,6 +122,15 @@
 
 	const statementMarkdown = $derived(instance.statement);
 
+	// Choix dans l'ordre affiché, chacun marqué juste ou faux À SA POSITION AFFICHÉE
+	// (sans `isCorrect`, le choix coché était toujours barré après validation)
+	const displayedChoices = $derived(
+		(instance.shuffledChoices ?? []).map((choice, position) => ({
+			...choice,
+			isCorrect: isDisplayedChoiceCorrect(instance, position)
+		}))
+	);
+
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
 	// Un seul trou (hors tracé) : le verso n'affiche que sa bonne réponse, en grand
@@ -196,8 +206,12 @@
 		switch (getQuestionType(instance)) {
 			case 'fill_in_blanks':
 				return fillBlankValues;
-			case 'multiple_choice':
-				return instance.multipleAnswers ? selectedChoices : selectedChoices[0];
+			case 'multiple_choice': {
+				// Positions cliquées (ordre affiché, mélangé) → indices d'origine : ceux que
+				// compare `validateAnswer` et ceux qui sont enregistrés.
+				const originalIndexes = toOriginalChoiceIndexes(instance, selectedChoices);
+				return instance.multipleAnswers ? originalIndexes : originalIndexes[0];
+			}
 			default:
 				return userAnswer;
 		}
@@ -361,7 +375,7 @@
 									<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 								{/if}
 								<MultipleChoiceInput
-									choices={instance.shuffledChoices || []}
+									choices={displayedChoices}
 									bind:selectedIndexes={selectedChoices}
 									multipleAnswers={instance.multipleAnswers}
 									disabled={!interactive || isInputDisabled}

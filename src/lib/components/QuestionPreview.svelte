@@ -16,6 +16,11 @@
 -->
 
 <script lang="ts">
+	import {
+		choiceLetter,
+		isDisplayedChoiceCorrect,
+		toDisplayedChoicePosition
+	} from '$lib/questions/choices';
 	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
@@ -343,12 +348,19 @@
 								{#each instance.correctChoiceIndex as ans, i (i)}
 									<li class="flex items-center gap-2">
 										<Badge class="bg-green-600">{i + 1}</Badge>
-										<code class="font-mono">{ans}</code>
+										<code class="font-mono"
+											>{choiceLetter(toDisplayedChoicePosition(instance, Number(ans)))}</code
+										>
 									</li>
 								{/each}
 							</ul>
-						{:else}
-							<code class="font-mono text-lg">{instance.correctChoiceIndex}</code>
+						{:else if instance.correctChoiceIndex !== undefined}
+							<!-- Lettre AFFICHÉE du bon choix (les choix sont mélangés) -->
+							<code class="font-mono text-lg"
+								>{choiceLetter(
+									toDisplayedChoicePosition(instance, Number(instance.correctChoiceIndex))
+								)}</code
+							>
 						{/if}
 					</div>
 				</div>
@@ -359,11 +371,7 @@
 						<Badge variant="outline">Choix (mélangés)</Badge>
 						<div class="space-y-2">
 							{#each instance.shuffledChoices as choice, i (i)}
-								{@const isCorrect =
-									(typeof instance.correctChoiceIndex === 'string' &&
-										instance.correctChoiceIndex === String(i)) ||
-									(Array.isArray(instance.correctChoiceIndex) &&
-										instance.correctChoiceIndex.includes(String(i)))}
+								{@const isCorrect = isDisplayedChoiceCorrect(instance, i)}
 								<div
 									class="flex items-center gap-3 rounded border p-3 {isCorrect
 										? 'border-green-500 bg-green-50 dark:bg-green-950/20'
@@ -372,7 +380,7 @@
 									<Badge variant={isCorrect ? 'default' : 'outline'}>
 										{String.fromCharCode(65 + i)}
 									</Badge>
-									<code class="flex-1 font-mono">{choice}</code>
+									<div class="flex-1"><MarkdownRenderer content={choice.content} /></div>
 									{#if isCorrect}
 										<Check class="h-5 w-5 text-green-600" />
 									{/if}
