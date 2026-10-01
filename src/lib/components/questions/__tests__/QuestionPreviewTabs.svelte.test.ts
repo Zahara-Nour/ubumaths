@@ -176,6 +176,25 @@ describe('QuestionPreviewTabs — onglets', () => {
 		expect(findButton(activePanel(container), 'Voir le recto')).toBeDefined();
 	});
 
+	it('En classe : texte agrandi comme la projection (--font-scale 2), tuile du verso non', async () => {
+		const { container } = await open(qcm());
+		const fontSize = () =>
+			parseFloat(
+				getComputedStyle(
+					activePanel(container).querySelector('.question-display-wrapper') as HTMLElement
+				).fontSize
+			);
+		await selectTab(container, 'Flash-card');
+		const base = fontSize();
+		expect(base).toBeGreaterThan(0);
+
+		await selectTab(container, 'En classe');
+		expect(fontSize()).toBeCloseTo(base * 2, 1);
+
+		await clickButton(activePanel(container), 'Voir le verso');
+		expect(fontSize()).toBeCloseTo(base, 1);
+	});
+
 	it("changer d'onglet ne remplace pas l'instance", async () => {
 		const { container } = await open(qcm('Énoncé unique'));
 		for (const label of ['Flash-card', 'En classe', 'Entraînement']) {

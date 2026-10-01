@@ -117,6 +117,8 @@
 			<p class="text-sm text-muted-foreground">
 				Série en entraînement : l'élève saisit sa réponse puis valide.
 			</p>
+			<!-- Sans `unitKeys`, comme un item de buildSeriesItems : FillBlanksInput déduit
+			     les touches d'unités de l'instance, exactement comme en série -->
 			{#key attempt}
 				<QuestionCard interactive={true} {instance} onAnswerSubmit={handleAnswerSubmit} size="lg" />
 			{/key}
@@ -148,7 +150,10 @@
 				/>
 			</div>
 		{:else}
-			<FlashCard {instance} interactive={false} size="lg" flippable={false} />
+			<!-- Même agrandissement que la projection (ClassroomSeries : --font-scale 2) -->
+			<div style:--font-scale="2">
+				<FlashCard {instance} interactive={false} size="lg" flippable={false} />
+			</div>
 		{/if}
 	</Tabs.Content>
 </Tabs.Root>
