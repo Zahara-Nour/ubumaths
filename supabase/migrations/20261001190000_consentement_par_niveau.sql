@@ -7,9 +7,10 @@
 --
 -- Décisions (Q69-Q73, 2026-10-01) :
 --   * pas de date de naissance enregistrée ;
---   * le NIVEAU décide (src/lib/utils/consent.ts, GRADES_REQUIRING_CONSENT) :
---     6e, 5e, 4e, 3e, 2nde et niveau inconnu → consentement requis, délai de grâce
---     de 30 jours ; 1re et terminale → non soumis ;
+--   * le NIVEAU décide : 1re et terminale → non soumis ; tout autre niveau (primaire,
+--     collège, 2nde) et niveau inconnu → consentement requis, délai de grâce de
+--     30 jours (par défaut prudent, plus large que GRADES_REQUIRING_CONSENT qui
+--     oubliait le primaire) ;
 --   * la règle s'applique à la création du profil ET à chaque changement de niveau ;
 --     un consentement déjà accordé (consent_granted_at) n'est jamais effacé ;
 --   * en 2nde, l'élève répond une fois à « As-tu 15 ans ou plus ? » (réponse et date
@@ -28,10 +29,26 @@
 -- Qui gagne / perd quoi : personne ne gagne de droit en base. L'élève ne peut pas
 -- écrire sa réponse d'âge directement. Aucune donnée existante modifiée.
 --
--- ROLLBACK :
+-- ROLLBACK (dans cet ordre : le garde doit cesser de lire les colonnes avant leur
+-- suppression, sinon tout UPDATE de profiles échouerait) :
 --   drop trigger if exists consent_rule_by_grade_trg on public.profiles;
 --   drop function if exists public.apply_consent_rule_by_grade();
---   (puis recréer guard_profile_consent_fields telle que dans 20261001160000)
+--   create or replace function public.guard_profile_consent_fields()
+--   returns trigger language plpgsql set search_path = '' as $f$
+--   begin
+--   	if (
+--   		new.consent_required is distinct from old.consent_required
+--   		or new.consent_granted_at is distinct from old.consent_granted_at
+--   		or new.consent_grace_period_ends is distinct from old.consent_grace_period_ends
+--   	)
+--   	and current_user in ('authenticated', 'anon')
+--   	and not public.is_teacher_or_admin() then
+--   		raise exception 'Les champs de consentement ne sont modifiables que par le professeur ou l''administrateur.'
+--   			using errcode = '42501';
+--   	end if;
+--   	return new;
+--   end;
+--   $f$;
 --   alter table public.profiles drop column if exists age_declared_at;   -- ⚠️ perd les réponses
 --   alter table public.profiles drop column if exists age_declaration;   -- ⚠️ perd les réponses
 
@@ -53,7 +70,17 @@ as $$
 declare
 	v_requires boolean;
 begin
-	-- Professeur / admin : jamais soumis. Couvre aussi le passage d'un profil créé
+	-- Création directe de son propre profil par un compte de l'API (cas d'un compte
+	-- resté sans profil) : un consentement ou une réponse d'âge ne se fabriquent pas.
+	if tg_op = 'INSERT'
+		and current_user in ('authenticated', 'anon')
+		and not public.is_teacher_or_admin() then
+		new.consent_granted_at := null;
+		new.age_declaration := null;
+		new.age_declared_at := null;
+	end if;
+
+		-- Professeur / admin : jamais soumis. Couvre aussi le passage d'un profil créé
 	-- « élève » par handle_new_user vers un autre rôle.
 	if new.role is distinct from 'student'::public.user_role then
 		if tg_op = 'INSERT' or old.role is distinct from new.role then
@@ -71,7 +98,11 @@ begin
 		return new;
 	end if;
 
-	v_requires := new.grade is null or new.grade in ('6', '5', '4', '3', '2');
+	-- Par défaut prudent : tout niveau est soumis SAUF 1re et terminale (16 ans et plus).
+	-- Le primaire (CP-CM2), le collège, la 2nde et un niveau inconnu sont soumis.
+	v_requires := new.grade is null or new.grade not in (
+		'1_GEN', '1_SPE', '1_STMG', 'T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_STMG'
+	);
 
 	if tg_op = 'UPDATE' then
 		-- Nouveau niveau : la réponse d'âge éventuelle ne vaut plus.

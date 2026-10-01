@@ -145,11 +145,14 @@ describe('consentement parental décidé par le niveau', () => {
 		}
 	);
 
-	it.each(['1_GEN', '1_SPE', 'T_SPE'])('A2 — passage en %s : non soumis', async (g) => {
-		await modifier(eleveId, { grade: '6', consent_granted_at: null });
-		await modifier(eleveId, { grade: g });
-		expect((await lire(eleveId)).consent_required).toBe(false);
-	});
+	it.each(['1_GEN', '1_SPE', '1_STMG', 'T_GEN', 'T_SPE', 'T_EXP', 'T_COMP', 'T_STMG'])(
+		'A2 — passage en %s : non soumis',
+		async (g) => {
+			await modifier(eleveId, { grade: '6', consent_granted_at: null });
+			await modifier(eleveId, { grade: g });
+			expect((await lire(eleveId)).consent_required).toBe(false);
+		}
+	);
 
 	it("A3 — passage de 3e en 2nde : réponse d'âge remise à zéro, nouveau délai", async () => {
 		await modifier(eleveId, { grade: '3', consent_granted_at: null });
@@ -221,6 +224,28 @@ describe('consentement parental décidé par le niveau', () => {
 		expect(error?.code).toBe('42501');
 		const p = await lire(eleveId);
 		expect(p.grade).toBe('2');
+		expect(p.consent_required).toBe(true);
+	});
+
+	it('B13 — un compte sans profil ne peut pas créer le sien avec un consentement forgé', async () => {
+		const autre = await TestData.profile().withRole('student').create();
+		const client = await clientFor(autre.email);
+		// Simule un compte resté sans profil (handle_new_user avale ses erreurs).
+		const { error: errSuppr } = await service.from('profiles').delete().eq('id', autre.id);
+		expect(errSuppr).toBeNull();
+		const { error } = await client.from('profiles').insert({
+			id: autre.id,
+			email: autre.email,
+			role: 'student',
+			grade: '6',
+			consent_granted_at: new Date().toISOString(),
+			age_declaration: '15_plus',
+			age_declared_at: new Date().toISOString()
+		} as never);
+		expect(error).toBeNull();
+		const p = await lire(autre.id);
+		expect(p.consent_granted_at).toBeNull();
+		expect(p.age_declaration).toBeNull();
 		expect(p.consent_required).toBe(true);
 	});
 
