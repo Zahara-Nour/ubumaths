@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-5 livrés (#595, #598, #600, #604, #610) ; lot 6 (variable aléatoire) — spécification soumise
+## État : lots 1-5 livrés ; lot 6 (variable aléatoire) implémenté, revue en cours
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -375,6 +375,26 @@ Tour 9 (2026-10-01) — recommandations suivies :
     indicateurs alors refusés.
 43. Pas de diagramme de la loi dans ce lot.
 44. Atelier léger : action par partenaire « Loi avec probabilités M » → E, V, σ dans l'historique.
+
+### Lot 6 — fait
+
+- `statistics/fraction.ts` (`Fraction` en bigint, `parse`, `fromNumber`, `sqrt` exact),
+  `statistics/random-variable.ts` (`randomVariable`, König-Huygens), `formatLawIndicators`.
+- Bloc ```loi (genre `loi`du nœud`stat-chart`) : parseur `checkLaw`, scène `LawScene`,
+Typst (en-têtes `$g_i$`, `$P(G = g_i)$`, case à compléter `box(width: 1.2cm)`), `<table>`
+  accessible à l'écran.
+- Atelier : action `law:M` « Loi avec probabilités M » (E, V, σ dans l'historique).
+- Preuves : tests (module : import seulement ; bloc et atelier : assertions) puis verts ;
+  5 275 tests serveur + 309 client ; `check:incremental` 0 ; PDF compile-prod 4/4 (jeu, dé,
+  `masquer:`, `?` en liste, bloc en erreur « somme 5/6 »), page relue (cases à compléter
+  élargies après relecture).
+
+### Question ouverte pour David (atelier)
+
+- ⚠️ Hypothèse de la spécification FAUSSE : une liste de l'atelier n'accepte que des nombres
+  écrits en clair ; `1/6` y est IGNORÉ (liste vide, 6 valeurs écartées). Le dé ne peut donc
+  pas y être saisi en fractions, et 0,1667 donne une somme 1,0002 → loi refusée. Piste :
+  laisser les listes accepter des fractions (`1/6`) — touche la saisie de TOUTES les listes.
 
 ## Reste à faire (hors lots 2-6)
 
