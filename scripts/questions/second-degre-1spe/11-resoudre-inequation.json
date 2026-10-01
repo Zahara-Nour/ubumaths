@@ -1,0 +1,863 @@
+{
+	"title": "Résoudre une inéquation du second degré",
+	"description": "ax²+bx+c > / ≥ / < / ≤ 0 : ensemble des solutions en intervalles, depuis le signe du trinôme",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Signe et inéquations",
+	"level": 3,
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{r}}[\\cup]{{s}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : $P(x)={{eval:ax^2+bx+c}}$ a deux racines, $x_1={{r}}$ et $x_2={{s}}$. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre elles ; ici $a={{a}}$ est {{if:a>0|positif|négatif}}.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: +\n  {{r}}: z\n  {{r}},{{s}}: -\n  {{s}}: z\n  {{s}},+inf: +\n```",
+					"On veut $P(x)>0$ (strictement) : à l'extérieur des racines, racines exclues : $S=\\left]-\\infty\\,;{{r}}\\right[\\cup\\left]{{s}}\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{r}};{{s}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : $P(x)={{eval:ax^2+bx+c}}$ a deux racines, $x_1={{r}}$ et $x_2={{s}}$. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre elles ; ici $a={{a}}$ est {{if:a>0|positif|négatif}}.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: +\n  {{r}}: z\n  {{r}},{{s}}: -\n  {{s}}: z\n  {{s}},+inf: +\n```",
+					"On veut $P(x)\\le 0$ : entre les racines, racines comprises : $S=\\left[{{r}}\\,;{{s}}\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\ge0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{r}};{{s}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : $P(x)={{eval:ax^2+bx+c}}$ a deux racines, $x_1={{r}}$ et $x_2={{s}}$. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre elles ; ici $a={{a}}$ est {{if:a>0|positif|négatif}}.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},{{s}}: +\n  {{s}}: z\n  {{s}},+inf: -\n```",
+					"On veut $P(x)\\ge 0$ : $a<0$, donc entre les racines, racines comprises : $S=\\left[{{r}}\\,;{{s}}\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}<0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{r}}[\\cup]{{s}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : $P(x)={{eval:ax^2+bx+c}}$ a deux racines, $x_1={{r}}$ et $x_2={{s}}$. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre elles ; ici $a={{a}}$ est {{if:a>0|positif|négatif}}.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},{{s}}: +\n  {{s}}: z\n  {{s}},+inf: -\n```",
+					"On veut $P(x)<0$ (strictement) : $a<0$, donc à l'extérieur des racines, racines exclues : $S=\\left]-\\infty\\,;{{r}}\\right[\\cup\\left]{{s}}\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\emptyset"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta<0$ : $P$ n'a aucune racine ; il garde **le signe de $a$** sur $\\mathbb{R}$. Ici $a={{a}}>0$, donc $P(x)>0$ pour tout réel $x$.",
+					"```variation\nvariable: x\ndomain: -inf, +inf\n\nsign: P(x)\n  -inf,+inf: +\n```",
+					"Aucun réel ne vérifie $P(x)\\le 0$ : $S=\\varnothing$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta<0$ : $P$ n'a aucune racine ; il garde **le signe de $a$** sur $\\mathbb{R}$. Ici $a={{a}}>0$, donc $P(x)>0$ pour tout réel $x$.",
+					"```variation\nvariable: x\ndomain: -inf, +inf\n\nsign: P(x)\n  -inf,+inf: +\n```",
+					"Tous les réels vérifient $P(x)>0$ : $S=\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\mathbb{R}\\setminus\\{ {{h}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta=0$ : $P$ a une racine double, $x_0=\\dfrac{-b}{2a}={{h}}$. Il est du signe de $a={{a}}>0$ partout, sauf en ${{h}}$ où il s'annule.",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nsign: P(x)\n  -inf,{{h}}: +\n  {{h}}: z\n  {{h}},+inf: +\n```",
+					"$P(x)>0$ pour tout réel sauf ${{h}}$ : $S=\\mathbb{R}\\setminus\\{ {{h}} \\}$, soit $\\left]-\\infty\\,;{{h}}\\right[\\cup\\left]{{h}}\\,;+\\infty\\right[$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "0"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{ {{h}} \\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta=0$ : $P$ a une racine double, $x_0=\\dfrac{-b}{2a}={{h}}$. Il est du signe de $a={{a}}>0$ partout, sauf en ${{h}}$ où il s'annule.",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nsign: P(x)\n  -inf,{{h}}: +\n  {{h}}: z\n  {{h}},+inf: +\n```",
+					"$P(x)\\le 0$ seulement quand $P(x)=0$, c'est-à-dire en $x={{h}}$ : $S=\\{ {{h}} \\}$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}<0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "2|3|5|6|7"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*p"
+				},
+				{
+					"name": "c",
+					"expression": "eval:p^2-r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "]{{p}}-sqrt({{r}});{{p}}+sqrt({{r}})["
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : deux racines, $x_1=\\dfrac{-b-\\sqrt{\\Delta}}{2a}={{p}}-\\sqrt{ {{r}} }$ et $x_2={{p}}+\\sqrt{ {{r}} }$. Ici $a=1>0$ : $P$ est négatif entre les racines.",
+					"```variation\nvariable: x\ndomain: -inf, x_1, x_2, +inf\n\nsign: P(x)\n  -inf,x_1: +\n  x_1: z\n  x_1,x_2: -\n  x_2: z\n  x_2,+inf: +\n```",
+					"On veut $P(x)<0$ (strictement), racines exclues : $S=\\left]{{p}}-\\sqrt{ {{r}} }\\,;{{p}}+\\sqrt{ {{r}} }\\right[$, valeurs exactes."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "17 — réunion juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]-\\infty;-2[\\cup]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "17 — réunion dans l'ordre inverse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]3;+\\infty[\\cup]-\\infty;-2["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "17 — « S = » tapé en tête",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["S=]-\\infty;-2[\\cup]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "23 — crochet fermé sur une racine exclue",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]-\\infty;-2]\\cup]3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "réunion incomplète",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle complémentaire (sens de l'inégalité)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]-2;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "26 — inégalité au lieu d'un ensemble",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["x<-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "27 — virgule comme séparateur",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]-\\infty,-2[\\cup]3,+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "réponse vide",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": [""],
+			"expected": {
+				"status": "empty"
+			}
+		},
+		{
+			"description": "intervalle fermé juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["[-2;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "21 — intervalles contigus non réunis (½)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["[-2;1]\\cup[1;3]"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
+			"description": "23 — racines exclues à tort",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["]-2;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "24 — crochet fermé sur l'infini",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["[-\\infty;3]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25 — bornes dans le désordre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "3",
+				"b": "-1",
+				"c": "-6"
+			},
+			"answers": ["[3;-2]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0 : entre les racines",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"s": "3",
+				"b": "1",
+				"c": "6"
+			},
+			"answers": ["[-2;3]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a < 0 : à l'extérieur",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"r": "-2",
+				"s": "3",
+				"b": "1",
+				"c": "6"
+			},
+			"answers": ["]-\\infty;-2[\\cup]3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "19 — ensemble vide",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["\\emptyset"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "19 — ensemble vide (\\varnothing)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "19 — ensemble vide (accolades)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["\\{\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "19 — ℝ au lieu de ∅",
+			"variationIndex": 4,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "19 — ℝ",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "19 — ℝ écrit ]-∞;+∞[",
+			"variationIndex": 5,
+			"variables": {
+				"a": "1",
+				"h": "1",
+				"k": "2",
+				"b": "-2",
+				"c": "3"
+			},
+			"answers": ["]-\\infty;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "18 — ℝ privé de la racine double",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0",
+				"b": "-4",
+				"c": "4"
+			},
+			"answers": ["\\mathbb{R}\\setminus\\{2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "18 — réunion équivalente",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0",
+				"b": "-4",
+				"c": "4"
+			},
+			"answers": ["]-\\infty;2[\\cup]2;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "18 — racine double oubliée",
+			"variationIndex": 6,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0",
+				"b": "-4",
+				"c": "4"
+			},
+			"answers": ["\\mathbb{R}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "20 — singleton",
+			"variationIndex": 7,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0",
+				"b": "-4",
+				"c": "4"
+			},
+			"answers": ["\\{2\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "20 — [2;2] au lieu de {2} (½)",
+			"variationIndex": 7,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0",
+				"b": "-4",
+				"c": "4"
+			},
+			"answers": ["[2;2]"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
+			"description": "22 — bornes exactes",
+			"variationIndex": 8,
+			"variables": {
+				"p": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["]1-\\sqrt{3};1+\\sqrt{3}["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "22 — bornes exactes écrites autrement",
+			"variationIndex": 8,
+			"variables": {
+				"p": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["]-\\sqrt3+1;\\sqrt3+1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "22 — bornes arrondies",
+			"variationIndex": 8,
+			"variables": {
+				"p": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["]-0{,}73;2{,}73["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

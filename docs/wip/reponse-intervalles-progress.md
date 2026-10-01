@@ -65,7 +65,13 @@ Nouveau type de réponse pour une case à trous : un ENSEMBLE de réels écrit e
       valeurs partagées ; par case : JSON des blancs)
 - [x] 3 — clavier « Intervalles » (`questions/intervals/keyboard-intervals.ts`) + `smartFence = false`
       posé au focus sur les champs d'une question à case `intervalles` (`FillBlanksInput`)
-- [ ] 4 — modèle n° 11 du second degré (inéquations), en brouillon
+- [x] 4 — modèle n° 11 du second degré (inéquations), en brouillon : « Résoudre une inéquation du
+      second degré », `9e1d084e-ff83-4852-ad51-fe79c3328ae0` (prod, brouillon, 2026-10-01) ; 9 variations
+      (Δ>0 a>0 / a<0, Δ<0 → ∅ / ℝ, Δ=0 → ℝ∖{h} / {h}, racines p±√r), corrigé avec tableau de signes,
+      30 specs (17-27). Fichier : `scripts/questions/second-degre-1spe/11-resoudre-inequation.json`.
+      ⚠️ La prod ne connaît `answerKind` qu'après la fusion de cette branche : ne pas prévisualiser ni
+      enregistrer ce modèle dans l'éditeur de prod avant (le schéma strict de prod refuserait la clé).
+  - au passage : `constraintIdSchema` (specs de test) ne connaissait pas `intervalForm` → corrigé.
 
 ## Mesure MathLive (phase 0) — 2026-10-01
 

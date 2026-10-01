@@ -182,6 +182,22 @@ describe('générateur et schémas', () => {
 		const withConstraint = { ...withoutId, options: { constraints: { intervalForm: 'off' } } };
 		expect(questionTemplateSchema.safeParse(withConstraint).success).toBe(true);
 	});
+
+	it('schéma : une spec de test peut attendre la contrainte intervalForm', () => {
+		const { id: _id, ...withoutId } = inequalityTemplate();
+		const withSpec = {
+			...withoutId,
+			testSpecs: [
+				{
+					description: 'contigus',
+					variables: { x1: '-2', x2: '3' },
+					answers: [']-\\infty;-2[\\cup]3;4]\\cup[4;+\\infty['],
+					expected: { status: 'unoptimal_form', constraintViolations: ['intervalForm'] }
+				}
+			]
+		};
+		expect(questionTemplateSchema.safeParse(withSpec).success).toBe(true);
+	});
 });
 
 describe('31 — specs de test du modèle', () => {
