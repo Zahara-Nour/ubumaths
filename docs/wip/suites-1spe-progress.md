@@ -153,3 +153,9 @@ Décision David : corriger`FillBlanksInput`, ou faire ces modèles en QCM.
 - 3-08 : troisième choix « ni croissante, ni décroissante » (au lieu de « on ne peut pas conclure »).
 - 3-04 (nature sur un nuage) et 4-03 (formule d'un nuage) se recoupent un peu.
 - Peu de tirages distincts dans certains modèles graphiques (3 à 10 par variation).
+
+## Journal
+
+- 2026-10-01 : spec validée par David ; #601 (escalier), #602 (`\textcolor` dans le PDF), #603
+  (questions) mergées ; 9 modèles publiés corrigés, 35 modèles neufs en brouillon ; 5
+  sous-domaines renommés en base (accents) par `rename-question-subdomains.ts --publier`, relus.
