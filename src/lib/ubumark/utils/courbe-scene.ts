@@ -272,13 +272,34 @@ function endpointsOf(fn: CourbeFunction, w: CourbeWindow): SceneEndpoint[] {
 	return result;
 }
 
-/** Ancre du nom de courbe : aux 4/5 du plus long morceau visible. */
-function labelAnchor(polylines: ScenePoint[][]): ScenePoint | null {
+/** Positions essayées le long du plus long morceau, dans l'ordre de préférence */
+const LABEL_POSITIONS = [0.8, 0.9, 0.65, 0.2, 0.35, 0.5] as const;
+
+/** Écart minimal à un point nommé, en fraction de la fenêtre sur chaque axe */
+const LABEL_CLEARANCE = 0.08;
+
+/**
+ * Ancre du nom de courbe : vers la droite du plus long morceau visible, à
+ * l'écart des points nommés (sinon « B » et « 𝒞f » se superposent).
+ */
+function labelAnchor(
+	polylines: ScenePoint[][],
+	avoid: { x: number; y: number }[],
+	w: CourbeWindow
+): ScenePoint | null {
 	let longest: ScenePoint[] | null = null;
 	for (const poly of polylines)
 		if (longest === null || poly.length > longest.length) longest = poly;
 	if (longest === null) return null;
-	return longest[Math.floor((longest.length - 1) * 0.8)];
+	const line = longest;
+	const at = (t: number) => line[Math.floor((line.length - 1) * t)];
+	const clear = (p: ScenePoint) =>
+		avoid.every(
+			(q) =>
+				Math.abs(p.x - q.x) / (w.xMax - w.xMin) > LABEL_CLEARANCE ||
+				Math.abs(p.y - q.y) / (w.yMax - w.yMin) > LABEL_CLEARANCE
+		);
+	return LABEL_POSITIONS.map(at).find(clear) ?? at(LABEL_POSITIONS[0]);
 }
 
 // ============================================================================
@@ -366,10 +387,6 @@ export function buildCourbeScene(spec: CourbeSpec, options: CourbeSceneOptions =
 		}
 		curves.push({ functionName: fn.name, color: fn.color, dashed: fn.dashed, polylines });
 		endpoints.push(...endpointsOf(fn, w));
-		if (fn.label) {
-			const anchor = labelAnchor(polylines);
-			if (anchor) curveLabels.push({ label: fn.label, x: anchor.x, y: anchor.y, color: fn.color });
-		}
 	}
 
 	const inside = (x: number, y: number) =>
@@ -389,6 +406,12 @@ export function buildCourbeScene(spec: CourbeSpec, options: CourbeSceneOptions =
 			});
 		}
 	}
+
+	spec.functions.forEach((fn, index) => {
+		if (!fn.label) return;
+		const anchor = labelAnchor(curves[index].polylines, points, w);
+		if (anchor) curveLabels.push({ label: fn.label, x: anchor.x, y: anchor.y, color: fn.color });
+	});
 
 	const asymptotes: CourbeScene['asymptotes'] = [];
 	for (const a of spec.asymptotes) {

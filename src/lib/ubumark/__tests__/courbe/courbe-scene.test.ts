@@ -154,6 +154,17 @@ describe('courbe — asymptotes et étiquettes', () => {
 		expect(l.y).toBeLessThanOrEqual(12);
 	});
 
+	it('le nom de courbe s’écarte des points nommés', () => {
+		const s = scene(
+			'x: -4 ; 6\ny: -8 ; 12\nf(x) = -(x+2)*(x-4)/2  nom=C_f\npoints: A(-2;0), B(4;0), M(2 ; f(2))'
+		);
+		const l = s.curveLabels[0];
+		for (const p of s.points) {
+			const far = Math.abs(l.x - p.x) / 10 > 0.08 || Math.abs(l.y - p.y) / 20 > 0.08;
+			expect(far, `trop près de ${p.name}`).toBe(true);
+		}
+	});
+
 	it('libellé accessible par défaut', () => {
 		const s = scene('x: -4 ; 6\ny: -8 ; 12\nf(x) = x\ng(x) = 2');
 		expect(s.ariaLabel).toBe('Courbes de f et g, x de −4 à 6');

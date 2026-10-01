@@ -87,7 +87,7 @@ isotrope, exporteurs sans `function`).
 ## Lots
 
 - [x] Lot 1 — types + parseur + scène (`types/courbe.ts`, `parser/courbe-parser.ts`, `utils/courbe-scene.ts`, 36 tests rouges avant : module absent)
-- [ ] Lot 2 — composant + câblage + listes + Q48
+- [x] Lot 2 — composant + câblage + listes + Q48
 - [ ] Lot 3 — Typst + compilation prod
 
 ## Journal
@@ -97,3 +97,15 @@ isotrope, exporteurs sans `function`).
   rendu SVG/Typst ; `pi` nu et `π` → `\pi` ; `{,}` → `.` ; points/aires/asymptotes lus APRÈS
   les fonctions (`M(2 ; f(2))` avant la ligne de f fonctionne) ; les avertissements de
   fenêtre (point, asymptote, courbe invisible) sont produits par la scène.
+- 2026-10-01 lot 2 : `Courbe.svelte` (SVG, `role="img"`), câblage parseur (2 sites), renderer,
+  `ListNode`, import de l'éditeur riche (bloc de code `courbe` porteur du texte : sans lui, le
+  bloc DISPARAISSAIT à l'aller-retour — preuve rouge faite), `check:ubumark` signale les blocs en
+  erreur / hors fenêtre.
+  Q48 : contexte `components/markdown/authoring-errors.ts` + prop `showAuthoringErrors` de
+  `MarkdownRenderer` (défaut élève, hérité par les rendus imbriqués), posée dans
+  `MarkdownEditor` (aperçu), `RichTextEditor` (aperçu), `QuestionPreview` (formulaire de modèle)
+  et la page prof `contenu/exercices/[id]`. Preuve rouge : neutraliser la prop → 3 tests rouges.
+  Couleurs : tokens `--color-info/destructive/warning/foreground/muted-foreground` ; vert et
+  violet n'ont pas de token → variables locales `light-dark()` dans le composant.
+  Le parseur repère `courbe` dans `lines` ET `originalLines` (appariés par rang) : robuste à une
+  formule `$$` multi-lignes placée avant (les blocs `line`/`trig` ne le sont pas — hors périmètre).

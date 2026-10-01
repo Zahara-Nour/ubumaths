@@ -62,6 +62,7 @@ import { findVariationBlocks, parseVariationTable } from './variation-table-pars
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
+import { findCourbeBlocks, parseCourbe, parseCourbeContent } from './courbe-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -412,6 +413,11 @@ function parseBlocks(
 	const probTreeBlocks = findProbTreeBlocks(originalLines);
 	const trigCircleBlocks = findTrigCircleBlocks(originalLines);
 	const numberLineBlocks = findNumberLineBlocks(originalLines);
+	// Bloc ```courbe : repéré dans `lines` (indices de la boucle) ET dans
+	// `originalLines` (contenu intact), apparié par rang — comme les blocs de
+	// code, pour survivre à une formule $$ sur plusieurs lignes placée avant.
+	const courbeBlocks = findCourbeBlocks(lines);
+	const originalCourbeBlocks = findCourbeBlocks(originalLines);
 
 	// =========================================================================
 	// CODE BLOCK LINE INDEX MISMATCH FIX
@@ -539,6 +545,20 @@ function parseBlocks(
 			}
 			// Note: Errors are silently ignored for now; could be logged if needed
 			i = numberLineBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1d bis: bloc ```courbe — TOUJOURS un nœud, même en erreur (Q48) :
+		// le renderer montre le message à l'auteur et un cadre neutre à l'élève.
+		const courbeBlock = courbeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
+		if (courbeBlock) {
+			const original = originalCourbeBlocks[courbeBlocks.indexOf(courbeBlock)];
+			blocks.push(
+				original
+					? parseCourbe(originalLines, original.startIndex, original.endIndex)
+					: parseCourbe(lines, courbeBlock.startIndex, courbeBlock.endIndex)
+			);
+			i = courbeBlock.endIndex + 1;
 			continue;
 		}
 
@@ -1470,6 +1490,9 @@ function parseContentWithCodeBlocks(
 			if (result.node) {
 				blocks.push(result.node);
 			}
+		} else if (language === 'courbe') {
+			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));
 		} else {
 			// Regular code block
 			blocks.push({
