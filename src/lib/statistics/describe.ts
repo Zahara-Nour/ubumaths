@@ -25,7 +25,7 @@
  */
 
 import { STATISTICS_LIMITS } from './limits';
-import { failure, formatForMessage, success, type Outcome } from './outcome';
+import { failure, formatForMessage, success, type Failure, type Outcome } from './outcome';
 
 // =============================================================================
 // Types
@@ -152,18 +152,18 @@ export function summarizeTable(
 }
 
 /** Plafond de `STATISTICS_LIMITS`. */
-function checkSize<T>(size: number): Outcome<T> | null {
+function checkSize(size: number): Failure | null {
 	if (size <= STATISTICS_LIMITS.maxValues) return null;
 	return failure(`Trop de valeurs : ${size} (au plus ${STATISTICS_LIMITS.maxValues}).`);
 }
 
-function checkValues<T>(values: readonly number[]): Outcome<T> | null {
+function checkValues(values: readonly number[]): Failure | null {
 	const index = values.findIndex((value) => !Number.isFinite(value));
 	if (index === -1) return null;
 	return failure(`La valeur n° ${index + 1} n'est pas un nombre fini.`);
 }
 
-function checkCounts<T>(counts: readonly number[]): Outcome<T> | null {
+function checkCounts(counts: readonly number[]): Failure | null {
 	const index = counts.findIndex((count) => !Number.isFinite(count) || count < 0);
 	if (index === -1) return null;
 	return failure(

@@ -14,9 +14,13 @@
  * Une entrée invalide n'est jamais une exception : l'auteur d'un bloc ou
  * l'élève de l'atelier doit lire un message en français, situé.
  */
-export type Outcome<T> =
-	| { readonly ok: true; readonly value: T }
-	| { readonly ok: false; readonly message: string };
+export type Outcome<T> = { readonly ok: true; readonly value: T } | Failure;
+
+/** Un échec : assignable à `Outcome<T>` quel que soit `T`. */
+export interface Failure {
+	readonly ok: false;
+	readonly message: string;
+}
 
 // =============================================================================
 // Fonctions
@@ -26,7 +30,7 @@ export function success<T>(value: T): Outcome<T> {
 	return { ok: true, value };
 }
 
-export function failure<T>(message: string): Outcome<T> {
+export function failure(message: string): Failure {
 	return { ok: false, message };
 }
 

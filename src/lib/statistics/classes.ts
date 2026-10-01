@@ -16,7 +16,7 @@
  */
 
 import { STATISTICS_LIMITS } from './limits';
-import { failure, formatForMessage, success, type Outcome } from './outcome';
+import { failure, formatForMessage, success, type Failure, type Outcome } from './outcome';
 
 // =============================================================================
 // Types
@@ -107,7 +107,7 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 	});
 }
 
-function checkClasses<T>(classes: readonly StatClass[]): Outcome<T> | null {
+function checkClasses(classes: readonly StatClass[]): Failure | null {
 	if (classes.length > STATISTICS_LIMITS.maxValues) {
 		return failure(`Trop de classes : ${classes.length} (au plus ${STATISTICS_LIMITS.maxValues}).`);
 	}

@@ -124,7 +124,7 @@ describe('A. série brute — quartiles du programme', () => {
 	});
 
 	it(`refuse plus de ${STATISTICS_LIMITS.maxValues} valeurs`, () => {
-		const tooMany = new Array<number>(STATISTICS_LIMITS.maxValues + 1).fill(1);
+		const tooMany = Array.from({ length: STATISTICS_LIMITS.maxValues + 1 }, () => 1);
 
 		expect(failureOf(summarizeList(tooMany))).toMatch(/trop de valeurs/i);
 	});
@@ -178,7 +178,7 @@ describe('B. série à effectifs', () => {
 	});
 
 	it('donne les mêmes indicateurs que la série dépliée', () => {
-		const unfolded = values.flatMap((value, i) => new Array<number>(counts[i]).fill(value));
+		const unfolded = values.flatMap((value, i) => Array.from({ length: counts[i] }, () => value));
 		const fromList = listSummary(unfolded);
 		const { summary } = tableOf(values, counts);
 
