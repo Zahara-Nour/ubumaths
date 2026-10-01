@@ -37,6 +37,9 @@
 
 import {
 	CLASS_CHART_KINDS,
+	CROSS_TABLE_DISPLAYS,
+	type CrossTableData,
+	type CrossTableDisplay,
 	CLASS_INDICATORS,
 	STAT_CHART_DIRECTIONS,
 	STAT_CHART_INDICATORS,
@@ -58,6 +61,7 @@ import {
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
 import { summarizeClasses } from '$lib/statistics/classes';
+import { crossTable } from '$lib/statistics/cross-table';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -76,13 +80,27 @@ interface Options {
 	direction: StatChartDirection;
 	reading: StatChartReading;
 	indicators: StatChartIndicator[];
+	rows: string[] | null;
+	columns: string[] | null;
+	showTotals: boolean;
+	display: CrossTableDisplay;
+	masked: { row: string; column: string; line: number }[];
+	corner: string | null;
+}
+
+/** Une ligne de données d'un tableau croisé, avant le contrôle d'ensemble */
+interface TableRow {
+	name: string;
+	values: (number | null)[];
+	line: number;
 }
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
-const BLOCK_START_REGEX = /^```(barres|circulaire|histogramme|frequences-cumulees)\s*$/;
+const BLOCK_START_REGEX =
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -113,12 +131,29 @@ const OPTION_KEYS = [
 	'legende',
 	'sens',
 	'lecture',
-	'indicateurs'
+	'indicateurs',
+	'lignes',
+	'colonnes',
+	'totaux',
+	'afficher',
+	'masquer',
+	'coin'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
 /** Options réservées à certains blocs ; absente = tous */
+/** Diagrammes dessinés (tout sauf le tableau croisé) */
+const FIGURE_KINDS: readonly StatChartKind[] = [
+	'barres',
+	'circulaire',
+	'histogramme',
+	'frequences-cumulees'
+];
+
 const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
+	// Un <table> n'a ni taille de figure ni description d'image (revue du lot 4)
+	taille: FIGURE_KINDS,
+	description: FIGURE_KINDS,
 	axes: ['barres', 'histogramme', 'frequences-cumulees'],
 	valeurs: ['barres', 'histogramme'],
 	couleur: ['barres', 'histogramme', 'frequences-cumulees'],
@@ -126,15 +161,25 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	legende: ['histogramme'],
 	sens: ['frequences-cumulees'],
 	lecture: ['frequences-cumulees'],
-	indicateurs: ['barres', 'histogramme', 'frequences-cumulees']
+	indicateurs: ['barres', 'histogramme', 'frequences-cumulees'],
+	lignes: ['tableau-croise'],
+	colonnes: ['tableau-croise'],
+	totaux: ['tableau-croise'],
+	afficher: ['tableau-croise'],
+	masquer: ['tableau-croise'],
+	coin: ['tableau-croise']
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
 	barres: 'diagrammes en barres',
 	circulaire: 'diagrammes circulaires',
 	histogramme: 'histogrammes',
-	'frequences-cumulees': 'polygones des fréquences cumulées'
+	'frequences-cumulees': 'polygones des fréquences cumulées',
+	'tableau-croise': 'tableaux croisés'
 };
+
+/** Nom réservé à la ligne et à la colonne des totaux */
+const TOTAL = 'Total';
 
 /** Indicateurs, tels que l'auteur les écrit */
 const INDICATOR_NAME: Record<StatChartIndicator, string> = {
@@ -373,15 +418,159 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			options.areaLegend = { value: area, unit: word === '' ? null : word };
 			return;
 		}
-		case 'valeurs': {
-			const answer = normalizeKey(value.trim());
-			if (answer !== 'oui' && answer !== 'non') {
-				throw new LineError(`« valeurs: ${value.trim()} » : écrire oui ou non`);
-			}
-			options.showValues = answer === 'oui';
+		case 'valeurs':
+			options.showValues = yesNo(value, 'valeurs');
 			return;
+		case 'totaux':
+			options.showTotals = yesNo(value, 'totaux');
+			return;
+		case 'lignes':
+			options.rows = parseNames(value, 'lignes');
+			return;
+		case 'colonnes':
+			options.columns = parseNames(value, 'colonnes');
+			return;
+		case 'afficher':
+			options.display = oneOf(value, CROSS_TABLE_DISPLAYS, 'affichage');
+			return;
+		case 'coin':
+			options.corner = parseText(value, 'coin');
+			return;
+		case 'masquer':
+			// La ligne est connue ici ; les noms sont vérifiés une fois tout lu
+			options.masked = value
+				.split(';')
+				.map((pair) => pair.trim())
+				.filter((pair) => pair !== '')
+				.map((pair) => {
+					const slash = pair.lastIndexOf('/');
+					if (slash <= 0 || slash === pair.length - 1) {
+						throw new LineError(`« ${pair} » : écrire une case sous la forme Ligne/Colonne`);
+					}
+					// « total » en toutes casses désigne les totaux, comme dans `parseNames`
+					const name = (raw: string) =>
+						normalizeKey(raw.trim()) === normalizeKey(TOTAL) ? TOTAL : raw.trim();
+					return { row: name(pair.slice(0, slash)), column: name(pair.slice(slash + 1)), line: 0 };
+				});
+			return;
+	}
+}
+
+function yesNo(value: string, key: string): boolean {
+	const answer = normalizeKey(value.trim());
+	if (answer !== 'oui' && answer !== 'non') {
+		throw new LineError(`« ${key}: ${value.trim()} » : écrire oui ou non`);
+	}
+	return answer === 'oui';
+}
+
+/** `Fille ; Garçon` : noms distincts, ni vides ni « Total », au plus 8 (Q34) */
+function parseNames(value: string, what: string): string[] {
+	const names = value.split(';').map((name) => name.trim());
+	if (names.some((name) => name === '')) throw new LineError(`${what} : un nom est vide`);
+	if (names.length > STAT_CHART_LIMITS.tableSize) {
+		throw new LineError(`${what} : au plus ${STAT_CHART_LIMITS.tableSize} noms`);
+	}
+	for (const [i, name] of names.entries()) {
+		if (normalizeKey(name) === normalizeKey(TOTAL)) {
+			throw new LineError(
+				`${what} : « ${TOTAL} » est réservé à la ligne et à la colonne des totaux`
+			);
+		}
+		if (name.length > STAT_CHART_LIMITS.labelLength) {
+			throw new LineError(
+				`${what} : « ${name} » trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+			);
+		}
+		if (name.includes('/')) {
+			throw new LineError(
+				`${what} : « ${name} » ne peut pas contenir « / » (séparateur de « masquer: »)`
+			);
+		}
+		const same = names.findIndex((other) => normalizeKey(other) === normalizeKey(name));
+		if (same !== i) throw new LineError(`${what} : « ${name} » donné deux fois`);
+	}
+	return names;
+}
+
+/**
+ * Contrôles d'un tableau croisé, une fois tout lu : noms, nombre de cases,
+ * cases masquées, fréquences calculables. Rend les données, ou les erreurs.
+ */
+function checkTable(
+	options: Options,
+	tableRows: readonly TableRow[],
+	optionLines: Partial<Record<OptionKey, number>>
+): { table: CrossTableData } | { errors: StatChartIssue[] } {
+	const { rows, columns } = options;
+	if (rows === null)
+		return { errors: [{ message: 'Écrire les noms des lignes : « lignes: Fille ; Garçon »' }] };
+	if (columns === null) {
+		return {
+			errors: [{ message: 'Écrire les noms des colonnes : « colonnes: Externe ; Interne »' }]
+		};
+	}
+
+	const errors: StatChartIssue[] = [];
+	const situated = (line: number, message: string) =>
+		errors.push({ message: `Ligne ${line} : ${message}`, line });
+	for (const row of tableRows) {
+		if (!rows.includes(row.name)) {
+			situated(row.line, `ligne « ${row.name} » absente de « lignes: »`);
+		} else if (row.values.length !== columns.length) {
+			situated(row.line, `${columns.length} valeurs attendues, ${row.values.length} reçues`);
 		}
 	}
+	for (const name of rows) {
+		if (!tableRows.some((row) => row.name === name)) {
+			situated(optionLines.lignes ?? 0, `ligne « ${name} » sans données : écrire « ${name} = … »`);
+		}
+	}
+
+	const rowNames = options.showTotals ? [...rows, TOTAL] : rows;
+	const columnNames = options.showTotals ? [...columns, TOTAL] : columns;
+	for (const { row, column, line } of options.masked) {
+		if (!options.showTotals && (row === TOTAL || column === TOTAL)) {
+			situated(line, `masquer « ${row}/${column} » : pas de totaux (« totaux: non »)`);
+		} else if (!rowNames.includes(row) || !columnNames.includes(column)) {
+			situated(line, `masquer : case « ${row}/${column} » inconnue`);
+		}
+	}
+	if (errors.length > 0) return { errors };
+
+	const cells = rows.map((name) => tableRows.find((row) => row.name === name)?.values ?? []);
+	if (options.display !== 'effectifs') {
+		const line = optionLines.afficher ?? 0;
+		if (cells.some((row) => row.some((value) => value === null))) {
+			return {
+				errors: [
+					{
+						message: `Ligne ${line} : fréquences impossibles avec une case « ? » : sa valeur est inconnue`,
+						line
+					}
+				]
+			};
+		}
+		// Total non nul : la règle du module statistique
+		const outcome = crossTable(
+			cells.map((row) => row.map((value) => value ?? 0)),
+			options.display
+		);
+		if (outcome !== null && !outcome.ok) {
+			return { errors: [{ message: `Ligne ${line} : ${outcome.message}`, line }] };
+		}
+	}
+	return {
+		table: {
+			rows,
+			columns,
+			cells,
+			showTotals: options.showTotals,
+			display: options.display,
+			masked: options.masked.map(({ row, column }) => ({ row, column })),
+			corner: options.corner
+		}
+	};
 }
 
 /** Contrôles sur l'ensemble des données, une fois toutes les lignes lues. */
@@ -466,6 +655,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	// (sans lui, `unit` resterait typée `null` après la boucle)
 	let unit = null as { value: StatChartUnit; line: number } | null;
 	let indicatorsLine = 0;
+	const optionLines: Partial<Record<OptionKey, number>> = {};
 	const seenOptions = new Set<OptionKey>();
 	const options: Options = {
 		title: null,
@@ -478,8 +668,16 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		areaLegend: null,
 		direction: 'croissantes',
 		reading: 'aucune',
-		indicators: []
+		indicators: [],
+		rows: null,
+		columns: null,
+		showTotals: true,
+		display: 'effectifs',
+		masked: [],
+		corner: null
 	};
+	const tableRows: TableRow[] = [];
+	const isTable = kind === 'tableau-croise';
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
 	const maxCategories = isClasses
 		? STAT_CHART_LIMITS.classes
@@ -499,6 +697,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				seenOptions.add(key);
 				applyOption(kind, key, kv[2], options);
 				if (key === 'indicateurs') indicatorsLine = line;
+				optionLines[key] = line;
+				if (key === 'masquer') options.masked.forEach((cell) => (cell.line = line));
 				return;
 			}
 
@@ -510,7 +710,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				}
 				if (kv) {
 					throw new LineError(
-						`option « ${kv[1]} » inconnue (options : titre, axes, description, taille, valeurs, couleur, étiquettes, légende, sens, lecture, indicateurs)`
+						`option « ${kv[1]} » inconnue (options : titre, axes, description, taille, valeurs, couleur, étiquettes, légende, sens, lecture, indicateurs, lignes, colonnes, totaux, afficher, masquer, coin)`
 					);
 				}
 				throw new LineError('écrire « catégorie = effectif » ou « option: valeur »');
@@ -518,6 +718,29 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 			const written = content.slice(0, separator).trim();
 			if (written === '') throw new LineError('catégorie sans nom avant « = »');
+
+			// Tableau croisé : `Fille = 45 ; 120`, une case par colonne, `?` = inconnue
+			if (isTable) {
+				if (tableRows.some((row) => row.name === written)) {
+					throw new LineError(`ligne « ${written} » déjà donnée`);
+				}
+				const values = content
+					.slice(separator + 1)
+					.split(';')
+					.map((cell) => {
+						if (cell.trim() === '?') return null;
+						const parsed = parseValue(cell);
+						if (unit !== null && unit.value !== parsed.unit) {
+							throw new LineError(
+								`effectifs et pourcentages mélangés (la ligne ${unit.line} donne des ${unit.value})`
+							);
+						}
+						unit ??= { value: parsed.unit, line };
+						return parsed.value;
+					});
+				tableRows.push({ name: written, values, line });
+				return;
+			}
 			const { label, interval } = isClasses
 				? parseClass(written)
 				: { label: written, interval: null };
@@ -549,7 +772,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	});
 
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
-	if (errors.length === 0) {
+	let table: CrossTableData | null = null;
+	if (errors.length === 0 && isTable) {
+		const checked = checkTable(options, tableRows, optionLines);
+		if ('errors' in checked) errors.push(...checked.errors);
+		else table = checked.table;
+	} else if (errors.length === 0) {
 		const whole = checkWhole(kind, data, dataUnit, options.areaLegend);
 		if (whole) errors.push(whole);
 	}
@@ -561,7 +789,25 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	}
 
 	const spec: StatChartSpec | null =
-		errors.length === 0 ? { kind, data, unit: dataUnit, ...options } : null;
+		errors.length === 0
+			? {
+					kind,
+					data,
+					unit: dataUnit,
+					title: options.title,
+					axes: options.axes,
+					description: options.description,
+					size: options.size,
+					showValues: options.showValues,
+					color: options.color,
+					labels: options.labels,
+					areaLegend: options.areaLegend,
+					direction: options.direction,
+					reading: options.reading,
+					indicators: options.indicators,
+					table
+				}
+			: null;
 
 	return { type: 'stat-chart', kind, source, spec, errors, warnings: [] };
 }

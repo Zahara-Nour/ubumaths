@@ -36,6 +36,7 @@ import {
 } from '$lib/statistics/classes';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
+import { crossTable } from '$lib/statistics/cross-table';
 
 // ============================================================================
 // TYPES
@@ -190,7 +191,35 @@ export interface CumulativeScene extends SceneCommon {
 	color: CourbeColor;
 }
 
-export type StatChartScene = BarScene | PieScene | HistogramScene | CumulativeScene;
+export interface SceneCell {
+	/** Texte affiché ; vide si la case est à compléter */
+	text: string;
+	/** Case à compléter (`masquer:`, ou `?` et les totaux qui en dépendent) */
+	hidden: boolean;
+	/** Ce que lit le lecteur d'écran à la place de `text` (« — » est muet), sinon null */
+	srText: string | null;
+}
+
+export interface CrossTableScene extends SceneCommon {
+	kind: 'tableau-croise';
+	/** Coin haut-gauche, ou null */
+	corner: string | null;
+	/** Le coin tel que le lit un lecteur d'écran : `Sexe \ Régime` → « lignes : Sexe, colonnes : Régime » */
+	cornerSpoken: string | null;
+	/** Ce qu'annonce une case à compléter, dans la langue du document */
+	hiddenLabel: string;
+	/** En-têtes des colonnes, `Total` compris */
+	columnHeaders: string[];
+	/** Lignes, `Total` comprise : en-tête et cases */
+	rows: { header: string; cells: SceneCell[] }[];
+}
+
+export type StatChartScene =
+	| BarScene
+	| PieScene
+	| HistogramScene
+	| CumulativeScene
+	| CrossTableScene;
 
 export interface StatChartSceneOptions {
 	/** Langue du document : séparateur décimal */
@@ -237,8 +266,33 @@ const KIND_TITLE = {
 	barres: 'Diagramme en barres',
 	circulaire: 'Diagramme circulaire',
 	histogramme: 'Histogramme',
-	'frequences-cumulees': 'Polygone des fréquences cumulées'
+	'frequences-cumulees': 'Polygone des fréquences cumulées',
+	'tableau-croise': 'Tableau croisé'
 } as const;
+
+/** Nom de la ligne et de la colonne des totaux */
+const TOTAL = 'Total';
+
+/** Textes lus par le lecteur d'écran d'un tableau croisé, selon la langue du document */
+const CROSS_TABLE_SPOKEN: Record<
+	ContentLocale,
+	{ title: string; hidden: string; undefined: string; rows: string; columns: string }
+> = {
+	fr: {
+		title: 'Tableau croisé',
+		hidden: 'case à compléter',
+		undefined: 'non définie',
+		rows: 'lignes',
+		columns: 'colonnes'
+	},
+	en: {
+		title: 'Contingency table',
+		hidden: 'blank cell',
+		undefined: 'undefined',
+		rows: 'rows',
+		columns: 'columns'
+	}
+};
 
 // ============================================================================
 // FORMATAGE
@@ -718,6 +772,85 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 }
 
 // ============================================================================
+// TABLEAU CROISÉ
+// ============================================================================
+
+function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): CrossTableScene {
+	const table = spec.table;
+	if (table === null) throw new Error('Tableau croisé sans données');
+	const { rows, columns, cells, showTotals, display } = table;
+
+	// `?` vaut 0 pour le calcul ; les totaux qui en dépendent seront cachés
+	const outcome = crossTable(
+		cells.map((row) => row.map((value) => value ?? 0)),
+		display
+	);
+	// Le parseur a vérifié le tableau ; une défaillance ici est un bug
+	if (outcome === null || !outcome.ok) {
+		throw new Error(
+			`Tableau croisé invalide : ${outcome?.ok === false ? outcome.message : 'vide'}`
+		);
+	}
+	const values = outcome.value;
+
+	const unknownInRow = cells.map((row) => row.some((value) => value === null));
+	const unknownInColumn = columns.map((_, j) => cells.some((row) => row[j] === null));
+	const anyUnknown = unknownInRow.some(Boolean);
+	const isMasked = (row: string, column: string) =>
+		table.masked.some((m) => m.row === row && m.column === column);
+
+	const spoken = CROSS_TABLE_SPOKEN[locale];
+	const cell = (row: string, column: string, value: number | null, unknown: boolean): SceneCell => {
+		if (unknown || isMasked(row, column)) return { text: '', hidden: true, srText: null };
+		// Fréquence non définie (ligne ou colonne toute nulle) : « — » est muet
+		if (value === null) return { text: '—', hidden: false, srText: spoken.undefined };
+		const text =
+			display === 'effectifs'
+				? formatValue(value, spec.unit, locale)
+				: `${formatRounded(value * 100, 1, locale)} %`;
+		return { text, hidden: false, srText: null };
+	};
+	// `Sexe \ Régime` : le « \ » serait lu « barre oblique inversée »
+	const cornerParts = table.corner?.split('\\').map((part) => part.trim()) ?? [];
+	const cornerSpoken =
+		table.corner === null
+			? null
+			: cornerParts.length === 2 && cornerParts.every((part) => part !== '')
+				? `${spoken.rows} : ${cornerParts[0]}, ${spoken.columns} : ${cornerParts[1]}`
+				: table.corner;
+
+	const bodyRows = rows.map((name, i) => {
+		const line = columns.map((column, j) =>
+			cell(name, column, values.cells[i][j], cells[i][j] === null)
+		);
+		if (showTotals) line.push(cell(name, TOTAL, values.rowTotals[i], unknownInRow[i]));
+		return { header: name, cells: line };
+	});
+	if (showTotals) {
+		const totals = columns.map((column, j) =>
+			cell(TOTAL, column, values.columnTotals[j], unknownInColumn[j])
+		);
+		totals.push(cell(TOTAL, TOTAL, values.total, anyUnknown));
+		bodyRows.push({ header: TOTAL, cells: totals });
+	}
+
+	return {
+		kind: 'tableau-croise',
+		title: spec.title,
+		accessibleTitle: spoken.title,
+		// Un <table> se décrit lui-même (en-têtes de lignes et de colonnes)
+		description: spec.description ?? spoken.title,
+		pixelSize: { width: 0, height: 0 },
+		indicators: [],
+		corner: table.corner,
+		cornerSpoken,
+		hiddenLabel: spoken.hidden,
+		columnHeaders: showTotals ? [...columns, TOTAL] : [...columns],
+		rows: bodyRows
+	};
+}
+
+// ============================================================================
 // SCÈNE
 // ============================================================================
 
@@ -735,5 +868,7 @@ export function buildStatChartScene(
 			return buildHistogramScene(spec, locale);
 		case 'frequences-cumulees':
 			return buildCumulativeScene(spec, locale);
+		case 'tableau-croise':
+			return buildCrossTableScene(spec, locale);
 	}
 }

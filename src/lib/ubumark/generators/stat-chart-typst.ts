@@ -24,6 +24,7 @@ import {
 	STAT_CHART_ASPECT_RATIO,
 	buildStatChartScene,
 	type BarScene,
+	type CrossTableScene,
 	type CumulativeScene,
 	type HistogramScene,
 	type PieScene,
@@ -328,6 +329,27 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
 }
 
+// ============================================================================
+// TABLEAU CROISÉ
+// ============================================================================
+
+/** Un `table()` Typst : en-têtes en gras, case à compléter vide. Pas de cetz. */
+function crossTableTypst(scene: CrossTableScene): string {
+	const bold = (text: string) => `text(weight: "bold")${textContent(text)}`;
+	const cells: string[] = [];
+	const push = (content: string) => cells.push(`  // case\n  ${content}`);
+
+	push(scene.corner === null ? '[]' : `text(style: "italic")${textContent(scene.corner)}`);
+	for (const header of scene.columnHeaders) push(bold(header));
+	for (const row of scene.rows) {
+		push(bold(row.header));
+		for (const cell of row.cells) push(cell.hidden ? '[]' : textContent(cell.text));
+	}
+
+	const columns = scene.columnHeaders.length + 1;
+	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${columns},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+}
+
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
@@ -344,6 +366,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return histogramTypst(scene, size);
 		case 'frequences-cumulees':
 			return cumulativeTypst(scene, size);
+		case 'tableau-croise':
+			return crossTableTypst(scene);
 	}
 }
 

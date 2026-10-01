@@ -170,6 +170,66 @@ describe('StatChart — histogramme et polygone (lot 3)', () => {
 	});
 });
 
+describe('StatChart — tableau croisé (lot 4)', () => {
+	const TABLE =
+		'lignes: Fille ; Garçon\ncolonnes: Externe ; Demi-pensionnaire\nFille = 45 ; 120\nGarçon = 50 ; 110';
+
+	it('un vrai tableau : légende, en-têtes de colonnes et de lignes', async () => {
+		const node = parseStatChartContent('tableau-croise', `titre: Régime\n${TABLE}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+
+		expect(table.querySelector('caption')?.textContent).toBe('Régime');
+		expect(
+			[...table.querySelectorAll('thead th[scope="col"]')].map((th) => th.textContent)
+		).toEqual(['Externe', 'Demi-pensionnaire', 'Total']);
+		expect(
+			[...table.querySelectorAll('tbody th[scope="row"]')].map((th) => th.textContent)
+		).toEqual(['Fille', 'Garçon', 'Total']);
+		expect(table.querySelector('tbody tr td')?.textContent).toBe('45');
+	});
+
+	it('case masquée : vide à l’écran, annoncée « case à compléter »', async () => {
+		const node = parseStatChartContent('tableau-croise', `${TABLE}\nmasquer: Fille/Externe`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cell = screen.container.querySelector('tbody tr td')!;
+
+		expect(cell.textContent?.trim()).toBe('case à compléter');
+		const hint = cell.querySelector('span')!;
+		expect(hint.getBoundingClientRect().width).toBeLessThanOrEqual(1);
+	});
+
+	// Audit a11y du lot 4 : un tableau qui déborde doit défiler au clavier
+	it('zone de défilement focalisable, nommée par la légende du tableau', async () => {
+		const node = parseStatChartContent('tableau-croise', `titre: Régime\n${TABLE}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const region = screen.container.querySelector('[role="region"]')!;
+		const caption = screen.container.querySelector('caption')!;
+
+		expect(region.getAttribute('tabindex')).toBe('0');
+		expect(region.getAttribute('aria-labelledby')).toBe(caption.id);
+	});
+
+	it('case à compléter : assez large pour écrire, et repérable à l’œil', async () => {
+		const node = parseStatChartContent('tableau-croise', `${TABLE}\nmasquer: Fille/Externe`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cell = screen.container.querySelector<HTMLTableCellElement>('td.stat-case-vide')!;
+		const filled = screen.container.querySelectorAll<HTMLTableCellElement>('tbody td')[1];
+
+		expect(cell.getBoundingClientRect().width).toBeGreaterThanOrEqual(50);
+		expect(getComputedStyle(cell).backgroundColor).not.toBe(
+			getComputedStyle(filled).backgroundColor
+		);
+	});
+
+	it('sans titre : légende accessible « Tableau croisé »', async () => {
+		const node = parseStatChartContent('tableau-croise', TABLE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('caption')?.textContent).toBe('Tableau croisé');
+	});
+});
+
 // =============================================================================
 // Accessibilité
 // =============================================================================

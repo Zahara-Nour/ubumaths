@@ -76,6 +76,23 @@ describe('reconnus par parseMarkdown', () => {
 		]);
 	});
 
+	it('```tableau-croise en retrait sous un item de liste', () => {
+		const block = [
+			'```tableau-croise',
+			'lignes: A ; B',
+			'colonnes: X ; Y',
+			'A = 1 ; 2',
+			'B = 3 ; 4',
+			'```'
+		];
+		const md = ['1. Compléter :', '', ...indent(block), '2. Suite.'].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(charts(list.items[0].children as BlockNode[]).map((c) => c.kind)).toEqual([
+			'tableau-croise'
+		]);
+	});
+
 	it('un bloc de code ordinaire dont le langage a un tiret reste un bloc de code', () => {
 		const md = ['1. Code :', '', ...indent(['```objective-c', 'int x = 1;', '```'])].join('\n');
 		const list = parseMarkdown(md).children[0] as ListNode;
@@ -127,9 +144,17 @@ describe('branchés dans generateTypst', () => {
 
 describe('aller-retour de l’éditeur riche', () => {
 	it('le bloc devient un bloc de code de son genre et revient intact', () => {
+		const table = [
+			'```tableau-croise',
+			'lignes: A ; B',
+			'colonnes: X ; Y',
+			'A = 1 ; 2',
+			'B = 3 ; 4',
+			'```'
+		];
 		const histogram = ['```histogramme', '[0 ; 10[ = 12', '```'];
 		const polygon = ['```frequences-cumulees', 'lecture: médiane', '[0 ; 10[ = 12', '```'];
-		for (const block of [BARS, PIE, histogram, polygon]) {
+		for (const block of [BARS, PIE, histogram, polygon, table]) {
 			const md = block.join('\n');
 			const json = markdownToTipTap(md);
 

@@ -83,6 +83,7 @@
 
 	const uid = $props.id();
 	const titleId = `${uid}-titre`;
+	const captionId = `${uid}-legende-tableau`;
 	const descId = `${uid}-description`;
 
 	const authoring = readAuthoringErrors();
@@ -121,6 +122,7 @@
 	let pie = $derived(scene?.kind === 'circulaire' ? scene : null);
 	let histogram = $derived(scene?.kind === 'histogramme' ? scene : null);
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
+	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
 	/** Histogramme ou polygone : abscisses dans l'unité des classes */
 	let classChart = $derived(histogram ?? cumulative);
 	/** Haut de l'axe vertical : carreaux / effectif (histogramme) ou 100 % (polygone) */
@@ -190,11 +192,54 @@
 
 {#if scene}
 	<figure class="stat-figure {className}">
-		{#if scene.title}
+		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
+		{#if scene.title && !crossTable}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
-		{#if bars}
+		{#if crossTable}
+			<!-- Zone de défilement focalisable : sans élément focalisable dedans, un
+			     tableau qui déborde ne défile pas au clavier (Safari macOS ; WCAG 2.1.1,
+			     audit a11y du lot 4). `tabindex` sur une région est le motif recommandé. -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+				<table class="stat-tableau">
+					<caption
+						id={captionId}
+						class:stat-titre={crossTable.title !== null}
+						class:sr-only={crossTable.title === null}
+						>{crossTable.title ?? crossTable.accessibleTitle}</caption
+					>
+					<thead>
+						<tr>
+							<!-- Coin : `Sexe \ Régime` est lu « lignes : Sexe, colonnes : Régime » -->
+							<td class="stat-coin"
+								>{#if crossTable.corner !== null}<span aria-hidden="true">{crossTable.corner}</span
+									><span class="sr-only">{crossTable.cornerSpoken}</span>{/if}</td
+							>
+							{#each crossTable.columnHeaders as header, i (i)}
+								<th scope="col">{header}</th>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each crossTable.rows as row, i (i)}
+							<tr>
+								<th scope="row">{row.header}</th>
+								{#each row.cells as cell, j (j)}
+									<!-- Case à compléter : vide à l'écran, annoncée au lecteur d'écran -->
+									<td class:stat-case-vide={cell.hidden}
+										>{#if cell.hidden}<span class="sr-only">{crossTable.hiddenLabel}</span
+											>{:else if cell.srText !== null}<span aria-hidden="true">{cell.text}</span
+											><span class="sr-only">{cell.srText}</span>{:else}{cell.text}{/if}</td
+									>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else if bars}
 			<svg
 				role="img"
 				aria-labelledby={titleId}
@@ -615,6 +660,40 @@
 
 	/* Bordure couleur du fond, comme les secteurs : sépare deux classes de même
 	   couleur au moins à 3:1 dans les deux thèmes (audit a11y) */
+	.stat-tableau-defilement {
+		overflow-x: auto;
+	}
+
+	.stat-tableau-defilement:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
+	}
+
+	.stat-tableau {
+		margin: 0 auto;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.stat-tableau th,
+	.stat-tableau td {
+		border: 1px solid var(--color-foreground);
+		padding: 0.3rem 0.6rem;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.stat-tableau .stat-coin {
+		font-style: italic;
+	}
+
+	/* Assez de place pour écrire une réponse (`min-width` n'a pas d'effet défini
+	   sur une case de tableau), et repérable même sans bordure visible */
+	.stat-tableau .stat-case-vide {
+		width: 3.5rem;
+		background: var(--color-muted);
+	}
+
 	.stat-rectangle {
 		stroke: var(--color-background);
 		stroke-width: 1.5;

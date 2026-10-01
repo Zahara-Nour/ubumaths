@@ -26,7 +26,8 @@ export const STAT_CHART_KINDS = [
 	'barres',
 	'circulaire',
 	'histogramme',
-	'frequences-cumulees'
+	'frequences-cumulees',
+	'tableau-croise'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -40,6 +41,29 @@ export type StatChartDirection = (typeof STAT_CHART_DIRECTIONS)[number];
 /** Lectures graphiques sur le polygone (Q27) */
 export const STAT_CHART_READINGS = ['aucune', 'médiane', 'quartiles'] as const;
 export type StatChartReading = (typeof STAT_CHART_READINGS)[number];
+
+/** Ce qu'affichent les cases d'un tableau croisé (Q33) */
+export const CROSS_TABLE_DISPLAYS = [
+	'effectifs',
+	'fréquences',
+	'fréquences par ligne',
+	'fréquences par colonne'
+] as const;
+export type CrossTableDisplay = (typeof CROSS_TABLE_DISPLAYS)[number];
+
+/** Tableau croisé (lot 4) : l'auteur écrit toutes les valeurs, et masque des cases (Q32). */
+export interface CrossTableData {
+	rows: string[];
+	columns: string[];
+	/** `null` : case `?`, inconnue et cachée */
+	cells: (number | null)[][];
+	showTotals: boolean;
+	display: CrossTableDisplay;
+	/** Cases à compléter ; `Total` désigne la ligne ou la colonne des totaux */
+	masked: { row: string; column: string }[];
+	/** Coin haut-gauche (`coin: Sexe \ Régime`) */
+	corner: string | null;
+}
 
 /** Indicateurs affichables sous la figure (Q28) */
 export const STAT_CHART_INDICATORS = [
@@ -105,6 +129,8 @@ export interface StatChartSpec {
 	reading: StatChartReading;
 	/** Indicateurs sous la figure, dans l'ordre de l'auteur (Q28) */
 	indicators: StatChartIndicator[];
+	/** Tableau croisé : ses lignes, colonnes et cases (`data` reste vide), sinon null */
+	table: CrossTableData | null;
 }
 
 // ============================================================================
@@ -163,6 +189,8 @@ export const STAT_CHART_LIMITS = {
 	pieSectors: 12,
 	/** Classes d'un histogramme ou d'un polygone (Q29) */
 	classes: 20,
+	/** Lignes, et colonnes, d'un tableau croisé (Q34) */
+	tableSize: 8,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */
