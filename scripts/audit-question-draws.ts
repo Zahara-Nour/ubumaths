@@ -11,7 +11,10 @@
  *  - deux signes collés (`+ -3`, `- -2`) ;
  *  - un terme nul (`+ 0`, `0x`) ;
  *  - un gabarit non résolu (`{{`, `<<`), `NaN`, `undefined` ;
- *  - un tableau ```variation qui ne se lit pas, ou qui casse la génération Typst.
+ *  - un tableau ```variation qui ne se lit pas, ou qui casse la génération Typst ;
+ *  - un bloc ```courbe en erreur ou en avertissement (parseur, scène, `parseMarkdown`), ou
+ *    rendu « Figure indisponible » en Typst. Le texte d'un bloc courbe est du code
+ *    (`x--2`, `+-3` y sont légitimes) : il échappe aux motifs ci-dessus.
  *
  * Usage :
  *   pnpm tsx scripts/audit-question-draws.ts --file <json> [--instances 200]
@@ -28,6 +31,9 @@ import { toQuestionTemplate } from '$lib/types/question-template';
 import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { generateTypst } from '$lib/ubumark/generators/typst-generator';
+import { parseCourbeContent } from '$lib/ubumark/parser/courbe-parser';
+import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
+import type { CourbeNode } from '$lib/ubumark/types/courbe';
 import { argValue, createScriptClient } from './relecture/common';
 
 // ============================================================================
@@ -60,6 +66,9 @@ const TEXT_DEFECTS: { kind: string; regex: RegExp }[] = [
 ];
 
 const VARIATION_BLOCK = /```variation\n([\s\S]*?)```/g;
+const COURBE_BLOCK = /```courbe\n([\s\S]*?)```/g;
+/** Texte que `courbe-typst.ts` écrit à la place d'un bloc en erreur */
+const TYPST_UNAVAILABLE = 'Figure indisponible';
 
 // ============================================================================
 // FONCTIONS
@@ -113,7 +122,10 @@ function numericValue(point: string): number {
 function textDefects(text: string): { kind: string; excerpt: string }[] {
 	const found: { kind: string; excerpt: string }[] = [];
 	// Ni les tableaux, ni les chemins d'images (`forme-canonique-0-600.png`)
-	const withoutTables = text.replace(VARIATION_BLOCK, '').replace(/!\[[^\]]*\]\([^)]*\)/g, '');
+	const withoutTables = text
+		.replace(VARIATION_BLOCK, '')
+		.replace(COURBE_BLOCK, '')
+		.replace(/!\[[^\]]*\]\([^)]*\)/g, '');
 	for (const { kind, regex } of TEXT_DEFECTS) {
 		const match = regex.exec(withoutTables);
 		if (match) {
@@ -146,6 +158,7 @@ function textDefects(text: string): { kind: string; excerpt: string }[] {
 			}
 		}
 	}
+	found.push(...courbeDefects(text));
 	if (VARIATION_BLOCK.test(text)) {
 		VARIATION_BLOCK.lastIndex = 0;
 		try {
@@ -160,10 +173,80 @@ function textDefects(text: string): { kind: string; excerpt: string }[] {
 	return found;
 }
 
+/** Nœuds ```courbe d'un document ubumark, à toute profondeur (listes comprises) */
+function courbeNodes(node: unknown): CourbeNode[] {
+	if (!node || typeof node !== 'object') return [];
+	if ((node as { type?: unknown }).type === 'courbe') return [node as CourbeNode];
+	return Object.values(node).flatMap((child: unknown) =>
+		Array.isArray(child) ? child.flatMap(courbeNodes) : courbeNodes(child)
+	);
+}
+
+function issues(list: { message: string; line?: number }[]): string {
+	return list.map((i) => (i.line ? `l.${i.line} ${i.message}` : i.message)).join('; ');
+}
+
+/** Blocs ```courbe : parseur seul, scène, puis document complet (`parseMarkdown`) et Typst */
+function courbeDefects(text: string): { kind: string; excerpt: string }[] {
+	const blocks = [...text.matchAll(COURBE_BLOCK)].map((m) => m[1].replace(/\n$/, ''));
+	if (blocks.length === 0) return [];
+	const found: { kind: string; excerpt: string }[] = [];
+	for (const source of blocks) {
+		const node = parseCourbeContent(source);
+		if (!node.spec) {
+			found.push({ kind: 'courbe en erreur', excerpt: issues(node.errors) });
+			continue;
+		}
+		const scene = buildCourbeScene(node.spec);
+		const warnings = [...node.warnings, ...scene.warnings];
+		if (warnings.length > 0)
+			found.push({ kind: 'courbe en avertissement', excerpt: issues(warnings) });
+		if (scene.curves.every((c) => c.polylines.length === 0))
+			found.push({
+				kind: 'courbe invisible',
+				excerpt: node.spec.functions.map((f) => f.expression).join(' ; ')
+			});
+		if (scene.points.length !== node.spec.points.length)
+			found.push({
+				kind: 'point non dessiné',
+				excerpt: node.spec.points.map((p) => p.name).join(',')
+			});
+	}
+	const document = parseMarkdown(text);
+	const nodes = courbeNodes(document);
+	if (nodes.length !== blocks.length) {
+		found.push({
+			kind: 'courbe perdue par parseMarkdown',
+			excerpt: `${nodes.length} nœud(s) pour ${blocks.length} bloc(s)`
+		});
+	}
+	for (const node of nodes) {
+		if (node.errors.length > 0 || !node.spec)
+			found.push({ kind: 'courbe en erreur (parseMarkdown)', excerpt: issues(node.errors) });
+		else if (node.warnings.length > 0)
+			found.push({
+				kind: 'courbe en avertissement (parseMarkdown)',
+				excerpt: issues(node.warnings)
+			});
+	}
+	try {
+		const typst = generateTypst(document);
+		if (typst.includes(TYPST_UNAVAILABLE))
+			found.push({ kind: 'courbe Typst indisponible', excerpt: TYPST_UNAVAILABLE });
+	} catch (error) {
+		found.push({
+			kind: 'Typst en échec',
+			excerpt: error instanceof Error ? error.message : String(error)
+		});
+	}
+	return found;
+}
+
 function auditTemplate(template: QuestionTemplate, instances: number) {
 	const defects: Defect[] = [];
 	let draws = 0;
 	let tables = 0;
+	let courbes = 0;
 	template.variations.forEach((variation, variationIndex) => {
 		const single: QuestionTemplate = { ...template, variations: [variation] };
 		for (let seed = 1; seed <= instances; seed++) {
@@ -182,21 +265,22 @@ function auditTemplate(template: QuestionTemplate, instances: number) {
 			].map((t) => String(t));
 			for (const text of texts) {
 				if (text.includes('```variation')) tables++;
+				courbes += [...text.matchAll(COURBE_BLOCK)].length;
 				for (const d of textDefects(text)) defects.push({ variationIndex, seed, ...d });
 			}
 		}
 	});
-	return { defects, draws, tables };
+	return { defects, draws, tables, courbes };
 }
 
 async function main(): Promise<number> {
 	const instances = Number(argValue('--instances') ?? 200);
 	let failures = 0;
 	for (const { name, template } of await templatesFromArgs()) {
-		const { defects, draws, tables } = auditTemplate(template, instances);
+		const { defects, draws, tables, courbes } = auditTemplate(template, instances);
 		const verdict = defects.length === 0 ? '✅' : `❌ ${defects.length} défaut(s)`;
 		console.log(
-			`${name} — « ${template.title} » : ${draws} tirages lus (${template.variations.length} var.), ${tables} tableau(x) — ${verdict}`
+			`${name} — « ${template.title} » : ${draws} tirages lus (${template.variations.length} var.), ${tables} tableau(x), ${courbes} courbe(s) — ${verdict}`
 		);
 		const shown = new Set<string>();
 		for (const d of defects) {

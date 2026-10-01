@@ -23,3 +23,19 @@ ne désignait le sous-domaine « Racines »).
 - Racine évidente (non unitaire) : l'autre racine `\frac{3}{2}` est jugée `bad_form` (forme
   stricte, attendu entier) alors qu'elle est racine.
 - `question:specs --template` signale l'erreur de schéma `created_at` (défaut de l'outil).
+
+## Lecture graphique tracée par ```courbe (Q57, 2026-10-01)
+
+Écrit en production : `eae2ff6a` (racines lues, Apprivoiser 7, ajouté aux `CIBLES`) et
+`87140df3` (forme canonique lue, Apprivoiser 9). Les 15 images fixes de chacun sont remplacées
+par une parabole tirée au hasard ; les PNG restent dans `static/images/questions/…` (David les
+retirera).
+
+- Racines : 1 variation, p < q dans −4..4, a = ±k/2 (k ∈ {1, 2, 4}), |β| entre ½ et 16 ;
+  fenêtre x −6..6, y adaptée (même règle que le modèle n° 9) ; ordre indifférent conservé.
+- Forme canonique : 2 variations (a ∈ {±¼, ±½} avec A(α±2 ; β+4a), a ∈ {±1, ±2, ±3} avec
+  A(α±1 ; β+a)) ; α, β ∈ −3..3 NON NULS (comme avant) ; fenêtre fixe x −6..6, y −7..7, grille 1.
+- Audit : `audit-question-draws.ts` vérifie désormais les blocs courbe (parseur, scène,
+  `parseMarkdown`, Typst sans « Figure indisponible ») ; preuve rouge faite.
+- Limite : une évaluation en cours garde son instance (`evaluation_attempt_questions.instance`),
+  mais un même `seed` ne redonne plus la même question qu'avant.

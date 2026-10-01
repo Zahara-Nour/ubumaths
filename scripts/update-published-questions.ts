@@ -60,7 +60,8 @@ const CIBLES: readonly string[] = [
 	'f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709', // Vrai ou Faux 1
 	'b48d72dd-e93b-4f5c-ac81-117ff1c2c79c', // Apprivoiser 8 — signe
 	'44b58fce-45ec-4979-819f-e4bdb8540944', // Apprivoiser 2 — reconnaître la forme
-	'd1648508-035e-4a2f-abce-87592365038f' // Identités remarquables 9 (seconde)
+	'd1648508-035e-4a2f-abce-87592365038f', // Identités remarquables 9 (seconde)
+	'eae2ff6a-5e46-445b-bfa6-02cadb6d956a' // Apprivoiser 7 — racines lues (courbe, Q57)
 ];
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
