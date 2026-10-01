@@ -153,4 +153,27 @@ describe('FillBlanksInput — case « intervalles »', () => {
 		await unmount();
 		expect(intervalsLayout()).toBeUndefined();
 	});
+
+	it('champ voisin ordinaire : smartFence intact ; blur : smartFence restauré', async () => {
+		const twoFields =
+			'Solutions : $S=\\placeholder[0]{}$ et $x=\\placeholder[1]{}$' as ResolvedMarkdown;
+		await render(FillBlanksInput, {
+			props: {
+				statement: twoFields,
+				blanks: [intervalBlank, { type: 'math', expectedAnswer: '3' }]
+			}
+		});
+		await expect.poll(() => document.querySelectorAll('math-field').length).toBe(2);
+
+		const ordinary = await focusedMathField(1);
+		await expect.poll(() => intervalsLayout()).toBeDefined();
+		expect(ordinary.smartFence).toBe(true);
+
+		const intervals = await focusedMathField(0);
+		await expect.poll(() => intervals.smartFence).toBe(false);
+		expect(ordinary.smartFence).toBe(true);
+
+		intervals.blur();
+		await expect.poll(() => intervals.smartFence).toBe(true);
+	});
 });

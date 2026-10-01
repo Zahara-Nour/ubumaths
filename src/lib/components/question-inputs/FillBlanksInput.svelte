@@ -31,6 +31,7 @@
 	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
 		expressionToFlashLatex,
@@ -220,14 +221,23 @@
 		);
 	});
 
-	// Case « intervalles » à remplir : onglet « Intervalles » et smartFence coupé
-	let hasIntervalBlank = $derived(
-		!flashMode &&
-			!effectiveDisabled &&
-			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'intervalles')
+	// Cases « intervalles » à remplir (identifiants de leurs \placeholder) : onglet
+	// « Intervalles » et smartFence coupé dans LEURS champs seulement
+	let intervalPromptIds = $derived(
+		flashMode || effectiveDisabled
+			? []
+			: blanks.flatMap((blank, index) =>
+					blank.type === 'math' && blank.answerKind === 'intervalles' ? [String(index)] : []
+				)
 	);
+	let hasIntervalBlank = $derived(intervalPromptIds.length > 0);
 
 	let container: HTMLDivElement | undefined = $state();
+
+	/** Champ MathLive (sans importer mathlive à l'exécution : le composant est rendu côté serveur) */
+	function isMathField(target: EventTarget | null): target is MathfieldElement {
+		return target instanceof HTMLElement && target.tagName === 'MATH-FIELD';
+	}
 
 	/**
 	 * Onglets « Unités » / « Intervalles » du clavier virtuel MathLive.
@@ -239,7 +249,8 @@
 	 * `focusin`/`focusout` remontent depuis le shadow DOM du math-field ; les
 	 * touches du clavier virtuel ne prennent pas le focus, donc ne le font pas sortir.
 	 *
-	 * Case « intervalles » : le champ qui prend le focus passe en `smartFence = false`.
+	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false` quand
+	 * il prend le focus, et retrouve son réglage quand il le perd (ou au démontage).
 	 * Mesuré au vrai clavier (2026-10-01) : avec `smartFence`, taper `[` ouvre une
 	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
 	 * illisible (docs/wip/reponse-intervalles-progress.md).
@@ -252,20 +263,27 @@
 		];
 		if (!element || layouts.length === 0) return;
 
-		const withIntervals = hasIntervalBlank;
+		const promptIds = intervalPromptIds;
 		let applied = false;
+		// Champs dont smartFence a été coupé → leur réglage d'origine
+		const smartFenceBefore = new Map<MathfieldElement, boolean>();
 
+		const restoreSmartFence = () => {
+			for (const [field, value] of smartFenceBefore) field.smartFence = value;
+			smartFenceBefore.clear();
+		};
 		const restoreDefault = () => {
+			restoreSmartFence();
 			if (!applied) return;
 			applied = false;
 			const keyboard = window.mathVirtualKeyboard;
 			if (keyboard) keyboard.layouts = 'default';
 		};
 		const addTabs = (event?: FocusEvent) => {
-			// Frontière de bibliothèque : réglage MathLive posé sur l'élément (comme mathModeSpace)
 			const field = event?.target ?? document.activeElement;
-			if (withIntervals && field instanceof HTMLElement && field.tagName === 'MATH-FIELD') {
-				Object.assign(field, { smartFence: false });
+			if (isMathField(field) && field.getPrompts().some((id) => promptIds.includes(id))) {
+				if (!smartFenceBefore.has(field)) smartFenceBefore.set(field, field.smartFence);
+				field.smartFence = false;
 			}
 			const keyboard = window.mathVirtualKeyboard;
 			if (!keyboard) return;
