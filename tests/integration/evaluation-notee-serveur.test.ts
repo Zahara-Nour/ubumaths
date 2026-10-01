@@ -126,6 +126,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
+		categories?: typeof CATEGORIES;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -133,7 +134,7 @@ async function createEvaluation(
 		.insert({
 			title: 'Éval serveur ZZ',
 			grade: '6',
-			categories: CATEGORIES,
+			categories: settings.categories ?? CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -608,6 +609,57 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
 		});
+	});
+
+	describe('Q59 : copie hostile, budget de correction de 5 s', () => {
+		let assignmentId: string;
+		const QUESTIONS = 8;
+
+		beforeAll(async () => {
+			({ assignmentId } = await createEvaluation({
+				categories: [{ category: FILL_CATEGORY, quantity: QUESTIONS, delay: 20 }]
+			}));
+		});
+
+		it('écritures coûteuses (~1,2 s par case) : questions restantes à 0 avec le message, copie close et notée', async () => {
+			const attempt = await start(classmate, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			expect(instances, 'décor : 8 questions à cases').toHaveLength(QUESTIONS);
+			// 2 justes d'abord, puis 6 écritures hostiles (~7 s de correction sans budget)
+			const hostile = (instance: QuestionInstance): SubmittedAnswer => ({
+				values: (instance.blanks ?? []).map(() => '1.0001^{9999}')
+			});
+			const result = await submitEvaluationAttempt(actors(classmate), attempt.attemptId, {
+				answers: instances.map((instance, position) => ({
+					position,
+					...(position < 2 ? rightAnswer(instance) : hostile(instance))
+				}))
+			});
+
+			const message = 'Réponse trop complexe pour être corrigée : simplifie ton écriture.';
+			const skipped = result.questions.filter((q) => q.feedback === message);
+			expect(skipped.length, 'budget atteint : au moins une question non corrigée').toBeGreaterThan(
+				0
+			);
+			// Les sautées sont les DERNIÈRES, toutes à 0 ; les 2 justes ont gardé leur point
+			expect(skipped.every((q) => q.status === 'incorrect' && q.points === 0)).toBe(true);
+			expect(Math.min(...skipped.map((q) => q.position))).toBeGreaterThanOrEqual(2);
+			expect(result.questions.slice(0, 2).map((q) => [q.status, q.points])).toEqual([
+				['correct', 1],
+				['correct', 1]
+			]);
+			// Note cohérente : 2 points sur 8 → 5/20
+			expect(result).toMatchObject({ late: false, pointsEarned: 2, grade: 5, correctCount: 2 });
+
+			const session = await sessionRow(attempt.attemptId);
+			expect(session.completed_at).not.toBeNull();
+			expect(Number(session.grade)).toBe(5);
+			const answers = await answersOf(attempt.attemptId);
+			expect(answers).toHaveLength(QUESTIONS);
+			expect(
+				answers.filter((a) => (a.user_answer as { feedback?: string }).feedback === message)
+			).toHaveLength(skipped.length);
+		}, 60_000);
 	});
 
 	describe('Q42 : la question vue par l’élève est figée au démarrage', () => {

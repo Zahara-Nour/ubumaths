@@ -13,7 +13,9 @@
  * - ENVOYER (Q35-Q37, Q39) : le serveur régénère, corrige (`validateAnswer`),
  *   applique le barème, écrit réponses et note, puis alimente le SRS avec SON
  *   verdict. Tout verdict venu du navigateur est ignoré. Course : envoi reçu
- *   après temps limite + 30 s → note 0, aucune réponse comptée.
+ *   après temps limite + 30 s → note 0, aucune réponse comptée. Q59 : la
+ *   correction a un budget de temps total (`grading-budget.ts`) ; au-delà, les
+ *   questions restantes valent 0 et la copie est quand même close et notée.
  *
  * DROITS. La base refuse toute écriture utilisateur sur une séance
  * d'évaluation (Q38) : les écritures passent par le client service_role
@@ -40,11 +42,11 @@ import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-it
 import { toPublicQuestion, type PublicQuestion } from '$lib/questions/public-question';
 import {
 	gradeOutOf20,
-	gradeQuestion,
 	isKnownForSrs,
 	type QuestionVerdict,
 	type SubmittedAnswer
 } from '$lib/questions/grading';
+import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
 import type { ValidationStatus } from '$lib/questions/types';
 import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
@@ -73,6 +75,8 @@ export interface AttemptActors {
 	now?: () => Date;
 	/** Hasard injectable (tests) : entier dans [0, max] */
 	randomInt?: (max: number) => number;
+	/** Budget de correction injectable (tests) : horloge, durée (Q59) */
+	gradingBudget?: GradingBudget;
 }
 
 interface EvaluationSummary {
@@ -571,16 +575,26 @@ export async function submitEvaluationAttempt(
 	const late = deadlineMs !== null && now.getTime() > deadlineMs;
 
 	const answersByPosition = new Map(input.answers.map((a) => [a.position, a]));
-	const corrected: CorrectedQuestion[] = questions.map(({ stored, instance: full }) => {
+	const toGrade = questions.map(({ stored, instance: full }) => {
 		// D18 : la graine ne quitte jamais le serveur, ni dans la réponse ni dans
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
 		const answer = late ? null : (answersByPosition.get(stored.position) ?? null);
-		const verdict: QuestionVerdict = answer
-			? gradeQuestion(instance, answer)
-			: { status: 'empty', points: 0, isCorrect: false, partial: false };
+		return { position: stored.position, instance, answer };
+	});
+	// Q59 : budget de temps TOTAL ; au-delà, les questions restantes valent 0 et
+	// la copie est quand même close et notée
+	const { verdicts, skipped } = gradeWithinBudget(toGrade, actors.gradingBudget);
+	if (skipped > 0) {
+		// Aucune donnée d'élève : seulement des comptes
+		console.warn(
+			`[evaluation-attempts] Budget de correction épuisé : ${skipped} question(s) sur ${toGrade.length} non corrigée(s)`
+		);
+	}
+	const corrected: CorrectedQuestion[] = toGrade.map(({ position, instance, answer }, index) => {
+		const verdict: QuestionVerdict = verdicts[index];
 		return {
-			position: stored.position,
+			position,
 			instance,
 			// QCM : indices d'ORIGINE calculés par le barème (ce que lit CorrectionCard)
 			answer: answer
