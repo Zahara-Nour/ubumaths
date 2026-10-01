@@ -37,6 +37,19 @@ export class DslTokenizerError extends Error {
 import { SUPPORTED_GREEK_LETTERS } from '$lib/mathAST/parser/constants';
 const BACKSLASH_WHITELIST = SUPPORTED_GREEK_LETTERS;
 
+/**
+ * Retirer le commentaire `# …` d'une ligne, HORS chaînes : `couleur="#2563eb"`
+ * garde son `#` (sans cela : « Chaîne non fermée »).
+ */
+function stripComment(line: string): string {
+	let inString = false;
+	for (let i = 0; i < line.length; i++) {
+		if (line[i] === '"') inString = !inString;
+		else if (line[i] === '#' && !inString) return line.slice(0, i);
+	}
+	return line;
+}
+
 export function tokenize(source: string): Token[] {
 	const tokens: Token[] = [];
 	const lines = source.split('\n');
@@ -49,7 +62,7 @@ export function tokenize(source: string): Token[] {
 		lineNum++;
 
 		// Skip empty lines and comment-only lines (after stripping comment + trailing space)
-		const trimmed = rawLine.replace(/#.*$/, '').trimEnd();
+		const trimmed = stripComment(rawLine).trimEnd();
 		if (trimmed.length === 0) {
 			lineOffset += rawLine.length + 1; // +1 for the '\n' separator
 			continue;
