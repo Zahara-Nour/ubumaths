@@ -60,6 +60,8 @@ import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
+// Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
+import { renderFigureTypst } from './figure-typst-registry';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
@@ -336,6 +338,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'courbe':
 			return generateCourbeTypst(node, { language: options.language });
+
+		case 'figure':
+			return renderFigureTypst(node);
 
 		default:
 			return '';
@@ -2935,6 +2940,9 @@ export async function markdownToTypst(
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
 	const { parseMarkdown } = await import('$lib/ubumark/parser/markdown-parser');
+	// Rendu réel des blocs ```figure, chargé À LA DEMANDE (import dynamique : il
+	// n'entre pas dans le chunk des pages Markdown — voir figure-typst-registry.ts)
+	await import('./figure-typst-setup');
 	const ast = parseMarkdown(markdown);
 	return generateTypst(ast, options);
 }

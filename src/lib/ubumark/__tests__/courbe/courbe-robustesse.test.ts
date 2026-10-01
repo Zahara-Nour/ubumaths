@@ -11,6 +11,11 @@ import { buildCourbeScene } from '../../utils/courbe-scene';
 import { parseMarkdown, type BlockNode } from '$lib/ubumark';
 import type { CourbeNode, CourbeSpec } from '../../types/courbe';
 
+// Seuil de détection d'un blocage, pas une mesure de performance : sans les
+// plafonds, ces entrées prenaient 22 à 24 s. Large pour les runners de CI,
+// plus lents que le poste (247 ms mesurés en CI pour ~40 ms en local).
+const HOSTILE_MAX_MS = 1000;
+
 const BASE = parseCourbeContent('x: -4 ; 6\ny: -8 ; 12\nf(x) = x^2\naire: f ; -1 ; 2').spec!;
 
 /** Spécification forgée : la scène doit tenir même sans passer par l'analyse. */
@@ -60,7 +65,7 @@ describe('courbe — budget borné (entrées hostiles)', () => {
 			expect(s.points.length).toBeLessThanOrEqual(50);
 			expect(s.areas.length).toBeLessThanOrEqual(10);
 		}
-		expect(performance.now() - start).toBeLessThan(200);
+		expect(performance.now() - start).toBeLessThan(HOSTILE_MAX_MS);
 	});
 });
 

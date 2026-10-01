@@ -2577,9 +2577,14 @@ function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const markCount = named.has('traits')
-		? (requireNumber(named.get('traits')!, 'traits', line) as 1 | 2 | 3)
-		: 1;
+	const traits = named.has('traits') ? requireNumber(named.get('traits')!, 'traits', line) : 1;
+	// Documenté `traits ∈ {1, 2, 3}` : sans contrôle, `traits=10^8` figeait le rendu (une boucle par trait)
+	if (traits !== 1 && traits !== 2 && traits !== 3)
+		throw new DslRuntimeError(
+			{ summary: `\`marque_segment()\` : \`traits\` vaut 1, 2 ou 3, reçu ${traits}.` },
+			line
+		);
+	const markCount: 1 | 2 | 3 = traits;
 	const id = figure.createSegmentMark(
 		requireElement(pos[0], 'A', line),
 		requireElement(pos[1], 'B', line),

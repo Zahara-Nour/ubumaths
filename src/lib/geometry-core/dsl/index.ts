@@ -14,7 +14,12 @@
 export type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
 export type { Token, TokenType } from './tokens';
 export type { SymbolTable, SymbolEntry, SymbolType } from './symbol-table';
-export type { InterpretResult, DirectiveHandler, DslStepper } from './interpreter';
+export type {
+	InterpretResult,
+	InterpretOptions,
+	DirectiveHandler,
+	DslStepper
+} from './interpreter';
 export { createStepper } from './interpreter';
 
 // Errors

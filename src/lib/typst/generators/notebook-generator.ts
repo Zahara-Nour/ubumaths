@@ -37,6 +37,8 @@ import type {
 	DisplayOutput,
 	CheckpointConfig
 } from '$lib/types/notebook';
+// Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
+import '$lib/ubumark/generators/figure-typst-setup';
 
 // ============================================================================
 // PUBLIC TYPES

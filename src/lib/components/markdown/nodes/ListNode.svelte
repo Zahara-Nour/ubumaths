@@ -34,12 +34,14 @@
 	import ProbabilityTree from './ProbabilityTree.svelte';
 	import TrigCircle from './TrigCircle.svelte';
 	import Courbe from './Courbe.svelte';
+	import FigureBlock from './FigureBlock.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
 	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
 	import type { CourbeNode } from '$lib/ubumark/types/courbe';
+	import type { FigureNode } from '$lib/ubumark/types/figure';
 
 	interface Props {
 		ordered: boolean;
@@ -215,6 +217,13 @@
 	}
 
 	/**
+	 * Bloc ```figure en retrait dans un item de liste
+	 */
+	function isFigureNode(node: ASTNode): node is FigureNode {
+		return node.type === 'figure';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -228,7 +237,8 @@
 			'variation-table',
 			'probability-tree',
 			'trig-circle',
-			'courbe'
+			'courbe',
+			'figure'
 		].includes(node.type);
 	}
 
@@ -349,6 +359,8 @@
 						<TrigCircle node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
+					{:else if isFigureNode(child)}
+						<FigureBlock node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -427,6 +439,8 @@
 						<TrigCircle node={child} />
 					{:else if isCourbeNode(child)}
 						<Courbe node={child} />
+					{:else if isFigureNode(child)}
+						<FigureBlock node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

@@ -63,6 +63,7 @@ import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-par
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
 import { findCourbeBlocks, parseCourbe, parseCourbeContent } from './courbe-parser';
+import { findFigureBlocks, parseFigure, parseFigureContent } from './figure-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -418,6 +419,9 @@ function parseBlocks(
 	// code, pour survivre à une formule $$ sur plusieurs lignes placée avant.
 	const courbeBlocks = findCourbeBlocks(lines);
 	const originalCourbeBlocks = findCourbeBlocks(originalLines);
+	// Bloc ```figure : même appariement par rang que ```courbe
+	const figureBlocks = findFigureBlocks(lines);
+	const originalFigureBlocks = findFigureBlocks(originalLines);
 
 	// =========================================================================
 	// CODE BLOCK LINE INDEX MISMATCH FIX
@@ -452,8 +456,10 @@ function parseBlocks(
 		source.map((line, index) =>
 			ranges.some((r) => index >= r.startIndex && index <= r.endIndex) ? '' : line
 		);
-	const codeBlocks = findCodeBlocks(maskCourbe(lines, courbeBlocks));
-	const originalCodeBlocks = findCodeBlocks(maskCourbe(originalLines, originalCourbeBlocks));
+	const codeBlocks = findCodeBlocks(maskCourbe(lines, [...courbeBlocks, ...figureBlocks]));
+	const originalCodeBlocks = findCodeBlocks(
+		maskCourbe(originalLines, [...originalCourbeBlocks, ...originalFigureBlocks])
+	);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
 	const tableBlocks = findTableBlocksWithDirective(lines);
@@ -566,6 +572,19 @@ function parseBlocks(
 					: parseCourbe(lines, courbeBlock.startIndex, courbeBlock.endIndex)
 			);
 			i = courbeBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1d ter: bloc ```figure — TOUJOURS un nœud, même en erreur (Q48)
+		const figureBlock = figureBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
+		if (figureBlock) {
+			const original = originalFigureBlocks[figureBlocks.indexOf(figureBlock)];
+			blocks.push(
+				original
+					? parseFigure(originalLines, original.startIndex, original.endIndex)
+					: parseFigure(lines, figureBlock.startIndex, figureBlock.endIndex)
+			);
+			i = figureBlock.endIndex + 1;
 			continue;
 		}
 
@@ -1500,6 +1519,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'figure') {
+			// Figure dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseFigureContent(restoreMathPlaceholders(code, placeholders)));
 		} else {
 			// Regular code block
 			blocks.push({
