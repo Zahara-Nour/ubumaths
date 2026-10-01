@@ -1,0 +1,207 @@
+{
+	"title": "Calculer un terme d'une suite géométrique",
+	"description": "Calculer le terme précédent",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Calculer un terme",
+	"level": 2,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Une suite géométrique a pour raison ${{q}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme précédent.\n\nLe terme précédent est $?$.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "t",
+					"expression": "eval:k*(q)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en multipliant par la raison $\\textcolor{{{color:primary.0}}}{{{q}}}$. Pour revenir au terme précédent, on fait l'inverse : on **divise** par la raison.",
+					"Le terme précédent est ${{t}}\\div\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une suite géométrique a pour raison ${{qd}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme précédent.\n\nLe terme précédent est $?$.",
+			"variables": [
+				{
+					"name": "qd",
+					"expression": "\\frac{1}{2}|0{,}5"
+				},
+				{
+					"name": "t",
+					"expression": "2..15;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*t}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en multipliant par la raison $\\textcolor{{{color:primary.0}}}{{{qd}}}$. Pour revenir au terme précédent, on **divise** par $\\textcolor{{{color:primary.0}}}{{{qd}}}$, ce qui revient à multiplier par $2$.",
+					"Le terme précédent est ${{t}}\\div\\textcolor{{{color:primary.0}}}{{{qd}}}={{t}}\\times2={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "raison 3, terme 15 → 5",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"k": "5",
+				"t": "15"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison −2, terme −14 → 7",
+			"variationIndex": 0,
+			"variables": {
+				"q": "-2",
+				"k": "7",
+				"t": "-14"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "multiplié par la raison au lieu de diviser (15×3)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"k": "5",
+				"t": "15"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison soustraite (15−3)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"k": "5",
+				"t": "15"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la raison oublié (−14÷2)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "-2",
+				"k": "7",
+				"t": "-14"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué 15÷3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"k": "5",
+				"t": "15"
+			},
+			"answers": ["15\\div3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "raison 1/2, terme 7 → 14",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "\\frac{1}{2}",
+				"t": "7"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison 0,5, terme −9 → −18",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"t": "-9"
+			},
+			"answers": ["-18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "multiplié par 0,5 au lieu de diviser (7/2)",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"t": "7"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "multiplié par 0,5, écrit en décimal 3,5",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"t": "7"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué 7×2",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "\\frac{1}{2}",
+				"t": "7"
+			},
+			"answers": ["7\\times2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

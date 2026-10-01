@@ -239,7 +239,7 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 			},
 			{
 				domain: 'Représentation graphique',
-				subdomains: ['Lire un terme', 'Associer formule et nuage']
+				subdomains: ['Lire un terme', 'Associer formule et nuage', 'Escalier']
 			},
 			{
 				domain: 'Suites arithmétiques',

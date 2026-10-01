@@ -1,0 +1,191 @@
+{
+	"title": "Somme des premiers entiers",
+	"description": "1 + 2 + … + n par la formule n(n+1)/2",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Somme des entiers",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Calcule la somme $S=1+2+3+\\cdots+{{n}}$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n+1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout entier $n\\geqslant1$ : $1+2+\\cdots+n=\\dfrac{n(n+1)}{2}$.",
+					"Ici $n=\\mathbf{ {{n}} }$ : $$S=\\dfrac{ {{n}}\\times{{eval:n+1}} }{2}=\\dfrac{ {{eval:n*(n+1)}} }{2}={{eval:n*(n+1)/2}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule la somme $S$ des ${{n}}$ premiers entiers naturels non nuls.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n+1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{n}}$ premiers entiers naturels non nuls sont $1, 2, \\cdots, {{n}}$ : $S=1+2+\\cdots+{{n}}$.",
+					"Pour tout entier $n\\geqslant1$ : $1+2+\\cdots+n=\\dfrac{n(n+1)}{2}$.",
+					"Ici $n=\\mathbf{ {{n}} }$ : $$S=\\dfrac{ {{n}}\\times{{eval:n+1}} }{2}=\\dfrac{ {{eval:n*(n+1)}} }{2}={{eval:n*(n+1)/2}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "n=100 : 5 050",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["5\\,050"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n=10 : 55",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n=37 : 703",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"answers": ["703"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5050 sans espace : juste mais perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["5050"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "oubli de la division par 2 : n(n+1) = 10 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["10\\,100"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n(n−1)/2 = 4 950",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["4\\,950"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n²/2 = 5 000",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["5\\,000"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : 100×101/2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["\\frac{100\\times101}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			}
+		},
+		{
+			"description": "n=20 : 210",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["210"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "n=64 : 2 080",
+			"variationIndex": 1,
+			"variables": {
+				"n": "64"
+			},
+			"answers": ["2\\,080"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "s’arrêter à n−1 : 1+…+19 = 190",
+			"variationIndex": 1,
+			"variables": {
+				"n": "20"
+			},
+			"answers": ["190"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n=64 : calcul non effectué 32×65",
+			"variationIndex": 1,
+			"variables": {
+				"n": "64"
+			},
+			"answers": ["32\\times65"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

@@ -1,0 +1,187 @@
+{
+	"title": "Calculer un terme d'une suite géométrique",
+	"description": "Calculer un terme à partir d'un autre",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Calculer un terme",
+	"level": 4,
+	"status": "draft",
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "$(u_n)$ est une suite géométrique de raison ${{q}}$, et $u_{ {{a}} }={{c}}$.\n\nCalcule $u_{ {{b}} }$.\n\n$u_{ {{b}} }=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+d"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(q)^d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour passer de $u_{ {{a}} }$ à $u_{ {{b}} }$, on avance de ${{b}}-{{a}}={{d}}$ rangs : on multiplie ${{d}}$ fois par la raison $\\textcolor{{{color:primary.0}}}{{{q}}}$.",
+					"$u_{ {{b}} }=u_{ {{a}} }\\times q^{ {{d}} }={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{ {{d}} }={{c}}\\times{{eval:(q)^d;()}}={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_2=5, q=3 → u_5=135",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["135"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_7=−3, q=−2 → u_11=−48",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"d": "4",
+				"b": "11",
+				"c": "-3",
+				"q": "-2"
+			},
+			"answers": ["-48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_4=2, q=−3 → u_6=18",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"d": "2",
+				"b": "6",
+				"c": "2",
+				"q": "-3"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule multiplication (5×3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "rang b au lieu de b−a (5×3^5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["1215"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison multipliée par l'écart (5×3×3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison ajoutée comme une suite arithmétique (5+3×3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de (−2)^4 faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"d": "4",
+				"b": "11",
+				"c": "-3",
+				"q": "-2"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué 5×3^3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3",
+				"b": "5",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["5\\times3^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			}
+		}
+	]
+}

@@ -1,0 +1,315 @@
+{
+	"title": "Associer une formule à un nuage de points",
+	"description": "Reconnaître la formule explicite d'une suite arithmétique ou géométrique sur son nuage de points",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Représentation graphique",
+	"subdomain": "Associer formule et nuage",
+	"level": 1,
+	"delay": 40,
+	"status": "draft",
+	"options": {
+		"shuffleChoices": true
+	},
+	"variations": [
+		{
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -10 ; 14\ngrille: 1 ; 2\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..8;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..3;±"
+				}
+			],
+			"choices": [
+				{
+					"content": "$u_n={{eval:a+r*n}}$"
+				},
+				{
+					"content": "$u_n={{eval:a-r*n}}$"
+				},
+				{
+					"content": "$u_n={{eval:a+r+r*n}}$"
+				},
+				{
+					"content": "$u_n={{a}}\\times{{eval:r;()}}^n$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points sont **alignés** : on passe d'un terme au suivant en ajoutant toujours le même nombre. La suite est arithmétique, ce qui écarte $u_n={{a}}\\times{{eval:r;()}}^n$ (suite géométrique, dont les points ne sont pas alignés).",
+					"Premier terme : le point $A$ d'abscisse $0$ donne $u_0={{a}}$. Raison : de $A$ à $B$, on avance de $1$ et on {{if:r>0|monte|descend}} de ${{eval:abs(r)}}$, donc $r=u_1-u_0={{r}}$.",
+					"```courbe\nx: -1 ; 6\ny: -10 ; 14\ngrille: 1 ; 2\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\npoints: A(0 ; {{a}}), B(1 ; {{a}}+({{r}}))\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"Conclusion : $u_n=u_0+nr$, soit $u_n={{eval:a+r*n}}$."
+				]
+			},
+			"conditions": ["a+5*r >= -9", "a+5*r <= 13"]
+		},
+		{
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}*16+3\nu(n) = {{a}}*2^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"choices": [
+				{
+					"content": "$u_n={{a}}\\times 2^n$"
+				},
+				{
+					"content": "$u_n={{a}}\\times(-2)^n$"
+				},
+				{
+					"content": "$u_n={{eval:2*a}}\\times 2^n$"
+				},
+				{
+					"content": "$u_n={{eval:a+a*n}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points ne sont **pas alignés** : la suite n'est pas arithmétique, ce qui écarte $u_n={{eval:a+a*n}}$. Les termes sont tous positifs, ce qui écarte $u_n={{a}}\\times(-2)^n$ (ses termes changent de signe à chaque rang).",
+					"On lit $u_0={{a}}$, $u_1={{eval:2*a}}$, $u_2={{eval:4*a}}$ : on passe d'un terme au suivant en **multipliant par $2$**. La suite est géométrique de raison $2$ et de premier terme $u_0={{a}}$.",
+					"```courbe\nx: -1 ; 6\ny: -2 ; {{a}}*16+3\nu(n) = {{a}}*2^n pour n de 0 à 4   bleu   nom=u_n\npoints: A(0 ; {{a}}), B(1 ; 2*{{a}}), C(2 ; 4*{{a}})\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"Conclusion : $u_n=u_0\\times q^n$, soit $u_n={{a}}\\times 2^n$."
+				]
+			}
+		},
+		{
+			"statement": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}+2\nu(n) = {{a}}*0.5^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "8|16|24|32"
+				}
+			],
+			"choices": [
+				{
+					"content": "$u_n={{a}}\\times 0.5^n$"
+				},
+				{
+					"content": "$u_n={{a}}\\times(-0.5)^n$"
+				},
+				{
+					"content": "$u_n={{eval:a/2}}\\times 0.5^n$"
+				},
+				{
+					"content": "$u_n={{eval:a-a/2*n}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points ne sont **pas alignés** : la suite n'est pas arithmétique, ce qui écarte $u_n={{eval:a-a/2*n}}$. Les termes sont tous positifs, ce qui écarte $u_n={{a}}\\times(-0.5)^n$ (ses termes changent de signe à chaque rang).",
+					"On lit $u_0={{a}}$, $u_1={{eval:a/2}}$, $u_2={{eval:a/4}}$ : on passe d'un terme au suivant en **multipliant par $0.5$** (on prend la moitié). La suite est géométrique de raison $0.5$ et de premier terme $u_0={{a}}$.",
+					"```courbe\nx: -1 ; 6\ny: -2 ; {{a}}+2\nu(n) = {{a}}*0.5^n pour n de 0 à 4   bleu   nom=u_n\npoints: A(0 ; {{a}}), B(1 ; {{a}}/2), C(2 ; {{a}}/4)\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"Conclusion : $u_n=u_0\\times q^n$, soit $u_n={{a}}\\times 0.5^n$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 {'a': -3, 'r': 2} : formule juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 {'a': -3, 'r': 2} : signe de la raison",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'a': -3, 'r': 2} : premier terme décalé (u_1 pris pour u_0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'a': -3, 'r': 2} : géométrique au lieu d'arithmétique",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'a': 8, 'r': -3} : formule juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"r": "-3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 {'a': 8, 'r': -3} : signe de la raison",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"r": "-3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'a': 8, 'r': -3} : premier terme décalé (u_1 pris pour u_0)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"r": "-3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'a': 8, 'r': -3} : géométrique au lieu d'arithmétique",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"r": "-3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 {'a': 3} : formule juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 {'a': 3} : raison négative",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 {'a': 3} : premier terme décalé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 {'a': 3} : arithmétique au lieu de géométrique",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 {'a': 16} : formule juste",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 {'a': 16} : raison négative",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 {'a': 16} : premier terme décalé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 {'a': 16} : arithmétique au lieu de géométrique",
+			"variationIndex": 2,
+			"variables": {
+				"a": "16"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

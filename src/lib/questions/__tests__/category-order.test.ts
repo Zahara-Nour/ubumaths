@@ -44,6 +44,19 @@ describe('compareCategories', () => {
 			sortItems(domains.map((domain) => ({ theme: 'Suites', domain }))).map((item) => item.domain)
 		).toEqual([...domains].reverse());
 
+		const graphiques = ['Escalier', 'Associer formule et nuage', 'Lire un terme'].map(
+			(subdomain) => ({
+				theme: 'Suites',
+				domain: 'Représentation graphique',
+				subdomain
+			})
+		);
+		expect(sortItems(graphiques).map((item) => item.subdomain)).toEqual([
+			'Lire un terme',
+			'Associer formule et nuage',
+			'Escalier'
+		]);
+
 		const subdomains = ['Terme général', 'Déterminer la raison', 'Calculer un terme'].map(
 			(subdomain) => ({ theme: 'Suites', domain: 'Suites géométriques', subdomain })
 		);

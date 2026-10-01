@@ -1,0 +1,333 @@
+{
+	"title": "Calculer un terme",
+	"description": "A l'aide d'une formule de récurrence qui dépend aussi de n",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Calculer un terme",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=u_n{{eval:b*n+c;+}}$\n\n$u_3=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:a+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:u1+b+c"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:u2+2*b+c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_0={{a}}$ et $u_{n+1}=u_n{{eval:b*n+c;+}}$ : pour calculer $u_{n+1}$, on remplace $n$ par le rang du terme **précédent**, celui qu'on connaît déjà.",
+					"$$u_1=u_0{{eval:b;+}}\\times 0{{eval:c;+}}={{a}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{u1}}}$$",
+					"$$u_2=u_1{{eval:b;+}}\\times 1{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{u1}}}{{eval:b;+}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{u2}}}$$",
+					"$$u_3=u_2{{eval:b;+}}\\times 2{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{u2}}}{{eval:2*b;+}}{{eval:c;+}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c*n;+}}$\n\n$u_3=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "2|-2|3"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:b*(a)"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:b*(u1)+(c)"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:b*(u2)+2*(c)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{u3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c*n;+}}$ : pour calculer $u_{n+1}$, on remplace $n$ par le rang du terme **précédent**, celui qu'on connaît déjà.",
+					"$$u_1={{b}}u_0{{eval:c;+}}\\times 0={{b}}\\times{{eval:a;()}}+0=\\textcolor{{{color:primary.0}}}{{{u1}}}$$",
+					"$$u_2={{b}}u_1{{eval:c;+}}\\times 1={{b}}\\times\\textcolor{{{color:primary.0}}}{{{eval:u1;()}}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{u2}}}$$",
+					"$$u_3={{b}}u_2{{eval:c;+}}\\times 2={{b}}\\times\\textcolor{{{color:primary.0}}}{{{eval:u2;()}}}{{eval:2*c;+}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_3 avec u_0=-2, u_(n+1)=u_n+(3)n+(-1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-1",
+				"u1": "-3",
+				"u2": "-1",
+				"u3": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décalage : n remplacé par le rang du terme calculé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-1",
+				"u1": "-3",
+				"u2": "-1",
+				"u3": "4"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s'arrête à u_2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-1",
+				"u1": "-3",
+				"u2": "-1",
+				"u3": "4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_3 avec u_0=5, u_(n+1)=u_n+(-4)n+(2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-4",
+				"c": "2",
+				"u1": "7",
+				"u2": "5",
+				"u3": "-1"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décalage : n remplacé par le rang du terme calculé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-4",
+				"c": "2",
+				"u1": "7",
+				"u2": "5",
+				"u3": "-1"
+			},
+			"answers": ["-13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "s'arrête à u_2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-4",
+				"c": "2",
+				"u1": "7",
+				"u2": "5",
+				"u3": "-1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non terminé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-1",
+				"u1": "-3",
+				"u2": "-1",
+				"u3": "4"
+			},
+			"answers": ["-1+6-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "u_3 avec u_0=3, u_(n+1)=2u_n+(-1)n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1",
+				"u1": "6",
+				"u2": "11",
+				"u3": "20"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décalage : n remplacé par le rang du terme calculé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1",
+				"u1": "6",
+				"u2": "11",
+				"u3": "20"
+			},
+			"answers": ["13"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_3 avec u_0=-1, u_(n+1)=3u_n+(2)n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"c": "2",
+				"u1": "-3",
+				"u2": "-7",
+				"u3": "-17"
+			},
+			"answers": ["-17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décalage : n remplacé par le rang du terme calculé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"c": "2",
+				"u1": "-3",
+				"u2": "-7",
+				"u3": "-17"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_3 avec u_0=2, u_(n+1)=-2u_n+(-3)n",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-2",
+				"c": "-3",
+				"u1": "-4",
+				"u2": "5",
+				"u3": "-16"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décalage : n remplacé par le rang du terme calculé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-2",
+				"c": "-3",
+				"u1": "-4",
+				"u2": "5",
+				"u3": "-16"
+			},
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non terminé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1",
+				"u1": "6",
+				"u2": "11",
+				"u3": "20"
+			},
+			"answers": ["22-2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

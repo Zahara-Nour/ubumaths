@@ -1,0 +1,253 @@
+{
+	"title": "Terme général d'une suite arithmétique",
+	"description": "À partir de u_1 ou d'un terme u_p",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Terme général",
+	"level": 2,
+	"status": "draft",
+	"delay": 40,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_1={{c}}$ et de raison $r={{r}}$.\n\nExprime $u_n$ en fonction de $n$, sous forme réduite.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["c != r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-r}}{{eval:r;+}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme est $u_1$ : pour aller de $u_1$ à $u_n$, on ajoute $n-1$ fois la raison. Donc $u_n=u_1+(n-1)\\times r$.",
+					"$u_n={{c}}+(n-1)\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{c}}{{eval:r;+}}n{{eval:-(r);+}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite arithmétique de raison $r={{r}}$ telle que $u_{ {{p}} }={{c}}$.\n\nExprime $u_n$ en fonction de $n$, sous forme réduite.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..15;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				}
+			],
+			"conditions": ["c != p*r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c-p*r}}{{eval:r;+}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour aller de $u_{ {{p}} }$ à $u_n$, on ajoute $n-{{p}}$ fois la raison. Donc $u_n=u_{ {{p}} }+(n-{{p}})\\times r$.",
+					"$u_n={{c}}+(n-{{p}})\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{c}}{{eval:r;+}}n{{eval:-(p)*(r);+}}={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_1=4, r=3 : 1+3n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"r": "3"
+			},
+			"answers": ["1+3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé 3n+1",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"r": "3"
+			},
+			"answers": ["3n+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_1=−2, r=−5 : 3−5n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "-2",
+				"r": "-5"
+			},
+			"answers": ["3-5n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_1 pris comme u_0 : 4+3n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"r": "3"
+			},
+			"answers": ["4+3n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n+1 au lieu de n−1 : 7+3n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"r": "3"
+			},
+			"answers": ["7+3n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "non réduite 4+3(n−1) : forme non optimale",
+			"variationIndex": 0,
+			"variables": {
+				"c": "4",
+				"r": "3"
+			},
+			"answers": ["4+3(n-1)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "u_2=5, r=3 : −1+3n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["-1+3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé 3n−1",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["3n-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_5=−4, r=−6 : 26−6n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"c": "-4",
+				"r": "-6"
+			},
+			"answers": ["26-6n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_p pris comme u_0 : 5+3n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["5+3n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "n+p au lieu de n−p : 11+3n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["11+3n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe : −4−6n+30 mal réduit en −34−6n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"c": "-4",
+				"r": "-6"
+			},
+			"answers": ["-34-6n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "non réduite 5+3(n−2) : forme non optimale",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["5+3(n-2)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "non réduite 5+3n−6 : forme non optimale",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"r": "3"
+			},
+			"answers": ["5+3n-6"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

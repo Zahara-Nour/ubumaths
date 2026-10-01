@@ -1,0 +1,153 @@
+{
+	"title": "Terme général d'une suite arithmétique",
+	"description": "À partir de u_0 et de la raison",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Terme général",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:r;+}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite arithmétique de premier terme $u_0$ et de raison $r$, $u_n=u_0+n\\times r$.",
+					"Ici $u_0={{a}}$ et $r=\\textcolor{{{color:primary.0}}}{{{r}}}$, donc $u_n={{a}}+n\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_0=5, r=3 : 5+3n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["5+3n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé 3n+5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["3n+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_0=−2, r=−7 : −2−7n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"answers": ["-2-7n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé −7n−2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"answers": ["-7n-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_0 et r échangés : 3+5n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["3+5n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "formule de u_1 : 5+3(n−1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["5+3(n-1)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion avec le géométrique 5×3^n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["5\\times3^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la raison −2+7n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"r": "-7"
+			},
+			"answers": ["-2+7n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe × inutile 5+3×n : forme non optimale",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "3"
+			},
+			"answers": ["5+3\\times n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			}
+		}
+	]
+}

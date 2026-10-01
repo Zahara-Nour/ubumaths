@@ -1,0 +1,355 @@
+{
+	"title": "Reconnaître une suite arithmétique ou géométrique à partir de sa relation de récurrence",
+	"description": "u(n+1) = u(n) + r, u(n+1) = q u(n), ou ni l'un ni l'autre",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"status": "draft",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 2,
+	"delay": 30,
+	"shared": {
+		"choices": [
+			{
+				"content": "arithmétique"
+			},
+			{
+				"content": "géométrique"
+			},
+			{
+				"content": "ni arithmétique, ni géométrique"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n{{eval:r;+}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour tout entier naturel $n$, $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{r}}}$ : on passe d'un terme au suivant en ajoutant toujours le même nombre.",
+					"La suite est **arithmétique**, de raison $r={{r}}$ et de premier terme $u_0={{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{q}}u_n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Pour tout entier naturel $n$, $u_{n+1}=\\textcolor{{{color:primary.0}}}{{{q}}}\\times u_n$ : on passe d'un terme au suivant en multipliant toujours par le même nombre.",
+					"La suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=\\dfrac{u_n}{ {{k}} }$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Diviser par ${{k}}$, c'est multiplier par $\\dfrac{1}{ {{k}} }$ : pour tout entier naturel $n$, $u_{n+1}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{k}} }}\\times u_n$.",
+					"La suite est **géométrique**, de raison $q=\\dfrac{1}{ {{k}} }$ et de premier terme $u_0={{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}={{p}}u_n{{eval:b;+}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:p*(a)+(b)"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:p*(u1)+(b)"
+				}
+			],
+			"conditions": ["p*a+b != 0", "p*a+b != a"],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Pour passer d'un terme au suivant, on multiplie par ${{p}}$ **puis** on ajoute ${{b}}$ : ce n'est ni seulement une addition, ni seulement une multiplication.",
+					"On calcule les premiers termes : $u_1={{u1}}$ et $u_2={{u2}}$.",
+					"$u_1-u_0={{eval:u1-(a)}}$ mais $u_2-u_1={{eval:u2-(u1)}}$ : la suite n'est pas arithmétique. $\\dfrac{u_1}{u_0}={{eval:(u1)/(a)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : elle n'est pas géométrique.",
+					"La suite n'est **ni arithmétique, ni géométrique**."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{a}}$ et, pour tout entier naturel $n$ :\n\n$$u_{n+1}=u_n+{{eval:k*n}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:a"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:a+(k)"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"On ajoute ${{eval:k*n}}$, qui **dépend de $n$** : on n'ajoute pas toujours le même nombre.",
+					"On calcule les premiers termes : $u_1={{u1}}$ et $u_2={{u2}}$.",
+					"$u_1-u_0={{eval:u1-(a)}}$ mais $u_2-u_1={{eval:u2-(u1)}}$ : la suite n'est pas arithmétique. $\\dfrac{u_1}{u_0}={{eval:(u1)/(a)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : elle n'est pas géométrique.",
+					"La suite n'est **ni arithmétique, ni géométrique**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 (u_{n+1} = u_n + r) : « arithmétique » accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"r": "-3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 (u_{n+1} = u_n + r) : « géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"r": "-3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (u_{n+1} = u_n + r) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"r": "-3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (u_{n+1} = q u_n) : « arithmétique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"q": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (u_{n+1} = q u_n) : « géométrique » accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"q": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 (u_{n+1} = q u_n) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"q": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (u_{n+1} = u_n / k) : « arithmétique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (u_{n+1} = u_n / k) : « géométrique » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 (u_{n+1} = u_n / k) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"k": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (u_{n+1} = p u_n + b) : « arithmétique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"b": "1",
+				"u1": "3",
+				"u2": "7"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (u_{n+1} = p u_n + b) : « géométrique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"b": "1",
+				"u1": "3",
+				"u2": "7"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (u_{n+1} = p u_n + b) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"p": "2",
+				"b": "1",
+				"u1": "3",
+				"u2": "7"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 (u_{n+1} = u_n + kn) : « arithmétique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"u1": "3",
+				"u2": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (u_{n+1} = u_n + kn) : « géométrique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"u1": "3",
+				"u2": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (u_{n+1} = u_n + kn) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"k": "1",
+				"u1": "3",
+				"u2": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

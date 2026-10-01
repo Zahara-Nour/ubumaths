@@ -1,0 +1,306 @@
+{
+	"title": "Sens de variation d'une suite géométrique de raison positive",
+	"description": "Le signe de u₀ et la position de q par rapport à 1 donnent le sens de variation",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sens de variation",
+	"status": "draft",
+	"subdomain": "Suites arithmétiques et géométriques",
+	"level": 2,
+	"delay": 30,
+	"shared": {
+		"choices": [
+			{
+				"content": "croissante"
+			},
+			{
+				"content": "décroissante"
+			},
+			{
+				"content": "constante"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "1.5|2|3|4|1.2"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est positif : $u_{n+1}-u_n$ est **positif**, la suite est **croissante**."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "q",
+					"expression": "1.5|2|3|4|1.2"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est négatif et $q-1={{eval:q-1}}$ est positif : $u_{n+1}-u_n$ est **négatif**, la suite est **décroissante**.",
+					"Attention : multiplier un nombre négatif par $q>1$ le rend **plus petit** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.8|0.9"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est positif et $q-1={{eval:q-1}}$ est négatif : $u_{n+1}-u_n$ est **négatif**, la suite est **décroissante**."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.8|0.9"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour tout $n$, $u_{n+1}-u_n=u_0\\times q^{n+1}-u_0\\times q^n=u_0\\times q^n\\times(q-1)$. Comme $q>0$, $q^n>0$ : le signe de $u_{n+1}-u_n$ est celui de $u_0\\times(q-1)$.",
+					"Ici $u_0={{a}}$ est négatif et $q-1={{eval:q-1}}$ est négatif : $u_{n+1}-u_n$ est **positif**, la suite est **croissante**.",
+					"Attention : multiplier un nombre négatif par $0<q<1$ le rend **plus grand** (par exemple ${{a}}\\times{{q}}={{eval:a*q}}$)."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q=1$.\n\nQuel est le sens de variation de la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Avec $q=1$, on multiplie toujours par $1$ : tous les termes valent $u_0={{a}}$.",
+					"La suite est **constante**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 (u0 > 0, q > 1) : « croissante » accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 (u0 > 0, q > 1) : « décroissante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (u0 > 0, q > 1) : « constante » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (u0 < 0, q > 1) : « croissante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (u0 < 0, q > 1) : « décroissante » accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 (u0 < 0, q > 1) : « constante » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-5",
+				"q": "1.5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « croissante » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « décroissante » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 (u0 > 0, 0 < q < 1) : « constante » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"q": "0.5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « croissante » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « décroissante » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (u0 < 0, 0 < q < 1) : « constante » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-2",
+				"q": "0.8"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (q = 1) : « croissante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (q = 1) : « décroissante » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-6"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (q = 1) : « constante » accepté",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-6"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
