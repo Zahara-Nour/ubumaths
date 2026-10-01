@@ -539,19 +539,19 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			const result = engine.execute('.stats 1, 2, 3, 4, 5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Moyenne');
-			expect(result.output).toContain('3');
-			expect(result.output).toContain('Mediane');
-			expect(result.output).toContain('Min');
-			expect(result.output).toContain('Max');
+			// Sortie française depuis le lot 5 des outils statistiques (Q38)
+			expect(result.output).toContain('Moyenne = 3');
+			expect(result.output).toContain('Médiane = 3');
+			expect(result.output).toContain('Minimum = 1');
+			expect(result.output).toContain('Maximum = 5');
 		});
 
 		it('computes variance and stdev for 2+ values', () => {
 			const result = engine.execute('.stats 1, 2, 3, 4, 5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Ecart-type');
-			expect(result.output).toContain('Variance');
+			expect(result.output).toContain('Écart type ≈ 1,41');
+			expect(result.output).toContain('Variance = 2');
 		});
 
 		/**
@@ -571,16 +571,18 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			const result = engine.execute('.stats 12, 15, 9');
 
 			// Mean 12; squared deviations 0, 9, 9 → 18/3 = 6
-			expect(result.output).toMatch(/Variance:\s*6\b/);
-			expect(result.output).toMatch(/Ecart-type \(stdev\):\s*2[.,]449/);
+			expect(result.output).toMatch(/Variance = 6\b/);
+			expect(result.output).toContain('Écart type ≈ 2,45');
 		});
 
-		it('handles single value (no variance/stdev)', () => {
+		// Depuis le lot 5, toutes les lignes sont écrites : la dispersion d'une
+		// seule valeur est nulle, et c'est ce que l'on dit
+		it('handles single value (zero dispersion)', () => {
 			const result = engine.execute('.stats 42');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('42');
-			expect(result.output).not.toContain('Variance');
+			expect(result.output).toContain('Effectif : 1');
+			expect(result.output).toContain('Variance = 0');
 		});
 
 		it('returns error for no arguments', () => {
@@ -601,14 +603,15 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			const result = engine.execute('.stats 1.5, 2.5, 3.5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('2.5'); // mean
+			expect(result.output).toContain('Moyenne = 2,5');
 		});
 
 		it('handles negative numbers', () => {
 			const result = engine.execute('.stats -5, 0, 5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('0'); // mean
+			expect(result.output).toContain('Moyenne = 0');
+			expect(result.output).toContain('Minimum = −5');
 		});
 	});
 
@@ -621,18 +624,15 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			const result = engine.execute('.linreg 1,2,3 : 2,4,6');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Pente');
-			expect(result.output).toContain('2');
-			expect(result.output).toContain('R²');
-			expect(result.output).toContain('1');
+			expect(result.output).toContain('Coefficient directeur a = 2');
+			expect(result.output).toContain('R² = 1');
 		});
 
 		it('computes linear regression with intercept', () => {
 			const result = engine.execute('.linreg 0,1,2 : 1,3,5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('Equation');
-			expect(result.output).toContain('y =');
+			expect(result.output).toContain('y = 2x + 1');
 		});
 
 		it('returns error without colon separator', () => {
@@ -667,7 +667,7 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			const result = engine.execute('.linreg 1,2,3 : 6,4,2');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('-2');
+			expect(result.output).toContain('Coefficient directeur a = −2');
 		});
 
 		it('returns R² for non-perfect fit', () => {

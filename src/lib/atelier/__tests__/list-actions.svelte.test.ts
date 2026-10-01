@@ -41,7 +41,8 @@ describe('statistiques d’une liste', () => {
 		expect(texte).toMatch(/moyenne/i);
 		expect(texte).toMatch(/médiane/i);
 		expect(texte).toMatch(/étendue/i);
-		expect(texte).toMatch(/écart-type/i);
+		// « écart type », sans trait d'union : le vocabulaire du programme (2-157)
+		expect(texte).toMatch(/écart type/i);
 		// ⚠️ Pas « mean », « stdev » ni « Mediane » sans accent, comme `.stats`
 		expect(texte).not.toMatch(/mean|stdev|Mediane\b/);
 	});

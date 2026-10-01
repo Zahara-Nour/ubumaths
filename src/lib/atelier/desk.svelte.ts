@@ -18,7 +18,8 @@
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
-import { summarizeList } from '$lib/statistics/describe';
+import { summarizeList, summarizeTable } from '$lib/statistics/describe';
+import { formatSummary } from '$lib/statistics/format';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -173,22 +174,36 @@ export class CalcDesk {
 			this.#push({ label: `Statistiques ${name}`, text: outcome.message, failed: true });
 			return;
 		}
-		const stats = outcome.value;
-
-		// ⚠️ Écrites ici, en français et accentuées : `.stats` rend « Moyenne
-		// (mean) » et « Mediane », et l'étendue lui manque.
+		// La mise en forme du module statistique : la même que `.stats` (Q38)
 		this.#push({
 			label: `Statistiques ${name}`,
-			text: [
-				`Effectif : ${stats.count}`,
-				`Moyenne : ${fr(stats.mean)}`,
-				`Médiane : ${fr(stats.median)}`,
-				`Minimum : ${fr(stats.min)}`,
-				`Maximum : ${fr(stats.max)}`,
-				`Étendue : ${fr(stats.range)}`,
-				`Écart-type : ${fr(stats.deviation)}`,
-				`Variance : ${fr(stats.variance)}`
-			].join('\n'),
+			text: formatSummary(outcome.value, 'fr').join('\n'),
+			failed: false
+		});
+	}
+
+	/** Les statistiques d'une liste de valeurs, effectifs pris dans une autre (Q35). */
+	#describeWith(name: string, partner: string): void {
+		const label = `Statistiques ${name} avec effectifs ${partner}`;
+		const values = this.#listNamed(name);
+		const counts = this.#listNamed(partner);
+		if (values === null || counts === null) {
+			this.#push({
+				label,
+				text: 'Il faut deux listes : les valeurs et leurs effectifs.',
+				failed: true
+			});
+			return;
+		}
+		const outcome = summarizeTable(values.values, counts.values);
+		if (outcome === null || !outcome.ok) {
+			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
+			this.#push({ label, text, failed: true });
+			return;
+		}
+		this.#push({
+			label,
+			text: formatSummary(outcome.value.summary, 'fr').join('\n'),
 			failed: false
 		});
 	}
@@ -345,7 +360,14 @@ export class CalcDesk {
 			return 'ok';
 		}
 		if (root === 'stats') {
-			this.#describe(name);
+			if (partner === undefined) this.#describe(name);
+			else this.#describeWith(name, partner);
+			return 'ok';
+		}
+		// Le diagramme vit dans la vue Données, sous la liste : on bascule son
+		// affichage, sans ligne d'historique (Q36)
+		if (root === 'chart') {
+			this.atelier.toggleChart(name, partner ?? null);
 			return 'ok';
 		}
 		if (root === 'scatter') {

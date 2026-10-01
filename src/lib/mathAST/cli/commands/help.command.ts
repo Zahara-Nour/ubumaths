@@ -241,10 +241,10 @@ export class HelpCommand extends BaseCommand {
 			'<div class="pl-2"><span class="text-cyan-400">.export</span> <span class="text-foreground/70">- Exporter l\'historique (JSON)</span></div>'
 		);
 		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">.stats</span> <span class="text-foreground/70">- Statistiques (moyenne, mediane...)</span></div>'
+			'<div class="pl-2"><span class="text-cyan-400">.stats</span> <span class="text-foreground/70">- Statistiques (moyenne, médiane, quartiles…)</span></div>'
 		);
 		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">.linreg</span> <span class="text-foreground/70">- Regression lineaire</span></div>'
+			'<div class="pl-2"><span class="text-cyan-400">.linreg</span> <span class="text-foreground/70">- Ajustement affine</span></div>'
 		);
 
 		// Keyboard shortcuts - inline

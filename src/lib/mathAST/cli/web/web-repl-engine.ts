@@ -36,7 +36,8 @@ import type {
 import { isUnit, isVariable } from '../../guards';
 import { parse as parseUnit } from '../../units/parser';
 import { getConversionFactor } from '../../units/conversion';
-import { summarizeList } from '../../../statistics/describe';
+import { summarizeList, summarizeTable } from '../../../statistics/describe';
+import { formatSummary, formatStatNumber } from '../../../statistics/format';
 import { fitAffine } from '../../../statistics/fit';
 
 // =============================================================================
@@ -1547,15 +1548,15 @@ export class WebReplEngine {
 			};
 		}
 
-		// Parse comma-separated values
-		const rawValues = args
-			.split(',')
-			.map((s) => s.trim())
-			.filter((s) => s.length > 0);
+		// Values, then optionally counts after « : » (`.stats 1 ; 2 ; 3 : 5 ; 8 ; 4`)
+		const parts = args.split(':');
+		if (parts.length > 2)
+			return this.statsFailure('Un seul « : », entre les valeurs et les effectifs');
+		const parsed = parts.map((part) => parseStatsNumbers(part));
 
 		// SECURITY: Limit number of values to prevent DoS
 		const MAX_STATS_VALUES = 1000;
-		if (rawValues.length > MAX_STATS_VALUES) {
+		if (parsed.some((numbers) => numbers.length > MAX_STATS_VALUES)) {
 			return {
 				success: false,
 				output: `Erreur: trop de valeurs (max: ${MAX_STATS_VALUES})`,
@@ -1571,11 +1572,8 @@ export class WebReplEngine {
 			};
 		}
 
-		const values = rawValues.map((s) => parseFloat(s));
-
-		// Check for parsing errors
 		// `!Number.isFinite`, not `isNaN`: `parseFloat('Infinity')` is not NaN.
-		if (!values.every(Number.isFinite)) {
+		if (!parsed.every((numbers) => numbers.every(Number.isFinite))) {
 			return {
 				success: false,
 				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
@@ -1590,6 +1588,7 @@ export class WebReplEngine {
 			};
 		}
 
+		const [values, counts] = parsed;
 		if (values.length === 0) {
 			return {
 				success: false,
@@ -1605,70 +1604,39 @@ export class WebReplEngine {
 			};
 		}
 
-		// ⚠️ Computed by `src/lib/statistics/` — the single source shared with the
-		// atelier and the ubumark blocks. No second implementation here.
-		//
-		// Population variance (divided by `n`, not `n - 1`), decided by David on
-		// 2026-09-16: the descriptive variance of the French curriculum, what a
-		// calculator's σₓ key returns.
-		const summarized = summarizeList(values);
+		// ⚠️ Computed AND worded by `src/lib/statistics/` — the single source shared
+		// with the atelier and the ubumark blocks (French labels, Q38). Population
+		// variance (divided by `n`), decided by David on 2026-09-16.
+		const summarized =
+			counts === undefined
+				? summarizeList(values)
+				: (() => {
+						const table = summarizeTable(values, counts);
+						return table === null || !table.ok
+							? table
+							: { ok: true as const, value: table.value.summary };
+					})();
 		if (summarized === null || !summarized.ok) {
-			// Unreachable today (non-finite, empty and over-limit inputs are
-			// rejected above); kept so a new module failure cannot be displayed
-			// as a success.
-			return {
-				success: false,
-				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Certaines valeurs ne sont pas des nombres valides'
-				}),
-				error: {
-					code: 'PARSE_ERROR',
-					message: 'Invalid numbers in input'
-				}
-			};
-		}
-		const { count: n, mean, median, min, max, variance, deviation: stdev } = summarized.value;
-
-		// Format output
-		const lines = [
-			`Statistiques (n=${n}):`,
-			`  Moyenne (mean): ${this.formatNumber(mean)}`,
-			`  Mediane: ${this.formatNumber(median)}`,
-			`  Min: ${this.formatNumber(min)}`,
-			`  Max: ${this.formatNumber(max)}`
-		];
-
-		if (n >= 2) {
-			lines.push(`  Ecart-type (stdev): ${this.formatNumber(stdev)}`);
-			lines.push(`  Variance: ${this.formatNumber(variance)}`);
-		}
-
-		const output = lines.join('\n');
-
-		// HTML output
-		const htmlLines = [
-			`<strong>Statistiques</strong> <span class="text-gray-400">(n=${n})</span>`,
-			`<span class="text-gray-400">Moyenne:</span> <span class="text-cyan-400">${this.formatNumber(mean)}</span>`,
-			`<span class="text-gray-400">Mediane:</span> <span class="text-cyan-400">${this.formatNumber(median)}</span>`,
-			`<span class="text-gray-400">Min:</span> ${this.formatNumber(min)}`,
-			`<span class="text-gray-400">Max:</span> ${this.formatNumber(max)}`
-		];
-
-		if (n >= 2) {
-			htmlLines.push(
-				`<span class="text-gray-400">Ecart-type:</span> <span class="text-cyan-400">${this.formatNumber(stdev)}</span>`
+			return this.statsFailure(
+				summarized?.ok === false ? summarized.message : 'Aucune valeur fournie'
 			);
-			htmlLines.push(`<span class="text-gray-400">Variance:</span> ${this.formatNumber(variance)}`);
 		}
 
-		const outputHtml = htmlLines.join('<br>');
-
+		const lines = formatSummary(summarized.value, 'fr');
 		return {
 			success: true,
-			output,
-			outputHtml
+			output: lines.join('\n'),
+			outputHtml: lines.map((line) => this.escapeHtml(line)).join('<br>')
+		};
+	}
+
+	/** A `.stats` refusal worded by the statistics module. */
+	private statsFailure(message: string): ReplExecutionResult {
+		return {
+			success: false,
+			output: `Erreur: ${message}`,
+			outputHtml: formatErrorHtml({ code: 'INVALID_OPTIONS', message }),
+			error: { code: 'INVALID_OPTIONS', message }
 		};
 	}
 
@@ -1806,25 +1774,19 @@ export class WebReplEngine {
 				? `y = ${this.formatNumber(a)}x + ${this.formatNumber(b)}`
 				: `y = ${this.formatNumber(a)}x - ${this.formatNumber(Math.abs(b))}`;
 
+		// French wording (Q38): « ajustement affine », decimal comma. The LaTeX of
+		// the equation (`latex` below) keeps the dot, it is rendered, not read.
+		const fr = (value: number) => formatStatNumber(Number(this.formatNumber(value)), 'fr');
 		const lines = [
-			`Regression lineaire (n=${n}):`,
-			`  Equation: ${equation}`,
-			`  Pente (a): ${this.formatNumber(a)}`,
-			`  Ordonnee a l'origine (b): ${this.formatNumber(b)}`,
-			`  R²: ${this.formatNumber(r2)}`
+			`Ajustement affine (n = ${n}) :`,
+			`  y = ${fr(a)}x ${b >= 0 ? '+' : '−'} ${fr(Math.abs(b))}`,
+			`  Coefficient directeur a = ${fr(a)}`,
+			`  Ordonnée à l’origine b = ${fr(b)}`,
+			`  R² = ${fr(r2)}`
 		];
 
 		const output = lines.join('\n');
-
-		// HTML output
-		const htmlLines = [
-			`<strong>Regression lineaire</strong> <span class="text-gray-400">(n=${n})</span>`,
-			`<span class="text-cyan-400">${this.escapeHtml(equation)}</span>`,
-			`<span class="text-gray-400">Pente (a):</span> ${this.formatNumber(a)}`,
-			`<span class="text-gray-400">Ordonnee (b):</span> ${this.formatNumber(b)}`,
-			`<span class="text-gray-400">R²:</span> <span class="text-green-400">${this.formatNumber(r2)}</span>`
-		];
-
+		const htmlLines = lines.map((line) => this.escapeHtml(line.trim()));
 		const outputHtml = htmlLines.join('<br>');
 
 		return {
@@ -1902,4 +1864,16 @@ export class WebReplEngine {
 			}
 		};
 	}
+}
+
+/**
+ * Numbers of a `.stats` argument. With `;` the comma is DECIMAL (the atelier's
+ * convention: `12,5 ; 3`); without, the legacy comma-separated form is kept
+ * (`12,15,9`).
+ */
+function parseStatsNumbers(part: string): number[] {
+	const separated = part.includes(';')
+		? part.split(';').map((s) => s.trim().replace(',', '.'))
+		: part.split(',').map((s) => s.trim());
+	return separated.filter((s) => s.length > 0).map((s) => parseFloat(s));
 }

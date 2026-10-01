@@ -146,9 +146,9 @@ describe('le catalogue des commandes', () => {
 			// valeurs doit les compter toutes, sinon il enseigne une écriture
 			// fausse — et le test le laisserait passer.
 			if (command.name === 'stats') {
-				const valeurs = command.example.slice(command.example.indexOf(' ')).split(',').length;
+				const valeurs = command.example.slice(command.example.indexOf(' ')).split(/[;,]/).length;
 				expect(result.output, `« .${command.french} » n'a pas lu toutes ses valeurs`).toContain(
-					`n=${valeurs}`
+					`Effectif : ${valeurs}`
 				);
 			}
 		}

@@ -7,6 +7,7 @@
 	 */
 	import type { AtelierObject } from '$lib/atelier/types';
 	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { useAtelier } from '$lib/atelier/context';
 
 	interface Props {
 		object: AtelierObject;
@@ -17,7 +18,15 @@
 
 	let { object, selected = false, onSelect, onAction }: Props = $props();
 
-	const actions = $derived(actionsFor(object));
+	const atelier = useAtelier();
+
+	/**
+	 * ⚠️ Avec l'atelier : sans lui, `actionsFor` retombe sur le catalogue de
+	 * repli, et les actions par partenaire (« Nuage avec M », « Diagramme avec
+	 * effectifs M ») comme la bascule « Retirer le diagramme » n'atteignaient
+	 * jamais l'écran (constaté au lot 5 des outils statistiques).
+	 */
+	const actions = $derived(actionsFor(object, atelier));
 
 	/** Les libellés français des types — l'interface ne parle pas anglais. */
 	const KIND_LABELS: Record<AtelierObject['kind'], string> = {

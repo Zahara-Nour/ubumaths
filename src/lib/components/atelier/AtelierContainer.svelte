@@ -159,9 +159,12 @@
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
 
-		// Un nuage se voit dans le Graphe, pas dans l'historique : c'est là que
-		// l'élève doit regarder.
-		activeView = action.id === 'scatter' ? 'graphe' : 'calcul';
+		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
+		// que l'élève doit regarder. ⚠️ Comparer la RACINE : les actions portent
+		// leur partenaire (`scatter:M`), et `action.id === 'scatter'` ne
+		// répondait plus jamais (outils statistiques, Q39).
+		const root = action.id.split(':')[0];
+		activeView = root === 'scatter' ? 'graphe' : root === 'chart' ? 'donnees' : 'calcul';
 	}
 </script>
 

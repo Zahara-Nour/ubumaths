@@ -62,6 +62,7 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	// donc qu'au repli, quand `actionsFor` est appelée sans atelier.
 	list: [
 		{ id: 'stats', label: 'Statistiques' },
+		{ id: 'chart', label: 'Diagramme en bâtons' },
 		{ id: 'scatter', label: 'Nuage de points' },
 		{ id: 'fit', label: 'Ajustement affine' }
 	]
@@ -77,7 +78,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 const NOT_YET: ReadonlySet<string> = new Set([
 	// 'plot' est câblé depuis le lot « vue Graphe ».
 	// 'derive', 'solve', 'variations' et 'image' le sont depuis la vue Calcul.
-	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données.
+	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
+	// depuis le lot 5 des outils statistiques.
 	'plot-points',
 	'plot-cobweb',
 	'table',
@@ -112,7 +114,11 @@ function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[]
 	// Une seule partenaire : inutile de la nommer deux fois dans la même liste
 	// d'actions — mais on la nomme quand même, pour que l'élève sache SANS
 	// cliquer ce qui va être tracé.
+	// Outils statistiques, lot 5 (Q35) : la partenaire peut aussi donner les
+	// EFFECTIFS des valeurs de cette liste
 	return partners.flatMap((partner) => [
+		{ id: `stats:${partner.name}`, label: `Statistiques avec effectifs ${partner.name}` },
+		{ id: `chart:${partner.name}`, label: `Diagramme avec effectifs ${partner.name}` },
 		{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 		{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
 	]);
@@ -144,7 +150,7 @@ export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectActi
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
 		isList(object) && atelier !== undefined
-			? [BY_KIND.list[0], ...partnerActions(object, atelier)]
+			? [BY_KIND.list[0], BY_KIND.list[1], ...partnerActions(object, atelier)]
 			: BY_KIND[object.kind];
 
 	const specific = catalogue.map((action) => {
@@ -152,6 +158,12 @@ export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectActi
 		// même bouton qui bascule, plutôt que deux boutons dont un est inutile.
 		if (action.id === 'plot' && object.plotted) {
 			action = { ...action, label: 'Retirer du graphe' };
+		}
+		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
+		// qui l'a affiché le retire
+		const [root, partner] = action.id.split(':');
+		if (root === 'chart' && atelier?.chartOf(object.name)?.partner === (partner ?? null)) {
+			action = { ...action, label: 'Retirer le diagramme' };
 		}
 		// D4 : un curseur sur une grandeur n'a pas de sens — on le dit plutôt que
 		// de faire disparaître l'action, sinon l'élève cherche pourquoi.
@@ -173,7 +185,6 @@ export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectActi
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
 		// `scatter:M` et `fit:M` portent leur partenaire : c'est la racine qui
 		// décide si l'action attend son lot.
-		const root = action.id.split(':')[0];
 		if (NOT_YET.has(root)) return { ...action, disabledReason: NOT_YET_REASON };
 		return action;
 	});
