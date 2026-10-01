@@ -320,7 +320,7 @@
 						<Badge>{QUESTION_TYPE_LABELS[getQuestionType(template)]}</Badge>
 					</div>
 					<div class="rounded-lg border bg-card p-4" use:renderLatex>
-						<MarkdownRenderer content={instance.statement} />
+						<MarkdownRenderer content={instance.statement} showAuthoringErrors />
 					</div>
 				</div>
 
@@ -395,7 +395,7 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Correction</Badge>
 						<div class="rounded-lg border bg-muted/50 p-4 text-sm">
-							<MarkdownRenderer content={correctionMarkdown} />
+							<MarkdownRenderer content={correctionMarkdown} showAuthoringErrors />
 						</div>
 					</div>
 				{/if}

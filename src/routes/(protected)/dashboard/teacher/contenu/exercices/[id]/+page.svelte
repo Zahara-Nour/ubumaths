@@ -752,6 +752,7 @@
 									content={exerciseContent.statement_md}
 									genericFunctions={genericFunctionsConfig}
 									onHashtagClick={searchByHashtag}
+									showAuthoringErrors
 								/>
 							{:else}
 								<p class="text-muted-foreground">(Aucun énoncé)</p>
@@ -784,6 +785,7 @@
 									content={exerciseContent.solution_md}
 									genericFunctions={genericFunctionsConfig}
 									onHashtagClick={searchByHashtag}
+									showAuthoringErrors
 								/>
 							{:else}
 								<p class="text-muted-foreground">(Aucune solution)</p>

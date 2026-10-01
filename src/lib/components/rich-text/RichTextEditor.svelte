@@ -1978,6 +1978,7 @@
 						content={previewMarkdown}
 						mode={previewDisplayMode}
 						{genericFunctions}
+						showAuthoringErrors
 					/>
 				</div>
 			{/if}

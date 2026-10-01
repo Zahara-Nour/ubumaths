@@ -522,11 +522,15 @@ export type { TrigCircleNode } from './trig-circle';
 // Re-export NumberLineNode for inclusion in BlockNode union
 export type { NumberLineNode } from './number-line';
 
+// Re-export CourbeNode for inclusion in BlockNode union
+export type { CourbeNode } from './courbe';
+
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
 import type { ProbabilityTreeNode } from './probability-tree';
 import type { TrigCircleNode } from './trig-circle';
 import type { NumberLineNode } from './number-line';
+import type { CourbeNode } from './courbe';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -545,7 +549,8 @@ export type BlockNode =
 	| VariationTableNode
 	| ProbabilityTreeNode
 	| TrigCircleNode
-	| NumberLineNode;
+	| NumberLineNode
+	| CourbeNode;
 
 // ============================================================================
 // COMPOSITE NODES
