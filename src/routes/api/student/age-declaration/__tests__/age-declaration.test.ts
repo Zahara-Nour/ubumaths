@@ -78,6 +78,7 @@ function asStudent(overrides: Record<string, unknown> = {}) {
 			role: 'student',
 			grade: '2',
 			age_declaration: null,
+			consent_required: true,
 			...overrides
 		}
 	});
@@ -143,7 +144,7 @@ describe('POST /api/student/age-declaration', () => {
 
 	it('B9 — Non avec un délai de grâce échu : nouveau délai de 30 jours', async () => {
 		asStudent({
-			consent_required: false,
+			consent_required: true,
 			consent_granted_at: null,
 			consent_grace_period_ends: new Date(Date.now() - 86_400_000).toISOString()
 		});
@@ -152,21 +153,17 @@ describe('POST /api/student/age-declaration', () => {
 		expect(payload.consent_required).toBe(true);
 		const fin = new Date(payload.consent_grace_period_ends as string).getTime() - Date.now();
 		expect(fin).toBeGreaterThan(29 * 86_400_000);
-	});
-
-	it('B9 — Non sur un ancien profil non soumis sans délai : re-soumis, 30 jours de grâce', async () => {
-		asStudent({
-			consent_required: false,
-			consent_granted_at: null,
-			consent_grace_period_ends: null
-		});
-		await POST(makeEvent({ fifteenOrOlder: false }) as never);
-		const payload = serviceChain.update.mock.calls[0][0] as Record<string, unknown>;
-		expect(payload.consent_required).toBe(true);
-		const fin = new Date(payload.consent_grace_period_ends as string).getTime() - Date.now();
-		expect(fin).toBeGreaterThan(29 * 86_400_000);
 		expect(fin).toBeLessThanOrEqual(30 * 86_400_000 + 60_000);
 	});
+
+	it.each([[true], [false]])(
+		'Q74 — élève dispensé (consent_required=false), réponse %s → 403, rien écrit',
+		async (fifteenOrOlder) => {
+			asStudent({ consent_required: false });
+			expect(await statusOf(POST(makeEvent({ fifteenOrOlder }) as never))).toBe(403);
+			expect(serviceChain.update).not.toHaveBeenCalled();
+		}
+	);
 
 	it('B11 — réponse déjà enregistrée → 409, rien écrit', async () => {
 		asStudent({ age_declaration: 'under_15' });

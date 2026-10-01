@@ -20,17 +20,21 @@ export interface AgeQuestionProfile {
 	role: string | null;
 	grade: string | null;
 	age_declaration: string | null;
+	consent_required: boolean | null;
 }
 
 /**
- * Vrai si la question doit être posée : élève de 2nde sans réponse.
+ * Vrai si la question doit être posée : élève de 2nde, soumis au consentement, sans
+ * réponse. Un élève déjà dispensé par le professeur n'est pas interrogé (Q74) : la
+ * question ne sert qu'à décider d'une dispense.
  */
 export function shouldAskAgeQuestion(profile: AgeQuestionProfile | null | undefined): boolean {
 	if (!profile) return false;
 	return (
 		profile.role === 'student' &&
 		profile.grade === AGE_QUESTION_GRADE &&
-		profile.age_declaration === null
+		profile.age_declaration === null &&
+		profile.consent_required === true
 	);
 }
 

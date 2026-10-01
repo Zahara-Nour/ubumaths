@@ -17,11 +17,12 @@
 		role: string | null;
 		grade: string | null;
 		ageDeclaration: string | null;
+		consentRequired: boolean | null;
 		/** Appelé après une réponse enregistrée (ex. recharger les données du layout). */
 		onAnswered?: () => void | Promise<void>;
 	}
 
-	let { role, grade, ageDeclaration, onAnswered }: Props = $props();
+	let { role, grade, ageDeclaration, consentRequired, onAnswered }: Props = $props();
 
 	// Fermée sans réponse pendant cette visite, ou réponse enregistrée.
 	let dismissed = $state(false);
@@ -29,7 +30,12 @@
 	let submitting = $state(false);
 
 	const isOpen = $derived(
-		shouldAskAgeQuestion({ role, grade, age_declaration: ageDeclaration }) &&
+		shouldAskAgeQuestion({
+			role,
+			grade,
+			age_declaration: ageDeclaration,
+			consent_required: consentRequired
+		}) &&
 			!dismissed &&
 			!answered
 	);
