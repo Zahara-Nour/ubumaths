@@ -1,0 +1,337 @@
+{
+	"title": "Valeur renvoyée par une fonction Python qui calcule un terme",
+	"description": "Boucle for : compter les tours, puis calculer les termes",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Algorithmes",
+	"level": 1,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for i in range(n):\n        u = {{b}} * u + {{c}}\n    return u\n```\n\nQue renvoie `terme(3)` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b*a+c"
+				},
+				{
+					"name": "s",
+					"expression": "eval:b*p+c"
+				},
+				{
+					"name": "w",
+					"expression": "eval:b*s+c"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"`range(3)` donne `i = 0, 1, 2` : la boucle fait $3$ tours. Chaque tour remplace `u` par ${{b}}u+{{c}}$ : la fonction renvoie $u_3$, avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n+{{c}}$.",
+					"$u_1={{b}}\\times{{a}}+{{c}}={{p}}$, $u_2={{b}}\\times{{p}}+{{c}}={{s}}$, $u_3={{b}}\\times{{s}}+{{c}}={{w}}$.",
+					"La fonction renvoie $\\mathbf{ {{w}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for i in range(n + 1):\n        u = {{b}} * u - {{c}}\n    return u\n```\n\nQue renvoie `terme(2)` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b*a-c"
+				},
+				{
+					"name": "s",
+					"expression": "eval:b*p-c"
+				},
+				{
+					"name": "w",
+					"expression": "eval:b*s-c"
+				}
+			],
+			"conditions": ["c != (b-1)*a", "p != 0", "s != 0", "w != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec `n = 2`, `range(n + 1)` donne `i = 0, 1, 2` : la boucle fait $3$ tours (et non $2$). Chaque tour remplace `u` par ${{b}}u-{{c}}$ : la fonction renvoie $u_3$, avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n-{{c}}$.",
+					"$u_1={{b}}\\times{{a}}-{{c}}={{p}}$, $u_2={{b}}\\times{{eval:p;()}}-{{c}}={{s}}$, $u_3={{b}}\\times{{eval:s;()}}-{{c}}={{w}}$.",
+					"La fonction renvoie $\\mathbf{ {{w}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for k in range(1, n + 1):\n        u = u + {{b}} * k\n    return u\n```\n\nQue renvoie `terme(4)` ?\n\nLa valeur renvoyée est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "w",
+					"expression": "eval:a+10*b"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec `n = 4`, `range(1, n + 1)` donne `k = 1, 2, 3, 4` : on ajoute successivement ${{b}}\\times1$, ${{b}}\\times2$, ${{b}}\\times3$ et ${{b}}\\times4$.",
+					"$${{a}}+{{b}}\\times(1+2+3+4)={{a}}+{{b}}\\times10=\\mathbf{ {{w}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u0=2, u ← 3u+1, 3 tours : 67",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"p": "7",
+				"s": "22",
+				"w": "67"
+			},
+			"answers": ["67"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=5, u ← 2u+4, 3 tours : 68",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"c": "4",
+				"p": "14",
+				"s": "32",
+				"w": "68"
+			},
+			"answers": ["68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un tour de moins (u2 = 22)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"p": "7",
+				"s": "22",
+				"w": "67"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un tour de plus (u4 = 202)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"p": "7",
+				"s": "22",
+				"w": "67"
+			},
+			"answers": ["202"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : 3×22+1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"p": "7",
+				"s": "22",
+				"w": "67"
+			},
+			"answers": ["3\\times22+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "range(n+1) : u0=4, u ← 2u−3, 3 tours : 11",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "3",
+				"p": "5",
+				"s": "7",
+				"w": "11"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=3, u ← 3u−5, 3 tours : 16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "3",
+				"c": "5",
+				"p": "4",
+				"s": "7",
+				"w": "16"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "range(n+1) lu comme range(n) : 2 tours → 7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "3",
+				"p": "5",
+				"s": "7",
+				"w": "11"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de c ignoré : 2u+3 → 41",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "2",
+				"c": "3",
+				"p": "5",
+				"s": "7",
+				"w": "11"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u ← u + 3k pour k de 1 à 4 : 35",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"w": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=12, pas 7 : 82",
+			"variationIndex": 2,
+			"variables": {
+				"a": "12",
+				"b": "7",
+				"w": "82"
+			},
+			"answers": ["82"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k de 0 à 3 comme range(n) : 5 + 3×6 = 23",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"w": "35"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ajout constant 4×3 au lieu de 3k : 17",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"w": "35"
+			},
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : 5+30",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "3",
+				"w": "35"
+			},
+			"answers": ["5+30"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}
