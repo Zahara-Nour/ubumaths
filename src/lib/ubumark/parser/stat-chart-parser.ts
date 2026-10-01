@@ -142,7 +142,18 @@ const OPTION_KEYS = [
 type OptionKey = (typeof OPTION_KEYS)[number];
 
 /** Options réservées à certains blocs ; absente = tous */
+/** Diagrammes dessinés (tout sauf le tableau croisé) */
+const FIGURE_KINDS: readonly StatChartKind[] = [
+	'barres',
+	'circulaire',
+	'histogramme',
+	'frequences-cumulees'
+];
+
 const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
+	// Un <table> n'a ni taille de figure ni description d'image (revue du lot 4)
+	taille: FIGURE_KINDS,
+	description: FIGURE_KINDS,
 	axes: ['barres', 'histogramme', 'frequences-cumulees'],
 	valeurs: ['barres', 'histogramme'],
 	couleur: ['barres', 'histogramme', 'frequences-cumulees'],
@@ -436,11 +447,10 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 					if (slash <= 0 || slash === pair.length - 1) {
 						throw new LineError(`« ${pair} » : écrire une case sous la forme Ligne/Colonne`);
 					}
-					return {
-						row: pair.slice(0, slash).trim(),
-						column: pair.slice(slash + 1).trim(),
-						line: 0
-					};
+					// « total » en toutes casses désigne les totaux, comme dans `parseNames`
+					const name = (raw: string) =>
+						normalizeKey(raw.trim()) === normalizeKey(TOTAL) ? TOTAL : raw.trim();
+					return { row: name(pair.slice(0, slash)), column: name(pair.slice(slash + 1)), line: 0 };
 				});
 			return;
 	}
@@ -472,7 +482,13 @@ function parseNames(value: string, what: string): string[] {
 				`${what} : « ${name} » trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
 			);
 		}
-		if (names.indexOf(name) !== i) throw new LineError(`${what} : « ${name} » donné deux fois`);
+		if (name.includes('/')) {
+			throw new LineError(
+				`${what} : « ${name} » ne peut pas contenir « / » (séparateur de « masquer: »)`
+			);
+		}
+		const same = names.findIndex((other) => normalizeKey(other) === normalizeKey(name));
+		if (same !== i) throw new LineError(`${what} : « ${name} » donné deux fois`);
 	}
 	return names;
 }
@@ -483,7 +499,8 @@ function parseNames(value: string, what: string): string[] {
  */
 function checkTable(
 	options: Options,
-	tableRows: readonly TableRow[]
+	tableRows: readonly TableRow[],
+	optionLines: Partial<Record<OptionKey, number>>
 ): { table: CrossTableData } | { errors: StatChartIssue[] } {
 	const { rows, columns } = options;
 	if (rows === null)
@@ -506,7 +523,7 @@ function checkTable(
 	}
 	for (const name of rows) {
 		if (!tableRows.some((row) => row.name === name)) {
-			errors.push({ message: `Ligne « ${name} » sans données : écrire « ${name} = … »` });
+			situated(optionLines.lignes ?? 0, `ligne « ${name} » sans données : écrire « ${name} = … »`);
 		}
 	}
 
@@ -523,9 +540,15 @@ function checkTable(
 
 	const cells = rows.map((name) => tableRows.find((row) => row.name === name)?.values ?? []);
 	if (options.display !== 'effectifs') {
+		const line = optionLines.afficher ?? 0;
 		if (cells.some((row) => row.some((value) => value === null))) {
 			return {
-				errors: [{ message: 'Fréquences impossibles avec une case « ? » : sa valeur est inconnue' }]
+				errors: [
+					{
+						message: `Ligne ${line} : fréquences impossibles avec une case « ? » : sa valeur est inconnue`,
+						line
+					}
+				]
 			};
 		}
 		// Total non nul : la règle du module statistique
@@ -533,7 +556,9 @@ function checkTable(
 			cells.map((row) => row.map((value) => value ?? 0)),
 			options.display
 		);
-		if (outcome !== null && !outcome.ok) return { errors: [{ message: outcome.message }] };
+		if (outcome !== null && !outcome.ok) {
+			return { errors: [{ message: `Ligne ${line} : ${outcome.message}`, line }] };
+		}
 	}
 	return {
 		table: {
@@ -630,6 +655,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	// (sans lui, `unit` resterait typée `null` après la boucle)
 	let unit = null as { value: StatChartUnit; line: number } | null;
 	let indicatorsLine = 0;
+	const optionLines: Partial<Record<OptionKey, number>> = {};
 	const seenOptions = new Set<OptionKey>();
 	const options: Options = {
 		title: null,
@@ -671,6 +697,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				seenOptions.add(key);
 				applyOption(kind, key, kv[2], options);
 				if (key === 'indicateurs') indicatorsLine = line;
+				optionLines[key] = line;
 				if (key === 'masquer') options.masked.forEach((cell) => (cell.line = line));
 				return;
 			}
@@ -747,7 +774,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	let table: CrossTableData | null = null;
 	if (errors.length === 0 && isTable) {
-		const checked = checkTable(options, tableRows);
+		const checked = checkTable(options, tableRows, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
 		else table = checked.table;
 	} else if (errors.length === 0) {

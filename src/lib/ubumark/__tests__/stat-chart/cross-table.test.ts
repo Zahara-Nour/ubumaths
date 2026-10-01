@@ -152,6 +152,34 @@ describe('tableau croisé — erreurs situées', () => {
 		expect(errorOf(`${zeros}\nafficher: fréquences`).message).toMatch(/total nul/i);
 	});
 
+	// Revue du lot 4
+	it('un nom ne peut pas contenir « / » (séparateur de masquer:)', () => {
+		expect(errorOf(BASE.replace('Externe ; Demi-pensionnaire', 'km/h ; x')).message).toMatch(/\//);
+	});
+
+	it('doublon à la casse près', () => {
+		expect(errorOf(BASE.replace('Fille ; Garçon', 'Fille ; fille')).message).toMatch(/fille/i);
+	});
+
+	it('masquer: « total » en minuscules désigne les totaux', () => {
+		expect(specOf(`${BASE}\nmasquer: total/Externe`).table!.masked).toEqual([
+			{ row: 'Total', column: 'Externe' }
+		]);
+	});
+
+	it('taille: et description: ne s’appliquent pas à un tableau', () => {
+		expect(errorOf(`${BASE}\ntaille: grande`).message).toMatch(/tableaux croisés/);
+		expect(errorOf(`${BASE}\ndescription: Un tableau`).message).toMatch(/tableaux croisés/);
+	});
+
+	it('erreurs situées : ligne sans données, fréquences impossibles, total nul', () => {
+		const missing = BASE.split('\n').slice(0, 3).join('\n');
+		expect(errorOf(missing).line).toBe(1);
+		expect(errorOf(`${BASE.replace('110', '?')}\nafficher: fréquences`).line).toBe(5);
+		const zeros = BASE.replace('45 ; 120', '0 ; 0').replace('50 ; 110', '0 ; 0');
+		expect(errorOf(`${zeros}\nafficher: fréquences`).line).toBe(5);
+	});
+
 	it('option d’un autre bloc', () => {
 		expect(errorOf(`${BASE}\nvaleurs: oui`).message).toMatch(/tableaux croisés|barres/);
 	});
