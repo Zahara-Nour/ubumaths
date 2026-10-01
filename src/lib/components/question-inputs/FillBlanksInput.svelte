@@ -249,11 +249,19 @@
 	 * `focusin`/`focusout` remontent depuis le shadow DOM du math-field ; les
 	 * touches du clavier virtuel ne prennent pas le focus, donc ne le font pas sortir.
 	 *
-	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false` quand
-	 * il prend le focus, et retrouve son réglage quand il le perd (ou au démontage).
-	 * Mesuré au vrai clavier (2026-10-01) : avec `smartFence`, taper `[` ouvre une
+	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false`
+	 * (mesuré au vrai clavier le 2026-10-01 : avec `smartFence`, taper `[` ouvre une
 	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
-	 * illisible (docs/wip/reponse-intervalles-progress.md).
+	 * illisible — docs/wip/reponse-intervalles-progress.md). Il retrouve son réglage
+	 * au démontage seulement.
+	 *
+	 * ⚠️ Le réglage se pose AVANT que le clavier ne s'ouvre (`pointerdown` en capture,
+	 * puis `focusin` pour le Tab), une seule fois, et jamais au `focusout` : toute
+	 * affectation d'option sur un math-field `readonly` focalisé, clavier visible,
+	 * appelle `hideVirtualKeyboard` (MathLive, `setOptions`). Or en ouvrant le clavier,
+	 * le bouton de MathLive fait sortir puis rentrer le focus du champ : l'ancien
+	 * va-et-vient du réglage refermait le clavier aussitôt ouvert (bug de prod du
+	 * 2026-10-01, modèle n° 11 : « rien n'apparaît »).
 	 */
 	$effect(() => {
 		const element = container;
@@ -269,37 +277,45 @@
 		const smartFenceBefore = new Map<MathfieldElement, boolean>();
 
 		const restoreSmartFence = () => {
-			for (const [field, value] of smartFenceBefore) field.smartFence = value;
+			for (const [field, value] of smartFenceBefore) {
+				if (field.smartFence !== value) field.smartFence = value;
+			}
 			smartFenceBefore.clear();
 		};
 		const restoreDefault = () => {
-			restoreSmartFence();
 			if (!applied) return;
 			applied = false;
 			const keyboard = window.mathVirtualKeyboard;
 			if (keyboard) keyboard.layouts = 'default';
 		};
+		/** smartFence coupé sur un champ à case « intervalles », s'il ne l'est pas déjà */
+		const disableSmartFence = (target: EventTarget | null) => {
+			if (!isMathField(target) || target.smartFence === false) return;
+			if (!target.getPrompts().some((id) => promptIds.includes(id))) return;
+			if (!smartFenceBefore.has(target)) smartFenceBefore.set(target, target.smartFence);
+			target.smartFence = false;
+		};
+		const beforeKeyboardOpens = (event: PointerEvent) => disableSmartFence(event.target);
 		const addTabs = (event?: FocusEvent) => {
-			const field = event?.target ?? document.activeElement;
-			if (isMathField(field) && field.getPrompts().some((id) => promptIds.includes(id))) {
-				if (!smartFenceBefore.has(field)) smartFenceBefore.set(field, field.smartFence);
-				field.smartFence = false;
-			}
+			disableSmartFence(event?.target ?? document.activeElement);
 			const keyboard = window.mathVirtualKeyboard;
 			if (!keyboard) return;
 			keyboard.layouts = ['default', ...layouts];
 			applied = true;
 		};
 
+		element.addEventListener('pointerdown', beforeKeyboardOpens, true);
 		element.addEventListener('focusin', addTabs);
 		element.addEventListener('focusout', restoreDefault);
 		// Déjà focalisé quand l'onglet change (unités recalculées) : l'appliquer tout de suite
 		if (element.contains(document.activeElement)) addTabs();
 
 		return () => {
+			element.removeEventListener('pointerdown', beforeKeyboardOpens, true);
 			element.removeEventListener('focusin', addTabs);
 			element.removeEventListener('focusout', restoreDefault);
 			restoreDefault();
+			restoreSmartFence();
 		};
 	});
 
