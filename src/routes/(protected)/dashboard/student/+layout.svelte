@@ -42,6 +42,8 @@
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { consent } from '$lib/stores/consent.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import AgeQuestionDialog from '$lib/components/AgeQuestionDialog.svelte';
+	import { invalidateAll } from '$app/navigation';
 	import BuddyWidget from '$lib/components/buddy/BuddyWidget.svelte';
 	import PalotinQuiz from '$lib/components/buddy/PalotinQuiz.svelte';
 	import ChangePalotinModal from '$lib/components/buddy/ChangePalotinModal.svelte';
@@ -53,6 +55,12 @@
 
 	// Get server data (includes consentStatus from parent protected layout)
 	let { data, children } = $props();
+
+	// Réponse enregistrée : recharge le profil et l'état du consentement (bandeau).
+	async function handleAgeAnswered() {
+		await invalidateAll();
+		if (data.consentStatus) consent.set(data.consentStatus);
+	}
 
 	/**
 	 * Hydrate cache on mount
@@ -94,6 +102,14 @@
 {#if data.consentStatus}
 	<ConsentBanner consentStatus={data.consentStatus} />
 {/if}
+
+<!-- Question d'âge en 2nde : recalculée à chaque chargement du layout (profil relu en base) -->
+<AgeQuestionDialog
+	role={data.profile.role}
+	grade={data.profile.grade}
+	ageDeclaration={data.profile.age_declaration}
+	onAnswered={handleAgeAnswered}
+/>
 
 <!-- Palotin Quiz (shown once if no buddy chosen) -->
 {#if showQuiz}

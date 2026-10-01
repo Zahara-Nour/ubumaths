@@ -83,6 +83,12 @@ export type ClassSchedule = Tables<'class_schedules'>;
 /** Profile table row type alias */
 export type Profile = Tables<'profiles'>;
 
+/**
+ * Réponse d'un élève de 2nde à « As-tu 15 ans ou plus ? » (colonne
+ * profiles.age_declaration, contrainte CHECK en base). null = pas de réponse.
+ */
+export type AgeDeclaration = '15_plus' | 'under_15';
+
 /** Student buddy table row type alias */
 export type StudentBuddy = Tables<'student_buddies'>;
 

@@ -11,6 +11,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { describeAgeDeclaration } from '$lib/utils/age-declaration';
 	import {
 		ShieldCheck,
 		AlertTriangle,
@@ -246,6 +247,10 @@
 							<div class="space-y-4">
 								{#each classItem.students as student (student.id)}
 									{@const statusBadge = getStatusBadge(student.consent_status)}
+									{@const ageText = describeAgeDeclaration(
+										student.age_declaration,
+										student.age_declared_at
+									)}
 									<div
 										class="flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4"
 									>
@@ -262,6 +267,40 @@
 												<p class="text-sm text-muted-foreground">
 													{formatGrade(student.grade)}
 												</p>
+												{#if ageText}
+													<!-- Réponse à la question d'âge (2nde) ; l'annuler fait reposer la question -->
+													<div class="flex flex-wrap items-center gap-2">
+														<p class="text-xs text-muted-foreground">{ageText}</p>
+														<form
+															method="POST"
+															action="?/resetAgeDeclaration"
+															use:enhance={() => {
+																return async ({ result }) => {
+																	if (result.type === 'success') {
+																		toaster.success(
+																			'Déclaration annulée : la question sera reposée'
+																		);
+																		await invalidateAll();
+																	} else if (result.type === 'failure') {
+																		toaster.error(String(result.data?.error || 'Erreur'));
+																	} else if (result.type === 'error') {
+																		toaster.error("Erreur lors de l'annulation de la déclaration");
+																	}
+																};
+															}}
+														>
+															<input type="hidden" name="studentId" value={student.id} />
+															<Button
+																type="submit"
+																size="sm"
+																variant="link"
+																class="h-auto p-0 text-xs"
+															>
+																Annuler la déclaration
+															</Button>
+														</form>
+													</div>
+												{/if}
 											</div>
 										</div>
 
