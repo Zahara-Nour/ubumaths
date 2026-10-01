@@ -16,6 +16,7 @@
 import type { Atelier } from './atelier.svelte';
 import { isList, type ListObject } from './types';
 import { summarizeTable } from '$lib/statistics/describe';
+import { Fraction } from '$lib/statistics/fraction';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
 import { STAT_CHART_LIMITS, type StatChartNode } from '$lib/ubumark/types/stat-chart';
 
@@ -41,12 +42,21 @@ const LINE_PREFIX = /^Ligne \d+ : /;
 // Fonctions
 // =============================================================================
 
-/**
- * Un nombre écrit comme l'élève l'écrit : virgule décimale, signe moins ASCII,
- * au plus 2 décimales — une valeur saisie `1/3` vaut 0,333… (Q45).
- */
+/** Un nombre écrit comme l'élève l'écrit : virgule décimale, signe moins ASCII. */
 function written(value: number): string {
-	return String(Math.round(value * 100) / 100).replace('.', ',');
+	return String(value).replace('.', ',');
+}
+
+/**
+ * Le nom d'une catégorie : une valeur saisie `1/3` (0,333…) s'écrit `1/3`,
+ * exacte ; toute autre comme avant (Q45).
+ *
+ * ⚠️ Jamais d'arrondi : arrondir confondait 0,331 et 0,334 (« catégorie déjà
+ * donnée ») et faisait calculer la moyenne sur 0,33 (revue de la PR).
+ */
+function categoryLabel(value: number): string {
+	const fraction = Fraction.fromNumber(value);
+	return fraction !== null && !fraction.isDecimal() ? fraction.toString() : written(value);
 }
 
 function listNamed(atelier: Atelier, name: string): ListObject | null {
@@ -95,7 +105,7 @@ export function listChart(atelier: Atelier, name: string, partner: string | null
 		`titre: ${title}`,
 		`axes: ${name} ; Effectif`,
 		`indicateurs: ${INDICATORS}`,
-		...rows.map((row) => `${written(row.value)} = ${written(row.count)}`)
+		...rows.map((row) => `${categoryLabel(row.value)} = ${written(row.count)}`)
 	].join('\n');
 	const node = parseStatChartContent('barres', source);
 	if (node.spec === null) {

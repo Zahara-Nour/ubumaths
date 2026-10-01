@@ -401,7 +401,11 @@ function valueAxis(
 /** Indicateurs d'une série à effectifs dont les catégories sont des nombres (Q28). */
 function barIndicators(spec: StatChartSpec, locale: ContentLocale): string[] {
 	if (spec.indicators.length === 0) return [];
-	const values = spec.data.map((d) => Number(d.label.replace(',', '.')));
+	// Fraction.parse lit `0,5` comme `1/3` : la moyenne part des valeurs EXACTES ;
+	// au-delà de 15 chiffres, il renonce et la lecture décimale prend le relais
+	const values = spec.data.map(
+		(d) => Fraction.parse(d.label)?.toNumber() ?? Number(d.label.replace(',', '.'))
+	);
 	const outcome = summarizeTable(
 		values,
 		spec.data.map((d) => d.value)
