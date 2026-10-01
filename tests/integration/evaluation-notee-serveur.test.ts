@@ -43,7 +43,12 @@ import { EvaluationError } from '$lib/server/evaluations';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
-import type { SubmittedAnswer } from '$lib/questions/grading';
+import { gradeQuestion, type SubmittedAnswer } from '$lib/questions/grading';
+import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import {
+	GRADING_BUDGET_EXCEEDED_FEEDBACK,
+	SUBMISSION_GRADING_BUDGET_MS
+} from '$lib/server/grading-budget';
 
 // Types
 type Client = SupabaseClient<Database>;
@@ -126,6 +131,7 @@ async function createEvaluation(
 		max_attempts?: number | null;
 		deadline?: string | null;
 		status?: 'draft' | 'published';
+		categories?: typeof CATEGORIES;
 	} = {}
 ): Promise<{ evaluationId: string; assignmentId: string }> {
 	const { data: series, error: seriesError } = await service
@@ -133,7 +139,7 @@ async function createEvaluation(
 		.insert({
 			title: 'Éval serveur ZZ',
 			grade: '6',
-			categories: CATEGORIES,
+			categories: settings.categories ?? CATEGORIES,
 			created_by: teacher.id
 		})
 		.select('id')
@@ -608,6 +614,78 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
 		});
+	});
+
+	describe('Q59 : copie hostile, budget de correction de 5 s', () => {
+		let assignmentId: string;
+		const QUESTIONS = 8;
+		const HOSTILE = '1.0001^{9999}';
+
+		beforeAll(async () => {
+			({ assignmentId } = await createEvaluation({
+				categories: [{ category: FILL_CATEGORY, quantity: QUESTIONS, delay: 20 }]
+			}));
+		});
+
+		it('budget épuisé pendant une écriture coûteuse : restantes à 0 avec le message, copie close et notée', async () => {
+			const attempt = await start(classmate, assignmentId);
+			const instances = await oracle(attempt.attemptId);
+			expect(instances, 'décor : 8 questions à cases').toHaveLength(QUESTIONS);
+			// La garde de complexité (#581) laisse passer cette écriture : elle coûte ~1,2 s
+			expect(isAnswerTooComplex(HOSTILE), 'décor : écriture admise par la garde').toBe(false);
+			// 2 justes, puis l'écriture coûteuse (position 2), puis 5 justes
+			const answers = instances.map((instance, position) => ({
+				position,
+				...(position === 2
+					? { values: (instance.blanks ?? []).map(() => HOSTILE) }
+					: rightAnswer(instance))
+			}));
+
+			// Horloge DÉTERMINISTE, indépendante de la vitesse de la machine : elle lit
+			// 0 ms, puis 5 s dès que l'écriture coûteuse a été (vraiment) corrigée
+			let elapsed = 0;
+			const result = await submitEvaluationAttempt(
+				actors(classmate, {
+					gradingBudget: {
+						clock: () => elapsed,
+						grade: (instance, answer) => {
+							const verdict = gradeQuestion(instance, answer);
+							if (answer.values?.includes(HOSTILE)) elapsed = SUBMISSION_GRADING_BUDGET_MS;
+							return verdict;
+						}
+					}
+				}),
+				attempt.attemptId,
+				{ answers }
+			);
+
+			const statuses = result.questions.map((q) => [q.position, q.status, q.points, q.feedback]);
+			// 0-1 corrigées et justes ; 2 en cours quand le budget s'épuise : corrigée
+			// jusqu'au bout, verdict ordinaire ; 3-7 jamais corrigées, à 0 avec le message
+			expect(statuses.slice(0, 2)).toEqual([
+				[0, 'correct', 1, undefined],
+				[1, 'correct', 1, undefined]
+			]);
+			expect(result.questions[2]).toMatchObject({ status: 'incorrect', points: 0 });
+			expect(result.questions[2].feedback).not.toBe(GRADING_BUDGET_EXCEEDED_FEEDBACK);
+			expect(statuses.slice(3)).toEqual(
+				[3, 4, 5, 6, 7].map((p) => [p, 'incorrect', 0, GRADING_BUDGET_EXCEEDED_FEEDBACK])
+			);
+			// Note cohérente : 2 points sur 8 → 5/20
+			expect(result).toMatchObject({ late: false, pointsEarned: 2, grade: 5, correctCount: 2 });
+
+			const session = await sessionRow(attempt.attemptId);
+			expect(session.completed_at).not.toBeNull();
+			expect(Number(session.grade)).toBe(5);
+			const rows = await answersOf(attempt.attemptId);
+			expect(rows).toHaveLength(QUESTIONS);
+			expect(
+				rows.filter(
+					(a) =>
+						(a.user_answer as { feedback?: string }).feedback === GRADING_BUDGET_EXCEEDED_FEEDBACK
+				)
+			).toHaveLength(5);
+		}, 60_000);
 	});
 
 	describe('Q42 : la question vue par l’élève est figée au démarrage', () => {
