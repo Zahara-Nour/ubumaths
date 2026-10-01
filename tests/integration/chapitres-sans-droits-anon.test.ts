@@ -41,6 +41,8 @@ const PRIVILEGES = [
 	'INSERT',
 	'UPDATE',
 	'DELETE',
+	// Jamais accordé à anon (absent de l'ACL de prod) : garde contre une
+	// régression future, ne prouve rien sur cette migration.
 	'TRUNCATE',
 	'REFERENCES',
 	'TRIGGER'
