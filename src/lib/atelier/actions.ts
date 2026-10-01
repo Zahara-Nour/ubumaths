@@ -100,8 +100,38 @@ const NOT_YET: ReadonlySet<string> = new Set([
  * L'identifiant porte le nom de la partenaire (`scatter:M`) : c'est lui que
  * l'exécution relit, donc rien n'est redeviné au moment du clic.
  */
-function partnerActions(object: AtelierObject, atelier: Atelier): ObjectAction[] {
-	const partners = atelier.objects.filter((o) => isList(o) && o.name !== object.name);
+/** Les listes partenaires possibles d'une liste : les autres, dans l'ordre du panneau. */
+export function partnersOf(object: AtelierObject, atelier: Atelier): string[] {
+	if (!isList(object)) return [];
+	return atelier.objects.filter((o) => isList(o) && o.name !== object.name).map((o) => o.name);
+}
+
+/**
+ * La partenaire proposée d'abord (Q46) : celle du diagramme affiché, pour que
+ * « Retirer le diagramme » reste sous la main ; sinon la liste suivante du
+ * panneau, en revenant au début ; null sans partenaire.
+ */
+export function defaultPartner(object: AtelierObject, atelier: Atelier): string | null {
+	const partners = partnersOf(object, atelier);
+	if (partners.length === 0) return null;
+	const shown = atelier.chartOf(object.name)?.partner;
+	if (shown != null && partners.includes(shown)) return shown;
+	const lists = atelier.objects.filter(isList).map((o) => o.name);
+	const index = lists.indexOf(object.name);
+	return lists.slice(index + 1).find((n) => partners.includes(n)) ?? partners[0];
+}
+
+function partnerActions(
+	object: AtelierObject,
+	atelier: Atelier,
+	chosen: string | undefined
+): ObjectAction[] {
+	// ⚠️ UNE partenaire à la fois (Q46) : une action par partenaire donnait
+	// 2 + 5 × (n − 1) boutons, 37 avec 8 listes (revue de code et audit a11y)
+	const names = partnersOf(object, atelier);
+	const wanted =
+		chosen !== undefined && names.includes(chosen) ? chosen : defaultPartner(object, atelier);
+	const partners = atelier.objects.filter((o) => o.name === wanted);
 
 	if (partners.length === 0) {
 		const reason = 'Il faut deux listes : crée-en une seconde dans « Mes objets ».';
@@ -176,13 +206,17 @@ function blockedBy(object: AtelierObject): string | undefined {
  *
  * @param object - L'objet tel que l'atelier le connaît, statut compris
  */
-export function actionsFor(object: AtelierObject, atelier?: Atelier): ObjectAction[] {
+export function actionsFor(
+	object: AtelierObject,
+	atelier?: Atelier,
+	partner?: string
+): ObjectAction[] {
 	const blocked = blockedBy(object);
 
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
 		isList(object) && atelier !== undefined
-			? [BY_KIND.list[0], BY_KIND.list[1], ...partnerActions(object, atelier)]
+			? [BY_KIND.list[0], BY_KIND.list[1], ...partnerActions(object, atelier, partner)]
 			: BY_KIND[object.kind];
 
 	const specific = catalogue.map((action) => {
