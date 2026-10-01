@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```figure — progression
 date: 2026-10-01
-status: spécification validée, lot 1 en cours
+status: lot 1 livré, lot 2 en cours
 branche: feat/bloc-figure (worktree ../ubumaths-wt-figure)
 ---
 
@@ -71,8 +71,29 @@ angle(B, A, C, marque="carre")
 
 ## Lots
 
-- [ ] Lot 1 — types + parseur + scène
+- [x] Lot 1 — types + parseur + scène (40 tests rouges avant : modules absents ; 6 tests geometry-core)
 - [ ] Lot 2 — composant à la demande + câblage + Q48
 - [ ] Lot 3 — Typst + compilation prod
 
 ## Journal
+
+- 2026-10-01 lot 1 : `types/figure.ts`, `parser/figure-parser.ts` (LÉGER : aucun import de
+  geometry-core), `utils/figure-scene.ts` (`src/lib/ubumark/__tests__/figure/`, 40 tests).
+  **Budget** : la mesure a montré le danger — trois boucles `pour` imbriquées (1000 tours
+  chacune) figeaient l'interpréteur **23,8 s** ; `polygone_regulier(O, 1, 10^7)` crée 10^7 objets
+  en UNE instruction. Ajouts OPTIONNELS à geometry-core (sans option : comportement historique,
+  3422 tests verts) : `interpret(…, { maxSteps })` (instructions + tours de boucle, erreur située
+  « Budget d'exécution dépassé ») et `Figure.setElementLimit(n)` (`FigureElementLimitError`).
+  Plafonds `FIGURE_LIMITS` : 20 000 caractères, 500 lignes, 400 objets (cachés compris),
+  5 000 instructions. Entrées hostiles : toutes refusées en ≤ 50 ms (le pire :
+  `polygone_regulier` à 10^7 sommets, coupé au 400ᵉ objet).
+  **Liste blanche en deux temps** : les appels refusés (`courbe`, `tangente`, `aire`, `lieu`,
+  `trace`, `image`, `slider`/`curseur`, `secteur`, `couronne`, `mtexte`, `rtexte`…) et les
+  directives `@…` sont rejetés AVANT l'exécution par un parcours de l'AST (boucles et macros
+  comprises) → ligne exacte, et aucun calcul coûteux lancé ; puis chaque objet VISIBLE doit être
+  d'un type dessiné par l'écran ET par `exportToTypst` (filet).
+  Choix : `;` accepté comme séparateur d'arguments (`point(0;0)`, usage français — le DSL n'a
+  pas de `;`, remplacé hors chaînes et commentaires) ; `2{,}5` (valeur affichée d'une variable)
+  lu `2.5`. `angle_droit` n'existe pas dans le DSL (retiré en mai) : codage = `angle(B, A, C,
+marque="carre")`. `mtexte`/`rtexte` refusés : leur LaTeX n'a pas d'équivalent Typst sûr.
+  Erreurs : `Ligne N : <summary>` avec N = ligne du BLOC (pas du script) + `hint` de geometry-core.

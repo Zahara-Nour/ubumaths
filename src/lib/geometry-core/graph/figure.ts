@@ -292,8 +292,21 @@ function buildParametricSamplingKey(
 	return parts.join(';');
 }
 
+/**
+ * Plafond d'objets franchi (`Figure.setElementLimit`) : une seule instruction
+ * comme `polygone_regulier(O, 1, 10^7)` créerait sinon 10^7 objets.
+ */
+export class FigureElementLimitError extends Error {
+	constructor(readonly limit: number) {
+		super(`Trop d'objets dans la figure (au plus ${limit}).`);
+		this.name = 'FigureElementLimitError';
+	}
+}
+
 export class Figure {
 	private elements = new Map<string, GeoElement>();
+	/** Nombre maximal d'objets (null : illimité, comportement historique) */
+	private elementLimit: number | null = null;
 	private positions = new Map<string, GeoPoint>();
 	private graph = new DependencyGraph();
 	private nextId = 1;
@@ -441,7 +454,15 @@ export class Figure {
 		return options?.style;
 	}
 
+	/** Plafonner le nombre d'objets (null : illimité). */
+	setElementLimit(limit: number | null): void {
+		this.elementLimit = limit;
+	}
+
 	private addElement(id: string, element: GeoElement, parentIds: readonly string[]): void {
+		if (this.elementLimit !== null && this.elements.size >= this.elementLimit) {
+			throw new FigureElementLimitError(this.elementLimit);
+		}
 		this.elements.set(id, element);
 		try {
 			this.graph.addNode(id, parentIds);
