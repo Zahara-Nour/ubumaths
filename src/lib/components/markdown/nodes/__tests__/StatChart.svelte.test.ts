@@ -283,6 +283,36 @@ describe('StatChart — erreurs (Q48)', () => {
 	});
 });
 
+// Revue du lot 3 : une exception de la scène cassait le rendu de TOUTE la page
+describe('StatChart — scène qui échoue', () => {
+	function brokenNode() {
+		const node = parseStatChartContent('histogramme', '[0 ; 1[ = 1\n[1 ; 3[ = 1');
+		// Spécification forgée, hors du parseur : quadrillage démesuré
+		node.spec!.data[1].interval = { lower: 1, upper: 1_000_000_000 };
+		return node;
+	}
+
+	it('élève : cadre neutre, la page continue', async () => {
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: { content: 'Avant.' }
+		});
+		const chart = await render(StatChart, { target: mainElement(), props: { node: brokenNode() } });
+
+		expect(chart.container.textContent).toContain('Figure indisponible');
+		expect(screen.container.textContent).toContain('Avant.');
+	});
+
+	it('prof : un message dit que le diagramme n’a pas pu être dessiné', async () => {
+		const chart = await render(StatChart, {
+			target: mainElement(),
+			props: { node: brokenNode(), showErrors: true }
+		});
+
+		expect(chart.container.textContent).toMatch(/non dessiné/);
+	});
+});
+
 describe('StatChart — dans un document', () => {
 	it('ListNode affiche le diagramme d’un item de liste', async () => {
 		const md = [

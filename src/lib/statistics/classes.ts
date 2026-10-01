@@ -75,8 +75,6 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 
 	let weightedCenters = 0;
 	let cumulative = 0;
-	let medianClassIndex = -1;
-	let estimatedMedian = Number.NaN;
 	const rows: ClassRow[] = [];
 
 	for (let i = 0; i < classes.length; i++) {
@@ -85,11 +83,6 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 		const before = cumulative;
 		cumulative += count;
 		weightedCenters += count * ((lower + upper) / 2);
-
-		if (medianClassIndex === -1 && count > 0 && reaches(cumulative, total / 2, total)) {
-			medianClassIndex = i;
-			estimatedMedian = lower + ((total / 2 - before) / count) * width;
-		}
 
 		rows.push({
 			lower,
@@ -103,12 +96,14 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 		});
 	}
 
+	// Une seule règle d'interpolation pour la médiane et les quartiles (revue du lot 3)
+	const median = interpolate(classes, total, total / 2);
 	return success({
 		classes: rows,
 		total,
 		mean: weightedCenters / total,
-		medianClassIndex,
-		estimatedMedian
+		medianClassIndex: median.classIndex,
+		estimatedMedian: median.value
 	});
 }
 
@@ -136,18 +131,32 @@ export function estimateClassQuantile(
 	const total = classes.reduce((sum, { count }) => sum + count, 0);
 	if (total === 0) return failure('Effectif total nul : aucune donnée à décrire.');
 
-	const target = (percent * total) / 100;
+	return success(interpolate(classes, total, (percent * total) / 100).value);
+}
+
+/**
+ * Valeur où l'effectif cumulé atteint `target`, par interpolation linéaire
+ * dans sa classe (répartition uniforme), et l'indice de cette classe.
+ * Préconditions : classes valides, total > 0, 0 < target < total.
+ */
+function interpolate(
+	classes: readonly StatClass[],
+	total: number,
+	target: number
+): { value: number; classIndex: number } {
 	let cumulative = 0;
-	for (const { lower, upper, count } of classes) {
+	for (let i = 0; i < classes.length; i++) {
+		const { lower, upper, count } = classes[i];
 		const before = cumulative;
 		cumulative += count;
 		if (count > 0 && reaches(cumulative, target, total)) {
 			// Atteint pile en fin de classe : la borne droite, sans bruit flottant
-			if (isExactly(cumulative, target, total)) return success(upper);
-			return success(lower + ((target - before) / count) * (upper - lower));
+			if (isExactly(cumulative, target, total)) return { value: upper, classIndex: i };
+			return { value: lower + ((target - before) / count) * (upper - lower), classIndex: i };
 		}
 	}
-	return success(classes[classes.length - 1].upper);
+	const last = classes.length - 1;
+	return { value: classes[last].upper, classIndex: last };
 }
 
 function checkClasses(classes: readonly StatClass[]): Failure | null {

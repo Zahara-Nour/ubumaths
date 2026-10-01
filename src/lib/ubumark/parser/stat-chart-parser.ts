@@ -58,6 +58,7 @@ import {
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
 import { summarizeClasses } from '$lib/statistics/classes';
+import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
 // TYPES
@@ -258,6 +259,10 @@ function parseClass(raw: string): { label: string; interval: { lower: number; up
 			`« ${raw} » : écrire une classe sous la forme [a ; b[, par exemple [0 ; 10[`
 		);
 	}
+	// Au-delà, le PGCD des amplitudes (quadrillage) n'est plus calculable sûrement
+	if ([match[1], match[2]].some((bound) => (bound.split(/[.,]/)[1] ?? '').length > 4)) {
+		throw new LineError(`« ${raw} » : au plus 4 décimales dans une borne`);
+	}
 	const lower = toNumber(match[1]);
 	const upper = toNumber(match[2]);
 	if (
@@ -359,7 +364,13 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			if (!match) throw new LineError('écrire « légende: 1 carreau = 2 élèves »');
 			const area = toNumber(match[1]);
 			if (!(area > 0)) throw new LineError('un carreau doit valoir plus que 0');
-			options.areaLegend = { value: area, unit: match[2].trim() === '' ? null : match[2].trim() };
+			const word = match[2].trim();
+			if (word.length > STAT_CHART_LIMITS.labelLength) {
+				throw new LineError(
+					`mot de la légende trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+				);
+			}
+			options.areaLegend = { value: area, unit: word === '' ? null : word };
 			return;
 		}
 		case 'valeurs': {
@@ -377,32 +388,40 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 function checkWhole(
 	kind: StatChartKind,
 	data: readonly StatChartDatum[],
-	unit: StatChartUnit
+	unit: StatChartUnit,
+	areaLegend: { value: number } | null
 ): StatChartIssue | null {
 	if (data.length === 0) {
 		return { message: 'Aucune donnée : écrire au moins une ligne « catégorie = effectif »' };
 	}
+	if (kind === 'barres') return null;
 
-	if (CLASS_CHART_KINDS.includes(kind)) {
-		// Classes contiguës, total non nul : la règle du module statistique
-		const outcome = summarizeClasses(
-			data.map((d) => ({
-				lower: d.interval?.lower ?? 0,
-				upper: d.interval?.upper ?? 0,
-				count: d.value
-			}))
-		);
-		if (outcome !== null && !outcome.ok) return { message: outcome.message };
-		return null;
-	}
-
-	if (kind !== 'circulaire') return null;
 	const total = data.reduce((sum, datum) => sum + datum.value, 0);
-	if (total === 0) return { message: 'Effectif total nul : aucun secteur à dessiner' };
+	// Circulaire et séries en classes : des pourcentages forment un tout (Q22 ;
+	// revue du lot 3 : 10 % + 20 % montaient quand même à 100 % sur le polygone)
 	if (unit === 'pourcentages' && Math.abs(total - 100) > STAT_CHART_LIMITS.percentTolerance) {
 		const rounded = Math.round(total * 10) / 10;
 		return { message: `La somme des pourcentages fait ${formatForMessage(rounded)} %, pas 100 %` };
 	}
+
+	if (CLASS_CHART_KINDS.includes(kind)) {
+		const classes = data.map((d) => ({
+			lower: d.interval?.lower ?? 0,
+			upper: d.interval?.upper ?? 0,
+			count: d.value
+		}));
+		// Classes contiguës, total non nul : la règle du module statistique
+		const outcome = summarizeClasses(classes);
+		if (outcome !== null && !outcome.ok) return { message: outcome.message };
+		// Quadrillage borné : la règle partagée avec la scène
+		if (kind === 'histogramme' && usesCarreaux(classes, areaLegend !== null)) {
+			const grid = carreauGrid(classes, areaLegend?.value ?? null);
+			if (!grid.ok) return { message: `Histogramme : ${grid.message}` };
+		}
+		return null;
+	}
+
+	if (total === 0) return { message: 'Effectif total nul : aucun secteur à dessiner' };
 	return null;
 }
 
@@ -531,7 +550,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	if (errors.length === 0) {
-		const whole = checkWhole(kind, data, dataUnit);
+		const whole = checkWhole(kind, data, dataUnit, options.areaLegend);
 		if (whole) errors.push(whole);
 	}
 	if (errors.length === 0 && options.indicators.length > 0) {

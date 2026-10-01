@@ -1,6 +1,6 @@
 /**
- * Blocs ```barres et ```circulaire → Typst (cetz 0.3.0)
- * =====================================================
+ * Blocs statistiques (barres, circulaire, histogramme, polygone) → Typst (cetz 0.3.0)
+ * ===================================================================================
  *
  * Dessine la MÊME scène que l'écran (`buildStatChartScene`) : mêmes barres,
  * mêmes secteurs, même légende. Chaque primitive est précédée d'un commentaire

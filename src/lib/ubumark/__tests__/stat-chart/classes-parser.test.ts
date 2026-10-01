@@ -204,3 +204,44 @@ describe('indicateurs:', () => {
 		);
 	});
 });
+
+// Revue du lot 3 : le quadrillage n'avait aucun plafond (10^9 lignes → processus tué)
+describe('quadrillage borné et pourcentages contrôlés', () => {
+	it('amplitudes sans diviseur commun assez grand : refusé, avec la raison', () => {
+		const error = errorOf('histogramme', '[0 ; 1[ = 1\n[1 ; 1000000000[ = 1');
+
+		expect(error.message).toMatch(/carreaux/);
+		expect(error.message).toMatch(/60/);
+	});
+
+	it('légende trop petite : trop de carreaux de haut, refusé', () => {
+		expect(
+			errorOf('histogramme', 'légende: 1 carreau = 0,01\n[0 ; 1[ = 1000\n[1 ; 3[ = 2').message
+		).toMatch(/carreaux/);
+	});
+
+	it('cas ordinaire au plafond : accepté', () => {
+		const lines = '[0 ; 1[ = 1\n[1 ; 60[ = 59';
+
+		expect(parseStatChartContent('histogramme', lines).spec).not.toBeNull();
+	});
+
+	it('au plus 4 décimales dans une borne', () => {
+		expect(errorOf('histogramme', '[0 ; 0,00001[ = 1\n[0,00001 ; 0,00003[ = 1').message).toMatch(
+			/décimales/
+		);
+	});
+
+	it('séries en classes en pourcentages : la somme doit faire 100', () => {
+		expect(errorOf('frequences-cumulees', '[0 ; 10[ = 10 %\n[10 ; 20[ = 20 %').message).toMatch(
+			/30/
+		);
+		expect(errorOf('histogramme', '[0 ; 10[ = 10 %\n[10 ; 20[ = 20 %').message).toMatch(/30/);
+	});
+
+	it('mot de la légende d’aire : au plus 40 caractères', () => {
+		expect(
+			errorOf('histogramme', `légende: 1 carreau = 2 ${'x'.repeat(41)}\n[0 ; 10[ = 1`).line
+		).toBe(1);
+	});
+});

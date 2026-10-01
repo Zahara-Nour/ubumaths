@@ -69,6 +69,8 @@ describe('Typst des diagrammes statistiques', () => {
 
 		expect(count(typst, '// rectangle')).toBe(3);
 		expect(typst).toContain('#"1 carreau = 2"');
+		// Quadrillage : 5 verticales (0 à 40 par 10) et 10 horizontales (0 à 9 carreaux)
+		expect(count(typst, 'stroke: 0.4pt + luma(120))')).toBe(15);
 	});
 
 	it('polygone : un tracé, une lecture par quartile demandé', () => {
@@ -86,6 +88,7 @@ describe('Typst des diagrammes statistiques', () => {
 		const typst = typstOf('histogramme', 'indicateurs: moyenne\n[0 ; 10[ = 12\n[10 ; 20[ = 18');
 
 		expect(typst).toContain('// indicateurs');
-		expect(typst).toContain('Moyenne = ');
+		// (5 × 12 + 15 × 18) / 30 = 11
+		expect(typst).toContain('#"Moyenne = 11"');
 	});
 });

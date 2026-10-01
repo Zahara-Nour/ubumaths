@@ -21,7 +21,8 @@
 	import {
 		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
-		type ScenePoint
+		type ScenePoint,
+		type StatChartScene
 	} from '$lib/ubumark/utils/stat-chart-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -47,6 +48,8 @@
 	const AXIS_TITLE_PX = 18;
 
 	const SIN_45 = Math.SQRT1_2;
+
+	const FAILED_MESSAGE = 'Le calcul du diagramme a échoué : il n’a pas été dessiné';
 
 	/** Marge gauche d'un histogramme ou d'un polygone (graduations jusqu'à « 100 ») */
 	const CLASS_PAD_LEFT = 44;
@@ -89,13 +92,30 @@
 
 	let errorsVisible = $derived(showErrors ?? authoring());
 	let admitted = $derived(budget()?.admits(node) ?? true);
-	let scene = $derived.by(() => {
+	/**
+	 * Une exception de la scène ne doit jamais remonter : elle cassait le rendu
+	 * de TOUTE la page (revue du lot 3). Le bloc tombe en erreur, comme une
+	 * faute d'auteur.
+	 */
+	let computed = $derived.by((): { scene: StatChartScene | null; failed: boolean } => {
 		const spec = node.spec;
-		if (!spec || !admitted) return null;
-		return withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
+		if (!spec || !admitted) return { scene: null, failed: false };
+		try {
+			const built = withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
+			return { scene: built, failed: false };
+		} catch {
+			return { scene: null, failed: true };
+		}
 	});
-	let overBudget = $derived(node.spec !== null && scene === null);
-	let shownErrors = $derived(overBudget ? [{ message: OVER_BUDGET_MESSAGE }] : node.errors);
+	let scene = $derived(computed.scene);
+	let overBudget = $derived(node.spec !== null && scene === null && !computed.failed);
+	let shownErrors = $derived(
+		computed.failed
+			? [{ message: FAILED_MESSAGE }]
+			: overBudget
+				? [{ message: OVER_BUDGET_MESSAGE }]
+				: node.errors
+	);
 
 	let bars = $derived(scene?.kind === 'barres' ? scene : null);
 	let pie = $derived(scene?.kind === 'circulaire' ? scene : null);

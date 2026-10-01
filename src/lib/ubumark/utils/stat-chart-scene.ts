@@ -1,6 +1,6 @@
 /**
- * Blocs ```barres et ```circulaire — scène pure
- * =============================================
+ * Blocs statistiques (barres, circulaire, histogramme, polygone) — scène pure
+ * ===========================================================================
  *
  * La MÊME scène sert l'écran (`StatChart.svelte`, SVG) et le PDF
  * (`stat-chart-typst.ts`, cetz) : mêmes barres, mêmes secteurs, mêmes
@@ -35,6 +35,7 @@ import {
 	type StatClass
 } from '$lib/statistics/classes';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
+import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 
 // ============================================================================
 // TYPES
@@ -238,15 +239,6 @@ const KIND_TITLE = {
 	histogramme: 'Histogramme',
 	'frequences-cumulees': 'Polygone des fréquences cumulées'
 } as const;
-
-/** Hauteur visée du plus haut rectangle, en carreaux, quand la légende est automatique */
-const CARREAUX_TARGET_MAX = 12;
-
-/** Valeurs « simples » d'un carreau, à une puissance de 10 près */
-const NICE_MULTIPLIERS = [1, 2, 2.5, 5] as const;
-
-/** Précision d'un calcul de PGCD sur des décimaux */
-const GCD_SCALE = 1e6;
 
 // ============================================================================
 // FORMATAGE
@@ -557,35 +549,13 @@ function classIndicators(
 	});
 }
 
-/** PGCD de décimaux, à `GCD_SCALE` près. */
-function decimalGcd(values: readonly number[]): number {
-	const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-	const scaled = values.map((value) => Math.round(value * GCD_SCALE));
-	return scaled.reduce((acc, value) => gcd(acc, value)) / GCD_SCALE;
-}
-
-/** Plus petite valeur simple (1, 2, 2,5, 5 × 10^k) pour que `max / valeur` ≤ cible. */
-function niceCarreauValue(maxDensity: number): number {
-	const ideal = maxDensity / CARREAUX_TARGET_MAX;
-	let power = 10 ** Math.floor(Math.log10(ideal));
-	for (;;) {
-		for (const multiplier of NICE_MULTIPLIERS) {
-			const candidate = multiplier * power;
-			if (candidate >= ideal - 1e-12) return candidate;
-		}
-		power *= 10;
-	}
-}
-
 function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): HistogramScene {
 	const width = COURBE_PIXEL_WIDTH[spec.size];
 	const height = width * STAT_CHART_ASPECT_RATIO;
 	const summary = classSummaryOf(spec);
-	const widths = summary.classes.map((c) => c.width);
 	const xMin = summary.classes[0].lower;
 	const xMax = summary.classes[summary.classes.length - 1].upper;
-	const equalWidths = widths.every((w) => Math.abs(w - widths[0]) <= 1e-9 * Math.abs(widths[0]));
-	const mode = equalWidths && spec.areaLegend === null ? 'axe' : 'carreaux';
+	const mode = usesCarreaux(summary.classes, spec.areaLegend !== null) ? 'carreaux' : 'axe';
 
 	const valueLabel = (count: number) => formatValue(count, spec.unit, locale);
 	const common = {
@@ -627,22 +597,24 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		};
 	}
 
-	// Amplitudes inégales : l'AIRE porte l'effectif (Q26). Un carreau a pour
-	// largeur le PGCD des amplitudes ; sa hauteur vaut `value` données par carreau.
-	const carreauWidth = decimalGcd(widths);
-	const densities = summary.classes.map((c) => (c.count * carreauWidth) / c.width);
-	const value = spec.areaLegend?.value ?? niceCarreauValue(Math.max(...densities) || 1);
+	// Amplitudes inégales : l'AIRE porte l'effectif (Q26) — règle partagée avec le parseur
+	const outcome = carreauGrid(summary.classes, spec.areaLegend?.value ?? null);
+	// Le parseur a refusé un quadrillage démesuré ; une défaillance ici est un bug
+	if (!outcome.ok) throw new Error(`Quadrillage refusé : ${outcome.message}`);
+	const { width: carreauWidth, value, heights, columns, rows: yMax } = outcome.grid;
 	const unitWord =
 		spec.areaLegend?.unit ??
 		(spec.areaLegend === null && spec.unit === 'pourcentages' ? '%' : null);
 	const legend = `1 carreau = ${formatTick(value, locale)}${unitWord ? ` ${unitWord}` : ''}`;
-	const heights = densities.map((density) => density / value);
-	const yMax = Math.max(1, Math.ceil(Math.max(...heights) - 1e-9));
-	const columns = Math.round((xMax - xMin) / carreauWidth);
 
 	const described = summary.classes.map((c, i) => {
 		const across = Math.round(c.width / carreauWidth);
-		const size = `${across} carreau${across > 1 ? 'x' : ''} de large, ${formatRounded(heights[i], 2, locale)} de haut`;
+		// Un rectangle très plat ne fait pas « 0 de haut »
+		const tall =
+			heights[i] > 0 && heights[i] < 0.005
+				? `moins de ${formatTick(0.01, locale)}`
+				: formatRounded(heights[i], 2, locale);
+		const size = `${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`;
 		return spec.showValues
 			? `${spec.data[i].label} : ${valueLabel(c.count)}, ${size}`
 			: `${spec.data[i].label} : ${size}`;
