@@ -491,7 +491,7 @@ function parseLawIndicators(raw: string): LawIndicator[] {
 		.map((name) => name.trim())
 		.filter((name) => name !== '');
 	if (names.length === 0) throw new LineError('indicateurs : aucun indicateur donné');
-	return names.map((name) => {
+	const indicators = names.map((name) => {
 		const key = normalizeKey(name).replace(/[\s-]+/g, '-');
 		const known = (Object.keys(LAW_INDICATOR_NAMES) as LawIndicator[]).find((i) => i === key);
 		if (known === undefined) {
@@ -501,6 +501,8 @@ function parseLawIndicators(raw: string): LawIndicator[] {
 		}
 		return known;
 	});
+	// Écrit deux fois : affiché une fois
+	return indicators.filter((indicator, i) => indicators.indexOf(indicator) === i);
 }
 
 /**
@@ -542,8 +544,22 @@ function checkLaw(
 				'indicateurs impossibles avec une probabilité « ? » : sa valeur est inconnue'
 			);
 		}
+		// Revue du lot 6 : un « ? » ne dispense pas des autres contrôles, sinon une
+		// fiche « trouver p » insoluble part sans alerte
+		const twice = values.find((v, i) => values.findIndex((other) => other.equals(v)) !== i);
+		if (twice) return at(variable.line, `la valeur « ${twice} » apparaît deux fois`);
 		const outside = known.find((p) => p.isNegative() || p.greaterThan(Fraction.ONE));
 		if (outside) return at(probabilities.line, `la probabilité ${outside} n'est pas entre 0 et 1`);
+		const sum = known.reduce((total, p) => total.add(p), Fraction.ZERO);
+		if (sum.greaterThan(Fraction.ONE)) {
+			return at(probabilities.line, `les probabilités connues font ${sum}, plus que 1`);
+		}
+		if (sum.equals(Fraction.ONE)) {
+			return at(
+				probabilities.line,
+				'les probabilités connues font déjà 1 : une probabilité « ? » vaudrait 0'
+			);
+		}
 	} else {
 		const outcome = randomVariable(values, known);
 		if (outcome !== null && !outcome.ok) return at(probabilities.line, outcome.message);
@@ -556,7 +572,7 @@ function checkLaw(
 		if (index === -1) {
 			return at(optionLines.masquer ?? 0, `masquer : la valeur « ${raw} » n'est pas dans la loi`);
 		}
-		masked.push(index);
+		if (!masked.includes(index)) masked.push(index);
 	}
 
 	return {
@@ -868,7 +884,11 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					throw new LineError(`au plus ${STAT_CHART_LIMITS.lawValues} valeurs dans une loi`);
 				}
 				for (const text of texts) {
-					if (Fraction.parse(text) === null) throw new LineError(`« ${text} » n'est pas un nombre`);
+					if (text === '') throw new LineError('valeur vide (un « ; » de trop ?)');
+					// Un pourcentage est une probabilité, pas une valeur de la variable
+					if (text.includes('%') || Fraction.parse(text) === null) {
+						throw new LineError(`« ${text} » n'est pas un nombre`);
+					}
 				}
 				lawVariable = { name: written, texts, line };
 				return;

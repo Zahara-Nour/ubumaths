@@ -81,6 +81,25 @@ describe('loi — erreurs situées', () => {
 		expect(errorOf('X = 1 ; a\nP = 1/2 ; 1/2').line).toBe(1);
 	});
 
+	// Revue du lot 6 : avec un « ? », presque rien n'était vérifié
+	it('avec « ? » : doublons et somme des probabilités connues vérifiés', () => {
+		expect(errorOf('X = 1 ; 1 ; 2\nP = 1/5 ; 1/5 ; ?').message).toMatch(/deux fois/);
+		expect(errorOf('X = 1 ; 2 ; 3\nP = 0,8 ; 0,5 ; ?').message).toMatch(/13\/10|1,3/);
+		expect(errorOf('X = 1 ; 2 ; 3\nP = 1/2 ; 1/2 ; ?').message).toMatch(/déjà 1/);
+	});
+
+	it('une valeur en pourcentage, ou vide, est refusée avec un message clair', () => {
+		expect(errorOf('X = 25 % ; 2\nP = 1/2 ; 1/2').line).toBe(1);
+		expect(errorOf('X = 1 ; 2 ;\nP = 1/2 ; 1/2').message).toMatch(/vide/);
+	});
+
+	it('masquer et indicateurs répétés : une seule fois', () => {
+		const law = specOf(`${GAME}\nmasquer: 0 ; 0\nindicateurs: espérance ; espérance`).law!;
+
+		expect(law.masked).toEqual([1]);
+		expect(law.indicators).toEqual(['esperance']);
+	});
+
 	it('au plus 12 valeurs', () => {
 		const values = Array.from({ length: 13 }, (_, i) => i).join(' ; ');
 		const probs = Array.from({ length: 13 }, () => '1/13').join(' ; ');

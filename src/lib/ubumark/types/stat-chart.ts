@@ -16,6 +16,7 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
+import type { LawIndicator } from '$lib/statistics/format';
 
 // ============================================================================
 // VALEURS
@@ -66,8 +67,8 @@ export interface CrossTableData {
 	corner: string | null;
 }
 
-/** Indicateurs d'une variable aléatoire (lot 6) */
-export type LawIndicator = 'esperance' | 'variance' | 'ecart-type';
+/** Indicateurs d'une variable aléatoire (lot 6) : le type du module statistique */
+export type { LawIndicator };
 
 /**
  * Loi d'une variable aléatoire finie (lot 6, Q41) : valeurs et probabilités

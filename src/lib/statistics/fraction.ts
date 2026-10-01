@@ -25,6 +25,16 @@ const MAX_DENOMINATOR = 10_000;
 /** Écart toléré entre un décimal de la machine et sa fraction */
 const MACHINE_TOLERANCE = 1e-9;
 
+/**
+ * Chiffres d'un nombre écrit (numérateur, dénominateur, ou décimal sans la
+ * virgule) : au-delà, ce n'est plus une probabilité de lycée, et les calculs
+ * exacts grossiraient sans fin (revue du lot 6).
+ */
+const MAX_DIGITS = 15;
+
+/** Au-delà, un décimal de la machine n'est plus représenté exactement */
+const MAX_MACHINE_VALUE = 1e15;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -36,14 +46,22 @@ function gcd(a: bigint, b: bigint): bigint {
 	return x;
 }
 
-/** Racine carrée entière exacte de `n ≥ 0`, ou null. */
+/**
+ * Racine carrée entière exacte de `n ≥ 0`, ou null.
+ *
+ * ⚠️ Méthode de Newton en `bigint`, qui converge en quelques tours. Corriger
+ * une estimation flottante de 1 en 1 prenait 38 s pour une racine de l'ordre
+ * de 10^26, et ne finissait plus au-delà : onglet figé (revue du lot 6).
+ */
 function exactSqrt(n: bigint): bigint | null {
 	if (n < 0n) return null;
 	if (n < 2n) return n;
-	let x = BigInt(Math.floor(Math.sqrt(Number(n))));
-	// Corrige l'arrondi flottant des grands entiers
-	while (x * x > n) x -= 1n;
-	while ((x + 1n) * (x + 1n) <= n) x += 1n;
+	let x = n;
+	let y = (x + 1n) / 2n;
+	while (y < x) {
+		x = y;
+		y = (x + n / x) / 2n;
+	}
 	return x * x === n ? x : null;
 }
 
@@ -72,12 +90,15 @@ export class Fraction {
 		const t = text.trim().replace('−', '-');
 		const ratio = FRACTION_REGEX.exec(t);
 		if (ratio) {
+			if (ratio[1].replace('-', '').length > MAX_DIGITS || ratio[2].length > MAX_DIGITS)
+				return null;
 			const den = BigInt(ratio[2]);
 			return den === 0n ? null : new Fraction(BigInt(ratio[1]), den);
 		}
 		const decimal = DECIMAL_REGEX.exec(t);
 		if (!decimal) return null;
 		const [, minus, whole, decimals = '', percent] = decimal;
+		if (whole.length + decimals.length > MAX_DIGITS) return null;
 		const scale = 10n ** BigInt(decimals.length) * (percent === '%' ? 100n : 1n);
 		const magnitude = BigInt(whole + decimals);
 		return new Fraction(minus === '-' ? -magnitude : magnitude, scale);
@@ -89,7 +110,10 @@ export class Fraction {
 	 * près ; null si aucune ne convient (π).
 	 */
 	static fromNumber(value: number): Fraction | null {
-		if (!Number.isFinite(value)) return null;
+		if (!Number.isFinite(value) || Math.abs(value) > MAX_MACHINE_VALUE) return null;
+		if (value === 0) return Fraction.ZERO;
+		// Plus petit que la tolérance : il deviendrait 0 sans prévenir
+		if (Math.abs(value) < MACHINE_TOLERANCE) return null;
 		let [h0, h1, k0, k1] = [0, 1, 1, 0];
 		let x = value;
 		for (let i = 0; i < 64; i++) {

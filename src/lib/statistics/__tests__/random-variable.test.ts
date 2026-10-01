@@ -153,3 +153,35 @@ describe('mise en forme française', () => {
 		]);
 	});
 });
+
+// Revue du lot 6 : la racine exacte corrigeait son estimation de 1 en 1 —
+// 38 s pour une valeur de 26 chiffres, onglet figé au-delà
+describe('grands nombres', () => {
+	it('écart type d’une loi à très grandes valeurs : immédiat', () => {
+		const start = performance.now();
+		const law = lawOf(['0', '1' + '0'.repeat(14)], ['1/2', '1/2']);
+
+		expect(performance.now() - start).toBeLessThan(200);
+		expect(law.exactDeviation?.toString()).toBe('5' + '0'.repeat(13));
+	});
+
+	// Racine de l'ordre de 10^26 : celle qui prenait 38 s (revue), au-delà de 2^53
+	it('racine exacte d’un carré de 53 chiffres : immédiat', () => {
+		const big = 10n ** 26n + 7n;
+		const start = performance.now();
+
+		expect(new Fraction(big * big).sqrt()?.toString()).toBe(String(big));
+		expect(performance.now() - start).toBeLessThan(200);
+	});
+
+	it('un nombre de plus de 15 chiffres n’est pas lu', () => {
+		expect(Fraction.parse('1' + '0'.repeat(15))).toBeNull();
+		expect(Fraction.parse('1/' + '1'.repeat(16))).toBeNull();
+	});
+
+	it('fromNumber : ni minuscule devenue 0, ni démesuré', () => {
+		expect(Fraction.fromNumber(1e-10)).toBeNull();
+		expect(Fraction.fromNumber(0)?.toString()).toBe('0');
+		expect(Fraction.fromNumber(1e20)).toBeNull();
+	});
+});
