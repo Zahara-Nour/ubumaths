@@ -8048,6 +8048,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_declaration: string | null
+          age_declared_at: string | null
           avatar_url: string | null
           bonus: number
           class_ids: string[] | null
@@ -8075,6 +8077,8 @@ export type Database = {
           vip_cards_history: Json
         }
         Insert: {
+          age_declaration?: string | null
+          age_declared_at?: string | null
           avatar_url?: string | null
           bonus?: number
           class_ids?: string[] | null
@@ -8102,6 +8106,8 @@ export type Database = {
           vip_cards_history?: Json
         }
         Update: {
+          age_declaration?: string | null
+          age_declared_at?: string | null
           avatar_url?: string | null
           bonus?: number
           class_ids?: string[] | null
