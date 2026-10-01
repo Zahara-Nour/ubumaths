@@ -515,23 +515,36 @@ function splitRanks(body: string, name: string): { body: string; from: number; t
 /**
  * Lire l'expression d'une suite : en n, et pour une récurrence en `v(n)`,
  * réécrit en variable (`computeSequenceTerms` du grapheur).
+ *
+ * `parseCustom` ne lit `x(n)` comme un appel que pour f, g, h, u, v, w (`t(n)`
+ * y devient `t*n`) : `v(n)` est donc réécrit en `(v_n)` AVANT l'analyse, puis
+ * l'indice `v_n` en variable. Les parenthèses gardent `v(n)^v(n)` correct.
  */
 function parseSequenceExpression(raw: string, name: string, recurrence: boolean): MathNode {
 	const expression = normalizeCourbeExpression(raw);
 	if (expression === '') throw new LineError(`expression de ${name} manquante`);
-	const parsed = parseExpression(expression);
+	const call = (args: string) => new RegExp(`(?<![A-Za-z0-9_\\\\])${name}\\s*\\(${args}`, 'g');
+	const rewritten = recurrence
+		? expression.replace(call('\\s*n\\s*\\)'), `(${name}_n)`)
+		: expression;
+	if (call('').test(rewritten)) {
+		throw new LineError(
+			recurrence
+				? `dans la relation, seul ${name}(n) est accepté (récurrence d'ordre 1)`
+				: `une suite explicite ${name}(n) ne peut pas utiliser ses propres termes : écrire ${name}(0) = … ; ${name}(n+1) = …`
+		);
+	}
+	const parsed = parseExpression(rewritten);
 	const ast = transformAST(parsed, {
-		enterFunction: (node) => {
-			if (node.name !== name) return;
-			const [arg] = node.args;
+		enterSubscript: (node) => {
 			const isPrevious =
-				recurrence && node.args.length === 1 && arg.type === 'variable' && arg.name === 'n';
+				recurrence &&
+				node.base.type === 'variable' &&
+				node.base.name === name &&
+				node.subscript.type === 'variable' &&
+				node.subscript.name === 'n';
 			if (isPrevious) return variable(PREV_TERM_VARIABLE);
-			throw new LineError(
-				recurrence
-					? `dans la relation, seul ${name}(n) est accepté (récurrence d'ordre 1)`
-					: `une suite explicite ${name}(n) ne peut pas utiliser ses propres termes : écrire ${name}(0) = … ; ${name}(n+1) = …`
-			);
+			throw new LineError(`indice non accepté dans l'expression de ${name}`);
 		}
 	});
 	const unknown = [...collectVariables(ast, new Set())].filter(
@@ -578,6 +591,9 @@ function parseSequenceLine(
 	line: number,
 	budgetLeft: number
 ): ParsedSequence {
+	if (!/^[a-zA-Z]$/.test(name)) {
+		throw new LineError(`nom de suite « ${name} » : une seule lettre (u, v, w…)`);
+	}
 	if (name === 'x' || name === 'y' || name === 'n') {
 		throw new LineError(`« ${name} » ne peut pas nommer une suite`);
 	}

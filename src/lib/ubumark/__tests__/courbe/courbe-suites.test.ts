@@ -86,6 +86,23 @@ describe('suites — récurrence (S2, S3)', () => {
 		]);
 	});
 
+	// parseCustom ne lit `x(n)` comme un appel que pour f, g, h, u, v, w : `t(n)` y est `t*n`
+	it('toute lettre nomme une suite récurrente (t, a, p…), pas seulement u, v, w', () => {
+		for (const name of ['t', 'a', 'p', 'q']) {
+			const s = spec(
+				parseCourbeContent(
+					`${WINDOW}\n${name}(0) = 1 ; ${name}(n+1) = 2*${name}(n)+n pour n de 0 à 3`
+				)
+			);
+			expect(s.sequences[0].terms.map((t) => t.value)).toEqual([1, 2, 5, 12]);
+		}
+	});
+
+	it('v(n) dans une puissance : v(n)^v(n) lu comme (v(n))^(v(n))', () => {
+		const s = spec(parseCourbeContent(`${WINDOW}\nv(0) = 2 ; v(n+1) = v(n)^v(n) pour n de 0 à 2`));
+		expect(s.sequences[0].terms.map((t) => t.value)).toEqual([2, 4, 256]);
+	});
+
 	it('rangs dessinés à partir de n0 > premier rang : les termes d’avant sont calculés', () => {
 		const s = spec(parseCourbeContent(`${WINDOW}\nv(0) = 1 ; v(n+1) = 2*v(n) pour n de 3 à 4`));
 		expect(pairs(s)).toEqual([
@@ -163,7 +180,10 @@ describe('suites — robustesse (S6)', () => {
 		expect(tooLong.spec).toBeNull();
 		expect(tooLong.errors[0].line).toBe(3);
 		expect(tooLong.errors[0].message).toMatch(new RegExp(`${COURBE_LIMITS.sequenceTerms}`));
-		const many = Array.from({ length: 12 }, (_, i) => `u${i}(n) = n pour n de 0 à 1`).join('\n');
+		const many = 'abcdefghijkl'
+			.split('')
+			.map((c) => `${c}(n) = n pour n de 0 à 1`)
+			.join('\n');
 		expect(parseCourbeContent(`${WINDOW}\n${many}`).spec).toBeNull();
 	});
 
@@ -174,7 +194,10 @@ describe('suites — robustesse (S6)', () => {
 			`${WINDOW}\nu(n) = n pour n de 0 à 9007199254740993`,
 			`${WINDOW}\nu(n) = n pour n de 9007199254740990 à 9007199254740999`,
 			`${WINDOW}\nu(n) = n pour n de -1e300 à 1e300`,
-			`${WINDOW}\n${Array.from({ length: 10 }, (_, i) => `u${i}(n) = sin(n)*n^n pour n de 0 à 199`).join('\n')}`
+			`${WINDOW}\n${'abcdefghij'
+				.split('')
+				.map((c) => `${c}(n) = sin(n)*n^n pour n de 0 à 199`)
+				.join('\n')}`
 		];
 		const start = performance.now();
 		for (const source of hostile) {
@@ -251,6 +274,10 @@ describe('suites — erreurs situées (S7)', () => {
 
 	it('premier rang de la récurrence après n0', () => {
 		expect(errorOf('v(2) = 1 ; v(n+1) = v(n)+1 pour n de 0 à 3')).toMatch(/v\(2\)|rang 2/);
+	});
+
+	it('nom de suite : une seule lettre', () => {
+		expect(errorOf('u1(n) = n pour n de 0 à 3')).toMatch(/lettre/);
 	});
 
 	it('nom déjà pris par une fonction', () => {
