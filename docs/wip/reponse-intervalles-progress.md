@@ -61,8 +61,10 @@ Nouveau type de réponse pour une case à trous : un ENSEMBLE de réels écrit e
     comparait les bornes à 0,001 près → comparaison exacte ;
   - `domainsAreEqual(ℝ \ {2}, ]-∞;2[ ∪ ]2;+∞[)` rendait `false` → points exclus développés ;
   - module : `src/lib/questions/intervals/interval-answer.ts`.
-- [ ] 2 — câblage validateur / barème / schémas / public-question / éditeur
-- [ ] 3 — clavier « Intervalles »
+- [x] 2 — câblage validateur / barème / schémas / public-question / éditeur (case cochée dans les
+      valeurs partagées ; par case : JSON des blancs)
+- [x] 3 — clavier « Intervalles » (`questions/intervals/keyboard-intervals.ts`) + `smartFence = false`
+      posé au focus sur les champs d'une question à case `intervalles` (`FillBlanksInput`)
 - [ ] 4 — modèle n° 11 du second degré (inéquations), en brouillon
 
 ## Mesure MathLive (phase 0) — 2026-10-01
@@ -111,3 +113,21 @@ avec le clic dans la case.
 droite, plus les formes sans ambiguïté de la colonne de gauche (`\left\lbrack2;3\right\rbrack`,
 `\left\lbrace3\right\rbrace`). La virgule de MathLive est nue (`0,5`) : `{,}` (écriture de l'auteur)
 est accepté aussi.
+
+### Clavier virtuel « Intervalles » — mesure au vrai clavier (2026-10-01)
+
+Même décor (page `/demo`, champ `readonly` + `\placeholder[0]{}`, `smartFence = false`), onglet chargé
+dans le VRAI clavier virtuel de MathLive (page de premier niveau, pas le proxy d'iframe de vitest),
+clics réels sur les touches de l'onglet, chiffres tapés au clavier physique :
+
+| Touches                                            | Valeur lue                    |
+| -------------------------------------------------- | ----------------------------- |
+| `]` `-∞` `;` « -2 » `[` `∪` `]` « 3 » `;` `+∞` `[` | `]-\infty;-2[\cup]3;+\infty[` |
+| `ℝ` `∖{}` « 2 »                                    | `\mathbb{R}\setminus\{2\}`    |
+| `∅`                                                | `\emptyset`                   |
+| `[` « -1 » `;` « 2 » `]`                           | `[-1;2]`                      |
+| `]` « 1 » `;` « 5 » `[`                            | `]1;5[`                       |
+
+Toutes relues juste par `judgeIntervalAnswer`. Test navigateur (vitest + Playwright, frappes
+`userEvent.keyboard` réelles) : `FillBlanksInput-intervals-keyboard.svelte.test.ts` — rouge avant le
+réglage `smartFence` (le champ restait `true`), vert après.
