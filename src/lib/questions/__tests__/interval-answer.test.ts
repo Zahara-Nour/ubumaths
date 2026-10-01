@@ -60,7 +60,17 @@ describe('20 — singleton', () => {
 
 	it('[3 ; 3] vaut ½, avec le message des accolades', () => {
 		const verdict = judgeIntervalAnswer('[3;3]', '\\{3\\}');
-		expect(verdict).toEqual({ status: 'unoptimal_form', feedback: INTERVAL_FEEDBACK.singleton });
+		expect(verdict).toEqual({
+			status: 'unoptimal_form',
+			feedback: INTERVAL_FEEDBACK.singleton('3')
+		});
+		expect(verdict.feedback).toContain('{3}');
+	});
+
+	it('le message du singleton affiche la vraie valeur (décimal à virgule)', () => {
+		expect(judgeIntervalAnswer('[0{,}5;0{,}5]', '\\{1/2\\}').feedback).toBe(
+			INTERVAL_FEEDBACK.singleton('0,5')
+		);
 	});
 });
 
@@ -256,5 +266,96 @@ describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flas
 
 	it('illisible : rendue telle quelle', () => {
 		expect(expectedIntervalsLatex(']2;x[')).toBe(']2;x[');
+	});
+});
+
+// ============================================================================
+// Relecture du 2026-10-01
+// ============================================================================
+
+/** n radicaux imbriqués autour de 2 */
+function nestedRoots(n: number): string {
+	return '\\sqrt{'.repeat(n) + '2' + '}'.repeat(n);
+}
+
+describe('borne hostile : jugée vite, illisible avec un message', () => {
+	it.each([12, 50])('%s radicaux imbriqués : moins de 200 ms', (depth) => {
+		const start = performance.now();
+		const verdict = judgeIntervalAnswer(`]${nestedRoots(depth)};3[`, ']1;3[');
+		expect(performance.now() - start).toBeLessThan(200);
+		expect(verdict).toEqual({ status: 'incorrect', feedback: INTERVAL_FEEDBACK.tooComplex });
+	});
+
+	it('borne trop longue', () => {
+		const long = Array.from({ length: 40 }, () => '1').join('+');
+		expect(judgeIntervalAnswer(`]${long};50[`, ']1;50[')).toEqual({
+			status: 'incorrect',
+			feedback: INTERVAL_FEEDBACK.tooComplex
+		});
+	});
+
+	it('imbrication au-delà de 100 niveaux : jamais d’exception', () => {
+		const deep = `]${'('.repeat(150)}2${')'.repeat(150)};3[`;
+		expect(() => judgeIntervalAnswer(deep, ']2;3[')).not.toThrow();
+		expect(judgeIntervalAnswer(deep, ']2;3[').status).toBe('incorrect');
+	});
+
+	it('une borne exacte usuelle reste lue', () => {
+		expect(judgeIntervalAnswer(']\\frac{1+\\sqrt{5}}{2};3[', '](1+sqrt(5))/2;3[').status).toBe(
+			'correct'
+		);
+	});
+});
+
+describe('points exclus dans une réunion', () => {
+	it(']0;5[ \\ {2} n’est pas ]0;5[', () => {
+		expect(judgeIntervalAnswer(']0;5[\\setminus\\{2\\}', ']0;5[').status).toBe('incorrect');
+		expect(judgeIntervalAnswer(']0;5[\\setminus\\{2\\}', ']0;5[', 'off').status).toBe('incorrect');
+	});
+
+	it(']0;5[ \\ {2} = ]0;2[ ∪ ]2;5[', () => {
+		expect(judgeIntervalAnswer(']0;5[\\setminus\\{2\\}', ']0;2[\\cup]2;5[').status).toBe('correct');
+		expect(
+			judgeIntervalAnswer(']0;5[\\setminus\\{2\\}\\cup]6;7[', ']0;2[\\cup]2;5[\\cup]6;7[').status
+		).toBe('correct');
+	});
+
+	it(']-∞;+∞[ \\ {2} = ℝ \\ {2}', () => {
+		expect(
+			judgeIntervalAnswer(']-\\infty;+\\infty[\\setminus\\{2\\}', '\\mathbb{R}\\setminus\\{2\\}')
+				.status
+		).toBe('correct');
+	});
+
+	it('point oublié entre deux intervalles contigus : message', () => {
+		expect(judgeIntervalAnswer(']0;2[\\cup]2;5[', ']0;5[')).toEqual({
+			status: 'incorrect',
+			feedback: 'Tu as oublié le point 2.'
+		});
+	});
+});
+
+describe('virgule décimale entre accolades', () => {
+	it('{0,5} est un seul point', () => {
+		expect(judgeIntervalAnswer('\\lbrace0,5\\rbrace', '\\{1/2\\}').status).toBe('correct');
+		expect(
+			judgeIntervalAnswer('\\R\\setminus\\lbrace0,5\\rbrace', '\\mathbb{R}\\setminus\\{1/2\\}')
+				.status
+		).toBe('correct');
+	});
+
+	it('virgule comme séparateur de points : message', () => {
+		expect(judgeIntervalAnswer('\\{1,-2\\}', '\\{-2;1\\}')).toEqual({
+			status: 'incorrect',
+			feedback: INTERVAL_FEEDBACK.separator
+		});
+	});
+});
+
+describe('corrigé : pas de parenthèses en trop', () => {
+	it('(1-sqrt(5))/2 → \\dfrac{1 - \\sqrt{5}}{2}', () => {
+		expect(expectedIntervalsLatex(']-\\infty;(1-sqrt(5))/2]')).toBe(
+			']-\\infty;\\dfrac{1 - \\sqrt{5}}{2}]'
+		);
 	});
 });

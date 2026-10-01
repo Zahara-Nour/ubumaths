@@ -28,7 +28,11 @@ export type { DomainMistakeType, DomainMistake } from './mistake-types';
 // Student Domain Parsing
 // =============================================================================
 
-export { parseStudentDomain, parseStudentDomainPieces } from './parse-student-domain';
+export {
+	parseStudentDomain,
+	parseStudentDomainPieces,
+	isBoundTooComplex
+} from './parse-student-domain';
 
 // =============================================================================
 // Domain Comparison

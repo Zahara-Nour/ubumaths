@@ -36,6 +36,7 @@ import {
 	greaterThanOrEqualInterval
 } from '../factory';
 import { union, excludePoints } from '../algebra';
+import { expandExcludedPoints } from './compare-domains';
 
 // =============================================================================
 // Main API
@@ -329,9 +330,11 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 function parseExcludedPoints(
 	input: string
 ): { success: true; points: MathNode[] } | { success: false } {
-	const sep = input.includes(';') ? ';' : ',';
+	// Virgule ENTRE DEUX CHIFFRES = virgule décimale (MathLive : `{0,5}`) ; toute autre
+	// virgule sépare (écriture historique `{0, 1}`) ; le point-virgule l'emporte.
+	const separator = input.includes(';') ? ';' : /(?<!\d),|,(?!\d)/;
 	const parts = input
-		.split(sep)
+		.split(separator)
 		.map((s) => s.trim())
 		.filter(Boolean);
 	const points: MathNode[] = [];
@@ -373,7 +376,8 @@ function parseIntervalNotation(input: string): ParseStudentDomainPiecesResult {
 		const piece = parsePiece(part);
 		if (!piece.success) return piece;
 		pieces.push(piece.piece);
-		result = union(result, piece.piece.domain);
+		// `union` ignore les points exclus : les développer d'abord (]0;5[ \ {2} → ]0;2[ ∪ ]2;5[)
+		result = union(result, expandExcludedPoints(piece.piece.domain));
 	}
 
 	return { success: true, domain: result, format: 'interval', pieces };
@@ -695,6 +699,10 @@ function parseEndpointValue(input: string): MathNode | null {
 		return bound('-inf');
 	}
 
+	// Borne hostile (radicaux imbriqués : coût ×9 par niveau à l'évaluation) : refusée
+	// AVANT toute lecture
+	if (isBoundTooComplex(trimmed)) return null;
+
 	const latex = trimmed
 		// Écritures historiques : π, pi, √2, √(…), sqrt2
 		.replace(/π|(?<!\\)\bpi\b/g, '\\pi ')
@@ -708,6 +716,30 @@ function parseEndpointValue(input: string): MathNode | null {
 
 	const node = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
 	return node && isRealConstant(node) ? node : null;
+}
+
+/** Longueur maximale d'une borne (la plus longue utile : `\\dfrac{-3-\\sqrt{13}}{4}`, 22) */
+export const MAX_BOUND_LENGTH = 60;
+
+/** Profondeur maximale d'imbrication d'une borne (accolades, parenthèses, radicaux, puissances) */
+export const MAX_BOUND_DEPTH = 4;
+
+/**
+ * Borne trop longue ou trop imbriquée pour être évaluée sans risque : le coût
+ * d'évaluation de radicaux imbriqués croît d'environ ×9 par niveau (12 niveaux :
+ * 2 s, 50 : plusieurs minutes, serveur des évaluations bloqué).
+ */
+export function isBoundTooComplex(text: string): boolean {
+	if (text.length > MAX_BOUND_LENGTH) return true;
+	let depth = 0;
+	let maxDepth = 0;
+	for (const char of text) {
+		if (char === '{' || char === '(') maxDepth = Math.max(maxDepth, ++depth);
+		else if (char === '}' || char === ')') depth--;
+	}
+	// Radicaux, fractions, puissances, factorielles : imbriqués même sans accolades (`\\sqrt\\sqrt2`)
+	const operators = text.match(/sqrt|√|frac|\^|!/g)?.length ?? 0;
+	return maxDepth > MAX_BOUND_DEPTH || operators > MAX_BOUND_DEPTH;
 }
 
 function parseLatexBound(latex: string): MathNode | null {
