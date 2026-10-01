@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 import {
 	createBugReportSchema,
 	listBugReportsQuerySchema
@@ -107,6 +108,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
+
+	// Chaque signalement notifie les admins : 10 par heure et par compte suffisent,
+	// et empêchent un élève d'inonder leurs notifications.
+	rateLimit(`bug-report:${user.id}`, 10, 60 * 60 * 1000);
 
 	// Validate request body
 	const body = await request.json();

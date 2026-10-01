@@ -535,15 +535,26 @@ export async function deleteNotification(
 			return { success: false, error: 'Permission refusée' };
 		}
 
-		// Soft delete
-		const { error } = await supabase
+		// Masquage par le client service, l'autorisation venant d'être vérifiée
+		// (auteur ou admin). Avec le client du compte, la base refusait toujours : une
+		// notification masquée ne satisfait plus la policy SELECT (deleted_at is null),
+		// et PostgREST la relit après l'UPDATE.
+		let maskQuery = createServiceRoleClient()
 			.from('notifications')
 			.update({ deleted_at: new Date().toISOString() })
-			.eq('id', notificationId);
+			.eq('id', notificationId)
+			.is('deleted_at', null);
+		// Défense en profondeur : hors admin, seulement ses propres notifications.
+		if (!isAdmin) maskQuery = maskQuery.eq('created_by', userId);
+		const { data: masked, error } = await maskQuery.select('id');
 
 		if (error) {
 			console.error('Error deleting notification:', error);
 			return { success: false, error: 'Erreur lors de la suppression' };
+		}
+
+		if (!masked || masked.length !== 1) {
+			return { success: false, error: 'Notification non trouvée' };
 		}
 
 		return { success: true };
