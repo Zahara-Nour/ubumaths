@@ -4,7 +4,7 @@ Décision de David : mise à jour directe des 13 modèles relus, qui restent pub
 
 - Specs : `scripts/questions/second-degre-existants/<id8>.json` (premier commit = instantané de
   production avant correction).
-- Écriture : `pnpm tsx scripts/update-published-questions.ts` (simulation + diff + preuves rouges),
+- Écriture : `pnpm tsx scripts/update-published-questions.ts --lot second-degre` (simulation + diff + preuves rouges),
   `--publier` pour écrire. Ids explicites dans `CIBLES`.
 - Rendu : `pnpm tsx scripts/audit-question-draws.ts --dir|--file|--template` (`1x`, `+ 0`, `-8 0`,
   gabarit non résolu, tableau ```variation illisible, abscisse hors domaine ou non croissante,

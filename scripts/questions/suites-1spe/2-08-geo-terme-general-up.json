@@ -1,0 +1,236 @@
+{
+	"title": "Terme général d'une suite géométrique",
+	"description": "À partir de u_1 ou d'un terme u_p",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Terme général",
+	"level": 2,
+	"status": "draft",
+	"delay": 40,
+	"options": {
+		"constraints": {
+			"form": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_1={{c}}$ et de raison $q={{q}}$.\n\nExprime $u_n$ en fonction de $n$, pour $n\\geqslant1$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-1}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme est $u_1$ : pour aller de $u_1$ à $u_n$, on multiplie $n-1$ fois par la raison. Donc $u_n=u_1\\times q^{n-1}$.",
+					"Ici $u_1={{c}}$ et $q=\\textcolor{{{color:primary.0}}}{{{q}}}$, donc $u_n={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{n-1}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de raison $q={{q}}$ telle que $u_{ {{p}} }={{c}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-{{p}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour aller de $u_{ {{p}} }$ à $u_n$, on multiplie $n-{{p}}$ fois par la raison. Donc $u_n=u_{ {{p}} }\\times q^{n-{{p}}}$.",
+					"Ici $u_{ {{p}} }={{c}}$ et $q=\\textcolor{{{color:primary.0}}}{{{q}}}$, donc $u_n={{c}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}^{n-{{p}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_1=6, q=2 : 6×2^(n−1)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"answers": ["6\\times2^{n-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme u_0×q^n acceptée : 3×2^n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"answers": ["3\\times2^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_1=−4, q=−3 : −4×(−3)^(n−1)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "-4",
+				"q": "-3"
+			},
+			"answers": ["-4\\times(-3)^{n-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_1 pris comme u_0 : 6×2^n",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"answers": ["6\\times2^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant n+1 au lieu de n−1",
+			"variationIndex": 0,
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"answers": ["6\\times2^{n+1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "parenthèses oubliées −4×3^(n−1)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "-4",
+				"q": "-3"
+			},
+			"answers": ["-4\\times3^{n-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_3=54, q=−3 : 54×(−3)^(n−3)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"c": "54",
+				"q": "-3"
+			},
+			"answers": ["54\\times(-3)^{n-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_2=5, q=3 : 5×3^(n−2)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["5\\times3^{n-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme u_0×q^n, u_0=−2 : −2×(−3)^n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"c": "54",
+				"q": "-3"
+			},
+			"answers": ["-2\\times(-3)^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme u_0×q^n fractionnaire : 5/9×3^n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["\\frac{5}{9}\\times3^n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_p pris comme u_0 : 54×(−3)^n",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"c": "54",
+				"q": "-3"
+			},
+			"answers": ["54\\times(-3)^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant n+3 au lieu de n−3",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3",
+				"c": "54",
+				"q": "-3"
+			},
+			"answers": ["54\\times(-3)^{n+3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison ajoutée comme en arithmétique 5+3(n−2)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"q": "3"
+			},
+			"answers": ["5+3(n-2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

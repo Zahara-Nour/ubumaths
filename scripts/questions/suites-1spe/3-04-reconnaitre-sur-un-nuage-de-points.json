@@ -1,0 +1,604 @@
+{
+	"title": "Reconnaître une suite arithmétique ou géométrique sur un nuage de points",
+	"description": "Points alignés, termes multipliés par un même nombre, ou ni l'un ni l'autre",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"status": "draft",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 4,
+	"delay": 45,
+	"shared": {
+		"choices": [
+			{
+				"content": "arithmétique"
+			},
+			{
+				"content": "géométrique"
+			},
+			{
+				"content": "ni arithmétique, ni géométrique"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "8|8"
+				},
+				{
+					"name": "N1",
+					"expression": "9|9"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:b"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:b+r"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:b+2*r"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:b+3*r"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points sont **alignés** : d'un rang au suivant, on monte toujours de la même hauteur.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. On ajoute toujours $\\textcolor{{{color:primary.0}}}{{{r}}}$.",
+					"La suite semble **arithmétique**, de raison $r={{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "8|8"
+				},
+				{
+					"name": "N1",
+					"expression": "9|9"
+				},
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "4..12"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:b"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:b-r"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:b-2*r"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:b-3*r"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points sont **alignés** : d'un rang au suivant, on descend toujours de la même hauteur.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. On ajoute toujours $\\textcolor{{{color:primary.0}}}{-{{r}}}$.",
+					"La suite semble **arithmétique**, de raison $r=-{{r}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "5|5"
+				},
+				{
+					"name": "N1",
+					"expression": "6|6"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:2*a"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:4*a"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:8*a"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Ils montent de plus en plus vite.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est le **double** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{2}$.",
+					"La suite semble **géométrique**, de raison $q=2$."
+				]
+			}
+		},
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "6|6"
+				},
+				{
+					"name": "N1",
+					"expression": "7|7"
+				},
+				{
+					"name": "a",
+					"expression": "32|48|64"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:a"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:a/2"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:a/4"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:a/8"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Ils descendent de moins en moins vite.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est la **moitié** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
+					"La suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
+				]
+			}
+		},
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "8|8"
+				},
+				{
+					"name": "N1",
+					"expression": "9|9"
+				},
+				{
+					"name": "c",
+					"expression": "3..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:c^2+d"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:(1-c)^2+d"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:(2-c)^2+d"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:(3-c)^2+d"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Les points ne sont pas alignés : la suite n'est pas arithmétique. Elle **diminue, puis augmente**.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre, la suite n'est pas géométrique.",
+					"La suite ne semble **ni arithmétique, ni géométrique**."
+				]
+			}
+		},
+		{
+			"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "6|6"
+				},
+				{
+					"name": "N1",
+					"expression": "7|7"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:4+c"
+				},
+				{
+					"name": "u3",
+					"expression": "eval:9+c"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"Les points ne sont pas alignés : la suite n'est pas arithmétique.",
+					"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre, la suite n'est pas géométrique.",
+					"Attention : des points qui montent de plus en plus vite ne suffisent pas pour dire « géométrique ». La suite ne semble **ni arithmétique, ni géométrique**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 (alignés, croissante) : « arithmétique » accepté",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "2",
+				"b": "-1",
+				"u0": "-1",
+				"u1": "1",
+				"u2": "3",
+				"u3": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 (alignés, croissante) : « géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "2",
+				"b": "-1",
+				"u0": "-1",
+				"u1": "1",
+				"u2": "3",
+				"u3": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (alignés, croissante) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "2",
+				"b": "-1",
+				"u0": "-1",
+				"u1": "1",
+				"u2": "3",
+				"u3": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (alignés, décroissante) : « arithmétique » accepté",
+			"variationIndex": 1,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "3",
+				"b": "10",
+				"u0": "10",
+				"u1": "7",
+				"u2": "4",
+				"u3": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 (alignés, décroissante) : « géométrique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "3",
+				"b": "10",
+				"u0": "10",
+				"u1": "7",
+				"u2": "4",
+				"u3": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (alignés, décroissante) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"r": "3",
+				"b": "10",
+				"u0": "10",
+				"u1": "7",
+				"u2": "4",
+				"u3": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (doubles) : « arithmétique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"N": "5",
+				"N1": "6",
+				"a": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "4",
+				"u3": "8"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (doubles) : « géométrique » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"N": "5",
+				"N1": "6",
+				"a": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "4",
+				"u3": "8"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 (doubles) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"N": "5",
+				"N1": "6",
+				"a": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "4",
+				"u3": "8"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (moitiés) : « arithmétique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"a": "64",
+				"u0": "64",
+				"u1": "32",
+				"u2": "16",
+				"u3": "8"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (moitiés) : « géométrique » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"a": "64",
+				"u0": "64",
+				"u1": "32",
+				"u2": "16",
+				"u3": "8"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 (moitiés) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"a": "64",
+				"u0": "64",
+				"u1": "32",
+				"u2": "16",
+				"u3": "8"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (descend puis monte) : « arithmétique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"c": "4",
+				"d": "1",
+				"u0": "17",
+				"u1": "10",
+				"u2": "5",
+				"u3": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (descend puis monte) : « géométrique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"c": "4",
+				"d": "1",
+				"u0": "17",
+				"u1": "10",
+				"u2": "5",
+				"u3": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (descend puis monte) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 4,
+			"variables": {
+				"N": "8",
+				"N1": "9",
+				"c": "4",
+				"d": "1",
+				"u0": "17",
+				"u1": "10",
+				"u2": "5",
+				"u3": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 5 (n² + c) : « arithmétique » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5",
+				"u3": "10"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (n² + c) : « géométrique » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5",
+				"u3": "10"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (n² + c) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 5,
+			"variables": {
+				"N": "6",
+				"N1": "7",
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5",
+				"u3": "10"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

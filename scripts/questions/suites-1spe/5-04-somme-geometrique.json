@@ -1,0 +1,251 @@
+{
+	"title": "Somme de termes consécutifs d'une suite géométrique",
+	"description": "u₀ + u₁ + … + uₙ, premier terme et raison entiers",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Suites géométriques",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..3"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a*(1-q^(n+1))/(1-q)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $q\\neq1$ : $S=\\text{premier terme}\\times\\dfrac{1-q^{\\text{nombre de termes}}}{1-q}$.",
+					"De $u_0$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{eval:n+1}} }$ termes.",
+					"$$\\begin{align*}S&={{a}}\\times\\dfrac{1-{{eval:q;()}}^{ {{eval:n+1}} }}{1-{{eval:q;()}}}\\\\&={{a}}\\times\\dfrac{ {{eval:1-q^(n+1)}} }{ {{eval:1-q}} }\\\\&={{s}}\\end{align*}$$"
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "-3..-2"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				},
+				{
+					"name": "s",
+					"expression": "eval:a*(1-q^(n+1))/(1-q)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $q\\neq1$ : $S=\\text{premier terme}\\times\\dfrac{1-q^{\\text{nombre de termes}}}{1-q}$.",
+					"De $u_0$ à $u_{ {{n}} }$, il y a $\\mathbf{ {{eval:n+1}} }$ termes.",
+					"$$\\begin{align*}S&={{a}}\\times\\dfrac{1-{{eval:q;()}}^{ {{eval:n+1}} }}{1-{{eval:q;()}}}\\\\&={{a}}\\times\\dfrac{ {{eval:1-q^(n+1)}} }{ {{eval:1-q}} }\\\\&={{s}}\\end{align*}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u0=5, q=2, jusqu'à u4 : 5×31 = 155",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2",
+				"n": "4",
+				"s": "155"
+			},
+			"answers": ["155"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=−3, q=3, jusqu'à u5 : −3×364 = -1092",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"q": "3",
+				"n": "5",
+				"s": "-1092"
+			},
+			"answers": ["-1\\,092"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=7, q=3, jusqu'à u3 : 280",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"q": "3",
+				"n": "3",
+				"s": "280"
+			},
+			"answers": ["280"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un terme de moins (2⁴ au lieu de 2⁵) : 5×15 = 75",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2",
+				"n": "4",
+				"s": "155"
+			},
+			"answers": ["75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0 oublié : 1 + 2 + … + 2⁴ = 31",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2",
+				"n": "4",
+				"s": "155"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0 × qⁿ⁺¹ seul : 5×32 = 160",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2",
+				"n": "4",
+				"s": "155"
+			},
+			"answers": ["160"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : 5×31",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"q": "2",
+				"n": "4",
+				"s": "155"
+			},
+			"answers": ["5\\times31"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "u0=4, q=−2, jusqu'à u5 : 4×(1−64)/3 = −84",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"q": "-2",
+				"n": "5",
+				"s": "-84"
+			},
+			"answers": ["-84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=−2, q=−3, jusqu'à u4 : −2×244/4 = -122",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"q": "-3",
+				"n": "4",
+				"s": "-122"
+			},
+			"answers": ["-122"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "signe de la raison perdu (q = 2) : 4×63 = 252",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"q": "-2",
+				"n": "5",
+				"s": "-84"
+			},
+			"answers": ["252"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un terme de moins : 4×(1+32)/3 = 44",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"q": "-2",
+				"n": "5",
+				"s": "-84"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : −4×21",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"q": "-2",
+				"n": "5",
+				"s": "-84"
+			},
+			"answers": ["-4\\times21"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

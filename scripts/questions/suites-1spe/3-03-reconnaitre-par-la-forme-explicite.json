@@ -1,0 +1,418 @@
+{
+	"title": "Reconnaître une suite arithmétique ou géométrique à partir de sa forme explicite",
+	"description": "u(n) = an + b, u(n) = u(0) × qⁿ, ou ni l'un ni l'autre (n² + c, kⁿ + c)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Reconnaître une suite",
+	"status": "draft",
+	"subdomain": "Arithmétique ou géométrique",
+	"level": 3,
+	"delay": 30,
+	"shared": {
+		"choices": [
+			{
+				"content": "arithmétique"
+			},
+			{
+				"content": "géométrique"
+			},
+			{
+				"content": "ni arithmétique, ni géométrique"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-\\left({{eval:a*n+b}}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$$",
+					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r={{a}}$ et de premier terme $u_0={{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{b}}-{{a}}(n+1)-\\left({{b}}-{{a}}n\\right)=\\textcolor{{{color:primary.0}}}{-{{a}}}$$",
+					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r=-{{a}}$ et de premier terme $u_0={{b}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}\\times{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times{{q}}^{n+1} }{ {{a}}\\times{{q}}^n }=\\textcolor{{{color:primary.0}}}{{{q}}}$$",
+					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}\\times{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "0.5|0.2|0.1|0.9"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times{{q}}^{n+1} }{ {{a}}\\times{{q}}^n }=\\textcolor{{{color:primary.0}}}{{{q}}}$$",
+					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:4+c"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n=(n+1)^2+{{c}}-\\left(n^2+{{c}}\\right)=n^2+2n+1-n^2=2n+1$$",
+					"La différence **dépend de $n$** : la suite n'est pas arithmétique.",
+					"On calcule les premiers termes : $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Comme $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$, la suite n'est pas géométrique.",
+					"La suite n'est **ni arithmétique, ni géométrique**."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:1+c"
+				},
+				{
+					"name": "u1",
+					"expression": "eval:k+c"
+				},
+				{
+					"name": "u2",
+					"expression": "eval:k^2+c"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$$u_{n+1}-u_n={{k}}^{n+1}+{{c}}-\\left({{k}}^n+{{c}}\\right)={{k}}^{n+1}-{{k}}^n={{k}}^n\\times\\left({{k}}-1\\right)$$",
+					"La différence **dépend de $n$** : la suite n'est pas arithmétique.",
+					"On calcule les premiers termes : $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Comme $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$, la suite n'est pas géométrique.",
+					"Attention : à cause du « $+{{c}}$ », ce n'est pas la forme $u_0\\times q^n$. La suite n'est **ni arithmétique, ni géométrique**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 (an + b) : « arithmétique » accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 (an + b) : « géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 (an + b) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (b − an) : « arithmétique » accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 (b − an) : « géométrique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 (b − an) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a × qⁿ) : « arithmétique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 (a × qⁿ) : « géométrique » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 (a × qⁿ) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"q": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a × 0,5ⁿ) : « arithmétique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 (a × 0,5ⁿ) : « géométrique » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 (a × 0,5ⁿ) : « ni arithmétique, ni géométrique » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "7",
+				"q": "0.5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (n² + c) : « arithmétique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (n² + c) : « géométrique » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 (n² + c) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 4,
+			"variables": {
+				"c": "1",
+				"u0": "1",
+				"u1": "2",
+				"u2": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 5 (kⁿ + c) : « arithmétique » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (kⁿ + c) : « géométrique » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 (kⁿ + c) : « ni arithmétique, ni géométrique » accepté",
+			"variationIndex": 5,
+			"variables": {
+				"k": "2",
+				"c": "1",
+				"u0": "2",
+				"u1": "3",
+				"u2": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

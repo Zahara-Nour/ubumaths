@@ -1,0 +1,238 @@
+{
+	"title": "Seuil d'une suite arithmétique par le calcul",
+	"description": "Plus petit n tel que uₙ > A (ou uₙ < A), par une inéquation",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Seuil",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nDétermine le plus petit entier $n$ tel que $u_n>{{A}}$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..30"
+				},
+				{
+					"name": "r",
+					"expression": "3..9"
+				},
+				{
+					"name": "A",
+					"expression": "100..500"
+				},
+				{
+					"name": "N",
+					"expression": "eval:floor((A-a)/r)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$ : $u_n=u_0+nr={{a}}+{{r}}n$.",
+					"$$\\begin{align*}u_n>{{A}}&\\iff {{a}}+{{r}}n>{{A}}\\\\&\\iff {{r}}n>{{eval:A-a}}\\\\&\\iff n>\\dfrac{ {{eval:A-a}} }{ {{r}} }\\end{align*}$$",
+					"Le plus petit entier strictement supérieur à $\\dfrac{ {{eval:A-a}} }{ {{r}} }$ est $\\mathbf{ {{N}} }$.",
+					"Vérification : $u_{ {{eval:N-1}} }={{eval:a+r*(N-1)}}\\leqslant{{A}}$ et $u_{ {{N}} }={{eval:a+r*N}}>{{A}}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{eval:-s}}$.\n\nDétermine le plus petit entier $n$ tel que $u_n<{{A}}$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "300..600"
+				},
+				{
+					"name": "s",
+					"expression": "3..9"
+				},
+				{
+					"name": "A",
+					"expression": "10..200"
+				},
+				{
+					"name": "N",
+					"expression": "eval:floor((a-A)/s)+1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$ : $u_n=u_0+nr={{a}}-{{s}}n$.",
+					"$$\\begin{align*}u_n<{{A}}&\\iff {{a}}-{{s}}n<{{A}}\\\\&\\iff -{{s}}n<{{eval:A-a}}\\\\&\\iff n>\\dfrac{ {{eval:a-A}} }{ {{s}} }\\end{align*}$$",
+					"On a divisé par $-{{s}}<0$ : le sens de l'inégalité change.",
+					"Le plus petit entier strictement supérieur à $\\dfrac{ {{eval:a-A}} }{ {{s}} }$ est $\\mathbf{ {{N}} }$.",
+					"Vérification : $u_{ {{eval:N-1}} }={{eval:a-s*(N-1)}}\\geqslant{{A}}$ et $u_{ {{N}} }={{eval:a-s*N}}<{{A}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u0=12, r=7, A=250 : quotient entier 34, u34 = 250 non > 250 → n = 35",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"r": "7",
+				"A": "250",
+				"N": "35"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "piège du quotient entier : 34 (u34 = 250 n'est pas > 250)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"r": "7",
+				"A": "250",
+				"N": "35"
+			},
+			"answers": ["34"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=5, r=4, A=300 : 295/4 = 73,75 → n = 74",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "4",
+				"A": "300",
+				"N": "74"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "partie entière du quotient : 73",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "4",
+				"A": "300",
+				"N": "74"
+			},
+			"answers": ["73"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "le quotient lui-même : 73,75",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "4",
+				"A": "300",
+				"N": "74"
+			},
+			"answers": ["73{,}75"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "la valeur u74 = 301 au lieu de n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"r": "4",
+				"A": "300",
+				"N": "74"
+			},
+			"answers": ["301"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=500, r=−6, A=100 : 400/6 ≈ 66,7 → n = 67",
+			"variationIndex": 1,
+			"variables": {
+				"a": "500",
+				"s": "6",
+				"A": "100",
+				"N": "67"
+			},
+			"answers": ["67"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=450, r=−5, A=50 : quotient entier 80 → n = 81",
+			"variationIndex": 1,
+			"variables": {
+				"a": "450",
+				"s": "5",
+				"A": "50",
+				"N": "81"
+			},
+			"answers": ["81"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "piège du quotient entier : 80",
+			"variationIndex": 1,
+			"variables": {
+				"a": "450",
+				"s": "5",
+				"A": "50",
+				"N": "81"
+			},
+			"answers": ["80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "partie entière : 66",
+			"variationIndex": 1,
+			"variables": {
+				"a": "500",
+				"s": "6",
+				"A": "100",
+				"N": "67"
+			},
+			"answers": ["66"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "valeur négative (sens non changé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "500",
+				"s": "6",
+				"A": "100",
+				"N": "67"
+			},
+			"answers": ["-66"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

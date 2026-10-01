@@ -1,0 +1,263 @@
+{
+	"id": "158ecaa4-7fa7-4313-a6be-bf60fc538ab6",
+	"title": "Exprimer le terme suivant",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture des termes",
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..9"
+			},
+			{
+				"name": "b",
+				"expression": "2..9!a"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "u"
+					},
+					"expectedAnswer": "{{a}}(n+1)^2"
+				}
+			],
+			"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n^2$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+			"correction": {
+				"steps": ["On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)^2$"]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "u"
+					},
+					"expectedAnswer": "{{a}}n+{{a}}"
+				}
+			],
+			"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+			"correction": {
+				"steps": ["On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)={{a}}n+{{a}}$"]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{n+{{eval:a+1}}}{n+{{eval:b+1}}}"
+				}
+			],
+			"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n=\\dfrac{n+{{a}}}{n+{{b}}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $n+1$ : $u_{n+1}=\\dfrac{n+1+{{a}}}{n+1+{{b}}}=\\dfrac{n+{{eval:a+1}}}{n+{{eval:b+1}}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}n+{{eval:a+b}}"
+				}
+			],
+			"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n+{{b}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)+{{b}}={{a}}n+{{a}}+{{b}}={{a}}n+{{eval:a+b}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}n{{eval:a-b;+}}"
+				}
+			],
+			"statement": "On considère la suite $(u_n)$ définie par :\n\n$$u_n={{a}}n-{{b}}$$\n\nExprime $u_{n+1}$ en fonction de $n$.\n\n$u_{n+1}=?$",
+			"correction": {
+				"steps": [
+					"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1)-{{b}}={{a}}n+{{a}}-{{b}}={{a}}n{{eval:a-b;+}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["3(n+1)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "forme remplacée 3(n+1)^2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3n^2+1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "u_n+1 au lieu de u_{n+1}",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4n+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "7"
+			},
+			"description": "4n+4",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["4n+1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "7"
+			},
+			"description": "4n+1 (u_n+1)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{n+4}{n+6}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "fraction décalée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["\\frac{n+4}{n+5}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "seul le numérateur décalé",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["2n+9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "2n+2+7 → 2n+9",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["9+2n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "ordre inversé 9+2n",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2n+8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "u_n + 1",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2n-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "2n+2-7 → 2n-5",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["2n+5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"description": "signe : 2n+5",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["3n^2+6n+3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "forme développée : perfectible — autre forme, juste (décision de David)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4(n+1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "7"
+			},
+			"description": "forme factorisée 4(n+1) : perfectible — autre forme, juste (décision de David)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3(n+1)(n+1)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"description": "v1 : 3(n+1)(n+1), autre écriture juste",
+			"variationIndex": 0
+		}
+	],
+	"description": "Remplacer n par n+1 dans une formule explicite"
+}

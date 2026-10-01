@@ -1,0 +1,122 @@
+{
+	"id": "8ed02829-51de-40e2-af77-8fa47d01ea98",
+	"title": "Calculer un terme d'une suite arithmétique",
+	"description": "Calculer un terme à partir d'un autre (rang supérieur)",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Calculer un terme",
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v+k*(r)}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{r}}$, et $u_{{a}}={{v}}$.\n\n$u_{{b}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..6"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+k"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "v",
+					"expression": "2..30;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_{ {{a}} }$ à $u_{ {{b}} }$, on ajoute $\\textcolor{{{color:primary.0}}}{{{k}}}$ fois la raison : $u_{ {{b}} }=u_{ {{a}} }+\\textcolor{{{color:primary.0}}}{{{k}}}\\times{{eval:r;()}}={{v}}{{eval:k*(r);+}}={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["19"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"r": "4",
+				"v": "7"
+			},
+			"description": "u_2=7, r=4 → u_5=19",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-33"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "0",
+				"k": "5",
+				"r": "-6",
+				"v": "-3"
+			},
+			"description": "u_0=-3, r=-6 → u_5=-33",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"r": "4",
+				"v": "7"
+			},
+			"description": "une seule raison ajoutée (7+4)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["27"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"r": "4",
+				"v": "7"
+			},
+			"description": "rang b au lieu de b−a (7+5×4)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7+3\\times4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "2",
+				"k": "3",
+				"r": "4",
+				"v": "7"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 0
+		}
+	]
+}

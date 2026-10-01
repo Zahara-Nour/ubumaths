@@ -1,0 +1,387 @@
+{
+	"title": "Seuil d'une suite géométrique avec un tableau de valeurs",
+	"description": "Plus petit n tel que uₙ > A (ou uₙ < A), lu dans un tableau",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Seuil et algorithmes",
+	"subdomain": "Seuil",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"choices": [
+			{
+				"content": "$n={{k}}$"
+			},
+			{
+				"content": "$n={{eval:k+1}}$"
+			},
+			{
+				"content": "$n={{eval:k+2}}$"
+			},
+			{
+				"content": "$n={{eval:k+3}}$"
+			},
+			{
+				"content": "$n={{eval:k+4}}$"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=1000$ et de raison $q=1.1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1464$ | $1611$ | $1772$ | $1949$ | $2144$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1620$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$u_0=1000>0$ et $q=1.1>1$ : la suite $(u_n)$ est croissante.",
+					"D'après le tableau, $u_{5}\\approx1611\\leqslant1620$ et $u_{6}\\approx1772>1620$.",
+					"La suite étant croissante, $u_n>1620$ pour tout $n\\geqslant6$ : le plus petit entier cherché est $\\mathbf{n=6}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=200$ et de raison $q=1.25$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $5$ | $6$ | $7$ | $8$ | $9$ |\n|---|---|---|---|---|---|\n| $u_n$ | $610$ | $763$ | $954$ | $1192$ | $1490$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1200$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "5"
+				}
+			],
+			"correctChoiceIndex": ["4"],
+			"correction": {
+				"steps": [
+					"$u_0=200>0$ et $q=1.25>1$ : la suite $(u_n)$ est croissante.",
+					"D'après le tableau, $u_{8}\\approx1192\\leqslant1200$ et $u_{9}\\approx1490>1200$.",
+					"La suite étant croissante, $u_n>1200$ pour tout $n\\geqslant9$ : le plus petit entier cherché est $\\mathbf{n=9}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=500$ et de raison $q=1.2$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $6$ | $7$ | $8$ | $9$ | $10$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1493$ | $1792$ | $2150$ | $2580$ | $3096$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1500$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "6"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$u_0=500>0$ et $q=1.2>1$ : la suite $(u_n)$ est croissante.",
+					"D'après le tableau, $u_{6}\\approx1493\\leqslant1500$ et $u_{7}\\approx1792>1500$.",
+					"La suite étant croissante, $u_n>1500$ pour tout $n\\geqslant7$ : le plus petit entier cherché est $\\mathbf{n=7}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=300$ et de raison $q=1.1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n|---|---|---|---|---|---|\n| $u_n$ | $643$ | $707$ | $778$ | $856$ | $942$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>780$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "8"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"$u_0=300>0$ et $q=1.1>1$ : la suite $(u_n)$ est croissante.",
+					"D'après le tableau, $u_{10}\\approx778\\leqslant780$ et $u_{11}\\approx856>780$.",
+					"La suite étant croissante, $u_n>780$ pour tout $n\\geqslant11$ : le plus petit entier cherché est $\\mathbf{n=11}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=5000$ et de raison $q=0.8$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1049$ | $839$ | $671$ | $537$ | $429$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<1040$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "7"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$u_0=5000>0$ et $0<q=0.8<1$ : la suite $(u_n)$ est décroissante.",
+					"D'après le tableau, $u_{7}\\approx1049\\geqslant1040$ et $u_{8}\\approx839<1040$.",
+					"La suite étant décroissante, $u_n<1040$ pour tout $n\\geqslant8$ : le plus petit entier cherché est $\\mathbf{n=8}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=2000$ et de raison $q=0.9$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n|---|---|---|---|---|---|\n| $u_n$ | $957$ | $861$ | $775$ | $697$ | $628$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<770$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "7"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"$u_0=2000>0$ et $0<q=0.9<1$ : la suite $(u_n)$ est décroissante.",
+					"D'après le tableau, $u_{9}\\approx775\\geqslant770$ et $u_{10}\\approx697<770$.",
+					"La suite étant décroissante, $u_n<770$ pour tout $n\\geqslant10$ : le plus petit entier cherché est $\\mathbf{n=10}$."
+				]
+			}
+		},
+		{
+			"statement": "$(u_n)$ est la suite géométrique de premier terme $u_0=8000$ et de raison $q=0.75$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|\n| $u_n$ | $2531$ | $1898$ | $1424$ | $1068$ | $801$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<1890$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "4"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$u_0=8000>0$ et $0<q=0.75<1$ : la suite $(u_n)$ est décroissante.",
+					"D'après le tableau, $u_{5}\\approx1898\\geqslant1890$ et $u_{6}\\approx1424<1890$.",
+					"La suite étant décroissante, $u_n<1890$ pour tout $n\\geqslant6$ : le plus petit entier cherché est $\\mathbf{n=6}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u0=1000, q=1,1, u_n > 1620 : n = 6",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=1000, q=1,1, u_n > 1620 : 5, dernier n qui ne convient pas",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=1000, q=1,1, u_n > 1620 : 7, un cran trop loin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=200, q=1,25, u_n > 1200 : n = 9",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=200, q=1,25, u_n > 1200 : 8, dernier n qui ne convient pas",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=200, q=1,25, u_n > 1200 : 7, deux crans trop tôt",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=500, q=1,2, u_n > 1500 : n = 7",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=500, q=1,2, u_n > 1500 : 6, dernier n qui ne convient pas",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=500, q=1,2, u_n > 1500 : 8, un cran trop loin",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=300, q=1,1, u_n > 780 : n = 11",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=300, q=1,1, u_n > 780 : 10, dernier n qui ne convient pas",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=300, q=1,1, u_n > 780 : 12, un cran trop loin",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=5000, q=0,8, u_n < 1040 : n = 8",
+			"variationIndex": 4,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=5000, q=0,8, u_n < 1040 : 7, dernier n qui ne convient pas",
+			"variationIndex": 4,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=5000, q=0,8, u_n < 1040 : 9, un cran trop loin",
+			"variationIndex": 4,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=2000, q=0,9, u_n < 770 : n = 10",
+			"variationIndex": 5,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=2000, q=0,9, u_n < 770 : 9, dernier n qui ne convient pas",
+			"variationIndex": 5,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=2000, q=0,9, u_n < 770 : 11, un cran trop loin",
+			"variationIndex": 5,
+			"variables": {
+				"k": "7"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=8000, q=0,75, u_n < 1890 : n = 6",
+			"variationIndex": 6,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u0=8000, q=0,75, u_n < 1890 : 5, dernier n qui ne convient pas",
+			"variationIndex": 6,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u0=8000, q=0,75, u_n < 1890 : 7, un cran trop loin",
+			"variationIndex": 6,
+			"variables": {
+				"k": "4"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

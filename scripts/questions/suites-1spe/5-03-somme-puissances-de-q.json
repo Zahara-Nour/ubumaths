@@ -1,0 +1,192 @@
+{
+	"title": "Somme des puissances successives de q",
+	"description": "1 + q + q² + … + qⁿ, q = 2 ou 3",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Sommes",
+	"subdomain": "Suites géométriques",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2^(n+1)-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $q\\neq1$ : $1+q+q^2+\\cdots+q^n=\\dfrac{q^{n+1}-1}{q-1}$ (il y a $n+1$ termes).",
+					"Ici $q=2$ et le dernier exposant est $\\mathbf{ {{n}} }$ :",
+					"$$S=\\dfrac{2^{ {{eval:n+1}} }-1}{2-1}=\\dfrac{ {{eval:2^(n+1)}}-1}{1}={{eval:2^(n+1)-1}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ {{n}} }$.\n\n$S=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(3^(n+1)-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $q\\neq1$ : $1+q+q^2+\\cdots+q^n=\\dfrac{q^{n+1}-1}{q-1}$ (il y a $n+1$ termes).",
+					"Ici $q=3$ et le dernier exposant est $\\mathbf{ {{n}} }$ :",
+					"$$S=\\dfrac{3^{ {{eval:n+1}} }-1}{3-1}=\\dfrac{ {{eval:3^(n+1)}}-1}{2}=\\dfrac{ {{eval:3^(n+1)-1}} }{2}={{eval:(3^(n+1)-1)/2}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "q=2, n=6 : 2⁷ − 1 = 127",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["127"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q=2, n=9 : 1 023",
+			"variationIndex": 0,
+			"variables": {
+				"n": "9"
+			},
+			"answers": ["1\\,023"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q=2, n=4 : 31",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "un terme de moins : 2⁶ − 1 = 63",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["63"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2⁷ = 128 (oubli du − 1)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["128"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : 2^7 − 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["2^7-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "q=3, n=4 : (3⁵ − 1)/2 = 121",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["121"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q=3, n=6 : 1 093",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["1\\,093"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "q=3, n=6 : 1093 sans espace, juste mais perfectible",
+			"variationIndex": 1,
+			"variables": {
+				"n": "6"
+			},
+			"answers": ["1093"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "oubli de la division par q − 1 : 3⁵ − 1 = 242",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["242"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "un terme de moins : (3⁴ − 1)/2 = 40",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué : (3^5 − 1)/2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{3^5-1}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

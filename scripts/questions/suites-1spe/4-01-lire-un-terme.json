@@ -1,0 +1,458 @@
+{
+	"title": "Lire un terme sur un graphique",
+	"description": "Lire la valeur d'un terme sur le nuage de points d'une suite",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Représentation graphique",
+	"subdomain": "Lire un terme",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 8\ny: -5 ; 12\nu(n) = {{a}}+({{r}})*n pour n de 0 à 7   bleu   nom=u_n\ngrille: 1 ; 1\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nLis la valeur de $u_{{{k}}}$.\n\n$u_{{{k}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+r*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère sur l'axe des abscisses le rang $n={{k}}$, puis on monte (ou on descend) jusqu'au point du nuage situé à cette abscisse : c'est le point $M$.",
+					"```courbe\nx: -1 ; 8\ny: -5 ; 12\nu(n) = {{a}}+({{r}})*n pour n de 0 à 7   bleu   nom=u_n\ngrille: 1 ; 1\npoints: M({{k}} ; {{a}}+({{r}})*{{k}})\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"L'ordonnée de $M$ se lit sur l'axe des ordonnées : $u_{ {{k}} }={{solution}}$."
+				]
+			},
+			"conditions": ["a+7*r >= -4", "a+7*r <= 11", "a+r*k != k"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = {{a}}+({{s}})*n/2 pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 0.5\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nLis la valeur de $u_{{{k}}}$.\n\n$u_{{{k}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..7"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "k",
+					"expression": "1|3|5|7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+s*k/2}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère sur l'axe des abscisses le rang $n={{k}}$, puis on monte (ou on descend) jusqu'au point du nuage situé à cette abscisse : c'est le point $M$.",
+					"```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = {{a}}+({{s}})*n/2 pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 0.5\npoints: M({{k}} ; {{a}}+({{s}})*{{k}}/2)\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"L'ordonnée de $M$ se lit sur l'axe des ordonnées : $u_{ {{k}} }={{solution}}$."
+				]
+			},
+			"conditions": ["a+4*s >= 0", "a+4*s <= 7"]
+		},
+		{
+			"statement": "La suite $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 9\ny: {{a}}-{{p}}*({{p}}+1)/2-1 ; {{a}}+29-8*{{p}}\nu(0) = {{a}} ; u(n+1) = u(n)+n-{{p}} pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 1\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nLis la valeur de $u_{{{k}}}$.\n\n$u_{{{k}}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..5"
+				},
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "k",
+					"expression": "1..8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+k*(k-1)/2-p*k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On repère sur l'axe des abscisses le rang $n={{k}}$, puis on monte (ou on descend) jusqu'au point du nuage situé à cette abscisse : c'est le point $M$.",
+					"```courbe\nx: -1 ; 9\ny: {{a}}-{{p}}*({{p}}+1)/2-1 ; {{a}}+29-8*{{p}}\nu(0) = {{a}} ; u(n+1) = u(n)+n-{{p}} pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 1\npoints: M({{k}} ; {{a}}+{{k}}*({{k}}-1)/2-{{p}}*{{k}})\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```",
+					"L'ordonnée de $M$ se lit sur l'axe des ordonnées : $u_{ {{k}} }={{solution}}$."
+				]
+			},
+			"conditions": ["k != p+1", "a+k*(k-1)/2-p*k != k"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_5 sur u_n=-3+(2)n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"k": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit le 5e point, c'est-à-dire u_4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "donne l'abscisse au lieu de l'ordonnée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"r": "2",
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_6 sur u_n=9+(-2)n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "9",
+				"r": "-2",
+				"k": "6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit le 6e point, c'est-à-dire u_5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "9",
+				"r": "-2",
+				"k": "6"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "donne l'abscisse au lieu de l'ordonnée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "9",
+				"r": "-2",
+				"k": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_4 sur u_n=1+(1)n",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "1",
+				"k": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit le 4e point, c'est-à-dire u_3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "1",
+				"k": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "donne l'abscisse au lieu de l'ordonnée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"r": "1",
+				"k": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_3 = 5/2 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_3 = 2.5 en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimal avec virgule",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit u_2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arrondi à l'unité (graduation de 0,5 ignorée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_5 = 5/2 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1",
+				"k": "5"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u_5 = 2.5 en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1",
+				"k": "5"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimal avec virgule",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1",
+				"k": "5"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit u_4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1",
+				"k": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arrondi à l'unité (graduation de 0,5 ignorée)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1",
+				"k": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5/2 (contrôle)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "fraction non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1",
+				"k": "3"
+			},
+			"answers": ["\\frac{10}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "u_5 de u(0)=2, u(n+1)=u(n)+n-3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"k": "5"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit u_4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"p": "3",
+				"k": "5"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_7 de u(0)=-1, u(n+1)=u(n)+n-2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"p": "2",
+				"k": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit u_6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"p": "2",
+				"k": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_8 de u(0)=5, u(n+1)=u(n)+n-3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"p": "3",
+				"k": "8"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lit u_7",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"p": "3",
+				"k": "8"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

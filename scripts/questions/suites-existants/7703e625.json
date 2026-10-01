@@ -1,0 +1,283 @@
+{
+	"id": "7703e625-8a3e-48bd-b4d3-245201766457",
+	"title": "Calculer un terme",
+	"description": "A l'aide d'une formule explicite",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Calculer un terme",
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*a+(c)}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n={{b}}n{{eval:c;+}}$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n={{b}}n{{eval:c;+}}$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} {{eval:c;+}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*a^2}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n={{b}}n^2$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..7"
+				},
+				{
+					"name": "b",
+					"expression": "2|-2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n={{b}}n^2$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}^2={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-1)^a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=(-1)^n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=(-1)^n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=(-1)^\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2-b*a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=n^2-{{b}}n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9!a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=n^2-{{b}}n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{a}}}^2-{{b}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(-1)^a*a}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$$u_n=(-1)^n\\times n$$\n\n$u_{{a}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..15"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_n=(-1)^n\\times n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=(-1)^\\textcolor{{{color:primary.0}}}{{{a}}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$ : $(-1)^n$ vaut $1$ si $n$ est pair, $-1$ s'il est impair."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-69"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "u_9 avec u_n=-7n-6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["69"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-63-6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7",
+				"c": "-6"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-72"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "-2"
+			},
+			"description": "u_6 avec u_n=-2n^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-144"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "-2"
+			},
+			"description": "(-2n)^2 au lieu de -2n^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8"
+			},
+			"description": "u_8 avec (-1)^n",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8"
+			},
+			"description": "parité inversée",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["28"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "49-21=28",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["46"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "n² - b au lieu de n² - bn",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["49-21"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "n impair → -9",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "signe oublié",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9"
+			},
+			"description": "(-1)^n seul",
+			"variationIndex": 4
+		}
+	]
+}

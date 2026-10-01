@@ -5,8 +5,8 @@
  * ⚠️ SIMULATION PAR DÉFAUT : rien n'est écrit sans `--publier`.
  *
  * `create-questions.ts` ne touche jamais un modèle publié. Ce script le fait, mais seulement
- * pour les ids listés EXPLICITEMENT dans `CIBLES` (décision de David du 2026-10-01 : modèles du
- * second degré relus, qui restent publiés).
+ * pour les ids listés EXPLICITEMENT dans un lot de `LOTS` (décisions de David du 2026-10-01 :
+ * modèles du second degré relus, et modèles des suites corrigés en place, qui restent publiés).
  *
  * Chaque cible a son fichier JSON (modèle complet en camelCase, avec ses `testSpecs`). Pour
  * chaque cible :
@@ -24,8 +24,9 @@
  * un niveau temporaire (900 + niveau) avant l'écriture finale.
  *
  * Usage :
- *   pnpm tsx scripts/update-published-questions.ts            (simulation, diff)
- *   pnpm tsx scripts/update-published-questions.ts --publier  (écrit)
+ *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
+ *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
+ *   lots : second-degre, suites
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -45,9 +46,12 @@ import { argValue, createScriptClient, hasFlag } from './relecture/common';
 // CIBLES — ids explicites, rien d'autre n'est touché
 // ============================================================================
 
-const DOSSIER = 'scripts/questions/second-degre-existants';
+interface Lot {
+	dossier: string;
+	cibles: readonly string[];
+}
 
-const CIBLES: readonly string[] = [
+const SECOND_DEGRE: readonly string[] = [
 	'1acb6d47-5d88-4ccf-830f-98dc57d0022c', // Apprivoiser 4 — nature de l'extremum
 	'a0089728-f07a-46ba-8109-7550d2ac800d', // Racines 1 — vérifier une racine
 	'2dd2b712-3687-4910-ab92-378c46125129', // Racines 2 → 3 — racine évidente
@@ -63,6 +67,24 @@ const CIBLES: readonly string[] = [
 	'd1648508-035e-4a2f-abce-87592365038f', // Identités remarquables 9 (seconde)
 	'eae2ff6a-5e46-445b-bfa6-02cadb6d956a' // Apprivoiser 7 — racines lues (courbe, Q57)
 ];
+
+/** Suites 1re SPE (docs/wip/suites-1spe-progress.md, lot 1) */
+const SUITES: readonly string[] = [
+	'8ed02829-51de-40e2-af77-8fa47d01ea98', // Arithmétiques › calculer un terme 3 — u_a quelconque (n'est plus le double du 4)
+	'a8b51d16-261f-4acd-a2c2-933d3ea9bab5', // Arithmétiques › calculer un terme 4 — terme éloigné, rang inférieur
+	'7703e625-8a3e-48bd-b4d3-245201766457', // Apprivoiser › calculer un terme 1 — n² − bn, (−1)ⁿ × n
+	'79d69593-e815-496c-b429-637a1cd68b4d', // Apprivoiser › calculer un terme 2 — u₁ : u_n² + c, u_n/2 + c
+	'1239554b-d442-4be6-8867-d9dc38311999', // Apprivoiser › calculer un terme 3 — u₂ : relations avec n
+	'0af4bf32-b97e-493d-bea4-917b6bbdf6f2', // Apprivoiser › deviner 1 — liste à partir de u₁
+	'fc921674-ee4f-488c-9fe4-5598795c0508', // Apprivoiser › deviner 2 — liste à partir de u₁
+	'95c38330-063f-4ade-b1ae-152b84bce20f', // Apprivoiser › deviner 3 — liste à partir de u₁
+	'158ecaa4-7fa7-4313-a6be-bf60fc538ab6' // Apprivoiser › écriture des termes 1 — description
+];
+
+const LOTS: Record<string, Lot> = {
+	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
+	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES }
+};
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
 const CHAMPS_ECRITS = [
@@ -143,15 +165,21 @@ interface Preparation {
 
 async function main(): Promise<number> {
 	const publier = hasFlag('--publier');
+	const nomLot = argValue('--lot');
+	const lot = nomLot ? LOTS[nomLot] : undefined;
+	if (!lot) {
+		console.error(`Usage : … --lot <${Object.keys(LOTS).join(' | ')}> [--publier]`);
+		return 2;
+	}
 	const seulement = argValue('--seulement')?.split(',');
-	const ids = CIBLES.filter((id) => !seulement || seulement.some((p) => id.startsWith(p)));
+	const ids = lot.cibles.filter((id) => !seulement || seulement.some((p) => id.startsWith(p)));
 	const { supabase, target } = createScriptClient(publier);
 	console.log(`${publier ? '✍️  ÉCRITURE' : '🔍 SIMULATION'} — base ${target}\n`);
 
 	// 1. Tout préparer et vérifier AVANT la moindre écriture
 	const preparations: Preparation[] = [];
 	for (const id of ids) {
-		const fichier = join(DOSSIER, `${id.slice(0, 8)}.json`);
+		const fichier = join(lot.dossier, `${id.slice(0, 8)}.json`);
 		const brut = JSON.parse(readFileSync(fichier, 'utf8')) as QuestionTemplate;
 		if (brut.id !== id) throw new Error(`${fichier} : id ${brut.id} ≠ cible ${id}`);
 		const { data, error } = await supabase

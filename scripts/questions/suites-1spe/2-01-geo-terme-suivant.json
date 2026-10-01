@@ -1,0 +1,192 @@
+{
+	"title": "Calculer un terme d'une suite géométrique",
+	"description": "Calculer le terme suivant",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites géométriques",
+	"subdomain": "Calculer un terme",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Une suite géométrique a pour raison ${{q}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme suivant.\n\nLe terme suivant est $?$.",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "t",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t*(q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une suite géométrique, on passe d'un terme au suivant en **multipliant** par la raison $\\textcolor{{{color:primary.0}}}{{{q}}}$ : le terme suivant est ${{t}}\\times\\textcolor{{{color:primary.0}}}{{{eval:q;()}}}={{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une suite géométrique a pour raison ${{qd}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme suivant.\n\nLe terme suivant est $?$.",
+			"variables": [
+				{
+					"name": "qd",
+					"expression": "\\frac{1}{2}|0{,}5"
+				},
+				{
+					"name": "k",
+					"expression": "2..15;±"
+				},
+				{
+					"name": "t",
+					"expression": "eval:2*(k)"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en **multipliant** par la raison $\\textcolor{{{color:primary.0}}}{{{qd}}}$, ce qui revient à diviser par $2$ : le terme suivant est ${{t}}\\times\\textcolor{{{color:primary.0}}}{{{qd}}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "raison 3, terme 5 → 15",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"t": "5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison −2, terme −7 → 14",
+			"variationIndex": 0,
+			"variables": {
+				"q": "-2",
+				"t": "-7"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison ajoutée au lieu de multipliée (5+3)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"t": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la raison oublié (−7×2)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "-2",
+				"t": "-7"
+			},
+			"answers": ["-14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué 5×3",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"t": "5"
+			},
+			"answers": ["5\\times3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "raison 1/2, terme −18 → −9",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "\\frac{1}{2}",
+				"k": "-9",
+				"t": "-18"
+			},
+			"answers": ["-9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison 0,5, terme 14 → 7",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"k": "7",
+				"t": "14"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "multiplié par 2 au lieu de diviser",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"k": "7",
+				"t": "14"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison ajoutée 14+0,5",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "0{,}5",
+				"k": "7",
+				"t": "14"
+			},
+			"answers": ["14{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fraction non simplifiée 14/2 : forme non optimale",
+			"variationIndex": 1,
+			"variables": {
+				"qd": "\\frac{1}{2}",
+				"k": "7",
+				"t": "14"
+			},
+			"answers": ["\\frac{14}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}

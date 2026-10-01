@@ -27,6 +27,46 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Suites (1re SPE) : domaines par notion, sous-domaines accentués', () => {
+		const domains = [
+			'Limites',
+			'Modélisation',
+			'Seuil et algorithmes',
+			'Sommes',
+			'Sens de variation',
+			'Reconnaître une suite',
+			'Suites géométriques',
+			'Suites arithmétiques',
+			'Représentation graphique',
+			'Apprivoiser'
+		];
+		expect(
+			sortItems(domains.map((domain) => ({ theme: 'Suites', domain }))).map((item) => item.domain)
+		).toEqual([...domains].reverse());
+
+		const graphiques = ['Escalier', 'Associer formule et nuage', 'Lire un terme'].map(
+			(subdomain) => ({
+				theme: 'Suites',
+				domain: 'Représentation graphique',
+				subdomain
+			})
+		);
+		expect(sortItems(graphiques).map((item) => item.subdomain)).toEqual([
+			'Lire un terme',
+			'Associer formule et nuage',
+			'Escalier'
+		]);
+
+		const subdomains = ['Terme général', 'Déterminer la raison', 'Calculer un terme'].map(
+			(subdomain) => ({ theme: 'Suites', domain: 'Suites géométriques', subdomain })
+		);
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Calculer un terme',
+			'Déterminer la raison',
+			'Terme général'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',

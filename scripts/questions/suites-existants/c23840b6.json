@@ -1,0 +1,106 @@
+{
+	"id": "c23840b6-f01c-4d33-ac40-4c5f9c2b6eab",
+	"title": "Déterminer la raison d'une suite arithmétique",
+	"description": "À partir de deux termes",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Determiner la raison",
+	"level": 2,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite arithmétique.\n\n$u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(b-a)*(d)}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+2}}..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(b-a)*(d)}}$, alors la raison est $r = \\dfrac{u_{{b}}-u_{{a}}}{ {{b}}-{{a}} } = \\dfrac{ {{eval:c+(b-a)*(d)}}-{{eval:c;()}} }{ {{eval:b-a}} }={{solution}}$."
+				],
+				"feedback": {
+					"correct": "La raison est {{answer}}."
+				}
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "7"
+			},
+			"description": "u_2=5, u_5=26 → 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "4",
+				"c": "-3",
+				"d": "-5"
+			},
+			"description": "u_1=-3, u_4=-18 → -5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"c": "5",
+				"d": "7"
+			},
+			"description": "oubli de diviser par l'écart des rangs",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "1",
+				"b": "4",
+				"c": "-3",
+				"d": "-5"
+			},
+			"description": "signe inversé",
+			"variationIndex": 0
+		}
+	]
+}

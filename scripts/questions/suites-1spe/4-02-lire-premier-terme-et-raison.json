@@ -1,0 +1,330 @@
+{
+	"title": "Lire le premier terme et la raison sur un graphique",
+	"description": "Suite arithmétique : lire u_0 et la raison r sur le nuage de points",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Représentation graphique",
+	"subdomain": "Lire un terme",
+	"level": 2,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "La suite arithmétique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -6 ; 12\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ngrille: 1 ; 1\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0=?$ et $r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..11"
+				},
+				{
+					"name": "r",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["a+5*r >= -5", "a+5*r <= 11", "a != r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme $u_0$ est l'ordonnée du point d'abscisse $0$ (le point $A$) : $u_0={{eval:a}}$.",
+					"Pour une suite arithmétique, on passe d'un terme au suivant en ajoutant toujours la raison $r$ : quand on avance de $1$ en abscisse, les points montent (ou descendent) toujours de $r$. Avec les points $A$ et $B$ d'abscisses $0$ et $1$ : $r=u_1-u_0$.",
+					"```courbe\nx: -1 ; 6\ny: -6 ; 12\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ngrille: 1 ; 1\npoints: A(0 ; {{a}}), B(1 ; {{a}}+({{r}}))\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```",
+					"On lit $u_1={{eval:a+r}}$, donc $r={{eval:a+r}}-{{eval:a;()}}={{eval:r}}$."
+				]
+			}
+		},
+		{
+			"statement": "La suite arithmétique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = {{a}}+({{s}})*n/2 pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 0.5\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0=?$ et $r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..7"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				}
+			],
+			"conditions": ["a+4*s >= 0", "a+4*s <= 7"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{eval:s/2}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme $u_0$ est l'ordonnée du point d'abscisse $0$ (le point $A$) : $u_0={{eval:a}}$.",
+					"Pour une suite arithmétique, on passe d'un terme au suivant en ajoutant toujours la raison $r$ : quand on avance de $1$ en abscisse, les points montent (ou descendent) toujours de $r$. Avec les points $A$ et $B$ d'abscisses $0$ et $1$ : $r=u_1-u_0$.",
+					"```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = {{a}}+({{s}})*n/2 pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 0.5\npoints: A(0 ; {{a}}), B(1 ; {{a}}+({{s}})/2)\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```",
+					"On lit $u_1={{eval:a+s/2}}$, donc $r={{eval:a+s/2}}-{{eval:a;()}}={{eval:s/2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "u_0=-4, r=3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"r": "3"
+			},
+			"answers": ["-4", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "signe de la raison inversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"r": "3"
+			},
+			"answers": ["-4", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_1 lu à la place de u_0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"r": "3"
+			},
+			"answers": ["-1", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "premier terme et raison échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"r": "3"
+			},
+			"answers": ["3", "-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_0=7, r=-2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"r": "-2"
+			},
+			"answers": ["7", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "signe de la raison inversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"r": "-2"
+			},
+			"answers": ["7", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_1 lu à la place de u_0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"r": "-2"
+			},
+			"answers": ["5", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "premier terme et raison échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"r": "-2"
+			},
+			"answers": ["-2", "7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_0=2, r=1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "signe de la raison inversé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1"
+			},
+			"answers": ["2", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_1 lu à la place de u_0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1"
+			},
+			"answers": ["3", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "premier terme et raison échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "1"
+			},
+			"answers": ["1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_0=1, r=1/2 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1"
+			},
+			"answers": ["1", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "r=0.5 en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1"
+			},
+			"answers": ["1", "0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison lue sur la graduation 1 au lieu de 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1"
+			},
+			"answers": ["1", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la raison inversé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1"
+			},
+			"answers": ["1", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u_0=5, r=-1/2 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1"
+			},
+			"answers": ["5", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "r=-0.5 en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1"
+			},
+			"answers": ["5", "-0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "raison lue sur la graduation 1 au lieu de 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1"
+			},
+			"answers": ["5", "-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la raison inversé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "5",
+				"s": "-1"
+			},
+			"answers": ["5", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "raison en fraction non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"s": "1"
+			},
+			"answers": ["1", "\\frac{2}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}

@@ -1,0 +1,106 @@
+{
+	"id": "1315d326-1a4b-4abc-af93-f8ab9aeecc66",
+	"title": "Déterminer la raison d'une suite arithmétique",
+	"description": "À partir de deux termes consécutifs",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Determiner la raison",
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Détermine la raison de cette suite arithmétique.\n\n$u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(d)}}$\n\nLa raison est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+1"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..9;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $u_{{a}}={{c}}$ et $u_{{b}}={{eval:c+(d)}}$, alors la raison est $r = u_{{b}}-u_{{a}} = {{eval:c+(d)}}-{{eval:c;()}}={{solution}}$."
+				],
+				"feedback": {
+					"correct": "La raison est {{answer}}."
+				}
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5",
+				"d": "7"
+			},
+			"description": "u_3=5, u_4=12 → 7",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-3",
+				"d": "-5"
+			},
+			"description": "u_2=-3, u_3=-8 → -5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "-3",
+				"d": "-5"
+			},
+			"description": "soustraction à l'envers refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["17"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "5",
+				"d": "7"
+			},
+			"description": "somme des termes refusée",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,334 @@
+{
+	"title": "Comportement d'une suite sur l'escalier",
+	"description": "Construction en escalier : sens de variation et convergence ou divergence de la suite",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Représentation graphique",
+	"subdomain": "Escalier",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"shared": {
+		"choices": [
+			{
+				"content": "$(u_n)$ semble croissante et converger"
+			},
+			{
+				"content": "$(u_n)$ semble décroissante et converger"
+			},
+			{
+				"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+			},
+			{
+				"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+			},
+			{
+				"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..4"
+				},
+				{
+					"name": "u0",
+					"expression": "0..2"
+				},
+				{
+					"name": "L",
+					"expression": "eval:2*b"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la droite** : $u_0<u_1<u_2<\\dots$, la suite semble **croissante**.",
+					"L'escalier se resserre vers le point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$, d'abscisse ${{L}}$ : les termes s'en rapprochent de plus en plus, la suite semble **converger** vers ${{L}}$.",
+					"```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Conclusion : $(u_n)$ semble croissante et converger."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "3|4"
+				},
+				{
+					"name": "L",
+					"expression": "eval:2*b"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la gauche** : $u_0>u_1>u_2>\\dots$, la suite semble **décroissante**.",
+					"L'escalier se resserre vers le point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$, d'abscisse ${{L}}$ : les termes s'en rapprochent de plus en plus, la suite semble **converger** vers ${{L}}$.",
+					"```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Conclusion : $(u_n)$ semble décroissante et converger."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "0.5|1"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la droite** : la suite semble **croissante**.",
+					"Ici, l'escalier **s'éloigne** du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$ (d'abscisse ${{c}}$) : les marches sont de plus en plus grandes. Les termes dépassent n'importe quelle valeur : la suite semble tendre vers $+\\infty$.",
+					"```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Conclusion : $(u_n)$ semble croissante et tendre vers $+\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "4..6"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. Les marches vont **vers la gauche** : la suite semble **décroissante**.",
+					"Ici, l'escalier **s'éloigne** du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$ (d'abscisse ${{c}}$) : les marches sont de plus en plus grandes. Les termes deviennent aussi négatifs qu'on veut : la suite semble tendre vers $-\\infty$.",
+					"```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Conclusion : $(u_n)$ semble décroissante et tendre vers $-\\infty$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "3|6"
+				},
+				{
+					"name": "d",
+					"expression": "3|4|-2"
+				}
+			],
+			"correctChoiceIndex": ["4"],
+			"correction": {
+				"steps": [
+					"On lit les termes sur l'axe des abscisses : chaque marche de l'escalier fait passer de $u_n$ à $u_{n+1}$. L'escalier tourne **en spirale** autour du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$ : les termes sont alternativement d'un côté puis de l'autre de ce point. On a $u_0{{if:d>0|>|<}}u_1$ mais $u_1{{if:d>0|<|>}}u_2$.",
+					"La suite n'est donc **ni croissante ni décroissante** (elle semble ici converger, en oscillant).",
+					"```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Conclusion : $(u_n)$ ne semble ni croissante ni décroissante."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 {'b': 3, 'u0': 1, 'L': 6} : bon choix",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"u0": "1",
+				"L": "6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 {'b': 3, 'u0': 1, 'L': 6} : choix 1 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"u0": "1",
+				"L": "6"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 {'b': 3, 'u0': 1, 'L': 6} : choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"b": "3",
+				"u0": "1",
+				"L": "6"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : bon choix",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"L": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : choix 0 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"L": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 {'b': 2, 'd': 4, 'L': 4} : choix 3 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "4",
+				"L": "4"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 {'c': 2, 'd': 1} : bon choix",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 {'c': 2, 'd': 1} : choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 {'c': 2, 'd': 1} : choix 3 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 {'c': 5} : bon choix",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 {'c': 5} : choix 1 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 {'c': 5} : choix 2 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"c": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 {'b': 6, 'd': -2} : bon choix",
+			"variationIndex": 4,
+			"variables": {
+				"b": "6",
+				"d": "-2"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 {'b': 6, 'd': -2} : choix 0 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"b": "6",
+				"d": "-2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 {'b': 6, 'd': -2} : choix 1 refusé",
+			"variationIndex": 4,
+			"variables": {
+				"b": "6",
+				"d": "-2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

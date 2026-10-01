@@ -1,0 +1,227 @@
+{
+	"id": "95c38330-063f-4ade-b1ae-152b84bce20f",
+	"title": "Deviner le terme général à partir d'une liste des premiers termes",
+	"description": "Suite géométrique - raison fractionnaire",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Deviner le terme général",
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"form": "warn",
+			"brackets": "off",
+			"products": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times\\left({{c}}\\right)^n"
+				}
+			],
+			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n${{d}}$ ; ${{f}}$ ; ${{g}}$ ; ${{h}}$ ; ${{j}}$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1/(b)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*(c)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a*(c)^2"
+				},
+				{
+					"name": "h",
+					"expression": "eval:a*(c)^3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:a*(c)^4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le premier terme de la suite est $u_0={{d}}$ et on multiplie par ${{c}}$ entre chaque terme, donc $u_n={{solution}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}\\times\\left({{c}}\\right)^n"
+				}
+			],
+			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_1$ :\n\n${{f}}$ ; ${{g}}$ ; ${{h}}$ ; ${{j}}$ ; ${{k}}$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±!cd(a)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:1/(b)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a*(c)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a*(c)^2"
+				},
+				{
+					"name": "h",
+					"expression": "eval:a*(c)^3"
+				},
+				{
+					"name": "j",
+					"expression": "eval:a*(c)^4"
+				},
+				{
+					"name": "k",
+					"expression": "eval:a*(c)^5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On passe d'un terme au suivant en multipliant par ${{c}}$ : la suite est géométrique de raison ${{c}}$.",
+					"Attention, la liste commence à $u_1={{f}}$ : le terme de rang $0$ est $u_0=u_1\\times{{eval:b;()}}=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"Donc $u_n={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["5\\times\\left(-\\frac{1}{4}\\right)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-4"
+			},
+			"description": "5, -5/4… : 5×(-1/4)^n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5(-\\frac{1}{4})^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-4"
+			},
+			"description": "produit implicite",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\times(\\frac{1}{4})^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-4"
+			},
+			"description": "signe de la raison oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5\\times(-4)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-4"
+			},
+			"description": "raison inversée (-4)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\times\\left(\\frac{1}{5}\\right)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "raison positive : 6×(1/5)^n, parenthèses nécessaires",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{6}{5}\\times\\left(\\frac{1}{5}\\right)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "u_1 pris comme premier terme",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["6\\times\\left(\\frac{1}{5}\\right)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "u_1=6/5 : u_n=6×(1/5)^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{6}{5}\\times\\left(\\frac{1}{5}\\right)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "u_1 pris pour u_0",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\times5^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "raison inversée",
+			"variationIndex": 1
+		}
+	]
+}
