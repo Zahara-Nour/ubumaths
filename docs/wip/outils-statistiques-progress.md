@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lot 1 livré (#595) ; lot 2 revu, corrigé, PR à ouvrir
+## État : lots 1-2 livrés (#595, #598) ; lot 3 (histogramme, fréquences cumulées, indicateurs) — spécification soumise
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -212,7 +212,33 @@ Tour 5 (2026-10-01) — recommandations suivies :
 
 (aucune)
 
-## Reste à faire (hors lot 2)
+## Lot 3 — histogramme, fréquences cumulées, `indicateurs:`
+
+Worktree `../ubumaths-wt-stats-lot3`, branche `feat/stats-histogramme`.
+
+Tour 6 (2026-10-01) — recommandations suivies :
+
+26. **Histogramme** : amplitudes égales → axe « Effectif » gradué ; inégales → quadrillage +
+    légende d'aire « 1 carreau = 2 élèves » (`légende:` fixe valeur et mot ; sinon automatique,
+    plus haut rectangle ≈ 10 carreaux, légende « 1 carreau = N ») ; largeur d'un carreau = plus
+    grand pas simple divisant toutes les amplitudes.
+27. **Polygone** : `croissantes` → points aux bornes droites depuis (première borne ; 0 %) ;
+    `décroissantes` → bornes gauches jusqu'à (dernière borne ; 0 %) ; axe en % de 0 à 100 par
+    10 ; `lecture: médiane` (pointillés à 50 %, « Me ≈ 14,4 ») | `quartiles` (Q1, Me, Q3
+    estimés par interpolation) | `aucune` (défaut).
+28. **`indicateurs:`** — classes : effectif total, moyenne (centres), classe médiane, médiane
+    estimée ; barres à catégories toutes numériques : effectif, moyenne, médiane, Q1, Q3, EIQ,
+    étendue, écart type. Ligne sous la figure (écran + PDF), arrondis Q13. Circulaire ou barres
+    non numériques → erreur d'auteur.
+29. **Classes** : `[a ; b[` seulement (espaces facultatifs), sinon erreur avec exemple ;
+    contiguës ; ≤ 20 classes.
+30. **Lecteur d'écran, amplitudes inégales** : dimensions en carreaux + légende, pas les
+    effectifs (sauf `valeurs: oui`) ; amplitudes égales : effectifs.
+
+Constaté : dans les items de liste, le langage d'un bloc de code est lu par `(\w*)`
+(`markdown-parser.ts:1494`) — `frequences-cumulees` (tiret) n'y serait pas reconnu → `[\w-]*`.
+
+## Reste à faire (hors lots 2-3)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
