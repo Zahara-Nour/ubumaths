@@ -56,12 +56,29 @@ function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
 }
 
+/** Couleurs que `rgb("…")` de Typst accepte (3, 4, 6 ou 8 chiffres hexadécimaux). */
+const TYPST_HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+/**
+ * Défense en profondeur : une couleur non hexadécimale (`red`, une chaîne
+ * avec `"`) ferait échouer tout le document, ou sortirait de la chaîne. Elle
+ * devient noire ; l'appelant est censé l'avoir validée avant.
+ */
 function hexToTypstColor(hex: string): string {
-	return `rgb("${hex}")`;
+	return TYPST_HEX_COLOR.test(hex) ? `rgb("${hex}")` : 'black';
 }
 
-function strokeExpr(hex: string, width: number, dash?: string): string {
+/**
+ * Ligne qui contient un nombre non fini HORS chaîne : `NaN`, `Infinity`
+ * écrits dans une coordonnée font échouer tout le document.
+ */
+function hasNonFiniteNumber(line: string): boolean {
+	return /NaN|Infinity/.test(line.replace(/"(?:[^"\\]|\\.)*"/g, '""'));
+}
+
+function strokeExpr(hex: string, rawWidth: number, dash?: string): string {
 	const color = hexToTypstColor(hex);
+	const width = Number.isFinite(rawWidth) ? rawWidth : 1;
 	let s = `${color} + ${width}pt`;
 	if (dash === 'dashed') s = `(paint: ${color}, thickness: ${width}pt, dash: "dashed")`;
 	else if (dash === 'dotted') s = `(paint: ${color}, thickness: ${width}pt, dash: "dotted")`;
@@ -643,7 +660,8 @@ export function exportToTypst(
 	}
 
 	lines.push('})');
-	return lines.join('\n');
+	// Défense en profondeur : une primitive avec un nombre non fini est omise
+	return lines.filter((line) => !hasNonFiniteNumber(line)).join('\n');
 }
 
 /** Convert a GeoImage to a Typst cetz content() call. */
