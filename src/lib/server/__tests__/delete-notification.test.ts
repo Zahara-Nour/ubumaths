@@ -9,15 +9,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const serviceUpdate = vi.fn();
+const serviceFilters = vi.fn();
 
 vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({
 		from: () => ({
 			update: (row: Record<string, unknown>) => {
 				serviceUpdate(row);
-				return {
-					eq: () => ({ select: async () => ({ data: [{ id: 'n1' }], error: null }) })
+				const chain = {
+					eq: (...args: unknown[]) => {
+						serviceFilters(...args);
+						return chain;
+					},
+					is: (...args: unknown[]) => {
+						serviceFilters(...args);
+						return chain;
+					},
+					select: async () => ({ data: [{ id: 'n1' }], error: null })
 				};
+				return chain;
 			}
 		})
 	})
@@ -44,7 +54,10 @@ function userClient(createdBy: string, role: string) {
 	} as never;
 }
 
-beforeEach(() => serviceUpdate.mockReset());
+beforeEach(() => {
+	serviceUpdate.mockReset();
+	serviceFilters.mockReset();
+});
 
 describe('deleteNotification', () => {
 	it("l'auteur masque sa notification via le client service", async () => {
@@ -53,6 +66,9 @@ describe('deleteNotification', () => {
 		expect(serviceUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({ deleted_at: expect.any(String) })
 		);
+		// Seulement une notification non masquée, et de son auteur.
+		expect(serviceFilters).toHaveBeenCalledWith('deleted_at', null);
+		expect(serviceFilters).toHaveBeenCalledWith('created_by', 'prof');
 	});
 
 	it("un compte qui n'est ni l'auteur ni admin est refusé, rien n'est écrit", async () => {

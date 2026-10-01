@@ -164,6 +164,27 @@ describe('sécurité : points mineurs Q76 / Q77 / Q78', () => {
 			});
 		});
 
+		it('le professeur ne peut pas déplacer une demande vers un autre élève', async () => {
+			// L'autre élève est aussi dans la classe du professeur : sans cela, la policy
+			// refuserait déjà le déplacement et le test ne prouverait rien.
+			const autre = await TestData.profile().withRole('student').create();
+			const { error: errMembre } = await service
+				.from('class_members')
+				.insert({ class_id: classe, student_id: autre.id, status: 'active' });
+			expect(errMembre).toBeNull();
+			const { error } = await enseignant
+				.from('parental_consents')
+				.update({ student_id: autre.id })
+				.eq('id', demande);
+			expect(error?.code).toBe('42501');
+			const { data } = await service
+				.from('parental_consents')
+				.select('student_id')
+				.eq('id', demande)
+				.single();
+			expect(data?.student_id).toBe(eleveId);
+		});
+
 		it('le professeur ne peut pas créer une demande déjà accordée', async () => {
 			const { error } = await enseignant.from('parental_consents').insert({
 				student_id: eleveId,

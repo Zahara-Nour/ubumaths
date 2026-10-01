@@ -4,7 +4,9 @@
 -- Q76 — Preuve du consentement parental (parental_consents)
 --   Avant : le professeur et l'admin pouvaient écrire consent_ip, consent_user_agent,
 --   consent_given_at, ou passer une demande à « granted », sans clic du parent.
---   Après : pour les rôles de l'API, ces quatre éléments sont refusés (42501).
+--   Après : pour les rôles de l'API, ces quatre éléments sont refusés (42501), ainsi
+--   que le changement d'élève ou de lien d'une demande (une preuve réelle ne peut
+--   pas être déplacée vers un autre élève).
 --   Seule grant_parental_consent (SECURITY DEFINER, appelée par le serveur quand le
 --   parent clique sur son lien) les écrit. Le professeur garde : créer une demande
 --   (en attente), changer l'e-mail du parent, relancer, et dispenser l'élève via
@@ -58,7 +60,11 @@ begin
 		return new;
 	end if;
 
+	-- Une demande reste attachée à son élève et à son lien : sinon une preuve réelle
+	-- pourrait être déplacée vers un autre élève.
 	if new.consent_ip is distinct from old.consent_ip
+		or new.student_id is distinct from old.student_id
+		or new.consent_token is distinct from old.consent_token
 		or new.consent_user_agent is distinct from old.consent_user_agent
 		or new.consent_given_at is distinct from old.consent_given_at
 		or (new.status = 'granted'::public.consent_status

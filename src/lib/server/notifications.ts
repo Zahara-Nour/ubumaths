@@ -539,11 +539,14 @@ export async function deleteNotification(
 		// (auteur ou admin). Avec le client du compte, la base refusait toujours : une
 		// notification masquée ne satisfait plus la policy SELECT (deleted_at is null),
 		// et PostgREST la relit après l'UPDATE.
-		const { data: masked, error } = await createServiceRoleClient()
+		let maskQuery = createServiceRoleClient()
 			.from('notifications')
 			.update({ deleted_at: new Date().toISOString() })
 			.eq('id', notificationId)
-			.select('id');
+			.is('deleted_at', null);
+		// Défense en profondeur : hors admin, seulement ses propres notifications.
+		if (!isAdmin) maskQuery = maskQuery.eq('created_by', userId);
+		const { data: masked, error } = await maskQuery.select('id');
 
 		if (error) {
 			console.error('Error deleting notification:', error);
