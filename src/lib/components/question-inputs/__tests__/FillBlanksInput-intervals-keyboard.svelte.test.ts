@@ -154,10 +154,13 @@ describe('FillBlanksInput — case « intervalles »', () => {
 		expect(intervalsLayout()).toBeUndefined();
 	});
 
-	it('champ voisin ordinaire : smartFence intact ; blur : smartFence restauré', async () => {
+	// smartFence n'est PAS restauré au blur : MathLive fait sortir puis rentrer le focus
+	// en ouvrant son clavier, et réaffecter une option referme le clavier (bug du
+	// 2026-10-01, FillBlanksInput-intervals-toggle.svelte.test.ts)
+	it('champ voisin ordinaire : smartFence intact ; démontage : smartFence restauré', async () => {
 		const twoFields =
 			'Solutions : $S=\\placeholder[0]{}$ et $x=\\placeholder[1]{}$' as ResolvedMarkdown;
-		await render(FillBlanksInput, {
+		const { unmount } = await render(FillBlanksInput, {
 			props: {
 				statement: twoFields,
 				blanks: [intervalBlank, { type: 'math', expectedAnswer: '3' }]
@@ -174,6 +177,8 @@ describe('FillBlanksInput — case « intervalles »', () => {
 		expect(ordinary.smartFence).toBe(true);
 
 		intervals.blur();
-		await expect.poll(() => intervals.smartFence).toBe(true);
+		expect(intervals.smartFence).toBe(false);
+		await unmount();
+		expect(intervals.smartFence).toBe(true);
 	});
 });
