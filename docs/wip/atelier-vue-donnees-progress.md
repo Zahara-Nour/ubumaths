@@ -8,6 +8,11 @@
 
 `src/lib/atelier/stats.ts` : `describeList()` et `fitAffine()`.
 
+> **Depuis le 2026-10-01** (chantier outils statistiques, lot 1) : déplacés dans
+> `src/lib/statistics/` (`describe.ts`, `fit.ts`), seule source de calcul, et
+> `.stats` / `.linreg` les appellent. Le paragraphe ci-dessous décrit l'état
+> du 2026-09-16.
+
 **Calculés ici, pas repris du moteur.** `.stats` et `.linreg` rendent du
 **texte** — « Moyenne (mean): 12 », sans accent et à moitié en anglais — et le
 relire est interdit depuis le lot 3, mesures à l'appui. `.stats` ne rend pas non
@@ -18,22 +23,12 @@ plus l'étendue, que le §4 N2 promet.
 Tranché par David le 2026-09-16 : c'est la **variance descriptive** du programme
 français, celle de la touche σₓ d'une calculatrice.
 
-Le moteur, lui, rend l'estimateur d'échantillon (`/(n - 1)`, mesuré
-`web-repl-engine.ts:1619`). Pour `12 ; 15 ; 9` :
-
-|                      | variance | écart-type |
-| -------------------- | -------- | ---------- |
-| Panneau de l'atelier | 6        | ≈ 2,45     |
-| `.stats 12,15,9`     | 9        | 3          |
-
-**Les deux sont justes**, ils ne répondent pas à la même question. Mais un élève
-qui essaierait les deux verrait deux nombres différents pour la même série.
-
-> 🔜 **Dette notée.** Harmoniser demanderait soit de changer `.stats` (module
-> partagé avec le CLI, où l'estimateur non biaisé est légitime), soit de nommer
-> les deux dans l'affichage. **Déclencheur : si un élève ou David bute
-> réellement dessus** — pas avant, parce que les commandes `.stats`/`.linreg`
-> sont marquées « avancées » et que le geste normal est l'action du panneau.
+> ✅ **Soldé.** Le moteur divise lui aussi par `n` depuis la décision du
+> 2026-09-16 (`.stats 12,15,9` → variance 6, écart-type ≈ 2,45, comme le
+> panneau). Ce paragraphe affirmait jusqu'au 2026-10-01 que le moteur rendait
+> l'estimateur `n − 1` (9 et 3) : c'était périmé, le code ne le faisait plus.
+> Depuis le lot 1 des outils statistiques, `.stats` appelle `summarizeList`,
+> donc les deux ne peuvent plus diverger.
 
 ## Étape 2 — le séparateur de liste (fait)
 

@@ -1,18 +1,18 @@
 /**
  * Les statistiques d'une liste, et l'ajustement affine de deux listes.
  *
- * ⚠️ Calculés **côté atelier** (décision Q2) et non repris de `.stats` : la
- * commande rend du TEXTE — « Moyenne (mean): 12 », sans accent et à moitié en
- * anglais — et le relire est interdit depuis le lot 3. Elle ne rend pas non plus
- * l'étendue, que le §4 N2 promet.
+ * Déplacés de `atelier/stats.ts` vers `statistics/` (chantier outils
+ * statistiques, lot 1) : une seule source de calcul pour l'atelier, le moteur
+ * (`.stats`, `.linreg`) et les blocs ubumark. Assertions inchangées.
  *
  * ⚠️ **Diviseur `n`, pas `n − 1`** (tranché par David le 2026-09-16) : c'est la
  * variance descriptive du programme français, celle de la touche σₓ des
- * calculatrices. Le moteur, lui, rend l'estimateur d'échantillon.
+ * calculatrices.
  */
 
 import { describe, it, expect } from 'vitest';
-import { describeList, fitAffine } from '../stats';
+import { describeList } from '../describe';
+import { fitAffine } from '../fit';
 
 describe('décrire une série', () => {
 	it('donne tout ce que le §4 N2 promet', () => {
@@ -121,5 +121,40 @@ describe('ajuster une droite sur deux séries', () => {
 
 		expect(fit.ok).toBe(true);
 		expect(fit.ok && fit.slope).toBeCloseTo(0, 6);
+	});
+});
+
+// Ajouts du lot 1 : une moyenne calculée en virgule flottante n'est pas
+// toujours égale aux valeurs (0,1 ; 0,1 ; 0,1 → 0,10000000000000002).
+describe('une série constante en décimaux', () => {
+	it('a une variance exactement nulle', () => {
+		const s = describeList([0.1, 0.1, 0.1]);
+
+		expect(s!.variance).toBe(0);
+		expect(s!.deviation).toBe(0);
+	});
+
+	it('ne donne pas de droite quand toutes les abscisses valent 0,1', () => {
+		const fit = fitAffine([0.1, 0.1, 0.1], [1, 2, 3]);
+
+		expect(fit.ok).toBe(false);
+	});
+
+	it('donne R² = 1 quand toutes les ordonnées valent 0,1', () => {
+		const fit = fitAffine([1, 2, 3], [0.1, 0.1, 0.1]);
+
+		expect(fit.ok).toBe(true);
+		expect(fit.ok && fit.r2).toBe(1);
+	});
+});
+
+describe('valeurs non finies', () => {
+	it('fitAffine refuse une abscisse ou une ordonnée non finie, en le disant', () => {
+		const x = fitAffine([1, Number.POSITIVE_INFINITY], [1, 2]);
+		const y = fitAffine([1, 2], [Number.NaN, 2]);
+
+		expect(x.ok).toBe(false);
+		expect(y.ok).toBe(false);
+		expect(x.ok === false && x.message).toMatch(/nombre fini/);
 	});
 });

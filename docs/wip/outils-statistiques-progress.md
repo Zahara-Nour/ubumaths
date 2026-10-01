@@ -1,0 +1,141 @@
+# Chantier : outils statistiques (blocs ubumark + atelier)
+
+Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
+
+## État : lot 1 revu et corrigé, PR à ouvrir
+
+## Existant vérifié dans le code (2026-10-01)
+
+- `src/lib/atelier/stats.ts` : `describeList` (variance de POPULATION, ÷ n) et `fitAffine`.
+- ⚠️ **Deux implémentations** du même calcul : `.stats` du moteur
+  (`web-repl-engine.ts` ~l.1605) recalcule moyenne / médiane / variance à la main.
+  L'exigence « une seule source » impose de le brancher sur le futur module.
+- ⚠️ **Doc périmée, pas le code** : le moteur divise bien par `n` (l.1615-1630),
+  mais le 2ᵉ paragraphe de la JSDoc de `describeList` et
+  `docs/wip/atelier-vue-donnees-progress.md` (§ « Le diviseur », l.16-30)
+  affirment encore qu'il rend l'estimateur `n − 1` (« 9 contre 6 »). À corriger.
+- Patron `courbe` présent : `types/courbe.ts`, `parser/courbe-parser.ts`,
+  `utils/courbe-scene.ts`, `generators/courbe-typst.ts`, `nodes/Courbe.svelte`,
+  aiguillage `markdown-parser.ts` l.1494-1519 (`variation`, `probtree`, `courbe`).
+- Pas de `src/lib/statistics/`.
+- Programmes : 2de §6.1 (`2-156`…`2-169`), §6.2 tableau croisé (`2-170`…`2-175`),
+  `2-176` loi des grands nombres ; 1re spé `1SPE-157`…`1SPE-173` (loi, espérance,
+  variance, écart type, échantillons) ; 6e rang 3 : barres + circulaire.
+- ⚠️ **Boîte à moustaches** : aucune occurrence dans `docs/wip/referentiel/`.
+  **Loi binomiale** : absente du programme de 1re spé du dépôt (Terminale).
+- ⚠️ **Conflit de vocabulaire** : « Série » est déjà un terme du glossaire
+  (composition de questions, `series`). « Série à effectifs » / « série
+  statistique » demande un arbitrage avant de nommer quoi que ce soit.
+
+## Décisions de David
+
+Tour 1 (2026-10-01) — toutes les recommandations suivies :
+
+1. **Vocabulaire** : « Série statistique » (toujours avec l'adjectif), distincte de « Série »
+   (questions). Code : `Dataset` (valeurs brutes), `FrequencyTable` (valeurs + effectifs) ;
+   jamais `series` pour des données.
+2. **Lots, dans l'ordre** : (1) module `src/lib/statistics/` + rebrancher `describeList` et
+   `.stats` + corriger la doc périmée ; (2) blocs barres + circulaire ; (3) histogramme +
+   polygone des fréquences cumulées ; (4) tableau croisé (totaux, fréquences conditionnelles et
+   marginales) ; (5) atelier ; (6) variable aléatoire finie (loi, E, V, σ), **sans binomiale**.
+   **Boîte à moustaches hors périmètre.**
+3. **Quartiles / déciles** : définition du programme de 2de (Q1 = plus petite valeur telle
+   qu'au moins 25 % des données lui soient ≤ ; Q3 à 75 %, D1/D9 idem), étendue aux séries à
+   effectifs par les fréquences cumulées. Médiane usuelle, jamais appelée « Q2 ». L'UI et la
+   doc disent « définition du programme » (≠ calculatrices TI/Casio).
+4. **Un bloc par diagramme**, noms français, grammaire des lignes de données partagée.
+5. **Atelier : pas de nouvel objet** — deux listes appariées (valeurs + effectifs), comme
+   `scatter:M` ; classes = bornes (n+1) + effectifs (n), reportables après le lot 5.
+6. **Diagrammes de l'atelier dans la vue Données**, même composant SVG que le bloc ; le
+   grapheur garde nuage et ajustement.
+7. **Pas de simulation** dans ce chantier.
+
+Tour 2 (2026-10-01) — toutes les recommandations suivies :
+
+8. **Syntaxe** : `clé:` = option, `donnée = effectif` = donnée, `;` séparateur, `{{a}}` résolues
+   avant ; une option l'emporte sur une catégorie homonyme (documenté). Blocs `barres`,
+   `circulaire` (`étiquettes:` pourcentages | effectifs | angles | aucune), `histogramme`
+   (`[a ; b[ = n`, aire ∝ effectif, `légende: 1 carreau = 2 élèves`), `frequences-cumulees`
+   (`sens:`, `lecture: médiane`), `tableau-croise` (`lignes:`, `colonnes:`, `?` = case vide,
+   `totaux:`, `afficher:`).
+9. **Virgule décimale acceptée** (`12,5` et `12.5`) : la virgule n'y est jamais séparatrice
+   (règle `;` de #520). Contexte vérifié : `parseCustom` lit `3,14` décimal (hors matrices) ;
+   bloc `figure` REFUSE la virgule (88e7ba2ae) ; `variation` = séparateur. Affichage selon la
+   langue du document (#448). `45,120` → erreur « effectif non entier ».
+10. **Effectifs entiers ≥ 0 OU pourcentages**, jamais mélangés (erreur d'auteur). Série brute
+    (`données:`) plus tard.
+11. **`indicateurs:`** en option, au lot 3.
+12. **Lot 1** : quartiles/déciles/EIQ (brut + effectifs), effectifs/fréquences/cumulées
+    (croissantes, décroissantes), classes (moyenne aux centres, classe médiane, médiane par
+    interpolation), rebrancher `describeList` + `.stats`, corriger la doc `n − 1`.
+13. **Arrondis d'affichage** : entier exact ; sinon ≈ à 2 décimales ; % à 1 décimale ; angles au
+    degré ; `arrondi: N` ; calcul interne jamais arrondi.
+
+Tour 3 (2026-10-01) — recommandations suivies, spécification TDD du lot 1 validée :
+
+14. **`.linreg` rebranché sur `fitAffine`** au lot 1 ; son erreur « X et Y de longueurs
+    différentes » reste au niveau de la commande, avant l'appel ; sortie inchangée.
+15. **Sortie de `.stats` inchangée au lot 1** (seule la source du calcul change) ; passage en
+    français + quartiles au lot 5. Raison : `.stats`/`.ajustement` sont exposées DANS l'atelier
+    (`OFF_REGISTRY`, `commands.ts:249`).
+16. **Objectif écrit** dans `atelier-progress.md` : l'atelier a vocation à remplacer le REPL web
+    (`/cas`) et garde `WebReplEngine` comme calculateur. Une note, pas d'ADR.
+
+## Lot 1 — spécification TDD validée
+
+Module `src/lib/statistics/`, pur. Entrée invalide → `{ ok: false, message }` (français, jamais
+d'exception) ; série vide → `null`. ⚠️ **Aucun import `$lib`** dans ce module : `mathAST` n'en
+fait jamais (`pnpm math` = `tsx`, sans alias) et le moteur l'importe en relatif.
+
+- **A. Série brute** : rang de Q_p = ⌈n·p/100⌉ (entiers). `3;7;8;5;12;14;21;13;18` → médiane 12,
+  Q1 7, Q3 14, EIQ 7 (≠ TI : 6 et 16). `1..8` → méd. 4,5, Q1 2, Q3 6. `1..30` → D1 3, D9 27.
+  Ordre indifférent. Une valeur → tout = elle, EIQ/variance/étendue 0. Valeurs égales → EIQ 0.
+  Vide → `null`. `NaN`/`Infinity` → erreur qui nomme la valeur.
+- **B. Effectifs** : `0..4` / `5;8;4;2;1` → moyenne 1,3, variance 1,21, σ 1,1, médiane 1, Q1 0,
+  Q3 2 ; fréquences `.25 .4 .2 .1 .05` ; cumulées croissantes `.25 .65 .85 .95 1` (effectifs
+  `5 13 17 19 20`) ; décroissantes `1 .75 .35 .15 .05`. Dépliée = mêmes indicateurs. Effectif 0
+  gardé dans le tableau, sans effet. Pourcentages = effectifs proportionnels. Erreurs :
+  effectif < 0 ou non fini (situé), total nul, longueurs différentes. Lignes triées par valeur.
+- **C. Classes** : `[0;10[ 12, [10;20[ 18, [20;40[ 10` → moyenne aux centres 15,75, classe
+  médiane `[10;20[`, médiane estimée 130/9 ; 50 % pile en fin de classe (`20, 20`) → classe
+  `[0;10[`, estimation 10 ; densité = effectif / amplitude exposée. Erreurs : borne gauche ≥
+  droite (situé), classes non contiguës / chevauchantes (nomme les deux).
+- **D. Non-régression** : tests existants de `describeList` verts sans modification ; `.stats` et
+  `.linreg` même sortie, calcul délégué au module (test qui l'espionne) ; `STATISTICS_LIMITS`
+  10 000 valeurs (`.stats`/`.linreg` gardent 1 000) ; doc `n − 1` corrigée.
+- **Ajout constaté en préparant les tests** : `fitAffine([0.1;0.1;0.1], …)` passe le garde
+  « abscisses identiques » (moyenne 0,10000000000000002 → variance ≈ 6e-34 ≠ 0) et rendrait une
+  pente absurde. Garde réécrit en égalité des valeurs ; même chose pour la variance d'une série
+  constante (0 exact).
+
+## Lot 1 — fait
+
+- `src/lib/statistics/` : `describe.ts` (`describeList`, `summarizeList`, `summarizeTable`),
+  `fit.ts` (`fitAffine`), `classes.ts` (`summarizeClasses`), `outcome.ts`, `limits.ts`.
+- Déplacés depuis `atelier/stats.ts` (git mv) ; importeurs mis à jour : `DataView.svelte`,
+  `desk.svelte.ts`. Moteur : import relatif `../../../statistics/…`.
+- Preuves : 40 tests rouges contre des stubs aux bonnes signatures (ancien calcul gardé),
+  puis verts ; sortie `.stats`/`.linreg` comparée à `statistics-commands.golden.json` capturé
+  AVANT (seul écart : `.stats 0.1, 0.1, 0.1` → écart type `0` au lieu de `1.38778e-17`) ;
+  espions `vi.mock` prouvant la délégation. Atelier : 433 tests serveur + 198 client verts.
+  `check:incremental` 0 erreur ; `lint:fast` propre.
+- Défauts trouvés en route : `fitAffine` laissait passer des abscisses constantes décimales
+  (pente absurde) et rendait R² = 0 pour des ordonnées constantes décimales → gardes par
+  égalité des valeurs. `Infinity` désormais refusé par `.stats` (affichait `Infinity`).
+- ⚠️ Test d'ordre de saisie : positions exactes, moyenne/variance à 1e-10 (sommes dans
+  l'ordre de saisie, voulu pour le bit-à-bit avec l'ancien `.stats`).
+- `svelte-autofixer` : non lancé (outil MCP absent de la session) ; seul changement `.svelte` =
+  un chemin d'import dans `DataView.svelte`.
+
+- Revue `code-reviewer` : 0 bloquant, 4 à corriger + 4 mineurs, tous traités : règle de cumul
+  unique (`cumulative.ts`, la classe médiane se décalait sur des pourcentages décimaux),
+  tolérance enfin testée (3 tests rouges en la neutralisant), `fitAffine` refuse le non-fini,
+  `.stats`/`.linreg` refusent `Infinity`, poids nuls sautés dans moyenne/variance, lignes de
+  même valeur fusionnées, atelier : échec ≠ absence (`summarizeList` + message).
+- Constaté : une liste de l'atelier écarte déjà les valeurs non finies à la saisie
+  (`2 ; 1/0` → `[2]`, « 1 valeur ignorée ») et la saisie plafonne à 10 000 caractères : le
+  dépassement de `STATISTICS_LIMITS` n'est pas atteignable depuis l'atelier aujourd'hui.
+
+## Questions ouvertes
+
+(aucune)
