@@ -54,6 +54,8 @@ on:
       - 'src/lib/server/**'
       - 'src/lib/srs/**'
       - 'src/lib/ubumark/**'
+      - 'src/lib/geometry-core/viewport/grid.ts'
+      - 'src/lib/geometry-core/viewport/sampler.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
       - 'src/lib/components/markdown/utils/math-utils.ts'
