@@ -12,6 +12,8 @@
  */
 
 import type { Summary } from './describe';
+import type { Fraction } from './fraction';
+import type { RandomVariableLaw } from './random-variable';
 
 // =============================================================================
 // Types
@@ -63,4 +65,48 @@ export function formatSummary(summary: Summary, locale: StatLocale): string[] {
 		`Variance ${v(summary.variance)}`,
 		`Écart type ${v(summary.deviation)}`
 	];
+}
+
+/** Indicateurs d'une variable aléatoire (lot 6) */
+export type LawIndicator = 'esperance' | 'variance' | 'ecart-type';
+
+const LAW_INDICATORS: readonly LawIndicator[] = ['esperance', 'variance', 'ecart-type'];
+
+/** `7/2`, `−3/4`, `5` : vrai signe moins. */
+export function formatFraction(value: Fraction): string {
+	return value.toString().replace('-', '−');
+}
+
+/**
+ * Une valeur exacte en fraction, suivie de son décimal : `7/2 = 3,5` s'il tombe
+ * juste, `35/12 ≈ 2,92` sinon ; un entier seul.
+ */
+function exactWithDecimal(value: Fraction, locale: StatLocale): string {
+	const exact = formatFraction(value);
+	if (value.den === 1n) return `= ${exact}`;
+	return `= ${exact} ${formatApproxValue(value.toNumber(), locale)}`;
+}
+
+/**
+ * E, V et σ d'une variable aléatoire, en français (Q40) : fractions exactes,
+ * écart type approché sauf racine exacte.
+ */
+export function formatLawIndicators(
+	name: string,
+	law: RandomVariableLaw,
+	locale: StatLocale,
+	indicators: readonly LawIndicator[] = LAW_INDICATORS
+): string[] {
+	return indicators.map((indicator) => {
+		switch (indicator) {
+			case 'esperance':
+				return `E(${name}) ${exactWithDecimal(law.expectation, locale)}`;
+			case 'variance':
+				return `V(${name}) ${exactWithDecimal(law.variance, locale)}`;
+			case 'ecart-type':
+				return law.exactDeviation === null
+					? `σ(${name}) ${formatApproxValue(law.deviation, locale)}`
+					: `σ(${name}) ${exactWithDecimal(law.exactDeviation, locale)}`;
+		}
+	});
 }

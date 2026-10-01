@@ -123,6 +123,7 @@
 	let histogram = $derived(scene?.kind === 'histogramme' ? scene : null);
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
 	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
+	let law = $derived(scene?.kind === 'loi' ? scene : null);
 	/** Histogramme ou polygone : abscisses dans l'unité des classes */
 	let classChart = $derived(histogram ?? cumulative);
 	/** Haut de l'axe vertical : carreaux / effectif (histogramme) ou 100 % (polygone) */
@@ -193,11 +194,41 @@
 {#if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
-		{#if scene.title && !crossTable}
+		{#if scene.title && !crossTable && !law}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
-		{#if crossTable}
+		{#if law}
+			<!-- Loi d'une variable aléatoire (lot 6) : même tableau accessible que
+			     le tableau croisé, deux lignes `gᵢ` / `P(G = gᵢ)` -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+				<table class="stat-tableau">
+					<caption id={captionId} class:stat-titre={law.title !== null}
+						>{law.title ?? law.accessibleTitle}</caption
+					>
+					<tbody>
+						<tr>
+							<th scope="row"><i>{law.variable.toLowerCase()}</i><sub>i</sub></th>
+							{#each law.values as value, i (i)}
+								<td>{value}</td>
+							{/each}
+						</tr>
+						<tr>
+							<th scope="row"
+								>P({law.variable} = <i>{law.variable.toLowerCase()}</i><sub>i</sub>)</th
+							>
+							{#each law.probabilities as cell, i (i)}
+								<td class:stat-case-vide={cell.hidden}
+									>{#if cell.hidden}<span class="sr-only">{law.hiddenLabel}</span
+										>{:else}{cell.text}{/if}</td
+								>
+							{/each}
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		{:else if crossTable}
 			<!-- Zone de défilement focalisable : sans élément focalisable dedans, un
 			     tableau qui déborde ne défile pas au clavier (Safari macOS ; WCAG 2.1.1,
 			     audit a11y du lot 4). `tabindex` sur une région est le motif recommandé. -->

@@ -40,6 +40,8 @@ import {
 	CROSS_TABLE_DISPLAYS,
 	type CrossTableData,
 	type CrossTableDisplay,
+	type LawData,
+	type LawIndicator,
 	CLASS_INDICATORS,
 	STAT_CHART_DIRECTIONS,
 	STAT_CHART_INDICATORS,
@@ -62,6 +64,8 @@ import {
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
 import { summarizeClasses } from '$lib/statistics/classes';
 import { crossTable } from '$lib/statistics/cross-table';
+import { Fraction } from '$lib/statistics/fraction';
+import { randomVariable } from '$lib/statistics/random-variable';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -86,6 +90,15 @@ interface Options {
 	display: CrossTableDisplay;
 	masked: { row: string; column: string; line: number }[];
 	corner: string | null;
+	lawIndicators: LawIndicator[];
+	/** Valeurs écrites dans `masquer:` d'une loi, vérifiées une fois tout lu */
+	lawMasked: string[];
+}
+
+/** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
+interface LawLine {
+	texts: (string | null)[];
+	line: number;
 }
 
 /** Une ligne de données d'un tableau croisé, avant le contrôle d'ensemble */
@@ -100,7 +113,7 @@ interface TableRow {
 // ============================================================================
 
 const BLOCK_START_REGEX =
-	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise)\s*$/;
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -161,12 +174,12 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	legende: ['histogramme'],
 	sens: ['frequences-cumulees'],
 	lecture: ['frequences-cumulees'],
-	indicateurs: ['barres', 'histogramme', 'frequences-cumulees'],
+	indicateurs: ['barres', 'histogramme', 'frequences-cumulees', 'loi'],
 	lignes: ['tableau-croise'],
 	colonnes: ['tableau-croise'],
 	totaux: ['tableau-croise'],
 	afficher: ['tableau-croise'],
-	masquer: ['tableau-croise'],
+	masquer: ['tableau-croise', 'loi'],
 	coin: ['tableau-croise']
 };
 
@@ -175,7 +188,15 @@ const KIND_NAME: Record<StatChartKind, string> = {
 	circulaire: 'diagrammes circulaires',
 	histogramme: 'histogrammes',
 	'frequences-cumulees': 'polygones des fréquences cumulées',
-	'tableau-croise': 'tableaux croisés'
+	'tableau-croise': 'tableaux croisés',
+	loi: 'lois de variables aléatoires'
+};
+
+/** Indicateurs d'une loi, tels que l'auteur les écrit */
+const LAW_INDICATOR_NAMES: Record<LawIndicator, string> = {
+	esperance: 'espérance',
+	variance: 'variance',
+	'ecart-type': 'écart type'
 };
 
 /** Nom réservé à la ligne et à la colonne des totaux */
@@ -402,7 +423,8 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			options.reading = oneOf(value, STAT_CHART_READINGS, 'lecture');
 			return;
 		case 'indicateurs':
-			options.indicators = parseIndicators(value);
+			if (kind === 'loi') options.lawIndicators = parseLawIndicators(value);
+			else options.indicators = parseIndicators(value);
 			return;
 		case 'legende': {
 			const match = AREA_LEGEND_REGEX.exec(value.trim());
@@ -437,6 +459,13 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			options.corner = parseText(value, 'coin');
 			return;
 		case 'masquer':
+			if (kind === 'loi') {
+				options.lawMasked = value
+					.split(';')
+					.map((v) => v.trim())
+					.filter((v) => v !== '');
+				return;
+			}
 			// La ligne est connue ici ; les noms sont vérifiés une fois tout lu
 			options.masked = value
 				.split(';')
@@ -454,6 +483,91 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				});
 			return;
 	}
+}
+
+function parseLawIndicators(raw: string): LawIndicator[] {
+	const names = raw
+		.split(';')
+		.map((name) => name.trim())
+		.filter((name) => name !== '');
+	if (names.length === 0) throw new LineError('indicateurs : aucun indicateur donné');
+	return names.map((name) => {
+		const key = normalizeKey(name).replace(/[\s-]+/g, '-');
+		const known = (Object.keys(LAW_INDICATOR_NAMES) as LawIndicator[]).find((i) => i === key);
+		if (known === undefined) {
+			throw new LineError(
+				`indicateur « ${name} » inconnu pour une loi (choisir : espérance, variance, écart type)`
+			);
+		}
+		return known;
+	});
+}
+
+/**
+ * Contrôles d'une loi, une fois tout lu (Q41-Q42) : le module statistique dit
+ * si c'en est une (somme exacte 1, probabilités dans [0 ; 1], valeurs
+ * distinctes). Rend les données, ou les erreurs.
+ */
+function checkLaw(
+	variable: ({ name: string } & LawLine) | null,
+	probabilities: LawLine | null,
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { law: LawData } | { errors: StatChartIssue[] } {
+	if (variable === null) {
+		return { errors: [{ message: 'Écrire les valeurs de la variable : « X = 1 ; 2 ; 3 »' }] };
+	}
+	if (probabilities === null) {
+		return { errors: [{ message: 'Écrire les probabilités : « P = 1/2 ; 1/4 ; 1/4 »' }] };
+	}
+	const at = (line: number, message: string) => ({
+		errors: [{ message: `Ligne ${line} : ${message}`, line }]
+	});
+
+	// Les valeurs ont été lues ligne par ligne : toutes sont des nombres
+	const values = variable.texts.map((text) => Fraction.parse(text ?? '') ?? Fraction.ZERO);
+	const probs = probabilities.texts.map((text) => (text === null ? null : Fraction.parse(text)));
+	if (probs.length !== values.length) {
+		return at(
+			probabilities.line,
+			`${values.length} valeur(s) pour ${probs.length} probabilité(s) : il en faut autant`
+		);
+	}
+
+	const known = probs.filter((p): p is Fraction => p !== null);
+	if (known.length < probs.length) {
+		if (options.lawIndicators.length > 0) {
+			return at(
+				optionLines.indicateurs ?? 0,
+				'indicateurs impossibles avec une probabilité « ? » : sa valeur est inconnue'
+			);
+		}
+		const outside = known.find((p) => p.isNegative() || p.greaterThan(Fraction.ONE));
+		if (outside) return at(probabilities.line, `la probabilité ${outside} n'est pas entre 0 et 1`);
+	} else {
+		const outcome = randomVariable(values, known);
+		if (outcome !== null && !outcome.ok) return at(probabilities.line, outcome.message);
+	}
+
+	const masked: number[] = [];
+	for (const raw of options.lawMasked) {
+		const wanted = Fraction.parse(raw);
+		const index = wanted === null ? -1 : values.findIndex((v) => v.equals(wanted));
+		if (index === -1) {
+			return at(optionLines.masquer ?? 0, `masquer : la valeur « ${raw} » n'est pas dans la loi`);
+		}
+		masked.push(index);
+	}
+
+	return {
+		law: {
+			variable: variable.name,
+			values: variable.texts.map((text) => text ?? ''),
+			probabilities: probabilities.texts,
+			masked,
+			indicators: options.lawIndicators
+		}
+	};
 }
 
 function yesNo(value: string, key: string): boolean {
@@ -674,8 +788,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		showTotals: true,
 		display: 'effectifs',
 		masked: [],
-		corner: null
+		corner: null,
+		lawIndicators: [],
+		lawMasked: []
 	};
+	let lawVariable = null as ({ name: string } & LawLine) | null;
+	let lawProbabilities = null as LawLine | null;
+	const isLaw = kind === 'loi';
 	const tableRows: TableRow[] = [];
 	const isTable = kind === 'tableau-croise';
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
@@ -718,6 +837,42 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 			const written = content.slice(0, separator).trim();
 			if (written === '') throw new LineError('catégorie sans nom avant « = »');
+
+			// Loi : `X = 1 ; 2 ; 3` (la variable) et `P = 1/2 ; 1/4 ; 1/4`
+			if (isLaw) {
+				const texts = content
+					.slice(separator + 1)
+					.split(';')
+					.map((t) => t.trim());
+				if (written === 'P') {
+					if (lawProbabilities !== null) throw new LineError('ligne « P = … » déjà donnée');
+					for (const text of texts) {
+						if (text !== '?' && Fraction.parse(text) === null) {
+							throw new LineError(
+								`« ${text} » n'est pas une probabilité (écrire 1/6, 0,25 ou 25 %)`
+							);
+						}
+					}
+					lawProbabilities = { texts: texts.map((t) => (t === '?' ? null : t)), line };
+					return;
+				}
+				if (!/^[A-Z]$/.test(written)) {
+					throw new LineError(
+						`« ${written} » : nommer la variable par une lettre majuscule (X = 1 ; 2 ; 3), ou écrire « P = … »`
+					);
+				}
+				if (lawVariable !== null) {
+					throw new LineError(`une seule variable par loi (déjà : ${lawVariable.name})`);
+				}
+				if (texts.length > STAT_CHART_LIMITS.lawValues) {
+					throw new LineError(`au plus ${STAT_CHART_LIMITS.lawValues} valeurs dans une loi`);
+				}
+				for (const text of texts) {
+					if (Fraction.parse(text) === null) throw new LineError(`« ${text} » n'est pas un nombre`);
+				}
+				lawVariable = { name: written, texts, line };
+				return;
+			}
 
 			// Tableau croisé : `Fille = 45 ; 120`, une case par colonne, `?` = inconnue
 			if (isTable) {
@@ -773,7 +928,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	let table: CrossTableData | null = null;
-	if (errors.length === 0 && isTable) {
+	let law: LawData | null = null;
+	if (errors.length === 0 && isLaw) {
+		const checked = checkLaw(lawVariable, lawProbabilities, options, optionLines);
+		if ('errors' in checked) errors.push(...checked.errors);
+		else law = checked.law;
+	} else if (errors.length === 0 && isTable) {
 		const checked = checkTable(options, tableRows, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
 		else table = checked.table;
@@ -805,7 +965,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					direction: options.direction,
 					reading: options.reading,
 					indicators: options.indicators,
-					table
+					table,
+					law
 				}
 			: null;
 

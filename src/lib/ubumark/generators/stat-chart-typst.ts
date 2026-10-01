@@ -27,6 +27,7 @@ import {
 	type CrossTableScene,
 	type CumulativeScene,
 	type HistogramScene,
+	type LawScene,
 	type PieScene,
 	type ScenePoint,
 	type SceneTick,
@@ -350,6 +351,30 @@ function crossTableTypst(scene: CrossTableScene): string {
 	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${columns},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
 }
 
+// ============================================================================
+// LOI D'UNE VARIABLE ALÉATOIRE
+// ============================================================================
+
+/**
+ * Un tableau de deux lignes, `gᵢ` et `P(G = gᵢ)` en mode math : la lettre est
+ * une majuscule unique (contrôlée par le parseur), donc jamais une variable
+ * Typst inconnue.
+ */
+function lawTypst(scene: LawScene): string {
+	const letter = scene.variable.toLowerCase();
+	const cells: string[] = [];
+	const push = (content: string) => cells.push(`  // case\n  ${content}`);
+
+	push(`[$${letter}_i$]`);
+	for (const value of scene.values) push(textContent(value));
+	push(`[$P(${scene.variable} = ${letter}_i)$]`);
+	// Une case à compléter garde de quoi écrire : sinon sa colonne se réduit à rien
+	for (const p of scene.probabilities)
+		push(p.hidden ? '[#box(width: 1.2cm)]' : textContent(p.text));
+
+	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.values.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+}
+
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
@@ -368,6 +393,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return cumulativeTypst(scene, size);
 		case 'tableau-croise':
 			return crossTableTypst(scene);
+		case 'loi':
+			return lawTypst(scene);
 	}
 }
 
