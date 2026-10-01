@@ -62,11 +62,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		age_declared_at: new Date().toISOString(),
 		consent_required: declaration === 'under_15'
 	};
-	if (
-		declaration === 'under_15' &&
-		!profile.consent_granted_at &&
-		!profile.consent_grace_period_ends
-	) {
+	// Un délai échu ne compte pas comme « en cours » : sans cela, l'élève passerait
+	// immédiatement en lecture seule au lieu de recevoir ses 30 jours.
+	const graceInProgress =
+		!!profile.consent_grace_period_ends &&
+		new Date(profile.consent_grace_period_ends).getTime() > Date.now();
+	if (declaration === 'under_15' && !profile.consent_granted_at && !graceInProgress) {
 		payload.consent_grace_period_ends = new Date(Date.now() + GRACE_PERIOD_MS).toISOString();
 	}
 

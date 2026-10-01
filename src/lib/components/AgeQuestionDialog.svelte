@@ -50,15 +50,23 @@
 			if (response.ok || response.status === 409) {
 				// 409 : une réponse existe déjà, inutile de reposer la question.
 				answered = true;
-				await onAnswered?.();
-				return;
+			} else {
+				toaster.error("Ta réponse n'a pas pu être enregistrée. Réessaie plus tard.");
 			}
-			toaster.error("Ta réponse n'a pas pu être enregistrée. Réessaie plus tard.");
 		} catch (err) {
 			console.error('[AgeQuestionDialog] Envoi impossible :', err);
 			toaster.error("Ta réponse n'a pas pu être enregistrée. Réessaie plus tard.");
 		} finally {
 			submitting = false;
+		}
+
+		// Hors du try : un échec du rechargement ne doit pas annoncer une réponse perdue.
+		if (answered) {
+			try {
+				await onAnswered?.();
+			} catch (err) {
+				console.error('[AgeQuestionDialog] Rechargement après réponse impossible :', err);
+			}
 		}
 	}
 </script>

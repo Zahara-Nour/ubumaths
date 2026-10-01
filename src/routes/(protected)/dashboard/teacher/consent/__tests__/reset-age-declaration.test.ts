@@ -63,6 +63,10 @@ function makeSupabase(opts: {
 				error: null
 			})
 		);
+		chain.not = vi.fn((...args: unknown[]) => {
+			if (isUpdate) recorded.updateEq.push(['not', ...args]);
+			return chain;
+		});
 		chain.update = vi.fn((payload: Record<string, unknown>) => {
 			isUpdate = true;
 			recorded.updatePayload = payload;
@@ -121,6 +125,9 @@ describe('actions.resetAgeDeclaration', () => {
 			expect(ends).toBeLessThanOrEqual(Date.now() + 30 * DAY_MS + 1000);
 
 			expect(recorded.updateEq).toContainEqual(['id', STUDENT_ID]);
+			// Seulement un élève de 2nde qui a répondu.
+			expect(recorded.updateEq).toContainEqual(['grade', '2']);
+			expect(recorded.updateEq).toContainEqual(['not', 'age_declaration', 'is', null]);
 			expect(recorded.selectAfterUpdate).toBe(true);
 		}
 	);

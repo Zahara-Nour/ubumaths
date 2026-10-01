@@ -141,6 +141,19 @@ describe('POST /api/student/age-declaration', () => {
 		expect(studentFrom).not.toHaveBeenCalled();
 	});
 
+	it('B9 — Non avec un délai de grâce échu : nouveau délai de 30 jours', async () => {
+		asStudent({
+			consent_required: false,
+			consent_granted_at: null,
+			consent_grace_period_ends: new Date(Date.now() - 86_400_000).toISOString()
+		});
+		await POST(makeEvent({ fifteenOrOlder: false }) as never);
+		const payload = serviceChain.update.mock.calls[0][0] as Record<string, unknown>;
+		expect(payload.consent_required).toBe(true);
+		const fin = new Date(payload.consent_grace_period_ends as string).getTime() - Date.now();
+		expect(fin).toBeGreaterThan(29 * 86_400_000);
+	});
+
 	it('B9 — Non sur un ancien profil non soumis sans délai : re-soumis, 30 jours de grâce', async () => {
 		asStudent({
 			consent_required: false,

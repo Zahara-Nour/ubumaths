@@ -15,6 +15,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
+import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
 import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { GRADES_REQUIRING_CONSENT } from '$lib/utils/consent';
@@ -309,6 +310,10 @@ export const actions: Actions = {
 				consent_grace_period_ends: graceEnds.toISOString()
 			})
 			.eq('id', studentId)
+			// Seulement un élève de 2nde qui a répondu : sinon la question ne lui serait
+			// jamais reposée (1re, terminale) ou son délai serait relancé sans raison.
+			.eq('grade', AGE_QUESTION_GRADE)
+			.not('age_declaration', 'is', null)
 			.select('id');
 
 		if (updateError) {
@@ -317,6 +322,7 @@ export const actions: Actions = {
 		}
 
 		// Un refus de la RLS ne rend pas d'erreur : zéro ligne.
+		// Zéro ligne aussi si l'élève n'est pas en 2nde ou n'a pas répondu.
 		if (!data || data.length !== 1) {
 			return fail(403, { error: "La déclaration n'a pas pu être annulée" });
 		}
