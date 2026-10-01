@@ -129,10 +129,25 @@ describe('30 — barème serveur = verdict du navigateur', () => {
 		['', 'empty', 0]
 	])('%s → %s (%s point)', (answer, status, points) => {
 		const instance = instanceWith([intervalBlank()]);
-		const browser = validateBlanksDetailed([answer], instance, [answer]).statuses[0];
+		// Navigateur : validateAnswer (QuestionCard) ; serveur : barème des évaluations notées
+		const browser = validateAnswer([answer], instance, [answer]);
+		const browserStatus = browser.status ?? (browser.isCorrect ? 'correct' : 'incorrect');
 		const server = gradeQuestion(instance, { values: [answer] });
-		expect(browser).toBe(status);
+		expect(browserStatus).toBe(status);
+		expect(server.status).toBe(status);
 		expect(server.points).toBe(points);
+	});
+
+	it('réponse hostile : navigateur et serveur répondent vite, sans exception', () => {
+		const hostile = `]${'\\sqrt{'.repeat(50)}2${'}'.repeat(50)};3[`;
+		const deep = `]${'('.repeat(150)}2${')'.repeat(150)};3[`;
+		const instance = instanceWith([intervalBlank()]);
+		for (const answer of [hostile, deep]) {
+			const start = performance.now();
+			expect(validateAnswer([answer], instance, [answer]).isCorrect).toBe(false);
+			expect(gradeQuestion(instance, { values: [answer] }).points).toBe(0);
+			expect(performance.now() - start).toBeLessThan(200);
+		}
 	});
 
 	it('version publique : le drapeau passe, la réponse non', () => {
@@ -145,6 +160,31 @@ describe('30 — barème serveur = verdict du navigateur', () => {
 		expect(serialized).not.toContain('expectedAnswer');
 		expect(serialized).not.toContain('infty');
 		expect(toDisplayInstance(question).blanks?.[0].answerKind).toBe('intervalles');
+	});
+});
+
+describe('orderIndependent : plusieurs cases intervalles', () => {
+	const options = { orderIndependent: true };
+	const blanks = [intervalBlank(']1;3]'), intervalBlank('\\{5\\}')];
+
+	it('dans le désordre : juste', () => {
+		const answers = ['\\{5\\}', ']1;3]'];
+		const result = validateAnswer(answers, instanceWith(blanks, options), answers);
+		expect(result.isCorrect).toBe(true);
+		expect(result.status ?? 'correct').toBe('correct');
+	});
+
+	it('écriture à reprendre : ½ (navigateur et serveur), avec intervalForm', () => {
+		const answers = ['[5;5]', ']1;2]\\cup[2;3]'];
+		const instance = instanceWith(blanks, options);
+		const result = validateAnswer(answers, instance, answers);
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toContain('intervalForm');
+		expect(validateBlanksDetailed(answers, instance, answers).statuses).toEqual([
+			'unoptimal_form',
+			'unoptimal_form'
+		]);
+		expect(gradeQuestion(instance, { values: answers }).points).toBe(0.5);
 	});
 });
 

@@ -1289,6 +1289,13 @@ function matchedAnswerForm(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
+	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
+	if (blank.answerKind === 'intervalles') {
+		const result = intervalBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+
 	let worstStatus: ValidationStatus = 'correct';
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 
