@@ -147,6 +147,54 @@ describe('diagramme d’une liste', () => {
 		expect(columnOf(container, 'L')?.querySelector('.stat-indicateurs')).not.toBeNull();
 	});
 
+	// Audit a11y du lot 5 (WCAG 4.1.3) : la bascule de vue et l'apparition du
+	// diagramme étaient silencieuses pour un lecteur d'écran
+	it('annonce le diagramme affiché, puis retiré', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+		const live = () => container.querySelector('[data-annonce]')?.textContent?.trim();
+
+		selectCard(container, 'L');
+		await settle();
+		clickAction(container, 'Diagramme en bâtons');
+		await settle();
+		await new Promise((r) => setTimeout(r, 50));
+		expect(live()).toBe('Diagramme de L affiché dans l’onglet Données.');
+
+		clickAction(container, 'Retirer le diagramme');
+		await settle();
+		await new Promise((r) => setTimeout(r, 50));
+		expect(live()).toBe('Diagramme de L retiré.');
+	});
+
+	it('le diagramme nomme sa liste, et la partenaire des effectifs', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5' });
+		atelier.toggleChart('L', 'M');
+		const { container } = await openData(atelier);
+
+		expect(columnOf(container, 'L')?.querySelector('figcaption')?.textContent).toBe(
+			'Diagramme de L, effectifs M'
+		);
+	});
+
+	it('le champ de la liste est décrit par son aperçu et par le message du diagramme', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '' });
+		atelier.toggleChart('L', null);
+		const { container } = await openData(atelier);
+		const field = fieldFor(container, 'L')!;
+		const described = (field.getAttribute('aria-describedby') ?? '')
+			.split(' ')
+			.map((id) => document.getElementById(id)?.textContent ?? '')
+			.join(' ');
+
+		expect(described).toMatch(/n['’]a pas encore de valeurs/);
+	});
+
 	it('vivant : la saisie redessine le diagramme', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 1' });

@@ -84,7 +84,12 @@ export function listChart(atelier: Atelier, name: string, partner: string | null
 		};
 	}
 
+	// Le titre nomme la liste et la partenaire : sous trois colonnes, l'élève
+	// au lecteur d'écran doit savoir de quel diagramme il s'agit (audit a11y)
+	const title =
+		partner === null ? `Diagramme de ${name}` : `Diagramme de ${name}, effectifs ${partner}`;
 	const source = [
+		`titre: ${title}`,
 		`axes: ${name} ; Effectif`,
 		`indicateurs: ${INDICATORS}`,
 		...rows.map((row) => `${written(row.value)} = ${written(row.count)}`)

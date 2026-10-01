@@ -57,11 +57,14 @@
 						value={list.definition}
 						oninput={(event) => edit(list.name, event.currentTarget.value)}
 						placeholder="12 ; 15 ; 9"
+						aria-describedby={`liste-${list.name}-apercu liste-${list.name}-diagramme`}
 					/>
+					<!-- Reliés au champ (aria-describedby) mais SANS aria-live : une
+					     annonce à chaque frappe serait du bavardage (audit a11y du lot 5) -->
 					{#if list.message}
-						<p class="probleme">{list.message}</p>
+						<p class="probleme" id={`liste-${list.name}-apercu`}>{list.message}</p>
 					{:else}
-						<p class="apercu">
+						<p class="apercu" id={`liste-${list.name}-apercu`}>
 							{summaryOf(list.values)}
 							{#if list.skipped > 0}
 								<span class="ecarte">· {skippedNote(list.skipped)}</span>
@@ -77,7 +80,7 @@
 								<StatChart node={chart.node} />
 							</div>
 						{:else}
-							<p class="probleme">{chart.message}</p>
+							<p class="probleme" id={`liste-${list.name}-diagramme`}>{chart.message}</p>
 						{/if}
 					{/if}
 				</li>

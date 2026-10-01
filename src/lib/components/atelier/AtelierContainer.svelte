@@ -63,6 +63,13 @@
 	let selected = $state<string | null>(null);
 	let notices = $state<SessionNotice[]>([]);
 
+	/**
+	 * Ce qu'une action a changé hors de la vue courante (bascule d'onglet,
+	 * diagramme affiché ou retiré), dit au lecteur d'écran (WCAG 4.1.3, audit
+	 * a11y du lot 5 des outils statistiques).
+	 */
+	let announcement = $state('');
+
 	// Le cycle de vie n'a de sens que dans un navigateur : la session lit le
 	// stockage et écoute les autres onglets.
 	// `$state` et non un simple `let` : l'effet ci-dessous doit se redéclencher
@@ -165,6 +172,22 @@
 		// répondait plus jamais (outils statistiques, Q39).
 		const root = action.id.split(':')[0];
 		activeView = root === 'scatter' ? 'graphe' : root === 'chart' ? 'donnees' : 'calcul';
+
+		if (root === 'chart') {
+			announce(
+				atelier.chartOf(object.name)
+					? `Diagramme de ${object.name} affiché dans l’onglet Données.`
+					: `Diagramme de ${object.name} retiré.`
+			);
+		} else if (root === 'scatter') {
+			announce(`Nuage de ${object.name} affiché dans l’onglet Graphe.`);
+		}
+	}
+
+	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
+	function announce(message: string) {
+		announcement = '';
+		setTimeout(() => (announcement = message), 0);
 	}
 </script>
 
@@ -191,6 +214,7 @@
 			pas seulement affiché. La région existe toujours, sinon un lecteur
 			d'écran ne verrait jamais apparaître son contenu.
 		-->
+		<p class="sr-only" aria-live="polite" data-annonce>{announcement}</p>
 		<ul class="avis" aria-live="polite" class:vide={notices.length === 0}>
 			{#each notices as notice, i (i)}
 				<li data-kind={notice.kind}>{notice.message}</li>

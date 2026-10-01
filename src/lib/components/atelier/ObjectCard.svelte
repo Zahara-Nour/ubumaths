@@ -79,7 +79,7 @@
 					class="action"
 					aria-disabled={action.disabledReason !== undefined}
 					aria-describedby={action.disabledReason
-						? `${object.name}-${action.id}-raison`
+						? `${object.name}-${action.id.replace(':', '-')}-raison`
 						: undefined}
 					onclick={() => {
 						if (action.disabledReason !== undefined) return;
@@ -89,7 +89,7 @@
 					{action.label}
 				</button>
 				{#if action.disabledReason}
-					<span id="{object.name}-{action.id}-raison" class="raison">
+					<span id="{object.name}-{action.id.replace(':', '-')}-raison" class="raison">
 						{action.disabledReason}
 					</span>
 				{/if}
@@ -168,6 +168,9 @@
 	}
 	.action {
 		font-size: 0.75rem;
+		/* Cible d'au moins 28 px : les actions se multiplient avec les listes
+		   partenaires (WCAG 2.5.8, audit a11y du lot 5) */
+		min-height: 1.75rem;
 		padding: 0.1875rem 0.5rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
