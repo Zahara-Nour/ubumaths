@@ -49,10 +49,12 @@
 	import ProbabilityTree from './nodes/ProbabilityTree.svelte';
 	import TrigCircle from './nodes/TrigCircle.svelte';
 	import NumberLine from './nodes/NumberLine.svelte';
+	import Courbe from './nodes/Courbe.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
 	import { provideContentLocale } from './content-locale';
+	import { provideAuthoringErrors } from './authoring-errors';
 	import type { ContentLocale } from '$lib/types/locale';
 
 	interface Props {
@@ -99,6 +101,12 @@
 		 * virgule. Absente : celle d'un rendu parent, sinon le français.
 		 */
 		locale?: ContentLocale;
+		/**
+		 * Contexte AUTEUR (éditeur, aperçu prof) : un bloc mal écrit affiche son
+		 * message détaillé. Absent : celui d'un rendu parent, sinon contexte élève
+		 * (cadre neutre « Figure indisponible »). Décision Q48 du 2026-10-01.
+		 */
+		showAuthoringErrors?: boolean;
 	}
 
 	let {
@@ -117,10 +125,12 @@
 		genericFunctions,
 		hints = [],
 		onHintOpen,
-		locale
+		locale,
+		showAuthoringErrors
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
+	provideAuthoringErrors(() => showAuthoringErrors);
 
 	/**
 	 * Parse the markdown content into an AST.
@@ -276,6 +286,8 @@
 					<TrigCircle {node} />
 				{:else if node.type === 'number-line'}
 					<NumberLine {node} />
+				{:else if node.type === 'courbe'}
+					<Courbe {node} />
 				{/if}
 			{/each}
 		{:else}

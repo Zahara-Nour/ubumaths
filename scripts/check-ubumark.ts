@@ -3,7 +3,7 @@
  * des corrigés en base : pour chaque fichier .md d'un dossier, passe chaque formule
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
- * `\unit` résiduel.
+ * `\unit` résiduel. Signale aussi les blocs ```courbe en erreur ou hors fenêtre.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -15,6 +15,24 @@ import { join } from 'node:path';
 import { extractMath } from '$lib/ubumark/parser/math-extractor';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
+import { parseMarkdown } from '$lib/ubumark';
+import type { CourbeNode } from '$lib/ubumark/types/courbe';
+import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
+
+/** Blocs ```courbe d'un arbre ubumark, listes comprises. */
+function courbes(node: unknown, found: CourbeNode[] = []): CourbeNode[] {
+	if (Array.isArray(node)) {
+		for (const child of node) courbes(child, found);
+	} else if (node !== null && typeof node === 'object') {
+		const record = node as Record<string, unknown>;
+		if (record.type === 'courbe') found.push(node as CourbeNode);
+		else {
+			courbes(record.children, found);
+			courbes(record.items, found);
+		}
+	}
+	return found;
+}
 
 const dir = process.argv[2];
 if (!dir) {
@@ -48,6 +66,17 @@ for (const f of files(dir)) {
 			console.log(
 				`${f.replace(dir, '')}  ${JSON.stringify(p.expression).slice(0, 60)}  → ${issues.join(' | ')}`
 			);
+		}
+	}
+	for (const courbe of courbes(parseMarkdown(md).children)) {
+		const messages = [
+			...courbe.errors,
+			...courbe.warnings,
+			...(courbe.spec ? buildCourbeScene(courbe.spec).warnings : [])
+		].map((m) => m.message);
+		if (messages.length) {
+			problems++;
+			console.log(`${f.replace(dir, '')}  COURBE : ${messages.join(' | ')}`);
 		}
 	}
 	const greek = findBareGreekNames(md);

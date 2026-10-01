@@ -59,6 +59,7 @@ import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
 import { generateNumberLineTypst } from './number-line-typst';
+import { generateCourbeTypst } from './courbe-typst';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
 import type { TrigCircleNode } from '../types/trig-circle';
@@ -332,6 +333,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'number-line':
 			return generateNumberLineTypst(node as unknown as NumberLineNode);
+
+		case 'courbe':
+			return generateCourbeTypst(node, { language: options.language });
 
 		default:
 			return '';

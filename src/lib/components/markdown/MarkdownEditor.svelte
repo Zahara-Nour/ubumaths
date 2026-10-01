@@ -569,7 +569,11 @@
 		<!-- Live Preview -->
 		{#if previewVisible}
 			<div class="w-1/2 overflow-y-auto bg-background p-4">
-				<MarkdownRenderer content={value} genericFunctions={genericFunctionsConfig} />
+				<MarkdownRenderer
+					content={value}
+					genericFunctions={genericFunctionsConfig}
+					showAuthoringErrors
+				/>
 			</div>
 		{/if}
 	</div>

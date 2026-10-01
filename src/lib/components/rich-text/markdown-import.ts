@@ -232,6 +232,11 @@ function convertBlock(block: BlockNode): JSONContent | null {
 		case 'probability-tree':
 			return convertProbabilityTree(block as ProbabilityTreeNode);
 
+		// Pas de nœud TipTap dédié : un bloc de code `courbe` porte le texte
+		// source, ce qui garde aussi un bloc en erreur (sinon il disparaîtrait).
+		case 'courbe':
+			return convertCodeBlock({ type: 'code-block', language: 'courbe', code: block.source });
+
 		default:
 			return null;
 	}
@@ -358,6 +363,10 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(convertVariationTable(child as VariationTableNode));
 		} else if (child.type === 'probability-tree') {
 			content.push(convertProbabilityTree(child as ProbabilityTreeNode));
+		} else if (child.type === 'courbe') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'courbe', code: child.source })
+			);
 		} else if (child.type === 'image') {
 			content.push(convertImage(child as ImageNode));
 		} else if (child.type === 'video') {

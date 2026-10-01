@@ -127,6 +127,14 @@ export {
 
 export type { NumberLineBlockRange } from '../types/number-line';
 
+// Bloc ```courbe
+export {
+	parseCourbe,
+	parseCourbeContent,
+	findCourbeBlocks,
+	isCourbeBlockStart
+} from './courbe-parser';
+
 // ============================================================================
 // TYPE RE-EXPORTS (for convenience)
 // ============================================================================
