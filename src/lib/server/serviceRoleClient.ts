@@ -43,6 +43,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Cleanup endpoints
 	'/api/cleanup/',
 	'/api/errors/cleanup',
+	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
+	'/consent/',
 	// GDPR account deletion (requires auth.admin.deleteUser)
 	'/api/account/delete',
 	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
