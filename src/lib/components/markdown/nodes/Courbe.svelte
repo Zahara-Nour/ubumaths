@@ -18,6 +18,7 @@
 	import { buildCourbeScene, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
 	interface Props {
 		node: CourbeNode;
@@ -58,7 +59,17 @@
 	const locale = readContentLocale();
 
 	let errorsVisible = $derived(showErrors ?? authoring());
-	let scene = $derived(node.spec ? buildCourbeScene(node.spec, { locale: locale() }) : null);
+	/** Budget du document (nombre de blocs, temps cumulé) partagé avec ```figure */
+	const budget = readRenderBudget();
+	let admitted = $derived(budget()?.admits(node) ?? true);
+	let computed = $derived.by(() => {
+		const spec = node.spec;
+		if (!spec || !admitted) return null;
+		return withinBudget(budget(), () => buildCourbeScene(spec, { locale: locale() }));
+	});
+	let overBudget = $derived(node.spec !== null && computed === null);
+	let scene = $derived(computed);
+	let shownErrors = $derived(overBudget ? [{ message: OVER_BUDGET_MESSAGE }] : node.errors);
 	let warnings = $derived([...node.warnings, ...(scene?.warnings ?? [])]);
 
 	let width = $derived(scene?.pixelSize.width ?? 0);
@@ -235,7 +246,7 @@
 	>
 		<p class="font-medium text-destructive">Bloc courbe : figure non dessinée</p>
 		<ul class="mt-1 list-disc pl-5">
-			{#each node.errors as e, i (i)}
+			{#each shownErrors as e, i (i)}
 				<li>{e.message}</li>
 			{/each}
 		</ul>

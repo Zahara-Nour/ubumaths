@@ -11,12 +11,14 @@
 	- Pendant le chargement : un cadre aux proportions de la figure (pas de saut
 	  de mise en page).
 	- Chargement impossible (réseau) : « Figure indisponible ».
+	- Budget du DOCUMENT épuisé (`render-budget.ts`) : cadre neutre.
 
 	@module components/markdown/nodes/FigureBlock
 -->
 <script lang="ts">
 	import type { FigureNode } from '$lib/ubumark/types/figure';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { OVER_BUDGET_MESSAGE, readRenderBudget } from '../render-budget';
 	import FigureErrors from './FigureErrors.svelte';
 
 	interface Props {
@@ -31,6 +33,10 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
+	/** Budget du document (nombre de figures) : au-delà, cadre neutre sans rien charger */
+	const budget = readRenderBudget();
+	let admitted = $derived(budget()?.admits(node) ?? true);
+
 	/** Largeur à l'écran par taille (même table que `FIGURE_PIXEL_WIDTH`, sans l'importer) */
 	const PLACEHOLDER_WIDTH = { petite: 280, moyenne: 400, grande: 560 } as const;
 
@@ -44,6 +50,8 @@
 
 {#if node.errors.length > 0}
 	<FigureErrors errors={node.errors} {errorsVisible} class={className} />
+{:else if !admitted}
+	<FigureErrors errors={[{ message: OVER_BUDGET_MESSAGE }]} {errorsVisible} class={className} />
 {:else}
 	{#await view}
 		<div

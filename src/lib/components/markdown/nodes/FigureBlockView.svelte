@@ -22,6 +22,7 @@
 	import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
 	import { figureToSvg } from '$lib/ubumark/utils/figure-svg';
 	import FigureErrors from './FigureErrors.svelte';
+	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
 	interface Props {
 		node: FigureNode;
@@ -31,7 +32,16 @@
 
 	let { node, errorsVisible, class: className = '' }: Props = $props();
 
-	let result = $derived(buildFigureScene(node));
+	const budget = readRenderBudget();
+
+	/** Scène calculée sous le budget de temps du document ; épuisé → cadre neutre */
+	let result = $derived(
+		withinBudget(budget(), () => buildFigureScene(node)) ?? {
+			scene: null,
+			errors: [{ message: OVER_BUDGET_MESSAGE }],
+			warnings: []
+		}
+	);
 	let drawing = $derived(result.scene ? figureToSvg(result.scene, node.header.size) : null);
 </script>
 

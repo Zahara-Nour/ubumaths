@@ -56,6 +56,7 @@
 	import MarkdownRaw from './MarkdownRaw.svelte';
 	import { provideContentLocale } from './content-locale';
 	import { provideAuthoringErrors } from './authoring-errors';
+	import { createRenderBudget, provideRenderBudget } from './render-budget';
 	import type { ContentLocale } from '$lib/types/locale';
 
 	interface Props {
@@ -159,6 +160,16 @@
 			return null;
 		}
 	});
+
+	/**
+	 * Budget des blocs ```figure / ```courbe, partagé par tout le document (rendus
+	 * imbriqués compris) : un nouveau budget à chaque nouveau contenu.
+	 */
+	let renderBudget = $derived.by(() => {
+		void ast;
+		return createRenderBudget();
+	});
+	provideRenderBudget(() => renderBudget);
 
 	// Track blanks found during render (for future use with onBlankFound)
 	// This will be enhanced when blank handling is implemented
