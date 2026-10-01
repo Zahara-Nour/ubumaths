@@ -3,8 +3,9 @@
  *
  * - `assignment=<id>` : une évaluation assignée ; sa forme et son temps viennent
  *   du serveur, le `mode` de l'URL est ignoré (B15).
- * - `categories=<…>` sans `mode` : lien de série partagé → choix de la forme (C19).
- * - `categories=<…>&mode=<…>` : comme avant (panier).
+ * - `categories=<…>` sans `mode` : ancien lien de série partagé → le PANIER,
+ *   paramètre intact (Q46) ; le panier le relit et dit s'il est abîmé.
+ * - `categories=<…>&mode=<…>` : démarrage direct sous cette forme.
  *
  * Les catégories sont validées (mêmes bornes que l'enregistrement d'une série) :
  * un lien abîmé donne un message, jamais un plantage.
@@ -16,7 +17,7 @@ import { parseCategoriesParam } from '$lib/validation/series';
 
 export type TestLaunch =
 	| { kind: 'assignment'; assignmentId: string }
-	| { kind: 'choose-form'; categories: CartItem[] }
+	| { kind: 'cart'; href: string }
 	| { kind: 'start'; mode: TestMode; categories: CartItem[]; timeLimit?: number }
 	| { kind: 'error'; message: string };
 
@@ -35,14 +36,19 @@ export function resolveTestLaunch(searchParams: URLSearchParams): TestLaunch {
 		return { kind: 'assignment', assignmentId };
 	}
 
-	const categories = parseCategoriesParam(searchParams.get('categories'));
+	const categoriesParam = searchParams.get('categories');
+	const modeParam = searchParams.get('mode');
+	if ((modeParam === null || modeParam === '') && categoriesParam) {
+		const cart = new URLSearchParams({ categories: categoriesParam });
+		return { kind: 'cart', href: `/automaths/panier?${cart.toString()}` };
+	}
+
+	const categories = parseCategoriesParam(categoriesParam);
 	if (!categories.success) {
 		return { kind: 'error', message: categories.error };
 	}
-
-	const modeParam = searchParams.get('mode');
 	if (modeParam === null || modeParam === '') {
-		return { kind: 'choose-form', categories: categories.data };
+		return { kind: 'error', message: 'Forme de série inconnue' };
 	}
 	if (!isTestMode(modeParam)) {
 		return { kind: 'error', message: 'Forme de série inconnue' };

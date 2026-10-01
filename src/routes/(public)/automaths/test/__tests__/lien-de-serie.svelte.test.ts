@@ -1,7 +1,7 @@
 /**
  * C19 — un lien de série `/automaths/test?categories=<…>`
  *
- * - SANS `mode` : la fenêtre de choix de la forme s'ouvre ;
+ * - SANS `mode` : redirection vers le panier (Q46), plus de fenêtre de choix ;
  * - lien abîmé, JSON invalide, trop de catégories, valeurs hors bornes : un
  *   message clair, jamais de plantage.
  */
@@ -10,6 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import { encodeCategoriesParam } from '$lib/validation/series';
 
+const goto = vi.hoisted(() => vi.fn(async () => {}));
 const url = vi.hoisted(() => ({ current: new URL('http://localhost/automaths/test') }));
 vi.mock('$app/state', () => ({
 	page: {
@@ -20,7 +21,7 @@ vi.mock('$app/state', () => ({
 }));
 vi.mock('$app/navigation', async (importOriginal) => ({
 	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
+	goto
 }));
 
 import Page from '../+page.svelte';
@@ -55,19 +56,26 @@ async function renderPage() {
 
 describe('C19 — lien de série', () => {
 	beforeEach(() => {
+		goto.mockClear();
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 	});
 
-	it('sans forme : la fenêtre de choix de la forme s’ouvre', async () => {
-		openLink(new URLSearchParams({ categories: encodeCategoriesParam([ITEM]) }).toString());
+	it('Q46 : sans forme, redirection vers le panier (pas de fenêtre de choix)', async () => {
+		const encoded = encodeCategoriesParam([ITEM]);
+		openLink(new URLSearchParams({ categories: encoded }).toString());
 		await renderPage();
 
-		await expect.element(page.getByText('Choisissez un mode de test')).toBeVisible();
-		await expect.element(page.getByText('Course aux nombres')).toBeVisible();
+		await vi.waitFor(() => expect(goto).toHaveBeenCalledTimes(1));
+		const [target, options] = goto.mock.calls[0] as unknown as [string, { replaceState: boolean }];
+		const href = new URL(target, 'http://localhost');
+		expect(href.pathname).toBe('/automaths/panier');
+		expect(href.searchParams.get('categories')).toBe(encoded);
+		expect(options).toMatchObject({ replaceState: true });
+		expect(document.body.textContent).not.toContain('Choisissez un mode de test');
 	});
 
 	it('lien abîmé (JSON tronqué) : message clair', async () => {
-		openLink('categories=%5B%7B%22category');
+		openLink('mode=interactive&categories=%5B%7B%22category');
 		await renderPage();
 
 		await expect.element(page.getByText(/Ce lien de série est abîmé/)).toBeVisible();
@@ -75,7 +83,10 @@ describe('C19 — lien de série', () => {
 
 	it('trop de catégories : message avec la borne', async () => {
 		openLink(
-			new URLSearchParams({ categories: encodeCategoriesParam(Array(51).fill(ITEM)) }).toString()
+			new URLSearchParams({
+				categories: encodeCategoriesParam(Array(51).fill(ITEM)),
+				mode: 'interactive'
+			}).toString()
 		);
 		await renderPage();
 
@@ -85,7 +96,8 @@ describe('C19 — lien de série', () => {
 	it('valeurs hors bornes : message', async () => {
 		openLink(
 			new URLSearchParams({
-				categories: encodeCategoriesParam([{ ...ITEM, quantity: 999 }])
+				categories: encodeCategoriesParam([{ ...ITEM, quantity: 999 }]),
+				mode: 'interactive'
 			}).toString()
 		);
 		await renderPage();

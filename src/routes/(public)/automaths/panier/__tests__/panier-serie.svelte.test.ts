@@ -1,11 +1,15 @@
 /**
  * C18 — Panier : « Enregistrer comme série » (prof et admin seulement) et
  * « Copier le lien » pour tous (toast de succès).
+ * Q44 — un menu choisit la forme du lien : sans forme (panier) ou une forme.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
+vi.mock('$app/state', () => ({
+	page: { url: new URL('http://localhost/automaths/panier'), state: {} }
+}));
 vi.mock('$app/navigation', async (importOriginal) => ({
 	...(await importOriginal<typeof import('$app/navigation')>()),
 	goto: vi.fn(async () => {})
@@ -69,13 +73,13 @@ describe('Panier — série (C18)', () => {
 		}
 	});
 
-	it('« Copier le lien » : lien sans forme, relisible, et toast de succès', async () => {
+	it('« Copier le lien » par défaut : lien SANS forme vers le panier, et toast', async () => {
 		await renderPanier('student');
-		await page.getByText('Copier le lien').click();
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
 		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
 		const link = new URL(writeText.mock.calls[0][0] as string);
-		expect(link.pathname).toBe('/automaths/test');
+		expect(link.pathname).toBe('/automaths/panier');
 		expect(link.searchParams.has('mode')).toBe(false);
 		const categories = parseCategoriesParam(link.searchParams.get('categories'));
 		expect(categories).toMatchObject({
@@ -85,10 +89,51 @@ describe('Panier — série (C18)', () => {
 		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
 	});
 
+	it('Q44 : forme « Flash-cards » → lien qui lance la série sous cette forme', async () => {
+		await renderPanier('student');
+		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('option', { name: 'Flash-cards' }).click();
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+		const link = new URL(writeText.mock.calls[0][0] as string);
+		expect(link.pathname).toBe('/automaths/test');
+		expect(link.searchParams.get('mode')).toBe('flash');
+		expect(link.searchParams.has('time')).toBe(false);
+	});
+
+	it('Q44 : « Course aux nombres » → le lien porte le temps limite réglé', async () => {
+		await renderPanier('student');
+		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('option', { name: 'Course aux nombres' }).click();
+		await expect.element(page.getByLabelText('Temps limite (minutes)')).toHaveValue(5);
+		await page.getByLabelText('Temps limite (minutes)').fill('8');
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+		const link = new URL(writeText.mock.calls[0][0] as string);
+		expect(link.pathname).toBe('/automaths/test');
+		expect(link.searchParams.get('mode')).toBe('course');
+		expect(link.searchParams.get('time')).toBe('480');
+	});
+
+	it('Q44 : temps limite hors de 1 à 60 min → rien n’est copié, message', async () => {
+		await renderPanier('student');
+		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('option', { name: 'Course aux nombres' }).click();
+		await page.getByLabelText('Temps limite (minutes)').fill('90');
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() =>
+			expect(toaster.error).toHaveBeenCalledWith('Le temps limite va de 1 à 60 minutes')
+		);
+		expect(writeText).not.toHaveBeenCalled();
+	});
+
 	it('presse-papiers refusé : toast d’erreur', async () => {
 		writeText.mockRejectedValueOnce(new Error('refusé'));
 		await renderPanier(null);
-		await page.getByText('Copier le lien').click();
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
 
 		await vi.waitFor(() =>
 			expect(toaster.error).toHaveBeenCalledWith('Impossible de copier le lien')

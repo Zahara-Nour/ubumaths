@@ -1,8 +1,9 @@
 /**
  * C17 — page « Séries » : badge « verrouillée », Modifier désactivé si
  * verrouillée, Dupliquer / Supprimer / Créer une évaluation.
+ * Q46 — même menu de forme que le panier à côté de « Copier le lien ».
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
@@ -12,8 +13,17 @@ vi.mock('$app/navigation', async (importOriginal) => ({
 	goto
 }));
 
+const toaster = vi.hoisted(() => ({
+	success: vi.fn(),
+	error: vi.fn(),
+	warning: vi.fn(),
+	info: vi.fn()
+}));
+vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
+
 import Page from '../+page.svelte';
 import type { SeriesWithUsage } from '$lib/types/evaluation';
+import { parseCategoriesParam } from '$lib/validation/series';
 
 const ITEM = {
 	category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
@@ -78,5 +88,54 @@ describe('Page Séries (C17)', () => {
 	it('aucune série : invitation à composer un panier', async () => {
 		await renderPage([]);
 		await expect.element(page.getByText("Aucune série pour l'instant.")).toBeVisible();
+	});
+});
+
+describe('Page Séries — lien de série (Q44, Q46)', () => {
+	let writeText: ReturnType<typeof vi.fn>;
+
+	beforeEach(() => {
+		writeText = vi.fn(async () => {});
+		Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+		Object.values(toaster).forEach((fn) => fn.mockClear());
+	});
+
+	it('par défaut : lien sans forme, vers le panier', async () => {
+		await renderPage([series({})]);
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+		const link = new URL(writeText.mock.calls[0][0] as string);
+		expect(link.pathname).toBe('/automaths/panier');
+		expect(parseCategoriesParam(link.searchParams.get('categories'))).toEqual({
+			success: true,
+			data: [ITEM]
+		});
+		expect(toaster.success).toHaveBeenCalledWith('Lien copié');
+	});
+
+	it('« En classe » : lien qui lance la série sous cette forme', async () => {
+		await renderPage([series({})]);
+		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('option', { name: 'En classe' }).click();
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+		const link = new URL(writeText.mock.calls[0][0] as string);
+		expect(link.pathname).toBe('/automaths/test');
+		expect(link.searchParams.get('mode')).toBe('display');
+	});
+
+	it('« Course aux nombres » : une durée est proposée et portée par le lien', async () => {
+		await renderPage([series({})]);
+		await page.getByRole('button', { name: 'Forme du lien' }).click();
+		await page.getByRole('option', { name: 'Course aux nombres' }).click();
+		await page.getByLabelText('Temps limite (minutes)').fill('12');
+		await page.getByRole('button', { name: 'Copier le lien' }).click();
+
+		await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+		const link = new URL(writeText.mock.calls[0][0] as string);
+		expect(link.searchParams.get('mode')).toBe('course');
+		expect(link.searchParams.get('time')).toBe('720');
 	});
 });

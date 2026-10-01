@@ -1,6 +1,6 @@
 /**
  * Composition d'une série : bornes partagées par l'enregistrement (B11) et par
- * la relecture d'un lien `/automaths/test?categories=…` (C19).
+ * la relecture d'un lien de série `?categories=…` (C19, Q44).
  */
 import { describe, it, expect } from 'vitest';
 import {
@@ -95,17 +95,42 @@ describe('parseCategoriesParam (C19)', () => {
 	});
 });
 
-describe('buildSeriesLink (C18)', () => {
-	it('construit un lien SANS forme, que parseCategoriesParam relit', () => {
-		const link = buildSeriesLink('https://chiph.re', [ITEM]);
-		const url = new URL(link);
+describe('buildSeriesLink (Q44)', () => {
+	it('sans forme : lien vers le PANIER, que parseCategoriesParam relit', () => {
+		const url = new URL(buildSeriesLink('https://chiph.re', [ITEM]));
 
-		expect(url.pathname).toBe('/automaths/test');
+		expect(url.pathname).toBe('/automaths/panier');
 		expect(url.searchParams.has('mode')).toBe(false);
+		expect(url.searchParams.has('time')).toBe(false);
 		expect(parseCategoriesParam(url.searchParams.get('categories'))).toEqual({
 			success: true,
 			data: [ITEM]
 		});
+	});
+
+	it.each(['display', 'interactive', 'flash'] as const)(
+		'forme %s : lien vers la page de test, sans temps',
+		(mode) => {
+			const url = new URL(buildSeriesLink('https://chiph.re', [ITEM], { mode, timeLimit: 300 }));
+
+			expect(url.pathname).toBe('/automaths/test');
+			expect(url.searchParams.get('mode')).toBe(mode);
+			expect(url.searchParams.has('time')).toBe(false);
+			expect(parseCategoriesParam(url.searchParams.get('categories'))).toEqual({
+				success: true,
+				data: [ITEM]
+			});
+		}
+	);
+
+	it('Course aux nombres : le lien porte le temps limite (secondes)', () => {
+		const url = new URL(
+			buildSeriesLink('https://chiph.re', [ITEM], { mode: 'course', timeLimit: 420 })
+		);
+
+		expect(url.pathname).toBe('/automaths/test');
+		expect(url.searchParams.get('mode')).toBe('course');
+		expect(url.searchParams.get('time')).toBe('420');
 	});
 
 	it('encodeCategoriesParam est l’inverse de parseCategoriesParam', () => {

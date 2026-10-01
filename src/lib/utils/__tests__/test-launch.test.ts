@@ -16,11 +16,18 @@ function params(entries: Record<string, string>): URLSearchParams {
 }
 
 describe('resolveTestLaunch', () => {
-	it('C19 : categories SANS mode → choix de la forme', () => {
-		expect(resolveTestLaunch(params({ categories: encodeCategoriesParam([ITEM]) }))).toEqual({
-			kind: 'choose-form',
-			categories: [ITEM]
-		});
+	it('Q46 : categories SANS mode → le panier, paramètre intact', () => {
+		const encoded = encodeCategoriesParam([ITEM]);
+		const launch = resolveTestLaunch(params({ categories: encoded }));
+
+		expect(launch.kind).toBe('cart');
+		const href = new URL((launch as { href: string }).href, 'http://localhost');
+		expect(href.pathname).toBe('/automaths/panier');
+		expect(href.searchParams.get('categories')).toBe(encoded);
+	});
+
+	it('Q46 : lien abîmé SANS mode → le panier aussi (il dira pourquoi)', () => {
+		expect(resolveTestLaunch(params({ categories: '[{oups' })).kind).toBe('cart');
 	});
 
 	it('categories AVEC mode → démarrage direct, comme avant', () => {
@@ -49,7 +56,7 @@ describe('resolveTestLaunch', () => {
 	});
 
 	it('C19 : lien abîmé → message, pas d’exception', () => {
-		const launch = resolveTestLaunch(params({ categories: '[{oups' }));
+		const launch = resolveTestLaunch(params({ categories: '[{oups', mode: 'interactive' }));
 		expect(launch.kind).toBe('error');
 	});
 
