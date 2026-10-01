@@ -60,6 +60,8 @@ export interface SceneEndpoint extends ScenePoint {
 export interface SceneStaircase {
 	/** Courbe de la relation f, découpée à la fenêtre */
 	curve: ScenePoint[][];
+	/** Noir pour un escalier seul ; couleur de l'escalier s'il y en a plusieurs (sinon indiscernables) */
+	relationColor: CourbeColor;
 	/** Droite y = x, découpée à la fenêtre */
 	diagonal: ScenePoint[][];
 	/** Escalier (u_0 ; 0) → (u_0 ; u_1) → (u_1 ; u_1) → …, découpé à la fenêtre */
@@ -371,6 +373,7 @@ function staircaseOf(
 	xAxisY: number,
 	size: CourbeSize,
 	withDiagonal: boolean,
+	relationColor: CourbeColor,
 	inside: (x: number, y: number) => boolean
 ): { staircase: SceneStaircase; clipped: boolean } {
 	const relation = seq.staircase!.relation;
@@ -407,7 +410,14 @@ function staircaseOf(
 	}
 
 	return {
-		staircase: { curve, diagonal, steps: clipPolyline(path, w), guides, termLabels },
+		staircase: {
+			curve,
+			relationColor,
+			diagonal,
+			steps: clipPolyline(path, w),
+			guides,
+			termLabels
+		},
 		clipped: path.some((p) => !inside(p.x, p.y))
 	};
 }
@@ -579,6 +589,8 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		const terms = seq.terms.slice(0, Math.min(COURBE_LIMITS.sequenceTerms, termsLeft));
 		termsLeft -= terms.length;
 		if (seq.staircase) {
+			const severalStaircases =
+				(input.sequences ?? []).filter((s) => s.staircase !== null).length > 1;
 			// Une seule droite y = x, même avec plusieurs escaliers
 			const withDiagonal = !sequences.some((s) => s.staircase !== null);
 			const { staircase, clipped } = staircaseOf(
@@ -588,6 +600,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				xAxisY,
 				input.size,
 				withDiagonal,
+				severalStaircases ? seq.color : 'noir',
 				inside
 			);
 			if (staircase.curve.length === 0) {
@@ -603,10 +616,15 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				});
 			}
 			sequences.push({ name: seq.name, color: seq.color, terms: [], staircase });
-			// Nom : sur la courbe de la relation, tracée en noir (l'escalier porte la couleur)
+			// Nom : sur la courbe de la relation, de sa couleur
 			const anchor = seq.label ? labelAnchor(staircase.curve, points, w) : null;
 			if (seq.label && anchor)
-				curveLabels.push({ label: seq.label, x: anchor.x, y: anchor.y, color: 'noir' });
+				curveLabels.push({
+					label: seq.label,
+					x: anchor.x,
+					y: anchor.y,
+					color: staircase.relationColor
+				});
 			continue;
 		}
 		const visible: ScenePoint[] = [];

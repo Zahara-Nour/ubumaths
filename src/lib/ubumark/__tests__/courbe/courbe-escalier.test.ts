@@ -168,6 +168,31 @@ describe('escalier — relecture du 2026-10-01', () => {
 		expect(scene.warnings).toEqual([]);
 	});
 
+	it('un seul escalier : relation en noir', () => {
+		const scene = buildCourbeScene(spec(parseCourbeContent(SOURCE)));
+		expect(scene.sequences[0].staircase!.relationColor).toBe('noir');
+	});
+
+	it('deux escaliers : chaque relation prend la couleur de son escalier (et son nom aussi)', () => {
+		const scene = buildCourbeScene(
+			spec(
+				parseCourbeContent(
+					`${WINDOW}\nu(0) = 0.5 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 4   rouge   escalier   nom=C_f\nv(0) = 1 ; v(n+1) = 0.8*v(n)+1 pour n de 0 à 4   vert   escalier   nom=C_g`
+				)
+			)
+		);
+		expect(scene.sequences.map((q) => q.staircase!.relationColor)).toEqual(['rouge', 'vert']);
+		expect(scene.curveLabels.map((l) => l.color)).toEqual(['rouge', 'vert']);
+		const typst = generateCourbeTypst(
+			parseCourbeContent(
+				`${WINDOW}\nu(0) = 0.5 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 4   rouge   escalier\nv(0) = 1 ; v(n+1) = 0.8*v(n)+1 pour n de 0 à 4   vert   escalier`
+			)
+		);
+		const relations = typst.split('\n').filter((l, i, all) => all[i - 1]?.includes('// relation'));
+		expect(relations.some((l) => l.includes('#dc2626'))).toBe(true);
+		expect(relations.some((l) => l.includes('#15803d'))).toBe(true);
+	});
+
 	it('deux escaliers : une seule droite y = x', () => {
 		const scene = buildCourbeScene(
 			spec(
