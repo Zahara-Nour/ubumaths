@@ -27,6 +27,7 @@
  *   pnpm tsx scripts/update-published-questions.ts            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --publier  (écrit)
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
+ *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -34,6 +35,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { checkTemplate } from '$lib/migration/review/check-template';
+import { runAllTestSpecs } from '$lib/questions/test-spec-runner';
 import { toQuestionTemplate } from '$lib/types/question-template';
 import { toJson } from '$lib/types/database-helpers';
 import type { TablesUpdate } from '$lib/types/database';
@@ -181,6 +183,21 @@ async function main(): Promise<number> {
 			`■ ${id.slice(0, 8)} « ${base.title} » (${base.status}) — ${specs} — ${changes.length ? `à modifier : ${changes.join(', ')}` : 'identique'}`
 		);
 		if (!publier) {
+			// Preuve rouge : les specs du fichier, jouées sur le contenu ACTUEL de la base
+			const actuel = runAllTestSpecs({ ...base, testSpecs: cible.testSpecs });
+			const rouges = actuel.filter((r) => !r.passed);
+			console.log(
+				`  specs du fichier sur le contenu actuel : ${actuel.length - rouges.length}/${actuel.length} vertes`
+			);
+			for (const r of rouges) {
+				console.log(
+					`    🔴 ${r.spec.description} — ${r.error ?? `obtenu ${r.actual.status} [${r.actual.constraintViolations.join(', ')}]`}`
+				);
+			}
+			if (hasFlag('--sans-diff')) {
+				preparations.push({ id, fichier, base, cible, changes });
+				continue;
+			}
 			for (const champ of changes) {
 				console.log(`  ── ${champ}`);
 				console.log(

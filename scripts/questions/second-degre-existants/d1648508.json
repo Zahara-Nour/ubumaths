@@ -25,7 +25,7 @@
 			"blanks": [
 				{
 					"requiredForm": {
-						"pattern": "(u-v)^2",
+						"pattern": "u^2",
 						"acceptable": "u*v"
 					},
 					"expectedAnswer": "({{c}}-{{a}})^2"
@@ -40,7 +40,9 @@
 			],
 			"correction": {
 				"steps": [
-					"$$\\begin{align}                 {{c}}^2 - {{eval:2*a}}{{c}} + {{eval:a^2}}               &= {{c}}^2 - 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					"On reconnaît l'identité remarquable $a^2-2ab+b^2=(a-b)^2$, avec $a={{c}}$ et $b={{a}}$ :",
+					"$$\\begin{align} {{c}}^2 - {{eval:2*a}}{{c}} + {{eval:a^2}} &= {{c}}^2 - 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\ &= {{solution}} \\end{align}$$",
+					"L'écriture $({{a}}-{{c}})^2$ est aussi juste : $({{a}}-{{c}})^2=(-({{c}}-{{a}}))^2=({{c}}-{{a}})^2$."
 				]
 			}
 		},
@@ -48,7 +50,7 @@
 			"blanks": [
 				{
 					"requiredForm": {
-						"pattern": "(u+v)^2",
+						"pattern": "u^2",
 						"acceptable": "u*v"
 					},
 					"expectedAnswer": "({{c}}+{{a}})^2"
@@ -63,7 +65,9 @@
 			],
 			"correction": {
 				"steps": [
-					"$$\\begin{align}                 {{c}}^2 + {{eval:2*a}}{{c}} + {{eval:a^2}}               &= {{c}}^2 + 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+					"On reconnaît l'identité remarquable $a^2+2ab+b^2=(a+b)^2$, avec $a={{c}}$ et $b={{a}}$ :",
+					"$$\\begin{align} {{c}}^2 + {{eval:2*a}}{{c}} + {{eval:a^2}} &= {{c}}^2 + 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\ &= {{solution}} \\end{align}$$",
+					"L'écriture $(-{{c}}-{{a}})^2$ est aussi juste : $(-{{c}}-{{a}})^2=(-({{c}}+{{a}}))^2=({{c}}+{{a}})^2$."
 				]
 			}
 		}
@@ -192,6 +196,79 @@
 			},
 			"description": "v1 erreur de signe : fausse",
 			"variationIndex": 1
+		},
+		{
+			"description": "v0 (-z+7)² : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"answers": ["(-z+7)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 (-z-7)², binôme opposé : juste (cohérent avec (7-z)² en v0)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"answers": ["(-z-7)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 (-7-z)² : juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"answers": ["(-7-z)^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 (-z-7)(-z-7) : perfectible",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"answers": ["(-z-7)(-z-7)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 (z-7)² : faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"answers": ["(z-7)^2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 a=1 : (y-1)²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"c": "y|y"
+			},
+			"answers": ["(y-1)^2"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	]
 }

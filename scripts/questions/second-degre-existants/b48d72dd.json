@@ -49,10 +49,27 @@
 			"correction": {
 				"steps": [
 					"Un carré est toujours positif et ${{a}} > 0$, donc ${{a}}(x{{eval:b;+}})^2 \\ge 0$.",
-					"On ajoute ${{c}} > 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\ge {{c}} > 0$. L'expression est **positive** pour tout $x$."
+					"On ajoute ${{c}} > 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\ge {{c}} > 0$. L'expression est **strictement positive** pour tout $x$."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"correctChoiceIndex": ["0"],
+			"choices": [
+				{
+					"content": "strictement positif pour tout réel $x$"
+				},
+				{
+					"content": "positif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "strictement négatif pour tout réel $x$"
+				},
+				{
+					"content": "négatif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "de signe variable : il dépend de la valeur de $x$"
+				}
+			]
 		},
 		{
 			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
@@ -77,10 +94,27 @@
 			"correction": {
 				"steps": [
 					"Un carré est toujours positif et ${{a}} < 0$, donc ${{a}}(x{{eval:b;+}})^2 \\le 0$.",
-					"On ajoute ${{c}} < 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\le {{c}} < 0$. L'expression est **négative** pour tout $x$."
+					"On ajoute ${{c}} < 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\le {{c}} < 0$. L'expression est **strictement négative** pour tout $x$."
 				]
 			},
-			"correctChoiceIndex": ["1"]
+			"correctChoiceIndex": ["2"],
+			"choices": [
+				{
+					"content": "strictement positif pour tout réel $x$"
+				},
+				{
+					"content": "positif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "strictement négatif pour tout réel $x$"
+				},
+				{
+					"content": "négatif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "de signe variable : il dépend de la valeur de $x$"
+				}
+			]
 		},
 		{
 			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
@@ -108,93 +142,242 @@
 			],
 			"correction": {
 				"steps": [
-					"Le terme ${{a}}(x{{eval:b;+}})^2$ est du signe de ${{a}}$ et s'annule pour $x = {{eval:-(b)}}$, alors que ${{c}}$ est de signe contraire.",
+					"Le terme ${{a}}(x{{eval:b;+}})^2$ est du signe de ${{a}}$ et s'annule pour $x = {{eval:-b}}$, alors que ${{c}}$ est de signe contraire.",
+					"En notant $f(x)$ l'expression, $f$ {{if:a>0|admet un minimum $f({{eval:-b}})={{c}}<0$, mais devient positive quand $x$ s'éloigne de ${{eval:-b}}$|admet un maximum $f({{eval:-b}})={{c}}>0$, mais devient négative quand $x$ s'éloigne de ${{eval:-b}}$}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b}}, +inf\n\nvariation: f(x)\n  {{eval:-b}}: {{c}}, {{if:a>0|bottom|top}}\n```",
 					"L'expression change donc de signe : son signe dépend de la valeur de $x$."
 				]
 			},
-			"correctChoiceIndex": ["2"]
+			"correctChoiceIndex": ["4"],
+			"choices": [
+				{
+					"content": "strictement positif pour tout réel $x$"
+				},
+				{
+					"content": "positif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "strictement négatif pour tout réel $x$"
+				},
+				{
+					"content": "négatif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "de signe variable : il dépend de la valeur de $x$"
+				}
+			]
+		},
+		{
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}(x{{eval:b;+}})^2"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Un carré est toujours positif ou nul et ${{a}} > 0$, donc ${{a}}(x{{eval:b;+}})^2 \\ge 0$.",
+					"Il est nul seulement quand $x{{eval:b;+}} = 0$, c'est-à-dire pour $x = {{eval:-b}}$. L'expression est **positive, et nulle pour $x={{eval:-b}}$**."
+				]
+			},
+			"choices": [
+				{
+					"content": "strictement positif pour tout réel $x$"
+				},
+				{
+					"content": "positif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "strictement négatif pour tout réel $x$"
+				},
+				{
+					"content": "négatif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "de signe variable : il dépend de la valeur de $x$"
+				}
+			]
+		},
+		{
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..-2"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}(x{{eval:b;+}})^2"
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": [
+					"Un carré est toujours positif ou nul et ${{a}} < 0$, donc ${{a}}(x{{eval:b;+}})^2 \\le 0$.",
+					"Il est nul seulement quand $x{{eval:b;+}} = 0$, c'est-à-dire pour $x = {{eval:-b}}$. L'expression est **négative, et nulle pour $x={{eval:-b}}$**."
+				]
+			},
+			"choices": [
+				{
+					"content": "strictement positif pour tout réel $x$"
+				},
+				{
+					"content": "positif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "strictement négatif pour tout réel $x$"
+				},
+				{
+					"content": "négatif, et nul pour une seule valeur de $x$"
+				},
+				{
+					"content": "de signe variable : il dépend de la valeur de $x$"
+				}
+			]
 		}
 	],
 	"testSpecs": [
 		{
-			"expected": {
-				"status": "correct"
-			},
+			"description": "a>0, c>0 : strictement positif",
+			"variationIndex": 0,
 			"variables": {
 				"a": "4",
 				"b": "5",
 				"c": "5"
 			},
-			"description": "a>0, c>0 : positif",
-			"variationIndex": 0,
-			"selectedChoices": [0]
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
+			"description": "a>0, c>0 : « positif et nul » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "5"
+			},
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
-			},
-			"variables": {
-				"a": "4",
-				"b": "5",
-				"c": "5"
-			},
-			"description": "a>0, c>0 : négatif refusé",
-			"variationIndex": 0,
-			"selectedChoices": [1]
+			}
 		},
 		{
-			"expected": {
-				"status": "correct"
-			},
-			"variables": {
-				"a": "-3",
-				"b": "5",
-				"c": "-1"
-			},
-			"description": "a<0, c<0 : négatif",
+			"description": "a<0, c<0 : strictement négatif",
 			"variationIndex": 1,
-			"selectedChoices": [1]
-		},
-		{
-			"expected": {
-				"status": "incorrect"
-			},
 			"variables": {
 				"a": "-3",
 				"b": "5",
 				"c": "-1"
 			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
 			"description": "a<0, c<0 : dépend de x refusé",
 			"variationIndex": 1,
-			"selectedChoices": [2]
+			"variables": {
+				"a": "-3",
+				"b": "5",
+				"c": "-1"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
-			"expected": {
-				"status": "correct"
-			},
+			"description": "a>0, c<0 : dépend de x",
+			"variationIndex": 2,
 			"variables": {
 				"a": "3",
 				"b": "5",
 				"c": "-2",
 				"k": "2"
 			},
-			"description": "a>0, c<0 : dépend de x",
-			"variationIndex": 2,
-			"selectedChoices": [2]
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
-			"expected": {
-				"status": "incorrect"
-			},
+			"description": "a<0, c>0 : strictement positif refusé",
+			"variationIndex": 2,
 			"variables": {
 				"a": "-4",
 				"b": "-5",
 				"c": "3",
 				"k": "3"
 			},
-			"description": "a<0, c>0 : positif refusé",
-			"variationIndex": 2,
-			"selectedChoices": [0]
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c=0, a>0 : positif et nul en -b",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c=0, a>0 : strictement positif refusé (nul en -b)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c=0, a<0 : négatif et nul en -b",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"b": "-1"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c=0, a<0 : strictement négatif refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"b": "-1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
 		}
 	]
 }

@@ -262,10 +262,11 @@
 			],
 			"correction": {
 				"steps": [
-					"Oui : pour $x \\neq 0$, $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x} = {{eval:x^2+(p+q)*x+p*q}}$ : l'expression se ramène à un polynôme du second degré."
+					"Non : l'expression $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x}$ n'est pas définie pour $x = 0$ (on ne divise pas par $0$), alors qu'un polynôme est défini pour tout réel $x$.",
+					"Pour $x \\neq 0$, on peut simplifier par $x$ : $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x} = {{eval:x^2+(p+q)*x+p*q}}$. L'expression coïncide avec un polynôme du second degré sauf en $0$, mais ce n'est pas un polynôme."
 				]
 			},
-			"correctChoiceIndex": ["0"]
+			"correctChoiceIndex": ["1"]
 		}
 	],
 	"testSpecs": [
@@ -442,30 +443,28 @@
 			"selectedChoices": [0]
 		},
 		{
-			"expected": {
-				"status": "correct",
-				"constraintViolations": []
-			},
+			"description": "quotient par x, non défini en 0 : Non",
+			"variationIndex": 7,
 			"variables": {
 				"p": "1",
 				"q": "1"
 			},
-			"description": "quotient simplifiable en degré 2 : Oui",
-			"variationIndex": 7,
-			"selectedChoices": [0]
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
-			"expected": {
-				"status": "incorrect",
-				"constraintViolations": []
-			},
+			"description": "quotient par x, non défini en 0 : Oui refusé",
+			"variationIndex": 7,
 			"variables": {
 				"p": "-2",
 				"q": "-3"
 			},
-			"description": "quotient simplifiable en degré 2 : Non refusé",
-			"variationIndex": 7,
-			"selectedChoices": [1]
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
 		}
 	]
 }
