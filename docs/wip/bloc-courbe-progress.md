@@ -147,3 +147,59 @@ isotrope, exporteurs sans `function`).
 - Clés d'index dans les `{#each}` de `Courbe.svelte`.
 - Compilation Typst dans un test Node : non faite (cetz se télécharge par le réseau) ;
   commentaire du test corrigé pour dire ce qui est prouvé.
+
+## Suites (extension du bloc, décision de David du 2026-10-01)
+
+Branche `feat/courbe-suites` (worktree `../ubumaths-wt-suites`), pour la 1re spé. Extension du
+bloc ```courbe, PAS un nouveau bloc.
+
+````
+```courbe
+x: -1 ; 10
+y: -1 ; 8
+u(n) = 2*n+1 pour n de 0 à 8          bleu   nom=u
+v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9   rouge
+points: …
+```
+````
+
+- Suite EXPLICITE `u(n) = expr(n)` et RÉCURRENTE `v(0) = a ; v(n+1) = expr(v(n), n)` (sur UNE
+  ligne ; premier rang quelconque : `v(1) = …`), rangs `pour n de n0 à n1` (entiers, n0 ≤ n1 ;
+  `à` ou `a`). Pour une récurrence, n0 ≥ rang du premier terme (les termes avant n0 sont
+  calculés, pas dessinés). Variables `{{…}}` résolues avant, comme le reste du bloc.
+- Rendu : un disque par terme (n ; u_n), points NON reliés ; couleur, `nom=` (ancré près du
+  dernier terme visible, même mécanique que le nom de courbe). Pas de pointillés de rappel en v1.
+  Terme hors fenêtre : non dessiné + avertissement prof. Écran (SVG) et Typst : MÊME scène
+  (primitive `sequences` de `courbe-scene.ts`, `// terme u` dans cetz).
+- Socle réutilisé du grapheur, SANS store : `computeSequenceTerms` et `PREV_TERM_VARIABLE` de
+  `grapheur/sequence.ts` (`v(n)` est lu par `parseCustom` comme un appel de fonction, réécrit en
+  `PREV_TERM_VARIABLE` par `transformAST`).
+- Pas en v1 : toile d'araignée, relier les points, sommes/produits, suites de matrices, appel
+  d'une fonction ou d'une autre suite dans l'expression.
+- Robustesse (`COURBE_LIMITS`) : ≤ 200 termes calculés par suite, ≤ 10 suites, ≤ 1000 termes au
+  total ; rangs entiers « sûrs » ; terme non fini ou |terme| > 10^12 → calcul ARRÊTÉ à ce rang,
+  avertissement situé (`v(n+1) = v(n)^2` ne fige rien). Entrées hostiles < 50 ms.
+- Erreurs situées (« Ligne N : … ») : rangs non entiers, n0 > n1, récurrence sans premier terme,
+  premier terme sans récurrence, expression illisible, nom qui ne correspond pas (`v(0) = 1 ;
+u(n+1) = …`, `v(n-1)` dans la relation), `pour n de … à …` absent, trop de termes.
+
+### Comportements à tester
+
+S1. explicite `u(n) = 2*n+1 pour n de 0 à 8` → 9 points (n ; 2n+1).
+S2. récurrence `v(0) = 1 ; v(n+1) = 0.5*v(n)+2` → 1 ; 2,5 ; 3,25 ; 3,625…
+S3. premier rang 1 (`w(1) = 2 ; w(n+1) = w(n)+n pour n de 1 à 5`).
+S4. `{{a}}` résolu avant.
+S5. termes hors fenêtre non dessinés + avertissement.
+S6. récurrence explosive `v(n+1) = v(n)^2` → arrêt, avertissement, < 50 ms (entrées hostiles).
+S7. erreurs ci-dessus, situées.
+S8. même nombre de termes à l'écran (SVG) et dans Typst.
+S9. fonction ET suite dans le même bloc ; bloc dans une liste.
+S10. `aria-label` mentionne la suite.
+S11. Typst sans « Figure indisponible » ; compilation d'une fiche (`rendu-fiche.ts` +
+`compile-prod.mjs`, 4/4 FR/EN énoncé/corrigé) si faisable.
+
+### Lots suites
+
+- [ ] Lot S1 — types + parseur + scène (tests rouges d'abord)
+- [ ] Lot S2 — SVG + Typst + accessibilité
+- [ ] Lot S3 — compilation d'une fiche, vérifs finales
