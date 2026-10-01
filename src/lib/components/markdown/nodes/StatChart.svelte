@@ -288,7 +288,8 @@
 								class="stat-pastille"
 								aria-hidden="true"
 								style:background-color={PIE_COLORS[item.colorIndex]}
-							></span><span class="stat-numero">{item.marker}</span>{' '}{item.text}
+							></span><span class="stat-numero">{item.marker}</span>
+							{item.text}
 						</li>
 					{/each}
 				</ul>
