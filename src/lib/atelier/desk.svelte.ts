@@ -18,7 +18,8 @@
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
-import { describeList, fitAffine } from './stats';
+import { describeList } from '$lib/statistics/describe';
+import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';

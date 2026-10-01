@@ -1,30 +1,18 @@
 /**
- * Atelier — statistiques d'une série et ajustement affine
+ * Statistiques — ajustement affine de deux séries
  *
- * ⚠️ Calculés **ici** et non repris de `.stats` / `.linreg` (décision Q2) :
- * ces commandes rendent du TEXTE — « Moyenne (mean): 12 », sans accent et à
- * moitié en anglais — et le relire est interdit depuis le lot 3, mesures à
- * l'appui. `.stats` ne rend pas non plus l'étendue, que le §4 N2 promet.
+ * **La** source de l'ajustement : l'atelier (vue Données) et le moteur
+ * (`.linreg` / `.ajustement`) l'appellent. Déplacé de `atelier/stats.ts`
+ * (chantier outils statistiques, lot 1).
  *
- * @module atelier/stats
+ * ⚠️ Aucun import `$lib` : voir `statistics/describe`.
+ *
+ * @module statistics/fit
  */
 
 // =============================================================================
 // Types
 // =============================================================================
-
-/** Ce qu'on sait dire d'une série de nombres. */
-export interface Description {
-	readonly count: number;
-	readonly mean: number;
-	readonly median: number;
-	readonly min: number;
-	readonly max: number;
-	/** `max - min`. Absente de `.stats`, promise par le §4 N2. */
-	readonly range: number;
-	readonly variance: number;
-	readonly deviation: number;
-}
 
 /** Ce qu'un ajustement affine a donné. */
 export type Fit =
@@ -46,48 +34,6 @@ export type Fit =
 // =============================================================================
 // Fonctions
 // =============================================================================
-
-/**
- * Décrire une série.
- *
- * ⚠️ **Variance de POPULATION** : la somme des carrés des écarts divisée par
- * `n`, pas par `n − 1`. C'est la variance descriptive du programme français,
- * celle que rend la touche σₓ d'une calculatrice — tranché par David le
- * 2026-09-16.
- *
- * Le moteur, lui, rend l'estimateur d'échantillon : `.stats 12,15,9` affiche un
- * écart-type de 3 là où le panneau affichera ≈ 2,45. Les deux sont justes, ils
- * ne répondent pas à la même question.
- *
- * @returns `null` pour une série vide — une absence, pas une erreur (§4 L2)
- */
-export function describeList(values: readonly number[]): Description | null {
-	const count = values.length;
-	if (count === 0) return null;
-
-	const sorted = [...values].sort((a, b) => a - b);
-	const sum = values.reduce((total, value) => total + value, 0);
-	const mean = sum / count;
-
-	const middle = Math.floor(count / 2);
-	const median = count % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
-
-	const min = sorted[0];
-	const max = sorted[count - 1];
-
-	const variance = values.reduce((total, value) => total + (value - mean) ** 2, 0) / count;
-
-	return {
-		count,
-		mean,
-		median,
-		min,
-		max,
-		range: max - min,
-		variance,
-		deviation: Math.sqrt(variance)
-	};
-}
 
 /**
  * Ajuster `y = ax + b` sur deux séries, par les moindres carrés.
@@ -122,7 +68,10 @@ export function fitAffine(xs: readonly number[], ys: readonly number[]): Fit {
 
 	// Tous les points sur une même verticale : la droite existe, mais elle n'est
 	// pas de la forme `y = ax + b`. Le dire vaut mieux qu'un `Infinity` affiché.
-	if (varianceX === 0) {
+	// ⚠️ Tester les VALEURS, pas `varianceX === 0` : pour 0,1 ; 0,1 ; 0,1 la
+	// moyenne flottante vaut 0,10000000000000002 et la variance ≈ 6e-34 passait
+	// le garde, avec une pente absurde à la clé.
+	if (isConstant(x)) {
 		return {
 			ok: false,
 			message:
@@ -142,7 +91,13 @@ export function fitAffine(xs: readonly number[], ys: readonly number[]): Fit {
 		totalSquares += (y[i] - meanY) ** 2;
 		residualSquares += (y[i] - (slope * x[i] + intercept)) ** 2;
 	}
-	const r2 = totalSquares === 0 ? 1 : 1 - residualSquares / totalSquares;
+	// ⚠️ Même piège que pour les abscisses : 0,1 ; 0,1 ; 0,1 laissait
+	// `totalSquares` ≈ 6e-34 et rendait R² = 0.
+	const r2 = isConstant(y) ? 1 : 1 - residualSquares / totalSquares;
 
 	return { ok: true, slope, intercept, r2, used, ignored };
+}
+
+function isConstant(values: readonly number[]): boolean {
+	return values.every((value) => value === values[0]);
 }

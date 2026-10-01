@@ -36,6 +36,8 @@ import type {
 import { isUnit, isVariable } from '../../guards';
 import { parse as parseUnit } from '../../units/parser';
 import { getConversionFactor } from '../../units/conversion';
+import { summarizeList } from '../../../statistics/describe';
+import { fitAffine } from '../../../statistics/fit';
 
 // =============================================================================
 // Web REPL Engine
@@ -1602,34 +1604,30 @@ export class WebReplEngine {
 			};
 		}
 
-		// Compute statistics
-		const n = values.length;
-		const sum = values.reduce((a, b) => a + b, 0);
-		const mean = sum / n;
-		const sorted = [...values].sort((a, b) => a - b);
-		const mid = Math.floor(n / 2);
-		const median = n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-		const min = sorted[0];
-		const max = sorted[n - 1];
-
-		// ⚠️ **Population variance: divided by `n`, not `n - 1`** — decided by
-		// David on 2026-09-16.
+		// ⚠️ Computed by `src/lib/statistics/` — the single source shared with the
+		// atelier and the ubumark blocks. No second implementation here.
 		//
-		// This is the descriptive variance of the French curriculum, what a
-		// calculator's σₓ key returns, and what the atelier's panel shows. With
-		// `n - 1` the same series read 9 here and 6 there: two correct numbers
-		// answering different questions, which a student comparing them could not
-		// reconcile.
-		//
-		// The sample estimator belongs to inferential statistics, which this
-		// command does not claim to do.
-		let variance = 0;
-		let stdev = 0;
-		if (n >= 2) {
-			const squaredDiffs = values.map((v) => (v - mean) ** 2);
-			variance = squaredDiffs.reduce((a, b) => a + b, 0) / n;
-			stdev = Math.sqrt(variance);
+		// Population variance (divided by `n`, not `n - 1`), decided by David on
+		// 2026-09-16: the descriptive variance of the French curriculum, what a
+		// calculator's σₓ key returns.
+		const summarized = summarizeList(values);
+		if (summarized === null || !summarized.ok) {
+			// Only a non-finite value (`Infinity`) gets here: NaN and empty input
+			// were rejected above.
+			return {
+				success: false,
+				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Certaines valeurs ne sont pas des nombres valides'
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: 'Invalid numbers in input'
+				}
+			};
 		}
+		const { count: n, mean, median, min, max, variance, deviation: stdev } = summarized.value;
 
 		// Format output
 		const lines = [
@@ -1776,20 +1774,13 @@ export class WebReplEngine {
 			};
 		}
 
-		// Linear regression calculation
-		const n = xValues.length;
-		const sumX = xValues.reduce((a, b) => a + b, 0);
-		const sumY = yValues.reduce((a, b) => a + b, 0);
-		const sumXY = xValues.reduce((acc, x, i) => acc + x * yValues[i], 0);
-		const sumX2 = xValues.reduce((acc, x) => acc + x * x, 0);
-		const sumY2 = yValues.reduce((acc, y) => acc + y * y, 0);
-
-		const meanX = sumX / n;
-		const meanY = sumY / n;
-
-		// Slope (a) and intercept (b)
-		const denominator = sumX2 - (sumX * sumX) / n;
-		if (Math.abs(denominator) < 1e-10) {
+		// ⚠️ Computed by `src/lib/statistics/fit` — the single source shared with
+		// the atelier. The length check above stays here: `fitAffine` would
+		// silently drop the extra values, which the atelier wants and this
+		// command does not.
+		const fit = fitAffine(xValues, yValues);
+		if (!fit.ok) {
+			// Fewer than 2 points was rejected above: only constant X remains.
 			return {
 				success: false,
 				output: 'Erreur: les valeurs X sont toutes identiques (regression impossible)',
@@ -1803,17 +1794,8 @@ export class WebReplEngine {
 				}
 			};
 		}
-
-		const a = (sumXY - (sumX * sumY) / n) / denominator;
-		const b = meanY - a * meanX;
-
-		// R² (coefficient of determination)
-		const ssTotal = sumY2 - (sumY * sumY) / n;
-		const ssRes = yValues.reduce((acc, y, i) => {
-			const predicted = a * xValues[i] + b;
-			return acc + (y - predicted) ** 2;
-		}, 0);
-		const r2 = ssTotal > 0 ? 1 - ssRes / ssTotal : 1;
+		const n = fit.used;
+		const { slope: a, intercept: b, r2 } = fit;
 
 		// Format output
 		const equation =

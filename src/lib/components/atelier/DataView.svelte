@@ -8,7 +8,7 @@
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList } from '$lib/atelier/types';
-	import { describeList } from '$lib/atelier/stats';
+	import { describeList } from '$lib/statistics/describe';
 
 	const atelier = useAtelier();
 
