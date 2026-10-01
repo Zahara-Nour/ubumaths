@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-5 livrés ; lot 6 (variable aléatoire) implémenté, revue en cours
+## État : lots 1-5 livrés ; lot 6 revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -388,6 +388,12 @@ Typst (en-têtes `$g_i$`, `$P(G = g_i)$`, case à compléter `box(width: 1.2cm)`
   5 275 tests serveur + 309 client ; `check:incremental` 0 ; PDF compile-prod 4/4 (jeu, dé,
   `masquer:`, `?` en liste, bloc en erreur « somme 5/6 »), page relue (cases à compléter
   élargies après relecture).
+
+- Revue de code : **quasi bloquant** — `exactSqrt` corrigeait son estimation de 1 en 1
+  (72 s mesurés pour une racine ~10^26, onglet figé au-delà) → Newton en bigint ; ≤ 15
+  chiffres par nombre ; `fromNumber` borné (ni minuscule changé en 0, ni > 10^15). Avec un
+  `?` : doublons, somme connue > 1 et somme connue = 1 refusés. Valeur vide ou en %
+  refusée ; `masquer:`/`indicateurs:` répétés dédoublonnés ; `LawIndicator` défini une fois.
 
 ### Question ouverte pour David (atelier)
 
