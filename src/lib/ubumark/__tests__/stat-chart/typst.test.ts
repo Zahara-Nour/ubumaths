@@ -63,4 +63,29 @@ describe('Typst des diagrammes statistiques', () => {
 		expect(typst).toContain('Figure indisponible');
 		expect(typst).not.toContain('cetz');
 	});
+
+	it('histogramme : un rectangle par classe ; quadrillage et légende d’aire si amplitudes inégales', () => {
+		const typst = typstOf('histogramme', '[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10');
+
+		expect(count(typst, '// rectangle')).toBe(3);
+		expect(typst).toContain('#"1 carreau = 2"');
+	});
+
+	it('polygone : un tracé, une lecture par quartile demandé', () => {
+		const typst = typstOf(
+			'frequences-cumulees',
+			'lecture: quartiles\n[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10'
+		);
+
+		expect(count(typst, '// polygone')).toBe(1);
+		expect(count(typst, '// lecture')).toBe(3);
+		expect(typst).toContain('#"Me ≈ 14,44"');
+	});
+
+	it('indicateurs sous la figure', () => {
+		const typst = typstOf('histogramme', 'indicateurs: moyenne\n[0 ; 10[ = 12\n[10 ; 20[ = 18');
+
+		expect(typst).toContain('// indicateurs');
+		expect(typst).toContain('Moyenne = ');
+	});
 });

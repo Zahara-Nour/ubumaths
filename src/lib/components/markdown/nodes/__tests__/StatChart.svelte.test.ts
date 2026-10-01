@@ -116,6 +116,43 @@ describe('StatChart — circulaire', () => {
 	});
 });
 
+describe('StatChart — histogramme et polygone (lot 3)', () => {
+	const TRAJETS = '[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10';
+
+	it('histogramme : un rectangle VISIBLE par classe, légende d’aire affichée', async () => {
+		const node = parseStatChartContent('histogramme', TRAJETS);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = screen.container.querySelectorAll<SVGRectElement>('.stat-rectangle');
+
+		expect(rects.length).toBe(3);
+		expect(getComputedStyle(rects[0]).fill).not.toBe('none');
+		expect(screen.container.textContent).toContain('1 carreau = 2');
+	});
+
+	it('polygone : un tracé VISIBLE et les lectures demandées', async () => {
+		const node = parseStatChartContent('frequences-cumulees', `lecture: quartiles\n${TRAJETS}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const line = screen.container.querySelector<SVGPolylineElement>('.stat-polygone')!;
+
+		expect(line.getAttribute('points')?.split(' ')).toHaveLength(4);
+		expect(getComputedStyle(line).stroke).not.toBe('none');
+		expect(screen.container.querySelectorAll('.stat-lecture').length).toBe(3);
+		expect(screen.container.textContent).toContain('Me ≈ 14,44');
+	});
+
+	it('ligne d’indicateurs sous la figure', async () => {
+		const node = parseStatChartContent(
+			'histogramme',
+			`indicateurs: effectif ; moyenne\n${TRAJETS}`
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('.stat-indicateurs')?.textContent).toBe(
+			'Effectif total : 40 · Moyenne = 15,75'
+		);
+	});
+});
+
 // =============================================================================
 // Accessibilité
 // =============================================================================

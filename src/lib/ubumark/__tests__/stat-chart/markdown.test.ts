@@ -65,6 +65,25 @@ describe('reconnus par parseMarkdown', () => {
 		expect(inItem[0].kind).toBe('circulaire');
 	});
 
+	// Lot 3 : le langage d'un bloc de code en liste était lu par `\w*`, sans tiret
+	it('```frequences-cumulees en retrait sous un item de liste', () => {
+		const block = ['```frequences-cumulees', '[0 ; 10[ = 12', '[10 ; 20[ = 18', '```'];
+		const md = ['1. Lire :', '', ...indent(block), '2. Suite.'].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+
+		expect(charts(list.items[0].children as BlockNode[]).map((c) => c.kind)).toEqual([
+			'frequences-cumulees'
+		]);
+	});
+
+	it('un bloc de code ordinaire dont le langage a un tiret reste un bloc de code', () => {
+		const md = ['1. Code :', '', ...indent(['```objective-c', 'int x = 1;', '```'])].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+		const [code] = (list.items[0].children as BlockNode[]).filter((c) => c.type === 'code-block');
+
+		expect(code).toMatchObject({ type: 'code-block', language: 'objective-c', code: 'int x = 1;' });
+	});
+
 	it('après une formule centrée sur plusieurs lignes (décalage des indices)', () => {
 		const doc = parseMarkdown(['$$', 'a = 1', '$$', '', ...BARS, '', 'Fin.'].join('\n'));
 
@@ -108,7 +127,9 @@ describe('branchés dans generateTypst', () => {
 
 describe('aller-retour de l’éditeur riche', () => {
 	it('le bloc devient un bloc de code de son genre et revient intact', () => {
-		for (const block of [BARS, PIE]) {
+		const histogram = ['```histogramme', '[0 ; 10[ = 12', '```'];
+		const polygon = ['```frequences-cumulees', 'lecture: médiane', '[0 ; 10[ = 12', '```'];
+		for (const block of [BARS, PIE, histogram, polygon]) {
 			const md = block.join('\n');
 			const json = markdownToTipTap(md);
 

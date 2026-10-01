@@ -24,8 +24,12 @@ import {
 	STAT_CHART_ASPECT_RATIO,
 	buildStatChartScene,
 	type BarScene,
+	type CumulativeScene,
+	type HistogramScene,
 	type PieScene,
-	type ScenePoint
+	type ScenePoint,
+	type SceneTick,
+	type StatChartScene
 } from '../utils/stat-chart-scene';
 
 // ============================================================================
@@ -192,6 +196,155 @@ function pieTypst(scene: PieScene, size: CourbeSize): string {
 }
 
 // ============================================================================
+// CLASSES (histogramme, polygone)
+// ============================================================================
+
+/** Repère commun : x de `xMin` à `xMax` sur la largeur, y de 0 à `yMax` sur la hauteur. */
+function frame(size: CourbeSize, xMin: number, xMax: number, yMax: number) {
+	const W = WIDTH_CM[size];
+	const H = W * STAT_CHART_ASPECT_RATIO;
+	return {
+		W,
+		H,
+		X: (x: number) => fmt(((x - xMin) / (xMax - xMin)) * W),
+		Y: (y: number) => fmt((y / yMax) * H)
+	};
+}
+
+/** Bornes des classes sous l'axe horizontal */
+function boundLabels(xTicks: readonly SceneTick[], X: (x: number) => string): string[] {
+	return xTicks.flatMap((tick) => [
+		`  line((${X(tick.value)}, -0.06), (${X(tick.value)}, 0), stroke: 0.5pt)`,
+		`  content((${X(tick.value)}, -0.1), anchor: "north", text(size: 6.5pt)[${tick.label}])`
+	]);
+}
+
+/** Graduations verticales avec lignes de rappel */
+function valueTicks(ticks: readonly SceneTick[], W: number, Y: (y: number) => string): string[] {
+	return ticks.flatMap((tick) => [
+		`  line((0, ${Y(tick.value)}), (${fmt(W)}, ${Y(tick.value)}), stroke: 0.3pt + luma(215))`,
+		`  line((-0.06, ${Y(tick.value)}), (0, ${Y(tick.value)}), stroke: 0.5pt)`,
+		`  content((-0.1, ${Y(tick.value)}), anchor: "east", text(size: 6.5pt)[${tick.label}])`
+	]);
+}
+
+function axes(W: number, H: number, title: string | null, xTitle: string | null): string[] {
+	const lines = [
+		'  // axes',
+		`  line((0, 0), (${fmt(W + 0.2)}, 0), stroke: 0.6pt)`,
+		`  line((0, 0), (0, ${fmt(H + 0.35)}), stroke: 0.6pt, mark: (end: ">", fill: black))`
+	];
+	if (title !== null) {
+		lines.push(
+			`  content((0, ${fmt(H + 0.45)}), anchor: "south", text(size: 7pt)${textContent(title)})`
+		);
+	}
+	if (xTitle !== null) {
+		lines.push(
+			`  content((${fmt(W / 2)}, -0.5), anchor: "north", text(size: 7pt)${textContent(xTitle)})`
+		);
+	}
+	return lines;
+}
+
+function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
+	const { W, H, X, Y } = frame(size, scene.xMin, scene.xMax, scene.yMax);
+	const color = TYPST_COLORS[scene.color];
+	const lines: string[] = ['  import cetz.draw: *'];
+
+	if (scene.mode === 'axe') {
+		lines.push('  // graduations', ...valueTicks(scene.ticks, W, Y));
+	} else {
+		lines.push('  // quadrillage');
+		for (const x of scene.grid.xs) {
+			lines.push(`  line((${X(x)}, 0), (${X(x)}, ${fmt(H)}), stroke: 0.3pt + luma(205))`);
+		}
+		for (const y of scene.grid.ys) {
+			lines.push(`  line((0, ${Y(y)}), (${fmt(W)}, ${Y(y)}), stroke: 0.3pt + luma(205))`);
+		}
+	}
+
+	for (const rect of scene.rects) {
+		lines.push('  // rectangle');
+		lines.push(
+			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${color}, stroke: 0.5pt + black)`
+		);
+		if (scene.showValues) {
+			lines.push(
+				`  content((${X((rect.lower + rect.upper) / 2)}, ${fmt(Number(Y(rect.height)) / 2)}), text(size: 6.5pt, fill: white, weight: "bold")${textContent(rect.valueLabel)})`
+			);
+		}
+	}
+
+	lines.push(
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	);
+
+	const legend =
+		scene.carreau === null
+			? ''
+			: `\n// légende d'aire\n#align(center, text(size: 7.5pt)[#box(width: 6pt, height: 6pt, stroke: 0.5pt) #h(3pt) #${typstString(scene.carreau.legend)}])`;
+	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}`;
+}
+
+function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
+	const { W, H, X, Y } = frame(size, scene.xMin, scene.xMax, 100);
+	const color = TYPST_COLORS[scene.color];
+	const lines: string[] = [
+		'  import cetz.draw: *',
+		'  // graduations',
+		...valueTicks(scene.ticks, W, Y)
+	];
+
+	const path = scene.points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+	lines.push('  // polygone');
+	lines.push(`  line(${path}, stroke: (paint: ${color}, thickness: 1.1pt, join: "round"))`);
+	for (const p of scene.points) {
+		lines.push(`  circle((${X(p.x)}, ${Y(p.y)}), radius: 0.05, fill: ${color}, stroke: none)`);
+	}
+
+	for (const reading of scene.readings) {
+		const x = X(reading.x);
+		const y = Y(reading.percent);
+		lines.push('  // lecture');
+		lines.push(
+			`  line((0, ${y}), (${x}, ${y}), (${x}, 0), stroke: (paint: luma(90), thickness: 0.5pt, dash: "dashed"))`
+		);
+		// Au début du pointillé, du côté libre (au-dessus si le polygone croît)
+		const above = scene.direction === 'croissantes';
+		lines.push(
+			`  content((0.06, ${fmt(Number(y) + (above ? 0.04 : -0.04))}), anchor: "${above ? 'south-west' : 'north-west'}", text(size: 6.5pt)${textContent(reading.text)})`
+		);
+	}
+
+	lines.push(
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	);
+	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+}
+
+/** Ligne d'indicateurs sous la figure (Q28) */
+function indicatorsBlock(scene: StatChartScene): string {
+	if (scene.indicators.length === 0) return '';
+	return `\n// indicateurs\n#align(center, text(size: 8pt)${textContent(scene.indicators.join(' · '))})`;
+}
+
+function figureTypst(scene: StatChartScene, size: CourbeSize): string {
+	switch (scene.kind) {
+		case 'barres':
+			return barsTypst(scene, size);
+		case 'circulaire':
+			return pieTypst(scene, size);
+		case 'histogramme':
+			return histogramTypst(scene, size);
+		case 'frequences-cumulees':
+			return cumulativeTypst(scene, size);
+	}
+}
+
+// ============================================================================
 // GÉNÉRATEUR
 // ============================================================================
 
@@ -206,9 +359,7 @@ export function generateStatChartTypst(
 		const scene = buildStatChartScene(node.spec, {
 			locale: options.language === 'en' ? 'en' : 'fr'
 		});
-		return scene.kind === 'barres'
-			? barsTypst(scene, node.spec.size)
-			: pieTypst(scene, node.spec.size);
+		return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
 	} catch {
 		return UNAVAILABLE;
 	}

@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { summarizeClasses, type StatClass } from '../classes';
+import { estimateClassQuantile, summarizeClasses, type StatClass } from '../classes';
 
 // =============================================================================
 // Helpers
@@ -136,5 +136,44 @@ describe('C. série en classes', () => {
 	it('refuse un effectif négatif ou un effectif total nul', () => {
 		expect(failureOf([{ lower: 0, upper: 10, count: -1 }])).toMatch(/effectif/i);
 		expect(failureOf([{ lower: 0, upper: 10, count: 0 }])).toMatch(/effectif total nul/i);
+	});
+});
+
+// Lot 3 : polygone des fréquences cumulées
+describe('fréquences cumulées décroissantes et quantiles estimés', () => {
+	it('fréquences cumulées décroissantes : part des données ≥ borne gauche', () => {
+		const rows = summaryOf(TRAJETS).classes;
+		const decreasing = rows.map((r) => r.decreasingCumulativeFrequency);
+
+		[1, 0.7, 0.25].forEach((expected, i) => expect(decreasing[i]).toBeCloseTo(expected, 10));
+	});
+
+	function quantile(percent: number) {
+		const outcome = estimateClassQuantile(TRAJETS, percent);
+		if (outcome === null || !outcome.ok) throw new Error(JSON.stringify(outcome));
+		return outcome.value;
+	}
+
+	it('Q1 estimé par interpolation linéaire dans sa classe', () => {
+		// 25 % de 40 = 10, dans [0 ; 10[ (12) : 0 + 10/12 × 10
+		expect(quantile(25)).toBeCloseTo(100 / 12, 10);
+	});
+
+	it('médiane estimée : la même que summarizeClasses', () => {
+		expect(quantile(50)).toBeCloseTo(summaryOf(TRAJETS).estimatedMedian, 10);
+	});
+
+	it('Q3 atteint pile en fin de classe : la borne droite', () => {
+		// 75 % de 40 = 30 = 12 + 18
+		expect(quantile(75)).toBe(20);
+	});
+
+	it('refuse un pourcentage hors de ]0 ; 100[', () => {
+		expect(estimateClassQuantile(TRAJETS, 0)?.ok).toBe(false);
+		expect(estimateClassQuantile(TRAJETS, 100)?.ok).toBe(false);
+	});
+
+	it('aucune classe : une absence', () => {
+		expect(estimateClassQuantile([], 50)).toBeNull();
 	});
 });
