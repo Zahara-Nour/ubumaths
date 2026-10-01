@@ -15,14 +15,6 @@ export { generateInstance, generateMultipleInstances } from './generator/instanc
 
 export { resolveVariables, resolveVariableExpression } from './generator/variable-resolver';
 
-export {
-	generateRandomNumber,
-	randomInt,
-	randomDecimalByDigits,
-	randomDecimalByRange,
-	resolveNumberOrVariable
-} from './generator/random-generator';
-
 export { resolveExpression, resolveSolution } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';

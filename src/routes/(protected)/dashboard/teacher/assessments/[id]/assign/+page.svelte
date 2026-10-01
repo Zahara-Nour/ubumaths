@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Checkbox } from '$lib/components/ui/checkbox';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ArrowLeft, Users, Check, X } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -19,12 +19,9 @@
 		goto('/dashboard/teacher/assessments').then(() => {});
 	}
 
-	function toggleClass(classId: string) {
-		if (selectedClassIds.includes(classId)) {
-			selectedClassIds = selectedClassIds.filter((id) => id !== classId);
-		} else {
-			selectedClassIds = [...selectedClassIds, classId];
-		}
+	function setClassSelected(classId: string, isChecked: boolean) {
+		const others = selectedClassIds.filter((id) => id !== classId);
+		selectedClassIds = isChecked ? [...others, classId] : others;
 	}
 
 	async function handleAssign() {
@@ -106,29 +103,31 @@
 				{:else}
 					<div class="space-y-3">
 						{#each data.classes as classData (classData.id)}
-							<button
-								type="button"
-								class="flex w-full cursor-pointer items-center justify-between rounded-lg border p-4 text-left transition-colors hover:bg-accent/50"
-								onclick={() => toggleClass(classData.id)}
-								aria-label="Sélectionner le {lore.entities.class} {classData.name}"
+							<!-- Ligne entière : la case et son libellé (nom, effectif) ; plus de case à
+							     cocher imbriquée dans un bouton (HTML invalide, double activation) -->
+							<div
+								class="flex w-full items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
 							>
-								<div class="flex items-center gap-4">
-									<Checkbox checked={selectedClassIds.includes(classData.id)} />
-									<div>
-										<div class="font-medium">{classData.name}</div>
-										<div class="text-sm text-muted-foreground">
+								<MyCheckbox
+									checked={selectedClassIds.includes(classData.id)}
+									onchange={(isChecked) => setClassSelected(classData.id, isChecked)}
+									aria-label="Sélectionner le {lore.entities.class} {classData.name}"
+								>
+									<span class="block">
+										<span class="block font-medium">{classData.name}</span>
+										<span class="block text-sm text-muted-foreground">
 											{classData.student_count}
 											{lore.entities.student}{classData.student_count > 1 ? 's' : ''}
-										</div>
-									</div>
-								</div>
+										</span>
+									</span>
+								</MyCheckbox>
 								{#if classData.is_assigned}
 									<Badge variant="secondary">
 										<Check class="mr-1 h-3 w-3" />
 										Déjà assignée
 									</Badge>
 								{/if}
-							</button>
+							</div>
 						{/each}
 					</div>
 				{/if}

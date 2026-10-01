@@ -57,13 +57,13 @@
 				: 'bg-red-100 dark:bg-red-950'
 	);
 
-	let timeDisplay = $derived(() => {
+	let timeDisplay = $derived.by(() => {
 		const minutes = Math.floor(result.timeSpent / 60);
 		const seconds = result.timeSpent % 60;
 		return minutes > 0 ? `${minutes}min ${seconds}s` : `${seconds}s`;
 	});
 
-	let averageTimeDisplay = $derived(() => {
+	let averageTimeDisplay = $derived.by(() => {
 		const seconds = Math.round(result.averageTime);
 		return `${seconds}s`;
 	});
@@ -109,7 +109,7 @@
 				</div>
 				<div>
 					<p class="text-sm text-muted-foreground">Temps total</p>
-					<p class="text-2xl font-bold">{timeDisplay()}</p>
+					<p class="text-2xl font-bold">{timeDisplay}</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -122,7 +122,7 @@
 				</div>
 				<div>
 					<p class="text-sm text-muted-foreground">Temps moyen</p>
-					<p class="text-2xl font-bold">{averageTimeDisplay()}/question</p>
+					<p class="text-2xl font-bold">{averageTimeDisplay}/question</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
