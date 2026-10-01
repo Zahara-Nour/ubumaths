@@ -401,13 +401,7 @@ export async function generateDailySummary(
 				}
 
 				// Create notification
-				await createDailySummaryNotification(
-					supabase,
-					member.student_id,
-					classData.name,
-					yesterday,
-					changes
-				);
+				await createDailySummaryNotification(member.student_id, classData.name, yesterday, changes);
 
 				summariesSent++;
 			} catch (studentError) {

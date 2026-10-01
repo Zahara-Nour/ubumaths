@@ -328,11 +328,8 @@ async function notifyCriticalError(
 	errorData: LogErrorData
 ): Promise<void> {
 	try {
-		// Use service role client for system notifications
-		const serviceClient = createServiceRoleClient();
-
-		// Create system notification for admins
-		await createSystemNotification(serviceClient, {
+		// Create system notification for admins (écrite par le client service)
+		await createSystemNotification({
 			title: '🚨 Erreur Critique Détectée',
 			message: `<p><strong>Type:</strong> ${errorData.error_type}</p>
 				<p><strong>Message:</strong> ${errorData.message}</p>

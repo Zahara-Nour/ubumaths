@@ -20,8 +20,10 @@ import type {
 } from '$lib/types/notification';
 import { sanitizeNotificationHtml } from './sanitization';
 import { escapeHtml } from '$lib/utils/html-escape';
+import { createServiceRoleClient } from './serviceRoleClient';
 
 type SupabaseClientType = SupabaseClient<Database>;
+type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
 
 /**
  * Create a new notification
@@ -157,30 +159,50 @@ export async function createNotification(
 }
 
 /**
+ * Champs d'une notification système : `is_system` et `created_by` sont imposés par
+ * `insertSystemNotification`, l'appelant ne peut pas les choisir.
+ */
+export type SystemNotificationRow = Omit<NotificationInsert, 'is_system' | 'created_by'> & {
+	system_event_type: string;
+};
+
+/**
+ * Insère une notification système (sans auteur) avec le client service.
+ *
+ * C'est le SEUL chemin d'écriture d'une notification système : la base refuse
+ * désormais ces insertions aux comptes connectés (sinon un élève pouvait diffuser
+ * une notification « système » à toute l'école). Le client service passe outre la RLS,
+ * donc les cibles sont décidées ici, par le code serveur, jamais par le navigateur.
+ */
+export async function insertSystemNotification(
+	row: SystemNotificationRow
+): Promise<{ error: { message: string } | null }> {
+	const { error } = await createServiceRoleClient()
+		.from('notifications')
+		.insert({
+			...row,
+			// Défense en profondeur : le message peut contenir un texte saisi par un élève.
+			message: sanitizeNotificationHtml(row.message),
+			is_system: true,
+			created_by: null
+		});
+	return { error };
+}
+
+/**
  * Create a system notification (automatic)
  *
- * System notifications bypass permission checks and are marked as is_system=true.
- *
- * NOTE: For notifications triggered by student actions (e.g., error reports),
- * prefer using database triggers with SECURITY DEFINER instead of this function,
- * as RLS policies may block students from inserting notifications.
+ * Écrite par le client service (cf. `insertSystemNotification`).
  */
 export async function createSystemNotification(
-	supabase: SupabaseClientType,
 	data: CreateSystemNotificationData
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-		// SECURITY: Sanitize message HTML even for system notifications (defense-in-depth)
-		// System messages are controlled by code, but sanitization adds an extra security layer
-		// in case of bugs or future changes that introduce user-controlled content.
-		const sanitizedMessage = sanitizeNotificationHtml(data.message);
-
-		const { error: insertError } = await supabase.from('notifications').insert({
-			created_by: null, // System notifications have no creator
+		const { error: insertError } = await insertSystemNotification({
 			title: data.title,
-			message: sanitizedMessage, // Use sanitized message
+			message: data.message, // nettoyé par insertSystemNotification
 			type: data.type,
 			priority: data.priority,
 			action_label: data.action_label || null,
@@ -190,7 +212,6 @@ export async function createSystemNotification(
 			target_class_ids: data.target_class_ids || null,
 			target_user_ids: data.target_user_ids || null,
 			expires_at: expiresAt,
-			is_system: true,
 			system_event_type: data.system_event_type,
 			deleted_at: null
 		});
@@ -696,20 +717,18 @@ export async function getCreatedNotifications(
  *
  * Creates a system notification targeting admins only with type 'pending_user'
  *
- * @param supabase - Supabase client
  * @param email - Email of the pending user
  * @param fullName - Full name of the pending user (optional)
  * @returns { success: boolean, error?: string }
  */
 export async function notifyAdminsOfPendingUser(
-	supabase: SupabaseClientType,
 	email: string,
 	fullName: string | null
 ): Promise<{ success: boolean; error?: string }> {
 	const displayName = fullName || email;
 	const message = `Un nouvel utilisateur attend une approbation: <strong>${displayName}</strong>`;
 
-	return createSystemNotification(supabase, {
+	return createSystemNotification({
 		title: 'Nouvel utilisateur en attente',
 		message,
 		type: 'alert',
@@ -725,20 +744,16 @@ export async function notifyAdminsOfPendingUser(
 /**
  * Notify admins of a new bug report
  *
- * @param supabase - Supabase client
  * @param data - Bug report data
  * @returns { success: boolean, error?: string }
  */
-export async function notifyAdminsOfNewBugReport(
-	supabase: SupabaseClientType,
-	data: {
-		reportId: string;
-		userName: string;
-		category: string;
-		severity: string;
-		title: string;
-	}
-): Promise<{ success: boolean; error?: string }> {
+export async function notifyAdminsOfNewBugReport(data: {
+	reportId: string;
+	userName: string;
+	category: string;
+	severity: string;
+	title: string;
+}): Promise<{ success: boolean; error?: string }> {
 	const categoryLabels: Record<string, string> = {
 		bug: '🐛 Bug',
 		content: '📝 Contenu',
@@ -759,7 +774,7 @@ export async function notifyAdminsOfNewBugReport(
 
 	const message = `<p><strong>${escapeHtml(data.userName)}</strong> a signalé : ${categoryLabel}</p><p>${escapeHtml(data.title)}</p>`;
 
-	return createSystemNotification(supabase, {
+	return createSystemNotification({
 		title: `Nouveau signalement (${severityLabel})`,
 		message,
 		type: data.severity === 'critical' ? 'alert' : 'info',

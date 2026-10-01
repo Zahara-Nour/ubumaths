@@ -7,12 +7,17 @@
  * All notifications are inserted into the `notifications` table and will
  * be automatically broadcast to users via the notificationsRealtimeManager.
  *
+ * Écrites par le client service (`insertSystemNotification`) : la base refuse les
+ * notifications système aux comptes connectés.
+ *
  * Note: notifications.type is constrained to 'info', 'alert', 'announcement', 'reminder'.
  * We use 'info' for all marketplace notifications and distinguish via system_event_type.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { insertSystemNotification } from '$lib/server/notifications';
+import { escapeHtml } from '$lib/utils/html-escape';
 
 /**
  * Create notification when someone makes a proposal on user's listing
@@ -41,8 +46,7 @@ export async function notifyNewProposal(
 			? `${proposerProfile.firstname || ''} ${proposerProfile.lastname || ''}`.trim() || 'Un élève'
 			: 'Un élève';
 
-		await supabase.from('notifications').insert({
-			is_system: true,
+		const { error: insertError } = await insertSystemNotification({
 			target_user_ids: [listingOwnerId],
 			target_type: 'users',
 			type: 'info',
@@ -53,6 +57,9 @@ export async function notifyNewProposal(
 			action_label: 'Voir',
 			priority: 'normal'
 		});
+		if (insertError) {
+			console.error('[marketplace] Notification non créée :', insertError);
+		}
 	} catch (error) {
 		console.error('Failed to create proposal notification:', error);
 	}
@@ -62,14 +69,12 @@ export async function notifyNewProposal(
  * Create notification when proposal is accepted
  */
 export async function notifyProposalAccepted(
-	supabase: SupabaseClient<Database>,
 	proposerId: string,
 	listingTitle: string,
 	tradeId: string
 ): Promise<void> {
 	try {
-		await supabase.from('notifications').insert({
-			is_system: true,
+		const { error: insertError } = await insertSystemNotification({
 			target_user_ids: [proposerId],
 			target_type: 'users',
 			type: 'info',
@@ -78,8 +83,11 @@ export async function notifyProposalAccepted(
 			message: `Votre proposition pour "${listingTitle}" a été acceptée ! L'échange est terminé.`,
 			action_url: `/dashboard/student/marketplace?tab=trades&highlight=${tradeId}`,
 			action_label: 'Voir',
-			priority: 'high'
+			priority: 'important'
 		});
+		if (insertError) {
+			console.error('[marketplace] Notification non créée :', insertError);
+		}
 	} catch (error) {
 		console.error('Failed to create acceptance notification:', error);
 	}
@@ -89,18 +97,16 @@ export async function notifyProposalAccepted(
  * Create notification when proposal is rejected
  */
 export async function notifyProposalRejected(
-	supabase: SupabaseClient<Database>,
 	proposerId: string,
 	listingTitle: string,
 	rejectionMessage?: string
 ): Promise<void> {
 	try {
 		const message = rejectionMessage
-			? `Votre proposition pour "${listingTitle}" a été refusée. Message: ${rejectionMessage}`
+			? `Votre proposition pour "${listingTitle}" a été refusée. Message: ${escapeHtml(rejectionMessage)}`
 			: `Votre proposition pour "${listingTitle}" a été refusée.`;
 
-		await supabase.from('notifications').insert({
-			is_system: true,
+		const { error: insertError } = await insertSystemNotification({
 			target_user_ids: [proposerId],
 			target_type: 'users',
 			type: 'info',
@@ -111,6 +117,9 @@ export async function notifyProposalRejected(
 			action_label: 'Voir',
 			priority: 'normal'
 		});
+		if (insertError) {
+			console.error('[marketplace] Notification non créée :', insertError);
+		}
 	} catch (error) {
 		console.error('Failed to create rejection notification:', error);
 	}
@@ -120,14 +129,12 @@ export async function notifyProposalRejected(
  * Create notification when trade is completed
  */
 export async function notifyTradeCompleted(
-	supabase: SupabaseClient<Database>,
 	userId: string,
 	partnerName: string,
 	tradeId: string
 ): Promise<void> {
 	try {
-		await supabase.from('notifications').insert({
-			is_system: true,
+		const { error: insertError } = await insertSystemNotification({
 			target_user_ids: [userId],
 			target_type: 'users',
 			type: 'info',
@@ -136,8 +143,11 @@ export async function notifyTradeCompleted(
 			message: `Votre échange avec ${partnerName} est terminé ! Les cartes et gidouilles ont été transférés.`,
 			action_url: `/dashboard/student/marketplace?tab=trades&highlight=${tradeId}`,
 			action_label: 'Voir',
-			priority: 'high'
+			priority: 'important'
 		});
+		if (insertError) {
+			console.error('[marketplace] Notification non créée :', insertError);
+		}
 	} catch (error) {
 		console.error('Failed to create trade completion notification:', error);
 	}
@@ -167,8 +177,7 @@ export async function notifyNewTradeOffer(
 			? `${offererProfile.firstname || ''} ${offererProfile.lastname || ''}`.trim() || 'Un élève'
 			: 'Un élève';
 
-		await supabase.from('notifications').insert({
-			is_system: true,
+		const { error: insertError } = await insertSystemNotification({
 			target_user_ids: [recipientId],
 			target_type: 'users',
 			type: 'info',
@@ -179,6 +188,9 @@ export async function notifyNewTradeOffer(
 			action_label: 'Voir',
 			priority: 'normal'
 		});
+		if (insertError) {
+			console.error('[marketplace] Notification non créée :', insertError);
+		}
 	} catch (error) {
 		console.error('Failed to create trade offer notification:', error);
 	}

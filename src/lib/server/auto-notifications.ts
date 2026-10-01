@@ -13,34 +13,26 @@
  * additional security layer (defense-in-depth) beyond DOMPurify sanitization.
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
 import type { NotificationTargetType } from '$lib/types/notification';
 
-type SupabaseClientType = SupabaseClient<Database>;
-
 /**
  * Create notification when a new assignment is created
  *
- * @param supabase - Supabase client
  * @param assignmentId - ID of the created assignment
  * @param assignmentTitle - Title of the assignment
  * @param classId - ID of the class
  * @param teacherName - Name of the teacher who created it
  */
-export async function notifyNewAssignment(
-	supabase: SupabaseClientType,
-	data: {
-		assignmentId: string;
-		assignmentTitle: string;
-		classId: string;
-		teacherName: string;
-	}
-): Promise<void> {
+export async function notifyNewAssignment(data: {
+	assignmentId: string;
+	assignmentTitle: string;
+	classId: string;
+	teacherName: string;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: 'Nouveau devoir assigné',
 			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> a assigné un nouveau devoir : <strong>${escapeHtml(data.assignmentTitle)}</strong></p>`,
 			type: 'info',
@@ -60,23 +52,19 @@ export async function notifyNewAssignment(
 /**
  * Create notification when a new resource is added
  *
- * @param supabase - Supabase client
  * @param resourceId - ID of the resource
  * @param resourceTitle - Title of the resource
  * @param classId - ID of the class
  * @param teacherName - Name of the teacher who added it
  */
-export async function notifyNewResource(
-	supabase: SupabaseClientType,
-	data: {
-		resourceId: string;
-		resourceTitle: string;
-		classId: string;
-		teacherName: string;
-	}
-): Promise<void> {
+export async function notifyNewResource(data: {
+	resourceId: string;
+	resourceTitle: string;
+	classId: string;
+	teacherName: string;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: 'Nouvelle ressource disponible',
 			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> a ajouté une nouvelle ressource : <strong>${escapeHtml(data.resourceTitle)}</strong></p>`,
 			type: 'info',
@@ -95,25 +83,21 @@ export async function notifyNewResource(
 /**
  * Create notification when a student earns reward points (gidouilles)
  *
- * @param supabase - Supabase client
  * @param studentId - ID of the student
  * @param amount - Amount of gidouilles earned
  * @param reason - Reason for the reward (optional)
  */
-export async function notifyRewardEarned(
-	supabase: SupabaseClientType,
-	data: {
-		studentId: string;
-		amount: number;
-		reason?: string;
-	}
-): Promise<void> {
+export async function notifyRewardEarned(data: {
+	studentId: string;
+	amount: number;
+	reason?: string;
+}): Promise<void> {
 	try {
 		const message = data.reason
 			? `<p>Vous avez gagné <strong>${Number(data.amount)} gidouilles</strong> ! ${escapeHtml(data.reason)}</p>`
 			: `<p>Vous avez gagné <strong>${Number(data.amount)} gidouilles</strong> !</p>`;
 
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: `🎉 ${Number(data.amount)} gidouilles gagnées !`,
 			message,
 			type: 'info',
@@ -130,21 +114,17 @@ export async function notifyRewardEarned(
 /**
  * Create notification when a student earns a VIP card
  *
- * @param supabase - Supabase client
  * @param studentId - ID of the student
  * @param cardType - Type of VIP card earned
  * @param cardName - Display name of the card
  */
-export async function notifyVipCardEarned(
-	supabase: SupabaseClientType,
-	data: {
-		studentId: string;
-		cardType: string;
-		cardName: string;
-	}
-): Promise<void> {
+export async function notifyVipCardEarned(data: {
+	studentId: string;
+	cardType: string;
+	cardName: string;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: '✨ Nouvelle carte VIP !',
 			message: `<p>Félicitations ! Vous avez obtenu une nouvelle carte VIP : <strong>${escapeHtml(data.cardName)}</strong></p>`,
 			type: 'info',
@@ -163,19 +143,15 @@ export async function notifyVipCardEarned(
 /**
  * Create notification when a student unlocks a badge
  *
- * @param supabase - Supabase client
  * @param studentId - ID of the student
  * @param badgeName - Name of the badge (system-defined constant)
  * @param badgeDescription - Description of the badge (system-defined constant, optional)
  */
-export async function notifyBadgeUnlocked(
-	supabase: SupabaseClientType,
-	data: {
-		studentId: string;
-		badgeName: string;
-		badgeDescription?: string;
-	}
-): Promise<void> {
+export async function notifyBadgeUnlocked(data: {
+	studentId: string;
+	badgeName: string;
+	badgeDescription?: string;
+}): Promise<void> {
 	try {
 		// NOTE: badgeName and badgeDescription are system constants, NOT user input
 		// Do NOT escape them (they're defined in code, not from database/user)
@@ -183,7 +159,7 @@ export async function notifyBadgeUnlocked(
 			? `<p>Bravo ! Vous avez débloqué le badge <strong>${data.badgeName}</strong> :<br/><em>${data.badgeDescription}</em></p>`
 			: `<p>Bravo ! Vous avez débloqué le badge <strong>${data.badgeName}</strong> !</p>`;
 
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: '🏆 Nouveau badge débloqué !',
 			message,
 			type: 'info',
@@ -202,21 +178,17 @@ export async function notifyBadgeUnlocked(
 /**
  * Create notification for system maintenance announcement
  *
- * @param supabase - Supabase client
  * @param date - Date of maintenance
  * @param duration - Expected duration
  * @param description - Description of what will be done
  */
-export async function notifyMaintenance(
-	supabase: SupabaseClientType,
-	data: {
-		date: string;
-		duration: string;
-		description: string;
-	}
-): Promise<void> {
+export async function notifyMaintenance(data: {
+	date: string;
+	duration: string;
+	description: string;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: 'Maintenance programmée',
 			message: `<p><strong>Une maintenance est prévue le ${escapeHtml(data.date)}</strong></p><p>Durée estimée : ${escapeHtml(data.duration)}</p><p>${escapeHtml(data.description)}</p>`,
 			type: 'alert',
@@ -232,23 +204,19 @@ export async function notifyMaintenance(
 /**
  * Create notification for new feature release
  *
- * @param supabase - Supabase client
  * @param featureName - Name of the new feature
  * @param description - Description of the feature
  * @param targetRoles - Which roles can access the feature (optional, defaults to all)
  * @param actionUrl - Link to more info or to use the feature (optional)
  */
-export async function notifyFeatureRelease(
-	supabase: SupabaseClientType,
-	data: {
-		featureName: string;
-		description: string;
-		targetRoles?: string[];
-		actionUrl?: string;
-	}
-): Promise<void> {
+export async function notifyFeatureRelease(data: {
+	featureName: string;
+	description: string;
+	targetRoles?: string[];
+	actionUrl?: string;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: `🎉 Nouvelle fonctionnalité : ${escapeHtml(data.featureName)}`,
 			message: `<p>${escapeHtml(data.description)}</p>`,
 			type: 'announcement',
@@ -267,29 +235,25 @@ export async function notifyFeatureRelease(
 /**
  * Create notification when an assessment is assigned to students
  *
- * @param supabase - Supabase client
  * @param assessmentId - ID of the assessment
  * @param assessmentTitle - Title of the assessment
  * @param teacherName - Name of the teacher who assigned it
  * @param classIds - IDs of classes assigned (optional)
  * @param studentIds - IDs of individual students assigned (optional)
  */
-export async function notifyNewAssessment(
-	supabase: SupabaseClientType,
-	data: {
-		assessmentId: string;
-		assessmentTitle: string;
-		teacherName: string;
-		classIds?: string[];
-		studentIds?: string[];
-	}
-): Promise<void> {
+export async function notifyNewAssessment(data: {
+	assessmentId: string;
+	assessmentTitle: string;
+	teacherName: string;
+	classIds?: string[];
+	studentIds?: string[];
+}): Promise<void> {
 	try {
 		// Determine target type based on what was assigned
 		const targetType: NotificationTargetType =
 			data.classIds && data.classIds.length > 0 ? 'classes' : 'users';
 
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: 'Nouvelle évaluation assignée',
 			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné une nouvelle évaluation : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
 			type: 'info',
@@ -310,21 +274,17 @@ export async function notifyNewAssessment(
 /**
  * Create notification when a student's error report is validated
  *
- * @param supabase - Supabase client
  * @param studentId - ID of the student who submitted the report
  * @param worksheetTitle - Title of the worksheet containing the error
  * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
  */
-export async function notifyErrorReportValidated(
-	supabase: SupabaseClientType,
-	data: {
-		studentId: string;
-		worksheetTitle: string;
-		exercisePosition: number;
-	}
-): Promise<void> {
+export async function notifyErrorReportValidated(data: {
+	studentId: string;
+	worksheetTitle: string;
+	exercisePosition: number;
+}): Promise<void> {
 	try {
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: '✅ Signalement validé !',
 			message: `<p>Ton signalement sur l'exercice <strong>${Number(data.exercisePosition)}</strong> du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
 			type: 'info',
@@ -342,26 +302,22 @@ export async function notifyErrorReportValidated(
 /**
  * Create notification when a student's error report is rejected
  *
- * @param supabase - Supabase client
  * @param studentId - ID of the student who submitted the report
  * @param worksheetTitle - Title of the worksheet
  * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
  * @param response - Optional response/reason for rejection (HTML from RichTextEditor, already sanitized)
  */
-export async function notifyErrorReportRejected(
-	supabase: SupabaseClientType,
-	data: {
-		studentId: string;
-		worksheetTitle: string;
-		exercisePosition: number;
-		response?: string;
-	}
-): Promise<void> {
+export async function notifyErrorReportRejected(data: {
+	studentId: string;
+	worksheetTitle: string;
+	exercisePosition: number;
+	response?: string;
+}): Promise<void> {
 	try {
 		// response is already HTML-sanitized from RichTextEditor, do not escape it
 		const responseHtml = data.response ? `<p>${data.response}</p>` : '';
 
-		await createSystemNotification(supabase, {
+		await createSystemNotification({
 			title: 'Signalement traité',
 			message: `<p>Ton signalement pour l'exercice <strong>${Number(data.exercisePosition)}</strong> de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
 			type: 'info',

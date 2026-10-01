@@ -137,7 +137,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 					: existingUser.email;
 
 			// Notification for the approved user
-			await createSystemNotification(supabase, {
+			await createSystemNotification({
 				title: 'Compte approuvé',
 				message: `Bienvenue ${fullName} ! Votre compte a été approuvé. Vous pouvez maintenant accéder à toutes les fonctionnalités de l'application.`,
 				type: 'info',
@@ -194,7 +194,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 							? `la classe ${classNames[0]}`
 							: `les classes ${classNames.join(', ')}`;
 
-					await createSystemNotification(supabase, {
+					await createSystemNotification({
 						title: 'Nouvel élève approuvé',
 						message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
 						type: 'info',

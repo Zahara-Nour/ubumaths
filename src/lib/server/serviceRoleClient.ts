@@ -33,6 +33,8 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Server utilities that need RLS bypass
 	'rateLimiter.ts',
 	'errorMonitoring.ts',
+	// Notifications système : la base les refuse aux comptes connectés
+	'lib/server/notifications.ts',
 	'serviceRoleClient.ts',
 	// SRS operations
 	'srs/',

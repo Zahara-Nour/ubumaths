@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { insertSystemNotification } from '$lib/server/notifications';
 import { completerParticipant, fetchParticipants } from './participants';
 
 // ============================================================================
@@ -409,13 +410,11 @@ export async function isMarketplaceEnabled(
 
 /**
  * Creates a marketplace notification for a user
- * @param supabase Supabase client
  * @param recipientId User ID to send notification to
  * @param type Type of marketplace notification
  * @param metadata Additional data for the notification
  */
 export async function createMarketplaceNotification(
-	supabase: SupabaseClient<Database>,
 	recipientId: string,
 	type:
 		| 'proposal_received'
@@ -447,8 +446,7 @@ export async function createMarketplaceNotification(
 
 	// Create the notification
 	// type must be 'info'|'alert'|'announcement'|'reminder' (DB constraint)
-	await supabase.from('notifications').insert({
-		is_system: true,
+	const { error: insertError } = await insertSystemNotification({
 		target_user_ids: [recipientId],
 		target_type: 'users',
 		type: 'info',
@@ -459,6 +457,9 @@ export async function createMarketplaceNotification(
 		action_label: 'Voir',
 		priority: 'normal'
 	});
+	if (insertError) {
+		console.error('[marketplace] Notification non créée :', insertError);
+	}
 }
 
 // ============================================================================

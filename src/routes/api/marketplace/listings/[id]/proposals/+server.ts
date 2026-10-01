@@ -449,7 +449,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		if (acceptation?.success && acceptation.data.success) {
 			// Notify accepted proposer
-			await notifyProposalAccepted(supabase, userId, 'Annonce', proposal.id);
+			await notifyProposalAccepted(userId, 'Annonce', proposal.id);
 
 			// Notify rejected proposers
 			const { data: rejectedProposals, error: rejectedProposalsError } = await supabase
@@ -466,12 +466,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 			if (rejectedProposals) {
 				for (const p of rejectedProposals) {
-					await notifyProposalRejected(
-						supabase,
-						p.proposer_id,
-						'Annonce',
-						'Autre proposition acceptée'
-					);
+					await notifyProposalRejected(p.proposer_id, 'Annonce', 'Autre proposition acceptée');
 				}
 			}
 

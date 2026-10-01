@@ -180,13 +180,7 @@ export async function generateWeeklyRewards(
 				}
 
 				// Create notification
-				await createWeeklyRewardNotification(
-					supabase,
-					member.student_id,
-					classData.name,
-					weekStart,
-					weekEnd
-				);
+				await createWeeklyRewardNotification(member.student_id, classData.name, weekStart, weekEnd);
 
 				rewardsAwarded++;
 				console.log(

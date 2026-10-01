@@ -5,8 +5,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { DailyChanges, NotificationInsert } from './types';
+import type { DailyChanges } from './types';
 import { formatDateForDisplay } from './timezone-utils';
+import { insertSystemNotification, type SystemNotificationRow } from '$lib/server/notifications';
 
 type DbClient = SupabaseClient<Database>;
 
@@ -163,14 +164,12 @@ export function formatWeeklyReward(className: string, weekStart: Date, weekEnd: 
  * Create a system notification for daily summary
  * Inserts notification into the database
  *
- * @param supabase - Supabase client
  * @param studentId - Student UUID
  * @param className - Name of the class
  * @param date - Date of the summary
  * @param changes - Daily changes object
  */
 export async function createDailySummaryNotification(
-	supabase: DbClient,
 	studentId: string,
 	className: string,
 	date: Date,
@@ -179,17 +178,16 @@ export async function createDailySummaryNotification(
 	try {
 		const message = formatDailySummary(className, date, changes);
 
-		const notification: NotificationInsert = {
+		const notification: SystemNotificationRow = {
 			title: '📊 Bilan quotidien',
 			message,
 			type: 'info',
-			is_system: true,
 			system_event_type: 'daily_summary',
 			target_type: 'users',
 			target_user_ids: [studentId]
 		};
 
-		const { error } = await supabase.from('notifications').insert(notification);
+		const { error } = await insertSystemNotification(notification);
 
 		if (error) {
 			console.error('[createDailySummaryNotification] Failed to create notification:', error);
@@ -207,14 +205,12 @@ export async function createDailySummaryNotification(
  * Create a system notification for weekly reward
  * Inserts notification into the database
  *
- * @param supabase - Supabase client
  * @param studentId - Student UUID
  * @param className - Name of the class
  * @param weekStart - Start of the week
  * @param weekEnd - End of the week
  */
 export async function createWeeklyRewardNotification(
-	supabase: DbClient,
 	studentId: string,
 	className: string,
 	weekStart: Date,
@@ -223,17 +219,16 @@ export async function createWeeklyRewardNotification(
 	try {
 		const message = formatWeeklyReward(className, weekStart, weekEnd);
 
-		const notification: NotificationInsert = {
+		const notification: SystemNotificationRow = {
 			title: `🏆 Récompense hebdomadaire`,
 			message,
 			type: 'success',
-			is_system: true,
 			system_event_type: 'weekly_reward',
 			target_type: 'users',
 			target_user_ids: [studentId]
 		};
 
-		const { error } = await supabase.from('notifications').insert(notification);
+		const { error } = await insertSystemNotification(notification);
 
 		if (error) {
 			console.error('[createWeeklyRewardNotification] Failed to create notification:', error);

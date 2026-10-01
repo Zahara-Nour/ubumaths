@@ -78,7 +78,7 @@ export const actions: Actions = {
 					profile.firstname && profile.lastname
 						? `${profile.firstname} ${profile.lastname}`
 						: 'Votre professeur';
-				await notifyNewAssessment(locals.supabase, {
+				await notifyNewAssessment({
 					assessmentId: evaluation.id,
 					assessmentTitle: evaluation.series.title,
 					teacherName,

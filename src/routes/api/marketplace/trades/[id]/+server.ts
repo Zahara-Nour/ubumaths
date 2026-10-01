@@ -161,7 +161,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Create notification for the other participant
 	const otherParticipantId = trade.initiator_id === userId ? trade.partner_id : trade.initiator_id;
 
-	await createMarketplaceNotification(supabase, otherParticipantId, 'trade_cancelled', {
+	await createMarketplaceNotification(otherParticipantId, 'trade_cancelled', {
 		trade_id: tradeId,
 		cancelled_by: userId
 	});
