@@ -75,24 +75,28 @@ function randomSeed(): number {
 	return Math.floor(Math.random() * (MAX_QUESTION_SEED + 1));
 }
 
+/** Un tirage : le modèle et la graine d'une question, avec sa durée et sa catégorie */
+export interface SeriesDraw {
+	template: QuestionTemplate;
+	seed: number;
+	delaySeconds: number;
+	categoryKey: string;
+}
+
 /**
- * Questions d'une série, dans l'ordre de la composition. Une catégorie sans
- * modèle est sautée ; une génération qui échoue est omise. Aucune des deux ne
- * décale la durée des autres questions.
- *
- * Chaque question est générée avec SA graine (Q20), que l'instance porte
- * (`instance.seed`) et que la sauvegarde archive : le serveur pourra régénérer
- * la copie de l'élève pour la corriger (ADR 0015).
+ * Tirages d'une série, dans l'ordre de la composition, SANS générer : un modèle
+ * au hasard dans la catégorie et une graine par répétition. Une catégorie sans
+ * modèle est sautée. Le serveur d'une évaluation enregistre ces tirages (modèle +
+ * graine) pour régénérer et corriger la copie (ADR 0015).
  */
-export function buildSeriesItems(
+export function drawSeriesQuestions(
 	categories: readonly CartItem[],
 	templates: readonly QuestionTemplate[],
-	options: BuildOptions = {}
-): ClassroomItem[] {
-	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
+	options: Omit<BuildOptions, 'generate'> = {}
+): SeriesDraw[] {
 	const nextSeed = options.nextSeed ?? randomSeed;
 	const pickIndex = options.pickIndex ?? ((count) => Math.floor(Math.random() * count));
-	const items: ClassroomItem[] = [];
+	const draws: SeriesDraw[] = [];
 
 	for (const cartItem of categories) {
 		const inCategory = templatesOfCategory(templates, cartItem.category);
@@ -110,12 +114,39 @@ export function buildSeriesItems(
 
 		for (let repetition = 0; repetition < cartItem.quantity; repetition++) {
 			const template = candidates[pickIndex(candidates.length)];
-			const result = generate(template, nextSeed());
-			if (result.success) {
-				items.push({ instance: result.instance, delaySeconds, categoryKey });
-			} else {
-				console.error(`Série : génération impossible pour le modèle ${template.id}`, result.errors);
-			}
+			draws.push({ template, seed: nextSeed(), delaySeconds, categoryKey });
+		}
+	}
+
+	return draws;
+}
+
+/**
+ * Questions d'une série, dans l'ordre de la composition. Une catégorie sans
+ * modèle est sautée ; une génération qui échoue est omise. Aucune des deux ne
+ * décale la durée des autres questions.
+ *
+ * Chaque question est générée avec SA graine (Q20), que l'instance porte
+ * (`instance.seed`).
+ */
+export function buildSeriesItems(
+	categories: readonly CartItem[],
+	templates: readonly QuestionTemplate[],
+	options: BuildOptions = {}
+): ClassroomItem[] {
+	const generate = options.generate ?? ((template, seed) => generateInstance(template, seed));
+	const items: ClassroomItem[] = [];
+
+	for (const { template, seed, delaySeconds, categoryKey } of drawSeriesQuestions(
+		categories,
+		templates,
+		options
+	)) {
+		const result = generate(template, seed);
+		if (result.success) {
+			items.push({ instance: result.instance, delaySeconds, categoryKey });
+		} else {
+			console.error(`Série : génération impossible pour le modèle ${template.id}`, result.errors);
 		}
 	}
 

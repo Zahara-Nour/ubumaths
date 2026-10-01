@@ -65,6 +65,8 @@ export interface ClassroomItem {
 	delaySeconds: number;
 	/** Clé de catégorie (theme|domain|subdomain|level) : ±5 s s'applique à toute la catégorie */
 	categoryKey: string;
+	/** Évaluation : touches d'unités calculées par le serveur (cf. public-question.ts) */
+	unitKeys?: string[];
 }
 
 // ===========================================================================

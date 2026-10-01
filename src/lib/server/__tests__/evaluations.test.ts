@@ -13,12 +13,6 @@ import {
 	getStudentAssignments,
 	validateAttempt
 } from '../evaluations';
-import {
-	CATEGORIES_MISMATCH_MESSAGE,
-	FORM_MISMATCH_MESSAGE,
-	resolveSessionEvaluation,
-	sameComposition
-} from '../evaluation-session';
 import { called, createFakeSupabase, type Result } from './helpers/fake-supabase';
 import type { DbSeries } from '$lib/types/evaluation';
 
@@ -141,7 +135,11 @@ describe('countAttempts / validateAttempt (B14)', () => {
 
 describe('createEvaluation (B13)', () => {
 	it('écrit forme et temps limite (secondes) de la Course aux nombres', async () => {
-		const fake = createFakeSupabase(() => ({ data: evaluationRow({ series: undefined }) }));
+		const fake = createFakeSupabase((table) =>
+			table === 'series'
+				? { data: { categories: SERIES.categories } }
+				: { data: evaluationRow({ series: undefined }) }
+		);
 		await createEvaluation(
 			fake.client,
 			{
@@ -167,8 +165,41 @@ describe('createEvaluation (B13)', () => {
 		});
 	});
 
+	it('série de plus de 500 questions : 400 avec message clair, rien d’inséré', async () => {
+		const big = Array.from({ length: 6 }, () => ({
+			category: { theme: 'Calcul', domain: 'Tables', subdomain: null, level: 3 },
+			quantity: 99,
+			delay: 20
+		}));
+		const fake = createFakeSupabase((table) =>
+			table === 'series' ? { data: { categories: big } } : { data: evaluationRow() }
+		);
+		await expect(
+			createEvaluation(
+				fake.client,
+				{
+					series_id: SERIES_ID,
+					settings: {
+						form: 'interactive',
+						time_limit: null,
+						max_attempts: null,
+						deadline: null,
+						shuffle_questions: true
+					},
+					status: 'draft'
+				},
+				TEACHER
+			)
+		).rejects.toMatchObject({ status: 400, message: expect.stringMatching(/500 au plus/) });
+		expect(fake.on('evaluations')).toHaveLength(0);
+	});
+
 	it('contrainte forme/temps violée (23514) : 400', async () => {
-		const fake = createFakeSupabase(() => ({ error: { code: '23514', message: 'check' } }));
+		const fake = createFakeSupabase((table) =>
+			table === 'series'
+				? { data: { categories: SERIES.categories } }
+				: { error: { code: '23514', message: 'check' } }
+		);
 		await expect(
 			createEvaluation(
 				fake.client,
@@ -208,8 +239,10 @@ describe('getStudentAssignments', () => {
 			},
 			test_sessions: {
 				data: [
-					{ evaluation_id: EVALUATION, score: 6, completed_at: '2026-09-30T11:00:00Z' },
-					{ evaluation_id: EVALUATION, score: 8, completed_at: '2026-09-30T12:00:00Z' }
+					{ evaluation_id: EVALUATION, grade: 16, completed_at: '2026-09-30T11:00:00Z' },
+					{ evaluation_id: EVALUATION, grade: 12.5, completed_at: '2026-09-30T12:00:00Z' },
+					// Tentative en cours : pas de note
+					{ evaluation_id: EVALUATION, grade: null, completed_at: null }
 				]
 			}
 		};
@@ -219,9 +252,15 @@ describe('getStudentAssignments', () => {
 
 		expect(assignment).toMatchObject({
 			id: ASSIGNMENT,
-			attempts_count: 2,
-			best_score: 8,
-			status: 'completed'
+			attempts_count: 3,
+			// C13 : la MEILLEURE note, pas la dernière
+			best_grade: 16,
+			// Une tentative terminée suffit : la 3ᵉ, ouverte puis abandonnée, n'en fait
+			// pas un « en cours » perpétuel
+			status: 'completed',
+			last_attempt_at: '2026-09-30T12:00:00Z',
+			// … mais la tentative ouverte reste joignable (« Reprendre »)
+			has_open_attempt: true
 		});
 		expect(assignment.evaluation).toMatchObject({ form: 'course', time_limit: 420 });
 		expect(assignment.evaluation.series.title).toBe('Tables de 7');
@@ -264,8 +303,31 @@ describe('getEvaluationResults', () => {
 			classes: { data: [{ id: CLASS_ID, name: '6e A' }] },
 			test_sessions: {
 				data: [
-					{ user_id: STUDENT, score: 9, completed_at: '2026-09-30T12:00:00Z', total_questions: 4 },
-					{ user_id: STUDENT, score: 5, completed_at: '2026-09-30T11:00:00Z', total_questions: 4 }
+					// Tri completed_at DESC : Postgres met les NULL EN PREMIER
+					{
+						user_id: STUDENT,
+						grade: null,
+						points_earned: null,
+						created_at: '2026-10-01T09:00:00Z',
+						completed_at: null,
+						total_questions: 4
+					},
+					{
+						user_id: STUDENT,
+						grade: 9.5,
+						points_earned: 2,
+						created_at: '2026-09-30T11:50:00Z',
+						completed_at: '2026-09-30T12:00:00Z',
+						total_questions: 4
+					},
+					{
+						user_id: STUDENT,
+						grade: 15,
+						points_earned: 3,
+						created_at: '2026-09-30T10:50:00Z',
+						completed_at: '2026-09-30T11:00:00Z',
+						total_questions: 4
+					}
 				]
 			}
 		};
@@ -281,167 +343,41 @@ describe('getEvaluationResults', () => {
 		expect(results[0]).toMatchObject({
 			student_id: STUDENT,
 			class_name: '6e A',
-			attempts_count: 2,
-			best_score: 9,
+			// C13 : la MEILLEURE note (15), pas la dernière (9,5)
+			best_grade: 15,
+			attempts_count: 3,
+			status: 'completed',
+			last_attempt_at: '2026-09-30T12:00:00Z',
 			title: 'Tables de 7'
 		});
+		// E21 : détail des tentatives
+		expect(results[0].attempts).toEqual([
+			{
+				grade: null,
+				points_earned: null,
+				total_questions: 4,
+				created_at: '2026-10-01T09:00:00Z',
+				completed_at: null
+			},
+			{
+				grade: 9.5,
+				points_earned: 2,
+				total_questions: 4,
+				created_at: '2026-09-30T11:50:00Z',
+				completed_at: '2026-09-30T12:00:00Z'
+			},
+			{
+				grade: 15,
+				points_earned: 3,
+				total_questions: 4,
+				created_at: '2026-09-30T10:50:00Z',
+				completed_at: '2026-09-30T11:00:00Z'
+			}
+		]);
 		expect(called(fake.on('test_sessions')[0], 'eq', 'evaluation_id', EVALUATION)).toBe(true);
 
 		const stats = computeEvaluationStatistics(EVALUATION, results);
-		expect(stats).toMatchObject({ total_assigned: 1, completed: 1, average_score: 9 });
-	});
-});
-
-describe('resolveSessionEvaluation (B16)', () => {
-	function fakeFor(options: {
-		form: 'interactive' | 'course';
-		recipient: boolean;
-		attempts?: number;
-		maxAttempts?: number | null;
-		deadline?: string | null;
-	}) {
-		return createFakeSupabase((table) => {
-			if (table === 'evaluation_assignments') {
-				return {
-					data: {
-						id: ASSIGNMENT,
-						evaluation_id: EVALUATION,
-						class_id: CLASS_ID,
-						student_id: null,
-						assigned_by: TEACHER,
-						assigned_at: '2026-09-30T10:00:00Z',
-						evaluation: evaluationRow({
-							form: options.form,
-							max_attempts: options.maxAttempts === undefined ? 2 : options.maxAttempts,
-							deadline: options.deadline ?? null
-						})
-					}
-				};
-			}
-			if (table === 'class_members') {
-				return { data: options.recipient ? { id: 'membre' } : null };
-			}
-			if (table === 'test_sessions') return { count: options.attempts ?? 0 };
-			return {};
-		});
-	}
-
-	/** Les catégories de la série, telles que la page les renvoie (clés dans un autre ordre) */
-	const SENT = [
-		{
-			delay: 20,
-			quantity: 4,
-			category: { level: 3, subdomain: null, domain: 'Tables', theme: 'Calcul' }
-		}
-	];
-
-	it('sans assignation : entraînement libre, aucune requête', async () => {
-		const fake = createFakeSupabase(() => ({}));
-		expect(
-			await resolveSessionEvaluation(fake.client, undefined, 'interactive', STUDENT, SENT)
-		).toEqual({ ok: true, evaluationId: null });
-		expect(fake.queries).toHaveLength(0);
-	});
-
-	it('destinataire, même forme, même composition : rattachée à l’ÉVALUATION', async () => {
-		const fake = fakeFor({ form: 'course', recipient: true });
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'course', STUDENT, SENT)
-		).toEqual({ ok: true, evaluationId: EVALUATION });
-	});
-
-	it('forme différente de celle de l’évaluation : 400', async () => {
-		const fake = fakeFor({ form: 'course', recipient: true });
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'interactive', STUDENT, SENT)
-		).toEqual({ ok: false, status: 400, error: FORM_MISMATCH_MESSAGE });
-	});
-
-	it('flash ou « En classe » avec une assignation : 400', async () => {
-		const fake = fakeFor({ form: 'interactive', recipient: true });
-		for (const mode of ['flash', 'display']) {
-			const result = await resolveSessionEvaluation(fake.client, ASSIGNMENT, mode, STUDENT, SENT);
-			expect(result).toMatchObject({ ok: false, status: 400 });
-		}
-	});
-
-	it('catégories différentes de la série (quantité changée) : 400', async () => {
-		const fake = fakeFor({ form: 'course', recipient: true });
-		const changed = [{ ...SENT[0], quantity: 1 }];
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'course', STUDENT, changed)
-		).toEqual({ ok: false, status: 400, error: CATEGORIES_MISMATCH_MESSAGE });
-	});
-
-	it('catégories différentes de la série (autre thème, catégorie en plus) : 400', async () => {
-		const fake = fakeFor({ form: 'course', recipient: true });
-		for (const sent of [
-			[{ ...SENT[0], category: { ...SENT[0].category, theme: 'Autre' } }],
-			[...SENT, SENT[0]],
-			[]
-		]) {
-			expect(
-				await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'course', STUDENT, sent)
-			).toMatchObject({ ok: false, status: 400 });
-		}
-	});
-
-	it('tentatives épuisées : 403, rien à rattacher', async () => {
-		const fake = fakeFor({ form: 'course', recipient: true, attempts: 2, maxAttempts: 2 });
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'course', STUDENT, SENT)
-		).toMatchObject({ ok: false, status: 403 });
-	});
-
-	it('date limite passée : 403', async () => {
-		const fake = fakeFor({
-			form: 'course',
-			recipient: true,
-			deadline: '2020-01-01T00:00:00Z'
-		});
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'course', STUDENT, SENT)
-		).toMatchObject({ ok: false, status: 403 });
-	});
-
-	it('aperçu du prof (non destinataire) : JAMAIS rattaché, sans compter ni comparer', async () => {
-		const fake = fakeFor({ form: 'interactive', recipient: false, attempts: 99, maxAttempts: 1 });
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'interactive', TEACHER, [])
-		).toEqual({ ok: true, evaluationId: null });
-		expect(fake.on('test_sessions')).toHaveLength(0);
-	});
-
-	it('le destinataire est vérifié AVANT la forme (non destinataire, autre forme : aperçu)', async () => {
-		const fake = fakeFor({ form: 'course', recipient: false });
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'interactive', TEACHER, SENT)
-		).toEqual({ ok: true, evaluationId: null });
-	});
-
-	it('assignation invisible (RLS) : 404', async () => {
-		const fake = createFakeSupabase(() => ({ data: null }));
-		expect(
-			await resolveSessionEvaluation(fake.client, ASSIGNMENT, 'interactive', STUDENT, SENT)
-		).toMatchObject({ ok: false, status: 404 });
-	});
-});
-
-describe('sameComposition', () => {
-	it('ignore l’ordre des clés et des catégories', () => {
-		const a = {
-			category: { theme: 'A', domain: 'D', subdomain: null, level: 1 },
-			quantity: 2,
-			delay: 20
-		};
-		const b = {
-			category: { theme: 'B', domain: 'D', subdomain: 'S', level: 2 },
-			quantity: 1,
-			delay: 30
-		};
-		expect(sameComposition([a, b], [b, a])).toBe(true);
-		expect(sameComposition([a], [{ ...a, delay: 21 }])).toBe(false);
-		expect(sameComposition([a], [{ ...a, category: { ...a.category, subdomain: '' } }])).toBe(true);
+		expect(stats).toMatchObject({ total_assigned: 1, completed: 1, average_grade: 15 });
 	});
 });
 

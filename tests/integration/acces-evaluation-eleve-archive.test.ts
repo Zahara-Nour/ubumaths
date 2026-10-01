@@ -61,6 +61,9 @@ function buildLocals(userId: string, client: SupabaseClient<Database>): App.Loca
 	} as unknown as App.Locals;
 }
 
+/** Modèle publié de la catégorie de la série (décor) */
+const TEMPLATE_ID = '0a11f0e0-0000-4000-8000-00000000e701';
+
 describe('un élève archivé et l’évaluation de son ancienne classe', () => {
 	let assignmentId: string;
 	let activeStudentId: string;
@@ -90,6 +93,24 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 		const archived = await member('archived');
 		archivedStudentId = archived.id;
 		archivedStudent = archived.client;
+
+		// Un modèle PUBLIÉ dans la catégorie de la série : depuis le chantier 5,
+		// `start` tire les questions côté serveur et répond 409 « aucune question
+		// disponible » sans modèle. Ce test porte sur l'ACCÈS, pas sur les questions.
+		await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
+		const { error: templateError } = await service.from('question_templates').insert({
+			id: TEMPLATE_ID,
+			type: 'fill_in_blanks',
+			title: 'Accès archivé ZZ',
+			theme: 'Fractions',
+			domain: 'Nombres',
+			subdomain: null,
+			level: 1,
+			grades: ['3'],
+			status: 'published',
+			variations: [{ statement: 'Combien font $2+2$ ? $?$', blanks: [{ expectedAnswer: '4' }] }]
+		});
+		expect(templateError, 'le décor n’a pas pu être posé').toBeNull();
 
 		// L'évaluation est PUBLIÉE : c'est la condition que la base vérifie en
 		// plus de l'affectation.
@@ -138,7 +159,10 @@ describe('un élève archivé et l’évaluation de son ancienne classe', () => 
 	}, 120_000);
 
 	afterAll(async () => {
+		// Élèves effacés d'abord : leurs tentatives (et les questions tirées, qui
+		// retiennent le modèle) partent avec eux
 		await cleanupAllTestData();
+		await service.from('question_templates').delete().eq('id', TEMPLATE_ID);
 	});
 
 	async function statusFor(studentId: string, client: SupabaseClient<Database>): Promise<number> {

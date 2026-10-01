@@ -17,6 +17,10 @@
 	- onBack: () => void - Callback to return to cart (« Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer » (une tentative de
 	  plus ne passe que par « Mes évaluations »)
+	- collectOnly: évaluation notée → réponses collectées SANS correction (ADR 0015)
+	- showResults: false → pas d'écran de résultats (la page affiche la correction
+	  du serveur) ; « Envoi de ta copie… » en attendant
+	- unitKeys: touches d'unités de chaque question (évaluation)
 -->
 
 <script lang="ts">
@@ -36,12 +40,25 @@
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
 		inEvaluation?: boolean;
+		collectOnly?: boolean;
+		showResults?: boolean;
+		unitKeys?: (string[] | undefined)[];
 	}
 
-	let { session, onComplete, onBack, inEvaluation = false }: Props = $props();
+	let {
+		session,
+		onComplete,
+		onBack,
+		inEvaluation = false,
+		collectOnly = false,
+		showResults = true,
+		unitKeys = []
+	}: Props = $props();
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
+	// Cartes des questions : en évaluation, ce qui est tapé sans « Valider » part aussi
+	let cards = $state<Array<ReturnType<typeof QuestionCard> | undefined>>([]);
 	let isCompleted = $state(false);
 	let testResult = $state<TestResult | null>(null);
 	let showScrollTop = $state(false);
@@ -49,7 +66,6 @@
 	// Derived
 	let timeLimit = $derived(session.timeLimit || 300); // Default 5 minutes
 	let answeredCount = $derived(answers.size);
-	let unansweredCount = $derived(session.instances.length - answeredCount);
 
 	/**
 	 * Handle answer submission for a specific question
@@ -73,6 +89,10 @@
 	 * Handle manual finish button
 	 */
 	function handleFinish() {
+		// Évaluation : une réponse tapée sans « Valider » part quand même (finishTest)
+		const unansweredCount = session.instances.filter(
+			(_, index) => !answers.has(index) && !(collectOnly && cards[index]?.hasPendingAnswer())
+		).length;
 		if (
 			unansweredCount > 0 &&
 			!confirm(
@@ -88,6 +108,15 @@
 	 * Finish test and calculate results
 	 */
 	function finishTest() {
+		// Évaluation : une réponse tapée mais pas validée est envoyée telle quelle
+		// (le serveur la corrige) ; hors évaluation, comportement inchangé
+		if (collectOnly) {
+			session.instances.forEach((_, index) => {
+				if (answers.has(index)) return;
+				const pending = cards[index]?.submitPendingAnswer() ?? null;
+				if (pending) answers.set(index, pending);
+			});
+		}
 		const endTime = Date.now();
 		const timeSpent = Math.round((endTime - session.startTime) / 1000);
 
@@ -229,10 +258,13 @@
 						class={cn('transition-all', answers.has(index) && 'ring-2 ring-primary ring-offset-2')}
 					>
 						<QuestionCard
+							bind:this={cards[index]}
 							interactive={true}
 							{instance}
 							onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
 							size="sm"
+							{collectOnly}
+							unitKeys={unitKeys[index]}
 						/>
 					</div>
 				</div>
@@ -250,6 +282,13 @@
 			</button>
 		{/if}
 	</div>
+{:else if testResult && !showResults}
+	<!-- Évaluation : la correction vient du serveur, la page l'affiche -->
+	<Card.Root>
+		<Card.Content class="p-6 text-center" role="status">
+			<p class="text-muted-foreground">Envoi de ta copie…</p>
+		</Card.Content>
+	</Card.Root>
 {:else if testResult}
 	<!-- Show results -->
 	<TestResults result={testResult} onRestart={handleRestart} onBackToCart={onBack} {inEvaluation} />

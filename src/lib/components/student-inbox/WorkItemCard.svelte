@@ -39,6 +39,7 @@
 	import { formatDeadline } from '$lib/utils/dates';
 	import { cn } from '$lib/utils';
 	import type { WorkItem, WorkSource } from '$lib/types/student-inbox';
+	import { formatGrade } from '$lib/types/evaluation';
 
 	interface Props {
 		item: WorkItem;
@@ -139,6 +140,17 @@
 				</Badge>
 				{#if item.formLabel}
 					<Badge variant="outline" data-testid="work-item-form">{item.formLabel}</Badge>
+				{/if}
+				{#if item.bestGrade !== null && item.bestGrade !== undefined}
+					<Badge variant="secondary" data-testid="work-item-grade">
+						{formatGrade(item.bestGrade)}
+					</Badge>
+				{/if}
+				{#if item.resumable}
+					<!-- La carte entière mène à la reprise (lien de la carte) -->
+					<Badge variant="outline" data-testid="work-item-resume">
+						Reprendre la tentative en cours
+					</Badge>
 				{/if}
 				{#if showViewedDot}
 					<span

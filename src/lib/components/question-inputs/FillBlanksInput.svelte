@@ -87,6 +87,12 @@
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/**
+		 * Touches de l'onglet « Unités » fournies par l'appelant. Évaluation : le
+		 * navigateur n'a pas la réponse attendue pour les déduire (le serveur les
+		 * calcule, cf. `public-question.ts`).
+		 */
+		unitKeys?: string[];
 	}
 
 	let {
@@ -102,7 +108,8 @@
 		validationResults = [],
 		blankFeedback = [],
 		onSubmit,
-		mathModeSpace
+		mathModeSpace,
+		unitKeys: providedUnitKeys
 	}: Props = $props();
 
 	// When showing correct answers, force disabled
@@ -204,6 +211,7 @@
 	// Touches de l'onglet « Unités » : seulement quand l'élève peut répondre à un trou à unité
 	let unitKeys = $derived.by(() => {
 		if (flashMode || effectiveDisabled) return [];
+		if (providedUnitKeys) return providedUnitKeys;
 		const unitBlanks = blanks.filter((blank) => blank.type === 'math' && blank.unit?.expected);
 		return unitKeysFor(
 			unitBlanks.map((blank) => blank.expectedAnswer),

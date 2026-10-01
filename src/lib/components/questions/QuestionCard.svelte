@@ -14,6 +14,9 @@
 
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
+	- collectOnly: évaluation notée (ADR 0015) → la réponse est COLLECTÉE sans être
+	  corrigée (l'instance n'a pas de réponse attendue ; le serveur corrige à l'envoi)
+	- unitKeys: touches d'unités fournies (évaluation), cf. FillBlanksInput
 	- instance: QuestionInstance (pre-generated)
 	- Callbacks: onAnswerSubmit, onAnswerChange
 	- Customization: size
@@ -21,6 +24,7 @@
 	Exports:
 	- submitPendingAnswer(): AnswerData | null - valide la réponse en cours
 	  (chrono écoulé) ; null si rien n'a été tapé ni coché
+	- hasPendingAnswer(): boolean - une réponse tapée ou cochée, pas encore validée
 -->
 
 <script lang="ts">
@@ -47,6 +51,8 @@
 		onAnswerSubmit?: (answer: AnswerData) => void;
 		_onAnswerChange?: (value: string | string[]) => void;
 		size?: 'sm' | 'md' | 'lg';
+		collectOnly?: boolean;
+		unitKeys?: string[];
 	}
 
 	let {
@@ -54,7 +60,9 @@
 		instance,
 		onAnswerSubmit,
 		_onAnswerChange,
-		size = 'md'
+		size = 'md',
+		collectOnly = false,
+		unitKeys
 	}: Props = $props();
 
 	// ============================================================================
@@ -195,9 +203,21 @@
 		const answerLatex =
 			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
 
-		const validationResult = validateAnswer(answer, instance, answerLatex);
-
 		isSubmitted = true;
+
+		// Évaluation : aucune correction ici (le serveur corrige). Une case math
+		// porte déjà le LaTeX tapé : c'est lui que le serveur juge, forme comprise
+		if (collectOnly) {
+			return {
+				value: answer,
+				isCorrect: false,
+				timeSpent: getTimeSpent(),
+				attempts,
+				submittedAt: new Date().toISOString()
+			};
+		}
+
+		const validationResult = validateAnswer(answer, instance, answerLatex);
 
 		return {
 			value: answer,
@@ -227,6 +247,10 @@
 	 * commencé, ou si la réponse a déjà été validée.
 	 * Appelée par le parent via `bind:this`.
 	 */
+	export function hasPendingAnswer(): boolean {
+		return interactive && !isSubmitted && hasStartedAnswer();
+	}
+
 	export function submitPendingAnswer(): AnswerData | null {
 		if (!interactive || isSubmitted || !hasStartedAnswer()) return null;
 		return validateCurrentAnswer();
@@ -304,6 +328,7 @@
 								mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 									? '\\,'
 									: undefined}
+								{unitKeys}
 							/>
 						{:else if getQuestionType(instance) === 'multiple_choice'}
 							<MultipleChoiceInput

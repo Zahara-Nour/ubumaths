@@ -1071,6 +1071,19 @@ export function validateBlanks(
 		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
 	}
 
+	return aggregateOrderedBlanks(
+		blanks.map((blank, i) =>
+			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+		)
+	);
+}
+
+type SingleBlankResult = ReturnType<typeof validateSingleBlank>;
+
+/** Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case */
+function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): ValidationResult {
+	// Seul le nombre de cases sert ici
+	const blanks = results;
 	// Ordered: per-blank pipeline
 	let worstStatus: ValidationStatus | undefined;
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
@@ -1083,8 +1096,8 @@ export function validateBlanks(
 	let emptyCount = 0;
 	let anyIncorrectValue = false;
 
-	for (let i = 0; i < blanks.length; i++) {
-		const result = validateSingleBlank(userAnswers[i], blanks[i], userAnswersLatex?.[i], instance);
+	for (let i = 0; i < results.length; i++) {
+		const result = results[i];
 
 		if (result.status === 'empty') {
 			emptyCount++;
@@ -1218,6 +1231,55 @@ function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
 	return matching;
 }
 
+/**
+ * Forme d'une réponse appariée à sa case (`orderIndependent`) : forme exigée,
+ * puis contraintes cosmétiques. La valeur est déjà jugée juste.
+ */
+function matchedAnswerForm(
+	userAnswer: string,
+	blankLatex: string | undefined,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	let worstStatus: ValidationStatus = 'correct';
+	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
+
+	if (blank.requiredForm && blankLatex) {
+		const verdict = requiredFormVerdict(blankLatex, blank.requiredForm);
+		if (verdict === 'violated') {
+			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
+			allViolations.push({ constraint: 'form', severity: 'error', feedback });
+			worstStatus = 'bad_form';
+		} else if (verdict === 'acceptable') {
+			const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
+			allViolations.push({ constraint: 'form', severity: 'warning', feedback });
+			worstStatus = 'unoptimal_form';
+		}
+	}
+
+	if (blankLatex) {
+		// rulesSuffice : pas de modèle de forme, cf. checkSimpleNumberForm
+		// Forme exigée : déjà jugée par le motif ; ici seules les contraintes cosmétiques,
+		// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
+		const { status, violations } = blank.requiredForm
+			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {})
+			: rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
+				? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
+				: applyConstraints(
+						[userAnswer],
+						[blankLatex],
+						[blank.expectedAnswer],
+						instance.options?.constraints ?? {}
+					);
+		if (status === 'bad_form') worstStatus = 'bad_form';
+		else if (status === 'unoptimal_form' && worstStatus === 'correct')
+			worstStatus = 'unoptimal_form';
+		allViolations.push(...violations);
+	}
+
+	return { status: worstStatus, violations: allViolations };
+}
+
 /** Order-independent matching: answers matched to blanks by maximum bipartite matching */
 function validateBlanksOrderIndependent(
 	userAnswers: string[],
@@ -1287,41 +1349,16 @@ function validateBlanksOrderIndependent(
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 
 	for (let a = 0; a < userAnswers.length; a++) {
-		const b = matching[a];
-		const blankLatex = userAnswersLatex?.[a];
-
-		if (blanks[b].requiredForm && blankLatex) {
-			const verdict = requiredFormVerdict(blankLatex, blanks[b].requiredForm!);
-			if (verdict === 'violated') {
-				const feedback = getRequiredFormFeedback(blanks[b].requiredForm!, false);
-				allViolations.push({ constraint: 'form', severity: 'error', feedback });
-				worstStatus = 'bad_form';
-			} else if (verdict === 'acceptable') {
-				const feedback = REQUIRED_FORM_FEEDBACK.acceptable;
-				allViolations.push({ constraint: 'form', severity: 'warning', feedback });
-				if (worstStatus === 'correct') worstStatus = 'unoptimal_form';
-			}
-		}
-
-		if (blankLatex) {
-			// rulesSuffice : pas de modèle de forme, cf. checkSimpleNumberForm
-			// Forme exigée : déjà jugée par le motif ; ici seules les contraintes cosmétiques,
-			// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
-			const { status, violations } = blanks[b].requiredForm
-				? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {})
-				: rulesDecide(blanks[b]) || acceptsExactDecimal(blanks[b], blankLatex)
-					? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
-					: applyConstraints(
-							[userAnswers[a]],
-							[blankLatex],
-							[blanks[b].expectedAnswer],
-							instance.options?.constraints ?? {}
-						);
-			if (status === 'bad_form') worstStatus = 'bad_form';
-			else if (status === 'unoptimal_form' && worstStatus === 'correct')
-				worstStatus = 'unoptimal_form';
-			allViolations.push(...violations);
-		}
+		const form = matchedAnswerForm(
+			userAnswers[a],
+			userAnswersLatex?.[a],
+			blanks[matching[a]],
+			instance
+		);
+		if (form.status === 'bad_form') worstStatus = 'bad_form';
+		else if (form.status === 'unoptimal_form' && worstStatus === 'correct')
+			worstStatus = 'unoptimal_form';
+		allViolations.push(...form.violations);
 	}
 
 	if (worstStatus === 'correct') {
@@ -1334,6 +1371,93 @@ function validateBlanksOrderIndependent(
 		feedback: feedbackOf(worstStatus, allViolations),
 		constraintViolations: allViolations
 	};
+}
+
+// ============================================================================
+// STATUT PAR CASE (évaluation notée, barème du chantier 5)
+// ============================================================================
+
+/** Verdict d'une case → son statut (une valeur fausse n'a pas de statut propre) */
+function singleBlankStatus(result: {
+	isCorrect: boolean;
+	status?: ValidationStatus;
+}): ValidationStatus {
+	if (result.status === 'empty') return 'empty';
+	if (result.isCorrect) return result.status === 'unoptimal_form' ? 'unoptimal_form' : 'correct';
+	return result.status === 'bad_form' ? 'bad_form' : 'incorrect';
+}
+
+/**
+ * Statut de CHAQUE case d'une question à trous, par la même chaîne que
+ * `validateAnswer` (validateSingleBlank ; appariement maximal si
+ * `orderIndependent`). Le barème d'une évaluation en a besoin : l'agrégat de
+ * `validateAnswer` ne dit pas combien de cases sont vides ni lesquelles sont
+ * fausses. N'altère aucun verdict existant.
+ *
+ * `orderIndependent` : un statut par RÉPONSE (rang de saisie), la case qui
+ * l'accepte étant trouvée par appariement.
+ *
+ * @returns un statut par case ; `[]` si la question n'a pas de case. Nombre de
+ *   réponses différent du nombre de cases : toutes `incorrect`.
+ */
+export function blankStatuses(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): ValidationStatus[] {
+	return validateBlanksDetailed(userAnswers, instance, userAnswersLatex).statuses;
+}
+
+/**
+ * Verdict global (celui de `validateAnswer`) ET statut de chaque case, en UNE
+ * validation par case (le barème d'une évaluation a besoin des deux).
+ * `orderIndependent` : l'appariement est refait pour les statuts (cas rare).
+ */
+export function validateBlanksDetailed(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): { result: ValidationResult; statuses: ValidationStatus[] } {
+	const blanks = instance.blanks ?? [];
+	if (blanks.length === 0) {
+		return { result: { isCorrect: userAnswers.length === 0 }, statuses: [] };
+	}
+	if (userAnswers.length !== blanks.length) {
+		return {
+			result: { isCorrect: false, message: 'Nombre de réponses incorrect' },
+			statuses: blanks.map(() => 'incorrect')
+		};
+	}
+
+	if (!instance.options?.orderIndependent) {
+		const results = blanks.map((blank, i) =>
+			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
+		);
+		return { result: aggregateOrderedBlanks(results), statuses: results.map(singleBlankStatus) };
+	}
+
+	return {
+		result: validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex),
+		statuses: orderIndependentStatuses(userAnswers, instance, userAnswersLatex)
+	};
+}
+
+function orderIndependentStatuses(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex?: string[]
+): ValidationStatus[] {
+	const blanks = instance.blanks ?? [];
+
+	const accepts = userAnswers.map((answer) =>
+		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
+	);
+	const matching = maximumMatching(accepts, blanks.length);
+	return userAnswers.map((answer, a) => {
+		if (!answer.trim()) return 'empty';
+		if (matching[a] === -1) return 'incorrect';
+		return matchedAnswerForm(answer, userAnswersLatex?.[a], blanks[matching[a]], instance).status;
+	});
 }
 
 // ============================================================================

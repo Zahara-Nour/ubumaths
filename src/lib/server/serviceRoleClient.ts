@@ -46,6 +46,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Nature d'un modèle (carte de cours, statut) lue même en brouillon — lecture seule
 	'/api/skill-attempts',
 	'/api/tests/save',
+	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur
+	'/api/evaluations/',
+	'evaluation-attempts.ts',
 	// Game milestone awards (student_achievements RLS only allows service_role inserts)
 	'/api/games/2048/scores',
 	'/api/games/mathemo/scores'

@@ -230,15 +230,28 @@ async function fetchAssessmentItems(
 	const evaluationIds = [...new Set(valid.map((a) => a.evaluation_id))];
 	const { data: sessionsRaw, error: sessionsErr } = await supabase
 		.from('test_sessions')
-		.select('evaluation_id, completed_at')
+		.select('evaluation_id, completed_at, grade')
 		.in('evaluation_id', evaluationIds)
-		.eq('user_id', userId)
-		.not('completed_at', 'is', null);
+		.eq('user_id', userId);
 	logError('evaluation.testSessions', sessionsErr);
 
 	const latestCompletionByEvaluation = new Map<string, string>();
+	// C13 : la MEILLEURE note (Q36), pas la dernière
+	const bestGradeByEvaluation = new Map<string, number>();
+	// Tentative ouverte (commencée, pas envoyée) : elle doit rester joignable
+	const openEvaluations = new Set<string>();
 	for (const session of sessionsRaw ?? []) {
-		if (!session.evaluation_id || !session.completed_at) continue;
+		if (!session.evaluation_id) continue;
+		if (!session.completed_at) {
+			openEvaluations.add(session.evaluation_id);
+			continue;
+		}
+		if (session.grade !== null && session.grade !== undefined) {
+			const grade = Number(session.grade);
+			const best = bestGradeByEvaluation.get(session.evaluation_id);
+			if (best === undefined || grade > best)
+				bestGradeByEvaluation.set(session.evaluation_id, grade);
+		}
 		const current = latestCompletionByEvaluation.get(session.evaluation_id);
 		if (!current || session.completed_at > current) {
 			latestCompletionByEvaluation.set(session.evaluation_id, session.completed_at);
@@ -253,12 +266,15 @@ async function fetchAssessmentItems(
 	return valid.map<WorkItem>((assignment) => {
 		const evaluation = assignment.evaluation!;
 		const doneAt = latestCompletionByEvaluation.get(evaluation.id) ?? null;
+		const resumable = openEvaluations.has(evaluation.id);
 		return {
 			source: 'assessment' satisfies WorkSource,
 			itemId: evaluation.id,
 			assignmentId: assignment.id,
 			title: evaluation.series?.title ?? 'Évaluation',
 			formLabel: formLabel(evaluation.form),
+			bestGrade: bestGradeByEvaluation.get(evaluation.id) ?? null,
+			resumable,
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
 			via: assignment.class_id ? 'class' : 'direct',
@@ -268,9 +284,10 @@ async function fetchAssessmentItems(
 			doneAt,
 			// Point d'entrée : l'identifiant de l'ASSIGNATION. La forme vient de
 			// l'évaluation (B15), d'où l'absence de `mode` dans le lien.
-			href: doneAt
-				? `/dashboard/student/assessments/${assignment.id}/results`
-				: `/automaths/test?assignment=${assignment.id}`,
+			href:
+				doneAt && !resumable
+					? `/dashboard/student/assessments/${assignment.id}/results`
+					: `/automaths/test?assignment=${assignment.id}`,
 			assignedAt: assignment.assigned_at
 		};
 	});

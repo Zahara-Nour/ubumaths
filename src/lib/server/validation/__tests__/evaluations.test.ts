@@ -8,6 +8,7 @@ import {
 	createEvaluationFormSchema,
 	createSeriesSchema,
 	evaluationSettingsSchema,
+	submitAttemptSchema,
 	updateSeriesSchema
 } from '../evaluations';
 
@@ -192,5 +193,104 @@ describe('assignations', () => {
 		expect(classIdsFieldSchema.safeParse(JSON.stringify([CLASS_ID])).success).toBe(true);
 		expect(classIdsFieldSchema.safeParse('[]').success).toBe(false);
 		expect(classIdsFieldSchema.safeParse('pas du json').success).toBe(false);
+	});
+});
+
+describe('submitAttemptSchema (C10)', () => {
+	it('accepte cases, choix et temps par question', () => {
+		const result = submitAttemptSchema.safeParse({
+			answers: [
+				{ position: 0, values: ['7', ''], timeSpent: 12 },
+				{ position: 1, choices: [0, 2] }
+			]
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('retire tout verdict envoyé par le navigateur', () => {
+		const result = submitAttemptSchema.safeParse({
+			answers: [
+				{
+					position: 0,
+					values: ['7'],
+					latex: ['(x+1)(x+2)'],
+					isCorrect: true,
+					points: 1,
+					status: 'correct'
+				}
+			],
+			timeSpent: 10,
+			grade: 20,
+			score: 10
+		});
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data).not.toHaveProperty('grade');
+			// Durée totale : mesurée par le serveur, jamais lue
+			expect(result.data).not.toHaveProperty('timeSpent');
+			expect(result.data.answers[0]).not.toHaveProperty('isCorrect');
+			expect(result.data.answers[0]).not.toHaveProperty('points');
+			// Forme jugée sur la valeur : un LaTeX à part n'est jamais lu (audit)
+			expect(result.data.answers[0]).not.toHaveProperty('latex');
+		}
+	});
+
+	it.each([
+		['position négative', { answers: [{ position: -1 }] }],
+		['position hors bornes', { answers: [{ position: 500 }] }],
+		['deux réponses à la même question', { answers: [{ position: 0 }, { position: 0 }] }],
+		['case trop longue', { answers: [{ position: 0, values: ['x'.repeat(2001)] }] }],
+		['trop de cases', { answers: [{ position: 0, values: Array(51).fill('1') }] }],
+		['indice de QCM hors bornes', { answers: [{ position: 0, choices: [50] }] }],
+		['indice de QCM non entier', { answers: [{ position: 0, choices: [0.5] }] }],
+		['temps négatif', { answers: [{ position: 0, timeSpent: -1 }] }],
+		['temps fabriqué', { answers: [{ position: 0, timeSpent: 86_401 }] }],
+		['trop de réponses', { answers: Array.from({ length: 501 }, (_, i) => ({ position: i })) }]
+	])('refuse : %s', (_label, body) => {
+		expect(submitAttemptSchema.safeParse(body).success).toBe(false);
+	});
+});
+
+describe('bornes d’une série enregistrée (alignées sur la base et l’envoi)', () => {
+	const item = (quantity: number, delay = 20) => ({ ...ITEM, quantity, delay });
+
+	it('durée > 600 s : refusée avec un message clair', () => {
+		const result = createSeriesSchema.safeParse({
+			title: 'T',
+			grade: '6',
+			categories: [item(1, 601)]
+		});
+		expect(result.success).toBe(false);
+		if (!result.success) expect(result.error.issues[0].message).toMatch(/600 s au plus/);
+	});
+
+	it('plus de 500 questions en tout : refusée, total annoncé', () => {
+		const result = createSeriesSchema.safeParse({
+			title: 'T',
+			grade: '6',
+			categories: Array.from({ length: 6 }, () => item(99))
+		});
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues[0].message).toMatch(/594 questions/);
+			expect(result.error.issues[0].message).toMatch(/500 au plus/);
+		}
+	});
+
+	it('modification : même borne', () => {
+		const result = updateSeriesSchema.safeParse({
+			categories: Array.from({ length: 6 }, () => item(99))
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('500 questions pile, 600 s pile : acceptées', () => {
+		expect(
+			createSeriesSchema.safeParse({
+				title: 'T',
+				grade: '6',
+				categories: [...Array.from({ length: 5 }, () => item(99, 600)), item(5)]
+			}).success
+		).toBe(true);
 	});
 });

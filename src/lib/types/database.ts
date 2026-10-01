@@ -2571,6 +2571,54 @@ export type Database = {
           },
         ]
       }
+      evaluation_attempt_questions: {
+        Row: {
+          category_key: string
+          created_at: string
+          delay_seconds: number
+          instance: Json | null
+          position: number
+          seed: number
+          template_id: string
+          test_session_id: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          delay_seconds: number
+          instance?: Json | null
+          position: number
+          seed: number
+          template_id: string
+          test_session_id: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          delay_seconds?: number
+          instance?: Json | null
+          position?: number
+          seed?: number
+          template_id?: string
+          test_session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluation_attempt_questions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "question_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_attempt_questions_test_session_id_fkey"
+            columns: ["test_session_id"]
+            isOneToOne: false
+            referencedRelation: "test_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evaluation_task_perimeter: {
         Row: {
           observable_id: string
@@ -11372,7 +11420,9 @@ export type Database = {
           created_at: string | null
           id: string
           is_correct: boolean | null
+          points: number | null
           question_instance: Json
+          status: string | null
           template_id: string | null
           test_session_id: string
           time_spent: number | null
@@ -11383,7 +11433,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_correct?: boolean | null
+          points?: number | null
           question_instance: Json
+          status?: string | null
           template_id?: string | null
           test_session_id: string
           time_spent?: number | null
@@ -11394,7 +11446,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_correct?: boolean | null
+          points?: number | null
           question_instance?: Json
+          status?: string | null
           template_id?: string | null
           test_session_id?: string
           time_spent?: number | null
@@ -11416,8 +11470,10 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           evaluation_id: string | null
+          grade: number | null
           id: string
           mode: string
+          points_earned: number | null
           score: number | null
           time_limit: number | null
           time_spent: number | null
@@ -11429,8 +11485,10 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           evaluation_id?: string | null
+          grade?: number | null
           id?: string
           mode: string
+          points_earned?: number | null
           score?: number | null
           time_limit?: number | null
           time_spent?: number | null
@@ -11442,8 +11500,10 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           evaluation_id?: string | null
+          grade?: number | null
           id?: string
           mode?: string
+          points_earned?: number | null
           score?: number | null
           time_limit?: number | null
           time_spent?: number | null

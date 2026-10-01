@@ -355,6 +355,32 @@ d'évaluation posées par le service). ⚠️ Tant que la PR B n'est pas livrée
 enregistrer une séance d'évaluation (client de l'élève) : migrer la prod avec la PR B, ou accepter
 l'intervalle (0 assignation en prod). Reste : `security-auditor`, `db:migrate`, `db:types`.
 
+### Chantier 5 — PR B (code), branche `feat/evaluation-notee-serveur`
+
+Livré (commits 83361daae → fin de branche), tests d'abord à chaque lot :
+
+- **A (barème)** `src/lib/questions/grading.ts` : statut PAR CASE via `blankStatuses`
+  (nouvel export de `answer-validator.ts`, même chaîne que `validateAnswer`, aucun verdict
+  existant modifié ; `orderIndependent` : un statut par réponse après appariement) ; QCM par
+  indices d'origine ; note /20 arrondie par le code (`roundToHalfPoint`).
+- **B (démarrage)** `src/lib/server/evaluation-attempts.ts` + route `start` : tirage par
+  `drawSeriesQuestions` (même règle que `buildSeriesItems`, cartes exclues), graines crypto,
+  séance + graines en service_role après vérification sous RLS ; reprise de la tentative en
+  cours (la plus ancienne si double démarrage) ; questions publiques en LISTE BLANCHE
+  (`src/lib/questions/public-question.ts`) : ni `templateId`, ni graine, ni réponse.
+- **C (envoi)** route `POST /api/evaluations/attempts/[id]/submit` (Zod borné) : régénère,
+  corrige, écrit réponses (`is_correct` = tous les points) puis clôt la séance sous condition
+  `completed_at IS NULL` (envoi concurrent → 409, réponses retirées) ; `score` = note/2 ;
+  Course + 30 s → note 0 sans réponse ; SRS par `recordSeriesReviews` (extrait de
+  `/api/tests/save`, révision ordinaire, pas de meilleur-du-jour). `/api/tests/save` refuse
+  toute assignation (400) ; `evaluation-session.ts` supprimé.
+- **Modèle déjà servi** : suppression → 409 (23503, et 23514 dès qu'une trace SRS existe :
+  `skill_attempts.template_id` → NULL refusé par `chk_attempt_regime`, mesuré).
+- **D** `tests/integration/evaluation-notee-serveur.test.ts` (21 tests, vrais modèles #314/#142).
+- **E** page `/automaths/test` (aucun modèle chargé en évaluation, `collectOnly`, envoi +
+  réessai), `EvaluationResults`, `EvaluationResultsTable` (prof), meilleure note dans « Mes
+  évaluations », résultats élève et boîte de réception.
+
 ### Chantier 5 — PR A livrée (#565), 2026-10-01
 
 Migration `20260930160000_evaluation_tentatives.sql` fusionnée et **appliquée en production** :
@@ -368,6 +394,8 @@ assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serv
 - **Q40 (David, 2026-10-01)** — SRS après une évaluation : une réponse en forme non optimale (½ point
   dans la note) compte « Bien » pour la révision, comme en entraînement libre. La note juge la forme, la
   révision juge la connaissance.
+  Précisée par David (choix a) : un ½ point dû à des cases en partie vides ou à un QCM coché en partie
+  vaut « À revoir » pour le SRS ; seule une vraie forme non optimale vaut « Bien ».
 - **Q41 (David, 2026-10-01)** — risque ACCEPTÉ : modèles publiés et générateur étant dans le navigateur
   (entraînement libre, ADR 0001), un élève qui programme peut retrouver par essais la graine qui redonne
   son énoncé, donc la réponse attendue d'une évaluation. Fermer ce risque imposerait la correction serveur
@@ -377,3 +405,8 @@ assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serv
   est enregistrée dans `evaluation_attempt_questions` (service_role seul) ; reprise et correction s'en
   servent, un modèle modifié entre-temps ne change rien à la tentative. Petite migration additive avant
   la PR B.
+
+- QCM : correctif #567 (positions affichées ↔ indices d'origine, bug en prod sans donnée touchée) ;
+  l'évaluation range et renvoie des indices d'origine.
+- ⚠️ Vercel : quota quotidien de déploiements épuisé le 2026-09-30 (pushes sur `main`, docs compris, et
+  aperçus de PR) — production restée sur #562 ; PR B à déployer dès que le quota se libère.

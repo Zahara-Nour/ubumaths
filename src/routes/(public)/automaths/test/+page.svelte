@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { buildSeriesItems } from '$lib/questions/series-items';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
@@ -18,8 +18,15 @@
 	import TestCourse from '$lib/components/test/TestCourse.svelte';
 	import FlashSeries from '$lib/components/test/FlashSeries.svelte';
 	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
+	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 	import { resolveTestLaunch } from '$lib/utils/test-launch';
 	import type { TestResult } from '$lib/types/test';
+	import type {
+		EvaluationStartResponse,
+		EvaluationSubmitResponse
+	} from '$lib/types/evaluation-attempt';
+	import { toSubmission, type Submission } from '$lib/questions/submission';
+	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
 
 	let { data }: { data: PageData } = $props();
 
@@ -35,18 +42,19 @@
 	let pendingCategories = $state<CartItem[] | null>(null);
 	let modeDialogOpen = $state(false);
 
-	/** Réponse de `/api/evaluations/assignments/[id]/start` */
-	interface EvaluationStart {
-		validation: { can_attempt: boolean; reason?: string };
-		preview: boolean;
-		evaluation: {
-			id: string;
-			form: 'interactive' | 'course';
-			time_limit: number | null;
-			title: string;
-			categories: CartItem[];
-		};
-	}
+	// Évaluation notée (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note.
+	// La page ne reçoit que des questions publiques ; la correction arrive à l'envoi.
+	/** Tentative en cours (null : entraînement libre ou aperçu du prof) */
+	let attemptId = $state<string | null>(null);
+	/** Rang de chaque question affichée dans la tentative */
+	let attemptPositions = $state<number[]>([]);
+	/** Touches d'unités de chaque question (calculées par le serveur) */
+	let attemptUnitKeys = $state<(string[] | undefined)[]>([]);
+	let evaluationResult = $state<EvaluationSubmitResponse | null>(null);
+	/** Copie prête à (ré)envoyer si l'envoi a échoué */
+	let pendingSubmission = $state<Submission | null>(null);
+	let submitError = $state<string | null>(null);
+	let isSubmitting = $state(false);
 
 	/**
 	 * Parse URL parameters and initialize test session
@@ -83,8 +91,19 @@
 		}
 	}
 
+	/** Message d'erreur d'une réponse d'API (`error` ou `message`) */
+	function errorMessageOf(body: unknown, fallback: string): string {
+		if (body && typeof body === 'object') {
+			if ('error' in body && typeof body.error === 'string') return body.error;
+			if ('message' in body && typeof body.message === 'string') return body.message;
+		}
+		return fallback;
+	}
+
 	/**
-	 * Ouvre une évaluation assignée (B14, B15)
+	 * Ouvre une évaluation assignée : le serveur crée (ou reprend) la tentative et
+	 * renvoie des questions SANS réponse (B6, B9). Aperçu du prof : questions
+	 * générées ici, comme un entraînement libre, jamais rattachées.
 	 */
 	async function startEvaluation(id: string) {
 		assignmentId = id;
@@ -95,41 +114,61 @@
 		const body: unknown = await response.json().catch(() => null);
 
 		if (!response.ok) {
-			const message =
-				body && typeof body === 'object' && 'error' in body && typeof body.error === 'string'
-					? body.error
-					: body &&
-						  typeof body === 'object' &&
-						  'message' in body &&
-						  typeof body.message === 'string'
-						? body.message
-						: "Impossible d'ouvrir l'évaluation";
-			throw new Error(message);
+			throw new Error(errorMessageOf(body, "Impossible d'ouvrir l'évaluation"));
 		}
 
-		const { validation, evaluation } = body as EvaluationStart;
-		if (!validation.can_attempt) {
-			throw new Error(validation.reason || 'Vous ne pouvez pas commencer cette évaluation');
+		const start = body as EvaluationStartResponse;
+		assessmentTitle = start.evaluation.title;
+		const form = start.evaluation.form;
+
+		if (start.preview) {
+			// Aperçu : les modèles sont chargés seulement maintenant (la page d'un
+			// élève en évaluation n'en reçoit aucun)
+			if (questionTemplatesCache.isEmpty) await questionTemplatesCache.fetchTemplates();
+			seriesItems = generateSeriesItems(start.evaluation.categories, { excludeCourseCards: true });
+			testSession = {
+				mode: form,
+				categories: start.evaluation.categories,
+				instances: seriesItems.map((item) => item.instance),
+				userAnswers: new Map(),
+				startTime: Date.now(),
+				timeLimit: form === 'course' ? (start.evaluation.time_limit ?? undefined) : undefined,
+				currentQuestionIndex: 0,
+				isPaused: false
+			};
+			isLoading = false;
+			return;
 		}
 
-		assessmentTitle = evaluation.title;
-		const categories = evaluation.categories;
-
-		// Évaluation notée : les cartes de cours (auto-évaluées) sont exclues
-		seriesItems = generateSeriesItems(categories, { excludeCourseCards: true });
+		const { attempt } = start;
+		attemptId = attempt.id;
+		attemptPositions = attempt.questions.map((question) => question.position);
+		attemptUnitKeys = attempt.questions.map(unitKeysOf);
+		seriesItems = attempt.questions.map((question) => ({
+			instance: toDisplayInstance(question),
+			delaySeconds: question.delaySeconds,
+			categoryKey: '',
+			unitKeys: unitKeysOf(question)
+		}));
 
 		testSession = {
-			mode: evaluation.form,
-			categories,
+			mode: form,
+			categories: [],
 			instances: seriesItems.map((item) => item.instance),
 			userAnswers: new Map(),
 			startTime: Date.now(),
-			// Course aux nombres : SON temps limite, fin automatique à zéro (TestCourse)
-			timeLimit: evaluation.form === 'course' ? (evaluation.time_limit ?? undefined) : undefined,
+			// Course : le temps RESTANT de la tentative (reprise comprise, B9)
+			timeLimit:
+				form === 'course'
+					? Math.max(1, attempt.remainingSeconds ?? start.evaluation.time_limit ?? 300)
+					: undefined,
 			currentQuestionIndex: 0,
 			isPaused: false
 		};
 
+		if (attempt.resumed) {
+			toaster.info('Tu reprends ta tentative en cours : mêmes questions, réponses à retaper.');
+		}
 		isLoading = false;
 	}
 
@@ -252,13 +291,78 @@
 	}
 
 	/**
+	 * Copie notée affichée : l'URL devient celle des résultats de l'élève. Sinon
+	 * un rechargement relancerait `start`, donc une nouvelle tentative.
+	 */
+	function showGradedCopy(copy: EvaluationSubmitResponse) {
+		evaluationResult = copy;
+		pendingSubmission = null;
+		if (assignmentId) {
+			replaceState(`/dashboard/student/assessments/${assignmentId}/results`, {});
+		}
+	}
+
+	/** Envoie la copie : le serveur corrige, note et renvoie la correction (C10) */
+	async function submitEvaluation() {
+		if (!attemptId || !pendingSubmission || isSubmitting) return;
+		isSubmitting = true;
+		submitError = null;
+		try {
+			const response = await fetch(
+				`/api/evaluations/attempts/${encodeURIComponent(attemptId)}/submit`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(pendingSubmission)
+				}
+			);
+			const body: unknown = await response.json().catch(() => null);
+			// Déjà terminée (un envoi précédent a abouti, sa réponse s'est perdue) :
+			// la copie déjà notée, reconstruite par le serveur ; à défaut, ses résultats
+			if (response.status === 409) {
+				const copy =
+					body && typeof body === 'object' && 'result' in body
+						? (body.result as EvaluationSubmitResponse | null)
+						: null;
+				if (copy) {
+					showGradedCopy(copy);
+				} else if (assignmentId) {
+					await goto(`/dashboard/student/assessments/${assignmentId}/results`);
+				}
+				return;
+			}
+			if (!response.ok) {
+				submitError = errorMessageOf(body, "Ta copie n'a pas pu être envoyée.");
+				return;
+			}
+			showGradedCopy(body as EvaluationSubmitResponse);
+		} catch {
+			submitError = "Ta copie n'a pas pu être envoyée. Vérifie ta connexion et réessaie.";
+		} finally {
+			isSubmitting = false;
+		}
+	}
+
+	function handleRetrySubmit() {
+		submitEvaluation().then(() => {});
+	}
+
+	/**
 	 * Handle test completion - save results to database
 	 */
 	async function handleTestComplete(result: TestResult) {
+		// Évaluation notée : rien n'est corrigé ici, la copie part au serveur
+		if (attemptId) {
+			pendingSubmission = toSubmission(attemptPositions, result.answers);
+			await submitEvaluation();
+			return;
+		}
 		// Visiteur non connecté : rien à enregistrer (l'API répondrait 401) ; les formes
 		// Flash-cards et Entraînement l'annoncent à l'écran
 		if (!data.user) return;
-		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement)
+		// Save to database (interactive, course, et flash : même sauvegarde que l'Entraînement).
+		// Aperçu d'une évaluation par le prof : enregistré comme un entraînement libre
+		// (jamais d'assignation : une évaluation ne s'enregistre que par son envoi)
 		if (result.mode === 'interactive' || result.mode === 'course' || result.mode === 'flash') {
 			try {
 				const response = await fetch('/api/tests/save', {
@@ -268,15 +372,12 @@
 					},
 					body: JSON.stringify({
 						result,
-						categories: testSession?.categories || [],
-						// Une séance flash n'est jamais rattachée à une évaluation (refusé par l'API)
-						assignmentId: result.mode === 'flash' ? undefined : assignmentId || undefined
+						categories: testSession?.categories || []
 					})
 				});
 
 				if (response.ok) {
 					const data = await response.json();
-					console.log('Test results saved with session ID:', data.sessionId);
 					// Update result with session ID
 					result.sessionId = data.sessionId;
 				} else {
@@ -295,19 +396,18 @@
 
 	// Initialize on mount
 	onMount(async () => {
-		// Initialize cache with server-loaded templates (SSR support)
-		// Priority: server data > existing cache > API fetch (only if necessary)
-
-		// First: use server-loaded templates (from SSR)
-		if (data.templates && data.templates.length > 0) {
-			questionTemplatesCache.initializeFromServer(data.templates);
-		}
-		// Second: only fetch from API if cache is completely empty AND server didn't load data
-		// This prevents fetch loops when offline
-		else if (questionTemplatesCache.isEmpty && !questionTemplatesCache.error) {
-			// Wait for fetch to complete before initializing test
-			// This ensures templates are available (or error is set)
-			await questionTemplatesCache.fetchTemplates();
+		// Évaluation assignée : aucun modèle n'est chargé (le serveur tire les
+		// questions ; l'aperçu du prof les chargera lui-même)
+		if (!new URL(page.url).searchParams.has('assignment')) {
+			// Priority: server data > existing cache > API fetch (only if necessary)
+			if (data.templates && data.templates.length > 0) {
+				questionTemplatesCache.initializeFromServer(data.templates);
+			}
+			// Only fetch from API if cache is completely empty AND server didn't load data
+			// This prevents fetch loops when offline
+			else if (questionTemplatesCache.isEmpty && !questionTemplatesCache.error) {
+				await questionTemplatesCache.fetchTemplates();
+			}
 		}
 
 		// Initialize test after cache is ready
@@ -366,6 +466,25 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
+	{:else if evaluationResult}
+		<!-- Évaluation envoyée : correction, points et note du SERVEUR -->
+		<EvaluationResults result={evaluationResult} title={assessmentTitle ?? undefined} />
+	{:else if submitError}
+		<Card.Root class="border-destructive">
+			<Card.Content class="flex min-h-64 items-center justify-center p-12">
+				<div class="text-center" role="alert">
+					<AlertCircle class="mx-auto mb-4 h-12 w-12 text-destructive" />
+					<p class="font-semibold">{submitError}</p>
+					<p class="mt-2 text-sm text-muted-foreground">
+						Tes réponses sont gardées sur cette page tant que tu ne la quittes pas.
+					</p>
+					<div class="mt-6 flex justify-center gap-3">
+						<Button onclick={handleRetrySubmit} disabled={isSubmitting}>Réessayer l'envoi</Button>
+						<Button variant="outline" onclick={handleBack}>Mes évaluations</Button>
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
 	{:else if testSession}
 		<!-- Test content -->
 		{#if testSession.mode === 'display'}
@@ -386,6 +505,8 @@
 					onBack={handleBack}
 					assessmentTitle={assignmentId ? assessmentTitle || undefined : undefined}
 					inEvaluation={!!assignmentId}
+					collectOnly={!!attemptId}
+					showResults={!attemptId}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
@@ -395,6 +516,9 @@
 				onComplete={handleTestComplete}
 				onBack={handleBack}
 				inEvaluation={!!assignmentId}
+				collectOnly={!!attemptId}
+				showResults={!attemptId}
+				unitKeys={attemptUnitKeys}
 			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->

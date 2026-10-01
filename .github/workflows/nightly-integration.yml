@@ -62,6 +62,7 @@ on:
       - 'src/lib/exercises/types.ts'
       - 'src/lib/exercises/validation.ts'
       - 'src/lib/types/evaluation.ts'
+      - 'src/lib/types/question-template.ts'
       - 'src/lib/validation/series.ts'
       - 'src/lib/types/chapter-templates.ts'
       - 'src/lib/types/database-helpers.ts'

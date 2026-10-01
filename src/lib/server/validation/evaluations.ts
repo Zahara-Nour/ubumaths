@@ -7,7 +7,13 @@
 
 import { z } from 'zod';
 import { gradeSchema, uuidSchema } from './common';
-import { seriesCategoriesSchema } from '$lib/validation/series';
+import { savedSeriesCategoriesSchema } from '$lib/validation/series';
+import {
+	MAX_ANSWER_LENGTH,
+	MAX_ANSWER_PARTS,
+	MAX_ANSWER_SECONDS as MAX_SECONDS,
+	MAX_ATTEMPT_ANSWERS
+} from '$lib/questions/submission';
 import {
 	COURSE_TIME_LIMIT_MAX_MINUTES,
 	COURSE_TIME_LIMIT_MIN_MINUTES
@@ -37,7 +43,7 @@ export const createSeriesSchema = z.object({
 	title: seriesTitleSchema,
 	grade: gradeSchema,
 	description: seriesDescriptionSchema,
-	categories: seriesCategoriesSchema
+	categories: savedSeriesCategoriesSchema
 });
 
 export type CreateSeriesInput = z.infer<typeof createSeriesSchema>;
@@ -48,7 +54,7 @@ export const updateSeriesSchema = z
 		title: seriesTitleSchema.optional(),
 		grade: gradeSchema.optional(),
 		description: seriesDescriptionSchema,
-		categories: seriesCategoriesSchema.optional()
+		categories: savedSeriesCategoriesSchema.optional()
 	})
 	.refine(
 		(data) => data.title !== undefined || data.grade !== undefined || data.categories !== undefined,
@@ -188,3 +194,47 @@ export const classIdsFieldSchema = z
 		}
 	})
 	.pipe(z.array(uuidSchema).min(1, 'Aucune classe sélectionnée').max(50, 'Trop de classes'));
+
+// ============================================================================
+// ENVOI D'UNE TENTATIVE (chantier 5, C10)
+// ============================================================================
+
+// Bornes partagées avec la page, qui tronque avant d'envoyer ($lib/questions/submission)
+const answerPartSchema = z.string().max(MAX_ANSWER_LENGTH, 'Réponse trop longue');
+
+/**
+ * Réponse à UNE question : cases (valeurs, le LaTeX tapé) ou positions cochées d'un
+ * QCM. Aucun verdict n'est lu : tout champ `isCorrect`, `points`, `score`… est
+ * retiré par Zod (objet non strict) et le serveur corrige lui-même.
+ */
+const submittedAnswerSchema = z.object({
+	position: z
+		.number()
+		.int()
+		.min(0)
+		.max(MAX_ATTEMPT_ANSWERS - 1),
+	values: z.array(answerPartSchema).max(MAX_ANSWER_PARTS).optional(),
+	choices: z
+		.array(
+			z
+				.number()
+				.int()
+				.min(0)
+				.max(MAX_ANSWER_PARTS - 1)
+		)
+		.max(MAX_ANSWER_PARTS)
+		.optional(),
+	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
+});
+
+export const submitAttemptSchema = z.object({
+	answers: z
+		.array(submittedAnswerSchema)
+		.max(MAX_ATTEMPT_ANSWERS, 'Trop de réponses')
+		.refine(
+			(answers) => new Set(answers.map((a) => a.position)).size === answers.length,
+			'Une question ne peut recevoir qu’une réponse'
+		)
+	// Pas de durée totale : le serveur la mesure (démarrage → envoi)
+});
+export type SubmitAttemptInput = z.infer<typeof submitAttemptSchema>;

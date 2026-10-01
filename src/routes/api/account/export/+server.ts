@@ -167,7 +167,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('test_sessions')
 				.select(
-					'id, mode, categories, score, total_questions, time_spent, completed_at, evaluation_id, created_at, test_answers(template_id, question_instance, user_answer, is_correct, time_spent, attempts, created_at)'
+					'id, mode, categories, score, grade, points_earned, total_questions, time_spent, completed_at, evaluation_id, created_at, test_answers(template_id, question_instance, user_answer, is_correct, points, status, time_spent, attempts, created_at)'
 				)
 				.eq('user_id', userId)
 				.order('created_at', { ascending: false })

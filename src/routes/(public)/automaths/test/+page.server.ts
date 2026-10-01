@@ -3,9 +3,17 @@ import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 
 /**
- * Load all published question templates for test generation
+ * Load all published question templates for test generation.
+ *
+ * Évaluation assignée (`?assignment=`) : AUCUN modèle (chantier 5, ADR 0015, E19).
+ * Le serveur tire et corrige ; la page ne reçoit que les questions publiques de
+ * la tentative. L'aperçu du prof charge les modèles lui-même, à la demande.
  */
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
+	if (url.searchParams.has('assignment')) {
+		return { templates: [] as QuestionTemplate[] };
+	}
+
 	const supabase = locals.supabase;
 
 	// Fetch all published question templates directly from database

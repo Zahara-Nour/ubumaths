@@ -311,6 +311,22 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.delete()
 			.eq('id', id);
 
+		// Modèle déjà servi à des élèves : la base refuse, on dit quoi faire.
+		// - 23503 : tiré dans une tentative d'évaluation (NO ACTION) ; sans lui, la
+		//   tentative ne se régénère plus (ni correction, ni vérification de la note).
+		// - 23514 : réponses enregistrées (`skill_attempts.template_id` passerait à
+		//   NULL, ce que refuse `chk_attempt_regime`). Mesuré le 2026-10-01 : c'est
+		//   ce code qui sort dès qu'une tentative a été envoyée.
+		if (deleteError?.code === '23503' || deleteError?.code === '23514') {
+			return json(
+				{
+					success: false,
+					error:
+						'Ce modèle a déjà servi à des élèves (évaluation ou révisions) : il ne peut plus être supprimé. Passe-le en brouillon.'
+				},
+				{ status: 409 }
+			);
+		}
 		if (deleteError) {
 			console.error('Error deleting template:', deleteError);
 			throw error(500, 'Failed to delete template');

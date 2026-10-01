@@ -12,6 +12,18 @@ import { z } from 'zod';
 /** Nombre de catégories d'une série */
 export const MAX_SERIES_CATEGORIES = 50;
 
+/**
+ * Durée d'une question : la base refuse au-delà (CHECK de
+ * `evaluation_attempt_questions.delay_seconds`, 1..600).
+ */
+export const MAX_QUESTION_DELAY_SECONDS = 600;
+
+/**
+ * Questions d'une série ENREGISTRÉE (donc d'une évaluation) : l'envoi d'une
+ * tentative n'en accepte pas davantage (`MAX_ATTEMPT_ANSWERS`).
+ */
+export const MAX_SERIES_QUESTIONS = 500;
+
 /** Catégorie de questions (même forme que `QuestionCategory` du panier) */
 export const questionCategorySchema = z.object({
 	theme: z.string().min(1, 'Thème requis').max(100, 'Thème trop long'),
@@ -33,7 +45,7 @@ export const cartItemSchema = z.object({
 		.number()
 		.int('Durée entière attendue')
 		.nonnegative('Durée invalide')
-		.max(3600, 'Durée trop longue (3600 s au plus)')
+		.max(MAX_QUESTION_DELAY_SECONDS, `Durée trop longue (${MAX_QUESTION_DELAY_SECONDS} s au plus)`)
 });
 
 /** Les catégories d'une série : 1 à 50 */
@@ -43,6 +55,25 @@ export const seriesCategoriesSchema = z
 	.max(MAX_SERIES_CATEGORIES, `Trop de catégories (${MAX_SERIES_CATEGORIES} au plus)`);
 
 export type SeriesCategories = z.infer<typeof seriesCategoriesSchema>;
+
+/** Nombre total de questions d'une composition */
+export function totalQuestions(categories: ReadonlyArray<{ quantity: number }>): number {
+	return categories.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+/**
+ * Catégories d'une série qu'on ENREGISTRE (série, évaluation) : en plus, au
+ * plus 500 questions en tout. Un lien d'entraînement libre n'y est pas soumis.
+ */
+export const savedSeriesCategoriesSchema = seriesCategoriesSchema.superRefine((categories, ctx) => {
+	const total = totalQuestions(categories);
+	if (total > MAX_SERIES_QUESTIONS) {
+		ctx.addIssue({
+			code: 'custom',
+			message: `Série trop longue : ${total} questions (${MAX_SERIES_QUESTIONS} au plus)`
+		});
+	}
+});
 
 export type CategoriesParamResult =
 	| { success: true; data: SeriesCategories }

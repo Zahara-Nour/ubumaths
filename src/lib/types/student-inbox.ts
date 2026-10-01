@@ -38,6 +38,16 @@ export interface WorkItem {
 	 */
 	formLabel?: string;
 	/**
+	 * Évaluation : meilleure note sur 20 parmi les tentatives envoyées (Q36) ;
+	 * absente (ou null) sans note et pour les autres sources.
+	 */
+	bestGrade?: number | null;
+	/**
+	 * Évaluation : une tentative est ouverte (commencée, pas envoyée). Le lien
+	 * mène alors à sa reprise, même si une tentative précédente est terminée.
+	 */
+	resumable?: boolean;
+	/**
 	 * The class this item reaches the student through, when there is one — used
 	 * for display. `null` for a purely individual assignment.
 	 *

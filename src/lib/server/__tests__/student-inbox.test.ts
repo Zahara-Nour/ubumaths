@@ -516,7 +516,10 @@ describe('getStudentWorkInbox — S1 (assessment done)', () => {
 				}
 			}
 		]);
-		mock.enqueue('test_sessions', [{ evaluation_id: 'a-1', completed_at: ISO.yesterday }]);
+		mock.enqueue('test_sessions', [
+			{ evaluation_id: 'a-1', completed_at: ISO.twoDaysAgo, grade: 16 },
+			{ evaluation_id: 'a-1', completed_at: ISO.yesterday, grade: 11.5 }
+		]);
 		mock.enqueue('exercise_assignments', []);
 		mock.enqueue('worksheet_assignments', []);
 		mock.enqueue('worksheet_assignment_students', []);
@@ -526,6 +529,43 @@ describe('getStudentWorkInbox — S1 (assessment done)', () => {
 		expect(inbox.doneRecently).toHaveLength(1);
 		expect(inbox.doneRecently[0].status).toBe('done');
 		expect(inbox.doneRecently[0].doneAt).toBe(ISO.yesterday);
+		// C13 : la MEILLEURE note, pas la dernière
+		expect(inbox.doneRecently[0].bestGrade).toBe(16);
+	});
+
+	it('terminée PLUS une tentative ouverte : reste faite (meilleure note), lien de reprise', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []);
+		mock.enqueue('evaluation_assignments', [
+			{
+				id: 'aa-1',
+				evaluation_id: 'a-1',
+				class_id: null,
+				student_id: STUDENT,
+				assigned_at: ISO.twoDaysAgo,
+				assigned_by: 'teacher-1',
+				evaluation: {
+					id: 'a-1',
+					form: 'interactive',
+					status: 'published',
+					deadline: null,
+					series: { title: 'Eval' }
+				}
+			}
+		]);
+		mock.enqueue('test_sessions', [
+			{ evaluation_id: 'a-1', completed_at: ISO.yesterday, grade: 16 },
+			{ evaluation_id: 'a-1', completed_at: null, grade: null }
+		]);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+		const item = inbox.doneRecently[0];
+		expect(item).toMatchObject({ status: 'done', bestGrade: 16, resumable: true });
+		expect(item.href).toBe('/automaths/test?assignment=aa-1');
 	});
 });
 

@@ -13,6 +13,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '$lib/types/database';
 import type {
 	AssignmentWithDetails,
+	AttemptSummary,
 	AttemptValidation,
 	DbEvaluation,
 	DbEvaluationAssignment,
@@ -24,6 +25,7 @@ import type {
 import { getAttemptsRemaining, getStudentStatus, isEvaluationForm } from '$lib/types/evaluation';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { toDbSeries } from '$lib/server/series';
+import { savedSeriesCategoriesSchema } from '$lib/validation/series';
 import type { EvaluationSettings } from '$lib/server/validation/evaluations';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -104,6 +106,23 @@ export async function createEvaluation(
 	input: { series_id: string; settings: EvaluationSettings; status: 'draft' | 'published' },
 	userId: string
 ): Promise<DbEvaluation> {
+	// Bornes de la série (durée, 500 questions) : une série enregistrée avant
+	// qu'elles existent ne devient pas une évaluation impossible à passer
+	const { data: series, error: seriesError } = await supabase
+		.from('series')
+		.select('categories')
+		.eq('id', input.series_id)
+		.maybeSingle();
+	if (seriesError) {
+		console.error('[createEvaluation] Série illisible :', seriesError);
+		throw new EvaluationError(500, 'Impossible de vérifier la série');
+	}
+	if (!series) throw new EvaluationError(404, 'Série introuvable');
+	const categories = savedSeriesCategoriesSchema.safeParse(series.categories);
+	if (!categories.success) {
+		throw new EvaluationError(400, categories.error.issues[0].message);
+	}
+
 	const { data, error } = await supabase
 		.from('evaluations')
 		.insert({
@@ -503,7 +522,7 @@ export async function getStudentAssignments(
 	const evaluationIds = [...new Set(assignments.map((a) => a.evaluation.id))];
 	const { data: sessions, error: sessionsError } = await supabase
 		.from('test_sessions')
-		.select('evaluation_id, score, completed_at')
+		.select('evaluation_id, grade, completed_at')
 		.in('evaluation_id', evaluationIds)
 		.eq('user_id', studentId)
 		.order('completed_at', { ascending: true });
@@ -517,24 +536,24 @@ export async function getStudentAssignments(
 
 	const attemptsByEvaluation = new Map<
 		string,
-		Array<{ score: number | null; completed_at: string | null }>
+		Array<{ grade: number | null; completed_at: string | null }>
 	>();
 	for (const session of sessions ?? []) {
 		if (!session.evaluation_id) continue;
 		const list = attemptsByEvaluation.get(session.evaluation_id) ?? [];
-		list.push({ score: session.score, completed_at: session.completed_at });
+		list.push({ grade: session.grade, completed_at: session.completed_at });
 		attemptsByEvaluation.set(session.evaluation_id, list);
 	}
 
 	return assignments.map(({ assignment, evaluation }) => {
 		const attempts = attemptsByEvaluation.get(evaluation.id) ?? [];
-		const bestScore = attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
-		const lastAttemptAt = attempts[attempts.length - 1]?.completed_at || null;
+		const lastAttemptAt = latestCompletion(attempts);
 		return {
 			...assignment,
 			evaluation,
 			attempts_count: attempts.length,
-			best_score: bestScore,
+			best_grade: bestGrade(attempts),
+			has_open_attempt: attempts.some((a) => a.completed_at === null),
 			last_attempt_at: lastAttemptAt,
 			status: getStudentStatus(attempts.length, lastAttemptAt, evaluation.deadline)
 		};
@@ -545,11 +564,32 @@ export async function getStudentAssignments(
 // RÉSULTATS (professeur)
 // ===========================================================================
 
-type Attempt = {
-	score: number | null;
-	completed_at: string | null;
-	total_questions: number | null;
-};
+/**
+ * Dernière tentative TERMINÉE (null s'il n'y en a aucune). Une tentative
+ * ouverte puis abandonnée après une tentative terminée ne rend pas l'élève
+ * « en cours » à jamais : il a composé, sa meilleure note compte. (Avant : on
+ * lisait la dernière ligne, et `completed_at` DESC range les NULL en tête.)
+ */
+export function latestCompletion(
+	attempts: ReadonlyArray<{ completed_at: string | null }>
+): string | null {
+	let latest: string | null = null;
+	for (const attempt of attempts) {
+		if (attempt.completed_at && (!latest || attempt.completed_at > latest)) {
+			latest = attempt.completed_at;
+		}
+	}
+	return latest;
+}
+
+/**
+ * Meilleure note sur 20 (Q36) parmi les tentatives NOTÉES ; null s'il n'y en a
+ * aucune. Une note de 0 est une note (pas « aucune »).
+ */
+export function bestGrade(attempts: ReadonlyArray<{ grade: number | null }>): number | null {
+	const grades = attempts.flatMap((a) => (a.grade === null ? [] : [Number(a.grade)]));
+	return grades.length > 0 ? Math.max(...grades) : null;
+}
 
 /**
  * Résultats d'une évaluation : un élève par ligne (une assignation de classe et
@@ -627,7 +667,7 @@ export async function getEvaluationResults(
 			: Promise.resolve({ data: [] as { id: string; name: string }[], error: null }),
 		supabase
 			.from('test_sessions')
-			.select('user_id, score, completed_at, total_questions')
+			.select('user_id, grade, points_earned, created_at, completed_at, total_questions')
 			.eq('evaluation_id', evaluation.id)
 			.in('user_id', studentIds)
 			.order('completed_at', { ascending: false })
@@ -648,11 +688,17 @@ export async function getEvaluationResults(
 	}
 
 	const classNames = new Map((classesRes.data ?? []).map((c) => [c.id, c.name]));
-	const attemptsByStudent = new Map<string, Attempt[]>();
+	const attemptsByStudent = new Map<string, AttemptSummary[]>();
 	for (const session of sessionsRes.data ?? []) {
 		if (!session.user_id) continue;
 		const list = attemptsByStudent.get(session.user_id) ?? [];
-		list.push(session);
+		list.push({
+			grade: session.grade === null ? null : Number(session.grade),
+			points_earned: session.points_earned === null ? null : Number(session.points_earned),
+			total_questions: session.total_questions,
+			created_at: session.created_at,
+			completed_at: session.completed_at
+		});
 		attemptsByStudent.set(session.user_id, list);
 	}
 
@@ -662,7 +708,7 @@ export async function getEvaluationResults(
 		if (!target) continue;
 		const attempts = attemptsByStudent.get(student.id) ?? [];
 		const lastAttempt = attempts[0];
-		const lastAttemptAt = lastAttempt?.completed_at || null;
+		const lastAttemptAt = latestCompletion(attempts);
 		results.push({
 			assignment_id: target.assignmentId,
 			evaluation_id: evaluation.id,
@@ -673,8 +719,9 @@ export async function getEvaluationResults(
 			student_id: student.id,
 			student_firstname: student.firstname,
 			student_lastname: student.lastname,
-			best_score: attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null,
+			best_grade: bestGrade(attempts),
 			attempts_count: attempts.length,
+			attempts,
 			last_attempt_at: lastAttemptAt,
 			status: getStudentStatus(attempts.length, lastAttemptAt, evaluation.deadline),
 			total_questions: lastAttempt?.total_questions || null
@@ -689,7 +736,7 @@ export function computeEvaluationStatistics(
 ): EvaluationStatistics {
 	const total = results.length;
 	const completed = results.filter((r) => r.status === 'completed').length;
-	const scores = results.filter((r) => r.best_score !== null).map((r) => r.best_score || 0);
+	const grades = results.flatMap((r) => (r.best_grade === null ? [] : [r.best_grade]));
 
 	return {
 		evaluation_id: evaluationId,
@@ -698,9 +745,9 @@ export function computeEvaluationStatistics(
 		in_progress: results.filter((r) => r.status === 'in_progress').length,
 		completed,
 		expired: results.filter((r) => r.status === 'expired').length,
-		average_score: scores.length > 0 ? scores.reduce((s, v) => s + v, 0) / scores.length : null,
-		min_score: scores.length > 0 ? Math.min(...scores) : null,
-		max_score: scores.length > 0 ? Math.max(...scores) : null,
+		average_grade: grades.length > 0 ? grades.reduce((s, v) => s + v, 0) / grades.length : null,
+		min_grade: grades.length > 0 ? Math.min(...grades) : null,
+		max_grade: grades.length > 0 ? Math.max(...grades) : null,
 		completion_rate: total > 0 ? (completed / total) * 100 : 0
 	};
 }

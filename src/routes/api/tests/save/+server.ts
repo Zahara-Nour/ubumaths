@@ -2,10 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateSaveTest } from '$lib/server/validation/tests';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
-import { FSRS } from '$lib/srs/fsrs';
-import { Grade } from '$lib/srs/types';
-import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
-import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
 import {
 	CourseCardLookupError,
 	fetchCourseCardTemplateIds
@@ -13,8 +10,6 @@ import {
 import { computeTestScore } from '$lib/utils/test-score';
 import { toJson } from '$lib/types/database-helpers';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { resolveSessionEvaluation } from '$lib/server/evaluation-session';
-import { EvaluationError } from '$lib/server/evaluations';
 
 /**
  * API route to save test results to database
@@ -47,27 +42,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// trouvé ») — tentatives `student_self`, pas d'XP.
 		const isFlash = result.mode === 'flash';
 
-		// Évaluation (B16) : la séance se rattache à l'ÉVALUATION de l'assignation,
-		// jamais à l'assignation. Forme ou catégories différentes → 400 ; date
-		// limite passée ou tentatives épuisées → 403 ; aperçu du prof → aucun
-		// rattachement (une séance rattachée verrouille la série). Résolu AVANT
-		// toute écriture.
-		let evaluationId: string | null;
-		try {
-			const resolution = await resolveSessionEvaluation(
-				supabase,
-				assignmentId,
-				result.mode,
-				user.id,
-				categories
+		// Évaluation (chantier 5, ADR 0015) : le SERVEUR tire, corrige et note, par
+		// `/api/evaluations/assignments/[id]/start` puis `/api/evaluations/attempts/[id]/submit`.
+		// Une sauvegarde qui cible une évaluation est refusée AVANT toute écriture ;
+		// la base la refuserait de toute façon (Q38). L'aperçu du prof s'enregistre
+		// comme un entraînement libre, sans assignation.
+		if (assignmentId) {
+			return json(
+				{ error: "Une évaluation s'enregistre par l'envoi de l'évaluation, pas ici" },
+				{ status: 400 }
 			);
-			if (!resolution.ok) {
-				return json({ error: resolution.error }, { status: resolution.status });
-			}
-			evaluationId = resolution.evaluationId;
-		} catch (resolutionError) {
-			if (!(resolutionError instanceof EvaluationError)) throw resolutionError;
-			return json({ error: resolutionError.message }, { status: resolutionError.status });
 		}
 
 		const reponsesAvecTemplate = result.answers.filter((answer) => answer.instance.templateId);
@@ -117,7 +101,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				time_spent: result.timeSpent,
 				time_limit: null, // Will be set from categories if needed
 				completed_at: result.completedAt,
-				evaluation_id: evaluationId
+				evaluation_id: null
 			})
 			.select('id')
 			.single();
@@ -155,120 +139,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// ----- Alimentation du référentiel (régime contenus) --------------------
-		// Sans ça, répondre à une évaluation ou à un entraînement ne validait AUCUN
-		// point de programme : seule la révision SRS alimentait le référentiel.
-		//
-		// Une ligne par réponse portant un template (le régime contenus est
-		// identifié par `template_id` ; le trigger `skill_attempts_after_insert`
-		// remonte ensuite aux points via `question_template_points`). Les réponses
-		// sans template — questions non migrées — ne produisent rien.
-		//
-		// Non bloquant : la session est déjà enregistrée, un échec ici ne doit pas
-		// faire perdre le résultat du test à l'élève.
-		// ⚠️ FSRS AVANT l'insertion, comme `/api/skill-attempts` — et pour la même
-		// raison : cette route y écrivait EN DIRECT depuis le 2026-08-29, ce qui
-		// contournait le couplage FSRS posé dans la route le 2026-06-10.
-		// Conséquence : répondre à une évaluation validait les points de programme
-		// mais ne replanifiait AUCUNE carte, et produisait la désynchro
-		// `srs_card_stats` ↔ `student_point_state` que le garde-fou de la route
-		// existe pour empêcher.
-		//
-		// L'invariant est tenu PAR RÉPONSE : pas de FSRS, pas d'attempt. Une carte
-		// qui échoue n'empêche pas les autres — la session est déjà enregistrée et
-		// l'élève ne doit pas perdre son travail pour une réponse.
-		// Quels modèles sont tagués à un point de programme ? Une requête pour tout
-		// le lot, là où la route en fait une par réponse.
-		const templatesTagues = new Set<string>();
-		if (templateIds.length > 0) {
-			const { data: liens, error: liensError } = await supabase
-				.from('question_template_points')
-				.select('template_id')
-				.in('template_id', templateIds);
-
-			if (liensError) {
-				console.error('[tests/save] question_template_points illisible :', liensError);
-			} else {
-				for (const lien of liens ?? []) templatesTagues.add(lien.template_id);
-			}
-		}
-
-		const now = new Date();
-		const fsrs = new FSRS();
-		const attemptsToInsert: {
-			student_id: string;
-			template_id: string;
-			success: boolean;
-			grade: Grade;
-			source: 'auto' | 'student_self';
-			with_help: boolean;
-		}[] = [];
-
-		for (const answer of reponsesAvecTemplate) {
-			const templateId = answer.instance.templateId as string;
-			const grade: Grade = answer.isCorrect ? Grade.GOOD : Grade.AGAIN;
-
-			try {
-				if (isFlash || courseCardIds.has(templateId)) {
-					// Auto-évaluation (flash-cards, carte de cours) : « J'avais trouvé » /
-					// « Je savais » = Good, sinon Again. La fiche (clé template_id, partagée
-					// avec tout paquet) ne garde qu'UN résultat par jour, le MEILLEUR
-					// (décision de David, 2026-09-30) ; la trace, toujours.
-					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade, undefined, {
-						bestOfDay: { now },
-						verifyWrite: true
-					});
-				} else {
-					await applyFsrsReview(supabase, fsrs, user.id, 'template', templateId, grade);
-				}
-			} catch (fsrsErr) {
-				console.error('[tests/save] FSRS update failed, attempt non inséré :', {
-					userId: user.id,
+		// Une ligne par réponse portant un template ; FSRS avant la trace ;
+		// auto-évaluation (flash, carte de cours) = meilleur résultat du jour
+		// (ADR 0016). Chemin partagé avec l'envoi d'une évaluation (Q39).
+		// Non bloquant : la session est déjà enregistrée.
+		await recordSeriesReviews(
+			supabase,
+			user.id,
+			reponsesAvecTemplate.map((answer) => {
+				const templateId = answer.instance.templateId as string;
+				return {
 					templateId,
-					grade,
-					err: fsrsErr
-				});
-				continue;
-			}
-
-			attemptsToInsert.push({
-				student_id: user.id,
-				template_id: templateId,
-				success: answer.isCorrect,
-				// `grade` manquait aussi : la route l'enregistre, cette insertion non.
-				grade,
-				source: isFlash || courseCardIds.has(templateId) ? 'student_self' : 'auto',
-				with_help: false
-			});
-		}
-
-		if (attemptsToInsert.length > 0) {
-			// `.select()` : vérifie que toutes les lignes ont été écrites
-			const { data: attemptsRows, error: attemptsError } = await supabase
-				.from('skill_attempts')
-				.insert(attemptsToInsert)
-				.select('id');
-
-			if (attemptsError) {
-				console.error('[tests/save] skill_attempts INSERT failed:', attemptsError);
-			} else if ((attemptsRows?.length ?? 0) !== attemptsToInsert.length) {
-				console.error('[tests/save] skill_attempts : lignes écrites ≠ lignes envoyées', {
-					sent: attemptsToInsert.length,
-					written: attemptsRows?.length ?? 0
-				});
-			}
-		}
-
-		// Auto-ajout au deck Programme, comme la route le fait après l'insertion.
-		// Non bloquant : les attempts sont déjà enregistrés.
-		// Une carte de cours n'est JAMAIS ajoutée à un paquet (décision 2026-09-28).
-		for (const templateId of templatesTagues) {
-			if (courseCardIds.has(templateId)) continue;
-			try {
-				await ensureProgrammeDeckCard(supabase, user.id, templateId);
-			} catch (progErr) {
-				console.error('[tests/save] Programme deck add failed:', progErr);
-			}
-		}
+					success: answer.isCorrect,
+					selfAssessed: isFlash || courseCardIds.has(templateId)
+				};
+			}),
+			{ neverInDeck: courseCardIds, logLabel: '[tests/save]' }
+		);
 
 		// Award buddy XP for each answer
 		let buddyXp = null;

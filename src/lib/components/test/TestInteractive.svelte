@@ -20,6 +20,10 @@
 	- onBack: () => void - Retour au panier (à « Mes évaluations » pour une évaluation)
 	- inEvaluation: évaluation assignée → pas de « Recommencer »
 	- assessmentTitle?: string - Titre d'une évaluation assignée
+	- collectOnly: évaluation notée → réponses collectées SANS correction (le
+	  serveur corrige à l'envoi, ADR 0015)
+	- showResults: false → pas d'écran de résultats à la fin (la page affiche
+	  la correction du serveur) ; « Envoi de ta copie… » en attendant
 -->
 
 <script lang="ts">
@@ -45,6 +49,8 @@
 		onBack: () => void;
 		inEvaluation?: boolean;
 		assessmentTitle?: string;
+		collectOnly?: boolean;
+		showResults?: boolean;
 	}
 
 	// Constants
@@ -58,7 +64,9 @@
 		onRestart,
 		onBack,
 		assessmentTitle,
-		inEvaluation = false
+		inEvaluation = false,
+		collectOnly = false,
+		showResults = true
 	}: Props = $props();
 
 	let backLabel = $derived(inEvaluation ? 'Mes évaluations' : 'Retour au panier');
@@ -175,7 +183,14 @@
 		</div>
 	{/if}
 
-	{#if testResult}
+	{#if testResult && !showResults}
+		<!-- Évaluation : la correction vient du serveur, la page l'affiche -->
+		<Card.Root>
+			<Card.Content class="p-6 text-center" role="status">
+				<p class="text-muted-foreground">Envoi de ta copie…</p>
+			</Card.Content>
+		</Card.Root>
+	{:else if testResult}
 		<TestResults result={testResult} {onRestart} onBackToCart={onBack} {inEvaluation} />
 	{:else if currentItem}
 		<!-- Header with progress -->
@@ -227,6 +242,8 @@
 						instance={currentItem.instance}
 						onAnswerSubmit={handleAnswerSubmit}
 						size="lg"
+						{collectOnly}
+						unitKeys={currentItem.unitKeys}
 					/>
 				</div>
 			{/key}

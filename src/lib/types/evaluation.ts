@@ -96,11 +96,24 @@ export interface DbEvaluationAssignment {
 	assigned_at: string;
 }
 
+/** Une tentative, telle que le professeur la voit (E21) */
+export interface AttemptSummary {
+	/** Note sur 20 ; null tant que la tentative n'est pas envoyée */
+	grade: number | null;
+	points_earned: number | null;
+	total_questions: number | null;
+	created_at: string | null;
+	completed_at: string | null;
+}
+
 /** Assignation vue par l'élève, avec ses tentatives */
 export interface AssignmentWithDetails extends DbEvaluationAssignment {
 	evaluation: EvaluationWithSeries;
 	attempts_count: number;
-	best_score: number | null;
+	/** Meilleure note sur 20 parmi les tentatives envoyées (Q36) */
+	best_grade: number | null;
+	/** Une tentative est ouverte (commencée, pas envoyée) : elle se reprend */
+	has_open_attempt: boolean;
 	last_attempt_at: string | null;
 	status: StudentEvaluationStatus;
 }
@@ -116,8 +129,11 @@ export interface EvaluationResult {
 	student_firstname: string | null;
 	student_lastname: string | null;
 	class_name: string | null;
-	best_score: number | null;
+	/** Meilleure note sur 20 parmi les tentatives envoyées (Q36) */
+	best_grade: number | null;
 	attempts_count: number;
+	/** Toutes les tentatives, la plus récente d'abord (E21) */
+	attempts: AttemptSummary[];
 	last_attempt_at: string | null;
 	status: StudentEvaluationStatus;
 	total_questions: number | null;
@@ -169,9 +185,10 @@ export interface EvaluationStatistics {
 	in_progress: number;
 	completed: number;
 	expired: number;
-	average_score: number | null;
-	min_score: number | null;
-	max_score: number | null;
+	/** Sur 20, calculées sur la meilleure note de chaque élève */
+	average_grade: number | null;
+	min_grade: number | null;
+	max_grade: number | null;
 	completion_rate: number;
 }
 
@@ -232,4 +249,10 @@ export function getStatusLabel(status: StudentEvaluationStatus): string {
 /** Nombre total de questions d'une série */
 export function countSeriesQuestions(categories: CartItem[]): number {
 	return categories.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+/** Note sur 20 à la française : 13,5/20 ; « – » sans note */
+export function formatGrade(grade: number | null | undefined): string {
+	if (grade === null || grade === undefined) return '–';
+	return `${Number(grade).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}/20`;
 }

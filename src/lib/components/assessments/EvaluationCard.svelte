@@ -27,6 +27,7 @@
 	import type { AssignmentWithDetails, EvaluationWithSeries } from '$lib/types/evaluation';
 	import {
 		countSeriesQuestions,
+		formatGrade,
 		formLabel,
 		getAttemptsRemaining,
 		getStatusColor,
@@ -114,9 +115,11 @@
 	</Card.Header>
 
 	<Card.Content>
-		{#if variant === 'student' && assignmentData && assignmentData.best_score !== null}
+		{#if variant === 'student' && assignmentData && assignmentData.best_grade !== null}
 			<div class="mb-3 rounded-lg bg-primary/10 p-4 text-center">
-				<div class="text-3xl font-bold text-primary">{assignmentData.best_score}/10</div>
+				<div class="text-3xl font-bold text-primary" data-testid="best-grade">
+					{formatGrade(assignmentData.best_grade)}
+				</div>
 				<div class="text-sm text-muted-foreground">Meilleure note</div>
 			</div>
 		{/if}
@@ -203,12 +206,21 @@
 					</Button>
 				{/if}
 			{:else if assignmentData.status === 'completed'}
-				{#if onViewResults}
-					<Button variant="outline" class="w-full" onclick={onViewResults}>
-						<BarChart3 class="mr-2 h-4 w-4" />
-						Voir les résultats
-					</Button>
-				{/if}
+				<div class="flex w-full flex-col gap-2">
+					{#if assignmentData.has_open_attempt && onStart}
+						<!-- Une tentative commencée après la dernière envoyée reste joignable -->
+						<Button class="w-full" onclick={onStart}>
+							<Play class="mr-2 h-4 w-4" />
+							Reprendre la tentative en cours
+						</Button>
+					{/if}
+					{#if onViewResults}
+						<Button variant="outline" class="w-full" onclick={onViewResults}>
+							<BarChart3 class="mr-2 h-4 w-4" />
+							Voir les résultats
+						</Button>
+					{/if}
+				</div>
 			{:else if assignmentData.status === 'expired'}
 				<Button disabled class="w-full">
 					<AlertCircle class="mr-2 h-4 w-4" />

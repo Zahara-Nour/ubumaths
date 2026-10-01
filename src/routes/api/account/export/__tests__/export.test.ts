@@ -357,6 +357,13 @@ describe('GET /api/account/export', () => {
 			// la citer ferait échouer toute la requête, donc l'export entier.
 			expect(selectArg).not.toMatch(/\bassignment_id\b/);
 			expect(selectArg).toMatch(/\bevaluation_id\b/);
+			// Évaluation notée (chantier 5) : la note et les verdicts du serveur font
+			// partie des données de l'élève
+			const [sessionPart, answersPart] = selectArg.split('test_answers(');
+			expect(sessionPart).toMatch(/\bgrade\b/);
+			expect(sessionPart).toMatch(/\bpoints_earned\b/);
+			expect(answersPart).toMatch(/\bpoints\b/);
+			expect(answersPart).toMatch(/\bstatus\b/);
 		});
 
 		test('communications section has correct structure', async () => {
