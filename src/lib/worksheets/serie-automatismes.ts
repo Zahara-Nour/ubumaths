@@ -71,10 +71,12 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 
 	const choix = instance.choices ?? [];
 	if (choix.length > 0) {
-		const lettre = (i: number) => String.fromCharCode(97 + i);
-		const liste = choix.map((c, i) => `${lettre(i)}) ${c.content}`).join('\n\n');
+		// Lettre en gras, pas `a) …` : une ligne `a)` serait une sous-liste, que le PDF
+		// renumérote selon sa profondeur (« 1) 2) ») alors que le corrigé dit « a) »
+		const lettre = (i: number) => `**${String.fromCharCode(97 + i)})**`;
+		const liste = choix.map((c, i) => `${lettre(i)} ${c.content}`).join('\n\n');
 		const bonnes = choix
-			.map((c, i) => (c.isCorrect ? `${lettre(i)}) ${c.content}` : null))
+			.map((c, i) => (c.isCorrect ? `${lettre(i)} ${c.content}` : null))
 			.filter((c): c is string => c !== null);
 		return {
 			statement: `${enonce}\n\n${liste}`,

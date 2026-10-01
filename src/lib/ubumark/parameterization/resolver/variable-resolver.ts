@@ -357,14 +357,22 @@ export function resolveExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	options?: { useDisplayValue?: boolean }
+	options?: {
+		useDisplayValue?: boolean;
+		/**
+		 * Contenu markdown (énoncé, corrigé) et non expression de variable : pas de
+		 * normalisation de la syntaxe simplifiée, qui lisait les « | » d'un tableau
+		 * comme une liste de tirage et enveloppait tout le texte dans {{…}}
+		 */
+		markdown?: boolean;
+	}
 ): string {
 	// Check if this is an explicit text literal (text:...) BEFORE normalization
 	// Text literals should NOT have variable substitution applied
-	const isTextLiteral = expression.trim().startsWith('text:');
+	const isTextLiteral = !options?.markdown && expression.trim().startsWith('text:');
 
 	// Normalize simplified syntax to legacy {{...}} syntax
-	let result = normalizeExpression(expression);
+	let result = options?.markdown ? expression : normalizeExpression(expression);
 
 	// Text literals: return as-is without any substitution or LaTeX conversion
 	if (isTextLiteral) {

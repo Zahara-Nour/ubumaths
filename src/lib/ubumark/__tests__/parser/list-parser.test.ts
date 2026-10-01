@@ -14,6 +14,7 @@ import {
 	countListItems,
 	flattenList
 } from '../../parser/list-parser';
+import { parseMarkdown, type ListNode } from '$lib/ubumark';
 
 describe('isListItem', () => {
 	it('should identify ordered list items with dot', () => {
@@ -458,5 +459,33 @@ describe('Edge Cases', () => {
 		const firstItem = lists[0].items[0];
 		// Main paragraph + at least one continuation (code blocks and text after)
 		expect(firstItem.children.length).toBeGreaterThanOrEqual(2);
+	});
+});
+
+describe('item à marqueur large (« 10. ») : retrait de 4 espaces', () => {
+	// Série de fiche (`buildSerie`) : à partir de « 10. », les lignes suivantes sont en
+	// retrait de 4 espaces ; un bloc de code y était lu comme du texte (2026-10-01)
+	const code = (md: string) => {
+		const list = parseMarkdown(md).children[0] as ListNode;
+		const block = list.items[0].children.find((c) => c.type === 'code-block');
+		return block?.type === 'code-block' ? block.code : null;
+	};
+
+	it('bloc de code sous « 10. », indentation Python conservée', () => {
+		expect(code('10. Q\n\n    ```python\n    def f():\n        return 1\n    ```')).toBe(
+			'def f():\n    return 1'
+		);
+	});
+
+	it('sous « 9. » (retrait de 3), rien ne change', () => {
+		expect(code('9. Q\n\n   ```python\n   def f():\n       return 1\n   ```')).toBe(
+			'def f():\n    return 1'
+		);
+	});
+
+	it('paragraphe sous « 10. » sans espace parasite', () => {
+		const list = parseMarkdown('10. Q\n\n    Suite du texte.').children[0] as ListNode;
+		const paragraphs = list.items[0].children.filter((c) => c.type === 'paragraph');
+		expect(JSON.stringify(paragraphs[1])).toContain('"Suite du texte."');
 	});
 });

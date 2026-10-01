@@ -299,3 +299,29 @@ describe('resolveMarkdownContent — texte sans marqueur', () => {
 		expect(result).toBe('Retenue');
 	});
 });
+
+describe('resolveMarkdownContent — tableau markdown à cellules variables', () => {
+	// « | » des tableaux lu comme une liste de tirage (`a|b|c`) : tout l'énoncé était
+	// enveloppé dans {{…}} et un seul morceau tiré — le tableau disparaissait (2026-10-01)
+	const a: ResolvedVariable[] = [{ name: 'a', value: '3' }];
+
+	it('le tableau est conservé, ses cellules résolues', () => {
+		const md =
+			'Tableau :\n\n| $n$ | 0 | 1 |\n| --- | --- | --- |\n| $u_n$ | {{a}} | {{eval:a+1}} |\n\nFin.';
+		const out = String(resolveMarkdownContent(templateMarkdown(md), a));
+		expect(out).toContain('| --- | --- | --- |');
+		expect(out).toContain('| 3 | 4 |');
+		expect(out).toContain('Tableau :');
+		expect(out).toContain('Fin.');
+	});
+
+	it('une barre verticale dans du texte ne déclenche pas de tirage', () => {
+		const out = String(resolveMarkdownContent(templateMarkdown('A {{a}} | 2 B'), a));
+		expect(out).toBe('A 3 | 2 B');
+	});
+
+	it('un vrai tirage au choix dans le texte reste un tirage', () => {
+		const out = String(resolveMarkdownContent(templateMarkdown('x = {{5|5}}'), a));
+		expect(out).toBe('x = 5');
+	});
+});

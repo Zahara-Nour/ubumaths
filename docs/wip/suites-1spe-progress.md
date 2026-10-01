@@ -172,6 +172,19 @@ Décision David : corriger`FillBlanksInput`, ou faire ces modèles en QCM.
 4. Plusieurs escaliers : chaque relation (et son nom) prend la couleur de son escalier ; noir pour
    un escalier seul.
 
-Nouveau défaut (non corrigé) : dans une série de fiche (`buildSerie`), à partir de la question 10,
+Défaut (CORRIGÉ, voir plus bas) : dans une série de fiche (`buildSerie`), à partir de la question 10,
 les lignes sont décalées de 4 espaces et un bloc ```python n'est plus reconnu : il s'imprime en
 texte brut entre guillemets (le PDF compile). Questions 1 à 9 correctes.
+
+## Défauts corrigés (2026-10-01, « corrige les défauts »)
+
+- Bloc de code sous « 10. » (retrait de 4) : le parseur de listes retirait toujours 3 espaces ;
+  il retire maintenant aussi la largeur supplémentaire du marqueur (`list-parser.ts`).
+- `\dots` (et `\dotsb`, `\dotsc`…) → `...` en Typst, comme `\ldots`.
+- Choix de QCM d'une série : `**a)** …` en paragraphes, plus une sous-liste que le PDF
+  renumérotait « 1) 2) » (la numérotation dépend de la profondeur). Les fiches déjà créées sont
+  figées : seules les nouvelles séries changent.
+- Tableau à cellules `{{…}}` : `normalizeExpression` lisait les « | » comme une liste de tirage et
+  enveloppait TOUT l'énoncé dans `{{…}}`. Le contenu markdown (énoncé, corrigé) n'est plus
+  normalisé (option `markdown`). Mesuré sur la production : 0 texte sur 4 928 n'était modifié par
+  cette normalisation → aucun rendu existant ne change.
