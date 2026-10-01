@@ -24,6 +24,7 @@
  * @module statistics/describe
  */
 
+import { isExactly, reaches } from './cumulative';
 import { STATISTICS_LIMITS } from './limits';
 import { failure, formatForMessage, success, type Failure, type Outcome } from './outcome';
 
@@ -67,20 +68,16 @@ export interface FrequencyRow {
 	readonly decreasingCumulativeFrequency: number;
 }
 
+/** Une valeur et son effectif. */
+interface Entry {
+	readonly value: number;
+	readonly weight: number;
+}
+
 export interface FrequencyTable {
 	readonly rows: readonly FrequencyRow[];
 	readonly summary: Summary;
 }
-
-// =============================================================================
-// Constantes
-// =============================================================================
-
-/**
- * Tolérance relative des comparaisons de cumuls. Des effectifs entiers
- * tombent juste ; des pourcentages saisis (`33,3 ; 33,3 ; 33,4`) non.
- */
-const CUMULATIVE_TOLERANCE = 1e-12;
 
 // =============================================================================
 // Fonctions
@@ -184,8 +181,12 @@ function checkCounts(counts: readonly number[]): Failure | null {
 function summarizeWeighted(values: readonly number[], weights: readonly number[]): Summary {
 	const total = sumInOrder(weights);
 
+	// ⚠️ Une valeur d'effectif nul ne fait pas partie de la série : la sauter
+	// aussi dans les sommes, sinon `0 × (1e200)²` = `0 × Infinity` = NaN.
 	let weightedSum = 0;
-	for (let i = 0; i < values.length; i++) weightedSum += weights[i] * values[i];
+	for (let i = 0; i < values.length; i++) {
+		if (weights[i] > 0) weightedSum += weights[i] * values[i];
+	}
 	const mean = weightedSum / total;
 
 	// Seules les valeurs d'effectif non nul font partie de la série
@@ -199,7 +200,9 @@ function summarizeWeighted(values: readonly number[], weights: readonly number[]
 	let variance = 0;
 	if (min !== max) {
 		let squares = 0;
-		for (let i = 0; i < values.length; i++) squares += weights[i] * (values[i] - mean) ** 2;
+		for (let i = 0; i < values.length; i++) {
+			if (weights[i] > 0) squares += weights[i] * (values[i] - mean) ** 2;
+		}
 		variance = squares / total;
 	}
 
@@ -223,11 +226,6 @@ function summarizeWeighted(values: readonly number[], weights: readonly number[]
 	};
 }
 
-interface Entry {
-	readonly value: number;
-	readonly weight: number;
-}
-
 /** Couples (valeur, effectif) triés par valeur ; tri stable. */
 function sortedEntries(values: readonly number[], weights: readonly number[]): Entry[] {
 	return values
@@ -245,7 +243,7 @@ function quantile(sorted: readonly Entry[], total: number, percent: number): num
 	let cumulative = 0;
 	for (const entry of sorted) {
 		cumulative += entry.weight;
-		if (reaches(cumulative, target)) return entry.value;
+		if (reaches(cumulative, target, total)) return entry.value;
 	}
 	return sorted[sorted.length - 1].value;
 }
@@ -260,16 +258,13 @@ function median(sorted: readonly Entry[], total: number): number {
 	let cumulative = 0;
 	for (let i = 0; i < sorted.length; i++) {
 		cumulative += sorted[i].weight;
-		if (!reaches(cumulative, half)) continue;
-		const exactlyHalf = Math.abs(cumulative - half) <= CUMULATIVE_TOLERANCE * total;
-		if (exactlyHalf && i + 1 < sorted.length) return (sorted[i].value + sorted[i + 1].value) / 2;
+		if (!reaches(cumulative, half, total)) continue;
+		if (isExactly(cumulative, half, total) && i + 1 < sorted.length) {
+			return (sorted[i].value + sorted[i + 1].value) / 2;
+		}
 		return sorted[i].value;
 	}
 	return sorted[sorted.length - 1].value;
-}
-
-function reaches(cumulative: number, target: number): boolean {
-	return cumulative >= target - CUMULATIVE_TOLERANCE * Math.max(target, 1);
 }
 
 function frequencyRows(
@@ -278,7 +273,7 @@ function frequencyRows(
 	total: number
 ): FrequencyRow[] {
 	let before = 0;
-	return sortedEntries(values, counts).map(({ value, weight }) => {
+	return mergedEntries(sortedEntries(values, counts)).map(({ value, weight }) => {
 		const cumulativeCount = before + weight;
 		const row: FrequencyRow = {
 			value,
@@ -291,6 +286,23 @@ function frequencyRows(
 		before = cumulativeCount;
 		return row;
 	});
+}
+
+/**
+ * Une valeur saisie deux fois n'a qu'une ligne : sinon le tableau montrerait
+ * deux fréquences cumulées différentes pour la même valeur.
+ */
+function mergedEntries(sorted: readonly Entry[]): Entry[] {
+	const merged: Entry[] = [];
+	for (const entry of sorted) {
+		const last = merged[merged.length - 1];
+		if (last !== undefined && last.value === entry.value) {
+			merged[merged.length - 1] = { value: last.value, weight: last.weight + entry.weight };
+		} else {
+			merged.push(entry);
+		}
+	}
+	return merged;
 }
 
 function sumInOrder(numbers: readonly number[]): number {

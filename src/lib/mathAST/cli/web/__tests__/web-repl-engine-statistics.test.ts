@@ -5,8 +5,14 @@
  * lui-même, il délègue à `src/lib/statistics/`. Sa sortie ne change pas —
  * `statistics-commands.golden.json` a été capturé AVANT le rebranchement.
  *
- * Seul écart voulu : `.stats 0.1, 0.1, 0.1` affichait un écart type de
- * `1.38778e-17` (moyenne flottante ≠ 0,1) ; il affiche maintenant `0`.
+ * Écarts voulus, figés ci-dessous :
+ * - `.stats 0.1, 0.1, 0.1` affichait un écart type de `1.38778e-17` (moyenne
+ *   flottante ≠ 0,1) ; il affiche maintenant `0` (dans le golden) ;
+ * - `Infinity` (que `parseFloat` accepte) est refusé par `.stats` et `.linreg`
+ *   au lieu d'afficher `Infinity` ou `NaN` ;
+ * - `.linreg` sur des abscisses petites mais distinctes (1e-6, 2e-6, 3e-6)
+ *   ajuste au lieu d'annoncer « valeurs X toutes identiques » (ancien seuil
+ *   absolu de 1e-10).
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -61,5 +67,21 @@ describe('le calcul vient du module statistique', () => {
 		expect(result.success).toBe(false);
 		expect(result.output).toContain('different de Y');
 		expect(fitModule.fitAffine).not.toHaveBeenCalled();
+	});
+});
+
+describe('écarts voulus par rapport à l’ancien moteur', () => {
+	it.each(['.stats 1, Infinity', '.linreg 1,Infinity : 1,2'])('%s : refusé', (command) => {
+		const result = new WebReplEngine().execute(command);
+
+		expect(result.success).toBe(false);
+		expect(result.output).toBe('Erreur: certaines valeurs ne sont pas des nombres valides');
+	});
+
+	it('.linreg ajuste des abscisses petites mais distinctes', () => {
+		const result = new WebReplEngine().execute('.linreg 0.000001,0.000002,0.000003 : 1,2,3');
+
+		expect(result.success).toBe(true);
+		expect(result.output).toContain('R²: 1');
 	});
 });

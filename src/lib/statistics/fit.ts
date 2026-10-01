@@ -56,6 +56,10 @@ export function fitAffine(xs: readonly number[], ys: readonly number[]): Fit {
 
 	const x = xs.slice(0, used);
 	const y = ys.slice(0, used);
+
+	if (![...x, ...y].every(Number.isFinite)) {
+		return { ok: false, message: "Une valeur n'est pas un nombre fini : impossible d'ajuster." };
+	}
 	const meanX = x.reduce((total, value) => total + value, 0) / used;
 	const meanY = y.reduce((total, value) => total + value, 0) / used;
 

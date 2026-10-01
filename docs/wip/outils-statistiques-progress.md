@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : phase 0 — tours 1-2 tranchés, spécification TDD du lot 1 soumise (aucun code écrit)
+## État : lot 1 revu et corrigé, PR à ouvrir
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -108,6 +108,34 @@ fait jamais (`pnpm math` = `tsx`, sans alias) et le moteur l'importe en relatif.
   pente absurde. Garde réécrit en égalité des valeurs ; même chose pour la variance d'une série
   constante (0 exact).
 
+## Lot 1 — fait
+
+- `src/lib/statistics/` : `describe.ts` (`describeList`, `summarizeList`, `summarizeTable`),
+  `fit.ts` (`fitAffine`), `classes.ts` (`summarizeClasses`), `outcome.ts`, `limits.ts`.
+- Déplacés depuis `atelier/stats.ts` (git mv) ; importeurs mis à jour : `DataView.svelte`,
+  `desk.svelte.ts`. Moteur : import relatif `../../../statistics/…`.
+- Preuves : 40 tests rouges contre des stubs aux bonnes signatures (ancien calcul gardé),
+  puis verts ; sortie `.stats`/`.linreg` comparée à `statistics-commands.golden.json` capturé
+  AVANT (seul écart : `.stats 0.1, 0.1, 0.1` → écart type `0` au lieu de `1.38778e-17`) ;
+  espions `vi.mock` prouvant la délégation. Atelier : 433 tests serveur + 198 client verts.
+  `check:incremental` 0 erreur ; `lint:fast` propre.
+- Défauts trouvés en route : `fitAffine` laissait passer des abscisses constantes décimales
+  (pente absurde) et rendait R² = 0 pour des ordonnées constantes décimales → gardes par
+  égalité des valeurs. `Infinity` désormais refusé par `.stats` (affichait `Infinity`).
+- ⚠️ Test d'ordre de saisie : positions exactes, moyenne/variance à 1e-10 (sommes dans
+  l'ordre de saisie, voulu pour le bit-à-bit avec l'ancien `.stats`).
+- `svelte-autofixer` : non lancé (outil MCP absent de la session) ; seul changement `.svelte` =
+  un chemin d'import dans `DataView.svelte`.
+
+- Revue `code-reviewer` : 0 bloquant, 4 à corriger + 4 mineurs, tous traités : règle de cumul
+  unique (`cumulative.ts`, la classe médiane se décalait sur des pourcentages décimaux),
+  tolérance enfin testée (3 tests rouges en la neutralisant), `fitAffine` refuse le non-fini,
+  `.stats`/`.linreg` refusent `Infinity`, poids nuls sautés dans moyenne/variance, lignes de
+  même valeur fusionnées, atelier : échec ≠ absence (`summarizeList` + message).
+- Constaté : une liste de l'atelier écarte déjà les valeurs non finies à la saisie
+  (`2 ; 1/0` → `[2]`, « 1 valeur ignorée ») et la saisie plafonne à 10 000 caractères : le
+  dépassement de `STATISTICS_LIMITS` n'est pas atteignable depuis l'atelier aujourd'hui.
+
 ## Questions ouvertes
 
-(aucune pour le lot 1)
+(aucune)

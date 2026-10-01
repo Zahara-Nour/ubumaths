@@ -15,6 +15,7 @@
  * @module statistics/classes
  */
 
+import { reaches } from './cumulative';
 import { STATISTICS_LIMITS } from './limits';
 import { failure, formatForMessage, success, type Failure, type Outcome } from './outcome';
 
@@ -82,7 +83,7 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 		cumulative += count;
 		weightedCenters += count * ((lower + upper) / 2);
 
-		if (medianClassIndex === -1 && count > 0 && cumulative * 2 >= total) {
+		if (medianClassIndex === -1 && count > 0 && reaches(cumulative, total / 2, total)) {
 			medianClassIndex = i;
 			estimatedMedian = lower + ((total / 2 - before) / count) * width;
 		}

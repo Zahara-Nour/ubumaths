@@ -1574,7 +1574,8 @@ export class WebReplEngine {
 		const values = rawValues.map((s) => parseFloat(s));
 
 		// Check for parsing errors
-		if (values.some((v) => isNaN(v))) {
+		// `!Number.isFinite`, not `isNaN`: `parseFloat('Infinity')` is not NaN.
+		if (!values.every(Number.isFinite)) {
 			return {
 				success: false,
 				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
@@ -1612,8 +1613,9 @@ export class WebReplEngine {
 		// calculator's σₓ key returns.
 		const summarized = summarizeList(values);
 		if (summarized === null || !summarized.ok) {
-			// Only a non-finite value (`Infinity`) gets here: NaN and empty input
-			// were rejected above.
+			// Unreachable today (non-finite, empty and over-limit inputs are
+			// rejected above); kept so a new module failure cannot be displayed
+			// as a success.
 			return {
 				success: false,
 				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
@@ -1729,7 +1731,8 @@ export class WebReplEngine {
 		const yValues = yRaw.map((s) => parseFloat(s));
 
 		// Validation
-		if (xValues.some((v) => isNaN(v)) || yValues.some((v) => isNaN(v))) {
+		// `!Number.isFinite`, not `isNaN`: `parseFloat('Infinity')` is not NaN.
+		if (![...xValues, ...yValues].every(Number.isFinite)) {
 			return {
 				success: false,
 				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',

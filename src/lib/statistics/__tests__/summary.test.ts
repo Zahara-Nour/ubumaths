@@ -231,6 +231,38 @@ describe('B. série à effectifs', () => {
 		expect(percentages.q3).toBe(proportional.q3);
 	});
 
+	// Revue du lot 1 : sans tolérance, 33,8 + 15,8 + 0,4 vaut 49,999… et la
+	// médiane sautait d'une valeur.
+	it('pourcentages décimaux : 50 % atteint pile malgré l’arrondi flottant', () => {
+		const { summary } = tableOf([0, 1, 2, 3, 4], [33.8, 15.8, 0.4, 39.5, 10.5]);
+
+		expect(summary.median).toBe(2.5);
+	});
+
+	it('pourcentages décimaux : 25 % atteint pile malgré l’arrondi flottant', () => {
+		// 0,2 + 20,9 + 3,9 = 24,999999999999996 en flottant
+		const { summary } = tableOf([1, 2, 3, 4], [0.2, 20.9, 3.9, 75]);
+
+		expect(summary.q1).toBe(3);
+	});
+
+	it('fusionne les lignes d’une même valeur', () => {
+		const { rows, summary } = tableOf([2, 2, 3], [1, 1, 1]);
+
+		expect(rows.map((r) => [r.value, r.count])).toEqual([
+			[2, 2],
+			[3, 1]
+		]);
+		expect(summary.count).toBe(3);
+	});
+
+	it('ignore une valeur d’effectif nul jusque dans la variance', () => {
+		const { summary } = tableOf([1, 2, 1e200], [1, 1, 0]);
+
+		expect(summary.mean).toBe(1.5);
+		expect(summary.variance).toBe(0.25);
+	});
+
 	it('table vide : une absence', () => {
 		expect(summarizeTable([], [])).toBeNull();
 	});

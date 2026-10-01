@@ -68,6 +68,15 @@ describe('C. série en classes', () => {
 		expect(s.estimatedMedian).toBe(10);
 	});
 
+	// Revue du lot 1 : même piège flottant que pour les séries à effectifs
+	it('pourcentages décimaux : 50 % atteint pile en fin de classe malgré l’arrondi', () => {
+		const counts = [33.8, 15.8, 0.4, 39.5, 10.5];
+		const s = summaryOf(counts.map((count, i) => ({ lower: i, upper: i + 1, count })));
+
+		expect(s.medianClassIndex).toBe(2);
+		expect(s.estimatedMedian).toBeCloseTo(3, 10);
+	});
+
 	it('amplitudes inégales : la densité vaut effectif / amplitude', () => {
 		const rows = summaryOf(TRAJETS).classes;
 

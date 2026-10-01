@@ -147,3 +147,14 @@ describe('une série constante en décimaux', () => {
 		expect(fit.ok && fit.r2).toBe(1);
 	});
 });
+
+describe('valeurs non finies', () => {
+	it('fitAffine refuse une abscisse ou une ordonnée non finie, en le disant', () => {
+		const x = fitAffine([1, Number.POSITIVE_INFINITY], [1, 2]);
+		const y = fitAffine([1, 2], [Number.NaN, 2]);
+
+		expect(x.ok).toBe(false);
+		expect(y.ok).toBe(false);
+		expect(x.ok === false && x.message).toMatch(/nombre fini/);
+	});
+});

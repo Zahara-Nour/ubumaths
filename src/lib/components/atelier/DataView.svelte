@@ -8,7 +8,7 @@
 	 */
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList } from '$lib/atelier/types';
-	import { describeList } from '$lib/statistics/describe';
+	import { summarizeList } from '$lib/statistics/describe';
 
 	const atelier = useAtelier();
 
@@ -22,8 +22,10 @@
 
 	/** Un aperçu chiffré, pour que la colonne dise quelque chose sans clic. */
 	function summaryOf(values: readonly number[]): string {
-		const stats = describeList(values);
-		if (stats === null) return '';
+		const outcome = summarizeList(values);
+		if (outcome === null) return '';
+		if (!outcome.ok) return outcome.message;
+		const stats = outcome.value;
 		const fr = (n: number) => Number(n.toFixed(2)).toString().replace('.', ',');
 		return `n = ${stats.count} · moyenne ${fr(stats.mean)}`;
 	}

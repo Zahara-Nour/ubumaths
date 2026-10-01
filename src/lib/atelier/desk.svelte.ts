@@ -18,7 +18,7 @@
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
-import { describeList } from '$lib/statistics/describe';
+import { summarizeList } from '$lib/statistics/describe';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -158,9 +158,9 @@ export class CalcDesk {
 	/** Les statistiques d'une liste, écrites en français. */
 	#describe(name: string): void {
 		const list = this.#listNamed(name);
-		const stats = list === null ? null : describeList(list.values);
+		const outcome = list === null ? null : summarizeList(list.values);
 
-		if (stats === null) {
+		if (outcome === null) {
 			this.#push({
 				label: `Statistiques ${name}`,
 				text: `« ${name} » n'a pas encore de valeurs.`,
@@ -168,6 +168,12 @@ export class CalcDesk {
 			});
 			return;
 		}
+		// Une liste invalide (trop de valeurs) n'est pas une liste vide : le dire
+		if (!outcome.ok) {
+			this.#push({ label: `Statistiques ${name}`, text: outcome.message, failed: true });
+			return;
+		}
+		const stats = outcome.value;
 
 		// ⚠️ Écrites ici, en français et accentuées : `.stats` rend « Moyenne
 		// (mean) » et « Mediane », et l'étendue lui manque.
