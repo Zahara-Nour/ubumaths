@@ -9,3 +9,4 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://github.com/excalidraw/excalidraw.git
 - https://github.com/rough-stuff/rough.git
 - https://github.com/tldraw/tldraw.git
+- https://github.com/UpsilonNumworks/Upsilon.git
