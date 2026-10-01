@@ -1344,7 +1344,12 @@ function convertTextcolorCommand(str: string): string {
 			const colorCloseIndex = findMatchingBrace(result, colorOpenBrace);
 			if (colorCloseIndex === -1) continue;
 
-			const color = result.slice(colorOpenBrace + 1, colorCloseIndex).trim();
+			const rawColor = result.slice(colorOpenBrace + 1, colorCloseIndex).trim();
+			// Couleur hexadécimale (`{{color:primary.0}}` → `#FF5722`) : `fill: #FF5722` ne compile
+			// pas en Typst, une seule erreur fait échouer tout le PDF
+			const color = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(rawColor)
+				? `rgb("${rawColor}")`
+				: rawColor;
 
 			// Look for the second argument (content) immediately after
 			const afterColor = result.slice(colorCloseIndex + 1);
@@ -1361,7 +1366,9 @@ function convertTextcolorCommand(str: string): string {
 			// Convert to Typst: text(fill: color, content)
 			// Note: In Typst math, we need to use the hash prefix to call content-mode functions
 			// Use placeholders for [ ] to protect them from the catch-all bracket replacement
-			const replacement = `#text(fill: ${color})<<<CONTENT_L>>>${content}<<<CONTENT_R>>>`;
+			// Contenu entre `$…$` : on est en math, un bloc `[…]` seul serait du TEXTE (une
+			// fraction s'imprimait « display(frac(1, 2)) »)
+			const replacement = `#text(fill: ${color})<<<CONTENT_L>>>$${content}$<<<CONTENT_R>>>`;
 			result = result.slice(0, startIndex) + replacement + result.slice(contentCloseIndex + 1);
 
 			changed = true;
@@ -1940,12 +1947,8 @@ function addImplicitMultiplicationSpaces(str: string): string {
 		return `<<<PROTECT_${protections.length - 1}>>>`;
 	});
 
-	// Protect content block placeholders <<<CONTENT_L>>>...<<<CONTENT_R>>>
-	// These come from \textcolor conversion - content inside should not be split
-	protected_ = protected_.replace(/<<<CONTENT_L>>>([\s\S]*?)<<<CONTENT_R>>>/g, (match) => {
-		protections.push(match);
-		return `__p${protections.length - 1}__`;
-	});
+	// Le contenu de \textcolor (<<<CONTENT_L>>>$…$<<<CONTENT_R>>>) est en math : il est découpé
+	// comme le reste (`ab` collé serait une variable inconnue) ; seuls ses marqueurs sont protégés.
 
 	// Protect ALL remaining <<<PLACEHOLDER>>> sequences (decimal comma, arrows, braces,
 	// matrix prefixes, and the <<<PROTECT_N>>> markers from above). These would be
@@ -1990,7 +1993,11 @@ function addImplicitMultiplicationSpaces(str: string): string {
 	// Restore protected content: __pN__ markers first (which may restore <<<PROTECT_N>>> markers),
 	// then <<<PROTECT_N>>> markers to get the original content
 	protected_ = protected_.replace(/__p(\d+)__/g, (_, idx) => protections[parseInt(idx)]);
-	protected_ = protected_.replace(/<<<PROTECT_(\d+)>>>/g, (_, idx) => protections[parseInt(idx)]);
+	// Protections imbriquées (`#text(fill: rgb("#FF5722"))` contient une chaîne protégée) :
+	// restaurer jusqu'à épuisement, au plus une fois par protection
+	for (let i = 0; i <= protections.length && /<<<PROTECT_\d+>>>/.test(protected_); i++) {
+		protected_ = protected_.replace(/<<<PROTECT_(\d+)>>>/g, (_, idx) => protections[parseInt(idx)]);
+	}
 
 	return protected_;
 }
