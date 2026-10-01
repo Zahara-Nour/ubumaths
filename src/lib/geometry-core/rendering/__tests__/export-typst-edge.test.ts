@@ -52,7 +52,7 @@ describe('exportToTypst — edge cases', () => {
 		const f = new Figure();
 		f.createFreePoint(pt(0, 0), { label: 'A' });
 		const result = exportToTypst(f, viewport, { showLabels: false });
-		expect(result).not.toContain('$A$');
+		expect(result).not.toContain('"A"');
 	});
 
 	// ─── Styles ───────────────────────────────────────────────
@@ -226,7 +226,7 @@ describe('exportToTypst — edge cases', () => {
 	it('includes cetz import', () => {
 		const f = new Figure();
 		const result = exportToTypst(f, viewport);
-		expect(result).toContain('#import "@preview/cetz:0.3.4"');
+		expect(result).toContain('#import "@preview/cetz:0.3.0"');
 	});
 
 	// ─── Complex figure ───────────────────────────────────────
@@ -251,6 +251,6 @@ describe('exportToTypst — edge cases', () => {
 		expect(result).toContain('arc('); // angle mark
 		expect(result).toContain('content('); // labels + measures
 		expect(result).toContain('grid('); // grid
-		expect(result).toContain('$M$'); // midpoint label
+		expect(result).toContain('text(style: "italic", "M")'); // midpoint label (texte, pas math)
 	});
 });

@@ -119,6 +119,16 @@ export interface InterpretResult {
 	angleMode: AngleMode;
 }
 
+/**
+ * Budgets optionnels (bloc ubumark ```figure, rendu dans le chat élève et le
+ * tableau blanc) : chaque boucle est plafonnée à 1000 tours, mais trois boucles
+ * imbriquées en font 10^9. Sans option, aucun budget (comportement historique).
+ */
+export interface InterpretOptions {
+	/** Nombre maximal d'instructions exécutées ET de tours de boucle, tous niveaux confondus */
+	maxSteps?: number;
+}
+
 function loadStdlib(macros: MacroRegistry): void {
 	const program = parse(STDLIB_MACROS);
 	for (const stmt of program.statements) {
@@ -131,13 +141,15 @@ function loadStdlib(macros: MacroRegistry): void {
 export function interpret(
 	program: DslProgram,
 	figure?: Figure,
-	onDirective?: DirectiveHandler
+	onDirective?: DirectiveHandler,
+	options?: InterpretOptions
 ): InterpretResult {
 	const fig = figure ?? new Figure();
 	const symbols = new SymbolTable();
 	const macros = new MacroRegistry();
 	loadStdlib(macros);
 	const interpreter = new Interpreter(fig, symbols, macros, onDirective, program.source ?? '');
+	interpreter.setStepBudget(options?.maxSteps ?? null);
 	interpreter.executeBlock(program.statements);
 	return { figure: fig, symbols, angleMode: interpreter.getAngleMode() };
 }
@@ -242,6 +254,30 @@ class Interpreter {
 		return this.angleMode;
 	}
 
+	/** Budget d'instructions restant (null : illimité). */
+	private stepBudget: number | null = null;
+	private stepLimit = 0;
+
+	setStepBudget(maxSteps: number | null): void {
+		this.stepBudget = maxSteps;
+		this.stepLimit = maxSteps ?? 0;
+	}
+
+	/** Consommer une unité du budget (instruction ou tour de boucle). */
+	private consumeStep(line: number): void {
+		if (this.stepBudget === null) return;
+		this.stepBudget--;
+		if (this.stepBudget < 0) {
+			throw new DslRuntimeError(
+				{
+					summary: `Budget d'exécution dépassé (plus de ${this.stepLimit} instructions).`,
+					hint: 'Réduire le nombre de tours des boucles `pour` (surtout imbriquées).'
+				},
+				line
+			);
+		}
+	}
+
 	constructor(
 		private figure: Figure,
 		private symbols: SymbolTable,
@@ -263,6 +299,7 @@ class Interpreter {
 	}
 
 	executeStatement(stmt: DslStatement): ResolvedValue | undefined {
+		this.consumeStep(stmt.line);
 		switch (stmt.kind) {
 			case 'assignment': {
 				assertNameNotReserved(stmt.name, stmt.line);
@@ -385,6 +422,7 @@ class Interpreter {
 					if (++count > maxIter) {
 						throw new DslRuntimeError('Limite de 1000 iterations atteinte', stmt.line);
 					}
+					this.consumeStep(stmt.line);
 					this.symbols.set(stmt.variable, { type: 'nombre', value: i });
 					this.executeBlock(stmt.body);
 				}
@@ -403,6 +441,7 @@ class Interpreter {
 					if (++count > maxIter) {
 						throw new DslRuntimeError('Limite de 1000 iterations atteinte', stmt.line);
 					}
+					this.consumeStep(stmt.line);
 					this.symbols.set(stmt.variable, this.toSymbolEntry(item));
 					this.executeBlock(stmt.body);
 				}

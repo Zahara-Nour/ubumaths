@@ -3,7 +3,7 @@
  * des corrigés en base : pour chaque fichier .md d'un dossier, passe chaque formule
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
- * `\unit` résiduel. Signale aussi les blocs ```courbe en erreur ou hors fenêtre.
+ * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -18,20 +18,38 @@ import { findBareGreekNames } from '$lib/exercises/bare-greek-warnings';
 import { parseMarkdown } from '$lib/ubumark';
 import type { CourbeNode } from '$lib/ubumark/types/courbe';
 import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
+import type { FigureNode } from '$lib/ubumark/types/figure';
+import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
 
-/** Blocs ```courbe d'un arbre ubumark, listes comprises. */
-function courbes(node: unknown, found: CourbeNode[] = []): CourbeNode[] {
+type BlocNode = CourbeNode | FigureNode;
+
+/** Blocs ```courbe et ```figure d'un arbre ubumark, listes comprises. */
+function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
-		for (const child of node) courbes(child, found);
+		for (const child of node) blocs(child, found);
 	} else if (node !== null && typeof node === 'object') {
 		const record = node as Record<string, unknown>;
 		if (record.type === 'courbe') found.push(node as CourbeNode);
+		else if (record.type === 'figure') found.push(node as FigureNode);
 		else {
-			courbes(record.children, found);
-			courbes(record.items, found);
+			blocs(record.children, found);
+			blocs(record.items, found);
 		}
 	}
 	return found;
+}
+
+/** Messages d'auteur d'un bloc : erreurs et avertissements (scène comprise). */
+function blocMessages(bloc: BlocNode): string[] {
+	if (bloc.type === 'figure') {
+		const { errors, warnings } = buildFigureScene(bloc);
+		return [...errors, ...warnings].map((m) => m.message);
+	}
+	return [
+		...bloc.errors,
+		...bloc.warnings,
+		...(bloc.spec ? buildCourbeScene(bloc.spec).warnings : [])
+	].map((m) => m.message);
 }
 
 const dir = process.argv[2];
@@ -68,15 +86,11 @@ for (const f of files(dir)) {
 			);
 		}
 	}
-	for (const courbe of courbes(parseMarkdown(md).children)) {
-		const messages = [
-			...courbe.errors,
-			...courbe.warnings,
-			...(courbe.spec ? buildCourbeScene(courbe.spec).warnings : [])
-		].map((m) => m.message);
+	for (const bloc of blocs(parseMarkdown(md).children)) {
+		const messages = blocMessages(bloc);
 		if (messages.length) {
 			problems++;
-			console.log(`${f.replace(dir, '')}  COURBE : ${messages.join(' | ')}`);
+			console.log(`${f.replace(dir, '')}  ${bloc.type.toUpperCase()} : ${messages.join(' | ')}`);
 		}
 	}
 	const greek = findBareGreekNames(md);

@@ -54,8 +54,9 @@ on:
       - 'src/lib/server/**'
       - 'src/lib/srs/**'
       - 'src/lib/ubumark/**'
-      - 'src/lib/geometry-core/viewport/grid.ts'
-      - 'src/lib/geometry-core/viewport/sampler.ts'
+      # Bloc ```figure : les producteurs de PDF importent l'interpréteur du DSL
+      - 'src/lib/geometry-core/**'
+      # Bloc ```courbe : suites (parseur)
       - 'src/lib/grapheur/sequence.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement

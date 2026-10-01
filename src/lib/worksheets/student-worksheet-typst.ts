@@ -30,6 +30,8 @@ import { parseMarkdown } from '$lib/ubumark';
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import { exerciseBadge } from '$lib/typst/worksheet-palette';
+// Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
+import '$lib/ubumark/generators/figure-typst-setup';
 
 // ============================================================================
 // HELPERS

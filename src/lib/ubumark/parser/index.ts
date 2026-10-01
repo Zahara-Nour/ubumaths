@@ -135,6 +135,14 @@ export {
 	isCourbeBlockStart
 } from './courbe-parser';
 
+// Bloc ```figure
+export {
+	parseFigure,
+	parseFigureContent,
+	findFigureBlocks,
+	isFigureBlockStart
+} from './figure-parser';
+
 // ============================================================================
 // TYPE RE-EXPORTS (for convenience)
 // ============================================================================
