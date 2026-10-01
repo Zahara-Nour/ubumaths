@@ -182,7 +182,7 @@ async function statusOf(promise: Promise<unknown>): Promise<number | 'ok'> {
 async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: rows, error } = await service
 		.from('evaluation_attempt_questions')
-		.select('position, template_id, seed')
+		.select('position, template_id, seed, instance')
 		.eq('test_session_id', attemptId)
 		.order('position');
 	expect(error).toBeNull();
@@ -194,6 +194,8 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
 	return rows!.map((row) => {
+		// Q42 : l'instance figée au démarrage fait foi ; la graine n'est qu'un repli
+		if (row.instance) return row.instance as unknown as QuestionInstance;
 		const result = generateInstance(byId.get(row.template_id)!, row.seed);
 		if (!result.success) throw new Error(result.errors.join('; '));
 		return result.instance;
@@ -583,6 +585,89 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				}
 			);
 			expect(result).toMatchObject({ late: false, grade: 20 });
+		});
+	});
+
+	describe('Q42 : la question vue par l’élève est figée au démarrage', () => {
+		let assignmentId: string;
+		const fill = () => fixture('entiers/142');
+
+		beforeAll(async () => {
+			({ assignmentId } = await createEvaluation());
+		});
+
+		afterAll(async () => {
+			// Le modèle retrouve son contenu pour les autres tests
+			await service
+				.from('question_templates')
+				.update({ variations: fill().variations })
+				.eq('id', FILL_ID);
+		});
+
+		it('l’instance complète (réponses attendues comprises) est enregistrée au démarrage', async () => {
+			const attempt = await start(student, assignmentId);
+			const { data } = await service
+				.from('evaluation_attempt_questions')
+				.select('position, instance')
+				.eq('test_session_id', attempt.attemptId)
+				.order('position');
+			expect(data).toHaveLength(3);
+			for (const row of data!) {
+				expect(row.instance).not.toBeNull();
+				expect(allKeys(row.instance).has('seed')).toBe(false);
+			}
+			const first = data![0].instance as unknown as QuestionInstance;
+			expect(first.blanks?.[0].expectedAnswer).toBeTruthy();
+		});
+
+		it('modifier le modèle entre le démarrage et l’envoi ne change ni la question reprise ni la note', async () => {
+			const attempt = await start(student, assignmentId);
+			const frozen = await oracle(attempt.attemptId);
+
+			// Le prof change le modèle : autre énoncé, autre réponse attendue
+			const changed = fill().variations.map((v: Record<string, unknown>) => ({
+				...v,
+				statement: 'Énoncé CHANGÉ : quel est le double de ${{a}}$ ? $?$',
+				blanks: [{ expectedAnswer: '{{eval:4*a}}' }]
+			}));
+			const { error } = await service
+				.from('question_templates')
+				.update({ variations: changed })
+				.eq('id', FILL_ID);
+			expect(error).toBeNull();
+
+			const resumed = await start(student, assignmentId);
+			expect(resumed.attemptId).toBe(attempt.attemptId);
+			expect(resumed.questions).toEqual(attempt.questions);
+			expect(JSON.stringify(resumed.questions)).not.toContain('CHANGÉ');
+
+			const result = await submitEvaluationAttempt(actors(student), attempt.attemptId, {
+				answers: frozen.map((instance, position) => ({ position, ...rightAnswer(instance) }))
+			});
+			expect(result.grade).toBe(20);
+			expect(JSON.stringify(result.questions)).not.toContain('CHANGÉ');
+			expect(allKeys(JSON.parse(JSON.stringify(result))).has('seed')).toBe(false);
+		});
+
+		it('repli : une ligne sans instance (tentative antérieure à Q42) se régénère depuis la graine', async () => {
+			await service
+				.from('question_templates')
+				.update({ variations: fill().variations })
+				.eq('id', FILL_ID);
+			const attempt = await start(classmate, assignmentId);
+			const { error } = await service
+				.from('evaluation_attempt_questions')
+				.update({ instance: null })
+				.eq('test_session_id', attempt.attemptId);
+			expect(error).toBeNull();
+
+			const resumed = await start(classmate, assignmentId);
+			expect(resumed.questions).toEqual(attempt.questions);
+			const instances = await oracle(attempt.attemptId);
+			const result = await submitEvaluationAttempt(actors(classmate), attempt.attemptId, {
+				answers: instances.map((instance, position) => ({ position, ...rightAnswer(instance) }))
+			});
+			expect(result.grade).toBe(20);
 		});
 	});
 

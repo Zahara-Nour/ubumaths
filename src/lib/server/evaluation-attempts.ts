@@ -219,9 +219,24 @@ interface StoredQuestion {
 	category_key: string;
 }
 
+/** Instance figée lue en base (objet JSON écrit par le serveur au démarrage) */
+function frozenInstanceOf(value: unknown): QuestionInstance | null {
+	return value && typeof value === 'object' && !Array.isArray(value)
+		? (value as QuestionInstance)
+		: null;
+}
+
+/** L'instance sans sa graine : la graine ne quitte jamais sa colonne (D18) */
+function withoutSeed(instance: QuestionInstance): QuestionInstance {
+	const { seed: _seed, ...rest } = instance;
+	return rest;
+}
+
 /**
- * Régénère les questions d'une tentative depuis modèles + graines (service :
- * un modèle repassé en brouillon depuis reste corrigeable).
+ * Questions d'une tentative (service_role). Q42 : l'instance FIGÉE au
+ * démarrage fait foi — un modèle modifié ou repassé en brouillon depuis ne
+ * change ni la question reprise ni la correction. Repli pour une ligne sans
+ * instance (tentative antérieure à Q42) : régénération depuis modèle + graine.
  */
 async function regenerateAttempt(
 	service: Db,
@@ -229,7 +244,7 @@ async function regenerateAttempt(
 ): Promise<Array<{ stored: StoredQuestion; instance: QuestionInstance }>> {
 	const { data: rows, error } = await service
 		.from('evaluation_attempt_questions')
-		.select('position, template_id, seed, delay_seconds, category_key')
+		.select('position, template_id, seed, delay_seconds, category_key, instance')
 		.eq('test_session_id', attemptId)
 		.order('position', { ascending: true });
 
@@ -242,21 +257,28 @@ async function regenerateAttempt(
 		throw new EvaluationError(500, 'Cette tentative ne contient aucune question');
 	}
 
-	const templateIds = [...new Set(stored.map((row) => row.template_id))];
-	const { data: templateRows, error: templatesError } = await service
-		.from('question_templates')
-		.select('*')
-		.in('id', templateIds);
+	const toRegenerate = stored.filter((row) => !frozenInstanceOf(row.instance));
+	const templates = new Map<string, QuestionTemplate>();
+	if (toRegenerate.length > 0) {
+		const templateIds = [...new Set(toRegenerate.map((row) => row.template_id))];
+		const { data: templateRows, error: templatesError } = await service
+			.from('question_templates')
+			.select('*')
+			.in('id', templateIds);
 
-	if (templatesError) {
-		console.error('[evaluation-attempts] Modèles de la tentative illisibles :', templatesError);
-		throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
+		if (templatesError) {
+			console.error('[evaluation-attempts] Modèles de la tentative illisibles :', templatesError);
+			throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
+		}
+		for (const row of (templateRows ?? []) as QuestionTemplateRow[]) {
+			templates.set(row.id, toQuestionTemplate(row));
+		}
 	}
-	const templates = new Map(
-		((templateRows ?? []) as QuestionTemplateRow[]).map((row) => [row.id, toQuestionTemplate(row)])
-	);
 
-	return stored.map((row) => {
+	return stored.map(({ instance: frozen, ...row }) => {
+		const instance = frozenInstanceOf(frozen);
+		if (instance) return { stored: row, instance: withoutSeed(instance) };
+
 		const template = templates.get(row.template_id);
 		const result = template ? generateInstance(template, row.seed) : null;
 		if (!result || !result.success) {
@@ -267,7 +289,7 @@ async function regenerateAttempt(
 			});
 			throw new EvaluationError(500, 'Impossible de relire ta tentative, préviens ton professeur');
 		}
-		return { stored: row, instance: result.instance };
+		return { stored: row, instance: withoutSeed(result.instance) };
 	});
 }
 
@@ -420,7 +442,13 @@ export async function startEvaluationAttempt(
 		);
 	}
 
-	const rows = generated.map(({ stored }) => ({ test_session_id: session.id, ...stored }));
+	// Q42 : l'instance complète (réponses attendues comprises) est FIGÉE ici,
+	// service_role seul ; elle ne sort jamais vers le navigateur
+	const rows = generated.map(({ stored, instance }) => ({
+		test_session_id: session.id,
+		...stored,
+		instance: toJson(withoutSeed(instance))
+	}));
 	const { data: written, error: questionsError } = await service
 		.from('evaluation_attempt_questions')
 		.insert(rows)

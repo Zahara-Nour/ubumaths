@@ -133,7 +133,10 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 			content: choice.content as ResolvedMarkdown,
 			isCorrect: false
 		}));
-		// Position affichée = indice : l'envoi transmet les positions cochées
+		// Position affichée = indice : l'envoi transmet les positions cochées. Toute
+		// conversion « position affichée → indice d'origine » faite par la carte
+		// (QuestionCard) est donc NEUTRE ici ; seul le serveur, qui a l'instance
+		// complète, convertit (test : QuestionCard-evaluation.svelte.test.ts)
 		instance.shuffledChoices = choices.map((choice, index) => ({
 			content: choice.content as ResolvedMarkdown,
 			originalIndex: index
