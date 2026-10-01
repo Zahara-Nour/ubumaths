@@ -1,7 +1,7 @@
 ---
 title: Suites numériques 1re SPE — questions et escalier du bloc courbe
 date: 2026-10-01
-status: lot 0 (escalier) en cours
+status: lot 0 livré (#601) ; lot 1 écrit en base ; lots 2-5 en cours
 ---
 
 # Suites 1re SPE — point de reprise
@@ -53,7 +53,7 @@ Comportements :
 
 - [x] Tests rouges (19 serveur + 3 navigateur, rouges avant) · [x] parseur · [x] scène · [x] Typst
       · [x] SVG · [x] compilation d'une fiche (3 escaliers, énoncé + corrigé, FR + EN : 4/4 OK
-      avec `compile-prod.mjs`, page relue à l'œil) · [x] typecheck 0 erreur · [ ] PR
+      avec `compile-prod.mjs`, page relue à l'œil) · [x] typecheck 0 erreur · [x] PR #601 mergée (2026-10-01)
 
 Relecture (`code-reviewer`, 2026-10-01) : rien de bloquant. Corrigés, tests rouges d'abord :
 départ de l'escalier sur l'axe dessiné (faux « sort de la fenêtre » quand y_min > 0), une seule
@@ -90,10 +90,36 @@ Vérifié en production le 2026-10-01 :
 - `requiredForm: {pattern: "u"}` : une lettre seule est vraisemblablement un joker — à confirmer
   par une spec (réponse développée acceptée ?) avant de le retirer.
 
+### Lot 1 — fait (2026-10-01), branche `feat/suites-1spe-questions`
+
+`update-published-questions.ts` prend désormais `--lot second-degre | suites` (obligatoire).
+Instantanés dans `scripts/questions/suites-existants/` (exportés par le nouveau
+`scripts/export-question-templates.ts`, lecture seule). 9 modèles publiés écrits en base et
+relus conformes, preuves rouges faites (specs du fichier rouges sur le contenu d'avant) :
+
+- `8ed02829` (arith. 3) : u_a quelconque, écart 2 à 5 rangs ; `a8b51d16` (arith. 4) : terme
+  éloigné (u_20…u_50) + terme de rang inférieur — les deux ne sont plus identiques.
+- `79d69593` (u₁) : + u_n² + c, u_n/2 + c ; `1239554b` (u₂) : + u_n + 2n + c, 2u_n − n.
+- `7703e625` (explicite) : + n² − bn, (−1)ⁿ × n (la variation (−1)ⁿ reste).
+- Deviner `0af4bf32`, `fc921674`, `95c38330` : + liste à partir de u₁ (piège u₁ pris pour u₀).
+- `158ecaa4` : description. `requiredForm: {pattern: "u"}` laissé tel quel (inoffensif).
+
+Piège trouvé : dans un CORRIGÉ, `u_{{a}}` donne `u_10` (rendu u₁0) pour un rang ≥ 10 — l'énoncé
+est renormalisé, pas le corrigé. Écrire `u_{ {{a}} }`.
+
+Sous-domaines accentués : `category-order.ts` mis à jour (+ ordre des nouveaux domaines, Limites
+passé en dernier) ; renommage en base par `scripts/rename-question-subdomains.ts` APRÈS le merge
+(simulation : 5 modèles, dont `07bce646` de terminale, même catégorie).
+
 ## Lots 2 à 5 — modèles neufs (brouillon)
 
-Voir la spec validée dans la conversation du 2026-10-01 ; tableau détaillé à reporter ici au
-démarrage du lot 2.
+Délégués à 4 agents `pedagogy-expert` (Opus), fichiers dans `scripts/questions/suites-1spe/`
+(`<lot>-<nn>-<slug>.json`). Lot 2 : 10 modèles verts. Lot 4 : 5 modèles verts (+ 2 escaliers en
+cours). Lots 3 et 5 : en cours.
+
+À trancher par David (ADR 0013 : les questions en `warn` sont choisies par lui) : `form: warn`
+pour les termes généraux 2-07, 2-09, 2-10, `form: off` pour 2-08 (u_p × q^(n−p) et u_0 × qⁿ tous
+deux justes).
 
 ## Journal
 
