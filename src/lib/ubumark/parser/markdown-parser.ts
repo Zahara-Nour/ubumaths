@@ -64,7 +64,12 @@ import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
 import { findCourbeBlocks, parseCourbe, parseCourbeContent } from './courbe-parser';
 import { findFigureBlocks, parseFigure, parseFigureContent } from './figure-parser';
-import { findStatChartBlocks, parseStatChart, parseStatChartContent } from './stat-chart-parser';
+import {
+	findStatChartBlocks,
+	isStatChartKind,
+	parseStatChart,
+	parseStatChartContent
+} from './stat-chart-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -1491,7 +1496,8 @@ function parseContentWithCodeBlocks(
 
 	// Regex to find fenced code blocks (``` or ~~~)
 	// Important: Use [ \t]* instead of \s* to avoid consuming newlines between blocks
-	const codeBlockRegex = /^(`{3,}|~{3,})(\w*)\n([\s\S]*?)\n\1[ \t]*$/gm;
+	// `[\w-]` : un langage peut porter un tiret (```frequences-cumulees, ```objective-c)
+	const codeBlockRegex = /^(`{3,}|~{3,})([\w-]*)\n([\s\S]*?)\n\1[ \t]*$/gm;
 
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
@@ -1547,7 +1553,7 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'figure') {
 			// Figure dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseFigureContent(restoreMathPlaceholders(code, placeholders)));
-		} else if (language === 'barres' || language === 'circulaire') {
+		} else if (isStatChartKind(language)) {
 			// Diagramme statistique dans un item de liste : toujours un nœud (Q48)
 			blocks.push(parseStatChartContent(language, restoreMathPlaceholders(code, placeholders)));
 		} else {

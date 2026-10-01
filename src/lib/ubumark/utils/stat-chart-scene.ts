@@ -1,6 +1,6 @@
 /**
- * Blocs ```barres et ```circulaire — scène pure
- * =============================================
+ * Blocs statistiques (barres, circulaire, histogramme, polygone) — scène pure
+ * ===========================================================================
  *
  * La MÊME scène sert l'écran (`StatChart.svelte`, SVG) et le PDF
  * (`stat-chart-typst.ts`, cetz) : mêmes barres, mêmes secteurs, mêmes
@@ -17,12 +17,25 @@
  * @module ubumark/utils/stat-chart-scene
  */
 
-import type { StatChartLabels, StatChartSpec, StatChartUnit } from '../types/stat-chart';
+import type {
+	StatChartDatum,
+	StatChartDirection,
+	StatChartLabels,
+	StatChartSpec,
+	StatChartUnit
+} from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
 import type { ContentLocale } from '$lib/types/locale';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { categoryFrequencies } from '$lib/statistics/describe';
+import { categoryFrequencies, summarizeTable } from '$lib/statistics/describe';
+import {
+	estimateClassQuantile,
+	summarizeClasses,
+	type ClassSummary,
+	type StatClass
+} from '$lib/statistics/classes';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
+import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 
 // ============================================================================
 // TYPES
@@ -51,6 +64,11 @@ interface SceneCommon {
 	description: string;
 	/** Taille du cadre de dessin, en px à l'écran */
 	pixelSize: { width: number; height: number };
+	/**
+	 * Ligne d'indicateurs sous la figure (Q28), dans l'ordre de l'auteur. Texte
+	 * visible : pas répétée dans `description`, sinon lue deux fois.
+	 */
+	indicators: string[];
 }
 
 export interface SceneBar {
@@ -112,7 +130,67 @@ export interface PieScene extends SceneCommon {
 	legend: SceneLegendItem[];
 }
 
-export type StatChartScene = BarScene | PieScene;
+export interface SceneRect {
+	label: string;
+	lower: number;
+	upper: number;
+	/** Effectif (mode `axe`) ou nombre de carreaux (mode `carreaux`) */
+	height: number;
+	/** Effectif écrit dans le rectangle (`valeurs: oui`) */
+	valueLabel: string;
+}
+
+export interface HistogramScene extends SceneCommon {
+	kind: 'histogramme';
+	xMin: number;
+	xMax: number;
+	rects: SceneRect[];
+	/**
+	 * `axe` : amplitudes égales, axe « Effectif » gradué ; `carreaux` :
+	 * amplitudes inégales (ou `légende:`), quadrillage et légende d'aire (Q26)
+	 */
+	mode: 'axe' | 'carreaux';
+	/** Haut de l'axe vertical, dans l'unité de `height` */
+	yMax: number;
+	/** Graduations verticales (mode `axe` seulement) */
+	ticks: SceneTick[];
+	/** Graduations horizontales : les bornes des classes */
+	xTicks: SceneTick[];
+	/** Carreau du quadrillage : largeur en unités de x, valeur, légende */
+	carreau: { width: number; value: number; legend: string } | null;
+	/** Lignes du quadrillage (x en unités de x, y dans l'unité de `height`) */
+	grid: { xs: number[]; ys: number[] };
+	axisTitles: { x: string | null; y: string | null };
+	color: CourbeColor;
+	showValues: boolean;
+}
+
+export interface SceneReading {
+	name: 'Q1' | 'Me' | 'Q3';
+	/** Ordonnée de lecture, en % */
+	percent: number;
+	/** Abscisse lue sur le polygone */
+	x: number;
+	/** `Me ≈ 14,44` */
+	text: string;
+}
+
+export interface CumulativeScene extends SceneCommon {
+	kind: 'frequences-cumulees';
+	xMin: number;
+	xMax: number;
+	/** Sommets du polygone : x en unités de x, y en % */
+	points: ScenePoint[];
+	xTicks: SceneTick[];
+	/** Graduations verticales, de 0 à 100 % */
+	ticks: SceneTick[];
+	readings: SceneReading[];
+	direction: StatChartDirection;
+	axisTitles: { x: string | null; y: string };
+	color: CourbeColor;
+}
+
+export type StatChartScene = BarScene | PieScene | HistogramScene | CumulativeScene;
 
 export interface StatChartSceneOptions {
 	/** Langue du document : séparateur décimal */
@@ -157,7 +235,9 @@ const ARC_STEP_DEGREES = 3;
 
 const KIND_TITLE = {
 	barres: 'Diagramme en barres',
-	circulaire: 'Diagramme circulaire'
+	circulaire: 'Diagramme circulaire',
+	histogramme: 'Histogramme',
+	'frequences-cumulees': 'Polygone des fréquences cumulées'
 } as const;
 
 // ============================================================================
@@ -168,6 +248,13 @@ const KIND_TITLE = {
 function formatRounded(value: number, decimals: number, locale: ContentLocale): string {
 	const factor = 10 ** decimals;
 	return formatTick(Math.round(value * factor) / factor, locale);
+}
+
+/** `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13). */
+function formatIndicatorValue(value: number, locale: ContentLocale): string {
+	const rounded = Math.round(value * 100) / 100;
+	const exact = Math.abs(rounded - value) <= 1e-9 * Math.max(1, Math.abs(value));
+	return `${exact ? '=' : '≈'} ${formatTick(rounded, locale)}`;
 }
 
 /** Valeur telle qu'écrite par l'auteur : effectif, ou pourcentage. */
@@ -186,16 +273,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const values = spec.data.map((d) => d.value);
 	const maxValue = Math.max(...values) || 1;
 
-	const automatic = computeGridStep(height / maxValue, { targetPx: TICK_TARGET_PX }).major;
-	// Un effectif est entier : un axe « Effectif » gradué en 0,5 serait faux
-	// (revue du lot 2). Les pas automatiques valent 1, 2 ou 5 × 10^k : au moins 1 reste propre.
-	const step = spec.unit === 'effectifs' ? Math.max(1, automatic || 1) : automatic || maxValue;
-	const tickCount = Math.ceil(maxValue / step - 1e-9);
-	const yMax = tickCount * step;
-	const ticks: SceneTick[] = Array.from({ length: tickCount + 1 }, (_, i) => ({
-		value: i * step,
-		label: formatTick(i * step, locale)
-	}));
+	const { yMax, ticks } = valueAxis(maxValue, height, spec.unit, locale);
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const bars = spec.data.map((d, i) => ({
@@ -228,8 +306,62 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 		color: spec.color,
 		showValues: spec.showValues,
 		rotateLabels,
-		longestLabel: longest
+		longestLabel: longest,
+		indicators: barIndicators(spec, locale)
 	};
+}
+
+/** Axe vertical depuis 0, au pas automatique ; entier pour des effectifs. */
+function valueAxis(
+	maxValue: number,
+	heightPx: number,
+	unit: StatChartUnit,
+	locale: ContentLocale
+): { yMax: number; ticks: SceneTick[] } {
+	const automatic = computeGridStep(heightPx / maxValue, { targetPx: TICK_TARGET_PX }).major;
+	// Un effectif est entier : un axe « Effectif » gradué en 0,5 serait faux
+	// (revue du lot 2). Les pas automatiques valent 1, 2 ou 5 × 10^k : au moins 1 reste propre.
+	const step = unit === 'effectifs' ? Math.max(1, automatic || 1) : automatic || maxValue;
+	const tickCount = Math.ceil(maxValue / step - 1e-9);
+	const ticks = Array.from({ length: tickCount + 1 }, (_, i) => ({
+		value: i * step,
+		label: formatTick(i * step, locale)
+	}));
+	return { yMax: tickCount * step, ticks };
+}
+
+/** Indicateurs d'une série à effectifs dont les catégories sont des nombres (Q28). */
+function barIndicators(spec: StatChartSpec, locale: ContentLocale): string[] {
+	if (spec.indicators.length === 0) return [];
+	const values = spec.data.map((d) => Number(d.label.replace(',', '.')));
+	const outcome = summarizeTable(
+		values,
+		spec.data.map((d) => d.value)
+	);
+	// Le parseur a vérifié les catégories numériques ; une défaillance ici est un bug
+	if (outcome === null || !outcome.ok) return [];
+	const s = outcome.value.summary;
+	const v = (value: number) => formatIndicatorValue(value, locale);
+	return spec.indicators.flatMap((indicator) => {
+		switch (indicator) {
+			case 'effectif':
+				return [`Effectif total : ${formatTick(s.count, locale)}`];
+			case 'moyenne':
+				return [`Moyenne ${v(s.mean)}`];
+			case 'mediane':
+				return [`Médiane ${v(s.median)}`];
+			case 'quartiles':
+				return [`Q1 ${v(s.q1)}`, `Q3 ${v(s.q3)}`];
+			case 'ecart-interquartile':
+				return [`Écart interquartile ${v(s.iqr)}`];
+			case 'etendue':
+				return [`Étendue ${v(s.range)}`];
+			case 'ecart-type':
+				return [`Écart type ${v(s.deviation)}`];
+			case 'classe-mediane':
+				return [];
+		}
+	});
 }
 
 // ============================================================================
@@ -358,7 +490,230 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 		description: spec.description ?? `${KIND_TITLE.circulaire} : ${listed.join(', ')}.`,
 		pixelSize: { width, height: width },
 		sectors,
-		legend
+		legend,
+		indicators: []
+	};
+}
+
+// ============================================================================
+// CLASSES (histogramme, polygone)
+// ============================================================================
+
+function classesOf(data: readonly StatChartDatum[]): StatClass[] {
+	return data.map((d) => ({
+		lower: d.interval?.lower ?? 0,
+		upper: d.interval?.upper ?? 0,
+		count: d.value
+	}));
+}
+
+/** Résumé d'une série en classes : le parseur l'a déjà validée. */
+function classSummaryOf(spec: StatChartSpec): ClassSummary {
+	const outcome = summarizeClasses(classesOf(spec.data));
+	if (outcome === null || !outcome.ok) {
+		throw new Error(
+			`Série en classes invalide : ${outcome?.ok === false ? outcome.message : 'vide'}`
+		);
+	}
+	return outcome.value;
+}
+
+function boundTicks(spec: StatChartSpec, locale: ContentLocale): SceneTick[] {
+	const bounds = [
+		spec.data[0].interval?.lower ?? 0,
+		...spec.data.map((d) => d.interval?.upper ?? 0)
+	];
+	return bounds.map((value) => ({ value, label: formatTick(value, locale) }));
+}
+
+/** Indicateurs d'une série en classes (Q28). */
+function classIndicators(
+	spec: StatChartSpec,
+	summary: ClassSummary,
+	locale: ContentLocale
+): string[] {
+	const v = (value: number) => formatIndicatorValue(value, locale);
+	return spec.indicators.flatMap((indicator) => {
+		switch (indicator) {
+			case 'effectif':
+				return [`Effectif total : ${formatTick(summary.total, locale)}`];
+			case 'moyenne':
+				return [`Moyenne ${v(summary.mean)}`];
+			case 'classe-mediane':
+				return [`Classe médiane : ${spec.data[summary.medianClassIndex].label}`];
+			case 'mediane':
+				return [`Médiane ${v(summary.estimatedMedian)}`];
+			default:
+				return [];
+		}
+	});
+}
+
+function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): HistogramScene {
+	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const height = width * STAT_CHART_ASPECT_RATIO;
+	const summary = classSummaryOf(spec);
+	const xMin = summary.classes[0].lower;
+	const xMax = summary.classes[summary.classes.length - 1].upper;
+	const mode = usesCarreaux(summary.classes, spec.areaLegend !== null) ? 'carreaux' : 'axe';
+
+	const valueLabel = (count: number) => formatValue(count, spec.unit, locale);
+	const common = {
+		kind: 'histogramme' as const,
+		title: spec.title,
+		accessibleTitle: KIND_TITLE.histogramme,
+		pixelSize: { width, height },
+		xMin,
+		xMax,
+		xTicks: boundTicks(spec, locale),
+		color: spec.color,
+		showValues: spec.showValues,
+		indicators: classIndicators(spec, summary, locale)
+	};
+
+	if (mode === 'axe') {
+		const maxCount = Math.max(...summary.classes.map((c) => c.count)) || 1;
+		const { yMax, ticks } = valueAxis(maxCount, height, spec.unit, locale);
+		const listed = spec.data.map((d) => `${d.label} ${valueLabel(d.value)}`);
+		return {
+			...common,
+			description: spec.description ?? `${KIND_TITLE.histogramme} : ${listed.join(', ')}.`,
+			rects: summary.classes.map((c, i) => ({
+				label: spec.data[i].label,
+				lower: c.lower,
+				upper: c.upper,
+				height: c.count,
+				valueLabel: valueLabel(c.count)
+			})),
+			mode,
+			yMax,
+			ticks,
+			carreau: null,
+			grid: { xs: [], ys: ticks.map((t) => t.value) },
+			axisTitles: {
+				x: spec.axes.x,
+				y: spec.axes.y ?? (spec.unit === 'pourcentages' ? 'Fréquence (%)' : 'Effectif')
+			}
+		};
+	}
+
+	// Amplitudes inégales : l'AIRE porte l'effectif (Q26) — règle partagée avec le parseur
+	const outcome = carreauGrid(summary.classes, spec.areaLegend?.value ?? null);
+	// Le parseur a refusé un quadrillage démesuré ; une défaillance ici est un bug
+	if (!outcome.ok) throw new Error(`Quadrillage refusé : ${outcome.message}`);
+	const { width: carreauWidth, value, heights, columns, rows: yMax } = outcome.grid;
+	const unitWord =
+		spec.areaLegend?.unit ??
+		(spec.areaLegend === null && spec.unit === 'pourcentages' ? '%' : null);
+	const legend = `1 carreau = ${formatTick(value, locale)}${unitWord ? ` ${unitWord}` : ''}`;
+
+	const described = summary.classes.map((c, i) => {
+		const across = Math.round(c.width / carreauWidth);
+		// Un rectangle très plat ne fait pas « 0 de haut »
+		const tall =
+			heights[i] > 0 && heights[i] < 0.005
+				? `moins de ${formatTick(0.01, locale)}`
+				: formatRounded(heights[i], 2, locale);
+		const size = `${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`;
+		return spec.showValues
+			? `${spec.data[i].label} : ${valueLabel(c.count)}, ${size}`
+			: `${spec.data[i].label} : ${size}`;
+	});
+
+	return {
+		...common,
+		// Q30 : les dimensions visibles, pas les effectifs (sauf `valeurs: oui`)
+		description:
+			spec.description ?? `${KIND_TITLE.histogramme} : ${described.join(' ; ')} ; ${legend}.`,
+		rects: summary.classes.map((c, i) => ({
+			label: spec.data[i].label,
+			lower: c.lower,
+			upper: c.upper,
+			height: heights[i],
+			valueLabel: valueLabel(c.count)
+		})),
+		mode,
+		yMax,
+		ticks: [],
+		carreau: { width: carreauWidth, value, legend },
+		grid: {
+			xs: Array.from({ length: columns + 1 }, (_, i) => xMin + i * carreauWidth),
+			ys: Array.from({ length: yMax + 1 }, (_, i) => i)
+		},
+		axisTitles: { x: spec.axes.x, y: null }
+	};
+}
+
+function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): CumulativeScene {
+	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const height = width * STAT_CHART_ASPECT_RATIO;
+	const summary = classSummaryOf(spec);
+	const rows = summary.classes;
+	const xMin = rows[0].lower;
+	const xMax = rows[rows.length - 1].upper;
+	const increasing = spec.direction === 'croissantes';
+
+	// Croissantes : bornes droites depuis (première borne ; 0) ; décroissantes :
+	// bornes gauches jusqu'à (dernière borne ; 0) (Q27)
+	const points: ScenePoint[] = increasing
+		? [{ x: xMin, y: 0 }, ...rows.map((r) => ({ x: r.upper, y: r.cumulativeFrequency * 100 }))]
+		: [
+				...rows.map((r) => ({ x: r.lower, y: r.decreasingCumulativeFrequency * 100 })),
+				{ x: xMax, y: 0 }
+			];
+
+	const wanted: { name: SceneReading['name']; percent: number }[] =
+		spec.reading === 'quartiles'
+			? [
+					{ name: 'Q1', percent: 25 },
+					{ name: 'Me', percent: 50 },
+					{ name: 'Q3', percent: 75 }
+				]
+			: spec.reading === 'médiane'
+				? [{ name: 'Me', percent: 50 }]
+				: [];
+	const classes = classesOf(spec.data);
+	const readings = wanted.flatMap(({ name, percent }) => {
+		const outcome = estimateClassQuantile(classes, percent);
+		if (outcome === null || !outcome.ok) return [];
+		return [
+			{
+				name,
+				// Sur le polygone décroissant, Q1 laisse 75 % des données au-dessus
+				percent: increasing ? percent : 100 - percent,
+				x: outcome.value,
+				text: `${name} ${formatIndicatorValue(outcome.value, locale)}`
+			}
+		];
+	});
+
+	const listed = points.map(
+		(p) => `${formatRounded(p.y, 1, locale)} % en ${formatTick(p.x, locale)}`
+	);
+	// « Me » est prononcé « mé » par les lecteurs d'écran : en toutes lettres ici
+	const spoken = readings.map((r) => (r.name === 'Me' ? r.text.replace(/^Me/, 'Médiane') : r.text));
+	const read = spoken.length > 0 ? ` ${spoken.join(', ')}.` : '';
+	const title = `${KIND_TITLE['frequences-cumulees']} ${spec.direction}`;
+
+	return {
+		kind: 'frequences-cumulees',
+		title: spec.title,
+		accessibleTitle: KIND_TITLE['frequences-cumulees'],
+		description: spec.description ?? `${title} : ${listed.join(', ')}.${read}`,
+		pixelSize: { width, height },
+		xMin,
+		xMax,
+		points,
+		xTicks: boundTicks(spec, locale),
+		ticks: Array.from({ length: 11 }, (_, i) => ({
+			value: i * 10,
+			label: formatTick(i * 10, locale)
+		})),
+		readings,
+		direction: spec.direction,
+		axisTitles: { x: spec.axes.x, y: spec.axes.y ?? 'Fréquence cumulée (%)' },
+		color: spec.color,
+		indicators: classIndicators(spec, summary, locale)
 	};
 }
 
@@ -371,5 +726,14 @@ export function buildStatChartScene(
 	options: StatChartSceneOptions = {}
 ): StatChartScene {
 	const locale = options.locale ?? 'fr';
-	return spec.kind === 'barres' ? buildBarScene(spec, locale) : buildPieScene(spec, locale);
+	switch (spec.kind) {
+		case 'barres':
+			return buildBarScene(spec, locale);
+		case 'circulaire':
+			return buildPieScene(spec, locale);
+		case 'histogramme':
+			return buildHistogramScene(spec, locale);
+		case 'frequences-cumulees':
+			return buildCumulativeScene(spec, locale);
+	}
 }

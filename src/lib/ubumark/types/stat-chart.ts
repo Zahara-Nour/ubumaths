@@ -22,8 +22,45 @@ import type { CourbeColor, CourbeSize } from './courbe';
 // ============================================================================
 
 /** Noms de blocs, tels que l'auteur les tape après ``` */
-export const STAT_CHART_KINDS = ['barres', 'circulaire'] as const;
+export const STAT_CHART_KINDS = [
+	'barres',
+	'circulaire',
+	'histogramme',
+	'frequences-cumulees'
+] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
+
+/** Blocs dont les données sont des classes `[a ; b[` */
+export const CLASS_CHART_KINDS: readonly StatChartKind[] = ['histogramme', 'frequences-cumulees'];
+
+/** Sens du polygone des fréquences cumulées (Q27) */
+export const STAT_CHART_DIRECTIONS = ['croissantes', 'décroissantes'] as const;
+export type StatChartDirection = (typeof STAT_CHART_DIRECTIONS)[number];
+
+/** Lectures graphiques sur le polygone (Q27) */
+export const STAT_CHART_READINGS = ['aucune', 'médiane', 'quartiles'] as const;
+export type StatChartReading = (typeof STAT_CHART_READINGS)[number];
+
+/** Indicateurs affichables sous la figure (Q28) */
+export const STAT_CHART_INDICATORS = [
+	'effectif',
+	'moyenne',
+	'mediane',
+	'quartiles',
+	'ecart-interquartile',
+	'etendue',
+	'ecart-type',
+	'classe-mediane'
+] as const;
+export type StatChartIndicator = (typeof STAT_CHART_INDICATORS)[number];
+
+/** Indicateurs disponibles pour une série en classes */
+export const CLASS_INDICATORS: readonly StatChartIndicator[] = [
+	'effectif',
+	'moyenne',
+	'classe-mediane',
+	'mediane'
+];
 
 /** Ce qu'affiche la légende d'un diagramme circulaire (`étiquettes:`) */
 export const STAT_CHART_LABELS = ['pourcentages', 'effectifs', 'angles', 'aucune'] as const;
@@ -34,8 +71,11 @@ export type StatChartUnit = 'effectifs' | 'pourcentages';
 
 /** Une catégorie et son effectif (ou son pourcentage). */
 export interface StatChartDatum {
+	/** Nom de la catégorie ; pour une classe, `[0 ; 10[` récrit proprement */
 	label: string;
 	value: number;
+	/** Bornes d'une classe `[lower ; upper[`, sinon null */
+	interval: { lower: number; upper: number } | null;
 	/** Ligne du bloc (1 = première ligne après la clôture d'ouverture) */
 	line: number;
 }
@@ -57,6 +97,14 @@ export interface StatChartSpec {
 	color: CourbeColor;
 	/** Circulaire : contenu de la légende (Q18) */
 	labels: StatChartLabels;
+	/** Histogramme : `légende: 1 carreau = 2 élèves`, sinon automatique (Q26) */
+	areaLegend: { value: number; unit: string | null } | null;
+	/** Polygone : sens des fréquences cumulées (Q27) */
+	direction: StatChartDirection;
+	/** Polygone : lectures graphiques (Q27) */
+	reading: StatChartReading;
+	/** Indicateurs sous la figure, dans l'ordre de l'auteur (Q28) */
+	indicators: StatChartIndicator[];
 }
 
 // ============================================================================
@@ -113,6 +161,8 @@ export const STAT_CHART_LIMITS = {
 	barCategories: 30,
 	/** Secteurs d'un diagramme circulaire */
 	pieSectors: 12,
+	/** Classes d'un histogramme ou d'un polygone (Q29) */
+	classes: 20,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

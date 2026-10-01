@@ -15,7 +15,7 @@
  * @module statistics/classes
  */
 
-import { reaches } from './cumulative';
+import { isExactly, reaches } from './cumulative';
 import { STATISTICS_LIMITS } from './limits';
 import { failure, formatForMessage, success, type Failure, type Outcome } from './outcome';
 
@@ -39,7 +39,10 @@ export interface ClassRow extends StatClass {
 	 */
 	readonly density: number;
 	readonly frequency: number;
+	/** Part des données < `upper` (polygone croissant, point à la borne droite) */
 	readonly cumulativeFrequency: number;
+	/** Part des données ≥ `lower` (polygone décroissant, point à la borne gauche) */
+	readonly decreasingCumulativeFrequency: number;
 }
 
 export interface ClassSummary {
@@ -72,8 +75,6 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 
 	let weightedCenters = 0;
 	let cumulative = 0;
-	let medianClassIndex = -1;
-	let estimatedMedian = Number.NaN;
 	const rows: ClassRow[] = [];
 
 	for (let i = 0; i < classes.length; i++) {
@@ -83,11 +84,6 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 		cumulative += count;
 		weightedCenters += count * ((lower + upper) / 2);
 
-		if (medianClassIndex === -1 && count > 0 && reaches(cumulative, total / 2, total)) {
-			medianClassIndex = i;
-			estimatedMedian = lower + ((total / 2 - before) / count) * width;
-		}
-
 		rows.push({
 			lower,
 			upper,
@@ -95,17 +91,72 @@ export function summarizeClasses(classes: readonly StatClass[]): Outcome<ClassSu
 			width,
 			density: count / width,
 			frequency: count / total,
-			cumulativeFrequency: cumulative / total
+			cumulativeFrequency: cumulative / total,
+			decreasingCumulativeFrequency: (total - before) / total
 		});
 	}
 
+	// Une seule règle d'interpolation pour la médiane et les quartiles (revue du lot 3)
+	const median = interpolate(classes, total, total / 2);
 	return success({
 		classes: rows,
 		total,
 		mean: weightedCenters / total,
-		medianClassIndex,
-		estimatedMedian
+		medianClassIndex: median.classIndex,
+		estimatedMedian: median.value
 	});
+}
+
+/**
+ * Quantile estimé d'une série en classes, par interpolation linéaire dans la
+ * classe où les effectifs cumulés atteignent `percent` % (répartition
+ * uniforme) : ce que l'on lit sur le polygone des fréquences cumulées.
+ *
+ * ⚠️ Une ESTIMATION, à ne pas confondre avec le quartile d'une série brute
+ * (`summarizeList`, définition du programme).
+ *
+ * @returns `null` sans aucune classe ; un échec situé sinon.
+ */
+export function estimateClassQuantile(
+	classes: readonly StatClass[],
+	percent: number
+): Outcome<number> | null {
+	if (classes.length === 0) return null;
+	if (!(percent > 0 && percent < 100)) {
+		return failure(`Pourcentage hors de ]0 ; 100[ (reçu ${formatForMessage(percent)}).`);
+	}
+	const invalid = checkClasses(classes);
+	if (invalid) return invalid;
+
+	const total = classes.reduce((sum, { count }) => sum + count, 0);
+	if (total === 0) return failure('Effectif total nul : aucune donnée à décrire.');
+
+	return success(interpolate(classes, total, (percent * total) / 100).value);
+}
+
+/**
+ * Valeur où l'effectif cumulé atteint `target`, par interpolation linéaire
+ * dans sa classe (répartition uniforme), et l'indice de cette classe.
+ * Préconditions : classes valides, total > 0, 0 < target < total.
+ */
+function interpolate(
+	classes: readonly StatClass[],
+	total: number,
+	target: number
+): { value: number; classIndex: number } {
+	let cumulative = 0;
+	for (let i = 0; i < classes.length; i++) {
+		const { lower, upper, count } = classes[i];
+		const before = cumulative;
+		cumulative += count;
+		if (count > 0 && reaches(cumulative, target, total)) {
+			// Atteint pile en fin de classe : la borne droite, sans bruit flottant
+			if (isExactly(cumulative, target, total)) return { value: upper, classIndex: i };
+			return { value: lower + ((target - before) / count) * (upper - lower), classIndex: i };
+		}
+	}
+	const last = classes.length - 1;
+	return { value: classes[last].upper, classIndex: last };
 }
 
 function checkClasses(classes: readonly StatClass[]): Failure | null {

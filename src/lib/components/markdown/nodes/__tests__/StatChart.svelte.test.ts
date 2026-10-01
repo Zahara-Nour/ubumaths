@@ -116,6 +116,60 @@ describe('StatChart — circulaire', () => {
 	});
 });
 
+describe('StatChart — histogramme et polygone (lot 3)', () => {
+	const TRAJETS = '[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10';
+
+	it('histogramme : un rectangle VISIBLE par classe, légende d’aire affichée', async () => {
+		const node = parseStatChartContent('histogramme', TRAJETS);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = screen.container.querySelectorAll<SVGRectElement>('.stat-rectangle');
+
+		expect(rects.length).toBe(3);
+		expect(getComputedStyle(rects[0]).fill).not.toBe('none');
+		expect(screen.container.textContent).toContain('1 carreau = 2');
+	});
+
+	it('polygone : un tracé VISIBLE et les lectures demandées', async () => {
+		const node = parseStatChartContent('frequences-cumulees', `lecture: quartiles\n${TRAJETS}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const line = screen.container.querySelector<SVGPolylineElement>('.stat-polygone')!;
+
+		expect(line.getAttribute('points')?.split(' ')).toHaveLength(4);
+		expect(getComputedStyle(line).stroke).not.toBe('none');
+		expect(screen.container.querySelectorAll('.stat-lecture').length).toBe(3);
+		expect(screen.container.textContent).toContain('Me ≈ 14,44');
+	});
+
+	it('ligne d’indicateurs sous la figure', async () => {
+		const node = parseStatChartContent(
+			'histogramme',
+			`indicateurs: effectif ; moyenne\n${TRAJETS}`
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		// Une liste : « · » n'est ni lu ni marqué d'une pause par les lecteurs d'écran (audit a11y)
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
+		);
+		expect(items).toEqual(['Effectif total : 40', 'Moyenne = 15,75']);
+	});
+
+	// Audit a11y : un effectif écrit DANS le rectangle disparaissait (rectangle bas, effectif 0)
+	// ou manquait de contraste (rouge, bleu en sombre)
+	it('valeurs: oui — l’effectif est écrit au-dessus du rectangle, même nul', async () => {
+		const node = parseStatChartContent('histogramme', 'valeurs: oui\n[0 ; 10[ = 0\n[10 ; 20[ = 5');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = screen.container.querySelectorAll<SVGRectElement>('.stat-rectangle');
+		const labels = screen.container.querySelectorAll<SVGTextElement>('.stat-valeur');
+
+		expect(labels.length).toBe(2);
+		labels.forEach((label, i) => {
+			const top = rects[i].getBoundingClientRect().top;
+			expect(label.getBoundingClientRect().bottom).toBeLessThanOrEqual(top + 1);
+		});
+	});
+});
+
 // =============================================================================
 // Accessibilité
 // =============================================================================
@@ -226,6 +280,36 @@ describe('StatChart — erreurs (Q48)', () => {
 			props: { content, showAuthoringErrors: true }
 		});
 		expect(prof.container.textContent).toContain('50 %');
+	});
+});
+
+// Revue du lot 3 : une exception de la scène cassait le rendu de TOUTE la page
+describe('StatChart — scène qui échoue', () => {
+	function brokenNode() {
+		const node = parseStatChartContent('histogramme', '[0 ; 1[ = 1\n[1 ; 3[ = 1');
+		// Spécification forgée, hors du parseur : quadrillage démesuré
+		node.spec!.data[1].interval = { lower: 1, upper: 1_000_000_000 };
+		return node;
+	}
+
+	it('élève : cadre neutre, la page continue', async () => {
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: { content: 'Avant.' }
+		});
+		const chart = await render(StatChart, { target: mainElement(), props: { node: brokenNode() } });
+
+		expect(chart.container.textContent).toContain('Figure indisponible');
+		expect(screen.container.textContent).toContain('Avant.');
+	});
+
+	it('prof : un message dit que le diagramme n’a pas pu être dessiné', async () => {
+		const chart = await render(StatChart, {
+			target: mainElement(),
+			props: { node: brokenNode(), showErrors: true }
+		});
+
+		expect(chart.container.textContent).toMatch(/non dessiné/);
 	});
 });
 

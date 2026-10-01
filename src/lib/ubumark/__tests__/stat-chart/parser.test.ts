@@ -72,9 +72,9 @@ describe('lire un bloc valide', () => {
 		const spec = specOf('barres', SPORTS);
 
 		expect(spec.data).toEqual([
-			{ label: 'Football', value: 12, line: 2 },
-			{ label: 'Natation', value: 8, line: 3 },
-			{ label: 'Danse', value: 7, line: 4 }
+			{ label: 'Football', value: 12, interval: null, line: 2 },
+			{ label: 'Natation', value: 8, interval: null, line: 3 },
+			{ label: 'Danse', value: 7, interval: null, line: 4 }
 		]);
 		expect(spec.unit).toBe('effectifs');
 		expect(spec.title).toBe('Sport préféré');

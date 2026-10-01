@@ -21,7 +21,8 @@
 	import {
 		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
-		type ScenePoint
+		type ScenePoint,
+		type StatChartScene
 	} from '$lib/ubumark/utils/stat-chart-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -47,6 +48,11 @@
 	const AXIS_TITLE_PX = 18;
 
 	const SIN_45 = Math.SQRT1_2;
+
+	const FAILED_MESSAGE = 'Le calcul du diagramme a échoué : il n’a pas été dessiné';
+
+	/** Marge gauche d'un histogramme ou d'un polygone (graduations jusqu'à « 100 ») */
+	const CLASS_PAD_LEFT = 44;
 
 	/** Rayon d'un repère numéroté, en px */
 	const MARKER_PX = 9;
@@ -86,16 +92,40 @@
 
 	let errorsVisible = $derived(showErrors ?? authoring());
 	let admitted = $derived(budget()?.admits(node) ?? true);
-	let scene = $derived.by(() => {
+	/**
+	 * Une exception de la scène ne doit jamais remonter : elle cassait le rendu
+	 * de TOUTE la page (revue du lot 3). Le bloc tombe en erreur, comme une
+	 * faute d'auteur.
+	 */
+	let computed = $derived.by((): { scene: StatChartScene | null; failed: boolean } => {
 		const spec = node.spec;
-		if (!spec || !admitted) return null;
-		return withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
+		if (!spec || !admitted) return { scene: null, failed: false };
+		try {
+			const built = withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
+			return { scene: built, failed: false };
+		} catch {
+			return { scene: null, failed: true };
+		}
 	});
-	let overBudget = $derived(node.spec !== null && scene === null);
-	let shownErrors = $derived(overBudget ? [{ message: OVER_BUDGET_MESSAGE }] : node.errors);
+	let scene = $derived(computed.scene);
+	let overBudget = $derived(node.spec !== null && scene === null && !computed.failed);
+	let shownErrors = $derived(
+		computed.failed
+			? [{ message: FAILED_MESSAGE }]
+			: overBudget
+				? [{ message: OVER_BUDGET_MESSAGE }]
+				: node.errors
+	);
 
 	let bars = $derived(scene?.kind === 'barres' ? scene : null);
 	let pie = $derived(scene?.kind === 'circulaire' ? scene : null);
+	let histogram = $derived(scene?.kind === 'histogramme' ? scene : null);
+	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
+	/** Histogramme ou polygone : abscisses dans l'unité des classes */
+	let classChart = $derived(histogram ?? cumulative);
+	/** Haut de l'axe vertical : carreaux / effectif (histogramme) ou 100 % (polygone) */
+	let classYMax = $derived(histogram ? histogram.yMax : 100);
+	let classPadBottom = $derived(PAD_BOTTOM_FLAT + (classChart?.axisTitles.x ? AXIS_TITLE_PX : 0));
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
@@ -126,6 +156,19 @@
 	/** Ordonnée d'écran d'une valeur */
 	function sy(value: number): number {
 		return bars ? PAD_TOP + (1 - value / bars.yMax) * plotHeight : 0;
+	}
+
+	/** Abscisse d'écran, dans l'unité des classes */
+	function cx(x: number): number {
+		if (!classChart) return 0;
+		return (
+			CLASS_PAD_LEFT + ((x - classChart.xMin) / (classChart.xMax - classChart.xMin)) * plotWidth
+		);
+	}
+
+	/** Ordonnée d'écran, de 0 à `classYMax` */
+	function cy(value: number): number {
+		return PAD_TOP + (1 - value / classYMax) * plotHeight;
 	}
 
 	let pieRadius = $derived(plotWidth / 2);
@@ -236,6 +279,148 @@
 					{/if}
 				</g>
 			</svg>
+		{:else if classChart}
+			<svg
+				role="img"
+				aria-labelledby={titleId}
+				aria-describedby={descId}
+				viewBox="0 0 {CLASS_PAD_LEFT + plotWidth + PAD_RIGHT} {PAD_TOP +
+					plotHeight +
+					classPadBottom}"
+				style:max-width="{CLASS_PAD_LEFT + plotWidth + PAD_RIGHT}px"
+				class="stat-svg"
+			>
+				<title id={titleId}>{scene.accessibleTitle}</title>
+				<desc id={descId}>{scene.description}</desc>
+
+				<!-- Graduations verticales, ou quadrillage d'un histogramme à carreaux -->
+				<g class="stat-graduations" aria-hidden="true">
+					{#if histogram?.mode !== 'carreaux'}
+						{#each classChart.ticks as tick, i (i)}
+							<line
+								class="stat-grille"
+								x1={cx(classChart.xMin)}
+								y1={cy(tick.value)}
+								x2={cx(classChart.xMax)}
+								y2={cy(tick.value)}
+							/>
+							<line
+								x1={CLASS_PAD_LEFT - 4}
+								y1={cy(tick.value)}
+								x2={CLASS_PAD_LEFT}
+								y2={cy(tick.value)}
+							/>
+							<text
+								x={CLASS_PAD_LEFT - 6}
+								y={cy(tick.value)}
+								text-anchor="end"
+								dominant-baseline="middle">{tick.label}</text
+							>
+						{/each}
+					{/if}
+				</g>
+
+				{#if histogram}
+					{#each histogram.rects as rect, i (i)}
+						<rect
+							class="stat-rectangle"
+							x={cx(rect.lower)}
+							y={cy(rect.height)}
+							width={cx(rect.upper) - cx(rect.lower)}
+							height={cy(0) - cy(rect.height)}
+							style:fill={COLOR_VAR[histogram.color]}
+						/>
+						<!-- Au-dessus, pas dedans : un rectangle bas ou nul le cachait, et le
+						     texte clair sur rouge ou bleu sombre manquait de contraste (audit a11y) -->
+						{#if histogram.showValues}
+							<text
+								class="stat-valeur"
+								x={(cx(rect.lower) + cx(rect.upper)) / 2}
+								y={cy(rect.height) - 4}
+								text-anchor="middle">{rect.valueLabel}</text
+							>
+						{/if}
+					{/each}
+				{/if}
+
+				<!-- Quadrillage du mode carreaux : APRÈS les rectangles, pour compter dedans -->
+				{#if histogram?.mode === 'carreaux'}
+					<g class="stat-quadrillage" aria-hidden="true">
+						{#each histogram.grid.xs as x, i (i)}
+							<line x1={cx(x)} y1={cy(0)} x2={cx(x)} y2={cy(classYMax)} />
+						{/each}
+						{#each histogram.grid.ys as y, i (i)}
+							<line x1={cx(classChart.xMin)} y1={cy(y)} x2={cx(classChart.xMax)} y2={cy(y)} />
+						{/each}
+					</g>
+				{/if}
+				{#if cumulative}
+					<polyline
+						class="stat-polygone"
+						points={cumulative.points
+							.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`)
+							.join(' ')}
+						style:stroke={COLOR_VAR[cumulative.color]}
+					/>
+					{#each cumulative.points as p, i (i)}
+						<circle
+							class="stat-sommet"
+							cx={cx(p.x)}
+							cy={cy(p.y)}
+							r="2.5"
+							style:fill={COLOR_VAR[cumulative.color]}
+						/>
+					{/each}
+					<!-- Étiquette au début du pointillé, du côté libre : au-dessus si le
+					     polygone croît (il passe dessous à gauche), en dessous s'il décroît -->
+					{#each cumulative.readings as reading, i (i)}
+						<g class="stat-lecture">
+							<polyline
+								points="{cx(cumulative.xMin)},{cy(reading.percent)} {cx(reading.x)},{cy(
+									reading.percent
+								)} {cx(reading.x)},{cy(0)}"
+							/>
+							<text
+								x={cx(cumulative.xMin) + 4}
+								y={cy(reading.percent) + (cumulative.direction === 'croissantes' ? -4 : 12)}
+								>{reading.text}</text
+							>
+						</g>
+					{/each}
+				{/if}
+
+				<!-- Bornes des classes et axes -->
+				<g class="stat-axes" aria-hidden="true">
+					{#each classChart.xTicks as tick, i (i)}
+						<line x1={cx(tick.value)} y1={cy(0)} x2={cx(tick.value)} y2={cy(0) + 4} />
+						<text x={cx(tick.value)} y={cy(0) + 16} text-anchor="middle">{tick.label}</text>
+					{/each}
+					<line x1={CLASS_PAD_LEFT} y1={cy(0)} x2={CLASS_PAD_LEFT + plotWidth} y2={cy(0)} />
+					<line x1={CLASS_PAD_LEFT} y1={cy(0)} x2={CLASS_PAD_LEFT} y2={PAD_TOP - 10} />
+					<polygon
+						points="{CLASS_PAD_LEFT},{PAD_TOP - 14} {CLASS_PAD_LEFT - 3.5},{PAD_TOP -
+							7} {CLASS_PAD_LEFT + 3.5},{PAD_TOP - 7}"
+					/>
+					{#if classChart.axisTitles.y}
+						<text class="stat-titre-axe" x={CLASS_PAD_LEFT + 6} y={PAD_TOP - 12}
+							>{classChart.axisTitles.y}</text
+						>
+					{/if}
+					{#if classChart.axisTitles.x}
+						<text
+							class="stat-titre-axe"
+							x={CLASS_PAD_LEFT + plotWidth / 2}
+							y={PAD_TOP + plotHeight + classPadBottom - 4}
+							text-anchor="middle">{classChart.axisTitles.x}</text
+						>
+					{/if}
+				</g>
+			</svg>
+			{#if histogram?.carreau}
+				<p class="stat-legende-aire">
+					<span class="stat-carreau" aria-hidden="true"></span>{histogram.carreau.legend}
+				</p>
+			{/if}
 		{:else if pie}
 			<div class="stat-circulaire">
 				<svg
@@ -294,6 +479,15 @@
 					{/each}
 				</ul>
 			</div>
+		{/if}
+
+		<!-- Une liste : « · » n'est ni lu ni marqué d'une pause par les lecteurs d'écran -->
+		{#if scene.indicators.length > 0}
+			<ul class="stat-indicateurs">
+				{#each scene.indicators as indicator, i (i)}
+					<li>{indicator}</li>
+				{/each}
+			</ul>
 		{/if}
 
 		{#if errorsVisible && node.warnings.length > 0}
@@ -417,6 +611,68 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
+	}
+
+	/* Bordure couleur du fond, comme les secteurs : sépare deux classes de même
+	   couleur au moins à 3:1 dans les deux thèmes (audit a11y) */
+	.stat-rectangle {
+		stroke: var(--color-background);
+		stroke-width: 1.5;
+	}
+
+	/* Mode carreaux : le quadrillage est la seule échelle, il passe DEVANT les
+	   rectangles pour qu'on y compte les carreaux, et doit atteindre ~3:1 */
+	.stat-quadrillage line {
+		stroke: color-mix(in oklab, var(--color-foreground) 50%, transparent);
+		stroke-width: 0.75;
+	}
+
+	.stat-polygone {
+		fill: none;
+		stroke-width: 2;
+		stroke-linejoin: round;
+	}
+
+	/* 1,5 px : sinon confondu avec la ligne de grille qu'il recouvre (audit a11y) */
+	.stat-lecture polyline {
+		fill: none;
+		stroke: var(--color-foreground);
+		stroke-width: 1.5;
+		stroke-dasharray: 4 3;
+	}
+
+	/* Halo couleur du fond : l'étiquette reste lisible sur la grille ou le polygone */
+	.stat-svg .stat-lecture text {
+		paint-order: stroke;
+		stroke: var(--color-background);
+		stroke-width: 3px;
+	}
+
+	.stat-legende-aire,
+	.stat-indicateurs {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0.4rem;
+		margin: 0.25rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	/* Séparateur visuel seulement : texte de remplacement vide pour les lecteurs d'écran */
+	.stat-indicateurs li + li::before {
+		content: '·' / '';
+		margin-right: 0.4rem;
+	}
+
+	.stat-carreau {
+		display: inline-block;
+		width: 0.75rem;
+		height: 0.75rem;
+		border: 1px solid var(--color-foreground);
 	}
 
 	.stat-repere circle {
