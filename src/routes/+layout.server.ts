@@ -32,27 +32,12 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		(cookie) => cookie.name.startsWith('sb-') // sb-access-token, sb-refresh-token, etc.
 	);
 
-	// Load VIP card templates from database (for client-side store)
+	// Catalogue des cartes VIP (store client) : lu seulement avec une session.
+	// Le visiteur n'a aucun droit sur `vip_card_templates` : l'interroger sans
+	// connexion ne rendrait rien, à chaque page vue.
 	let vipCardTemplates: VipCardTemplate[] = [];
-	try {
-		const { data, error } = await locals.supabase
-			.from('vip_card_templates')
-			.select('*')
-			.order('sort_order', { ascending: true });
-
-		if (error) {
-			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
-		} else {
-			// Le store conserve la ligne telle quelle et ne rétrécit que `action`,
-			// colonne jsonb : c'est son contrat, distinct du type d'administration.
-			vipCardTemplates = (data ?? []).map((row) => ({
-				...row,
-				action: asVipCardAction(row.action)
-			}));
-			console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${vipCardTemplates.length} VIP card templates`);
-		}
-	} catch (err) {
-		console.error('❌ [ROOT LAYOUT SERVER] Exception loading VIP card templates:', err);
+	if (locals.user) {
+		vipCardTemplates = await loadVipCardTemplates(locals.supabase);
 	}
 
 	return {
@@ -67,3 +52,29 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		vipCardTemplates
 	};
 };
+
+/** Catalogue complet ; une erreur est journalisée et rend un tableau vide. */
+async function loadVipCardTemplates(supabase: App.Locals['supabase']): Promise<VipCardTemplate[]> {
+	try {
+		const { data, error } = await supabase
+			.from('vip_card_templates')
+			.select('*')
+			.order('sort_order', { ascending: true });
+
+		if (error) {
+			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
+			return [];
+		}
+		// Le store conserve la ligne telle quelle et ne rétrécit que `action`,
+		// colonne jsonb : c'est son contrat, distinct du type d'administration.
+		const templates = (data ?? []).map((row) => ({
+			...row,
+			action: asVipCardAction(row.action)
+		}));
+		console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${templates.length} VIP card templates`);
+		return templates;
+	} catch (err) {
+		console.error('❌ [ROOT LAYOUT SERVER] Exception loading VIP card templates:', err);
+		return [];
+	}
+}
