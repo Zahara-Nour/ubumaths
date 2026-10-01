@@ -165,6 +165,8 @@ export type {
 	CourbeNode,
 	CourbeSpec,
 	CourbeFunction,
+	CourbeSequence,
+	CourbeSequenceTerm,
 	CourbePoint,
 	CourbeIssue,
 	CourbeLabel,

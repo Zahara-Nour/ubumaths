@@ -3,7 +3,7 @@
  * ===================================
  *
  * Dessine la MÊME scène que l'écran (`buildCourbeScene`) : mêmes polylignes,
- * mêmes points, mêmes bornes. Chaque primitive est précédée d'un commentaire
+ * mêmes points, mêmes bornes, mêmes termes de suites. Chaque primitive est précédée d'un commentaire
  * (`// trace f`, `// point A`…) qui permet de les compter dans les tests.
  *
  * ⚠️ En production, le PDF est compilé dans le navigateur par typst.ts
@@ -179,6 +179,15 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		lines.push(
 			`  circle(${P(e)}, radius: 0.065, fill: ${e.open ? 'white' : color}, stroke: 0.7pt + ${color})`
 		);
+	}
+
+	// Termes des suites : un disque par terme, non reliés
+	for (const seq of scene.sequences) {
+		const color = TYPST_COLORS[seq.color];
+		for (const t of seq.terms) {
+			lines.push(`  // terme ${seq.name}`);
+			lines.push(`  circle(${P(t)}, radius: 0.06, fill: ${color}, stroke: none)`);
+		}
 	}
 
 	// Points nommés : nom en TEXTE italique (jamais en mode math)

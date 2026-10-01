@@ -154,3 +154,67 @@ describe('Courbe — dans un item de liste (comportement 8)', () => {
 		expect(screen.container.querySelectorAll('.courbe-trace').length).toBeGreaterThan(0);
 	});
 });
+
+describe('Courbe — suites (1re spé)', () => {
+	const SUITES = `x: -1 ; 10
+y: -1 ; 20
+f(x) = 0.5*x+2   vert   nom=C_f
+u(n) = 2*n+1 pour n de 0 à 12   bleu   nom=u
+v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9   rouge   nom=v`;
+
+	it('un disque par terme visible, autant que la scène (et que Typst)', async () => {
+		const node = parseCourbeContent(SUITES);
+		const scene = buildCourbeScene(node.spec!);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const disks = screen.container.querySelectorAll('.courbe-terme');
+		expect(disks.length).toBe(20);
+		expect(disks.length).toBe(scene.sequences.reduce((n, s) => n + s.terms.length, 0));
+		// Points non reliés : aucune polyligne de plus que la courbe de f
+		expect(screen.container.querySelectorAll('.courbe-trace').length).toBe(
+			scene.curves[0].polylines.length
+		);
+	});
+
+	it('les termes sont VISIBLES : disque rempli d’une couleur, rayon non nul', async () => {
+		const node = parseCourbeContent(SUITES);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const disk = screen.container.querySelector('.courbe-terme') as SVGCircleElement;
+		const style = getComputedStyle(disk);
+		expect(style.fill).not.toBe('none');
+		expect(style.fill).not.toBe('');
+		expect(Number(disk.getAttribute('r'))).toBeGreaterThan(0);
+		const box = disk.getBoundingClientRect();
+		expect(box.width).toBeGreaterThan(0);
+	});
+
+	it('aria-label mentionne la suite ; noms affichés', async () => {
+		const node = parseCourbeContent(SUITES);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]');
+		expect(svg!.getAttribute('aria-label')).toBe('Courbe de f et suites u et v, x de −1 à 10');
+		const names = [...screen.container.querySelectorAll('.courbe-nom')].map((n) => n.textContent);
+		expect(names).toEqual(['Cf', 'u', 'v']);
+	});
+
+	it('prof : termes hors fenêtre et récurrence explosive signalés sous la figure', async () => {
+		const node = parseCourbeContent(
+			'x: -1 ; 10\ny: -1 ; 20\nu(n) = 2*n+1 pour n de 0 à 12\nv(0) = 2 ; v(n+1) = v(n)^2 pour n de 0 à 50'
+		);
+		const prof = await render(Courbe, { target: mainElement(), props: { node, showErrors: true } });
+		const text = prof.container.textContent ?? '';
+		expect(text).toContain('hors de la fenêtre');
+		expect(text).toContain('calcul arrêté');
+	});
+
+	it('dans un item de liste, via MarkdownRenderer', async () => {
+		const content = [
+			'1. Conjecturer :',
+			'',
+			'   ```courbe',
+			...SUITES.split('\n').map((l) => `   ${l}`),
+			'   ```'
+		].join('\n');
+		const screen = await render(MarkdownRenderer, { target: mainElement(), props: { content } });
+		expect(screen.container.querySelectorAll('.courbe-terme').length).toBe(20);
+	});
+});

@@ -6,6 +6,7 @@
 	scène pure `buildCourbeScene` (la même que le PDF Typst).
 
 	- Repère anisotrope : la fenêtre x et y de l'auteur remplit un cadre 4:3.
+	- Suites : un disque par terme (n ; u_n), non reliés.
 	- Couleurs par tokens `var(--color-*)` (clair / sombre).
 	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique).
 	- Erreur (Q48) : message situé pour le prof (`showErrors`, ou contexte posé
@@ -214,6 +215,19 @@
 					style:stroke={COLOR_VAR[e.color]}
 					style:fill={e.open ? 'var(--color-background)' : COLOR_VAR[e.color]}
 				/>
+			{/each}
+
+			<!-- Termes des suites : un disque par terme, points non reliés -->
+			{#each scene.sequences as seq, s (s)}
+				{#each seq.terms as t, i (i)}
+					<circle
+						class="courbe-terme"
+						cx={sx(t.x)}
+						cy={sy(t.y)}
+						r="3"
+						style:fill={COLOR_VAR[seq.color]}
+					/>
+				{/each}
 			{/each}
 
 			<!-- Points nommés -->

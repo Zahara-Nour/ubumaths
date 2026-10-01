@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```courbe — progression
 date: 2026-10-01
-status: lots 1-3 livrés sur la branche (PR à ouvrir)
+status: lots 1-3 livrés ; suites (lots S1-S3) livrées sur feat/courbe-suites
 branche: feat/bloc-courbe (worktree ../ubumaths-wt-courbe)
 ---
 
@@ -147,3 +147,76 @@ isotrope, exporteurs sans `function`).
 - Clés d'index dans les `{#each}` de `Courbe.svelte`.
 - Compilation Typst dans un test Node : non faite (cetz se télécharge par le réseau) ;
   commentaire du test corrigé pour dire ce qui est prouvé.
+
+## Suites (extension du bloc, décision de David du 2026-10-01)
+
+Branche `feat/courbe-suites` (worktree `../ubumaths-wt-suites`), pour la 1re spé. Extension du
+bloc ```courbe, PAS un nouveau bloc.
+
+````
+```courbe
+x: -1 ; 10
+y: -1 ; 8
+u(n) = 2*n+1 pour n de 0 à 8          bleu   nom=u
+v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9   rouge
+points: …
+```
+````
+
+- Suite EXPLICITE `u(n) = expr(n)` et RÉCURRENTE `v(0) = a ; v(n+1) = expr(v(n), n)` (sur UNE
+  ligne ; premier rang quelconque : `v(1) = …`), rangs `pour n de n0 à n1` (entiers, n0 ≤ n1 ;
+  `à` ou `a`). Pour une récurrence, n0 ≥ rang du premier terme (les termes avant n0 sont
+  calculés, pas dessinés). Variables `{{…}}` résolues avant, comme le reste du bloc.
+- Rendu : un disque par terme (n ; u_n), points NON reliés ; couleur, `nom=` (ancré près du
+  dernier terme visible, même mécanique que le nom de courbe). Pas de pointillés de rappel en v1.
+  Terme hors fenêtre : non dessiné + avertissement prof. Écran (SVG) et Typst : MÊME scène
+  (primitive `sequences` de `courbe-scene.ts`, `// terme u` dans cetz).
+- Socle réutilisé du grapheur, SANS store : `computeSequenceTerms` et `PREV_TERM_VARIABLE` de
+  `grapheur/sequence.ts` (`v(n)` est lu par `parseCustom` comme un appel de fonction, réécrit en
+  `PREV_TERM_VARIABLE` par `transformAST`).
+- Pas en v1 : toile d'araignée, relier les points, sommes/produits, suites de matrices, appel
+  d'une fonction ou d'une autre suite dans l'expression.
+- Robustesse (`COURBE_LIMITS`) : ≤ 200 termes calculés par suite, ≤ 10 suites, ≤ 1000 termes au
+  total ; rangs entiers « sûrs » ; terme non fini ou |terme| > 10^12 → calcul ARRÊTÉ à ce rang,
+  avertissement situé (`v(n+1) = v(n)^2` ne fige rien). Entrées hostiles < 50 ms.
+- Erreurs situées (« Ligne N : … ») : rangs non entiers, n0 > n1, récurrence sans premier terme,
+  premier terme sans récurrence, expression illisible, nom qui ne correspond pas (`v(0) = 1 ;
+u(n+1) = …`, `v(n-1)` dans la relation), `pour n de … à …` absent, trop de termes.
+
+### Comportements à tester
+
+S1. explicite `u(n) = 2*n+1 pour n de 0 à 8` → 9 points (n ; 2n+1).
+S2. récurrence `v(0) = 1 ; v(n+1) = 0.5*v(n)+2` → 1 ; 2,5 ; 3,25 ; 3,625…
+S3. premier rang 1 (`w(1) = 2 ; w(n+1) = w(n)+n pour n de 1 à 5`).
+S4. `{{a}}` résolu avant.
+S5. termes hors fenêtre non dessinés + avertissement.
+S6. récurrence explosive `v(n+1) = v(n)^2` → arrêt, avertissement, < 50 ms (entrées hostiles).
+S7. erreurs ci-dessus, situées.
+S8. même nombre de termes à l'écran (SVG) et dans Typst.
+S9. fonction ET suite dans le même bloc ; bloc dans une liste.
+S10. `aria-label` mentionne la suite.
+S11. Typst sans « Figure indisponible » ; compilation d'une fiche (`rendu-fiche.ts` +
+`compile-prod.mjs`, 4/4 FR/EN énoncé/corrigé) si faisable.
+
+### Lots suites
+
+- [x] Lot S1 — types + parseur + scène + Typst (`courbe-suites.test.ts`, rouge avant : `sequences`
+      absent)
+- [x] Lot S2 — SVG (`.courbe-terme`) + accessibilité (5 tests navigateur, 3 rouges avant)
+- [x] Lot S3 — compilation d'une fiche, vérifs finales
+
+### Journal suites
+
+- 2026-10-01 : termes calculés à l'ANALYSE (`CourbeSequence.terms`) avec `computeSequenceTerms`
+  du grapheur ; la scène filtre à la fenêtre et tronque aux plafonds (spécification forgée).
+  Avertissements : explosion / terme non défini (analyse, `node.warnings`), rangs sautés d'une
+  suite explicite, termes hors fenêtre (scène). Nom de suite = UNE lettre.
+- Piège trouvé par la compilation de la fiche : `parseCustom` ne lit `x(n)` comme un appel que
+  pour f, g, h, u, v, w — `t(n)` y devient `t*n`. D'où la réécriture TEXTUELLE `t(n)` → `(t_n)`
+  avant l'analyse, puis l'indice → variable (test rouge ajouté : t, a, p, q).
+- **Compilation prouvée** : fiche de 3 exercices (fonction + 2 suites + point ; récurrence
+  explosive `w(n+1) = w(n)^2` ; suite de premier rang 1 dans un item de liste, `taille: petite`)
+  passée par `rendu-fiche.ts` (énoncé + corrigé, FR + EN) puis `compile-prod.mjs` : 4/4 OK,
+  29 `// terme` par énoncé (20 + 4 + 5), aucun « Figure indisponible », page relue à l'œil.
+- `src/lib/grapheur/sequence.ts` désormais atteint par la suite d'intégration (via ubumark) :
+  motif ajouté au filtre `paths` de `nightly-integration.yml` (`check:integration-paths`).

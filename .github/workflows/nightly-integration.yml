@@ -56,6 +56,8 @@ on:
       - 'src/lib/ubumark/**'
       # Bloc ```figure : les producteurs de PDF importent l'interpréteur du DSL
       - 'src/lib/geometry-core/**'
+      # Bloc ```courbe : suites (parseur)
+      - 'src/lib/grapheur/sequence.ts'
       - 'src/lib/utils/**'
       # src/lib : fichiers atteints ponctuellement
       - 'src/lib/components/markdown/utils/math-utils.ts'

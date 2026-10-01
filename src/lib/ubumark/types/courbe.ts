@@ -98,6 +98,37 @@ export interface CourbeArea {
 	line: number;
 }
 
+/** Terme calculé d'une suite : rang n et valeur u_n. */
+export interface CourbeSequenceTerm {
+	n: number;
+	value: number;
+}
+
+/**
+ * Suite numérique : `u(n) = 2*n+1 pour n de 0 à 8` (explicite) ou
+ * `v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9` (récurrente).
+ *
+ * Les termes sont calculés à l'analyse (budget borné, arrêt sur un terme non
+ * fini ou démesuré) : l'écran et le PDF dessinent les mêmes nombres.
+ */
+export interface CourbeSequence {
+	name: string;
+	kind: 'explicite' | 'recurrence';
+	/** Membre de droite après normalisation (`0.5*v(n)+2`) */
+	expression: string;
+	/** Premier rang dessiné (n0) */
+	firstIndex: number;
+	/** Dernier rang dessiné (n1) */
+	lastIndex: number;
+	/** Récurrence : premier terme donné (`v(0) = 1`) */
+	firstTerm: CourbeSequenceTerm | null;
+	/** Termes calculés de rang n0 à n1, rangs non définis absents */
+	terms: CourbeSequenceTerm[];
+	color: CourbeColor;
+	label: CourbeLabel | null;
+	line: number;
+}
+
 /** Pas de la grille, par axe (repère anisotrope). */
 export interface CourbeGrid {
 	x: number;
@@ -110,6 +141,7 @@ export interface CourbeSpec {
 	/** null : pas automatique (`computeGridStep`) */
 	grid: CourbeGrid | null;
 	functions: CourbeFunction[];
+	sequences: CourbeSequence[];
 	points: CourbePoint[];
 	asymptotes: CourbeAsymptote[];
 	areas: CourbeArea[];
@@ -172,6 +204,13 @@ export const COURBE_LIMITS = {
 	points: 50,
 	asymptotes: 20,
 	areas: 10,
+	sequences: 10,
+	/** Termes CALCULÉS par suite (premier terme de la récurrence compris) */
+	sequenceTerms: 200,
+	/** Termes de toutes les suites d'une figure */
+	totalSequenceTerms: 1000,
+	/** Au-delà, une suite est jugée explosive : le calcul s'arrête */
+	sequenceValue: 1e12,
 	/** Valeur absolue maximale d'une borne de fenêtre */
 	bound: 1e9,
 	/** Étendue minimale, relative à la plus grande borne (et à 1) */
