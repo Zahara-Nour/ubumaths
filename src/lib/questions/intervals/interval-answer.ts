@@ -33,8 +33,11 @@ import {
 } from '$lib/mathAST/domain/validation';
 import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
 import { intervalDomain } from '$lib/mathAST/domain/factory';
+import type { Interval } from '$lib/mathAST/domain/types';
+import { toLatex } from '$lib/mathAST/latex-generator';
+import type { MathNode } from '$lib/mathAST/types';
 import { variable } from '$lib/mathAST/factory';
-import { isInfinity } from '$lib/mathAST/guards';
+import { isInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
 import { checkReducedFractions } from '$lib/questions/constraint-validators';
 
@@ -226,4 +229,61 @@ export function judgeIntervalAnswer(
 	const issue = writingIssue(parsed.pieces, parsed.domain);
 	if (!issue || mode === 'off') return { status: 'correct' };
 	return { status: mode === 'strict' ? 'bad_form' : 'unoptimal_form', feedback: issue };
+}
+
+// Affichage
+
+/** Borne en LaTeX, décimal à virgule (`0{,}5`) */
+function boundLatex(value: MathNode): string {
+	if (isInfinity(value)) return isPositiveInfinity(value) ? '+\\infty' : '-\\infty';
+	return toLatex(value).replace(/(\d)\.(\d)/g, '$1{,}$2');
+}
+
+function intervalLatex(interval: Interval): string {
+	const { lower, upper } = interval;
+	if (
+		lower.type === 'closed' &&
+		upper.type === 'closed' &&
+		compareNumericNodes(lower.value, upper.value) === 0
+	) {
+		return `\\{${boundLatex(lower.value)}\\}`;
+	}
+	const open = lower.type === 'closed' ? '[' : ']';
+	const close = upper.type === 'closed' ? ']' : '[';
+	return `${open}${boundLatex(lower.value)};${boundLatex(upper.value)}${close}`;
+}
+
+function domainLatex(domain: Domain): string {
+	if (domain.kind === 'universal') return '\\mathbb{R}';
+	if (domain.kind !== 'interval_set' || domain.intervals.length === 0) return '\\emptyset';
+	const [first] = domain.intervals;
+	// ℝ privé de points : écrit tel quel
+	if (
+		domain.excludedPoints.length > 0 &&
+		domain.intervals.length === 1 &&
+		isInfinity(first.lower.value) &&
+		isInfinity(first.upper.value)
+	) {
+		const points = domain.excludedPoints.map((point) => boundLatex(point.value)).join(';');
+		return `\\mathbb{R}\\setminus\\{${points}\\}`;
+	}
+	const expanded = expandExcludedPoints(domain);
+	if (expanded.kind !== 'interval_set') return domainLatex(expanded);
+	if (
+		expanded.intervals.length === 1 &&
+		isInfinity(first.lower.value) &&
+		isInfinity(expanded.intervals[0].upper.value)
+	) {
+		return '\\mathbb{R}';
+	}
+	return expanded.intervals.map(intervalLatex).join('\\cup');
+}
+
+/**
+ * Réponse attendue d'une case « intervalles » en LaTeX (corrigé, flash back).
+ * Illisible : rendue telle quelle (le test du modèle la signale).
+ */
+export function expectedIntervalsLatex(expected: string): string {
+	const target = readExpectedIntervals(expected);
+	return target.ok ? domainLatex(target.domain) : expected;
 }

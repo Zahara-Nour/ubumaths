@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	judgeIntervalAnswer,
 	readExpectedIntervals,
+	expectedIntervalsLatex,
 	INTERVAL_FEEDBACK
 } from '$lib/questions/intervals/interval-answer';
 
@@ -229,5 +230,31 @@ describe('31 — réponse attendue du modèle', () => {
 
 	it('côté élève, une réponse attendue illisible rend faux sans lever', () => {
 		expect(judgeIntervalAnswer(']2;3[', 'n’importe quoi').status).toBe('incorrect');
+	});
+});
+
+describe('expectedIntervalsLatex — réponse attendue affichée (corrigé, flash back)', () => {
+	it.each([
+		[
+			']-\\infty;1-sqrt(2)[\\cup]3/2;+\\infty[',
+			']-\\infty;1 - \\sqrt{2}[\\cup]\\dfrac{3}{2};+\\infty['
+		],
+		['[-1;2]', '[-1;2]'],
+		[']0.5;1]', ']0{,}5;1]'],
+		['\\emptyset', '\\emptyset'],
+		['\\mathbb{R}', '\\mathbb{R}'],
+		['\\{3\\}', '\\{3\\}'],
+		['\\mathbb{R}\\setminus\\{2\\}', '\\mathbb{R}\\setminus\\{2\\}']
+	])('%s → %s', (expected, latex) => {
+		expect(expectedIntervalsLatex(expected)).toBe(latex);
+	});
+
+	it('se relit comme la réponse attendue (aller-retour)', () => {
+		const expected = ']-\\infty;(1-sqrt(5))/2]\\cup[(1+sqrt(5))/2;+\\infty[';
+		expect(judgeIntervalAnswer(expectedIntervalsLatex(expected), expected).status).toBe('correct');
+	});
+
+	it('illisible : rendue telle quelle', () => {
+		expect(expectedIntervalsLatex(']2;x[')).toBe(']2;x[');
 	});
 });

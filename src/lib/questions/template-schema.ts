@@ -16,6 +16,7 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
+import { ANSWER_KINDS } from './types';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -292,6 +293,7 @@ export const blankDefaultsSchema = z.object({
 	removeSpaces: z.boolean().optional(),
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
+	answerKind: z.enum(ANSWER_KINDS).optional(),
 	unit: unitSchema.optional()
 });
 
@@ -305,6 +307,7 @@ export const blankSchema = z.object({
 	validationRules: z.array(validationRuleSchema).optional(),
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
+	answerKind: z.enum(ANSWER_KINDS).optional(),
 	unit: unitSchema.optional()
 });
 
@@ -321,7 +324,8 @@ export const constraintsSchema = z.object({
 	signs: constraintModeSchema.optional(),
 	reducedFractions: constraintModeSchema.optional(),
 	percent: constraintModeSchema.optional(),
-	unit: constraintModeSchema.optional()
+	unit: constraintModeSchema.optional(),
+	intervalForm: constraintModeSchema.optional()
 });
 
 export const optionsSchema = z.object({
@@ -528,6 +532,7 @@ const blankDefaultsStrictZ = z
 		removeSpaces: z.boolean().optional(),
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
+		answerKind: z.enum(ANSWER_KINDS).optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -543,6 +548,7 @@ const blankStrictZ = z
 		validationRules: z.array(validationRuleStrictZ).optional(),
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
+		answerKind: z.enum(ANSWER_KINDS).optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();

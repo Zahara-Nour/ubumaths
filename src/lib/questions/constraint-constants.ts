@@ -13,7 +13,8 @@ export const CONSTRAINT_IDS: ConstraintId[] = [
 	'signs',
 	'reducedFractions',
 	'percent',
-	'unit'
+	'unit',
+	'intervalForm'
 ];
 
 export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
@@ -28,7 +29,8 @@ export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
 	signs: 'Signes (-- = +)',
 	reducedFractions: 'Fractions irréductibles',
 	percent: 'Pourcentage',
-	unit: 'Unité'
+	unit: 'Unité',
+	intervalForm: 'Écriture d’un ensemble (intervalles)'
 };
 
 export const CONSTRAINT_MODE_OPTIONS = [
