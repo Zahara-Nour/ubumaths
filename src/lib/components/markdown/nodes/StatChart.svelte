@@ -121,6 +121,7 @@
 	let pie = $derived(scene?.kind === 'circulaire' ? scene : null);
 	let histogram = $derived(scene?.kind === 'histogramme' ? scene : null);
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
+	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
 	/** Histogramme ou polygone : abscisses dans l'unité des classes */
 	let classChart = $derived(histogram ?? cumulative);
 	/** Haut de l'axe vertical : carreaux / effectif (histogramme) ou 100 % (polygone) */
@@ -190,11 +191,44 @@
 
 {#if scene}
 	<figure class="stat-figure {className}">
-		{#if scene.title}
+		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
+		{#if scene.title && !crossTable}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
-		{#if bars}
+		{#if crossTable}
+			<div class="stat-tableau-defilement">
+				<table class="stat-tableau">
+					<caption
+						class:stat-titre={crossTable.title !== null}
+						class:sr-only={crossTable.title === null}
+						>{crossTable.title ?? crossTable.accessibleTitle}</caption
+					>
+					<thead>
+						<tr>
+							<td class="stat-coin">{crossTable.corner ?? ''}</td>
+							{#each crossTable.columnHeaders as header, i (i)}
+								<th scope="col">{header}</th>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each crossTable.rows as row, i (i)}
+							<tr>
+								<th scope="row">{row.header}</th>
+								{#each row.cells as cell, j (j)}
+									<!-- Case à compléter : vide à l'écran, annoncée au lecteur d'écran -->
+									<td class:stat-case-vide={cell.hidden}
+										>{#if cell.hidden}<span class="sr-only">case à compléter</span
+											>{:else}{cell.text}{/if}</td
+									>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else if bars}
 			<svg
 				role="img"
 				aria-labelledby={titleId}
@@ -615,6 +649,33 @@
 
 	/* Bordure couleur du fond, comme les secteurs : sépare deux classes de même
 	   couleur au moins à 3:1 dans les deux thèmes (audit a11y) */
+	.stat-tableau-defilement {
+		overflow-x: auto;
+	}
+
+	.stat-tableau {
+		margin: 0 auto;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.stat-tableau th,
+	.stat-tableau td {
+		border: 1px solid var(--color-foreground);
+		padding: 0.3rem 0.6rem;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.stat-tableau .stat-coin {
+		font-style: italic;
+	}
+
+	/* Assez de place pour écrire une réponse */
+	.stat-tableau .stat-case-vide {
+		min-width: 3.5rem;
+	}
+
 	.stat-rectangle {
 		stroke: var(--color-background);
 		stroke-width: 1.5;

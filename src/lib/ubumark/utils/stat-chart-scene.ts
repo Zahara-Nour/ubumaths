@@ -36,6 +36,7 @@ import {
 } from '$lib/statistics/classes';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
+import { crossTable } from '$lib/statistics/cross-table';
 
 // ============================================================================
 // TYPES
@@ -190,7 +191,29 @@ export interface CumulativeScene extends SceneCommon {
 	color: CourbeColor;
 }
 
-export type StatChartScene = BarScene | PieScene | HistogramScene | CumulativeScene;
+export interface SceneCell {
+	/** Texte affiché ; vide si la case est à compléter */
+	text: string;
+	/** Case à compléter (`masquer:`, ou `?` et les totaux qui en dépendent) */
+	hidden: boolean;
+}
+
+export interface CrossTableScene extends SceneCommon {
+	kind: 'tableau-croise';
+	/** Coin haut-gauche, ou null */
+	corner: string | null;
+	/** En-têtes des colonnes, `Total` compris */
+	columnHeaders: string[];
+	/** Lignes, `Total` comprise : en-tête et cases */
+	rows: { header: string; cells: SceneCell[] }[];
+}
+
+export type StatChartScene =
+	| BarScene
+	| PieScene
+	| HistogramScene
+	| CumulativeScene
+	| CrossTableScene;
 
 export interface StatChartSceneOptions {
 	/** Langue du document : séparateur décimal */
@@ -237,8 +260,12 @@ const KIND_TITLE = {
 	barres: 'Diagramme en barres',
 	circulaire: 'Diagramme circulaire',
 	histogramme: 'Histogramme',
-	'frequences-cumulees': 'Polygone des fréquences cumulées'
+	'frequences-cumulees': 'Polygone des fréquences cumulées',
+	'tableau-croise': 'Tableau croisé'
 } as const;
+
+/** Nom de la ligne et de la colonne des totaux */
+const TOTAL = 'Total';
 
 // ============================================================================
 // FORMATAGE
@@ -718,6 +745,74 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 }
 
 // ============================================================================
+// TABLEAU CROISÉ
+// ============================================================================
+
+function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): CrossTableScene {
+	const table = spec.table;
+	if (table === null) throw new Error('Tableau croisé sans données');
+	const { rows, columns, cells, showTotals, display } = table;
+
+	// `?` vaut 0 pour le calcul ; les totaux qui en dépendent seront cachés
+	const outcome = crossTable(
+		cells.map((row) => row.map((value) => value ?? 0)),
+		display
+	);
+	// Le parseur a vérifié le tableau ; une défaillance ici est un bug
+	if (outcome === null || !outcome.ok) {
+		throw new Error(
+			`Tableau croisé invalide : ${outcome?.ok === false ? outcome.message : 'vide'}`
+		);
+	}
+	const values = outcome.value;
+
+	const unknownInRow = cells.map((row) => row.some((value) => value === null));
+	const unknownInColumn = columns.map((_, j) => cells.some((row) => row[j] === null));
+	const anyUnknown = unknownInRow.some(Boolean);
+	const isMasked = (row: string, column: string) =>
+		table.masked.some((m) => m.row === row && m.column === column);
+
+	const format = (value: number | null): string => {
+		// Fréquence non définie (ligne ou colonne toute nulle)
+		if (value === null) return '—';
+		if (display === 'effectifs') return formatValue(value, spec.unit, locale);
+		return `${formatRounded(value * 100, 1, locale)} %`;
+	};
+	const cell = (row: string, column: string, value: number | null, unknown: boolean): SceneCell =>
+		unknown || isMasked(row, column)
+			? { text: '', hidden: true }
+			: { text: format(value), hidden: false };
+
+	const bodyRows = rows.map((name, i) => {
+		const line = columns.map((column, j) =>
+			cell(name, column, values.cells[i][j], cells[i][j] === null)
+		);
+		if (showTotals) line.push(cell(name, TOTAL, values.rowTotals[i], unknownInRow[i]));
+		return { header: name, cells: line };
+	});
+	if (showTotals) {
+		const totals = columns.map((column, j) =>
+			cell(TOTAL, column, values.columnTotals[j], unknownInColumn[j])
+		);
+		totals.push(cell(TOTAL, TOTAL, values.total, anyUnknown));
+		bodyRows.push({ header: TOTAL, cells: totals });
+	}
+
+	return {
+		kind: 'tableau-croise',
+		title: spec.title,
+		accessibleTitle: KIND_TITLE['tableau-croise'],
+		// Un <table> se décrit lui-même (en-têtes de lignes et de colonnes)
+		description: spec.description ?? KIND_TITLE['tableau-croise'],
+		pixelSize: { width: 0, height: 0 },
+		indicators: [],
+		corner: table.corner,
+		columnHeaders: showTotals ? [...columns, TOTAL] : [...columns],
+		rows: bodyRows
+	};
+}
+
+// ============================================================================
 // SCÈNE
 // ============================================================================
 
@@ -735,5 +830,7 @@ export function buildStatChartScene(
 			return buildHistogramScene(spec, locale);
 		case 'frequences-cumulees':
 			return buildCumulativeScene(spec, locale);
+		case 'tableau-croise':
+			return buildCrossTableScene(spec, locale);
 	}
 }
