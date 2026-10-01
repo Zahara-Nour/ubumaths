@@ -155,6 +155,46 @@ describe('escalier — fenêtre (E4)', () => {
 	});
 });
 
+describe('escalier — relecture du 2026-10-01', () => {
+	it('axe des abscisses au bord (y_min > 0) : l’escalier part de l’axe, sans avertissement', () => {
+		const scene = buildCourbeScene(
+			spec(
+				parseCourbeContent(
+					`x: 1 ; 5\ny: 1 ; 5\nu(0) = 2 ; u(n+1) = 0.5*u(n)+1.5 pour n de 0 à 4   escalier`
+				)
+			)
+		);
+		expect(scene.sequences[0].staircase!.steps[0][0]).toEqual({ x: 2, y: 1 });
+		expect(scene.warnings).toEqual([]);
+	});
+
+	it('deux escaliers : une seule droite y = x', () => {
+		const scene = buildCourbeScene(
+			spec(
+				parseCourbeContent(
+					`${WINDOW}\nu(0) = 0.5 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 4   escalier\nv(0) = 6.5 ; v(n+1) = 0.5*v(n)+3 pour n de 0 à 4   vert   escalier`
+				)
+			)
+		);
+		const diagonals = scene.sequences.flatMap((q) => q.staircase!.diagonal);
+		expect(diagonals).toHaveLength(1);
+	});
+
+	it('courbe de la relation hors fenêtre : avertissement situé (le nom n’est pas dessiné)', () => {
+		const scene = buildCourbeScene(
+			spec(
+				parseCourbeContent(
+					`${WINDOW}\nu(0) = 1 ; u(n+1) = u(n)+20 pour n de 0 à 1   escalier   nom=C_f`
+				)
+			)
+		);
+		expect(scene.curveLabels).toEqual([]);
+		expect(scene.warnings.map((w) => w.message)).toContain(
+			"Ligne 3 : la courbe de la relation de u n'apparaît pas dans la fenêtre"
+		);
+	});
+});
+
 describe('escalier — erreurs situées (E5, E6, E7)', () => {
 	it('suite explicite (E5)', () => {
 		expect(errorOf(`${WINDOW}\nu(n) = 2*n pour n de 0 à 5   escalier`)).toMatch(

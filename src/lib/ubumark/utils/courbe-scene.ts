@@ -370,15 +370,20 @@ function staircaseOf(
 	w: CourbeWindow,
 	xAxisY: number,
 	size: CourbeSize,
+	withDiagonal: boolean,
 	inside: (x: number, y: number) => boolean
 ): { staircase: SceneStaircase; clipped: boolean } {
 	const relation = seq.staircase!.relation;
-	const path = computeCobwebPath(terms).map((p) => ({ x: clean(p.x), y: clean(p.y) }));
+	// Le chemin du grapheur part de (u0 ; 0) : ici, de l'axe tel qu'il est dessiné
+	const path = computeCobwebPath(terms).map((p, i) => ({
+		x: clean(p.x),
+		y: i === 0 ? xAxisY : clean(p.y)
+	}));
 	const curve = samplePieces(createRecurrenceFunctionEvaluator(relation), w.xMin, w.xMax, w);
 	const lo = Math.max(w.xMin, w.yMin);
 	const hi = Math.min(w.xMax, w.yMax);
 	const diagonal =
-		lo < hi
+		withDiagonal && lo < hi
 			? [
 					[
 						{ x: lo, y: lo },
@@ -574,7 +579,23 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		const terms = seq.terms.slice(0, Math.min(COURBE_LIMITS.sequenceTerms, termsLeft));
 		termsLeft -= terms.length;
 		if (seq.staircase) {
-			const { staircase, clipped } = staircaseOf(seq, terms, w, xAxisY, input.size, inside);
+			// Une seule droite y = x, même avec plusieurs escaliers
+			const withDiagonal = !sequences.some((s) => s.staircase !== null);
+			const { staircase, clipped } = staircaseOf(
+				seq,
+				terms,
+				w,
+				xAxisY,
+				input.size,
+				withDiagonal,
+				inside
+			);
+			if (staircase.curve.length === 0) {
+				warnings.push({
+					message: `Ligne ${seq.line} : la courbe de la relation de ${seq.name} n'apparaît pas dans la fenêtre`,
+					line: seq.line
+				});
+			}
 			if (clipped) {
 				warnings.push({
 					message: `Ligne ${seq.line} : l'escalier de ${seq.name} sort de la fenêtre, il est coupé au bord`,

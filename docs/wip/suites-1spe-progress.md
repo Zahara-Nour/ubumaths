@@ -51,7 +51,23 @@ Comportements :
 - E8 même scène écran (SVG) et Typst ; compilation d'une fiche.
 - E9 aria-label mentionne l'escalier. `nom=` nomme la courbe de f.
 
-- [ ] Tests rouges · [ ] parseur · [ ] scène · [ ] Typst · [ ] SVG · [ ] compilation fiche · [ ] PR
+- [x] Tests rouges (19 serveur + 3 navigateur, rouges avant) · [x] parseur · [x] scène · [x] Typst
+      · [x] SVG · [x] compilation d'une fiche (3 escaliers, énoncé + corrigé, FR + EN : 4/4 OK
+      avec `compile-prod.mjs`, page relue à l'œil) · [x] typecheck 0 erreur · [ ] PR
+
+Relecture (`code-reviewer`, 2026-10-01) : rien de bloquant. Corrigés, tests rouges d'abord :
+départ de l'escalier sur l'axe dessiné (faux « sort de la fenêtre » quand y_min > 0), une seule
+droite y = x avec deux escaliers, avertissement si la courbe de la relation est hors fenêtre.
+Écart minimal entre étiquettes u_k selon la taille (u₁ omise à tort en taille moyenne, vu sur
+le PDF).
+
+Limites connues (à dire à David) :
+
+- Rangs u_k placés 26 px / 0,38 cm sous l'axe : si l'axe des abscisses n'est pas en bas de la
+  fenêtre, ils sont DANS le repère (lisibles, mais peuvent croiser un tracé). Pour les
+  questions : fenêtre y qui commence à 0 ou un peu en dessous.
+- Deux escaliers : leurs relations sont toutes deux en noir (décision produit ouverte : refuser,
+  ou colorer la relation).
 
 ## Lot 1 — existant (corrigé en place)
 
@@ -61,6 +77,18 @@ Comportements :
 - Deviner (`0af4bf32`, `fc921674`, `95c38330`) : liste à partir de u₁.
 - `158ecaa4` sans description ; `requiredForm: {pattern: "u"}` à comprendre.
 - Sous-domaines sans accent : vérifier les dépendances au texte avant de renommer.
+
+Vérifié en production le 2026-10-01 :
+
+- **Aucun usage élève** des 14 modèles du thème (evaluation_attempt_questions, skill_attempts,
+  srs_cards, test_answers, journal) ; aucune référence par identifiant dans series, chapter
+  templates, worksheet_exercises, test_sessions. Ajouter des variations ne change donc aucun
+  tirage déjà vu.
+- Le texte des sous-domaines n'est cité en dur que dans `src/lib/questions/category-order.ts`
+  (ordre d'affichage) : renommer = PR qui met ce fichier à jour (avec l'ordre des nouveaux
+  domaines), PUIS mise à jour en base.
+- `requiredForm: {pattern: "u"}` : une lettre seule est vraisemblablement un joker — à confirmer
+  par une spec (réponse développée acceptée ?) avant de le retirer.
 
 ## Lots 2 à 5 — modèles neufs (brouillon)
 
