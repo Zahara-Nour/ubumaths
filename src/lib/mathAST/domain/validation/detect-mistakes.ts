@@ -17,6 +17,8 @@ import { number as numberNode } from '../../factory';
 import { formatInterval } from '../format';
 import { toCustom } from '../../custom-generator';
 import { findZeros } from '../preimage';
+import { compareNumericNodes } from '../../eval/compare-numeric';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
 /**
  * Tolerance for comparing excluded points in student vs correct domain.
@@ -405,7 +407,8 @@ function detectBoundaryMistakes(
 		const cLower = tryGetEndpointNumber(c.lower.value);
 
 		if (sLower !== null && cLower !== null) {
-			if (Math.abs(sLower - cLower) < 0.001) {
+			// Comparaison EXACTE (1-√2 ≠ -0,414) : une borne arrondie est une autre borne
+			if (compareNumericNodes(s.lower.value, c.lower.value) === 0) {
 				// Same value, check inclusive vs exclusive
 				if (s.lower.type !== c.lower.type) {
 					if (c.lower.type === 'open' && s.lower.type === 'closed') {
@@ -450,7 +453,7 @@ function detectBoundaryMistakes(
 		const cUpper = tryGetEndpointNumber(c.upper.value);
 
 		if (sUpper !== null && cUpper !== null) {
-			if (Math.abs(sUpper - cUpper) < 0.001) {
+			if (compareNumericNodes(s.upper.value, c.upper.value) === 0) {
 				if (s.upper.type !== c.upper.type) {
 					if (c.upper.type === 'open' && s.upper.type === 'closed') {
 						mistakes.push(
@@ -617,41 +620,10 @@ function tryGetNumericValue(node: MathNode): number | null {
  * Handles both MathNode format (kind: 'number') and
  * MathNode format (type: 'number') used in excluded points.
  */
-function tryGetEndpointNumber(value: unknown): number | null {
-	if (typeof value === 'object' && value !== null) {
-		const v = value as {
-			kind?: string;
-			type?: string;
-			value?: number | string;
-			sign?: string;
-		};
-
-		// Handle MathNode format: { kind: 'number', value: 0 }
-		if (v.kind === 'number') {
-			if (typeof v.value === 'number') {
-				return v.value;
-			}
-			if (typeof v.value === 'string') {
-				const num = parseFloat(v.value);
-				return isNaN(num) ? null : num;
-			}
-		}
-
-		// Handle MathNode format: { type: 'number', value: '0' }
-		if (v.type === 'number' && typeof v.value === 'string') {
-			const num = parseFloat(v.value);
-			return isNaN(num) ? null : num;
-		}
-
-		// Handle infinity
-		if (v.kind === 'positive_infinity' || v.kind === 'negative_infinity') {
-			return null; // Don't compare infinities
-		}
-		if (v.type === 'infinity') {
-			return null;
-		}
-	}
-	return null;
+function tryGetEndpointNumber(value: MathNode): number | null {
+	// Valeur numérique de toute borne finie (-2, 3/2, 1-√2) ; l'infini ne se compare pas
+	const num = endpointToNumber(value);
+	return Number.isFinite(num) ? num : null;
 }
 
 /**
