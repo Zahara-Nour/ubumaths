@@ -423,3 +423,14 @@ assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serv
   `src/lib/questions/generator/random-generator.ts` (suppression non tranchée par David) ; deux tests
   instables (`vip-card-rarity-distribution`, `chapter-worksheet-publish-distributes`) ;
   `svelte-autofixer` jamais passé sur les `.svelte` des chantiers 4-5 (MCP indisponible).
+
+### Restes du chantier 5 traités (#570, #571), 2026-10-01
+
+- **#570** : `MyCheckbox` sur la page « Assigner » (case Shadcn imbriquée dans un bouton) ;
+  `svelte-autofixer` passé en CLI (`npx @sveltejs/mcp svelte-autofixer <fichier>`) sur les 28 `.svelte`
+  des chantiers 4-5 — seul « goto() sans resolve() », règle désactivée par le projet ;
+  `src/lib/questions/generator/random-generator.ts` supprimé (aucun import) ; test VIP à ±4,5 σ.
+- **#571** (Q43 = A) : le test instable `chapter-worksheet-publish-distributes` révélait un défaut de
+  prod — `published_at` écrit à l'horloge de Node, comparé à `now()` de Postgres. Trigger
+  `published_at_horloge_base` sur 5 tables (appliqué en prod, vérifié) ; filtres `lte.now` / `gt.now`
+  évalués par la base (fiches distribuées, boîte de réception, notifications). Déployé.
