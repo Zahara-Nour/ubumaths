@@ -27,7 +27,14 @@ import { DslTokenizerError } from '$lib/geometry-core/dsl/tokenizer';
 import type { DslExpr, DslProgram, DslStatement } from '$lib/geometry-core/dsl/types';
 import { Figure, FigureElementLimitError } from '$lib/geometry-core/graph/figure';
 import type { GeoElement } from '$lib/geometry-core/types/elements';
-import { isPointElement, isVector } from '$lib/geometry-core/types/elements';
+import {
+	isAngle,
+	isArcByAngles,
+	isCircleByRadius,
+	isPointElement,
+	isText,
+	isVector
+} from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import type { Viewport } from '$lib/geometry-core/viewport/types';
 
@@ -166,6 +173,34 @@ export function normalizeFigureScript(script: string): string {
 		.join('\n');
 }
 
+/** Code d'une ligne, chaînes vidées et commentaire retiré. */
+function codeOf(line: string): string {
+	let out = '';
+	let inString = false;
+	for (const ch of line) {
+		if (ch === '"') inString = !inString;
+		else if (ch === '#' && !inString) break;
+		out += inString ? ' ' : ch;
+	}
+	return out;
+}
+
+/**
+ * Virgule décimale : dans une ligne qui sépare ses arguments par `;`
+ * (`point(2,5 ; 1)`), une virgule entre deux chiffres ne peut être qu'une
+ * virgule décimale — sans ce message, l'auteur lirait « 3 arguments reçus ».
+ */
+function findDecimalComma(script: string): { line: number; number: string } | null {
+	const lines = script.split('\n');
+	for (let i = 0; i < lines.length; i++) {
+		const code = codeOf(lines[i]);
+		if (!code.includes(';')) continue;
+		const match = /\d+,\d+/.exec(code);
+		if (match) return { line: i + 1, number: match[0] };
+	}
+	return null;
+}
+
 /** Premier appel refusé ou directive d'animation, parcouru dans tout le programme. */
 function findRefused(program: DslProgram): { line: number; reason: string } | null {
 	let found: { line: number; reason: string } | null = null;
@@ -287,6 +322,154 @@ function toIssue(node: FigureNode, error: unknown): FigureIssue {
 }
 
 // ============================================================================
+// COULEURS ET NOMBRES (relecture 2026-10-01)
+// ============================================================================
+
+/**
+ * Seule forme de couleur admise en sortie : hexadécimale à 3, 4, 6 ou 8
+ * chiffres (ce que `rgb("…")` de Typst accepte). Tout le reste — `red`, `"`,
+ * `red;mask-image:url(…)` — ferait échouer TOUTE la fiche PDF, ou injecterait
+ * du CSS à l'écran (chat élève).
+ */
+export const FIGURE_HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+/** Noms courants, anglais et français (les noms français du DSL sont déjà résolus en amont). */
+const COLOR_NAMES: Readonly<Record<string, string>> = {
+	rouge: '#dc2626',
+	red: '#dc2626',
+	bleu: '#1e40af',
+	blue: '#1e40af',
+	vert: '#16a34a',
+	green: '#16a34a',
+	orange: '#ea580c',
+	violet: '#9333ea',
+	purple: '#9333ea',
+	noir: '#000000',
+	black: '#000000',
+	gris: '#4b5563',
+	gray: '#4b5563',
+	grey: '#4b5563',
+	jaune: '#f59e0b',
+	yellow: '#f59e0b',
+	cyan: '#0891b2',
+	blanc: '#ffffff',
+	white: '#ffffff',
+	marron: '#92400e',
+	brown: '#92400e',
+	rose: '#db2777',
+	pink: '#db2777'
+};
+
+/** Couleur sûre (hexadécimale) ou null si inconnue. */
+export function normalizeFigureColor(raw: string): string | null {
+	const value = raw.trim();
+	if (FIGURE_HEX_COLOR.test(value)) return value;
+	return COLOR_NAMES[value.toLowerCase()] ?? null;
+}
+
+/** Au-delà, les nombres s'écrivent en notation exponentielle : refusés. */
+const MAX_COORDINATE = 1e9;
+
+function finite(n: number | undefined): boolean {
+	return n === undefined || (Number.isFinite(n) && Math.abs(n) <= MAX_COORDINATE);
+}
+
+/** Ligne du SCRIPT où l'objet est nommé (`A = …`), sinon où la chaîne apparaît. */
+function scriptLineOf(script: string, el: GeoElement, needle?: string): number | null {
+	const lines = script.split('\n');
+	if (needle !== undefined) {
+		const i = lines.findIndex((l) => l.includes(`"${needle}"`));
+		if (i !== -1) return i + 1;
+	}
+	if (el.label) {
+		const escaped = el.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const i = lines.findIndex((l) => new RegExp(`^\\s*${escaped}\\s*=`).test(l));
+		if (i !== -1) return i + 1;
+	}
+	return null;
+}
+
+/** Nombres dessinés d'un objet visible : tous finis et raisonnables ? */
+function hasFiniteGeometry(figure: Figure, el: GeoElement): boolean {
+	const positionOk = (id: string) => {
+		const pos = figure.getPosition(id);
+		return !pos || (finite(geoToNumber(pos.x)) && finite(geoToNumber(pos.y)));
+	};
+	if (isPointElement(el) && !positionOk(el.id)) return false;
+	if (!el.dependsOn.every(positionOk)) return false;
+	const sty = el.style;
+	if (sty && ![sty.strokeWidth, sty.pointSize, sty.opacity, sty.fillOpacity].every(finite)) {
+		return false;
+	}
+	if (isCircleByRadius(el) && !finite(figure.resolveParam(el.radius))) return false;
+	if (
+		isArcByAngles(el) &&
+		![el.radius, el.startAngle, el.endAngle].every((p) => finite(figure.resolveParam(p)))
+	) {
+		return false;
+	}
+	if (isVector(el)) {
+		const comp = figure.getVectorComponents(el.id);
+		if (comp && !(finite(geoToNumber(comp.dx)) && finite(geoToNumber(comp.dy)))) return false;
+	}
+	if (isText(el)) {
+		const p = el.position;
+		const o = el.anchorOffset;
+		if ((p && !(finite(p.x) && finite(p.y))) || (o && !(finite(o.dx) && finite(o.dy)))) {
+			return false;
+		}
+	}
+	if (isAngle(el) && !(finite(el.arcRadiusPx) && finite(el.arcSpacingPx))) return false;
+	return true;
+}
+
+/**
+ * Valider (et normaliser) couleurs et nombres des objets visibles. Les noms de
+ * couleur connus sont remplacés par leur valeur hexadécimale dans la figure.
+ */
+function validateDrawing(
+	node: FigureNode,
+	figure: Figure,
+	elements: GeoElement[]
+): FigureIssue | null {
+	const located = (el: GeoElement, message: string, needle?: string): FigureIssue => {
+		const line = scriptLineOf(node.script, el, needle);
+		return line === null ? { message } : issueAt(node, line, message);
+	};
+	for (const el of elements) {
+		const name = el.label ? `« ${el.label} » : ` : '';
+		const fixes: { color?: string; fillColor?: string } = {};
+		const rawColor = el.style?.color ?? el.color;
+		const rawFill = el.style?.fillColor;
+		for (const [key, raw] of [
+			['color', rawColor],
+			['fillColor', rawFill]
+		] as const) {
+			if (raw === undefined) continue;
+			const hex = normalizeFigureColor(raw);
+			if (hex === null) {
+				const what = key === 'color' ? 'couleur' : 'couleur de remplissage';
+				return located(
+					el,
+					`${name}${what} inconnue (écrire un nom courant comme rouge, bleu, red, blue, ou une valeur #2563eb)`,
+					raw
+				);
+			}
+			if (hex !== raw) fixes[key] = hex;
+		}
+		if (fixes.color !== undefined || fixes.fillColor !== undefined)
+			figure.updateStyle(el.id, fixes);
+		if (!hasFiniteGeometry(figure, el)) {
+			return located(
+				el,
+				`${name}nombre non fini ou démesuré (division par zéro, valeur au-delà de 10^9 ?)`
+			);
+		}
+	}
+	return null;
+}
+
+// ============================================================================
 // DESCRIPTION AUTOMATIQUE
 // ============================================================================
 
@@ -366,6 +549,22 @@ export function buildFigureScene(node: FigureNode): FigureSceneResult {
 		};
 	}
 
+	const comma = findDecimalComma(node.script);
+	if (comma) {
+		const [int, dec] = comma.number.split(',');
+		return {
+			scene: null,
+			errors: [
+				issueAt(
+					node,
+					comma.line,
+					`virgule décimale dans « ${comma.number} » : écrire ${int}.${dec} ou ${int}{,}${dec} (la virgule et le point-virgule séparent les arguments)`
+				)
+			],
+			warnings
+		};
+	}
+
 	let program: DslProgram;
 	try {
 		program = parse(normalizeFigureScript(node.script));
@@ -386,8 +585,8 @@ export function buildFigureScene(node: FigureNode): FigureSceneResult {
 		return { scene: null, errors: [toIssue(node, error)], warnings };
 	}
 
-	const elements = figure.getAllElements().filter((el) => el.visible);
-	const outside = elements.find((el) => !isFigureDrawable(el));
+	const drawn = figure.getAllElements().filter((el) => el.visible);
+	const outside = drawn.find((el) => !isFigureDrawable(el));
 	if (outside) {
 		const name = outside.label ? `« ${outside.label} » ` : '';
 		return {
@@ -398,6 +597,11 @@ export function buildFigureScene(node: FigureNode): FigureSceneResult {
 			warnings
 		};
 	}
+
+	const invalid = validateDrawing(node, figure, drawn);
+	if (invalid) return { scene: null, errors: [invalid], warnings };
+	// Relire après normalisation des couleurs (`updateStyle` remplace l'objet)
+	const elements = figure.getAllElements().filter((el) => el.visible);
 
 	const positions = new Map<string, { x: number; y: number }>();
 	for (const el of elements) {

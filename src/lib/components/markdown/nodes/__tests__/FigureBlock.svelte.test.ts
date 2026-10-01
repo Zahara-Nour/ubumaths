@@ -173,3 +173,32 @@ describe('FigureBlock — dans MarkdownRenderer', () => {
 		await svgOf(screen.container);
 	});
 });
+
+describe('FigureBlock — couleur hostile (relecture, point 3)', () => {
+	const HOSTILE = `fenetre: 0 ; 4 ; 0 ; 3
+---
+A = point(1, 1, couleur="red;mask-image:url(https://x.supabase.co/pixel)")
+B = point(2, 1)`;
+
+	it('élève : jamais dans le DOM, cadre neutre', async () => {
+		const md = ['```figure', ...HOSTILE.split('\n'), '```'].join('\n');
+		const screen = await render(MarkdownRenderer, {
+			target: mainElement(),
+			props: { content: md }
+		});
+		await expect.poll(() => screen.container.textContent).toMatch(/Figure indisponible/);
+		expect(screen.container.innerHTML).not.toMatch(/mask-image|supabase/);
+	});
+
+	it('prof : erreur située, la couleur n’est pas appliquée', async () => {
+		const node = parseFigureContent(HOSTILE);
+		const screen = await render(FigureBlock, {
+			target: mainElement(),
+			props: { node, showErrors: true }
+		});
+		await expect
+			.poll(() => screen.container.textContent)
+			.toMatch(/Ligne 3 : « A » : couleur inconnue/);
+		expect(screen.container.querySelector('[style*="mask"]')).toBeNull();
+	});
+});
