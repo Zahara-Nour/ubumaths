@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-2 livrés (#595, #598) ; lot 3 implémenté, revues en cours
+## État : lots 1-2 livrés (#595, #598) ; lot 3 revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -257,6 +257,16 @@ Constaté : dans les items de liste, le langage d'un bloc de code est lu par `(\
   comptes 9 rectangles / 2 polygones / 4 lectures / 3 indicateurs / 1 erreur, pages relues.
   Défaut vu et corrigé : étiquettes de lecture sur le polygone → déplacées au début du
   pointillé, côté libre (écran et PDF).
+- Revue `code-reviewer` : **bloquant** — quadrillage sans plafond (amplitudes 1 et 10^9 →
+  10^9 lignes, processus tué ; 6 Mo de Typst pour des cas banals) → module partagé
+  `utils/stat-chart-carreaux.ts` (parseur refuse au-delà de 60 carreaux en largeur ou en
+  hauteur, scène dessine), bornes à 4 décimales au plus ; PGCD nul → page entière cassée à
+  l'écran → `try/catch` dans le composant (bloc en erreur, page intacte) ; % des séries en
+  classes contrôlés (100 ± 0,5) ; médiane et quartiles estimés par UNE interpolation.
+- Audit `accessibility-tester` : effectifs au-dessus des rectangles (contraste, rectangle
+  nul), bordure couleur du fond, quadrillage à 50 % DEVANT les rectangles en mode carreaux,
+  halo des étiquettes de lecture, pointillé 1,5 px, indicateurs en `<ul>` (« · » non lu),
+  « Médiane » en toutes lettres dans `<desc>`. Légende d'aire gardée dans `<desc>` (Q30).
 
 ## Reste à faire (hors lots 2-3)
 
