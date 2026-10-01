@@ -64,7 +64,9 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	// Authentication and authorization: teacher OR admin
 	const { profile: approverProfile } = await requireRoles(locals, ['teacher', 'admin']);
 
-	const supabase = locals.supabase;
+	// En élévation admin, le client admin porte le JWT de l'admin : nécessaire pour
+	// modifier is_test, réservé à l'admin par la base (migration 20261001180000).
+	const supabase = locals.adminSupabase ?? locals.supabase;
 	const userId = params.id;
 
 	// Validate UUID format
@@ -87,7 +89,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		// Check if user exists and get current data
 		const { data: existingUser, error: checkError } = await supabase
 			.from('profiles')
-			.select('id, email, firstname, lastname, status')
+			.select('id, email, firstname, lastname, status, is_test')
 			.eq('id', userId)
 			.maybeSingle();
 
@@ -98,6 +100,17 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (!existingUser) {
 			throw error(404, `User with ID "${userId}" not found`);
+		}
+
+		// is_test est réservé à l'admin : on le refuse clairement ici plutôt que de
+		// laisser la base faire échouer toute l'approbation en 500.
+		if (
+			is_test !== undefined &&
+			is_test !== existingUser.is_test &&
+			approverProfile.role !== 'admin' &&
+			!locals.adminSupabase
+		) {
+			throw error(403, "Seul l'administrateur peut changer le statut « compte de test ».");
 		}
 
 		// Build update object with status fields
