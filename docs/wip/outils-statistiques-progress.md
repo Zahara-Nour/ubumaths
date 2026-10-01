@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lot 1 revu et corrigé, PR à ouvrir
+## État : lot 1 livré (#595) ; lot 2 (barres + circulaire) — spécification validée, tests à écrire
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -135,6 +135,42 @@ fait jamais (`pnpm math` = `tsx`, sans alias) et le moteur l'importe en relatif.
 - Constaté : une liste de l'atelier écarte déjà les valeurs non finies à la saisie
   (`2 ; 1/0` → `[2]`, « 1 valeur ignorée ») et la saisie plafonne à 10 000 caractères : le
   dépassement de `STATISTICS_LIMITS` n'est pas atteignable depuis l'atelier aujourd'hui.
+
+## Lot 2 — barres + circulaire
+
+Worktree `../ubumaths-wt-stats-lot2`, branche `feat/stats-barres-circulaire`.
+
+Tour 4 (2026-10-01) — recommandations suivies :
+
+17. **Un nœud interne `stat-chart`** avec `kind` (`barres` | `circulaire`, puis histogramme…) :
+    les 7 points de câblage (markdown-parser, union AST, MarkdownRenderer, ListNode,
+    typst-generator, markdown-import, index) une seule fois.
+18. **Circulaire** : légende à côté (contenu selon `étiquettes:`, défaut pourcentages), premier
+    secteur à midi, sens horaire, ordre de l'auteur.
+19. **Barres** : `valeurs: oui` affiche les effectifs au-dessus, désactivé par défaut.
+20. Catégories numériques = catégories (équidistantes, ordre écrit) en v1.
+21. Couleurs : barres une couleur (`couleur:`, mots de `courbe`, bleu par défaut) ; circulaire
+    palette automatique fixe (7 couleurs), 12 secteurs au plus.
+22. Circulaire en % : erreur d'auteur si |somme − 100| > 0,5 ; barres : aucun contrôle.
+
+### Spécification TDD validée
+
+- **Parseur** — nominal : ordre écrit, `{{n}}` avant, `12,5`/`12.5`, options `titre:`
+  `axes:` `description:` `taille:` `valeurs:` `couleur:` `étiquettes:`, option > catégorie
+  homonyme. Limites : % décimal, effectif nul (barre vide / secteur absent), noms avec
+  `# $ * " \` sans casser SVG ni PDF, ≤ 30 catégories (barres) / 12 (circulaire), nom ≤ 40
+  caractères. Erreurs situées : clé inconnue, ligne sans `=`, effectif non entier (`45,12`),
+  négatif, mélange effectifs / %, catégorie en double, aucune donnée, circulaire de total nul,
+  circulaire % ≠ 100 ± 0,5.
+- **Scène** (pure, SVG + Typst) : axe vertical depuis 0, pas auto (fonction de `courbe`), titre
+  d'axe par défaut « Effectif » / « Fréquence (%) » ; circulaire Σ angles = 360°, départ midi
+  horaire, angles légende au degré ; nombres selon la langue du document ; description auto
+  qui énumère les données ; fréquences via `src/lib/statistics/`.
+- **Écran** : SVG `role="img"`, `<title>`, `<desc>` ; erreurs prof / « Figure indisponible »
+  élève ; budget document (20 figures) ; bloc en retrait de liste ; aller-retour éditeur riche ;
+  `accessibility-tester`.
+- **PDF** : même scène (même nombre de barres / secteurs) ; fiche FR + EN, énoncé + corrigé,
+  noms hostiles + bloc en erreur → `compile-prod.mjs` (typst.ts 0.6.1-rc5) 4/4, page relue.
 
 ## Questions ouvertes
 
