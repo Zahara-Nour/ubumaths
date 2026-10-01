@@ -8,6 +8,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 const tokenSchema = z.string().uuid();
 
@@ -99,7 +100,7 @@ const grantResponseSchema = z.discriminatedUnion('success', [
 ]);
 
 export const actions: Actions = {
-	grant: async ({ params, locals, request, getClientAddress }) => {
+	grant: async ({ params, request, getClientAddress }) => {
 		// Validate token format
 		const tokenValidation = tokenSchema.safeParse(params.token);
 		if (!tokenValidation.success) {
@@ -118,8 +119,11 @@ export const actions: Actions = {
 
 		const userAgent = request.headers.get('user-agent');
 
-		// Grant consent via database function
-		const { data, error: dbError } = await locals.supabase.rpc('grant_parental_consent', {
+		// Consentement accordé par le client service : la fonction n'est plus exécutable
+		// par anon / authenticated, sinon n'importe qui détenant le lien pouvait l'appeler
+		// directement et inscrire une IP et un navigateur de son choix comme preuve RGPD.
+		// Ici, l'IP et le navigateur viennent de la requête reçue par le serveur.
+		const { data, error: dbError } = await createServiceRoleClient().rpc('grant_parental_consent', {
 			p_token: token,
 			// L'IP peut manquer derrière certains proxys : le paramètre est
 			// `DEFAULT NULL` côté SQL, donc optionnel dans les types générés.
