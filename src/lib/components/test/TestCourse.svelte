@@ -66,7 +66,6 @@
 	// Derived
 	let timeLimit = $derived(session.timeLimit || 300); // Default 5 minutes
 	let answeredCount = $derived(answers.size);
-	let unansweredCount = $derived(session.instances.length - answeredCount);
 
 	/**
 	 * Handle answer submission for a specific question
@@ -90,6 +89,10 @@
 	 * Handle manual finish button
 	 */
 	function handleFinish() {
+		// Évaluation : une réponse tapée sans « Valider » part quand même (finishTest)
+		const unansweredCount = session.instances.filter(
+			(_, index) => !answers.has(index) && !(collectOnly && cards[index]?.hasPendingAnswer())
+		).length;
 		if (
 			unansweredCount > 0 &&
 			!confirm(

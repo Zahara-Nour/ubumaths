@@ -27,6 +27,7 @@ vi.mock('$app/navigation', async (importOriginal) => ({
 }));
 
 import Page from '../+page.svelte';
+import { goto } from '$app/navigation';
 
 const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const ATTEMPT = '99999999-9999-4999-8999-999999999999';
@@ -101,14 +102,17 @@ function apiCalls(): Array<[string, RequestInit | undefined]> {
 		.filter(([href]) => href.startsWith('/api/'));
 }
 
-function mockApi(start: EvaluationStartResponse) {
+function mockApi(
+	start: EvaluationStartResponse,
+	submitReply: { status: number; body: unknown } = { status: 200, body: SUBMIT_RESPONSE }
+) {
 	fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
 		const href = String(input);
 		if (href.startsWith('/api/') && href.includes('/start')) {
 			return new Response(JSON.stringify(start), { status: 200 });
 		}
 		if (href.startsWith('/api/') && href.includes('/submit')) {
-			return new Response(JSON.stringify(SUBMIT_RESPONSE), { status: 200 });
+			return new Response(JSON.stringify(submitReply.body), { status: submitReply.status });
 		}
 		if (href.startsWith('/api/')) return new Response('{}', { status: 404 });
 		return realFetch(input, init);
@@ -211,5 +215,68 @@ describe('Évaluation notée — page élève', () => {
 		const text = container.textContent?.replace(/\s+/g, ' ') ?? '';
 		expect(text).toMatch(/répondu 12[45] Terminer/);
 		expect(text).not.toContain('300');
+	});
+});
+
+describe('Évaluation notée — Course reprise après la fin du temps', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		document.body.innerHTML = '';
+	});
+
+	it('temps restant 0 : la copie part d’elle-même, et la note du serveur s’affiche', async () => {
+		mockApi(startResponse({ resumed: true, remainingSeconds: 0 }, 'course'), {
+			status: 200,
+			body: { ...SUBMIT_RESPONSE, late: true, grade: 0, pointsEarned: 0, correctCount: 0 }
+		});
+		await renderPage();
+
+		await vi.waitFor(() => expect(apiCalls()).toHaveLength(2), { timeout: 5000 });
+		expect(apiCalls()[1][0]).toContain(`/attempts/${ATTEMPT}/submit`);
+		await expect.element(page.getByTestId('evaluation-grade')).toHaveTextContent('0/20');
+		expect(document.body.textContent).toMatch(/après la fin du temps/);
+	});
+});
+
+describe('Évaluation notée — envoi réussi, réponse perdue (409)', () => {
+	beforeEach(() => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		vi.mocked(goto).mockClear();
+	});
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		document.body.innerHTML = '';
+	});
+
+	async function finishBothQuestions() {
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		await answerCurrent(1);
+		await expect.element(page.getByText('Combien font 1 + 2 ?')).toBeVisible();
+		await answerCurrent(1);
+	}
+
+	it('409 avec la copie déjà notée : la page l’affiche (pas de blocage)', async () => {
+		mockApi(startResponse(), {
+			status: 409,
+			body: { error: 'Cette tentative est déjà terminée', result: SUBMIT_RESPONSE }
+		});
+		await renderPage();
+		await finishBothQuestions();
+
+		await expect.element(page.getByTestId('evaluation-grade')).toHaveTextContent('10/20');
+		expect(document.body.textContent).not.toContain("n'a pas pu être envoyée");
+	});
+
+	it('409 sans copie reconstruite : direction les résultats de l’élève', async () => {
+		mockApi(startResponse(), {
+			status: 409,
+			body: { error: 'Cette tentative est déjà terminée', result: null }
+		});
+		await renderPage();
+		await finishBothQuestions();
+
+		await vi.waitFor(() =>
+			expect(goto).toHaveBeenCalledWith(`/dashboard/student/assessments/${ASSIGNMENT}/results`)
+		);
 	});
 });

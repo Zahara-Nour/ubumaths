@@ -24,6 +24,7 @@
 	Exports:
 	- submitPendingAnswer(): AnswerData | null - valide la réponse en cours
 	  (chrono écoulé) ; null si rien n'a été tapé ni coché
+	- hasPendingAnswer(): boolean - une réponse tapée ou cochée, pas encore validée
 -->
 
 <script lang="ts">
@@ -199,16 +200,15 @@
 
 		isSubmitted = true;
 
-		// Évaluation : aucune correction ici (le serveur corrige) ; le LaTeX part
-		// avec la réponse, le serveur en a besoin pour juger la forme
+		// Évaluation : aucune correction ici (le serveur corrige). Une case math
+		// porte déjà le LaTeX tapé : c'est lui que le serveur juge, forme comprise
 		if (collectOnly) {
 			return {
 				value: answer,
 				isCorrect: false,
 				timeSpent: getTimeSpent(),
 				attempts,
-				submittedAt: new Date().toISOString(),
-				...(answerLatex && { valueLatex: [...answerLatex] })
+				submittedAt: new Date().toISOString()
 			};
 		}
 
@@ -242,6 +242,10 @@
 	 * commencé, ou si la réponse a déjà été validée.
 	 * Appelée par le parent via `bind:this`.
 	 */
+	export function hasPendingAnswer(): boolean {
+		return interactive && !isSubmitted && hasStartedAnswer();
+	}
+
 	export function submitPendingAnswer(): AnswerData | null {
 		if (!interactive || isSubmitted || !hasStartedAnswer()) return null;
 		return validateCurrentAnswer();

@@ -20,12 +20,12 @@
 	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
 	import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 	import { resolveTestLaunch } from '$lib/utils/test-launch';
-	import type { TestResult, TestAnswerResult } from '$lib/types/test';
+	import type { TestResult } from '$lib/types/test';
 	import type {
 		EvaluationStartResponse,
 		EvaluationSubmitResponse
 	} from '$lib/types/evaluation-attempt';
-	import type { SubmittedAnswer } from '$lib/questions/grading';
+	import { toSubmission, type Submission } from '$lib/questions/submission';
 	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
 
 	let { data }: { data: PageData } = $props();
@@ -52,10 +52,7 @@
 	let attemptUnitKeys = $state<(string[] | undefined)[]>([]);
 	let evaluationResult = $state<EvaluationSubmitResponse | null>(null);
 	/** Copie prête à (ré)envoyer si l'envoi a échoué */
-	let pendingSubmission = $state<{
-		answers: Array<SubmittedAnswer & { position: number; timeSpent?: number }>;
-		timeSpent: number;
-	} | null>(null);
+	let pendingSubmission = $state<Submission | null>(null);
 	let submitError = $state<string | null>(null);
 	let isSubmitting = $state(false);
 
@@ -293,29 +290,6 @@
 		}
 	}
 
-	/** Réponse d'une question, au format de l'envoi (le serveur corrige) */
-	function toSubmittedAnswer(
-		position: number,
-		answer: TestAnswerResult | undefined
-	): SubmittedAnswer & { position: number; timeSpent?: number } {
-		const data = answer?.userAnswer;
-		// Chrono écoulé sans rien taper : `value` vaut '' → question vide
-		if (!data || data.value === '') return { position };
-		const timeSpent = Math.max(0, Math.round(data.timeSpent ?? 0));
-		const value = data.value;
-		if (typeof value === 'number') return { position, choices: [value], timeSpent };
-		if (Array.isArray(value) && value.every((v) => typeof v === 'number')) {
-			return { position, choices: value as number[], timeSpent };
-		}
-		const values = Array.isArray(value) ? value.map(String) : [String(value)];
-		return {
-			position,
-			values,
-			...(data.valueLatex && { latex: data.valueLatex }),
-			timeSpent
-		};
-	}
-
 	/** Envoie la copie : le serveur corrige, note et renvoie la correction (C10) */
 	async function submitEvaluation() {
 		if (!attemptId || !pendingSubmission || isSubmitting) return;
@@ -331,6 +305,21 @@
 				}
 			);
 			const body: unknown = await response.json().catch(() => null);
+			// Déjà terminée (un envoi précédent a abouti, sa réponse s'est perdue) :
+			// la copie déjà notée, reconstruite par le serveur ; à défaut, ses résultats
+			if (response.status === 409) {
+				const copy =
+					body && typeof body === 'object' && 'result' in body
+						? (body.result as EvaluationSubmitResponse | null)
+						: null;
+				if (copy) {
+					evaluationResult = copy;
+					pendingSubmission = null;
+				} else if (assignmentId) {
+					await goto(`/dashboard/student/assessments/${assignmentId}/results`);
+				}
+				return;
+			}
 			if (!response.ok) {
 				submitError = errorMessageOf(body, "Ta copie n'a pas pu être envoyée.");
 				return;
@@ -354,12 +343,7 @@
 	async function handleTestComplete(result: TestResult) {
 		// Évaluation notée : rien n'est corrigé ici, la copie part au serveur
 		if (attemptId) {
-			pendingSubmission = {
-				answers: attemptPositions.map((position, index) =>
-					toSubmittedAnswer(position, result.answers[index])
-				),
-				timeSpent: Math.max(0, Math.min(86_400, Math.round(result.timeSpent)))
-			};
+			pendingSubmission = toSubmission(attemptPositions, result.answers);
 			await submitEvaluation();
 			return;
 		}
