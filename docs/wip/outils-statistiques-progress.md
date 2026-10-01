@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-4 livrés (#595, #598, #600, #604) ; lot 5 (atelier) — spécification soumise
+## État : lots 1-4 livrés ; lot 5 (atelier) implémenté, revues en cours
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -320,6 +320,27 @@ Tour 8 (2026-10-01) — recommandations suivies :
 Constaté : `AtelierContainer.svelte:164` compare `action.id === 'scatter'`, or les ids sont
 `scatter:M` depuis `11f05261c` → « Nuage avec M » bascule sur Calcul (aucun test). Et `.stats`
 découpe sur les virgules : `.stats 12,5` = deux valeurs.
+
+### Lot 5 — fait
+
+- `statistics/format.ts` : `formatSummary`, `formatApproxValue` — une seule mise en forme
+  (action « Statistiques », `.stats`, lignes d'indicateurs des diagrammes).
+- Moteur : `.stats` accepte `;` (virgule décimale), l'ancienne forme `,`, `valeurs : effectifs` ;
+  sortie française ; `.linreg` en français (LaTeX inchangé) ; aide alignée. Golden recapturé
+  volontairement ; tests historiques passés des libellés anglais aux VALEURS françaises
+  (`.stats 42` écrit maintenant `Variance = 0` au lieu de taire la dispersion).
+- Atelier : `charts` (SvelteMap) hors `serialize()`, suit rename/remove/restore ; `chart.ts`
+  produit un texte ```barres lu par le parseur ubumark (une grammaire, mêmes contrôles) ;
+actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Données).
+- ⚠️ **Diagnostic Q39 corrigé** : dans l'écran réel, `ObjectCard.svelte` appelait
+  `actionsFor(object)` SANS l'atelier → catalogue de repli : les actions par partenaire
+  (« Nuage avec M », revue #339) n'avaient jamais atteint l'écran ; « Nuage de points » (id
+  `scatter`) basculait donc bien sur le Graphe. Corrigé : `ObjectCard` passe l'atelier ; le
+  basculement compare la racine de l'id, sans quoi `scatter:M` aurait cassé la bascule.
+- Preuves : tests rouges (assertions pour l'écran et le moteur ; import pour `format` et
+  `list-charts`, modules absents) puis verts ; 5 221 tests serveur + 304 client ;
+  `check:incremental` 0 ; eslint 0 erreur (18 avertissements préexistants dans
+  `atelier.svelte.ts`, hors du diff).
 
 ## Reste à faire (hors lots 2-5)
 
