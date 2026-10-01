@@ -52,6 +52,7 @@ import {
 	DEFAULT_INTERVAL_FORM_MODE
 } from '$lib/questions/intervals/interval-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
+import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -759,6 +760,9 @@ function validateBlankValue(
 		return status !== 'incorrect' && status !== 'empty';
 	}
 
+	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
+	if (isAnswerTooComplex(userAnswer)) return false;
+
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -871,6 +875,11 @@ function intervalBlankResult(
 	}
 }
 
+/** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
+function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
+	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
+}
+
 /**
  * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
  */
@@ -893,6 +902,12 @@ function validateSingleBlank(
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
 	if (blank.answerKind === 'intervalles') {
 		return intervalBlankResult(userAnswerLatex || userAnswer, blank, instance);
+	}
+
+	// Réponse hostile ou démesurée : fausse AVANT toute lecture (garde Q58, cf.
+	// answer-complexity.ts). Le LaTeX sert aussi à juger la forme : il est mesuré.
+	if (isBlankAnswerTooComplex(userAnswer, userAnswerLatex)) {
+		return { isCorrect: false, feedback: ANSWER_TOO_COMPLEX_FEEDBACK };
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1352,6 +1367,16 @@ function validateBlanksOrderIndependent(
 	// All empty → early return
 	if (emptyCount === blanks.length) {
 		return { isCorrect: false, status: 'empty', feedback: "Tu n'as rien répondu." };
+	}
+
+	// Réponse hostile ou démesurée (garde Q58) : fausse, avec son message. Les cases
+	// « intervalles » ont leur propre garde (dans `validateBlankValue`).
+	const ordinaryBlanks = blanks.every((blank) => blank.answerKind !== 'intervalles');
+	if (
+		ordinaryBlanks &&
+		userAnswers.some((answer, i) => isBlankAnswerTooComplex(answer, userAnswersLatex?.[i]))
+	) {
+		return { isCorrect: false, feedback: ANSWER_TOO_COMPLEX_FEEDBACK };
 	}
 
 	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
