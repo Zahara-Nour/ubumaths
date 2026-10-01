@@ -212,8 +212,9 @@ describe('diagramme circulaire', () => {
 // =============================================================================
 
 describe('titre et description accessibles', () => {
-	it('titre : celui de l’auteur, sinon le genre de diagramme', () => {
-		expect(bars('titre: Sports\nA = 1').accessibleTitle).toBe('Sports');
+	it('titre accessible : le genre de diagramme (le titre de l’auteur est dans figcaption)', () => {
+		expect(bars('titre: Sports\nA = 1').accessibleTitle).toBe('Diagramme en barres');
+		expect(bars('titre: Sports\nA = 1').title).toBe('Sports');
 		expect(bars('A = 1').accessibleTitle).toBe('Diagramme en barres');
 		expect(pie('A = 1').accessibleTitle).toBe('Diagramme circulaire');
 	});

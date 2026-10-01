@@ -125,12 +125,42 @@ describe('StatChart — accessibilité', () => {
 		expect(new Set(ids).size).toBe(2);
 	});
 
-	it('le titre de l’auteur est affiché et sert de titre accessible', async () => {
+	// Audit a11y du lot 2 : figcaption ET <title> identiques = titre annoncé deux fois
+	it('le titre de l’auteur est affiché une fois ; l’image annonce son genre', async () => {
 		const node = parseStatChartContent('circulaire', PIE);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });
 
 		expect(screen.container.querySelector('figcaption')?.textContent).toBe('Transport');
-		expect(screen.container.querySelector('svg title')?.textContent).toBe('Transport');
+		expect(screen.container.querySelector('svg title')?.textContent).toBe('Diagramme circulaire');
+	});
+
+	// Audit a11y du lot 2 : noms inclinés et graduations sortaient du cadre
+	it('aucun texte ne sort du cadre, même avec un long nom incliné et de grandes graduations', async () => {
+		const long = 'Une catégorie au nom vraiment très long';
+		const node = parseStatChartContent(
+			'barres',
+			`${long} = 12500\nB = 3\nC = 4\nD = 1\nE = 2\nF = 3\nG = 4`
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg')!;
+		const [, , width, height] = svg.getAttribute('viewBox')!.split(' ').map(Number);
+
+		for (const text of svg.querySelectorAll<SVGTextElement>('text')) {
+			const box = text.getBBox();
+			const matrix = text.getCTM()!.inverse().multiply(svg.getCTM()!).inverse();
+			const corners = [
+				new DOMPoint(box.x, box.y),
+				new DOMPoint(box.x + box.width, box.y + box.height),
+				new DOMPoint(box.x, box.y + box.height),
+				new DOMPoint(box.x + box.width, box.y)
+			].map((p) => p.matrixTransform(matrix));
+			for (const c of corners) {
+				expect(c.x, text.textContent ?? '').toBeGreaterThanOrEqual(-1);
+				expect(c.x, text.textContent ?? '').toBeLessThanOrEqual(width + 1);
+				expect(c.y, text.textContent ?? '').toBeGreaterThanOrEqual(-1);
+				expect(c.y, text.textContent ?? '').toBeLessThanOrEqual(height + 1);
+			}
+		}
 	});
 
 	it('un nom hostile s’affiche en texte, sans être interprété', async () => {

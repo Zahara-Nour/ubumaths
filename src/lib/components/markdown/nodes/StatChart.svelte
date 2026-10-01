@@ -32,8 +32,10 @@
 
 	let { node, showErrors, class: className = '' }: Props = $props();
 
-	/** Marges autour du cadre des barres, en px */
-	const PAD_LEFT = 40;
+	/** Marges autour du cadre des barres, en px (la gauche s'élargit selon les textes) */
+	const PAD_LEFT_MIN = 40;
+	/** Largeur moyenne d'un chiffre de graduation à 10 px */
+	const TICK_CHAR_PX = 6.2;
 	const PAD_RIGHT = 12;
 	const PAD_TOP = 26;
 	/** Bas : noms à plat ou inclinés, puis titre de l'axe horizontal */
@@ -42,6 +44,7 @@
 
 	/** Largeur moyenne d'un caractère à 11 px : un nom incliné à 45° descend de ~0,7 × sa longueur */
 	const CHAR_PX = 6.5;
+	const SIN_45 = Math.SQRT1_2;
 
 	/** Marge autour du disque, en px */
 	const PIE_PAD = 4;
@@ -51,7 +54,7 @@
 		bleu: 'var(--color-info)',
 		rouge: 'var(--color-destructive)',
 		vert: 'var(--stat-vert)',
-		orange: 'var(--color-warning)',
+		orange: 'var(--stat-orange)',
 		violet: 'var(--stat-violet)',
 		noir: 'var(--color-foreground)',
 		gris: 'var(--color-muted-foreground)'
@@ -60,7 +63,7 @@
 	/** Palette des secteurs (même ordre que `stat-chart-typst.ts`) */
 	const PIE_COLORS = [
 		'var(--color-info)',
-		'var(--color-warning)',
+		'var(--stat-orange)',
 		'var(--stat-vert)',
 		'var(--color-destructive)',
 		'var(--stat-violet)',
@@ -92,14 +95,26 @@
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
+	/** Étendue d'un nom incliné, horizontale comme verticale */
+	let rotatedExtent = $derived(bars?.rotateLabels ? bars.longestLabel * CHAR_PX * SIN_45 : 0);
 	let padBottom = $derived(
-		(bars?.rotateLabels ? 16 + bars.longestLabel * CHAR_PX * 0.71 : PAD_BOTTOM_FLAT) +
+		(bars?.rotateLabels ? 16 + rotatedExtent : PAD_BOTTOM_FLAT) +
 			(bars?.axisTitles.x ? AXIS_TITLE_PX : 0)
 	);
+	/**
+	 * Gauche : la plus longue graduation, et un nom incliné qui part vers la
+	 * gauche depuis le milieu de la première barre (audit a11y : texte rogné).
+	 */
+	let padLeft = $derived.by(() => {
+		if (!bars) return PAD_LEFT_MIN;
+		const ticks = 12 + Math.max(...bars.ticks.map((t) => t.label.length)) * TICK_CHAR_PX;
+		const halfBand = plotWidth / bars.bars.length / 2;
+		return Math.max(PAD_LEFT_MIN, ticks, rotatedExtent - halfBand + 6);
+	});
 
 	/** Abscisse d'écran d'une position en catégories */
 	function sx(x: number): number {
-		return bars ? PAD_LEFT + (x / bars.bars.length) * plotWidth : 0;
+		return bars ? padLeft + (x / bars.bars.length) * plotWidth : 0;
 	}
 
 	/** Ordonnée d'écran d'une valeur */
@@ -126,8 +141,8 @@
 				role="img"
 				aria-labelledby={titleId}
 				aria-describedby={descId}
-				viewBox="0 0 {PAD_LEFT + plotWidth + PAD_RIGHT} {PAD_TOP + plotHeight + padBottom}"
-				style:max-width="{PAD_LEFT + plotWidth + PAD_RIGHT}px"
+				viewBox="0 0 {padLeft + plotWidth + PAD_RIGHT} {PAD_TOP + plotHeight + padBottom}"
+				style:max-width="{padLeft + plotWidth + PAD_RIGHT}px"
 				class="stat-svg"
 			>
 				<title id={titleId}>{scene.accessibleTitle}</title>
@@ -138,13 +153,13 @@
 					{#each bars.ticks as tick, i (i)}
 						<line
 							class="stat-grille"
-							x1={PAD_LEFT}
+							x1={padLeft}
 							y1={sy(tick.value)}
-							x2={PAD_LEFT + plotWidth}
+							x2={padLeft + plotWidth}
 							y2={sy(tick.value)}
 						/>
-						<line x1={PAD_LEFT - 4} y1={sy(tick.value)} x2={PAD_LEFT} y2={sy(tick.value)} />
-						<text x={PAD_LEFT - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
+						<line x1={padLeft - 4} y1={sy(tick.value)} x2={padLeft} y2={sy(tick.value)} />
+						<text x={padLeft - 6} y={sy(tick.value)} text-anchor="end" dominant-baseline="middle"
 							>{tick.label}</text
 						>
 					{/each}
@@ -189,17 +204,17 @@
 
 				<!-- Axes -->
 				<g class="stat-axes" aria-hidden="true">
-					<line x1={PAD_LEFT} y1={sy(0)} x2={PAD_LEFT + plotWidth} y2={sy(0)} />
-					<line x1={PAD_LEFT} y1={sy(0)} x2={PAD_LEFT} y2={PAD_TOP - 10} />
+					<line x1={padLeft} y1={sy(0)} x2={padLeft + plotWidth} y2={sy(0)} />
+					<line x1={padLeft} y1={sy(0)} x2={padLeft} y2={PAD_TOP - 10} />
 					<polygon
-						points="{PAD_LEFT},{PAD_TOP - 14} {PAD_LEFT - 3.5},{PAD_TOP - 7} {PAD_LEFT +
+						points="{padLeft},{PAD_TOP - 14} {padLeft - 3.5},{PAD_TOP - 7} {padLeft +
 							3.5},{PAD_TOP - 7}"
 					/>
-					<text class="stat-titre-axe" x={PAD_LEFT + 6} y={PAD_TOP - 12}>{bars.axisTitles.y}</text>
+					<text class="stat-titre-axe" x={padLeft + 6} y={PAD_TOP - 12}>{bars.axisTitles.y}</text>
 					{#if bars.axisTitles.x}
 						<text
 							class="stat-titre-axe"
-							x={PAD_LEFT + plotWidth / 2}
+							x={padLeft + plotWidth / 2}
 							y={PAD_TOP + plotHeight + padBottom - 4}
 							text-anchor="middle">{bars.axisTitles.x}</text
 						>
@@ -242,7 +257,8 @@
 		{/if}
 
 		{#if errorsVisible && node.warnings.length > 0}
-			<ul class="mt-1 text-xs text-warning">
+			<!-- Texte en couleur de premier plan : `text-warning` ne fait que 3:1 (audit a11y) -->
+			<ul class="mt-1 border-l-2 border-warning pl-2 text-xs text-foreground">
 				{#each node.warnings as w, i (i)}
 					<li>{w.message}</li>
 				{/each}
@@ -253,7 +269,8 @@
 	<div
 		class="stat-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
 	>
-		<p class="font-medium text-destructive">Bloc {node.kind} : diagramme non dessiné</p>
+		<!-- Texte en couleur de premier plan : `text-destructive` ne fait que 3,3:1 (audit a11y) -->
+		<p class="font-medium">Bloc {node.kind} : diagramme non dessiné</p>
 		<ul class="mt-1 list-disc pl-5">
 			{#each shownErrors as e, i (i)}
 				<li>{e.message}</li>
@@ -270,10 +287,13 @@
 
 <style>
 	.stat-figure {
+		overflow-x: auto;
 		/* Pas de token de thème pour ces teintes : définies ici, claires / sombres */
 		--stat-vert: light-dark(#15803d, #4ade80);
 		--stat-violet: light-dark(#7c3aed, #a78bfa);
 		--stat-sarcelle: light-dark(#0d9488, #2dd4bf);
+		/* `--color-warning` ne fait que 3:1 sur le fond clair (audit a11y) */
+		--stat-orange: light-dark(#b45309, #f59e0b);
 		margin: 0.5rem 0;
 	}
 
@@ -286,6 +306,8 @@
 	.stat-svg {
 		display: block;
 		width: 100%;
+		/* En dessous, le texte du SVG (11 px) deviendrait illisible : défiler plutôt */
+		min-width: 300px;
 		height: auto;
 		margin: 0 auto;
 		font-family: inherit;
@@ -302,7 +324,8 @@
 	}
 
 	.stat-graduations .stat-grille {
-		stroke: var(--color-border);
+		/* `--color-border` : 1,3:1, quasi invisible (audit a11y) */
+		stroke: color-mix(in oklab, var(--color-foreground) 30%, transparent);
 		stroke-width: 0.75;
 	}
 

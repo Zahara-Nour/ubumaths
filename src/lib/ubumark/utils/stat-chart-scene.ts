@@ -41,7 +41,11 @@ export interface SceneTick {
 interface SceneCommon {
 	/** Titre affiché au-dessus du diagramme (celui de l'auteur), ou null */
 	title: string | null;
-	/** Titre accessible (`<title>`) : celui de l'auteur, sinon le genre */
+	/**
+	 * Titre accessible (`<title>`) : le GENRE du diagramme. Le titre de l'auteur
+	 * est déjà lu dans `<figcaption>` : le répéter le ferait annoncer deux fois
+	 * (audit a11y du lot 2).
+	 */
 	accessibleTitle: string;
 	/** Description accessible (`<desc>`) : celle de l'auteur, sinon automatique */
 	description: string;
@@ -185,7 +189,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	return {
 		kind: 'barres',
 		title: spec.title,
-		accessibleTitle: spec.title ?? KIND_TITLE.barres,
+		accessibleTitle: KIND_TITLE.barres,
 		description: spec.description ?? `${KIND_TITLE.barres} : ${listed.join(', ')}.`,
 		pixelSize: { width, height },
 		bars,
@@ -292,7 +296,7 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 	return {
 		kind: 'circulaire',
 		title: spec.title,
-		accessibleTitle: spec.title ?? KIND_TITLE.circulaire,
+		accessibleTitle: KIND_TITLE.circulaire,
 		description: spec.description ?? `${KIND_TITLE.circulaire} : ${listed.join(', ')}.`,
 		pixelSize: { width, height: width },
 		sectors,
