@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-2 livrés (#595, #598) ; lot 3 (histogramme, fréquences cumulées, indicateurs) — spécification soumise
+## État : lots 1-2 livrés (#595, #598) ; lot 3 implémenté, revues en cours
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -237,6 +237,26 @@ Tour 6 (2026-10-01) — recommandations suivies :
 
 Constaté : dans les items de liste, le langage d'un bloc de code est lu par `(\w*)`
 (`markdown-parser.ts:1494`) — `frequences-cumulees` (tiret) n'y serait pas reconnu → `[\w-]*`.
+
+### Lot 3 — fait
+
+- `statistics/classes.ts` : `estimateClassQuantile` (interpolation, borne droite exacte quand
+  le cumul tombe pile), `decreasingCumulativeFrequency`. ⚠️ Spécification : la formule de Q1
+  était écrite « 10/30 × 10 », la bonne est 10/12 × 10 (même valeur 8,33) — test sur la bonne.
+- Parseur réécrit : classes `[a ; b[`, options `légende:` `sens:` `lecture:` `indicateurs:`
+  réservées par bloc, contiguïté via `summarizeClasses` (une seule règle).
+- Scène : `HistogramScene` (mode `axe` / `carreaux`, carreau = PGCD des amplitudes, valeur
+  automatique 1/2/2,5/5 × 10^k), `CumulativeScene` (lectures via `estimateClassQuantile`),
+  ligne `indicators` sur toutes les scènes (non répétée dans `<desc>`).
+- `markdown-parser.ts` : langage d'un bloc de code en liste `[\w-]*` (avant : `\w*`).
+- Preuves : 53 tests rouges contre stubs, puis verts ; 4 682 tests serveur + 235 client verts ;
+  `check:incremental` 0 ; eslint sans erreur sur les fichiers modifiés.
+- PDF (compile-prod, typst.ts 0.6.1-rc5) : fiche FR/EN énoncé/corrigé (amplitudes égales et
+  inégales, bornes négatives et décimales, `légende:` hostile `"x" \b`, polygones croissant
+  et décroissant en liste, lectures, indicateurs barres et classes, bloc en erreur) : 4/4 OK,
+  comptes 9 rectangles / 2 polygones / 4 lectures / 3 indicateurs / 1 erreur, pages relues.
+  Défaut vu et corrigé : étiquettes de lecture sur le polygone → déplacées au début du
+  pointillé, côté libre (écran et PDF).
 
 ## Reste à faire (hors lots 2-3)
 
