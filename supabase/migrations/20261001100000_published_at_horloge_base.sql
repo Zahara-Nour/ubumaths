@@ -31,6 +31,7 @@
 -- rattachement naît « préparé »), et les tests d'intégration qui gardent
 -- `<= now()` contre une date FUTURE posent cette date à l'insertion. Les
 -- écraser à l'insertion rendrait ces gardes vertes pour une mauvaise raison.
+-- Choix validé le 2026-10-01 : le trigger ne se déclenche PAS sur INSERT.
 --
 -- Aucune policy, aucun GRANT : SECURITY INVOKER, le trigger ne fait que
 -- réécrire la ligne que l'appelant avait déjà le droit d'écrire.
