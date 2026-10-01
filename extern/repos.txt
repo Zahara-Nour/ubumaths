@@ -1,5 +1,0 @@
-# Dépôts tiers clonés dans extern/ pour inspiration et comparaison.
-# Une URL git par ligne ; les lignes vides et les commentaires sont ignorés.
-# `pnpm extern:sync` clone ce qui manque et met à jour le reste.
-https://github.com/arnog/mathlive.git
-https://github.com/cortex-js/compute-engine.git

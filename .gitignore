@@ -12,7 +12,7 @@ node_modules
 
 # Dépôts tiers clonés pour inspiration (pnpm extern:sync) : seule la liste est suivie
 /extern/*
-!/extern/repos.txt
+!/extern/repos.md
 externe
 
 /data
