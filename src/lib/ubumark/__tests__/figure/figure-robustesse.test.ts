@@ -31,6 +31,10 @@ const HOSTILE: Array<[string, string]> = [
 		'macro récursive en arbre',
 		'macro f(n):\n    si n > 0:\n        f(n - 1)\n        f(n - 1)\n    retourne n\nf(30)'
 	],
+	[
+		'codage à 10^8 traits',
+		'A = point(0, 0)\nB = point(1, 0)\nmarque_segment(A, B, traits=100000000)'
+	],
 	['script démesuré', 'A = point(0, 0)\n'.repeat(5000)],
 	['ligne démesurée', `x = ${'1+'.repeat(100000)}1`]
 ];

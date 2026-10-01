@@ -332,6 +332,17 @@ function autoAriaLabel(elements: GeoElement[]): string {
 
 const MAX_WARNINGS = 10;
 
+/**
+ * Style par défaut d'une figure de manuel : objets NOIRS (l'écran les affiche
+ * dans la couleur du texte, claire ou sombre), traits fins, petits points.
+ */
+export const FIGURE_DEFAULT_COLOR = '#000000';
+const FIGURE_DEFAULTS = {
+	defaultColor: FIGURE_DEFAULT_COLOR,
+	defaultStrokeWidth: 1.5,
+	defaultPointSize: 3
+} as const;
+
 export function buildFigureScene(node: FigureNode): FigureSceneResult {
 	const warnings: FigureIssue[] = [];
 	if (node.errors.length > 0 || node.header.window === null) {
@@ -367,7 +378,7 @@ export function buildFigureScene(node: FigureNode): FigureSceneResult {
 		return { scene: null, errors: [issueAt(node, refused.line, refused.reason)], warnings };
 	}
 
-	const figure = new Figure();
+	const figure = new Figure(FIGURE_DEFAULTS);
 	figure.setElementLimit(FIGURE_LIMITS.elements);
 	try {
 		interpret(program, figure, undefined, { maxSteps: FIGURE_LIMITS.steps });

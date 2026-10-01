@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```figure — progression
 date: 2026-10-01
-status: lot 1 livré, lot 2 en cours
+status: lots 1-2 livrés, lot 3 en cours
 branche: feat/bloc-figure (worktree ../ubumaths-wt-figure)
 ---
 
@@ -72,7 +72,7 @@ angle(B, A, C, marque="carre")
 ## Lots
 
 - [x] Lot 1 — types + parseur + scène (40 tests rouges avant : modules absents ; 6 tests geometry-core)
-- [ ] Lot 2 — composant à la demande + câblage + Q48
+- [x] Lot 2 — composant à la demande + câblage + Q48
 - [ ] Lot 3 — Typst + compilation prod
 
 ## Journal
@@ -97,3 +97,20 @@ angle(B, A, C, marque="carre")
   lu `2.5`. `angle_droit` n'existe pas dans le DSL (retiré en mai) : codage = `angle(B, A, C,
 marque="carre")`. `mtexte`/`rtexte` refusés : leur LaTeX n'a pas d'équivalent Typst sûr.
   Erreurs : `Ligne N : <summary>` avec N = ligne du BLOC (pas du script) + `hint` de geometry-core.
+- 2026-10-01 lot 2 : `FigureBlock.svelte` (LÉGER, dans le chunk Markdown : n'importe rien de
+  geometry-core ; erreurs d'en-tête affichées sans rien charger ; cadre aux proportions de la
+  figure pendant le chargement ; échec de chargement → « Figure indisponible ») +
+  `FigureBlockView.svelte` (chargé par `import()`, SVG statique depuis `utils/figure-svg.ts`, qui
+  n'utilise que les PRIMITIVES SVG de geometry-core — ni `GeometryCanvas`, ni `exportToSVG` qui
+  importe roughjs) + `FigureErrors.svelte` (Q48, réutilise `showAuthoringErrors` de `courbe`).
+  Câblage : union `BlockNode`, 2 sites de `markdown-parser.ts` (les lignes d'un bloc figure sont
+  masquées pour la recherche des blocs de code, comme `courbe`), `MarkdownRenderer`, `ListNode`,
+  `markdown-import.ts` (preuve rouge : 3 tests d'aller-retour rouges avant), `check:ubumark`.
+  Style par défaut d'une figure : objets NOIRS (`Figure` créée avec `defaultColor: #000000`,
+  traits 1,5, points de rayon 3) ; à l'écran le noir devient `var(--color-foreground)` (clair /
+  sombre), posé en `style:` (un `var()` dans un attribut de présentation SVG n'est pas fiable).
+  **Faille trouvée et corrigée dans geometry-core** : `marque_segment(A, B, traits=10^8)` n'était
+  pas borné (documenté 1, 2 ou 3) → une boucle par trait à chaque rendu ; refusé désormais.
+  Tests navigateur (`nodes/__tests__/FigureBlock.svelte.test.ts`, 12, rendus dans `<main>`) :
+  chaque objet visible de la scène a sa forme (`data-element`), repère isotrope, couleur
+  calculée non vide, Q48 prof/élève, contexte du renderer, bloc dans une liste.

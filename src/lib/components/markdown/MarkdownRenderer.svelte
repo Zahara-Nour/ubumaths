@@ -50,6 +50,7 @@
 	import TrigCircle from './nodes/TrigCircle.svelte';
 	import NumberLine from './nodes/NumberLine.svelte';
 	import Courbe from './nodes/Courbe.svelte';
+	import FigureBlock from './nodes/FigureBlock.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -288,6 +289,8 @@
 					<NumberLine {node} />
 				{:else if node.type === 'courbe'}
 					<Courbe {node} />
+				{:else if node.type === 'figure'}
+					<FigureBlock {node} />
 				{/if}
 			{/each}
 		{:else}
