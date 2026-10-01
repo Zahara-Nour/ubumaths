@@ -60,6 +60,7 @@ import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import { generateTrigCircleTypst } from './trig-circle-typst';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
+import { generateStatChartTypst } from './stat-chart-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import type { VariationTableNode } from '../types/variation-table';
@@ -341,6 +342,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'figure':
 			return renderFigureTypst(node);
+
+		case 'stat-chart':
+			return generateStatChartTypst(node, { language: options.language });
 
 		default:
 			return '';

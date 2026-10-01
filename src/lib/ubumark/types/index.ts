@@ -175,6 +175,20 @@ export type {
 } from './courbe';
 
 // ============================================================================
+// DIAGRAMMES STATISTIQUES (blocs ```barres, ```circulaire)
+// ============================================================================
+
+export type {
+	StatChartNode,
+	StatChartSpec,
+	StatChartDatum,
+	StatChartIssue,
+	StatChartKind,
+	StatChartLabels,
+	StatChartUnit
+} from './stat-chart';
+
+// ============================================================================
 // FIGURE (bloc ```figure)
 // ============================================================================
 

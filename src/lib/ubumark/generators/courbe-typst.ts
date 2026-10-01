@@ -28,8 +28,8 @@ export interface CourbeTypstOptions {
 	language?: string;
 }
 
-/** Largeur du cadre en cm ; une colonne de fiche fait ~8,7 cm. */
-const WIDTH_CM: Record<CourbeSize, number> = {
+/** Largeur du cadre en cm ; une colonne de fiche fait ~8,7 cm. Partagée avec les diagrammes statistiques. */
+export const WIDTH_CM: Record<CourbeSize, number> = {
 	petite: 4.5,
 	moyenne: 6.5,
 	grande: 7.6

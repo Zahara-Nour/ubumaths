@@ -148,6 +148,26 @@ export function summarizeTable(
 	});
 }
 
+/**
+ * Fréquences d'une variable qualitative : effectif / effectif total, dans
+ * l'ordre donné (diagrammes en barres et circulaire).
+ *
+ * Les effectifs peuvent être des pourcentages : seules leurs proportions
+ * comptent.
+ *
+ * @returns `null` sans catégorie ; un échec situé pour un effectif invalide
+ *   ou un total nul.
+ */
+export function categoryFrequencies(counts: readonly number[]): Outcome<number[]> | null {
+	if (counts.length === 0) return null;
+	const invalid = checkSize(counts.length) ?? checkCounts(counts);
+	if (invalid) return invalid;
+
+	const total = sumInOrder(counts);
+	if (total === 0) return failure('Effectif total nul : aucune donnée à décrire.');
+	return success(counts.map((count) => count / total));
+}
+
 /** Plafond de `STATISTICS_LIMITS`. */
 function checkSize(size: number): Failure | null {
 	if (size <= STATISTICS_LIMITS.maxValues) return null;

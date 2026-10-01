@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lot 1 revu et corrigé, PR à ouvrir
+## État : lot 1 livré (#595) ; lot 2 revu, corrigé, PR à ouvrir
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -136,6 +136,84 @@ fait jamais (`pnpm math` = `tsx`, sans alias) et le moteur l'importe en relatif.
   (`2 ; 1/0` → `[2]`, « 1 valeur ignorée ») et la saisie plafonne à 10 000 caractères : le
   dépassement de `STATISTICS_LIMITS` n'est pas atteignable depuis l'atelier aujourd'hui.
 
+## Lot 2 — barres + circulaire
+
+Worktree `../ubumaths-wt-stats-lot2`, branche `feat/stats-barres-circulaire`.
+
+Tour 4 (2026-10-01) — recommandations suivies :
+
+17. **Un nœud interne `stat-chart`** avec `kind` (`barres` | `circulaire`, puis histogramme…) :
+    les 7 points de câblage (markdown-parser, union AST, MarkdownRenderer, ListNode,
+    typst-generator, markdown-import, index) une seule fois.
+18. **Circulaire** : légende à côté (contenu selon `étiquettes:`, défaut pourcentages), premier
+    secteur à midi, sens horaire, ordre de l'auteur.
+19. **Barres** : `valeurs: oui` affiche les effectifs au-dessus, désactivé par défaut.
+20. Catégories numériques = catégories (équidistantes, ordre écrit) en v1.
+21. Couleurs : barres une couleur (`couleur:`, mots de `courbe`, bleu par défaut) ; circulaire
+    palette automatique fixe (7 couleurs), 12 secteurs au plus.
+22. Circulaire en % : erreur d'auteur si |somme − 100| > 0,5 ; barres : aucun contrôle.
+
+### Spécification TDD validée
+
+- **Parseur** — nominal : ordre écrit, `{{n}}` avant, `12,5`/`12.5`, options `titre:`
+  `axes:` `description:` `taille:` `valeurs:` `couleur:` `étiquettes:`, option > catégorie
+  homonyme. Limites : % décimal, effectif nul (barre vide / secteur absent), noms avec
+  `# $ * " \` sans casser SVG ni PDF, ≤ 30 catégories (barres) / 12 (circulaire), nom ≤ 40
+  caractères. Erreurs situées : clé inconnue, ligne sans `=`, effectif non entier (`45,12`),
+  négatif, mélange effectifs / %, catégorie en double, aucune donnée, circulaire de total nul,
+  circulaire % ≠ 100 ± 0,5.
+- **Scène** (pure, SVG + Typst) : axe vertical depuis 0, pas auto (fonction de `courbe`), titre
+  d'axe par défaut « Effectif » / « Fréquence (%) » ; circulaire Σ angles = 360°, départ midi
+  horaire, angles légende au degré ; nombres selon la langue du document ; description auto
+  qui énumère les données ; fréquences via `src/lib/statistics/`.
+- **Écran** : SVG `role="img"`, `<title>`, `<desc>` ; erreurs prof / « Figure indisponible »
+  élève ; budget document (20 figures) ; bloc en retrait de liste ; aller-retour éditeur riche ;
+  `accessibility-tester`.
+- **PDF** : même scène (même nombre de barres / secteurs) ; fiche FR + EN, énoncé + corrigé,
+  noms hostiles + bloc en erreur → `compile-prod.mjs` (typst.ts 0.6.1-rc5) 4/4, page relue.
+
+### Lot 2 — fait
+
+- `ubumark/types/stat-chart.ts`, `parser/stat-chart-parser.ts`, `utils/stat-chart-scene.ts`,
+  `generators/stat-chart-typst.ts`, `components/markdown/nodes/StatChart.svelte` ;
+  `statistics/describe.ts` gagne `categoryFrequencies`.
+- Câblage : markdown-parser (blocs repérés dans `lines` ET `originalLines`, masqués pour les
+  blocs de code, langages `barres`/`circulaire` dans les items de liste), union AST, index,
+  MarkdownRenderer, ListNode, typst-generator, markdown-import (bloc de code `barres` /
+  `circulaire`, texte source gardé même en erreur).
+- Preuves : tests rouges contre des stubs (65 puis 7 + 14), puis verts ; ubumark + rich-text +
+  statistics 3667 tests verts, composants markdown 85 ; `check:incremental` 0 ; `lint:fast` propre.
+- **PDF** : fiche de 2 exercices (noms hostiles `# $ * " \`, bloc en erreur, blocs en liste,
+  `étiquettes: angles`, `%`) passée par `rendu-fiche.ts` puis `compile-prod.mjs` (typst.ts
+  0.6.1-rc5) : 4/4 OK ; comptes `// barre` 5, `// secteur` 5, « Figure indisponible » 1 par
+  énoncé (doublés dans le corrigé). Page relue : deux défauts vus et corrigés (rayon blanc d'un
+  disque entier ; titre d'axe qui chevauchait un nom incliné → place calculée d'après le nom le
+  plus long).
+- Secteurs = polygones de la scène (pas `arc` de cetz) : même dessin écran / PDF.
+- `svelte-autofixer` : outil MCP absent de la session, non lancé.
+
+- Revues : `code-reviewer` (0 bloquant ; effectifs gradués en entiers, piste « Vélo = 3 »,
+  repli « Figure indisponible » si la scène lève dans le PDF, constantes partagées) et
+  `accessibility-tester` (texte rogné, contrastes erreurs / grille / orange, largeur minimale
+  300 px, titre lu une fois : `<title>` = genre, titre auteur en `<figcaption>`).
+
+Tour 5 (2026-10-01) — recommandations suivies :
+
+23. **Repères numérotés** dans chaque secteur (dehors avec un trait sous 20°) et dans la
+    légende, écran et PDF ; jamais deux couleurs identiques côte à côte (dernier / premier
+    compris) ; 12 secteurs au plus maintenus.
+24. **Description accessible = ce que la légende affiche** (étiquettes: aucune → catégories
+    seules) ; barres : effectifs gardés (lisibles sur l'axe).
+25. **Défauts hérités de `courbe`** (aussi `figure`, `stat-chart`) → PR séparée après ce lot :
+    bloc non fermé dans un item de liste rendu en texte brut ; bloc non fermé suivi plus loin
+    d'un ``` nu qui avale le texte intermédiaire.
+
 ## Questions ouvertes
 
 (aucune)
+
+## Reste à faire (hors lot 2)
+
+- PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
+- Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
+- `--font-scale` non appliqué au texte des SVG (la légende HTML le suit).

@@ -64,6 +64,7 @@ import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
 import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
 import { findCourbeBlocks, parseCourbe, parseCourbeContent } from './courbe-parser';
 import { findFigureBlocks, parseFigure, parseFigureContent } from './figure-parser';
+import { findStatChartBlocks, parseStatChart, parseStatChartContent } from './stat-chart-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -422,6 +423,9 @@ function parseBlocks(
 	// Bloc ```figure : même appariement par rang que ```courbe
 	const figureBlocks = findFigureBlocks(lines);
 	const originalFigureBlocks = findFigureBlocks(originalLines);
+	// Blocs ```barres / ```circulaire : même appariement par rang que ```courbe
+	const statChartBlocks = findStatChartBlocks(lines);
+	const originalStatChartBlocks = findStatChartBlocks(originalLines);
 
 	// =========================================================================
 	// CODE BLOCK LINE INDEX MISMATCH FIX
@@ -456,9 +460,15 @@ function parseBlocks(
 		source.map((line, index) =>
 			ranges.some((r) => index >= r.startIndex && index <= r.endIndex) ? '' : line
 		);
-	const codeBlocks = findCodeBlocks(maskCourbe(lines, [...courbeBlocks, ...figureBlocks]));
+	const codeBlocks = findCodeBlocks(
+		maskCourbe(lines, [...courbeBlocks, ...figureBlocks, ...statChartBlocks])
+	);
 	const originalCodeBlocks = findCodeBlocks(
-		maskCourbe(originalLines, [...originalCourbeBlocks, ...originalFigureBlocks])
+		maskCourbe(originalLines, [
+			...originalCourbeBlocks,
+			...originalFigureBlocks,
+			...originalStatChartBlocks
+		])
 	);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
@@ -585,6 +595,21 @@ function parseBlocks(
 					: parseFigure(lines, figureBlock.startIndex, figureBlock.endIndex)
 			);
 			i = figureBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1d quater: blocs ```barres / ```circulaire — TOUJOURS un nœud (Q48)
+		const statChartBlock = statChartBlocks.find(
+			(range) => i >= range.startIndex && i <= range.endIndex
+		);
+		if (statChartBlock) {
+			const original = originalStatChartBlocks[statChartBlocks.indexOf(statChartBlock)];
+			blocks.push(
+				original
+					? parseStatChart(originalLines, original.startIndex, original.endIndex)
+					: parseStatChart(lines, statChartBlock.startIndex, statChartBlock.endIndex)
+			);
+			i = statChartBlock.endIndex + 1;
 			continue;
 		}
 
@@ -1522,6 +1547,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'figure') {
 			// Figure dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseFigureContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'barres' || language === 'circulaire') {
+			// Diagramme statistique dans un item de liste : toujours un nœud (Q48)
+			blocks.push(parseStatChartContent(language, restoreMathPlaceholders(code, placeholders)));
 		} else {
 			// Regular code block
 			blocks.push({

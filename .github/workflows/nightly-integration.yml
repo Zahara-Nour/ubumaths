@@ -53,6 +53,7 @@ on:
       - 'src/lib/resources/**'
       - 'src/lib/server/**'
       - 'src/lib/srs/**'
+      - 'src/lib/statistics/**'
       - 'src/lib/ubumark/**'
       # Bloc ```figure : les producteurs de PDF importent l'interpréteur du DSL
       - 'src/lib/geometry-core/**'
