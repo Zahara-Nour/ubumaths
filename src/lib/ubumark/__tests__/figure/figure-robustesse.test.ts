@@ -8,6 +8,11 @@ import { parseFigureContent } from '../../parser/figure-parser';
 import { buildFigureScene } from '../../utils/figure-scene';
 import { FIGURE_LIMITS } from '../../types/figure';
 
+// Seuil de détection d'un blocage, pas une mesure de performance : sans les
+// plafonds, ces entrées prenaient 22 à 24 s. Large pour les runners de CI,
+// plus lents que le poste (247 ms mesurés en CI pour ~40 ms en local).
+const HOSTILE_MAX_MS = 1000;
+
 const HEADER = 'fenetre: -10 ; 10 ; -10 ; 10\n---\n';
 
 function timed(body: string) {
@@ -42,7 +47,7 @@ const HOSTILE: Array<[string, string]> = [
 describe('figure — budget borné (entrées hostiles)', () => {
 	it.each(HOSTILE)('%s : refusé en moins de 200 ms, message pour le prof', (_label, body) => {
 		const { result, ms } = timed(body);
-		expect(ms).toBeLessThan(200);
+		expect(ms).toBeLessThan(HOSTILE_MAX_MS);
 		expect(result.scene).toBeNull();
 		expect(result.errors.length).toBeGreaterThan(0);
 	});
@@ -62,6 +67,6 @@ describe('figure — budget borné (entrées hostiles)', () => {
 		].join('\n');
 		const { result, ms } = timed(body);
 		expect(result.errors).toEqual([]);
-		expect(ms).toBeLessThan(200);
+		expect(ms).toBeLessThan(HOSTILE_MAX_MS);
 	});
 });

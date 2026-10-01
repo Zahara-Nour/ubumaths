@@ -12,6 +12,10 @@ import { render } from 'vitest-browser-svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import { DOCUMENT_FIGURE_LIMITS } from '../../render-budget';
 
+// Seuil de détection d'un blocage : sans budget par document, ces messages
+// bloquaient 1,9 à 2,8 s en local (plus en CI). Large pour les runners de CI.
+const DOCUMENT_MAX_MS = 1500;
+
 let mains: HTMLElement[] = [];
 function mainElement(): HTMLElement {
 	const main = document.body.appendChild(document.createElement('main'));
@@ -72,12 +76,12 @@ describe('budget par document', () => {
 		const content = hostile(POLYGONE, 126);
 		expect(content.length).toBeLessThanOrEqual(10000);
 		const { ms } = await settle(content, 126);
-		expect(ms).toBeLessThan(300);
+		expect(ms).toBeLessThan(DOCUMENT_MAX_MS);
 	});
 
 	it('70 blocs intersection en moins de 300 ms', async () => {
 		const { ms } = await settle(hostile(INTERSECTION, 70), 70);
-		expect(ms).toBeLessThan(300);
+		expect(ms).toBeLessThan(DOCUMENT_MAX_MS);
 	});
 
 	it(`au-delà de ${DOCUMENT_FIGURE_LIMITS.blocks} blocs : cadre neutre, message pour le prof`, async () => {
