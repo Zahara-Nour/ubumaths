@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { userEvent } from '@vitest/browser/context';
+import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
@@ -143,7 +143,7 @@ describe('actions avec une autre liste', () => {
 		) as HTMLElement;
 		(carte.querySelector('button') as HTMLButtonElement).click();
 		await settle();
-		return { container, carte };
+		return { container, carte, atelier };
 	}
 
 	const labels = (carte: HTMLElement) =>
@@ -158,7 +158,7 @@ describe('actions avec une autre liste', () => {
 	});
 
 	it('plusieurs partenaires : un menu, au plus 9 boutons, et le choix change les actions', async () => {
-		const { carte } = await cardOf(['L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']);
+		const { carte, atelier } = await cardOf(['L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']);
 		const trigger = carte.querySelector('[aria-haspopup="listbox"]') as HTMLButtonElement;
 
 		// Audit a11y : le bouton annonce la liste CHOISIE, pas seulement « Liste partenaire »
@@ -180,5 +180,13 @@ describe('actions avec une autre liste', () => {
 		expect(labels(carte)).toContain('Nuage avec N');
 		expect(labels(carte)).not.toContain('Nuage avec M');
 		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste N');
+
+		// Le geste part bien avec N, pas seulement le libellé (revue)
+		const nuage = [...carte.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Nuage avec N'
+		) as HTMLButtonElement;
+		nuage.click();
+		await settle();
+		expect(atelier.get('L')?.plottedWith).toBe('N');
 	});
 });

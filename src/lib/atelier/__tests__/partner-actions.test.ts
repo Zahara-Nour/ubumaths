@@ -66,10 +66,33 @@ describe('regroupement par partenaire', () => {
 		expect(labels).toContain('Retirer le diagramme');
 	});
 
-	it('une partenaire inconnue retombe sur la partenaire par défaut', () => {
-		const atelier = atelierWith(['L', 'M']);
+	it('une partenaire inconnue retombe sur la partenaire par défaut, une connue est suivie', () => {
+		const atelier = atelierWith(['L', 'M', 'N']);
 
 		expect(ids(atelier, 'L', 'Z')).toContain('scatter:M');
+		expect(ids(atelier, 'L', 'N')).toContain('scatter:N');
+		expect(ids(atelier, 'L', 'N')).not.toContain('scatter:M');
+	});
+
+	// Revue : un diagramme affiché avec M, l'élève choisit N — « Retirer le
+	// diagramme » disparaissait ; il reste parmi les actions de la liste
+	it('diagramme affiché avec M, partenaire N choisie : « Retirer le diagramme » reste', () => {
+		const atelier = atelierWith(['L', 'M', 'N']);
+		atelier.toggleChart('L', 'M');
+		const actions = actionsFor(atelier.get('L')!, atelier, 'N');
+		const remove = actions.find((a) => a.label === 'Retirer le diagramme');
+
+		expect(remove?.id).toBe('chart:M');
+		expect(remove?.partner).toBeUndefined();
+		expect(actions.find((a) => a.id === 'chart:N')?.label).toBe('Diagramme avec effectifs N');
+	});
+
+	it('les actions avec la partenaire portent son nom ; celles de la liste, non', () => {
+		const atelier = atelierWith(['L', 'M']);
+		const actions = actionsFor(atelier.get('L')!, atelier);
+
+		expect(actions.find((a) => a.id === 'scatter:M')?.partner).toBe('M');
+		expect(actions.find((a) => a.id === 'stats')?.partner).toBeUndefined();
 	});
 
 	it('sans partenaire : nuage et ajustement grisés, avec leur raison (inchangé)', () => {

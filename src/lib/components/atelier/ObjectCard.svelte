@@ -38,8 +38,8 @@
 
 	const actions = $derived(actionsFor(object, atelier, partner ?? undefined));
 	/** Les actions de l'objet lui-même, puis celles faites avec la partenaire */
-	const ownActions = $derived(actions.filter((a) => !a.id.includes(':')));
-	const partnerActions = $derived(actions.filter((a) => a.id.includes(':')));
+	const ownActions = $derived(actions.filter((a) => a.partner === undefined));
+	const partnerActions = $derived(actions.filter((a) => a.partner !== undefined));
 
 	/** Les libellés français des types — l'interface ne parle pas anglais. */
 	const KIND_LABELS: Record<AtelierObject['kind'], string> = {
