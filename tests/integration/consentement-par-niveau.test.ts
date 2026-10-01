@@ -154,17 +154,38 @@ describe('consentement parental décidé par le niveau', () => {
 		}
 	);
 
-	it("A3 — passage de 3e en 2nde : réponse d'âge remise à zéro, nouveau délai", async () => {
+	it("A3 — 3e → 2nde (même catégorie) : réponse d'âge remise à zéro, délai expiré NON relancé", async () => {
+		const expire = new Date(Date.now() - JOUR).toISOString();
 		await modifier(eleveId, { grade: '3', consent_granted_at: null });
-		await modifier(eleveId, {
-			age_declaration: '15_plus',
-			age_declared_at: new Date().toISOString(),
-			consent_grace_period_ends: new Date(Date.now() - JOUR).toISOString()
-		});
+		await modifier(eleveId, { consent_required: true, consent_grace_period_ends: expire });
 		await modifier(eleveId, { grade: '2' });
 		const p = await lire(eleveId);
 		expect(p.age_declaration).toBeNull();
-		expect(p.age_declared_at).toBeNull();
+		expect(p.consent_required).toBe(true);
+		expect(new Date(p.consent_grace_period_ends!).getTime()).toBe(new Date(expire).getTime());
+	});
+
+	it('A7 — 6e → 5e : une dispense du professeur et un délai expiré restent tels quels', async () => {
+		const expire = new Date(Date.now() - 3 * JOUR).toISOString();
+		await modifier(eleveId, { grade: '6', consent_granted_at: null });
+		await modifier(eleveId, { consent_required: false, consent_grace_period_ends: expire });
+		await modifier(eleveId, { grade: '5' });
+		const p = await lire(eleveId);
+		expect(p.consent_required).toBe(false);
+		expect(new Date(p.consent_grace_period_ends!).getTime()).toBe(new Date(expire).getTime());
+	});
+
+	it('A8 — 2nde dispensée par « 15 ans ou plus » → 3e : la dispense tombe, 30 jours de grâce', async () => {
+		await modifier(eleveId, { grade: '2', consent_granted_at: null });
+		await modifier(eleveId, {
+			age_declaration: '15_plus',
+			age_declared_at: new Date().toISOString(),
+			consent_required: false,
+			consent_grace_period_ends: new Date(Date.now() - JOUR).toISOString()
+		});
+		await modifier(eleveId, { grade: '3' });
+		const p = await lire(eleveId);
+		expect(p.age_declaration).toBeNull();
 		expect(p.consent_required).toBe(true);
 		expect(graceDansTrenteJours(p.consent_grace_period_ends)).toBe(true);
 	});
@@ -230,6 +251,13 @@ describe('consentement parental décidé par le niveau', () => {
 	// Le cas « compte sans profil qui crée le sien » est désormais refusé en amont par
 	// la policy (20261001200000, profil-cree-par-le-serveur.test.ts). La neutralisation
 	// dans apply_consent_rule_by_grade reste une seconde barrière.
+
+	it("B13 — l'élève ne peut pas changer son niveau, même dans la même catégorie (6e → 2nde)", async () => {
+		await modifier(eleveId, { grade: '6', consent_granted_at: null });
+		const { error } = await eleve.from('profiles').update({ grade: '2' }).eq('id', eleveId);
+		expect(error?.code).toBe('42501');
+		expect((await lire(eleveId)).grade).toBe('6');
+	});
 
 	// --------------------------------------------------------------------------
 	// C16. Annulation par le professeur
