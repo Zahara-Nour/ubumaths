@@ -14,7 +14,7 @@
 --     envoyé au parent) — elles s'exécutent en tant que propriétaire ;
 --   * le professeur et l'admin (dispense, prolongation du délai de grâce).
 --
--- Mise en œuvre : trigger BEFORE UPDATE. Il ne refuse que lorsque l'instruction est
+-- Mise en œuvre : trigger BEFORE UPDATE (upsert ON CONFLICT DO UPDATE compris). Il ne refuse que lorsque l'instruction est
 -- exécutée par les rôles de l'API (authenticated, anon) ET que l'appelant n'est ni
 -- professeur ni admin. Une mise à jour qui ne change pas ces champs passe, quel
 -- que soit l'appelant.
@@ -49,8 +49,10 @@ $$;
 comment on function public.guard_profile_consent_fields() is
 	'Refuse à un élève la modification de consent_required, consent_granted_at et consent_grace_period_ends (Q65).';
 
+-- Sans clause OF : le garde couvre aussi un futur trigger qui modifierait NEW.consent_*
+-- sans que la colonne figure dans le SET de la requête.
 create trigger guard_profile_consent_fields_trg
-	before update of consent_required, consent_granted_at, consent_grace_period_ends
+	before update
 	on public.profiles
 	for each row
 	execute function public.guard_profile_consent_fields();
