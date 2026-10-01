@@ -1325,10 +1325,10 @@ describe('RLS — référentiel lecture publique', () => {
 
 		const { data, error } = await anonClient.from('curriculum_themes' as never).select('id');
 
-		// RLS policy is FOR SELECT TO authenticated → anon role gets 0 rows, no error.
-		// (The USING clause is simply never evaluated for the anon role — 0 rows returned silently.)
-		expect(error).toBeNull();
-		expect((data as Array<unknown>).length).toBe(0);
+		// Depuis 20261001170000 (option b), anon n'a plus aucun droit sur la table :
+		// refus explicite (42501) au lieu des 0 lignes silencieuses de la RLS.
+		expect(data).toBeNull();
+		expect(error?.code).toBe('42501');
 	});
 });
 
