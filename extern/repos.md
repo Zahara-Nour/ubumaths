@@ -7,3 +7,4 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://github.com/arnog/mathlive.git
 - https://github.com/cortex-js/compute-engine.git
 - https://github.com/excalidraw/excalidraw.git
+- https://github.com/rough-stuff/rough.git
