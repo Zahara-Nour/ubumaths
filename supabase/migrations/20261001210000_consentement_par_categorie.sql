@@ -32,7 +32,8 @@
 -- ROLLBACK : recréer apply_consent_rule_by_grade telle que dans
 -- 20261001190000_consentement_par_niveau.sql et guard_profile_reserved_fields telle
 -- que dans 20261001180000_profil_is_test_et_bonus_verrouilles.sql (create or replace,
--- aucun objet supprimé).
+-- aucun objet supprimé). ⚠️ Restaurer les DEUX ensemble : la garde seule (version
+-- 180000) sous la nouvelle règle rouvrirait le trou « 6e → 2nde, puis 15 ans ou plus ».
 
 create or replace function public.apply_consent_rule_by_grade()
 returns trigger
@@ -69,6 +70,11 @@ begin
 
 	-- Création, ou retour au rôle élève : la règle s'applique entièrement.
 	if tg_op = 'INSERT' or old.role is distinct from new.role then
+		if tg_op = 'UPDATE' then
+			-- Retour au rôle élève : une ancienne réponse d'âge ne vaut plus.
+			new.age_declaration := null;
+			new.age_declared_at := null;
+		end if;
 		new.consent_required := v_requires;
 		if v_requires and new.consent_granted_at is null then
 			new.consent_grace_period_ends := now() + interval '30 days';

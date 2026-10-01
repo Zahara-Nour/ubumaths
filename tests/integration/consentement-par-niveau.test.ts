@@ -252,11 +252,36 @@ describe('consentement parental décidé par le niveau', () => {
 	// la policy (20261001200000, profil-cree-par-le-serveur.test.ts). La neutralisation
 	// dans apply_consent_rule_by_grade reste une seconde barrière.
 
-	it("B13 — l'élève ne peut pas changer son niveau, même dans la même catégorie (6e → 2nde)", async () => {
+	it("B13bis — l'élève ne peut pas changer son niveau, même dans la même catégorie (6e → 2nde)", async () => {
 		await modifier(eleveId, { grade: '6', consent_granted_at: null });
 		const { error } = await eleve.from('profiles').update({ grade: '2' }).eq('id', eleveId);
 		expect(error?.code).toBe('42501');
 		expect((await lire(eleveId)).grade).toBe('6');
+	});
+
+	it('le professeur connecté change toujours le niveau d’un élève', async () => {
+		await modifier(eleveId, { grade: '6', consent_granted_at: null });
+		const { data, error } = await enseignant
+			.from('profiles')
+			.update({ grade: '5' })
+			.eq('id', eleveId)
+			.select('id');
+		expect(error).toBeNull();
+		expect(data).toHaveLength(1);
+		expect((await lire(eleveId)).grade).toBe('5');
+	});
+
+	it("retour au rôle élève : une ancienne réponse d'âge est remise à zéro", async () => {
+		await modifier(eleveId, { grade: '2', consent_granted_at: null });
+		await modifier(eleveId, {
+			age_declaration: '15_plus',
+			age_declared_at: new Date().toISOString()
+		});
+		await modifier(eleveId, { role: 'admin' });
+		await modifier(eleveId, { role: 'student' });
+		const p = await lire(eleveId);
+		expect(p.age_declaration).toBeNull();
+		expect(p.consent_required).toBe(true);
 	});
 
 	// --------------------------------------------------------------------------
