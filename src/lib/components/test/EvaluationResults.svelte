@@ -44,7 +44,7 @@
 			isCorrect: question.isCorrect,
 			userAnswer: question.answer
 				? {
-						value: question.answer.choices ?? question.answer.values ?? [],
+						value: question.answer.choiceIndexes ?? question.answer.values ?? [],
 						isCorrect: question.isCorrect,
 						timeSpent: 0,
 						attempts: 1,

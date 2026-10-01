@@ -6,7 +6,7 @@
 
 import type { CartItem } from '$lib/stores/questionCart.svelte';
 import type { PublicQuestion } from '$lib/questions/public-question';
-import type { QuestionPoints, SubmittedAnswer } from '$lib/questions/grading';
+import type { QuestionPoints } from '$lib/questions/grading';
 import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
 
 export interface EvaluationStartSummary {
@@ -31,15 +31,27 @@ export type EvaluationStartResponse =
 			};
 	  };
 
+/**
+ * Réponse de l'élève telle que la copie l'affiche. QCM : choix cochés en
+ * indices d'ORIGINE (comme partout dans l'application, cf. `questions/choices`),
+ * jamais en positions affichées.
+ */
+export interface CorrectedAnswer {
+	values?: string[];
+	choiceIndexes?: number[];
+}
+
 /** Une question corrigée par le serveur, renvoyée APRÈS l'envoi */
 export interface CorrectedQuestion {
 	position: number;
 	/** Instance complète (correction comprise), sans graine */
 	instance: QuestionInstance;
-	answer: SubmittedAnswer | null;
+	answer: CorrectedAnswer | null;
 	status: ValidationStatus;
 	points: QuestionPoints;
 	isCorrect: boolean;
+	/** ½ point partiel (cases vides, QCM incomplet), pas une forme non optimale */
+	partial: boolean;
 	feedback?: string;
 }
 

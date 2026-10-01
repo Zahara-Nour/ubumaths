@@ -37,6 +37,14 @@ export interface QuestionVerdict {
 	points: QuestionPoints;
 	/** Juste au sens de la note : tous les points (cf. `test_answers.is_correct`) */
 	isCorrect: boolean;
+	/**
+	 * ½ point PARTIEL : cases en partie vides (le reste juste), QCM coché en
+	 * partie sans erreur. À distinguer d'une forme non optimale (même ½ point)
+	 * pour le SRS (Q40, choix a de David).
+	 */
+	partial: boolean;
+	/** QCM : choix cochés en indices d'ORIGINE (ce qu'enregistrent et lisent les copies) */
+	choiceIndexes?: number[];
 	/** Message pour l'élève (forme, unité, case vide…), s'il y en a un */
 	feedback?: string;
 	/** Message propre à chaque case */
@@ -45,11 +53,12 @@ export interface QuestionVerdict {
 
 // Functions
 /**
- * « Su » pour le SRS (décision Q40 de David, 2026-10-01) : une forme non
- * optimale (½ point) compte « Bien », comme en entraînement libre.
+ * « Su » pour le SRS (Q40, choix a de David, 2026-10-01) : juste, ou forme non
+ * optimale (½ point) comme en entraînement libre. Un ½ PARTIEL (cases en partie
+ * vides, QCM incomplet) vaut « À revoir ».
  */
-export function isKnownForSrs(status: ValidationStatus): boolean {
-	return status === 'correct' || status === 'unoptimal_form';
+export function isKnownForSrs(verdict: { status: ValidationStatus; partial: boolean }): boolean {
+	return verdict.status === 'correct' || (verdict.status === 'unoptimal_form' && !verdict.partial);
 }
 
 export function pointsOfStatus(status: ValidationStatus): QuestionPoints {
@@ -128,15 +137,30 @@ function gradeChoices(instance: QuestionInstance, answer: SubmittedAnswer): Ques
 
 	// Règles de validation propres au QCM (rare) : le verdict de validateAnswer, tout ou rien
 	if (instance.validationRules && instance.validationRules.length > 0 && !outOfRange) {
-		if (selected.length === 0) return { status: 'empty', points: 0, isCorrect: false };
+		if (selected.length === 0) {
+			return { status: 'empty', points: 0, isCorrect: false, partial: false, choiceIndexes: [] };
+		}
 		const result = validateAnswer(instance.multipleAnswers ? selected : selected[0], instance);
 		const status: ValidationStatus = result.isCorrect ? 'correct' : 'incorrect';
-		return { status, points: pointsOfStatus(status), isCorrect: result.isCorrect };
+		return {
+			status,
+			points: pointsOfStatus(status),
+			isCorrect: result.isCorrect,
+			partial: false,
+			choiceIndexes: selected
+		};
 	}
 
 	const status = statusFromChoices(selected, correctChoiceIndexes(instance));
 	const points = pointsOfStatus(status);
-	return { status, points, isCorrect: points === 1 };
+	return {
+		status,
+		points,
+		isCorrect: points === 1,
+		// Un QCM n'a pas de « forme » : son ½ vient toujours d'un choix manquant
+		partial: status === 'unoptimal_form',
+		...(!outOfRange && { choiceIndexes: selected })
+	};
 }
 
 function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
@@ -144,16 +168,19 @@ function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): Quest
 	const values = answer.values ?? blanks.map(() => '');
 	// Nombre de cases différent : réponse fabriquée ou périmée, jamais une exception
 	if (values.length !== blanks.length) {
-		return { status: 'incorrect', points: 0, isCorrect: false };
+		return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
 	}
 	// Forme jugée sur la valeur elle-même (cf. `SubmittedAnswer.values`)
 	const { result, statuses } = validateBlanksDetailed(values, instance, values);
 	const status = statusFromBlankStatuses(statuses);
 	const points = pointsOfStatus(status);
+	// ½ dû à des cases vides (le reste juste), pas à la forme
+	const partial = status === 'unoptimal_form' && statuses.includes('empty');
 	return {
 		status,
 		points,
 		isCorrect: points === 1,
+		partial,
 		...(result.feedback && { feedback: result.feedback }),
 		...(result.blankFeedback && { blankFeedback: result.blankFeedback })
 	};
@@ -172,6 +199,6 @@ export function gradeQuestion(
 			? gradeChoices(instance, answer)
 			: gradeBlanks(instance, answer);
 	} catch {
-		return { status: 'incorrect', points: 0, isCorrect: false };
+		return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
 	}
 }

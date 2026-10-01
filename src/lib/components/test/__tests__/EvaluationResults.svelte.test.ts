@@ -37,7 +37,8 @@ function response(overrides: Partial<EvaluationSubmitResponse> = {}): Evaluation
 				answer: { values: ['7'] },
 				status: 'correct',
 				points: 1,
-				isCorrect: true
+				isCorrect: true,
+				partial: false
 			},
 			{
 				position: 1,
@@ -45,7 +46,8 @@ function response(overrides: Partial<EvaluationSubmitResponse> = {}): Evaluation
 				answer: { values: ['8', ''] },
 				status: 'unoptimal_form',
 				points: 0.5,
-				isCorrect: false
+				isCorrect: false,
+				partial: true
 			},
 			{
 				position: 2,
@@ -53,7 +55,8 @@ function response(overrides: Partial<EvaluationSubmitResponse> = {}): Evaluation
 				answer: null,
 				status: 'empty',
 				points: 0,
-				isCorrect: false
+				isCorrect: false,
+				partial: false
 			}
 		],
 		...overrides

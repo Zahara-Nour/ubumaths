@@ -43,6 +43,11 @@ export interface WorkItem {
 	 */
 	bestGrade?: number | null;
 	/**
+	 * Évaluation : une tentative est ouverte (commencée, pas envoyée). Le lien
+	 * mène alors à sa reprise, même si une tentative précédente est terminée.
+	 */
+	resumable?: boolean;
+	/**
 	 * The class this item reaches the student through, when there is one — used
 	 * for display. `null` for a purely individual assignment.
 	 *

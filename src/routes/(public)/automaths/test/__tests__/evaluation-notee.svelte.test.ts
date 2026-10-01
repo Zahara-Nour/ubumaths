@@ -23,11 +23,12 @@ vi.mock('$app/state', () => ({
 }));
 vi.mock('$app/navigation', async (importOriginal) => ({
 	...(await importOriginal<typeof import('$app/navigation')>()),
-	goto: vi.fn(async () => {})
+	goto: vi.fn(async () => {}),
+	replaceState: vi.fn()
 }));
 
 import Page from '../+page.svelte';
-import { goto } from '$app/navigation';
+import { goto, replaceState } from '$app/navigation';
 
 const ASSIGNMENT = '44444444-4444-4444-8444-444444444444';
 const ATTEMPT = '99999999-9999-4999-8999-999999999999';
@@ -85,10 +86,12 @@ const SUBMIT_RESPONSE = {
 			level: 1,
 			generatedAt: ''
 		},
-		answer: { choices: [1] },
+		// QCM : indices d'origine (ordre non mélangé ici)
+		answer: { choiceIndexes: [1] },
 		status: position === 0 ? 'correct' : 'incorrect',
 		points: position === 0 ? 1 : 0,
-		isCorrect: position === 0
+		isCorrect: position === 0,
+		partial: false
 	}))
 };
 
@@ -197,6 +200,24 @@ describe('Évaluation notée — page élève', () => {
 		expect(points).toEqual(['1 point', '0 point']);
 	});
 
+	it('après l’envoi, l’URL devient celle des résultats : recharger ne relance PAS une tentative', async () => {
+		vi.mocked(replaceState).mockClear();
+		mockApi(startResponse());
+		await renderPage();
+		await expect.element(page.getByText('Combien font 2 + 2 ?')).toBeVisible();
+		expect(replaceState).not.toHaveBeenCalled();
+
+		await answerCurrent(1);
+		await expect.element(page.getByText('Combien font 1 + 2 ?')).toBeVisible();
+		await answerCurrent(1);
+
+		await expect.element(page.getByTestId('evaluation-grade')).toHaveTextContent('10/20');
+		expect(replaceState).toHaveBeenCalledWith(
+			`/dashboard/student/assessments/${ASSIGNMENT}/results`,
+			{}
+		);
+	});
+
 	it('E20 : recharger une tentative en cours → mêmes questions, rien de coché', async () => {
 		mockApi(startResponse({ resumed: true }));
 		const { container } = await renderPage();
@@ -265,6 +286,10 @@ describe('Évaluation notée — envoi réussi, réponse perdue (409)', () => {
 
 		await expect.element(page.getByTestId('evaluation-grade')).toHaveTextContent('10/20');
 		expect(document.body.textContent).not.toContain("n'a pas pu être envoyée");
+		expect(replaceState).toHaveBeenCalledWith(
+			`/dashboard/student/assessments/${ASSIGNMENT}/results`,
+			{}
+		);
 	});
 
 	it('409 sans copie reconstruite : direction les résultats de l’élève', async () => {

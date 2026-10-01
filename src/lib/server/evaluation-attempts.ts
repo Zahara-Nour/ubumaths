@@ -29,7 +29,11 @@ import type { CartItem } from '$lib/stores/questionCart.svelte';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 import type { EvaluationWithSeries } from '$lib/types/evaluation';
-import type { CorrectedQuestion, EvaluationSubmitResponse } from '$lib/types/evaluation-attempt';
+import type {
+	CorrectedAnswer,
+	CorrectedQuestion,
+	EvaluationSubmitResponse
+} from '$lib/types/evaluation-attempt';
 import { getAttemptsRemaining } from '$lib/types/evaluation';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { drawSeriesQuestions, MAX_QUESTION_SEED } from '$lib/questions/series-items';
@@ -38,6 +42,7 @@ import {
 	gradeOutOf20,
 	gradeQuestion,
 	isKnownForSrs,
+	type QuestionVerdict,
 	type SubmittedAnswer
 } from '$lib/questions/grading';
 import type { ValidationStatus } from '$lib/questions/types';
@@ -123,17 +128,18 @@ export class AttemptAlreadySubmittedError extends EvaluationError {
 }
 
 /**
- * Q40 (David, 2026-10-01) : le SRS reçoit « su » dès que le statut est correct
- * ou en forme non optimale (½ point), comme en entraînement libre ; la note ne
- * compte `is_correct` qu'à 1 point.
+ * Q40 (David, 2026-10-01, choix a) : le SRS reçoit « su » pour une réponse
+ * juste, ou en forme non optimale (½ point) comme en entraînement libre. Un ½
+ * PARTIEL (cases vides, QCM incomplet) reste « À revoir ». La note ne compte
+ * `is_correct` qu'à 1 point.
  */
 export function srsReviewsOf(
-	questions: ReadonlyArray<{ status: ValidationStatus; isCorrect: boolean }>,
+	questions: ReadonlyArray<{ status: ValidationStatus; partial: boolean }>,
 	templateIds: readonly string[]
 ): SeriesReview[] {
 	return questions.map((question, index) => ({
 		templateId: templateIds[index],
-		success: isKnownForSrs(question.status),
+		success: isKnownForSrs(question),
 		selfAssessed: false
 	}));
 }
@@ -496,21 +502,30 @@ export async function startEvaluationAttempt(
 }
 
 /** Réponse enregistrée : au format `AnswerData` que lisent les corrections */
+/**
+ * Réponse enregistrée : au format `AnswerData` que lisent les corrections
+ * (QCM : indices d'ORIGINE, comme partout). En plus, de quoi reconstruire la
+ * copie à l'identique (409) : message et nature du ½ point.
+ */
 function storedUserAnswer(
-	answer: SubmittedAnswer | null,
-	isCorrect: boolean,
+	question: CorrectedQuestion,
 	timeSpent: number | undefined,
 	submittedAt: string
-): AnswerData | null {
-	if (!answer) return null;
+): (AnswerData & { feedback?: string; partial: boolean }) | null {
+	if (!question.answer) return null;
 	return {
-		value: answer.choices ?? answer.values ?? [],
-		isCorrect,
+		value: question.answer.choiceIndexes ?? question.answer.values ?? [],
+		isCorrect: question.isCorrect,
 		timeSpent: timeSpent ?? 0,
 		attempts: 1,
-		submittedAt
+		submittedAt,
+		partial: question.partial,
+		...(question.feedback && { feedback: question.feedback })
 	};
 }
+
+/** Clé de la position dans `test_answers.question_instance` (appariement de la copie) */
+const POSITION_KEY = 'attemptPosition';
 
 /**
  * Envoyer une tentative : corriger, noter, enregistrer.
@@ -561,22 +576,24 @@ export async function submitEvaluationAttempt(
 		// `test_answers.question_instance` (lisible par l'élève et le prof)
 		const { seed: _seed, ...instance } = full;
 		const answer = late ? null : (answersByPosition.get(stored.position) ?? null);
-		const verdict = answer
+		const verdict: QuestionVerdict = answer
 			? gradeQuestion(instance, answer)
-			: { status: 'empty' as const, points: 0 as const, isCorrect: false };
+			: { status: 'empty', points: 0, isCorrect: false, partial: false };
 		return {
 			position: stored.position,
 			instance,
+			// QCM : indices d'ORIGINE calculés par le barème (ce que lit CorrectionCard)
 			answer: answer
 				? {
 						...(answer.values && { values: answer.values }),
-						...(answer.choices && { choices: answer.choices })
+						...(verdict.choiceIndexes && { choiceIndexes: verdict.choiceIndexes })
 					}
 				: null,
 			status: verdict.status,
 			points: verdict.points,
 			isCorrect: verdict.isCorrect,
-			...('feedback' in verdict && verdict.feedback && { feedback: verdict.feedback })
+			partial: verdict.partial,
+			...(verdict.feedback && { feedback: verdict.feedback })
 		};
 	});
 
@@ -590,14 +607,9 @@ export async function submitEvaluationAttempt(
 		const rows = corrected.map((q, index) => ({
 			test_session_id: attemptId,
 			template_id: questions[index].stored.template_id,
-			question_instance: toJson(q.instance),
+			question_instance: toJson({ ...q.instance, [POSITION_KEY]: q.position }),
 			user_answer: toJson(
-				storedUserAnswer(
-					q.answer,
-					q.isCorrect,
-					answersByPosition.get(q.position)?.timeSpent,
-					nowIso
-				)
+				storedUserAnswer(q, answersByPosition.get(q.position)?.timeSpent, nowIso)
 			),
 			is_correct: q.isCorrect,
 			points: q.points,
@@ -683,14 +695,21 @@ export async function submitEvaluationAttempt(
 }
 
 /** Réponse enregistrée (`test_answers.user_answer`) → réponse envoyée */
-function submittedAnswerOf(userAnswer: unknown): SubmittedAnswer | null {
+function correctedAnswerOf(userAnswer: unknown): CorrectedAnswer | null {
 	if (!userAnswer || typeof userAnswer !== 'object' || !('value' in userAnswer)) return null;
 	const value = (userAnswer as { value: unknown }).value;
 	if (Array.isArray(value) && value.every((v) => typeof v === 'number')) {
-		return { choices: value as number[] };
+		return { choiceIndexes: value as number[] };
 	}
 	if (Array.isArray(value)) return { values: value.map(String) };
 	return null;
+}
+
+/** Champ texte / booléen d'une réponse enregistrée */
+function storedField(userAnswer: unknown, key: 'feedback' | 'partial'): unknown {
+	return userAnswer && typeof userAnswer === 'object' && key in userAnswer
+		? (userAnswer as Record<string, unknown>)[key]
+		: undefined;
 }
 
 /**
@@ -721,26 +740,27 @@ export async function readSubmittedCopy(
 		if (answersError) return null;
 
 		const questions = await regenerateAttempt(service, attemptId);
-		const remaining = [...(rows ?? [])];
-		const corrected: CorrectedQuestion[] = questions.map(({ stored, instance: full }) => {
-			const { seed: _seed, ...instance } = full;
-			// Une ligne par question : même modèle, même énoncé (instances déterministes)
-			const index = remaining.findIndex(
-				(row) =>
-					row.template_id === stored.template_id &&
-					(row.question_instance as { statement?: unknown } | null)?.statement ===
-						instance.statement
-			);
-			const row = index === -1 ? null : remaining.splice(index, 1)[0];
+		// Une ligne par question, appariée sur la position rangée à l'écriture
+		const byPosition = new Map(
+			(rows ?? []).map((row) => [
+				(row.question_instance as Record<string, unknown> | null)?.[POSITION_KEY],
+				row
+			])
+		);
+		const corrected: CorrectedQuestion[] = questions.map(({ stored, instance }) => {
+			const row = byPosition.get(stored.position) ?? null;
 			const status = VALIDATION_STATUSES.find((s) => s === row?.status) ?? 'empty';
 			const points = Number(row?.points ?? 0);
+			const feedback = storedField(row?.user_answer, 'feedback');
 			return {
 				position: stored.position,
 				instance,
-				answer: submittedAnswerOf(row?.user_answer),
+				answer: correctedAnswerOf(row?.user_answer),
 				status,
 				points: points === 1 ? 1 : points === 0.5 ? 0.5 : 0,
-				isCorrect: row?.is_correct === true
+				isCorrect: row?.is_correct === true,
+				partial: storedField(row?.user_answer, 'partial') === true,
+				...(typeof feedback === 'string' && feedback && { feedback })
 			};
 		});
 

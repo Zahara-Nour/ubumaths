@@ -112,6 +112,8 @@ export interface AssignmentWithDetails extends DbEvaluationAssignment {
 	attempts_count: number;
 	/** Meilleure note sur 20 parmi les tentatives envoyées (Q36) */
 	best_grade: number | null;
+	/** Une tentative est ouverte (commencée, pas envoyée) : elle se reprend */
+	has_open_attempt: boolean;
 	last_attempt_at: string | null;
 	status: StudentEvaluationStatus;
 }

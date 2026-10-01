@@ -180,6 +180,15 @@ describe('WorkItemCard - forme d’une évaluation', () => {
 		await expect.element(page.getByTestId('work-item-grade')).toHaveTextContent('13,5/20');
 	});
 
+	it('tentative ouverte : « Reprendre la tentative en cours »', async () => {
+		const item = makeItem('assessment', { status: 'done', bestGrade: 16, resumable: true });
+		await render(WorkItemCard, { props: { item } });
+
+		await expect
+			.element(page.getByTestId('work-item-resume'))
+			.toHaveTextContent('Reprendre la tentative en cours');
+	});
+
 	it('sans note : rien', async () => {
 		const item = makeItem('assessment');
 		const { container } = await render(WorkItemCard, { props: { item } });

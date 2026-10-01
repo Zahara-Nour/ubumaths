@@ -9,28 +9,32 @@ import { isKnownForSrs } from '$lib/questions/grading';
 
 describe('Q40 — verdict du serveur envoyé au SRS', () => {
 	it.each([
-		['correct', true],
-		['unoptimal_form', true],
-		['bad_form', false],
-		['incorrect', false],
-		['empty', false]
-	] as const)('%s → su : %s', (status, known) => {
-		expect(isKnownForSrs(status)).toBe(known);
+		['correct', false, true],
+		['unoptimal_form', false, true],
+		// Choix a de David : ½ dû à des cases vides ou un QCM incomplet → « À revoir »
+		['unoptimal_form', true, false],
+		['bad_form', false, false],
+		['incorrect', false, false],
+		['empty', false, false]
+	] as const)('%s (partiel : %s) → su : %s', (status, partial, known) => {
+		expect(isKnownForSrs({ status, partial })).toBe(known);
 	});
 
 	it('révisions ordinaires (pas d’auto-évaluation), une par question, modèle de la question', () => {
 		const reviews = srsReviewsOf(
 			[
-				{ status: 'correct', isCorrect: true },
-				{ status: 'unoptimal_form', isCorrect: false },
-				{ status: 'incorrect', isCorrect: false }
+				{ status: 'correct', partial: false },
+				{ status: 'unoptimal_form', partial: false },
+				{ status: 'unoptimal_form', partial: true },
+				{ status: 'incorrect', partial: false }
 			],
-			['t1', 't2', 't3']
+			['t1', 't2', 't3', 't4']
 		);
 		expect(reviews).toEqual([
 			{ templateId: 't1', success: true, selfAssessed: false },
 			{ templateId: 't2', success: true, selfAssessed: false },
-			{ templateId: 't3', success: false, selfAssessed: false }
+			{ templateId: 't3', success: false, selfAssessed: false },
+			{ templateId: 't4', success: false, selfAssessed: false }
 		]);
 	});
 });

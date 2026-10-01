@@ -258,7 +258,9 @@ describe('getStudentAssignments', () => {
 			// Une tentative terminée suffit : la 3ᵉ, ouverte puis abandonnée, n'en fait
 			// pas un « en cours » perpétuel
 			status: 'completed',
-			last_attempt_at: '2026-09-30T12:00:00Z'
+			last_attempt_at: '2026-09-30T12:00:00Z',
+			// … mais la tentative ouverte reste joignable (« Reprendre »)
+			has_open_attempt: true
 		});
 		expect(assignment.evaluation).toMatchObject({ form: 'course', time_limit: 420 });
 		expect(assignment.evaluation.series.title).toBe('Tables de 7');

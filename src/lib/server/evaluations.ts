@@ -553,6 +553,7 @@ export async function getStudentAssignments(
 			evaluation,
 			attempts_count: attempts.length,
 			best_grade: bestGrade(attempts),
+			has_open_attempt: attempts.some((a) => a.completed_at === null),
 			last_attempt_at: lastAttemptAt,
 			status: getStudentStatus(attempts.length, lastAttemptAt, evaluation.deadline)
 		};

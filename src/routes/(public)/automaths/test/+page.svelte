@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, replaceState } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { buildSeriesItems } from '$lib/questions/series-items';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
@@ -290,6 +290,18 @@
 		}
 	}
 
+	/**
+	 * Copie notée affichée : l'URL devient celle des résultats de l'élève. Sinon
+	 * un rechargement relancerait `start`, donc une nouvelle tentative.
+	 */
+	function showGradedCopy(copy: EvaluationSubmitResponse) {
+		evaluationResult = copy;
+		pendingSubmission = null;
+		if (assignmentId) {
+			replaceState(`/dashboard/student/assessments/${assignmentId}/results`, {});
+		}
+	}
+
 	/** Envoie la copie : le serveur corrige, note et renvoie la correction (C10) */
 	async function submitEvaluation() {
 		if (!attemptId || !pendingSubmission || isSubmitting) return;
@@ -313,8 +325,7 @@
 						? (body.result as EvaluationSubmitResponse | null)
 						: null;
 				if (copy) {
-					evaluationResult = copy;
-					pendingSubmission = null;
+					showGradedCopy(copy);
 				} else if (assignmentId) {
 					await goto(`/dashboard/student/assessments/${assignmentId}/results`);
 				}
@@ -324,8 +335,7 @@
 				submitError = errorMessageOf(body, "Ta copie n'a pas pu être envoyée.");
 				return;
 			}
-			evaluationResult = body as EvaluationSubmitResponse;
-			pendingSubmission = null;
+			showGradedCopy(body as EvaluationSubmitResponse);
 		} catch {
 			submitError = "Ta copie n'a pas pu être envoyée. Vérifie ta connexion et réessaie.";
 		} finally {

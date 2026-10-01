@@ -463,6 +463,20 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 					[1, 'correct', true]
 				].sort((a, b) => String(a).localeCompare(String(b)))
 			);
+			// QCM : rangé et renvoyé en indices d'ORIGINE (ce que lit CorrectionCard), pas
+			// en positions affichées
+			const qcmOriginals = rightAnswer(instances[2]).choices!.map(
+				(p) => instances[2].shuffledChoices![p].originalIndex
+			);
+			expect(result.questions[2].answer).toEqual({ choiceIndexes: qcmOriginals });
+			const qcmRow = answers.find((a) => a.template_id === QCM_ID);
+			expect((qcmRow!.user_answer as { value: number[] }).value).toEqual(qcmOriginals);
+			// Position rangée avec l'instance : la copie reconstruite s'y apparie
+			expect(
+				answers
+					.map((a) => (a.question_instance as { attemptPosition: number }).attemptPosition)
+					.sort()
+			).toEqual([0, 1, 2]);
 			for (const answer of answers) {
 				expect(allKeys(answer.question_instance).has('seed')).toBe(false);
 				expect([QCM_ID, FILL_ID]).toContain(answer.template_id);
@@ -505,6 +519,14 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 				[1, 'incorrect', 0],
 				[2, 'correct', 1]
 			]);
+			// Même réponse que la copie d'origine (QCM en indices d'origine), message compris
+			const original = await oracle(first.attemptId);
+			expect(copy!.questions[2].answer).toEqual({
+				choiceIndexes: rightAnswer(original[2]).choices!.map(
+					(p) => original[2].shuffledChoices![p].originalIndex
+				)
+			});
+			expect(copy!.questions[0].answer).toEqual({ values: rightAnswer(original[0]).values });
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 			expect(await answersOf(first.attemptId)).toHaveLength(3);
 			expect(Number((await sessionRow(first.attemptId)).grade)).toBe(13.5);

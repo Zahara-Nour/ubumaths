@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	gradeOutOf20,
 	gradeQuestion,
+	isKnownForSrs,
 	pointsOfStatus,
 	roundToHalfPoint,
 	statusFromBlankStatuses,
@@ -263,8 +264,47 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 		});
 	});
 
+	it('QCM : la réponse rendue est en indices d’ORIGINE (ceux que lit la copie)', () => {
+		const instance = choicesInstance([true, false, true], [2, 0, 1]);
+		expect(gradeQuestion(instance, { choices: [0, 1] }).choiceIndexes).toEqual([2, 0]);
+		expect(gradeQuestion(instance, { choices: [2] }).choiceIndexes).toEqual([1]);
+	});
+
 	it('QCM : position hors bornes → 0', () => {
 		const instance = choicesInstance([true, false], [0, 1], false);
 		expect(gradeQuestion(instance, { choices: [5] }).points).toBe(0);
+	});
+});
+
+describe('Q40 (choix a de David) : le ½ point ne vaut « Bien » pour le SRS que pour la forme', () => {
+	it('forme non optimale (form: warn) : ½ point, « Bien »', () => {
+		const verdict = gradeQuestion(
+			blanksInstance([math('480')], { constraints: { form: 'warn' } }),
+			{
+				values: ['400+80']
+			}
+		);
+		expect(verdict).toMatchObject({ points: 0.5, partial: false });
+		expect(isKnownForSrs(verdict)).toBe(true);
+	});
+
+	it('cases partiellement vides (le reste juste) : ½ point, « À revoir »', () => {
+		const verdict = gradeQuestion(blanksInstance([math('7'), math('8')]), { values: ['7', ''] });
+		expect(verdict).toMatchObject({ points: 0.5, partial: true });
+		expect(isKnownForSrs(verdict)).toBe(false);
+	});
+
+	it('QCM coché partiellement, sans erreur : ½ point, « À revoir »', () => {
+		const verdict = gradeQuestion(choicesInstance([true, false, true], [2, 0, 1]), {
+			choices: [1]
+		});
+		expect(verdict).toMatchObject({ points: 0.5, partial: true });
+		expect(isKnownForSrs(verdict)).toBe(false);
+	});
+
+	it('juste : « Bien » ; faux : « À revoir »', () => {
+		const instance = blanksInstance([math('7')]);
+		expect(isKnownForSrs(gradeQuestion(instance, { values: ['7'] }))).toBe(true);
+		expect(isKnownForSrs(gradeQuestion(instance, { values: ['9'] }))).toBe(false);
 	});
 });

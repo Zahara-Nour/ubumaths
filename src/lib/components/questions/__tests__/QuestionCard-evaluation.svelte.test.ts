@@ -16,6 +16,8 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { toDisplayInstance, toPublicQuestion } from '$lib/questions/public-question';
 import { toSubmission } from '$lib/questions/submission';
 import { gradeQuestion } from '$lib/questions/grading';
+import { choiceLetter } from '$lib/questions/choices';
+import EvaluationResults from '$lib/components/test/EvaluationResults.svelte';
 import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 import { templateMarkdown } from '$lib/ubumark';
@@ -94,5 +96,47 @@ describe('QCM mélangé en évaluation', () => {
 			expect(gradeQuestion(full, submission.answers[0]).points).toBe(expected);
 			await unmount();
 		}
+	});
+
+	it('la copie affiche la lettre et le contenu COCHÉS à l’écran (indices d’origine renvoyés)', async () => {
+		const full = shuffledInstance();
+		// Un mauvais choix affiché ailleurs qu'à sa place d'origine
+		const position = full.shuffledChoices!.findIndex(
+			(c, p) => c.originalIndex !== 0 && c.originalIndex !== p
+		);
+		expect(position).toBeGreaterThanOrEqual(0);
+		const clicked = full.shuffledChoices![position];
+
+		const verdict = gradeQuestion(full, { choices: [position] });
+		const main = document.body.appendChild(document.createElement('main'));
+		const { container } = await render(EvaluationResults, {
+			target: main,
+			props: {
+				result: {
+					attemptId: 'a',
+					late: false,
+					grade: 0,
+					pointsEarned: 0,
+					totalQuestions: 1,
+					correctCount: 0,
+					// Ce que le serveur renvoie et range : la réponse du barème
+					questions: [
+						{
+							position: 0,
+							instance: full,
+							answer: { choiceIndexes: verdict.choiceIndexes },
+							status: verdict.status,
+							points: verdict.points,
+							isCorrect: verdict.isCorrect,
+							partial: verdict.partial
+						}
+					]
+				}
+			}
+		});
+		const chosen = container.querySelector('.user-answer-section li');
+		const text = chosen?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+		expect(text.startsWith(choiceLetter(position))).toBe(true);
+		expect(text).toContain(clicked.content.replace(/\$/g, ''));
 	});
 });

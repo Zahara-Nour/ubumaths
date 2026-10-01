@@ -146,6 +146,12 @@
 						{formatGrade(item.bestGrade)}
 					</Badge>
 				{/if}
+				{#if item.resumable}
+					<!-- La carte entière mène à la reprise (lien de la carte) -->
+					<Badge variant="outline" data-testid="work-item-resume">
+						Reprendre la tentative en cours
+					</Badge>
+				{/if}
 				{#if showViewedDot}
 					<span
 						class="text-base leading-none text-primary/50"
