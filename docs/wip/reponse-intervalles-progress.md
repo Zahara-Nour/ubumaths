@@ -153,3 +153,22 @@ réglage `smartFence` (le champ restait `true`), vert après.
   `matchedAnswerForm`) · 5 messages (point oublié, singleton avec sa valeur, corrigé sans parenthèses)
   · 6 test 30 = `validateAnswer` contre `gradeQuestion` · 7 `smartFence` limité au champ et restauré ·
   8 aucune exception (try/catch dans `judgeIntervalAnswer`).
+
+## Bug de prod du 2026-10-01 — le bouton du clavier virtuel n'ouvrait rien (branche `fix/clavier-intervalles`)
+
+Mesuré (Playwright, page d'aperçu admin, modèle n° 11 importé en base LOCALE, clics réels) : clic
+sur le bouton du clavier d'une case `intervalles` → `visible = false`, onglets revenus à `default` ;
+même geste sur une case ordinaire → clavier ouvert. Aucune erreur console.
+
+**Cause** : en ouvrant le clavier, MathLive fait sortir puis rentrer le focus du champ. Le composant
+réaffectait alors `smartFence` (restauré au `focusout`, recoupé au `focusin`), et toute affectation
+d'option sur un math-field `readonly` focalisé, clavier visible, appelle `hideVirtualKeyboard`
+(`setOptions` de MathLive). Preuve isolée : sur une case ORDINAIRE, affecter `smartFence` au
+`focusout` referme aussi le clavier. Introduit par #578 (le réglage `smartFence`) ; l'onglet
+« Unités » seul n'est pas touché (changer `layouts`, clavier visible, ne le referme pas). Portée :
+tout écran qui rend une case `intervalles` (`QuestionCard`, `FlashCard` → `FillBlanksInput`).
+
+**Correctif** : `smartFence` coupé une seule fois, AVANT l'ouverture (`pointerdown` en capture, puis
+`focusin` pour le Tab), seulement s'il ne l'est pas déjà ; restauré au démontage seulement.
+Test : `FillBlanksInput-intervals-toggle.svelte.test.ts` (VRAI clavier installé dans l'iframe,
+clic réel sur le bouton) — rouge 2/3 avant (témoin ordinaire vert), vert 3/3 après.
