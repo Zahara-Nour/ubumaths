@@ -13,3 +13,4 @@ Dépôts clonés dans `extern/` pour inspiration et comparaison. Leur contenu es
 - https://github.com/hakimel/reveal.js.git
 - https://github.com/Kozea/WeasyPrint.git
 - https://forge.apps.education.fr/sesamath/sacoche.git
+- https://forge.apps.education.fr/sesamath/mathgraph.git
