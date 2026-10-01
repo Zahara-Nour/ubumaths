@@ -12,6 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
+import { parseMarkdown, type ListNode } from '$lib/ubumark';
 
 const base = {
 	title: 't',
@@ -116,11 +117,22 @@ describe('buildSerie — cas nominaux', () => {
 		expect(c.statement).not.toBe(a.statement);
 	});
 
-	it('QCM : choix listés a) b) à l’énoncé, bonne réponse au corrigé', () => {
+	it('QCM : choix a) b) à l’énoncé, bonne réponse au corrigé', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'parite', seed: 3 }]);
-		expect(serie.statement).toContain('a) pair');
-		expect(serie.statement).toContain('b) impair');
-		expect(serie.solution).toContain('Réponse : a) pair');
+		expect(serie.statement).toContain('**a)** pair');
+		expect(serie.statement).toContain('**b)** impair');
+		expect(serie.solution).toContain('Réponse : **a)** pair');
+	});
+
+	it('QCM : les choix ne sont PAS une sous-liste (renumérotée « 1) 2) » dans le PDF)', () => {
+		// La numérotation d'une liste dépend de sa profondeur (a, puis 1, puis i) : des choix
+		// en sous-liste sortaient « 1) 2) » alors que le corrigé dit « Réponse : a) »
+		const serie = buildSerie(modeles, [{ templateId: 'parite', seed: 3 }]);
+		for (const texte of [serie.statement, serie.solution]) {
+			const list = parseMarkdown(texte).children[0] as ListNode;
+			const nested = list.items[0].children.filter((c) => c.type === 'list');
+			expect(nested).toEqual([]);
+		}
 	});
 
 	it('plusieurs cases (texte et formule) : toutes à trous, toutes remplies au corrigé', () => {
