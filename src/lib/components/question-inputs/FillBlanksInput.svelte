@@ -49,6 +49,7 @@
 	import MathBlock from '$lib/components/markdown/nodes/MathBlock.svelte';
 	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
 	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
+	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 
 	// Utility functions
@@ -464,6 +465,9 @@
 				/>
 			{:else if node.type === 'heading'}
 				<HeadingNode level={node.level} children={node.children} />
+			{:else}
+				<!-- Blocs sans trou (courbe, tableau, code, liste…) : rendus tels quels -->
+				<StaticBlockNode {node} />
 			{/if}
 		{/each}
 	{/if}
