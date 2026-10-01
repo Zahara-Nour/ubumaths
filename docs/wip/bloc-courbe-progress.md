@@ -86,8 +86,14 @@ isotrope, exporteurs sans `function`).
 
 ## Lots
 
-- [ ] Lot 1 — types + parseur + scène
+- [x] Lot 1 — types + parseur + scène (`types/courbe.ts`, `parser/courbe-parser.ts`, `utils/courbe-scene.ts`, 36 tests rouges avant : module absent)
 - [ ] Lot 2 — composant + câblage + listes + Q48
 - [ ] Lot 3 — Typst + compilation prod
 
 ## Journal
+
+- 2026-10-01 lot 1 : parseur + scène verts (36 tests, `src/lib/ubumark/__tests__/courbe/`).
+  Choix : nom de courbe en LaTeX RESTREINT (`C_f`, `\mathcal{C}_f`) → pas de `{@html}`, même
+  rendu SVG/Typst ; `pi` nu et `π` → `\pi` ; `{,}` → `.` ; points/aires/asymptotes lus APRÈS
+  les fonctions (`M(2 ; f(2))` avant la ligne de f fonctionne) ; les avertissements de
+  fenêtre (point, asymptote, courbe invisible) sont produits par la scène.
