@@ -70,6 +70,8 @@ export interface BarScene extends SceneCommon {
 	showValues: boolean;
 	/** Noms de catégories inclinés (trop nombreux ou trop longs pour tenir à plat) */
 	rotateLabels: boolean;
+	/** Caractères du nom le plus long : place à réserver sous l'axe s'il est incliné */
+	longestLabel: number;
 }
 
 export interface SceneSector {
@@ -195,7 +197,8 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 		},
 		color: spec.color,
 		showValues: spec.showValues,
-		rotateLabels
+		rotateLabels,
+		longestLabel: longest
 	};
 }
 

@@ -109,6 +109,10 @@ describe('diagramme en barres', () => {
 		expect(bars(many).rotateLabels).toBe(true);
 	});
 
+	it('donne la longueur du nom le plus long, pour placer le titre de l’axe dessous', () => {
+		expect(bars('Football = 1\nDanse = 2').longestLabel).toBe(8);
+	});
+
 	it('série toute nulle : un axe quand même', () => {
 		const scene = bars('A = 0\nB = 0');
 

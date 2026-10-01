@@ -146,7 +146,8 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		`  content((0, ${fmt(H + 0.45)}), anchor: "south", text(size: 7pt)${textContent(scene.axisTitles.y)})`
 	);
 	if (scene.axisTitles.x !== null) {
-		const below = scene.rotateLabels ? 1.4 : 0.5;
+		// Nom incliné à 45° : ~0,12 cm par caractère à 6,5 pt, soit ~0,085 cm de hauteur
+		const below = scene.rotateLabels ? 0.35 + scene.longestLabel * 0.085 : 0.5;
 		lines.push(
 			`  content((${fmt(W / 2)}, ${fmt(-below)}), anchor: "north", text(size: 7pt)${textContent(scene.axisTitles.x)})`
 		);

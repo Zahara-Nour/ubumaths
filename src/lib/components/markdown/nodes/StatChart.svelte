@@ -38,8 +38,10 @@
 	const PAD_TOP = 26;
 	/** Bas : noms à plat ou inclinés, puis titre de l'axe horizontal */
 	const PAD_BOTTOM_FLAT = 26;
-	const PAD_BOTTOM_ROTATED = 78;
 	const AXIS_TITLE_PX = 18;
+
+	/** Largeur moyenne d'un caractère à 11 px : un nom incliné à 45° descend de ~0,7 × sa longueur */
+	const CHAR_PX = 6.5;
 
 	/** Marge autour du disque, en px */
 	const PIE_PAD = 4;
@@ -91,7 +93,7 @@
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
 	let plotHeight = $derived(scene?.pixelSize.height ?? 0);
 	let padBottom = $derived(
-		(bars?.rotateLabels ? PAD_BOTTOM_ROTATED : PAD_BOTTOM_FLAT) +
+		(bars?.rotateLabels ? 16 + bars.longestLabel * CHAR_PX * 0.71 : PAD_BOTTOM_FLAT) +
 			(bars?.axisTitles.x ? AXIS_TITLE_PX : 0)
 	);
 
