@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-3 livrés (#595, #598, #600) ; lot 4 (tableau croisé) — spécification soumise
+## État : lots 1-3 livrés (#595, #598, #600) ; lot 4 revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -284,6 +284,22 @@ Garçon/Total ; Total/Externe` : totaux toujours calculés ; case masquée vide,
     Total) fait 100 % ; `par colonne` : l'inverse.
 34. Coin vide par défaut, `coin: Sexe \ Régime` ; `titre:` au-dessus et en `<caption>` ;
     ≤ 8 lignes × 8 colonnes ; effectifs entiers ou %, sans mélange.
+
+### Lot 4 — fait
+
+- `statistics/cross-table.ts` (`crossTable` : totaux, fréquences sur le total / par ligne /
+  par colonne ; `null` si non définie) ; genre `tableau-croise` du nœud `stat-chart`
+  (`spec.table`) ; parseur (`lignes:` `colonnes:` `totaux:` `afficher:` `masquer:` `coin:`,
+  lignes `Nom = v1 ; v2`, `?`) ; scène `CrossTableScene` ; Typst `table()` ; `<table>` à l'écran.
+- Preuves : 36 tests rouges contre stub puis verts ; 4 734 tests serveur + 243 client ;
+  `check:incremental` 0 ; eslint sans erreur ; PDF compile-prod 4/4 (73 cases, masquer, `?`,
+  3 modes de fréquences, noms hostiles, liste, bloc en erreur), page relue.
+- Audit a11y : zone de défilement focalisable (`role="region"`, nommée par la `<caption>`),
+  textes lus selon la langue (« blank cell »), coin lu « lignes : …, colonnes : … », « — »
+  lu « non définie », case à compléter large (`width`) et grisée.
+- Revue de code : noms sans « / », doublons à la casse près, `total` en minuscules dans
+  `masquer:`, `taille:`/`description:` refusées pour un tableau, erreurs du tableau situées.
+  « 100 % » sans décimale : conforme à Q13 (entier exact), pas modifié.
 
 ## Reste à faire (hors lots 2-4)
 
