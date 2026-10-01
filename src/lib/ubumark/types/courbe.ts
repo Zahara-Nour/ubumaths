@@ -152,4 +152,45 @@ export interface CourbeNode extends BaseNode {
 export interface CourbeBlockRange {
 	startIndex: number;
 	endIndex: number;
+	/** false : clôture ``` absente, le bloc s'arrête à sa dernière ligne de courbe */
+	closed?: boolean;
+}
+
+// ============================================================================
+// BUDGET
+// ============================================================================
+
+/**
+ * Plafonds : le bloc est aussi rendu dans le chat élève et le tableau blanc,
+ * une entrée hostile ne doit jamais figer l'onglet. L'analyse REFUSE au-delà
+ * (message situé) ; la scène TRONQUE, au cas où une spécification arriverait
+ * sans passer par l'analyse.
+ */
+export const COURBE_LIMITS = {
+	gridLines: 200,
+	functions: 10,
+	points: 50,
+	asymptotes: 20,
+	areas: 10,
+	/** Valeur absolue maximale d'une borne de fenêtre */
+	bound: 1e9,
+	/** Étendue minimale, relative à la plus grande borne (et à 1) */
+	relativeExtent: 1e-6
+} as const;
+
+/**
+ * Pourquoi l'intervalle [min ; max] ne peut pas servir de fenêtre, ou null.
+ * Au-delà de 10^9, ou trop étroit devant ses bornes, les multiples du pas ne
+ * sont plus représentables en flottants : la grille ne finirait jamais.
+ */
+export function courbeRangeProblem(min: number, max: number): string | null {
+	if (!Number.isFinite(min) || !Number.isFinite(max)) return 'bornes non finies';
+	if (Math.abs(min) > COURBE_LIMITS.bound || Math.abs(max) > COURBE_LIMITS.bound) {
+		return 'bornes trop grandes (au plus 10^9 en valeur absolue)';
+	}
+	if (!(min < max)) return 'la première borne doit être inférieure à la seconde';
+	const scale = Math.max(1, Math.abs(min), Math.abs(max));
+	if (max - min < COURBE_LIMITS.relativeExtent * scale)
+		return 'étendue trop petite devant les bornes';
+	return null;
 }

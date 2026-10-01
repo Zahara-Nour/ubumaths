@@ -102,10 +102,10 @@
 		>
 			<!-- Grille -->
 			<g class="courbe-grille" aria-hidden="true">
-				{#each scene.grid.xs as x (x)}
+				{#each scene.grid.xs as x, i (i)}
 					<line x1={sx(x)} y1={PAD} x2={sx(x)} y2={PAD + height} />
 				{/each}
-				{#each scene.grid.ys as y (y)}
+				{#each scene.grid.ys as y, i (i)}
 					<line x1={PAD} y1={sy(y)} x2={PAD + width} y2={sy(y)} />
 				{/each}
 			</g>
@@ -142,7 +142,7 @@
 
 			<!-- Graduations -->
 			<g class="courbe-graduations" aria-hidden="true">
-				{#each scene.ticks.x as tick (tick.value)}
+				{#each scene.ticks.x as tick, i (i)}
 					<line
 						x1={sx(tick.value)}
 						y1={sy(scene.axes.xAxisY) - 3}
@@ -153,7 +153,7 @@
 						{tick.label}
 					</text>
 				{/each}
-				{#each scene.ticks.y as tick (tick.value)}
+				{#each scene.ticks.y as tick, i (i)}
 					<line
 						x1={sx(scene.axes.yAxisX) - 3}
 						y1={sy(tick.value)}

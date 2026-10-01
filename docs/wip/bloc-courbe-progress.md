@@ -128,3 +128,22 @@ isotrope, exporteurs sans `function`).
 - Rapport du cadre fixe 4:3, quelle que soit la fenêtre.
 - Export LaTeX : non (le générateur LaTeX ignore le bloc, comme avant).
 - Couleurs Typst = teintes du thème clair.
+
+## Relecture (2026-10-01) — corrections
+
+- **Budget borné** (bloc rendu aussi dans le chat élève et le tableau blanc) : `COURBE_LIMITS`
+  (`types/courbe.ts`) — 200 lignes de grille, 10 fonctions, 50 points, 20 asymptotes, 10 aires,
+  bornes ≤ 10^9, étendue ≥ 10^-6 × la plus grande borne. L'analyse REFUSE (message situé), la
+  scène TRONQUE et rend une scène vide si la fenêtre est inutilisable. `multiples` refuse un rang
+  hors `Number.isSafeInteger` (boucle infinie au-delà de 2^53 : 22 s, 1,6 Go, `RangeError`).
+  Le plafond de grille vaut aussi pour le pas automatique. Test d'entrées hostiles < 200 ms (7 ms).
+- **Aire** restreinte à [a ; b] ∩ domaine de f, avec avertissement pour le prof.
+- **`f(a)` hors du domaine** de f (bornes ouvertes exclues) : erreur située.
+- **Bloc non fermé** : il s'arrête à sa dernière ligne de courbe (ou avant une autre clôture
+  ```lang), erreur « bloc non fermé » ; ses lignes sont masquées pour la recherche des blocs de
+  code, la suite du document reste visible. Limite : en item de liste, un bloc non fermé reste
+  du texte (comme les autres blocs).
+  ```
+- Clés d'index dans les `{#each}` de `Courbe.svelte`.
+- Compilation Typst dans un test Node : non faite (cetz se télécharge par le réseau) ;
+  commentaire du test corrigé pour dire ce qui est prouvé.

@@ -183,6 +183,6 @@ describe('courbe — erreurs situées (comportements 6 et 7, Q48)', () => {
 describe('courbe — détection des blocs', () => {
 	it('repère ```courbe … ```', () => {
 		const lines = ['texte', '```courbe', 'x: -1 ; 1', 'y: -1 ; 1', '```', 'fin'];
-		expect(findCourbeBlocks(lines)).toEqual([{ startIndex: 1, endIndex: 4 }]);
+		expect(findCourbeBlocks(lines)).toEqual([{ startIndex: 1, endIndex: 4, closed: true }]);
 	});
 });

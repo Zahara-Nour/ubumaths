@@ -43,7 +43,7 @@ import type {
 	CourbeSpec,
 	CourbeWindow
 } from '../types/courbe';
-import { COURBE_COLORS, COURBE_SIZES } from '../types/courbe';
+import { COURBE_COLORS, COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
 import type { MathNode } from '$lib/mathAST/types';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
@@ -69,9 +69,6 @@ const LABEL_REGEX =
 /** Nom de point : une lettre, éventuellement suivie de chiffres ou de primes */
 const POINT_NAME_REGEX = /^[A-Za-z][A-Za-z0-9']*$/;
 
-/** Plafond de lignes de grille par axe : au-delà, le pas est une faute de frappe */
-const MAX_GRID_LINES = 200;
-
 const KNOWN_KEYS = [
 	'x',
 	'y',
@@ -94,15 +91,44 @@ export function isCourbeBlockStart(line: string): boolean {
 }
 
 /** Blocs ```courbe d'une liste de lignes (indices inclusifs, clôtures comprises). */
+/** Ligne qui a la forme d'une ligne de bloc courbe (clé connue ou `f(x) = …`) */
+function looksLikeCourbeLine(line: string): boolean {
+	const trimmed = line.trim();
+	if (FUNCTION_LINE_REGEX.test(trimmed)) return true;
+	const kv = KEY_LINE_REGEX.exec(trimmed);
+	return kv !== null && (KNOWN_KEYS as readonly string[]).includes(kv[1].toLowerCase());
+}
+
+/**
+ * Blocs ```courbe d'une liste de lignes (indices inclusifs, clôtures comprises).
+ *
+ * Bloc NON FERMÉ (fin du document, ou autre clôture d'ouverture ```python
+ * avant toute clôture nue) : il s'arrête à sa dernière ligne qui a la forme
+ * d'une ligne de courbe, pour ne pas avaler la suite du document.
+ */
 export function findCourbeBlocks(lines: string[]): CourbeBlockRange[] {
 	const blocks: CourbeBlockRange[] = [];
 	let i = 0;
 	while (i < lines.length) {
 		if (isCourbeBlockStart(lines[i])) {
 			const startIndex = i;
-			i++;
-			while (i < lines.length && !BLOCK_END_REGEX.test(lines[i])) i++;
-			blocks.push({ startIndex, endIndex: i < lines.length ? i : lines.length - 1 });
+			let j = i + 1;
+			while (j < lines.length && !BLOCK_END_REGEX.test(lines[j]) && !lines[j].startsWith('```'))
+				j++;
+			if (j < lines.length && BLOCK_END_REGEX.test(lines[j])) {
+				blocks.push({ startIndex, endIndex: j, closed: true });
+				i = j + 1;
+				continue;
+			}
+			let end = startIndex;
+			for (let k = startIndex + 1; k < j; k++) {
+				if (lines[k].trim() === '') continue;
+				if (!looksLikeCourbeLine(lines[k])) break;
+				end = k;
+			}
+			blocks.push({ startIndex, endIndex: end, closed: false });
+			i = end + 1;
+			continue;
 		}
 		i++;
 	}
@@ -161,7 +187,19 @@ function parseExpression(expression: string): MathNode {
 	}
 }
 
-type FunctionTable = Map<string, (x: number) => number>;
+type FunctionTable = Map<string, { evaluate: (x: number) => number; domain: CourbeDomain | null }>;
+
+/** x appartient-il au domaine (bornes ouvertes exclues) ? */
+function inDomain(x: number, domain: CourbeDomain | null): boolean {
+	if (domain === null) return true;
+	const aboveMin = domain.minOpen ? x > domain.min : x >= domain.min;
+	const belowMax = domain.maxOpen ? x < domain.max : x <= domain.max;
+	return aboveMin && belowMax;
+}
+
+function formatDomain(d: CourbeDomain): string {
+	return `${d.minOpen ? ']' : '['}${formatPlain(d.min)} ; ${formatPlain(d.max)}${d.maxOpen ? '[' : ']'}`;
+}
 
 /**
  * Remplacer chaque appel `f(…)` d'une fonction déclarée par sa valeur
@@ -180,7 +218,12 @@ function substituteCalls(expression: string, functions: FunctionTable): string {
 			const fn = functions.get(name);
 			if (fn && close !== -1) {
 				const argument = evaluateConstant(expression.slice(open + 1, close), functions);
-				const value = fn(argument);
+				if (!inDomain(argument, fn.domain) && fn.domain !== null) {
+					throw new LineError(
+						`${name}(${formatPlain(argument)}) : ${formatPlain(argument)} n'est pas dans le domaine ${formatDomain(fn.domain)} de ${name}`
+					);
+				}
+				const value = fn.evaluate(argument);
 				if (!Number.isFinite(value)) {
 					throw new LineError(`${name}(${formatPlain(argument)}) n'est pas défini`);
 				}
@@ -356,7 +399,11 @@ function parseFunctionLine(
 
 function parsePoints(value: string, functions: FunctionTable, line: number): CourbePoint[] {
 	const points: CourbePoint[] = [];
-	for (const item of splitTopLevel(value, ',')) {
+	const items = splitTopLevel(value, ',');
+	if (items.length > COURBE_LIMITS.points) {
+		throw new LineError(`au plus ${COURBE_LIMITS.points} points par figure`);
+	}
+	for (const item of items) {
 		if (item === '') continue;
 		const open = item.indexOf('(');
 		const name = open === -1 ? item : item.slice(0, open).trim();
@@ -448,10 +495,16 @@ export function parseCourbeContent(source: string): CourbeNode {
 			if (fn) {
 				const [, name, variable, rest] = fn;
 				if (functionTable.has(name)) throw new LineError(`fonction ${name} déjà définie`);
+				if (functions.length >= COURBE_LIMITS.functions) {
+					throw new LineError(`au plus ${COURBE_LIMITS.functions} fonctions par figure`);
+				}
 				const parsed = parseFunctionLine(name, variable, rest, line);
 				functions.push(parsed);
 				const compiled = compile(parsed.ast);
-				functionTable.set(name, (x: number) => compiled({ x }));
+				functionTable.set(name, {
+					evaluate: (x: number) => compiled({ x }),
+					domain: parsed.domain
+				});
 				return;
 			}
 
@@ -474,6 +527,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 						throw new LineError(
 							`x : la borne de gauche (${formatPlain(min)}) doit être inférieure à celle de droite (${formatPlain(max)})`
 						);
+					const problem = courbeRangeProblem(min, max);
+					if (problem) throw new LineError(`x : ${problem}`);
 					window = { ...window, xMin: min, xMax: max };
 					windowLines = { ...windowLines, x: line };
 					break;
@@ -484,6 +539,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 						throw new LineError(
 							`y : la borne du bas (${formatPlain(min)}) doit être inférieure à celle du haut (${formatPlain(max)})`
 						);
+					const problem = courbeRangeProblem(min, max);
+					if (problem) throw new LineError(`y : ${problem}`);
 					window = { ...window, yMin: min, yMax: max };
 					windowLines = { ...windowLines, y: line };
 					break;
@@ -532,6 +589,15 @@ export function parseCourbeContent(source: string): CourbeNode {
 			else if (item.key === 'asymptotes')
 				asymptotes.push(...parseAsymptotes(item.value, item.line));
 			else areas.push(parseArea(item.value, names, item.line));
+			const over =
+				points.length > COURBE_LIMITS.points
+					? `au plus ${COURBE_LIMITS.points} points par figure`
+					: asymptotes.length > COURBE_LIMITS.asymptotes
+						? `au plus ${COURBE_LIMITS.asymptotes} asymptotes par figure`
+						: areas.length > COURBE_LIMITS.areas
+							? `au plus ${COURBE_LIMITS.areas} aires par figure`
+							: null;
+			if (over) throw new LineError(over);
 		} catch (error) {
 			fail(item.line, item.content, error);
 		}
@@ -548,10 +614,13 @@ export function parseCourbeContent(source: string): CourbeNode {
 	if (errors.length === 0 && grid !== null) {
 		const g: CourbeGrid = grid;
 		const w = window as CourbeWindow;
-		if ((w.xMax - w.xMin) / g.x > MAX_GRID_LINES || (w.yMax - w.yMin) / g.y > MAX_GRID_LINES) {
+		if (
+			(w.xMax - w.xMin) / g.x > COURBE_LIMITS.gridLines ||
+			(w.yMax - w.yMin) / g.y > COURBE_LIMITS.gridLines
+		) {
 			const gridLine = lines.findIndex((l) => /^\s*grille\s*:/i.test(l)) + 1;
 			errors.push({
-				message: `Ligne ${gridLine} : pas de grille trop petit pour la fenêtre (plus de ${MAX_GRID_LINES} lignes)`,
+				message: `Ligne ${gridLine} : pas de grille trop petit pour la fenêtre (plus de ${COURBE_LIMITS.gridLines} lignes)`,
 				line: gridLine
 			});
 		}
@@ -580,5 +649,18 @@ export function parseCourbeContent(source: string): CourbeNode {
 export function parseCourbe(lines: string[], startIndex: number, endIndex: number): CourbeNode {
 	const closed = endIndex > startIndex && BLOCK_END_REGEX.test(lines[endIndex]);
 	const body = lines.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
-	return parseCourbeContent(body.join('\n'));
+	const node = parseCourbeContent(body.join('\n'));
+	if (closed) return node;
+	// Non fermé : la figure n'est pas dessinée, l'auteur sait pourquoi (Q48).
+	return {
+		...node,
+		spec: null,
+		errors: [
+			...node.errors,
+			{
+				message: `Ligne ${body.length + 1} : bloc non fermé (\`\`\` manquant après la dernière ligne)`,
+				line: body.length + 1
+			}
+		]
+	};
 }

@@ -25,6 +25,7 @@ import type {
 	CourbeSpec,
 	CourbeWindow
 } from '../types/courbe';
+import { COURBE_LIMITS, courbeRangeProblem } from '../types/courbe';
 import type { ContentLocale } from '$lib/types/locale';
 import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
 import { sampleFunction } from '$lib/geometry-core/viewport/sampler';
@@ -130,9 +131,15 @@ export function formatTick(value: number, locale: ContentLocale = 'fr'): string 
 
 /** Multiples entiers du pas compris dans [min ; max] */
 function multiples(step: number, min: number, max: number): number[] {
-	const values: number[] = [];
+	if (!(step > 0) || !Number.isFinite(step) || !Number.isFinite(min) || !Number.isFinite(max)) {
+		return [];
+	}
 	const first = Math.ceil(min / step - EPSILON);
 	const last = Math.floor(max / step + EPSILON);
+	// Au-delà de 2^53, `k++` ne fait plus avancer k : la boucle ne finirait jamais.
+	if (!Number.isSafeInteger(first) || !Number.isSafeInteger(last)) return [];
+	if (last - first + 1 > COURBE_LIMITS.gridLines + 1) return [];
+	const values: number[] = [];
 	for (let k = first; k <= last; k++) values.push(clean(k * step));
 	return values;
 }
@@ -306,10 +313,8 @@ function labelAnchor(
 // AIRES
 // ============================================================================
 
-function areaPolygon(fn: CourbeFunction, from: number, to: number, w: CourbeWindow): ScenePoint[] {
+function areaPolygon(fn: CourbeFunction, a: number, b: number, w: CourbeWindow): ScenePoint[] {
 	const evaluate = evaluatorOf(fn);
-	const a = Math.max(from, w.xMin);
-	const b = Math.min(to, w.xMax);
 	if (!(a < b)) return [];
 	const base = Math.min(Math.max(0, w.yMin), w.yMax);
 	const clampY = (y: number) => Math.min(w.yMax, Math.max(w.yMin, y));
@@ -345,12 +350,47 @@ function defaultAriaLabel(spec: CourbeSpec): string {
 // SCÈNE
 // ============================================================================
 
-export function buildCourbeScene(spec: CourbeSpec, options: CourbeSceneOptions = {}): CourbeScene {
+/** Scène vide : fenêtre inutilisable (spécification qui n'est pas passée par l'analyse). */
+function emptyScene(spec: CourbeSpec, width: number, height: number, message: string): CourbeScene {
+	return {
+		window: { xMin: 0, xMax: 1, yMin: 0, yMax: 1 },
+		pixelSize: { width, height },
+		grid: { xStep: 0, yStep: 0, xs: [], ys: [] },
+		axes: { xAxisY: 0, yAxisX: 0 },
+		originVisible: false,
+		ticks: { x: [], y: [] },
+		curves: [],
+		endpoints: [],
+		points: [],
+		asymptotes: [],
+		areas: [],
+		curveLabels: [],
+		ariaLabel: spec.description ?? 'Figure indisponible',
+		warnings: [{ message }]
+	};
+}
+
+/**
+ * Construire la scène. Budget borné QUELLES QUE SOIENT les entrées : fenêtre
+ * vérifiée, listes tronquées aux plafonds, grille plafonnée, échantillonnage
+ * à nombre de points fixe.
+ */
+export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions = {}): CourbeScene {
 	const locale = options.locale ?? 'fr';
-	const w = spec.window;
-	const warnings: CourbeIssue[] = [];
-	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const width = COURBE_PIXEL_WIDTH[input.size] ?? COURBE_PIXEL_WIDTH.moyenne;
 	const height = width * ASPECT_RATIO;
+	const w = input.window;
+	const problem = courbeRangeProblem(w.xMin, w.xMax) ?? courbeRangeProblem(w.yMin, w.yMax);
+	if (problem) return emptyScene(input, width, height, `Fenêtre inutilisable : ${problem}`);
+
+	const spec: CourbeSpec = {
+		...input,
+		functions: input.functions.slice(0, COURBE_LIMITS.functions),
+		points: input.points.slice(0, COURBE_LIMITS.points),
+		asymptotes: input.asymptotes.slice(0, COURBE_LIMITS.asymptotes),
+		areas: input.areas.slice(0, COURBE_LIMITS.areas)
+	};
+	const warnings: CourbeIssue[] = [];
 
 	// Grille : donnée par l'auteur, sinon calculée par axe (repère anisotrope).
 	const xStep =
@@ -437,7 +477,23 @@ export function buildCourbeScene(spec: CourbeSpec, options: CourbeSceneOptions =
 	for (const area of spec.areas) {
 		const fn = spec.functions.find((f) => f.name === area.functionName);
 		if (!fn) continue;
-		const polygon = areaPolygon(fn, area.from, area.to, w);
+		// Aire restreinte à [a ; b] ∩ domaine de f ∩ fenêtre
+		const from = Math.max(area.from, fn.domain?.min ?? -Infinity);
+		const to = Math.min(area.to, fn.domain?.max ?? Infinity);
+		if (!(from < to)) {
+			warnings.push({
+				message: `Ligne ${area.line} : l'aire est hors du domaine de ${fn.name}, elle n'est pas dessinée`,
+				line: area.line
+			});
+			continue;
+		}
+		if (from > area.from || to < area.to) {
+			warnings.push({
+				message: `Ligne ${area.line} : aire restreinte au domaine de ${fn.name}, de ${formatTick(from, locale)} à ${formatTick(to, locale)}`,
+				line: area.line
+			});
+		}
+		const polygon = areaPolygon(fn, Math.max(from, w.xMin), Math.min(to, w.xMax), w);
 		if (polygon.length === 0) {
 			warnings.push({
 				message: `Ligne ${area.line} : aire invisible dans la fenêtre`,

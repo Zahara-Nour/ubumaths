@@ -445,8 +445,15 @@ function parseBlocks(
 	// We map between them by index: the Nth code block in `lines` corresponds
 	// to the Nth code block in `originalLines`.
 	// =========================================================================
-	const codeBlocks = findCodeBlocks(lines);
-	const originalCodeBlocks = findCodeBlocks(originalLines);
+	// Les lignes d'un bloc ```courbe sont masquées pour la recherche des blocs
+	// de code : sinon un ```courbe NON FERMÉ ouvrirait un bloc de code qui
+	// avalerait la suite du document (même nombre de lignes : indices intacts).
+	const maskCourbe = (source: string[], ranges: { startIndex: number; endIndex: number }[]) =>
+		source.map((line, index) =>
+			ranges.some((r) => index >= r.startIndex && index <= r.endIndex) ? '' : line
+		);
+	const codeBlocks = findCodeBlocks(maskCourbe(lines, courbeBlocks));
+	const originalCodeBlocks = findCodeBlocks(maskCourbe(originalLines, originalCourbeBlocks));
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
 	const tableBlocks = findTableBlocksWithDirective(lines);

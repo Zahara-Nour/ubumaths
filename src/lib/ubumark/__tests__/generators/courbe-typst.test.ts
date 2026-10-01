@@ -62,7 +62,11 @@ describe('courbe → Typst', () => {
 		expect(generateCourbeTypst(n)).toContain('[0,5]');
 	});
 
-	it('bloc en erreur : cadre neutre, pas de cetz (le PDF ne doit pas échouer)', () => {
+	// Ce test prouve seulement le TEXTE produit (cadre neutre, aucun appel cetz).
+	// La compilation typst.ts 0.6.1-rc5 n'est PAS exécutée ici : elle télécharge
+	// cetz par le réseau (`scripts/fiches/compile-prod.mjs`), elle a été faite à
+	// la main sur une fiche contenant ce cas (voir docs/wip/bloc-courbe-progress.md).
+	it('bloc en erreur : cadre neutre en texte, aucun appel cetz', () => {
 		const out = generateCourbeTypst(parseCourbeContent('x: 6 ; -4\ny: -1 ; 1'));
 		expect(out).toContain('Figure indisponible');
 		expect(out).not.toContain('cetz');
