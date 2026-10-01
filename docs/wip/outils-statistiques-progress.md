@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-4 livrés ; lot 5 (atelier) implémenté, revues en cours
+## État : lots 1-4 livrés ; lot 5 (atelier) revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -341,6 +341,23 @@ actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Do
   `list-charts`, modules absents) puis verts ; 5 221 tests serveur + 304 client ;
   `check:incremental` 0 ; eslint 0 erreur (18 avertissements préexistants dans
   `atelier.svelte.ts`, hors du diff).
+
+- Audit a11y : annonce polie du diagramme affiché / retiré et de la bascule vers le Graphe ;
+  champ de la liste relié (`aria-describedby`) à son aperçu et au message du diagramme, sans
+  `aria-live` (pas de bavardage à la frappe) ; titre « Diagramme de L, effectifs M » ; cibles
+  d'action ≥ 28 px ; ids sans « : ».
+- Revue de code : `.stats` strict (`1,2,3 ; 4`, `3abc`, `12 15 9` donnaient des statistiques
+  FAUSSES sans erreur) et un « ; » fixe la convention pour tout l'argument ; « Retirer le
+  diagramme » possible même liste en erreur ; actions « avec effectifs » désactivées avant le
+  clic si la partenaire est en erreur ou de longueur différente ; supprimer la partenaire
+  retire ses diagrammes ; retirer ne bascule plus de vue ; test de non-enregistrement par
+  égalité de `serialize()` et `revision` inchangée ; message d'usage avec « ; ».
+
+### Question ouverte pour David (UX de l'atelier)
+
+- Avec plusieurs listes, les actions d'une liste s'accumulent : 2 + 4 × (n − 1) boutons
+  (10 avec 3 listes, 30 avec 8). Signalé par la revue de code ET l'audit a11y. Piste :
+  regrouper par partenaire (« Avec M » dépliable).
 
 ## Reste à faire (hors lots 2-5)
 
