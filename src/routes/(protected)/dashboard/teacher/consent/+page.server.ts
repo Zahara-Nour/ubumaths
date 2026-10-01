@@ -15,7 +15,8 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { z } from 'zod';
-import { requireRole } from '$lib/server/middleware/auth';
+import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
+import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { GRADES_REQUIRING_CONSENT } from '$lib/utils/consent';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
@@ -33,6 +34,9 @@ export interface StudentConsentInfo {
 	consent_required: boolean;
 	consent_granted_at: string | null;
 	consent_grace_period_ends: string | null;
+	/** Réponse à la question d'âge en 2nde ('15_plus' | 'under_15' | null). */
+	age_declaration: string | null;
+	age_declared_at: string | null;
 	parent_email: string | null;
 	consent_status: 'granted' | 'pending' | 'expired' | 'grace_period' | 'not_required';
 	email_count: number;
@@ -92,7 +96,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				grade,
 				consent_required,
 				consent_granted_at,
-				consent_grace_period_ends
+				consent_grace_period_ends,
+				age_declaration,
+				age_declared_at
 			)
 		`
 		)
@@ -164,6 +170,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			consent_required: boolean;
 			consent_granted_at: string | null;
 			consent_grace_period_ends: string | null;
+			age_declaration: string | null;
+			age_declared_at: string | null;
 		} | null;
 
 		if (!student) continue;
@@ -207,6 +215,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			consent_required: student.consent_required,
 			consent_granted_at: student.consent_granted_at,
 			consent_grace_period_ends: student.consent_grace_period_ends,
+			age_declaration: student.age_declaration,
+			age_declared_at: student.age_declared_at,
 			parent_email: consent?.parent_email || null,
 			consent_status: consentStatus,
 			email_count: consent?.email_count || 0,
@@ -252,6 +262,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	};
 };
 
+// Annulation de la réponse d'âge d'un élève (C16)
+const resetAgeDeclarationSchema = z.object({
+	studentId: z.string().uuid()
+});
+
+/** Délai de grâce rouvert quand la réponse d'âge est annulée. */
+const AGE_RESET_GRACE_DAYS = 30;
+
 // Schema for updating parent email
 const updateParentEmailSchema = z.object({
 	studentId: z.string().uuid(),
@@ -259,6 +277,59 @@ const updateParentEmailSchema = z.object({
 });
 
 export const actions: Actions = {
+	/**
+	 * Annule la réponse d'âge d'un élève : la question lui sera reposée.
+	 * Client du professeur (locals.supabase) : le garde guard_profile_consent_fields
+	 * laisse passer un professeur ou un administrateur, et la RLS s'applique.
+	 */
+	resetAgeDeclaration: async ({ request, locals }) => {
+		const { user } = await requireRoles(locals, ['teacher', 'admin']);
+		const supabase = locals.supabase;
+
+		const formData = await request.formData();
+		const validation = resetAgeDeclarationSchema.safeParse({
+			studentId: formData.get('studentId')
+		});
+		if (!validation.success) {
+			return fail(400, { error: 'Élève invalide' });
+		}
+		const { studentId } = validation.data;
+
+		const hasAccess = await verifyTeacherStudent(user.id, studentId, supabase);
+		if (!hasAccess) {
+			return fail(403, { error: 'Vous ne pouvez modifier que vos propres élèves' });
+		}
+
+		const graceEnds = new Date(Date.now() + AGE_RESET_GRACE_DAYS * 24 * 60 * 60 * 1000);
+		const { data, error: updateError } = await supabase
+			.from('profiles')
+			.update({
+				age_declaration: null,
+				age_declared_at: null,
+				consent_required: true,
+				consent_grace_period_ends: graceEnds.toISOString()
+			})
+			.eq('id', studentId)
+			// Seulement un élève de 2nde qui a répondu : sinon la question ne lui serait
+			// jamais reposée (1re, terminale) ou son délai serait relancé sans raison.
+			.eq('grade', AGE_QUESTION_GRADE)
+			.not('age_declaration', 'is', null)
+			.select('id');
+
+		if (updateError) {
+			console.error('[Consent Page] Annulation de la réponse d’âge impossible :', updateError);
+			return fail(500, { error: "Erreur lors de l'annulation de la déclaration" });
+		}
+
+		// Un refus de la RLS ne rend pas d'erreur : zéro ligne.
+		// Zéro ligne aussi si l'élève n'est pas en 2nde ou n'a pas répondu.
+		if (!data || data.length !== 1) {
+			return fail(403, { error: "La déclaration n'a pas pu être annulée" });
+		}
+
+		return { success: true };
+	},
+
 	updateParentEmail: async ({ request, locals }) => {
 		const { user } = await requireRole(locals, 'teacher');
 		const supabase = locals.supabase;
