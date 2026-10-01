@@ -42,6 +42,7 @@ describe('Typst des diagrammes statistiques', () => {
 
 		expect(count(typst, '// secteur')).toBe(scene.sectors.length);
 		expect(count(typst, '// légende')).toBe(3);
+		expect(count(typst, '// repère')).toBe(scene.sectors.length);
 	});
 
 	it('noms hostiles : écrits comme chaînes Typst échappées, jamais comme du balisage', () => {

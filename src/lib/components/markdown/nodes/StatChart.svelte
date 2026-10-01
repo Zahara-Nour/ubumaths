@@ -48,8 +48,10 @@
 
 	const SIN_45 = Math.SQRT1_2;
 
-	/** Marge autour du disque, en px */
-	const PIE_PAD = 4;
+	/** Rayon d'un repère numéroté, en px */
+	const MARKER_PX = 9;
+	/** Les repères extérieurs sont à 1,2 rayon du centre : marge en part du rayon, plus le repère */
+	const PIE_PAD_RATIO = 0.22;
 
 	/** Couleur des barres : tokens du thème ; vert et violet n'en ont pas, voir le style */
 	const COLOR_VAR: Record<CourbeColor, string> = {
@@ -126,11 +128,20 @@
 		return bars ? PAD_TOP + (1 - value / bars.yMax) * plotHeight : 0;
 	}
 
+	let pieRadius = $derived(plotWidth / 2);
+	let piePad = $derived(pieRadius * PIE_PAD_RATIO + MARKER_PX + 2);
+
+	/** Point du repère de la scène (rayon 1, y vers le haut) → écran */
+	function pieX(p: ScenePoint): number {
+		return piePad + pieRadius + p.x * pieRadius;
+	}
+
+	function pieY(p: ScenePoint): number {
+		return piePad + pieRadius - p.y * pieRadius;
+	}
+
 	function piePoints(points: ScenePoint[]): string {
-		const r = plotWidth / 2;
-		return points
-			.map((p) => `${(PIE_PAD + r + p.x * r).toFixed(2)},${(PIE_PAD + r - p.y * r).toFixed(2)}`)
-			.join(' ');
+		return points.map((p) => `${pieX(p).toFixed(2)},${pieY(p).toFixed(2)}`).join(' ');
 	}
 </script>
 
@@ -231,8 +242,8 @@
 					role="img"
 					aria-labelledby={titleId}
 					aria-describedby={descId}
-					viewBox="0 0 {plotWidth + 2 * PIE_PAD} {plotWidth + 2 * PIE_PAD}"
-					style:max-width="{plotWidth + 2 * PIE_PAD}px"
+					viewBox="0 0 {plotWidth + 2 * piePad} {plotWidth + 2 * piePad}"
+					style:max-width="{plotWidth + 2 * piePad}px"
 					class="stat-svg stat-disque"
 				>
 					<title id={titleId}>{scene.accessibleTitle}</title>
@@ -244,6 +255,30 @@
 							style:fill={PIE_COLORS[sector.colorIndex]}
 						/>
 					{/each}
+					<!-- Repères numérotés (Q23) : le lien secteur → légende ne dépend pas de la couleur -->
+					{#each pie.sectors as sector, i (i)}
+						<g class="stat-repere">
+							{#if sector.leader}
+								<line
+									x1={pieX(sector.leader[0])}
+									y1={pieY(sector.leader[0])}
+									x2={pieX(sector.leader[1])}
+									y2={pieY(sector.leader[1])}
+								/>
+							{/if}
+							<circle
+								cx={pieX(sector.markerPosition)}
+								cy={pieY(sector.markerPosition)}
+								r={MARKER_PX}
+							/>
+							<text
+								x={pieX(sector.markerPosition)}
+								y={pieY(sector.markerPosition)}
+								text-anchor="middle"
+								dominant-baseline="central">{sector.marker}</text
+							>
+						</g>
+					{/each}
 				</svg>
 
 				<ul class="stat-legende">
@@ -253,7 +288,7 @@
 								class="stat-pastille"
 								aria-hidden="true"
 								style:background-color={PIE_COLORS[item.colorIndex]}
-							></span>{item.text}
+							></span><span class="stat-numero">{item.marker}</span>{' '}{item.text}
 						</li>
 					{/each}
 				</ul>
@@ -381,6 +416,26 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
+	}
+
+	.stat-repere circle {
+		fill: var(--color-background);
+		stroke: var(--color-foreground);
+		stroke-width: 1;
+	}
+
+	.stat-repere line {
+		stroke: var(--color-foreground);
+		stroke-width: 1;
+	}
+
+	.stat-svg .stat-repere text {
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.stat-numero {
+		font-weight: 700;
 	}
 
 	.stat-pastille {

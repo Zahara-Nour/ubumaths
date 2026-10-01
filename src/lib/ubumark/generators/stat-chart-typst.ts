@@ -165,9 +165,25 @@ function pieTypst(scene: PieScene, size: CourbeSize): string {
 		);
 	}
 
+	// Repères numérotés (Q23) : disque blanc lisible sur toute couleur, et en noir et blanc
+	for (const sector of scene.sectors) {
+		lines.push('  // repère');
+		if (sector.leader) {
+			lines.push(
+				`  line(${P(sector.leader[0])}, ${P(sector.leader[1])}, stroke: 0.4pt + luma(60))`
+			);
+		}
+		lines.push(
+			`  circle(${P(sector.markerPosition)}, radius: 0.17, fill: white, stroke: 0.4pt + luma(60))`
+		);
+		lines.push(
+			`  content(${P(sector.markerPosition)}, text(size: 6.5pt, weight: "bold")[${sector.marker}])`
+		);
+	}
+
 	const legend = scene.legend.map(
 		(item) =>
-			`    // légende\n    [#box(width: 7pt, height: 7pt, fill: ${PIE_COLORS[item.colorIndex]}) #h(3pt) #text(size: 8pt)${textContent(item.text)}]`
+			`    // légende\n    [#box(width: 7pt, height: 7pt, fill: ${PIE_COLORS[item.colorIndex]}) #h(3pt) #text(size: 8pt, weight: "bold")[${item.marker}] #h(3pt) #text(size: 8pt)${textContent(item.text)}]`
 	);
 
 	const canvas = `cetz.canvas({\n${lines.join('\n')}\n  })`;

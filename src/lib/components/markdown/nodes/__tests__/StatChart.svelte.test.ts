@@ -84,7 +84,25 @@ describe('StatChart — circulaire', () => {
 		const legend = [...screen.container.querySelectorAll('.stat-legende li')].map((li) =>
 			li.textContent?.trim()
 		);
-		expect(legend).toEqual(['Bus — 46,7 %', 'Vélo — 20 %', 'À pied — 33,3 %', 'Rien — 0 %']);
+		expect(legend).toEqual([
+			'1 Bus — 46,7 %',
+			'2 Vélo — 20 %',
+			'3 À pied — 33,3 %',
+			'4 Rien — 0 %'
+		]);
+	});
+
+	// Q23 : le numéro relie le secteur à sa légende sans passer par la couleur
+	it('chaque secteur porte un repère numéroté, lisible sur sa couleur', async () => {
+		const node = parseStatChartContent('circulaire', PIE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const markers = [...screen.container.querySelectorAll('.stat-repere text')].map(
+			(t) => t.textContent
+		);
+
+		expect(markers).toEqual(['1', '2', '3']);
+		const disk = screen.container.querySelector('.stat-repere circle') as SVGCircleElement;
+		expect(getComputedStyle(disk).fill).not.toBe('none');
 	});
 
 	it('les secteurs ont des couleurs différentes', async () => {

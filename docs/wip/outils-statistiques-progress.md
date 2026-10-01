@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lot 1 livré (#595) ; lot 2 implémenté, revues `code-reviewer` + `accessibility-tester` en cours
+## État : lot 1 livré (#595) ; lot 2 revu, corrigé, PR à ouvrir
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -192,6 +192,28 @@ Tour 4 (2026-10-01) — recommandations suivies :
 - Secteurs = polygones de la scène (pas `arc` de cetz) : même dessin écran / PDF.
 - `svelte-autofixer` : outil MCP absent de la session, non lancé.
 
+- Revues : `code-reviewer` (0 bloquant ; effectifs gradués en entiers, piste « Vélo = 3 »,
+  repli « Figure indisponible » si la scène lève dans le PDF, constantes partagées) et
+  `accessibility-tester` (texte rogné, contrastes erreurs / grille / orange, largeur minimale
+  300 px, titre lu une fois : `<title>` = genre, titre auteur en `<figcaption>`).
+
+Tour 5 (2026-10-01) — recommandations suivies :
+
+23. **Repères numérotés** dans chaque secteur (dehors avec un trait sous 20°) et dans la
+    légende, écran et PDF ; jamais deux couleurs identiques côte à côte (dernier / premier
+    compris) ; 12 secteurs au plus maintenus.
+24. **Description accessible = ce que la légende affiche** (étiquettes: aucune → catégories
+    seules) ; barres : effectifs gardés (lisibles sur l'axe).
+25. **Défauts hérités de `courbe`** (aussi `figure`, `stat-chart`) → PR séparée après ce lot :
+    bloc non fermé dans un item de liste rendu en texte brut ; bloc non fermé suivi plus loin
+    d'un ``` nu qui avale le texte intermédiaire.
+
 ## Questions ouvertes
 
 (aucune)
+
+## Reste à faire (hors lot 2)
+
+- PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
+- Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
+- `--font-scale` non appliqué au texte des SVG (la légende HTML le suit).

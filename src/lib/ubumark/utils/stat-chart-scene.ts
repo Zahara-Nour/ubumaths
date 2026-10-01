@@ -86,6 +86,16 @@ export interface SceneSector {
 	/** Contour fermé : centre, puis l'arc échantillonné (disque entier : l'arc seul) */
 	polygon: ScenePoint[];
 	colorIndex: number;
+	/**
+	 * Numéro de la ligne de légende (1 = première catégorie écrite) : relie le
+	 * secteur à sa légende sans passer par la couleur (Q23, daltonisme et
+	 * impression en noir et blanc)
+	 */
+	marker: number;
+	/** Centre du repère : dans le secteur, ou hors du disque s'il est trop petit */
+	markerPosition: ScenePoint;
+	/** Trait du bord du disque vers un repère placé dehors, sinon null */
+	leader: [ScenePoint, ScenePoint] | null;
 }
 
 export interface SceneLegendItem {
@@ -93,6 +103,7 @@ export interface SceneLegendItem {
 	/** Ligne affichée : « Bus — 46,7 % » selon `étiquettes:` */
 	text: string;
 	colorIndex: number;
+	marker: number;
 }
 
 export interface PieScene extends SceneCommon {
@@ -132,6 +143,14 @@ const FLAT_LABELS_MAX = 6;
  * partagée avec `StatChart.svelte`, qui en déduit la place d'un nom incliné.
  */
 export const STAT_CHART_CHAR_PX = 6.5;
+
+/** En dessous de cet angle, le repère d'un secteur est placé hors du disque */
+const MARKER_INSIDE_MIN_DEGREES = 20;
+
+/** Distance au centre d'un repère intérieur, extérieur, et bout du trait (rayon = 1) */
+const MARKER_INSIDE_RADIUS = 0.62;
+const MARKER_OUTSIDE_RADIUS = 1.2;
+const LEADER_END_RADIUS = 1.1;
 
 /** Pas d'échantillonnage des arcs, en degrés */
 const ARC_STEP_DEGREES = 3;
@@ -233,23 +252,44 @@ function sectorPolygon(start: number, end: number): ScenePoint[] {
 	return end - start >= 360 ? arc : [{ x: 0, y: 0 }, ...arc];
 }
 
-function legendText(
-	label: string,
+/** Valeur affichée par la légende selon `étiquettes:`, ou null (`aucune`). */
+function shownValue(
 	labels: StatChartLabels,
 	value: string,
 	percent: string,
 	angle: string
-): string {
+): string | null {
 	switch (labels) {
 		case 'aucune':
-			return label;
+			return null;
 		case 'effectifs':
-			return `${label} — ${value}`;
+			return value;
 		case 'angles':
-			return `${label} — ${angle}`;
+			return angle;
 		case 'pourcentages':
-			return `${label} — ${percent}`;
+			return percent;
 	}
+}
+
+function scaled(point: ScenePoint, radius: number): ScenePoint {
+	return { x: point.x * radius, y: point.y * radius };
+}
+
+/**
+ * Couleurs des secteurs dessinés, dans l'ordre de la palette, sans que deux
+ * voisins se ressemblent — le dernier touche le premier, à midi (Q23).
+ */
+function sectorColors(count: number): number[] {
+	const colors: number[] = [];
+	for (let k = 0; k < count; k++) {
+		const forbidden = new Set<number>();
+		if (k > 0) forbidden.add(colors[k - 1]);
+		if (k === count - 1 && k > 0) forbidden.add(colors[0]);
+		let color = k % PIE_PALETTE_SIZE;
+		while (forbidden.has(color)) color = (color + 1) % PIE_PALETTE_SIZE;
+		colors.push(color);
+	}
+	return colors;
 }
 
 function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
@@ -263,13 +303,17 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 	}
 	const frequencies = outcome.value;
 
+	const drawn = spec.data.filter((d) => d.value > 0).length;
+	const colors = sectorColors(drawn);
 	const sectors: SceneSector[] = [];
 	const legend: SceneLegendItem[] = [];
 	const listed: string[] = [];
 	let start = 0;
 
 	spec.data.forEach((d, i) => {
-		const colorIndex = i % PIE_PALETTE_SIZE;
+		const marker = i + 1;
+		// Une catégorie sans secteur garde une pastille, sans voisin à éviter
+		const colorIndex = d.value > 0 ? colors[sectors.length] : i % PIE_PALETTE_SIZE;
 		const sweep = frequencies[i] * 360;
 		// Le dernier secteur non nul ferme le cercle exactement
 		const isLastNonZero = frequencies.slice(i + 1).every((f) => f === 0);
@@ -281,23 +325,30 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 		const angle = `${formatRounded(sweep, 0, locale)}°`;
 
 		if (d.value > 0) {
+			const middle = onCircle((start + end) / 2);
+			const inside = end - start >= MARKER_INSIDE_MIN_DEGREES;
 			sectors.push({
 				label: d.label,
 				startAngle: start,
 				endAngle: end,
 				polygon: sectorPolygon(start, end),
-				colorIndex
+				colorIndex,
+				marker,
+				markerPosition: scaled(middle, inside ? MARKER_INSIDE_RADIUS : MARKER_OUTSIDE_RADIUS),
+				leader: inside ? null : [middle, scaled(middle, LEADER_END_RADIUS)]
 			});
 			start = end;
 		}
+
+		// Q24 : la description dit ce que la légende affiche, jamais une valeur cachée
+		const shown = shownValue(spec.labels, value, percent, angle);
 		legend.push({
 			label: d.label,
-			text: legendText(d.label, spec.labels, value, percent, angle),
-			colorIndex
+			text: shown === null ? d.label : `${d.label} — ${shown}`,
+			colorIndex,
+			marker
 		});
-		listed.push(
-			spec.unit === 'pourcentages' ? `${d.label} ${value}` : `${d.label} ${value} (${percent})`
-		);
+		listed.push(shown === null ? d.label : `${d.label} ${shown}`);
 	});
 
 	return {

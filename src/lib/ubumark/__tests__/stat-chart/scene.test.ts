@@ -133,6 +133,42 @@ describe('diagramme en barres', () => {
 // Circulaire
 // =============================================================================
 
+describe('repères numérotés (Q23)', () => {
+	it('chaque secteur porte le numéro de sa ligne de légende', () => {
+		const scene = pie('A = 0\nB = 2\nC = 2');
+
+		expect(scene.legend.map((l) => l.marker)).toEqual([1, 2, 3]);
+		expect(scene.sectors.map((s) => s.marker)).toEqual([2, 3]);
+	});
+
+	it('grand secteur : repère à l’intérieur, sans trait', () => {
+		const [big] = pie('A = 3\nB = 1').sectors;
+		const r = Math.hypot(big.markerPosition.x, big.markerPosition.y);
+
+		expect(r).toBeLessThan(1);
+		expect(big.leader).toBeNull();
+	});
+
+	it('petit secteur : repère hors du disque, relié par un trait', () => {
+		const scene = pie('A = 99\nB = 1');
+		const small = scene.sectors[1];
+		const r = Math.hypot(small.markerPosition.x, small.markerPosition.y);
+
+		expect(r).toBeGreaterThan(1);
+		expect(small.leader).not.toBeNull();
+		const [from, to] = small.leader!;
+		expect(Math.hypot(from.x, from.y)).toBeCloseTo(1, 5);
+		expect(Math.hypot(to.x, to.y)).toBeGreaterThan(1);
+	});
+
+	it('le repère est au milieu angulaire de son secteur', () => {
+		const [first] = pie('A = 1\nB = 1').sectors;
+		// Secteur de 0° à 180° : milieu à 90°, donc à droite (x > 0, y ≈ 0)
+		expect(first.markerPosition.x).toBeGreaterThan(0);
+		expect(first.markerPosition.y).toBeCloseTo(0, 10);
+	});
+});
+
 describe('diagramme circulaire', () => {
 	it('les angles font 360°, premier secteur à midi, dans l’ordre écrit', () => {
 		const scene = pie(TRANSPORT);
@@ -200,11 +236,27 @@ describe('diagramme circulaire', () => {
 		expect(pie('A = 35 %\nB = 65 %').legend[0].text).toBe('A — 35 %');
 	});
 
-	it('couleurs : une palette fixe de 7, reprise au-delà', () => {
-		const source = Array.from({ length: 9 }, (_, i) => `C${i} = 1`).join('\n');
-		const colors = pie(source).legend.map((l) => l.colorIndex);
+	it('couleurs : une palette fixe de 7, dans l’ordre', () => {
+		const source = Array.from({ length: 5 }, (_, i) => `C${i} = 1`).join('\n');
 
-		expect(colors).toEqual([0, 1, 2, 3, 4, 5, 6, 0, 1]);
+		expect(pie(source).sectors.map((s) => s.colorIndex)).toEqual([0, 1, 2, 3, 4]);
+	});
+
+	// Q23 : jamais deux couleurs identiques côte à côte, dernier et premier compris
+	it.each([8, 9, 12, 15])('%i secteurs : deux voisins n’ont jamais la même couleur', (n) => {
+		const source = Array.from({ length: Math.min(n, 12) }, (_, i) => `C${i} = 1`).join('\n');
+		const colors = pie(source).sectors.map((s) => s.colorIndex);
+
+		colors.forEach((c, i) =>
+			expect(c, `secteur ${i + 1}`).not.toBe(colors[(i + 1) % colors.length])
+		);
+	});
+
+	it('voisins après un effectif nul : couleurs différentes aussi', () => {
+		const lines = ['A = 1', ...Array.from({ length: 6 }, (_, i) => `Z${i} = 0`), 'H = 1', 'I = 1'];
+		const colors = pie(lines.join('\n')).sectors.map((s) => s.colorIndex);
+
+		colors.forEach((c, i) => expect(c).not.toBe(colors[(i + 1) % colors.length]));
 	});
 
 	it('les fréquences viennent du module statistique', () => {
@@ -233,8 +285,21 @@ describe('titre et description accessibles', () => {
 			'Diagramme en barres : Football 12, Natation 8.'
 		);
 		expect(pie(TRANSPORT).description).toBe(
-			'Diagramme circulaire : Bus 14 (46,7 %), Vélo 6 (20 %), À pied 10 (33,3 %).'
+			'Diagramme circulaire : Bus 46,7 %, Vélo 20 %, À pied 33,3 %.'
 		);
+	});
+
+	// Q24 : jamais une valeur que la légende cache à l'élève voyant
+	it('circulaire : la description dit ce que la légende affiche, rien de plus', () => {
+		expect(pie(`étiquettes: effectifs\n${TRANSPORT}`).description).toBe(
+			'Diagramme circulaire : Bus 14, Vélo 6, À pied 10.'
+		);
+		expect(pie(`étiquettes: angles\n${TRANSPORT}`).description).toBe(
+			'Diagramme circulaire : Bus 168°, Vélo 72°, À pied 120°.'
+		);
+		const hidden = pie(`étiquettes: aucune\n${TRANSPORT}`).description;
+		expect(hidden).toBe('Diagramme circulaire : Bus, Vélo, À pied.');
+		expect(hidden).not.toMatch(/\d/);
 	});
 
 	it('la description de l’auteur l’emporte', () => {
