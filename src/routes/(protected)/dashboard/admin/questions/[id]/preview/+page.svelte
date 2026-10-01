@@ -8,9 +8,9 @@
 	Features:
 	- Load question template by ID
 	- Generate multiple instances (different seeds)
-	- Test answer validation with QuestionDisplay
-	- Toggle correction display
-	- Switch between interactive/flashcard modes
+	- Show the REAL student renderings in tabs (Flash-card, Entraînement, En classe),
+	  with the same components and props as the student screens (decision Q61)
+	- Authoring errors (```courbe / ```figure) shown in detail: teacher page (Q48)
 -->
 
 <script lang="ts">
@@ -24,15 +24,16 @@
 	import { goto } from '$app/navigation';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
-	import type { AnswerData } from '$lib/types/question-display';
-	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import QuestionPreviewTabs, {
+		type PreviewTab
+	} from '$lib/components/questions/QuestionPreviewTabs.svelte';
+	import { provideAuthoringErrors } from '$lib/components/markdown/authoring-errors';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
-	import { Switch } from '$lib/components/ui/switch';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ArrowLeft, RefreshCw, Loader2 } from '@lucide/svelte';
 
@@ -56,9 +57,11 @@
 	// Generation options
 	let seed = $state<number | undefined>(undefined); // Optional seed for reproducibility
 
-	// Display options
-	let showCorrection = $state(false); // Show correction on wrong answer
-	let interactive = $state(true); // Interactive mode (answer validation)
+	// Onglet de rendu élève : gardé d'une instance à l'autre (absent = défaut selon le type)
+	let previewTab = $state<PreviewTab | undefined>(undefined);
+
+	// Page de PROF : un bloc mal écrit affiche son message détaillé, pas « Figure indisponible »
+	provideAuthoringErrors(() => true);
 
 	// Réponses attendues, lisibles : une ligne par trou, ou le(s) choix correct(s) d'un QCM
 	let expectedAnswers = $derived.by(() => {
@@ -155,22 +158,6 @@
 	}
 
 	/**
-	 * Handle answer submission from QuestionDisplay
-	 *
-	 * Called after QuestionDisplay validates the answer client-side.
-	 * Shows a toast notification based on the validation result.
-	 *
-	 * @param answerData - Answer data with validation result from QuestionDisplay
-	 */
-	function handleAnswerSubmit(answerData: AnswerData) {
-		if (answerData.isCorrect) {
-			toaster.success('Excellente réponse ! 🎉');
-		} else {
-			toaster.error("Ce n'est pas la bonne réponse. Consultez la correction.");
-		}
-	}
-
-	/**
 	 * Navigate back to questions list page
 	 */
 	function handleBack() {
@@ -241,25 +228,6 @@ TEMPLATE - PAGE LAYOUT
 					</Button>
 				</div>
 			</div>
-
-			<!-- Display Options -->
-			<div class="space-y-4 border-t pt-4">
-				<h3 class="font-semibold">Options d'Affichage</h3>
-
-				<div class="grid gap-4 md:grid-cols-2">
-					<!-- Show Correction Toggle -->
-					<div class="flex items-center justify-between space-x-2">
-						<Label for="correction" class="cursor-pointer">Afficher la correction</Label>
-						<Switch id="correction" bind:checked={showCorrection} />
-					</div>
-
-					<!-- Interactive Mode Toggle -->
-					<div class="flex items-center justify-between space-x-2">
-						<Label for="interactive" class="cursor-pointer">Mode interactif</Label>
-						<Switch id="interactive" bind:checked={interactive} />
-					</div>
-				</div>
-			</div>
 		</Card.Content>
 	</Card.Root>
 
@@ -275,14 +243,7 @@ TEMPLATE - PAGE LAYOUT
 		</Card.Root>
 	{:else if instance}
 		<AnswerAssumptionsNotice assumptions={instance.options?.answerAssumptions} />
-		<FlashCard
-			{interactive}
-			{instance}
-			onAnswerSubmit={handleAnswerSubmit}
-			showCorrectionOnWrong={showCorrection}
-			size="lg"
-			maxAttempts={0}
-		/>
+		<QuestionPreviewTabs {instance} bind:tab={previewTab} />
 
 		<!-- Debug Info -->
 		<Card.Root>
