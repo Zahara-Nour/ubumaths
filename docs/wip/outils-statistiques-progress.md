@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-4 livrés ; lot 5 (atelier) revu, corrigé, PR ouverte
+## État : lots 1-5 livrés (#595, #598, #600, #604, #610) ; lot 6 (variable aléatoire) — spécification soumise
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -359,7 +359,24 @@ actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Do
   (10 avec 3 listes, 30 avec 8). Signalé par la revue de code ET l'audit a11y. Piste :
   regrouper par partenaire (« Avec M » dépliable).
 
-## Reste à faire (hors lots 2-5)
+## Lot 6 — variable aléatoire finie (1re spé)
+
+Worktree `../ubumaths-wt-stats-lot6`, branche `feat/stats-variable-aleatoire`.
+
+Tour 9 (2026-10-01) — recommandations suivies :
+
+40. **Calcul exact en fractions** (probabilités `1/6`, `0,25`, `25 %`) : E et V en fraction
+    irréductible (+ « = 3,5 » si décimal exact, « ≈ 2,92 » sinon) ; σ approché, sauf racine
+    exacte. Petite arithmétique de fractions dans le module statistique.
+41. Bloc ```loi : `G = -2 ; 0 ; 5`, `P = 1/2 ; 3/10 ; 1/5`, `indicateurs: espérance ;
+    variance ; écart type`, `titre:`; tableau horizontal`gᵢ`/`P(G = gᵢ)` ; somme
+    EXACTEMENT 1, probabilités dans [0 ; 1], valeurs distinctes, ≤ 12 valeurs.
+42. `masquer: 5` (probabilité connue, cachée, « case à compléter ») ; `?` = inconnue et cachée,
+    indicateurs alors refusés.
+43. Pas de diagramme de la loi dans ce lot.
+44. Atelier léger : action par partenaire « Loi avec probabilités M » → E, V, σ dans l'historique.
+
+## Reste à faire (hors lots 2-6)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
