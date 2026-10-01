@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-2 livrés (#595, #598) ; lot 3 revu, corrigé, PR ouverte
+## État : lots 1-3 livrés (#595, #598, #600) ; lot 4 (tableau croisé) — spécification soumise
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -268,7 +268,24 @@ Constaté : dans les items de liste, le langage d'un bloc de code est lu par `(\
   halo des étiquettes de lecture, pointillé 1,5 px, indicateurs en `<ul>` (« · » non lu),
   « Médiane » en toutes lettres dans `<desc>`. Légende d'aire gardée dans `<desc>` (Q30).
 
-## Reste à faire (hors lots 2-3)
+## Lot 4 — tableau croisé
+
+Worktree `../ubumaths-wt-stats-lot4`, branche `feat/stats-tableau-croise`.
+
+Tour 7 (2026-10-01) — recommandations suivies :
+
+31. **Même nœud `stat-chart`**, genre `tableau-croise` (câblage du lot 2 réutilisé, compte
+    dans le budget de figures) ; rendu `<table>` à l'écran, `table()` Typst.
+32. **Le prof écrit toutes les valeurs** et cache avec `masquer: Fille/Demi-pensionnaire ;
+Garçon/Total ; Total/Externe` : totaux toujours calculés ; case masquée vide, annoncée
+    « case à compléter ». `?` reste un raccourci « inconnue ET cachée » : les totaux qui en
+    dépendent sont cachés aussi. (Précision de la syntaxe Q8, accordée.)
+33. **Fréquences en %, une décimale** ; `fréquences par ligne` : chaque ligne (et la colonne
+    Total) fait 100 % ; `par colonne` : l'inverse.
+34. Coin vide par défaut, `coin: Sexe \ Régime` ; `titre:` au-dessus et en `<caption>` ;
+    ≤ 8 lignes × 8 colonnes ; effectifs entiers ou %, sans mélange.
+
+## Reste à faire (hors lots 2-4)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
