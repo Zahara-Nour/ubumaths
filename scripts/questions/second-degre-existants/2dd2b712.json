@@ -1,0 +1,236 @@
+{
+	"id": "2dd2b712-3687-4910-ab92-378c46125129",
+	"title": "Trouver une racine évidente d'un polynôme",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Trouve une racine évidente de ce polynôme :\n\n$$P(x)={{eval:x^2-(r+s)x+r*s}}$$\n\nUne racine évidente est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1|-1|2|-2"
+				},
+				{
+					"name": "s",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["s != r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"rulesSuffice": true
+				}
+			],
+			"validationRules": [
+				{
+					"type": "equation_root",
+					"equation": "(x)^2-(({{r}})+({{s}}))*(x)+({{r}})*({{s}})=0",
+					"variable": "x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche une racine parmi les valeurs simples $1$, $-1$, $2$, $-2$ en calculant $P(x)$.",
+					"Pour $x={{r}}$ : $P({{r}}) = {{eval:r;()}}^2 {{if:r+s!=0|{{eval:-(r+s);+}} \\times {{eval:r;()}}}} {{if:s!=0|{{eval:r*s;+}}}} = {{eval:r^2}} {{if:r+s!=0|{{eval:-(r+s)*r;+}}}} {{if:s!=0|{{eval:r*s;+}}}} = 0$.",
+					"Le résultat est nul : ${{r}}$ est une racine évidente de $P$ (l'autre racine est ${{s}}$)."
+				]
+			}
+		},
+		{
+			"statement": "Trouve une racine évidente de ce polynôme :\n\n$$P(x)={{eval:ax^2+bx+c}}$$\n\nUne racine évidente est $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "r",
+					"expression": "1|-1"
+				},
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-(q+a*r)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:q*r"
+				}
+			],
+			"conditions": ["q != a*r"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}",
+					"rulesSuffice": true
+				}
+			],
+			"validationRules": [
+				{
+					"type": "equation_root",
+					"equation": "({{a}})*(x)^2+({{b}})*(x)+({{c}})=0",
+					"variable": "x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche une racine parmi les valeurs simples $1$ et $-1$ : $P(1)=a+b+c$ et $P(-1)=a-b+c$.",
+					"Pour $x={{r}}$ : $P({{r}}) = {{a}} \\times {{eval:r;()}}^2 {{if:b!=0|{{eval:b;+}} \\times {{eval:r;()}}}} {{eval:c;+}} = {{a}} {{if:b!=0|{{eval:b*r;+}}}} {{eval:c;+}} = 0$.",
+					"Le résultat est nul : ${{r}}$ est une racine évidente de $P$ (l'autre racine est ${{eval:q/a}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "racine évidente r",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"s": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "autre racine s acceptée",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"s": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racine négative",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-1",
+				"s": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "opposé d'une racine refusé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"s": "3"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²-4 (s=-r, terme en x nul) : -2",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2",
+				"s": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²-3x (s=0) : 0 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"r": "1",
+				"s": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "non unitaire 2x²+x-3 : 1",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"a": "2",
+				"q": "3",
+				"b": "-5",
+				"c": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "non unitaire : l'autre racine 3/2 (non évidente) jugée bad_form — limite connue, forme stricte",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"a": "2",
+				"q": "3",
+				"b": "-5",
+				"c": "3"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "non unitaire : -1 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"r": "1",
+				"a": "2",
+				"q": "3",
+				"b": "-5",
+				"c": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "non unitaire, a<0 : -1",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-1",
+				"a": "-3",
+				"q": "2",
+				"b": "-5",
+				"c": "-2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

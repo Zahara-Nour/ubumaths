@@ -1,0 +1,307 @@
+{
+	"id": "f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709",
+	"title": "Vrai ou Faux sur les polynômes du second degré",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Vrai ou Faux",
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"choices": [
+			{
+				"content": "Vrai"
+			},
+			{
+				"content": "Faux"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La courbe représentative d'un polynôme du second degré est une droite.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, la courbe représentative d'un polynôme du second degré est une parabole."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Un polynôme du second degré peut ne pas avoir de racine.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : par exemple $x^2+1$ n'a pas de racine, car $x^2+1 \\geq 1 > 0$ pour tout réel $x$ (son discriminant $\\Delta=-4$ est strictement négatif). Sa parabole ne coupe pas l'axe des abscisses."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Un polynôme du second degré peut n'avoir qu'une seule racine.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : par exemple $x^2$ n'a qu'une seule racine, $0$ (son discriminant est nul, on parle de racine double). Sa parabole touche l'axe des abscisses en son sommet sans le traverser."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Un polynôme du second degré a au maximum deux racines.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : les racines sont les solutions de $ax^2+bx+c=0$ ; selon le signe du discriminant $\\Delta=b^2-4ac$, il y en a deux ($\\Delta>0$), une seule ($\\Delta=0$) ou aucune ($\\Delta<0$). Il n'y en a donc jamais plus de deux."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La forme factorisée permet de trouver les racines du polynôme.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, dans la forme factorisée $a(x-x_1)(x-x_2)$, les racines sont $x_1$ et $x_2$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La forme canonique permet de trouver les coordonnées du sommet de la parabole.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, dans la forme canonique $a(x-\\alpha)^2+\\beta$, les coordonnées du sommet de la parabole sont $(\\alpha \\,;\\, \\beta)$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La courbe représentative d'un polynôme du second degré admet un axe de symétrie.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, la courbe représentative admet un axe de symétrie passant par le sommet de la parabole."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Un polynôme du second degré a toujours deux racines.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : $x^2+1$ n'a aucune racine ($x^2+1\\geq1$), et $x^2$ n'en a qu'une. Le nombre de racines dépend du signe du discriminant."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "La parabole d'équation $y=a(x-\\alpha)^2+\\beta$ a pour sommet le point de coordonnées $(-\\alpha\\,;\\,\\beta)$.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : le sommet est $(\\alpha\\,;\\,\\beta)$. Par exemple, $2(x-3)^2+1$ vaut $1$ en $x=3$ et est supérieur à $1$ ailleurs : le sommet est $(3\\,;\\,1)$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Si $a<0$, le polynôme $ax^2+bx+c$ admet un minimum.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : si $a<0$, la parabole est tournée vers le bas : le polynôme admet un **maximum**, atteint au sommet."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Si son discriminant est strictement négatif, un polynôme du second degré est négatif pour tout réel $x$.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : si $\\Delta<0$, le polynôme ne s'annule pas et garde le signe de $a$ : $x^2+1$ ($\\Delta=-4$) est positif pour tout $x$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "L'axe de symétrie de la parabole qui représente $ax^2+bx+c$ a pour équation $x=\\dfrac{b}{2a}$.",
+			"correction": {
+				"steps": [
+					"{{solution:html}} : l'axe de symétrie a pour équation $x=-\\dfrac{b}{2a}$. Par exemple, $x^2-2x$ s'annule en $0$ et en $2$ : l'axe est la droite $x=1=-\\dfrac{-2}{2\\times1}$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 1 : Faux",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "affirmation 1 : Vrai refusé",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 2 : Vrai",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 3 : Vrai",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 4 : Vrai",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 5 : Vrai",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 6 : Vrai",
+			"variationIndex": 5,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 7 : Vrai",
+			"variationIndex": 6,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "affirmation 4 : Faux refusé",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		},
+		{
+			"description": "affirmation 8 : Faux",
+			"variationIndex": 7,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "affirmation 8 : Vrai refusé",
+			"variationIndex": 7,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "affirmation 9 : Faux",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "affirmation 9 : Vrai refusé",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "affirmation 10 : Faux",
+			"variationIndex": 9,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "affirmation 10 : Vrai refusé",
+			"variationIndex": 9,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "affirmation 11 : Faux",
+			"variationIndex": 10,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "affirmation 11 : Vrai refusé",
+			"variationIndex": 10,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "affirmation 12 : Faux",
+			"variationIndex": 11,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "affirmation 12 : Vrai refusé",
+			"variationIndex": 11,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

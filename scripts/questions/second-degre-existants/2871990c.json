@@ -1,0 +1,470 @@
+{
+	"id": "2871990c-21d1-4d96-a2df-897ee2a1cc5c",
+	"title": "Reconnaître un polynôme du second degré",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"choices": [
+			{
+				"content": "Oui"
+			},
+			{
+				"content": "Non"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "-5..5"
+				},
+				{
+					"name": "expression1",
+					"expression": "eval:ax^3+bx^2+cx+d"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Non : dans l'expression ${{expression1}}$, le terme ${{eval:ax^3}}$ fait que c'est un polynôme du troisième degré, et non du second degré."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				},
+				{
+					"name": "expression2",
+					"expression": "eval:ax^2+bx+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Oui : l'expression ${{expression2}}$ est bien de la forme $ax^2+bx+c$ avec $a={{a}}$, $b={{b}}$ et $c={{c}}$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression3}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression3",
+					"expression": "eval:ax^2+bx+dsqrt(x)+c"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Non : dans l'expression ${{expression3}}$, le terme ${{eval:dsqrt(x)}}$ fait que ce n'est pas un polynôme."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression4}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±!b"
+				},
+				{
+					"name": "expression4",
+					"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Oui : si on développe l'expression ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$, on trouve bien une expression de la forme $ax^2+bx+c$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression5}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression5",
+					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Oui : si on développe l'expression ${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$, on trouve bien une expression de la forme $ax^2+bx+c$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression6}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression6",
+					"expression": "{{{eval:ax^2+bx+c}}}/{x{{eval:d;+}}}"
+				}
+			],
+			"conditions": ["a*d*d-b*d+c!=0"],
+			"correction": {
+				"steps": [
+					"Non : l'expression $\\dfrac{{{eval:ax^2+bx+c}}}{x{{eval:d;+}}}$ est le quotient d'un polynôme du second degré par une expression affine : ce n'est pas un polynôme."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression7}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression7",
+					"expression": "{{{eval:x^2+(p+q)*x+p*q}}}/{x{{eval:p;+}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Non : pour $x \\neq {{eval:-p}}$, $\\dfrac{{{eval:x^2+(p+q)*x+p*q}}}{x{{eval:p;+}}} = \\dfrac{\\left(x{{eval:p;+}}\\right)\\left(x{{eval:q;+}}\\right)}{x{{eval:p;+}}} = x{{eval:q;+}}$ : l'expression se ramène à un polynôme de degré 1, pas du second degré."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Cette expression est-elle celle d'un polynôme du second degré ?\n\n$${{expression8}}$$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "expression8",
+					"expression": "{{{eval:x^3+(p+q)*x^2+p*q*x}}}/{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Non : l'expression $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x}$ n'est pas définie pour $x = 0$ (on ne divise pas par $0$), alors qu'un polynôme est défini pour tout réel $x$.",
+					"Pour $x \\neq 0$, on peut simplifier par $x$ : $\\dfrac{{{eval:x^3+(p+q)*x^2+p*q*x}}}{x} = {{eval:x^2+(p+q)*x+p*q}}$. L'expression coïncide avec un polynôme du second degré sauf en $0$, mais ce n'est pas un polynôme."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "degré 3 : Non",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "1",
+				"d": "-3"
+			},
+			"description": "degré 3 : Oui refusé",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "-4",
+				"b": "0",
+				"c": "0"
+			},
+			"description": "ax²+bx+c : Oui",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "0",
+				"d": "3"
+			},
+			"description": "avec √x : Non",
+			"variationIndex": 2,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "0",
+				"d": "3"
+			},
+			"description": "avec √x : Oui refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "-4"
+			},
+			"description": "forme factorisée : Oui",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "-4"
+			},
+			"description": "forme factorisée : Non refusé",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-5",
+				"c": "1"
+			},
+			"description": "forme canonique : Oui",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-3",
+				"c": "0",
+				"d": "2"
+			},
+			"description": "quotient : Non",
+			"variationIndex": 5,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-3",
+				"c": "0",
+				"d": "2"
+			},
+			"description": "quotient : Oui refusé",
+			"variationIndex": 5,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct",
+				"constraintViolations": []
+			},
+			"variables": {
+				"p": "1",
+				"q": "1"
+			},
+			"description": "quotient simplifiable en degré 1 : Non",
+			"variationIndex": 6,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect",
+				"constraintViolations": []
+			},
+			"variables": {
+				"p": "-2",
+				"q": "-3"
+			},
+			"description": "quotient simplifiable en degré 1 : Oui refusé",
+			"variationIndex": 6,
+			"selectedChoices": [0]
+		},
+		{
+			"description": "quotient par x, non défini en 0 : Non",
+			"variationIndex": 7,
+			"variables": {
+				"p": "1",
+				"q": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "quotient par x, non défini en 0 : Oui refusé",
+			"variationIndex": 7,
+			"variables": {
+				"p": "-2",
+				"q": "-3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

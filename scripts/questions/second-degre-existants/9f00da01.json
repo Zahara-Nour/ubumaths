@@ -1,0 +1,345 @@
+{
+	"id": "9f00da01-a030-4697-8d69-20c380fa0b78",
+	"title": "Déterminer l'équation de l'axe de symétrie de la parabole",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 6,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"statement": "Détermine l'équation de l'axe de symétrie de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:a(x-h)^2+k}}$$\n\nL'axe de symétrie a pour équation $x=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "h",
+					"expression": "-5..5"
+				},
+				{
+					"name": "k",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{h}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme canonique $a(x-\\alpha)^2+\\beta$ avec $a = {{a}}$, $\\alpha = {{h}}$ et $\\beta = {{k}}$ : le sommet de la parabole est $S\\left({{h}}\\,;\\,{{k}}\\right)$.",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut|négatif, la parabole est tournée vers le bas}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{h}}, +inf\n\nvariation: f(x)\n  {{h}}: {{k}}, {{if:a>0|bottom|top}}\n```",
+					"L'axe de symétrie de la parabole est la droite verticale passant par le sommet : elle a pour équation $\\textcolor{{{color:primary.0}}}{x = {{h}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Détermine l'équation de l'axe de symétrie de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:ax^2+bx+c}}$$\n\nL'axe de symétrie a pour équation $x=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme développée $ax^2+bx+c$ avec $a = {{a}}$, $b = {{b}}$ et $c = {{c}}$. L'abscisse du sommet est :",
+					"$$\\alpha = \\dfrac{-b}{2a} = \\dfrac{ {{eval:-b}} }{ {{eval:2*a}} } = {{eval:-b/(2*a)}}$$",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut|négatif, la parabole est tournée vers le bas}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, {{if:a>0|bottom|top}}\n```",
+					"L'axe de symétrie de la parabole est la droite verticale passant par le sommet : elle a pour équation $\\textcolor{{{color:primary.0}}}{x = {{eval:-b/(2*a)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Détermine l'équation de l'axe de symétrie de la parabole qui représente la fonction $f$ définie sur $\\mathbb{R}$ par :\n\n$$f(x)={{eval:a(x-r)(x-s)}}$$\n\nL'axe de symétrie a pour équation $x=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..6"
+				},
+				{
+					"name": "s",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["r != s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r+s)/2}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f(x)$ est écrit sous la forme factorisée $a(x-x_1)(x-x_2)$ : les racines sont $x_1 = {{r}}$ et $x_2 = {{s}}$. La parabole est symétrique par rapport à la droite verticale passant par le milieu des racines, donc :",
+					"$$\\alpha = \\dfrac{x_1+x_2}{2} = \\dfrac{ {{r}} {{if:s!=0|{{eval:s;+}}}} }{2} = {{eval:(r+s)/2}}$$",
+					"Comme $a={{a}}$ est {{if:a>0|positif, la parabole est tournée vers le haut|négatif, la parabole est tournée vers le bas}} :",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:(r+s)/2}}, +inf\n\nvariation: f(x)\n  {{eval:(r+s)/2}}: {{eval:-a*(r-s)^2/4}}, {{if:a>0|bottom|top}}\n```",
+					"L'axe de symétrie de la parabole est la droite verticale passant par le sommet : elle a pour équation $\\textcolor{{{color:primary.0}}}{x = {{eval:(r+s)/2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "« x=-5 » ressaisi alors que « x = » est imprimé : refusé (limite connue)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "5"
+			},
+			"answers": ["x=-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme canonique : la valeur seule de α est acceptée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique, a<0 : α juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"h": "5",
+				"k": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique : erreur de signe sur α",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme canonique : β au lieu de α",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"h": "-5",
+				"k": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme canonique, a=1 et α=0 : f(x)=x²+3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "0",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme canonique, a=-1 et β=0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"h": "2",
+				"k": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "α non simplifié 4/2 : juste, perfectible",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "0"
+			},
+			"answers": ["\\frac{4}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "forme développée : α = -b/2a = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-8",
+				"c": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée : α fractionnaire",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"c": "-1"
+			},
+			"answers": ["-\\frac{1}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée : b/2a au lieu de -b/2a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-8",
+				"c": "1"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme développée, a=-1 : α = -b/2a",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"c": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée, b=0 : α=0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "-3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme factorisée : milieu des racines",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"r": "-3",
+				"s": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme factorisée : milieu en décimal",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"r": "-3",
+				"s": "4"
+			},
+			"answers": ["0.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme factorisée : demi-différence refusée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"r": "-3",
+				"s": "4"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme factorisée x(x-4) : α=2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "0",
+				"s": "4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
