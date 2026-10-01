@@ -26,7 +26,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
-	{ ignores: ['externe/**', 'static/upsilon-simulator/**'] },
+	{ ignores: ['extern/**', 'externe/**', 'static/upsilon-simulator/**'] },
 	...svelte.configs.base,
 	{
 		// `configs.base` pose le parseur Svelte mais laisse le `<script>` en JS :

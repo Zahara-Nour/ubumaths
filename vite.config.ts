@@ -70,6 +70,10 @@ export default defineConfig(async ({ mode }): Promise<ViteUserConfig> => {
 		server: {
 			fs: {
 				allow: ['..']
+			},
+			// Dépôts tiers de extern/ : jamais importés, inutile de les surveiller
+			watch: {
+				ignored: ['**/extern/**']
 			}
 		},
 

@@ -10,7 +10,9 @@ node_modules
 /build
 *.tsbuildinfo
 
-extern
+# Dépôts tiers clonés pour inspiration (pnpm extern:sync) : seule la liste est suivie
+/extern/*
+!/extern/repos.txt
 externe
 
 /data
