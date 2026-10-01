@@ -1,0 +1,197 @@
+{
+	"id": "d1648508-035e-4a2f-abce-87592365038f",
+	"title": "Factoriser une expression du second degré",
+	"grades": ["2"],
+	"theme": "Calcul littéral",
+	"domain": "Transformation",
+	"subdomain": "Identités remarquables",
+	"level": 9,
+	"delay": 30,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..9"
+			},
+			{
+				"name": "c",
+				"expression": "x|y|z"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "(u-v)^2",
+						"acceptable": "u*v"
+					},
+					"expectedAnswer": "({{c}}-{{a}})^2"
+				}
+			],
+			"statement": "Factorise.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "expression1",
+					"expression": "{{c}}^2-{{eval:2*a}}{{c}}+{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 {{c}}^2 - {{eval:2*a}}{{c}} + {{eval:a^2}}               &= {{c}}^2 - 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"requiredForm": {
+						"pattern": "(u+v)^2",
+						"acceptable": "u*v"
+					},
+					"expectedAnswer": "({{c}}+{{a}})^2"
+				}
+			],
+			"statement": "Factorise.\n\n$${{expression2}}$$",
+			"variables": [
+				{
+					"name": "expression2",
+					"expression": "{{c}}^2+{{eval:2*a}}{{c}}+{{eval:a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$$\\begin{align}                 {{c}}^2 + {{eval:2*a}}{{c}} + {{eval:a^2}}               &= {{c}}^2 + 2 \\times {{c}} \\times {{a}} + {{a}}^2 \\\\               &= {{solution}}                \\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["(z-7)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v0 carré de la différence",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(7-z)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v0 carré, binôme opposé : juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(z-7)(z-7)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v0 produit de deux facteurs égaux : perfectible",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["z^2-14z+49"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v0 recopie de l'énoncé : refusée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(z+7)^2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v0 erreur de signe : fausse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["(z+7)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v1 carré de la somme",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(7+z)^2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v1 carré, termes inversés : juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(z+7)(z+7)"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v1 produit de deux facteurs égaux : perfectible",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["z^2+14z+49"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v1 recopie de l'énoncé : refusée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(z-7)^2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7",
+				"c": "z|z"
+			},
+			"description": "v1 erreur de signe : fausse",
+			"variationIndex": 1
+		}
+	]
+}

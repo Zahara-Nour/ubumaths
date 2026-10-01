@@ -1,0 +1,172 @@
+{
+	"id": "f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709",
+	"title": "Vrai ou Faux sur les polynômes du second degré",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Vrai ou Faux",
+	"level": 1,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"choices": [
+			{
+				"content": "Vrai"
+			},
+			{
+				"content": "Faux"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "La courbe représentative d'un polynôme du second degré est une droite.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, la courbe représentative d'un polynôme du second degré est une parabole."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Un polynôme du second degré peut ne pas avoir de racine.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, c'est le cas lorsque la courbe représentative ne coupe ni ne touche l'axe des abscisses. Le discriminant est alors négatif."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Un polynôme du second degré peut n'avoir qu'une seule racine.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, c'est le cas lorsque la courbe représentative touche l'axe des abscisses sans le traverser (racine double). Le discriminant est alors nul."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Un polynôme du second degré a au maximum deux racines.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, la courbe représentative coupe l'axe des abscisses en au plus deux points. Il y a exactement deux racines lorsque le discriminant est strictement positif."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La forme factorisée permet de trouver les racines du polynôme.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, dans la forme factorisée $a(x-x_1)(x-x_2)$, les racines sont $x_1$ et $x_2$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La forme canonique permet de trouver les coordonnées du sommet de la parabole.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, dans la forme canonique $a(x-\\alpha)^2+\\beta$, les coordonnées du sommet de la parabole sont $(\\alpha \\,;\\, \\beta)$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "La courbe représentative d'un polynôme du second degré admet un axe de symétrie.",
+			"correction": {
+				"steps": [
+					"{{solution:html}}, la courbe représentative admet un axe de symétrie passant par le sommet de la parabole."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 1 : Faux",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "affirmation 1 : Vrai refusé",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 2 : Vrai",
+			"variationIndex": 1,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 3 : Vrai",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 4 : Vrai",
+			"variationIndex": 3,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 5 : Vrai",
+			"variationIndex": 4,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 6 : Vrai",
+			"variationIndex": 5,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {},
+			"description": "affirmation 7 : Vrai",
+			"variationIndex": 6,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {},
+			"description": "affirmation 4 : Faux refusé",
+			"variationIndex": 3,
+			"selectedChoices": [1]
+		}
+	]
+}

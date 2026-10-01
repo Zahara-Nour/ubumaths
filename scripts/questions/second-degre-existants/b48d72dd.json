@@ -1,0 +1,200 @@
+{
+	"id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
+	"title": "Déterminer le signe d'une expression du second degré",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 8,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"choices": [
+			{
+				"content": "positif"
+			},
+			{
+				"content": "négatif"
+			},
+			{
+				"content": "son signe dépend de la valeur de $x$"
+			}
+		],
+		"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$"
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est toujours positif et ${{a}} > 0$, donc ${{a}}(x{{eval:b;+}})^2 \\ge 0$.",
+					"On ajoute ${{c}} > 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\ge {{c}} > 0$. L'expression est **positive** pour tout $x$."
+				]
+			},
+			"correctChoiceIndex": ["0"]
+		},
+		{
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..-2"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un carré est toujours positif et ${{a}} < 0$, donc ${{a}}(x{{eval:b;+}})^2 \\le 0$.",
+					"On ajoute ${{c}} < 0$ : ${{a}}(x{{eval:b;+}})^2{{eval:c;+}} \\le {{c}} < 0$. L'expression est **négative** pour tout $x$."
+				]
+			},
+			"correctChoiceIndex": ["1"]
+		},
+		{
+			"statement": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:-(a)/abs(a)*k}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le terme ${{a}}(x{{eval:b;+}})^2$ est du signe de ${{a}}$ et s'annule pour $x = {{eval:-(b)}}$, alors que ${{c}}$ est de signe contraire.",
+					"L'expression change donc de signe : son signe dépend de la valeur de $x$."
+				]
+			},
+			"correctChoiceIndex": ["2"]
+		}
+	],
+	"testSpecs": [
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "a>0, c>0 : positif",
+			"variationIndex": 0,
+			"selectedChoices": [0]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "a>0, c>0 : négatif refusé",
+			"variationIndex": 0,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "5",
+				"c": "-1"
+			},
+			"description": "a<0, c<0 : négatif",
+			"variationIndex": 1,
+			"selectedChoices": [1]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "5",
+				"c": "-1"
+			},
+			"description": "a<0, c<0 : dépend de x refusé",
+			"variationIndex": 1,
+			"selectedChoices": [2]
+		},
+		{
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "-2",
+				"k": "2"
+			},
+			"description": "a>0, c<0 : dépend de x",
+			"variationIndex": 2,
+			"selectedChoices": [2]
+		},
+		{
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-5",
+				"c": "3",
+				"k": "3"
+			},
+			"description": "a<0, c>0 : positif refusé",
+			"variationIndex": 2,
+			"selectedChoices": [0]
+		}
+	]
+}

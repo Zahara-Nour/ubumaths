@@ -1,0 +1,124 @@
+{
+	"id": "1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+	"title": "Déterminer les racines d'un polynôme du second degré",
+	"description": "Le polynôme n'est pas complètement factorisé",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 4,
+	"delay": 20,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "2..5;±"
+			},
+			{
+				"name": "b",
+				"expression": "1..5;±"
+			},
+			{
+				"name": "c",
+				"expression": "1..5;±"
+			}
+		],
+		"conditions": ["abs(b) != abs(c)"]
+	},
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-(c)}}"
+				}
+			],
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$({{a}}x{{eval:a*(b);+}})(x{{eval:c;+}})$$\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le premier facteur, $({{a}}x{{eval:a*(b);+}}) = {{a}}(x{{eval:b;+}})$.",
+					"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
+					"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-(c)}}"
+				}
+			],
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$$(x{{eval:b;+}})({{a}}x{{eval:a*(c);+}})$$\n\nLes racines sont $?$ et $?$.",
+			"correction": {
+				"steps": [
+					"Le polynôme n'est **pas** complètement factorisé : on factorise ${{a}}$ dans le second facteur, $({{a}}x{{eval:a*(c);+}}) = {{a}}(x{{eval:c;+}})$.",
+					"La forme factorisée est ${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$.",
+					"Les racines sont donc ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-5", "-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "v1 racines",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-25", "-2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "v1 racine -a*b du facteur non factorisé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4", "-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"c": "-4"
+			},
+			"description": "v2 racines ordre libre",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1", "-4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"c": "-4"
+			},
+			"description": "v2 erreur de signe",
+			"variationIndex": 1
+		}
+	]
+}

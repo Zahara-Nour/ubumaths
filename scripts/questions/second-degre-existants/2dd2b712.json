@@ -1,0 +1,96 @@
+{
+	"id": "2dd2b712-3687-4910-ab92-378c46125129",
+	"title": "Trouver une racine évidente d'un polynôme",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 2,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"rulesSuffice": true,
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Trouve une racine évidente de ce polynôme :\n\n$$x^2{{eval:-(a+(b));+}}x{{eval:(a)*(b);+}}$$\n\nUne racine évidente est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±!a"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{a}}$ dans le polynôme :",
+					"${{eval:a;()}}^2 {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b));+}} \\times {{eval:a;()}}}} {{eval:(a)*(b);+}} = {{eval:(a)^2}} {{if:{{b}} + ({{a}}) != 0|{{eval:-(a+(b))*(a);+}}}} {{eval:(a)*(b);+}} = {{eval:(a)^2-(a+(b))*(a)+(a)*(b)}}$.",
+					"Le résultat est nul : ${{a}}$ est une racine évidente de ce polynôme (${{b}}$ en est une autre)."
+				]
+			},
+			"validationRules": [
+				{
+					"type": "equation_root",
+					"equation": "(x)^2-({{a}}+({{b}}))*(x)+({{a}})*({{b}})=0",
+					"variable": "x"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "racine a",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "autre racine b acceptée",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "3"
+			},
+			"description": "racine négative",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"description": "opposé d'une racine refusé",
+			"variationIndex": 0
+		}
+	]
+}

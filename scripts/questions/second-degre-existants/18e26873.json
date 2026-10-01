@@ -1,0 +1,103 @@
+{
+	"id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+	"title": "Déterminer les racines d'un polynôme du second degré",
+	"description": "À l'aide de la forme factorisée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Racines",
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-(c)}}"
+				}
+			],
+			"statement": "Détermine les racines de ce polynôme du second degré.\n\n$${{a}}(x{{eval:b;+}})(x{{eval:c;+}})$$\n\nLes racines sont $?$ et $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["abs(b) != abs(c)"],
+			"correction": {
+				"steps": [
+					"Un produit de facteurs est nul si et seulement si l'un de ses facteurs est nul ($a = {{a}} \\ne 0$) :",
+					"$x{{eval:b;+}} = 0$ ou $x{{eval:c;+}} = 0$, donc les racines sont ${{eval:-(b)}}$ et ${{eval:-(c)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-5", "-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "racines dans l'ordre",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2", "-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "racines dans l'autre ordre",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5", "2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "erreur de signe",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1", "1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "-1",
+				"c": "4"
+			},
+			"description": "racine répétée",
+			"variationIndex": 0
+		}
+	]
+}

@@ -1,0 +1,95 @@
+{
+	"id": "9f00da01-a030-4697-8d69-20c380fa0b78",
+	"title": "Déterminer l'équation de l'axe de symétrie de la parabole",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 6,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "x={{eval:-(b)}}"
+				}
+			],
+			"statement": "Détermine l'équation de l'axe de symétrie de la parabole qui représente ce polynôme du second degré.\n\n$${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$$\n\nL'équation est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Cette expression est la forme canonique $a(x-\\alpha)^2+\\beta$ avec $a = {{a}}$, $\\alpha = {{eval:-(b)}}$ et $\\beta = {{c}}$.",
+					"L'axe de symétrie de la parabole est la droite verticale passant par le sommet, d'équation $\\textcolor{{{color:primary.0}}}{x = {{eval:-(b)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["x=-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "équation juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x=5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-5",
+				"c": "1"
+			},
+			"description": "équation juste, b<0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["x=5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "erreur de signe",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["y=2"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "2"
+			},
+			"description": "y = beta au lieu de x = alpha",
+			"variationIndex": 0
+		}
+	]
+}

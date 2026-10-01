@@ -1,0 +1,98 @@
+{
+	"id": "56b1803f-f707-49a9-a0b7-3e6b8220f2d7",
+	"title": "Déterminer les coordonnées du sommet",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"subdomain": "Apprivoiser",
+	"level": 5,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b)}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"statement": "Détermine les coordonnées du sommet $S$ de la parabole qui représente ce polynôme du second degré.\n\n$${{a}}(x{{eval:b;+}})^2{{eval:c;+}}$$\n\n$S\\left( \\, ? \\, ; \\, ? \\, \\right)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Cette expression est la forme canonique $a(x-\\alpha)^2+\\beta$ avec $a = {{a}}$, $\\alpha = {{eval:-(b)}}$ et $\\beta = {{c}}$.",
+					"Le sommet de la parabole est donc $S\\left( \\textcolor{{{color:primary.0}}}{{{eval:-(b)}}} \\,;\\, \\textcolor{{{color:primary.0}}}{{{c}}} \\right)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-5", "5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "sommet juste, b>0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5", "1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-5",
+				"c": "1"
+			},
+			"description": "sommet juste, b<0",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["5", "5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"c": "5"
+			},
+			"description": "erreur de signe sur l'abscisse",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2", "4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-4",
+				"c": "-2"
+			},
+			"description": "coordonnées inversées",
+			"variationIndex": 0
+		}
+	]
+}
