@@ -218,3 +218,52 @@ v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9   rouge   nom=v`;
 		expect(screen.container.querySelectorAll('.courbe-terme').length).toBe(20);
 	});
 });
+
+describe('Courbe — escalier (lot 0 des suites 1re spé)', () => {
+	const ESCALIER = `x: 0 ; 7
+y: 0 ; 7
+u(0) = 0.5 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 4   rouge   escalier termes   nom=C_f`;
+
+	it('autant de traits que la scène : relation, y = x, escalier, rappels, rangs', async () => {
+		const node = parseCourbeContent(ESCALIER);
+		const st = buildCourbeScene(node.spec!).sequences[0].staircase!;
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const el = screen.container;
+		expect(el.querySelectorAll('.courbe-relation').length).toBe(st.curve.length);
+		expect(el.querySelectorAll('.courbe-diagonale').length).toBe(1);
+		expect(el.querySelectorAll('.courbe-escalier').length).toBe(st.steps.length);
+		expect(el.querySelectorAll('.courbe-rappel').length).toBe(4);
+		expect(el.querySelectorAll('.courbe-terme').length).toBe(0);
+		const ranks = [...el.querySelectorAll('.courbe-rang')].map((r) => r.textContent);
+		expect(ranks).toEqual(['u0', 'u1', 'u2', 'u3']);
+	});
+
+	it('l’escalier est VISIBLE : trait coloré, sans remplissage, non vide', async () => {
+		const node = parseCourbeContent(ESCALIER);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		for (const selector of ['.courbe-escalier', '.courbe-relation', '.courbe-diagonale']) {
+			const line = screen.container.querySelector(selector) as SVGPolylineElement;
+			const style = getComputedStyle(line);
+			expect(style.fill).toBe('none');
+			expect(style.stroke).not.toBe('none');
+			expect(Number.parseFloat(style.strokeWidth)).toBeGreaterThan(0);
+			expect(line.getBoundingClientRect().width).toBeGreaterThan(0);
+		}
+	});
+
+	it('les rangs restent DANS le dessin, même axe des abscisses en bas', async () => {
+		const node = parseCourbeContent(ESCALIER);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg')!.getBoundingClientRect();
+		for (const rank of screen.container.querySelectorAll('.courbe-rang')) {
+			expect(rank.getBoundingClientRect().bottom).toBeLessThanOrEqual(svg.bottom + 0.5);
+		}
+	});
+
+	it('aria-label mentionne l’escalier', async () => {
+		const node = parseCourbeContent(ESCALIER);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]');
+		expect(svg!.getAttribute('aria-label')).toBe('Escalier de la suite u, x de 0 à 7');
+	});
+});

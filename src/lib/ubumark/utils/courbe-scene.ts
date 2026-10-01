@@ -21,6 +21,7 @@ import type {
 	CourbeFunction,
 	CourbeIssue,
 	CourbeLabel,
+	CourbeSequence,
 	CourbeSize,
 	CourbeSpec,
 	CourbeWindow
@@ -30,6 +31,7 @@ import type { ContentLocale } from '$lib/types/locale';
 import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
 import { sampleFunction } from '$lib/geometry-core/viewport/sampler';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
+import { computeCobwebPath, createRecurrenceFunctionEvaluator } from '$lib/grapheur/sequence';
 
 // ============================================================================
 // TYPES
@@ -54,12 +56,27 @@ export interface SceneEndpoint extends ScenePoint {
 	color: CourbeColor;
 }
 
-/** Suite : un disque par terme visible (n ; u_n), points non reliés */
+/** Escalier d'une récurrence, dans le repère (u_n ; u_{n+1}) */
+export interface SceneStaircase {
+	/** Courbe de la relation f, découpée à la fenêtre */
+	curve: ScenePoint[][];
+	/** Droite y = x, découpée à la fenêtre */
+	diagonal: ScenePoint[][];
+	/** Escalier (u_0 ; 0) → (u_0 ; u_1) → (u_1 ; u_1) → …, découpé à la fenêtre */
+	steps: ScenePoint[][];
+	/** Option `termes` : rappels de (u_k ; u_k) à l'axe des abscisses, k ≥ 1 */
+	guides: { from: ScenePoint; to: ScenePoint }[];
+	/** Option `termes` : étiquettes u_k sous l'axe, sans chevauchement */
+	termLabels: { n: number; x: number }[];
+}
+
+/** Suite : un disque par terme visible (n ; u_n), points non reliés — ou un escalier */
 export interface SceneSequence {
 	name: string;
 	color: CourbeColor;
-	/** Termes visibles, par rang croissant */
+	/** Termes visibles, par rang croissant (vide pour un escalier) */
 	terms: ScenePoint[];
+	staircase: SceneStaircase | null;
 }
 
 export interface SceneTick {
@@ -119,6 +136,17 @@ const SAMPLE_COUNT = 300;
 const AREA_SAMPLES = 120;
 
 const EPSILON = 1e-9;
+
+/**
+ * Écart minimal entre deux étiquettes u_k de l'escalier, en fraction de la
+ * largeur : une étiquette fait ~16 px à l'écran, ~0,3 cm dans le PDF, donc une
+ * part plus grande d'une petite figure.
+ */
+const TERM_LABEL_GAP: Record<CourbeSize, number> = {
+	petite: 0.07,
+	moyenne: 0.05,
+	grande: 0.04
+};
 
 // ============================================================================
 // NOMBRES
@@ -242,10 +270,19 @@ function drawnInterval(fn: CourbeFunction, w: CourbeWindow): [number, number] | 
 function sampleCurve(fn: CourbeFunction, w: CourbeWindow): ScenePoint[][] {
 	const interval = drawnInterval(fn, w);
 	if (interval === null) return [];
-	const evaluate = evaluatorOf(fn);
+	return samplePieces(evaluatorOf(fn), interval[0], interval[1], w);
+}
+
+/** Courbe d'un évaluateur sur [xMin ; xMax], coupée aux discontinuités et à la fenêtre. */
+function samplePieces(
+	evaluate: (x: number) => number | null,
+	xMin: number,
+	xMax: number,
+	w: CourbeWindow
+): ScenePoint[][] {
 	const sampled = sampleFunction(
 		evaluate,
-		{ xMin: interval[0], xMax: interval[1], yMin: w.yMin, yMax: w.yMax },
+		{ xMin, xMax, yMin: w.yMin, yMax: w.yMax },
 		SAMPLE_COUNT
 	);
 	// Coupe aux discontinuités repérées par le sampler…
@@ -319,6 +356,63 @@ function labelAnchor(
 }
 
 // ============================================================================
+// ESCALIER
+// ============================================================================
+
+/**
+ * Escalier d'une récurrence : chemin du grapheur (`computeCobwebPath`),
+ * courbe de f, droite y = x et, avec `termes`, rappels et étiquettes.
+ * @returns l'escalier, et s'il sort de la fenêtre (avertissement)
+ */
+function staircaseOf(
+	seq: CourbeSequence,
+	terms: CourbeSequence['terms'],
+	w: CourbeWindow,
+	xAxisY: number,
+	size: CourbeSize,
+	withDiagonal: boolean,
+	inside: (x: number, y: number) => boolean
+): { staircase: SceneStaircase; clipped: boolean } {
+	const relation = seq.staircase!.relation;
+	// Le chemin du grapheur part de (u0 ; 0) : ici, de l'axe tel qu'il est dessiné
+	const path = computeCobwebPath(terms).map((p, i) => ({
+		x: clean(p.x),
+		y: i === 0 ? xAxisY : clean(p.y)
+	}));
+	const curve = samplePieces(createRecurrenceFunctionEvaluator(relation), w.xMin, w.xMax, w);
+	const lo = Math.max(w.xMin, w.yMin);
+	const hi = Math.min(w.xMax, w.yMax);
+	const diagonal =
+		withDiagonal && lo < hi
+			? [
+					[
+						{ x: lo, y: lo },
+						{ x: hi, y: hi }
+					]
+				]
+			: [];
+
+	const guides: SceneStaircase['guides'] = [];
+	const termLabels: SceneStaircase['termLabels'] = [];
+	if (seq.staircase!.showTerms) {
+		const gap = (TERM_LABEL_GAP[size] ?? TERM_LABEL_GAP.moyenne) * (w.xMax - w.xMin);
+		terms.forEach((t, k) => {
+			const v = clean(t.value);
+			if (k > 0 && inside(v, v)) guides.push({ from: { x: v, y: v }, to: { x: v, y: xAxisY } });
+			const onAxis = v >= w.xMin - EPSILON && v <= w.xMax + EPSILON;
+			if (onAxis && termLabels.every((l) => Math.abs(l.x - v) >= gap)) {
+				termLabels.push({ n: t.n, x: v });
+			}
+		});
+	}
+
+	return {
+		staircase: { curve, diagonal, steps: clipPolyline(path, w), guides, termLabels },
+		clipped: path.some((p) => !inside(p.x, p.y))
+	};
+}
+
+// ============================================================================
 // AIRES
 // ============================================================================
 
@@ -350,19 +444,24 @@ function joinNames(names: string[]): string {
 function defaultAriaLabel(spec: CourbeSpec): string {
 	const range = `x de ${formatTick(spec.window.xMin)} à ${formatTick(spec.window.xMax)}`;
 	const names = spec.functions.map((f) => f.name);
-	const sequenceNames = (spec.sequences ?? []).map((s) => s.name);
+	const sequences = spec.sequences ?? [];
+	const cloudNames = sequences.filter((s) => !s.staircase).map((s) => s.name);
+	const staircaseNames = sequences.filter((s) => s.staircase).map((s) => s.name);
 	const parts: string[] = [];
 	if (names.length > 0) {
-		parts.push(`${names.length === 1 ? 'Courbe de' : 'Courbes de'} ${joinNames(names)}`);
+		parts.push(`${names.length === 1 ? 'courbe de' : 'courbes de'} ${joinNames(names)}`);
 	}
-	if (sequenceNames.length > 0) {
-		const head = sequenceNames.length === 1 ? 'suite' : 'suites';
+	if (cloudNames.length > 0) {
+		parts.push(`${cloudNames.length === 1 ? 'suite' : 'suites'} ${joinNames(cloudNames)}`);
+	}
+	if (staircaseNames.length > 0) {
 		parts.push(
-			`${parts.length === 0 ? head[0].toUpperCase() + head.slice(1) : head} ${joinNames(sequenceNames)}`
+			`${staircaseNames.length === 1 ? 'escalier de la suite' : 'escaliers des suites'} ${joinNames(staircaseNames)}`
 		);
 	}
 	if (parts.length === 0) return `Repère, ${range}`;
-	return `${parts.join(' et ')}, ${range}`;
+	const text = parts.join(' et ');
+	return `${text[0].toUpperCase()}${text.slice(1)}, ${range}`;
 }
 
 // ============================================================================
@@ -479,6 +578,37 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 	for (const seq of (input.sequences ?? []).slice(0, COURBE_LIMITS.sequences)) {
 		const terms = seq.terms.slice(0, Math.min(COURBE_LIMITS.sequenceTerms, termsLeft));
 		termsLeft -= terms.length;
+		if (seq.staircase) {
+			// Une seule droite y = x, même avec plusieurs escaliers
+			const withDiagonal = !sequences.some((s) => s.staircase !== null);
+			const { staircase, clipped } = staircaseOf(
+				seq,
+				terms,
+				w,
+				xAxisY,
+				input.size,
+				withDiagonal,
+				inside
+			);
+			if (staircase.curve.length === 0) {
+				warnings.push({
+					message: `Ligne ${seq.line} : la courbe de la relation de ${seq.name} n'apparaît pas dans la fenêtre`,
+					line: seq.line
+				});
+			}
+			if (clipped) {
+				warnings.push({
+					message: `Ligne ${seq.line} : l'escalier de ${seq.name} sort de la fenêtre, il est coupé au bord`,
+					line: seq.line
+				});
+			}
+			sequences.push({ name: seq.name, color: seq.color, terms: [], staircase });
+			// Nom : sur la courbe de la relation, tracée en noir (l'escalier porte la couleur)
+			const anchor = seq.label ? labelAnchor(staircase.curve, points, w) : null;
+			if (seq.label && anchor)
+				curveLabels.push({ label: seq.label, x: anchor.x, y: anchor.y, color: 'noir' });
+			continue;
+		}
 		const visible: ScenePoint[] = [];
 		const hidden: number[] = [];
 		for (const t of terms) {
@@ -495,7 +625,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 				line: seq.line
 			});
 		}
-		sequences.push({ name: seq.name, color: seq.color, terms: visible });
+		sequences.push({ name: seq.name, color: seq.color, terms: visible, staircase: null });
 		// Nom de la suite : près du dernier terme visible
 		const last = visible[visible.length - 1];
 		if (seq.label && last)
