@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : phase 0 — questions, tour 1 posé (aucun code écrit)
+## État : phase 0 — tour 1 tranché, tour 2 posé (aucun code écrit)
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -29,8 +29,27 @@ Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré l
 
 ## Décisions de David
 
-(aucune pour l'instant)
+Tour 1 (2026-10-01) — toutes les recommandations suivies :
+
+1. **Vocabulaire** : « Série statistique » (toujours avec l'adjectif), distincte de « Série »
+   (questions). Code : `Dataset` (valeurs brutes), `FrequencyTable` (valeurs + effectifs) ;
+   jamais `series` pour des données.
+2. **Lots, dans l'ordre** : (1) module `src/lib/statistics/` + rebrancher `describeList` et
+   `.stats` + corriger la doc périmée ; (2) blocs barres + circulaire ; (3) histogramme +
+   polygone des fréquences cumulées ; (4) tableau croisé (totaux, fréquences conditionnelles et
+   marginales) ; (5) atelier ; (6) variable aléatoire finie (loi, E, V, σ), **sans binomiale**.
+   **Boîte à moustaches hors périmètre.**
+3. **Quartiles / déciles** : définition du programme de 2de (Q1 = plus petite valeur telle
+   qu'au moins 25 % des données lui soient ≤ ; Q3 à 75 %, D1/D9 idem), étendue aux séries à
+   effectifs par les fréquences cumulées. Médiane usuelle, jamais appelée « Q2 ». L'UI et la
+   doc disent « définition du programme » (≠ calculatrices TI/Casio).
+4. **Un bloc par diagramme**, noms français, grammaire des lignes de données partagée.
+5. **Atelier : pas de nouvel objet** — deux listes appariées (valeurs + effectifs), comme
+   `scatter:M` ; classes = bornes (n+1) + effectifs (n), reportables après le lot 5.
+6. **Diagrammes de l'atelier dans la vue Données**, même composant SVG que le bloc ; le
+   grapheur garde nuage et ajustement.
+7. **Pas de simulation** dans ce chantier.
 
 ## Questions ouvertes
 
-Tour 1 : voir la conversation du 2026-10-01 (Q1 à Q7) — à reporter ici une fois tranchées.
+Tour 2 (posé le 2026-10-01) : syntaxe des blocs des lots 2-4, contenu du lot 1, arrondis.
