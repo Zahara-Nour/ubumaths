@@ -1,0 +1,326 @@
+{
+	"title": "Calculer le discriminant",
+	"description": "Δ = b² − 4ac, coefficients entiers",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Discriminant",
+	"level": 1,
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx+c}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*a*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+c}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-4*a*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b=0$ (pas de terme en $x$) et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= 0^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:-4*a*c}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$. Ici $a={{a}}$, $b={{b}}$ et $c=0$ (pas de terme constant).",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times 0 \\\\ &= {{eval:b^2}}\\end{align}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{c}}{{eval:bx;+}}{{eval:ax^2;+}}$.\n\n$\\Delta=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b^2-4*a*c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les termes ne sont pas dans l'ordre habituel : on repère le coefficient de chaque terme. $a={{a}}$ (devant $x^2$), $b={{b}}$ (devant $x$) et $c={{c}}$ (terme constant).",
+					"Le discriminant de $ax^2+bx+c$ est $\\Delta=b^2-4ac$.",
+					"$$\\begin{align}\\Delta &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Δ de 2x^2-3x-5 = 49",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ de -x^2+4x-4 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "4",
+				"c": "-4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ de 3x^2+x+7 = -83",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["-83"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "b² + 4ac au lieu de b² − 4ac",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"answers": ["-31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−b² au lieu de (−3)² (= −9 + 40)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"answers": ["31"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non terminé : 9+40",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"answers": ["9+40"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "Δ de 3x^2-2 = 24",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ de -x^2-4 = -16",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"c": "-4"
+			},
+			"answers": ["-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "b pris égal à 1 : 1−4ac",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"c": "-2"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Δ de -2x^2+5x = 25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "5"
+			},
+			"answers": ["25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ de 4x^2-3x = 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "-3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−b² au lieu de b²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "5"
+			},
+			"answers": ["-25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "désordre : Δ de -3x^2+2x+5 = 64",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a et c échangés n'y changent rien (−4ac symétrique) : 4 + 60",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["64"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "b et c confondus : 5² − 4×(−3)×2 = 49",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "5"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

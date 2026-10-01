@@ -1,0 +1,394 @@
+{
+	"title": "Calculer les racines avec le discriminant (valeurs exactes)",
+	"description": "Δ non carré parfait : racines avec radical simplifié",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Discriminant",
+	"level": 4,
+	"delay": 90,
+	"options": {
+		"orderIndependent": true
+	},
+	"variations": [
+		{
+			"statement": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant. Donne leurs valeurs exactes, avec un radical simplifié.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..3"
+				},
+				{
+					"name": "r",
+					"expression": "2|3|5|6|7"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*p"
+				},
+				{
+					"name": "c",
+					"expression": "eval:p^2-q^2*r"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}-{{eval:q*sqrt(r)}}"
+				},
+				{
+					"expectedAnswer": "{{p}}+{{eval:q*sqrt(r)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : deux racines. $\\Delta$ n'est pas un carré parfait ; on simplifie sa racine : $\\sqrt{\\Delta}=\\sqrt{ {{eval:b^2-4*a*c}} }={{eval:sqrt(b^2-4*a*c)}}$.",
+					"$$\\begin{align}x_1 &= \\dfrac{-b-\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}-{{eval:sqrt(b^2-4*a*c)}} }{2} = {{p}}-{{eval:q*sqrt(r)}} \\\\ x_2 &= \\dfrac{-b+\\sqrt{\\Delta}}{2a} = \\dfrac{ {{eval:-b}}+{{eval:sqrt(b^2-4*a*c)}} }{2} = {{p}}+{{eval:q*sqrt(r)}}\\end{align}$$",
+					"On a divisé chaque terme du numérateur par $2$."
+				]
+			}
+		},
+		{
+			"statement": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant. Donne leurs valeurs exactes, chacune sous la forme d'une seule fraction.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1|3|5|7"
+				},
+				{
+					"name": "s",
+					"expression": "1|1|3"
+				},
+				{
+					"name": "r",
+					"expression": "5|13|17"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-m"
+				},
+				{
+					"name": "c",
+					"expression": "eval:(m^2-s^2*r)/4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\dfrac{ {{m}}-{{eval:s*sqrt(r)}} }{2}"
+				},
+				{
+					"expectedAnswer": "\\dfrac{ {{m}}+{{eval:s*sqrt(r)}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$, puis on calcule le discriminant.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"$\\Delta>0$ : deux racines. $\\Delta$ n'est pas un carré parfait : $\\sqrt{\\Delta}=\\sqrt{ {{eval:b^2-4*a*c}} }{{if:s>1|={{eval:sqrt(b^2-4*a*c)}}|}}$ n'est pas un entier : on le garde sous forme de radical simplifié.",
+					"$$\\begin{align}x_1 &= \\dfrac{-b-\\sqrt{\\Delta}}{2a} = \\dfrac{ {{m}}-{{eval:s*sqrt(r)}} }{2} \\\\ x_2 &= \\dfrac{-b+\\sqrt{\\Delta}}{2a} = \\dfrac{ {{m}}+{{eval:s*sqrt(r)}} }{2}\\end{align}$$",
+					"$-b={{m}}$ est impair : la fraction ne se simplifie pas."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x^2-2x-2 : 1±√3",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["1-\\sqrt{3}", "1+\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "√3+1 et −√3+1 (ordre des termes)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["-\\sqrt{3}+1", "\\sqrt{3}+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "racines dans l'autre ordre",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["1+\\sqrt{3}", "1-\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "non simplifiée : (2±√12)/2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["\\frac{2-\\sqrt{12}}{2}", "\\frac{2+\\sqrt{12}}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		},
+		{
+			"description": "valeurs approchées −0,73 et 2,73",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["-0{,}73", "2{,}73"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−1±√3 (signe de b oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"q": "1",
+				"r": "3",
+				"a": "1",
+				"b": "-2",
+				"c": "-2"
+			},
+			"answers": ["-1-\\sqrt{3}", "-1+\\sqrt{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x^2+4x-4 : −2±2√2",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-2",
+				"q": "2",
+				"r": "2",
+				"a": "1",
+				"b": "4",
+				"c": "-4"
+			},
+			"answers": ["-2-2\\sqrt{2}", "-2+2\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "radical non simplifié −2±√8",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-2",
+				"q": "2",
+				"r": "2",
+				"a": "1",
+				"b": "4",
+				"c": "-4"
+			},
+			"answers": ["-2-\\sqrt{8}", "-2+\\sqrt{8}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		},
+		{
+			"description": "2√2−2 (ordre des termes)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-2",
+				"q": "2",
+				"r": "2",
+				"a": "1",
+				"b": "4",
+				"c": "-4"
+			},
+			"answers": ["-2-2\\sqrt{2}", "2\\sqrt{2}-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−2±4√2 (√Δ non divisé par 2)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "-2",
+				"q": "2",
+				"r": "2",
+				"a": "1",
+				"b": "4",
+				"c": "-4"
+			},
+			"answers": ["-2-4\\sqrt{2}", "-2+4\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x^2-3x+1 : (3±√5)/2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"r": "5",
+				"a": "1",
+				"b": "-3",
+				"c": "1"
+			},
+			"answers": ["\\frac{3-\\sqrt{5}}{2}", "\\frac{3+\\sqrt{5}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "dfrac et \\sqrt5 sans accolades",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"r": "5",
+				"a": "1",
+				"b": "-3",
+				"c": "1"
+			},
+			"answers": ["\\dfrac{3-\\sqrt5}{2}", "\\dfrac{3+\\sqrt5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(3±√5)/4 (division par 4)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"r": "5",
+				"a": "1",
+				"b": "-3",
+				"c": "1"
+			},
+			"answers": ["\\frac{3-\\sqrt{5}}{4}", "\\frac{3+\\sqrt{5}}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−3±√5)/2 (signe de b oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"r": "5",
+				"a": "1",
+				"b": "-3",
+				"c": "1"
+			},
+			"answers": ["\\frac{-3-\\sqrt{5}}{2}", "\\frac{-3+\\sqrt{5}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "deux fractions 3/2 − √5/2 : pas une seule fraction",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3",
+				"s": "1",
+				"r": "5",
+				"a": "1",
+				"b": "-3",
+				"c": "1"
+			},
+			"answers": ["\\frac{3}{2}-\\frac{\\sqrt{5}}{2}", "\\frac{3}{2}+\\frac{\\sqrt{5}}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		},
+		{
+			"description": "x^2-x-11 : (1±3√5)/2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "1",
+				"s": "3",
+				"r": "5",
+				"a": "1",
+				"b": "-1",
+				"c": "-11"
+			},
+			"answers": ["\\frac{1-3\\sqrt{5}}{2}", "\\frac{1+3\\sqrt{5}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "radical non simplifié (1±√45)/2",
+			"variationIndex": 1,
+			"variables": {
+				"m": "1",
+				"s": "3",
+				"r": "5",
+				"a": "1",
+				"b": "-1",
+				"c": "-11"
+			},
+			"answers": ["\\frac{1-\\sqrt{45}}{2}", "\\frac{1+\\sqrt{45}}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		}
+	]
+}

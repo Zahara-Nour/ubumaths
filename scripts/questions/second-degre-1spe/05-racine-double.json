@@ -1,0 +1,262 @@
+{
+	"title": "Calculer la racine double",
+	"description": "Δ = 0 : x₀ = −b/(2a)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Discriminant",
+	"level": 5,
+	"delay": 45,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Calcule le discriminant du polynôme $P(x)={{eval:ax^2+bx+c}}$, puis détermine sa racine.\n\n$\\Delta=?$ et la racine est $x_0=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*r"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r^2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= 0\\end{align}$$",
+					"$\\Delta=0$ : le polynôme a une seule racine, dite **racine double**.",
+					"$$x_0=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Calcule le discriminant du polynôme $P(x)={{eval:ax^2+bx+c}}$, puis détermine sa racine.\n\n$\\Delta=?$ et la racine est $x_0=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "1|-1"
+				},
+				{
+					"name": "p",
+					"expression": "2|3"
+				},
+				{
+					"name": "q",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:k*p^2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*k*p*q"
+				},
+				{
+					"name": "c",
+					"expression": "eval:k*q^2"
+				}
+			],
+			"conditions": ["mod(q,p) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On identifie $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2}}{{eval:-4*a*c;+}} \\\\ &= 0\\end{align}$$",
+					"$\\Delta=0$ : le polynôme a une seule racine, dite **racine double**.",
+					"$$x_0=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x^2+12x+18 : Δ=0, x0=-3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"b": "12",
+				"c": "18"
+			},
+			"answers": ["0", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-x^2+8x-16 : Δ=0, x0=4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "4",
+				"b": "8",
+				"c": "-16"
+			},
+			"answers": ["0", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x0 = b/(2a) (signe oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"b": "12",
+				"c": "18"
+			},
+			"answers": ["0", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x0 = −b/a (2 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"b": "12",
+				"c": "18"
+			},
+			"answers": ["0", "-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Δ faux (b²+4ac), racine juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"b": "12",
+				"c": "18"
+			},
+			"answers": ["288", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4x^2-12x+9 : x0=3/2",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"a": "4",
+				"b": "-12",
+				"c": "9"
+			},
+			"answers": ["0", "\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-9x^2-12x-4 : x0=-2/3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-1",
+				"p": "3",
+				"q": "-2",
+				"a": "-9",
+				"b": "-12",
+				"c": "-4"
+			},
+			"answers": ["0", "-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x0 = 3/2 écrit 1,5",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"a": "4",
+				"b": "-12",
+				"c": "9"
+			},
+			"answers": ["0", "1{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x0 = 12/8 non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"a": "4",
+				"b": "-12",
+				"c": "9"
+			},
+			"answers": ["0", "\\frac{12}{8}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "x0 = −3/2 (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"p": "2",
+				"q": "3",
+				"a": "4",
+				"b": "-12",
+				"c": "9"
+			},
+			"answers": ["0", "-\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
