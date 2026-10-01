@@ -135,6 +135,14 @@ export {
 	isCourbeBlockStart
 } from './courbe-parser';
 
+// Blocs ```barres, ```circulaire
+export {
+	parseStatChart,
+	parseStatChartContent,
+	findStatChartBlocks,
+	isStatChartBlockStart
+} from './stat-chart-parser';
+
 // Bloc ```figure
 export {
 	parseFigure,

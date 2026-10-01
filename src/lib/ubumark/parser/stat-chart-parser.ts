@@ -276,7 +276,9 @@ function checkWhole(
 export function parseStatChartContent(kind: StatChartKind, source: string): StatChartNode {
 	const errors: StatChartIssue[] = [];
 	const data: StatChartDatum[] = [];
-	let unit: { value: StatChartUnit; line: number } | null = null;
+	// `as` : affectée dans le rappel de `forEach`, que TypeScript ne suit pas
+	// (sans lui, `unit` resterait typée `null` après la boucle)
+	let unit = null as { value: StatChartUnit; line: number } | null;
 	const seenOptions = new Set<OptionKey>();
 	const options: Options = {
 		title: null,

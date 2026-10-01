@@ -49,3 +49,5 @@ export { generateNumberLineTypst } from './number-line-typst';
 export type { NumberLineTypstOptions } from './number-line-typst';
 export { generateCourbeTypst } from './courbe-typst';
 export type { CourbeTypstOptions } from './courbe-typst';
+export { generateStatChartTypst } from './stat-chart-typst';
+export type { StatChartTypstOptions } from './stat-chart-typst';

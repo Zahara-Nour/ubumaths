@@ -35,6 +35,7 @@
 	import TrigCircle from './TrigCircle.svelte';
 	import Courbe from './Courbe.svelte';
 	import FigureBlock from './FigureBlock.svelte';
+	import StatChart from './StatChart.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -42,6 +43,7 @@
 	import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
 	import type { CourbeNode } from '$lib/ubumark/types/courbe';
 	import type { FigureNode } from '$lib/ubumark/types/figure';
+	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
 
 	interface Props {
 		ordered: boolean;
@@ -224,6 +226,13 @@
 	}
 
 	/**
+	 * Bloc ```barres / ```circulaire en retrait dans un item de liste
+	 */
+	function isStatChartNode(node: ASTNode): node is StatChartNode {
+		return node.type === 'stat-chart';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -238,7 +247,8 @@
 			'probability-tree',
 			'trig-circle',
 			'courbe',
-			'figure'
+			'figure',
+			'stat-chart'
 		].includes(node.type);
 	}
 
@@ -361,6 +371,8 @@
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
 						<FigureBlock node={child} />
+					{:else if isStatChartNode(child)}
+						<StatChart node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -441,6 +453,8 @@
 						<Courbe node={child} />
 					{:else if isFigureNode(child)}
 						<FigureBlock node={child} />
+					{:else if isStatChartNode(child)}
+						<StatChart node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
