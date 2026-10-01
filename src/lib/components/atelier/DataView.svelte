@@ -9,6 +9,8 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList } from '$lib/atelier/types';
 	import { summarizeList } from '$lib/statistics/describe';
+	import { listChart } from '$lib/atelier/chart';
+	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 
 	const atelier = useAtelier();
 
@@ -44,6 +46,7 @@
 	{:else}
 		<ul class="colonnes">
 			{#each lists as list (list.name)}
+				{@const shown = atelier.chartOf(list.name)}
 				<li class="colonne" data-status={list.status}>
 					<label for={`liste-${list.name}`}>{list.name}</label>
 					<input
@@ -54,16 +57,31 @@
 						value={list.definition}
 						oninput={(event) => edit(list.name, event.currentTarget.value)}
 						placeholder="12 ; 15 ; 9"
+						aria-describedby={`liste-${list.name}-apercu liste-${list.name}-diagramme`}
 					/>
+					<!-- Reliés au champ (aria-describedby) mais SANS aria-live : une
+					     annonce à chaque frappe serait du bavardage (audit a11y du lot 5) -->
 					{#if list.message}
-						<p class="probleme">{list.message}</p>
+						<p class="probleme" id={`liste-${list.name}-apercu`}>{list.message}</p>
 					{:else}
-						<p class="apercu">
+						<p class="apercu" id={`liste-${list.name}-apercu`}>
 							{summaryOf(list.values)}
 							{#if list.skipped > 0}
 								<span class="ecarte">· {skippedNote(list.skipped)}</span>
 							{/if}
 						</p>
+					{/if}
+					<!-- Diagramme vivant (outils statistiques, Q36) : recalculé à chaque
+					     saisie, parce qu'il relit la liste au lieu d'en garder une copie -->
+					{#if shown}
+						{@const chart = listChart(atelier, list.name, shown.partner)}
+						{#if chart.ok}
+							<div class="diagramme">
+								<StatChart node={chart.node} />
+							</div>
+						{:else}
+							<p class="probleme" id={`liste-${list.name}-diagramme`}>{chart.message}</p>
+						{/if}
 					{/if}
 				</li>
 			{/each}
@@ -132,6 +150,10 @@
 		border-radius: 0.25rem;
 		background: var(--color-background);
 		color: var(--color-foreground);
+		min-width: 0;
+	}
+
+	.diagramme {
 		min-width: 0;
 	}
 

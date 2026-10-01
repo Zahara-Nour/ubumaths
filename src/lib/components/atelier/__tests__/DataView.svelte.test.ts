@@ -106,3 +106,144 @@ describe('la vue Données', () => {
 		expect(container.querySelector('.aide')?.textContent).toContain('points-virgules');
 	});
 });
+
+// =============================================================================
+// Lot 5 (outils statistiques) : diagramme vivant sous la liste
+// =============================================================================
+
+describe('diagramme d’une liste', () => {
+	function selectCard(container: HTMLElement, name: string) {
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === name
+		);
+		(carte?.querySelector('button') as HTMLButtonElement | undefined)?.click();
+	}
+
+	function clickAction(container: HTMLElement, label: string) {
+		const bouton = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === label
+		) as HTMLButtonElement | undefined;
+		bouton?.click();
+	}
+
+	const columnOf = (container: HTMLElement, name: string) =>
+		fieldFor(container, name)?.closest('.colonne') as HTMLElement | null;
+
+	it('« Diagramme en bâtons » : bascule sur Données, barres sous la bonne colonne', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3 ; 3 ; 5' });
+		atelier.create({ kind: 'list', name: 'M', definition: '1 ; 1' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+
+		selectCard(container, 'L');
+		await settle();
+		clickAction(container, 'Diagramme en bâtons');
+		await settle();
+
+		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Données');
+		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
+		expect(columnOf(container, 'M')?.querySelector('svg')).toBeNull();
+		expect(columnOf(container, 'L')?.querySelector('.stat-indicateurs')).not.toBeNull();
+	});
+
+	// Audit a11y du lot 5 (WCAG 4.1.3) : la bascule de vue et l'apparition du
+	// diagramme étaient silencieuses pour un lecteur d'écran
+	it('annonce le diagramme affiché, puis retiré', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+		const live = () => container.querySelector('[data-annonce]')?.textContent?.trim();
+
+		selectCard(container, 'L');
+		await settle();
+		clickAction(container, 'Diagramme en bâtons');
+		await settle();
+		await new Promise((r) => setTimeout(r, 50));
+		expect(live()).toBe('Diagramme de L affiché dans l’onglet Données.');
+
+		clickAction(container, 'Retirer le diagramme');
+		await settle();
+		await new Promise((r) => setTimeout(r, 50));
+		expect(live()).toBe('Diagramme de L retiré.');
+	});
+
+	it('le diagramme nomme sa liste, et la partenaire des effectifs', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5' });
+		atelier.toggleChart('L', 'M');
+		const { container } = await openData(atelier);
+
+		expect(columnOf(container, 'L')?.querySelector('figcaption')?.textContent).toBe(
+			'Diagramme de L, effectifs M'
+		);
+	});
+
+	it('le champ de la liste est décrit par son aperçu et par le message du diagramme', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '' });
+		atelier.toggleChart('L', null);
+		const { container } = await openData(atelier);
+		const field = fieldFor(container, 'L')!;
+		const described = (field.getAttribute('aria-describedby') ?? '')
+			.split(' ')
+			.map((id) => document.getElementById(id)?.textContent ?? '')
+			.join(' ');
+
+		expect(described).toMatch(/n['’]a pas encore de valeurs/);
+	});
+
+	it('vivant : la saisie redessine le diagramme', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 1' });
+		atelier.toggleChart('L', null);
+		const { container } = await openData(atelier);
+		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(1);
+
+		const field = fieldFor(container, 'L')!;
+		field.value = '1 ; 2 ; 3';
+		field.dispatchEvent(new Event('input', { bubbles: true }));
+		await settle();
+
+		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
+	});
+
+	it('un diagramme impossible dit pourquoi, sous la colonne', async () => {
+		const atelier = new Atelier();
+		atelier.create({
+			kind: 'list',
+			name: 'L',
+			definition: Array.from({ length: 31 }, (_, i) => i).join(' ; ')
+		});
+		atelier.toggleChart('L', null);
+		const { container } = await openData(atelier);
+
+		expect(columnOf(container, 'L')?.textContent).toMatch(/30/);
+	});
+});
+
+// Q39 : « Nuage avec M » basculait sur Calcul depuis que l'action s'appelle `scatter:M`
+describe('nuage avec une partenaire', () => {
+	it('bascule sur le Graphe', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2' });
+		atelier.create({ kind: 'list', name: 'M', definition: '3 ; 4' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
+		);
+		(carte?.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		const bouton = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Nuage avec M'
+		) as HTMLButtonElement;
+		bouton.click();
+		await settle();
+
+		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
+	});
+});

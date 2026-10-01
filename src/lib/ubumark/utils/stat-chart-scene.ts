@@ -37,6 +37,7 @@ import {
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 import { crossTable } from '$lib/statistics/cross-table';
+import { formatApproxValue } from '$lib/statistics/format';
 
 // ============================================================================
 // TYPES
@@ -304,11 +305,9 @@ function formatRounded(value: number, decimals: number, locale: ContentLocale): 
 	return formatTick(Math.round(value * factor) / factor, locale);
 }
 
-/** `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13). */
+/** `= 15,75` / `≈ 14,44` : la règle du module statistique (Q13) */
 function formatIndicatorValue(value: number, locale: ContentLocale): string {
-	const rounded = Math.round(value * 100) / 100;
-	const exact = Math.abs(rounded - value) <= 1e-9 * Math.max(1, Math.abs(value));
-	return `${exact ? '=' : '≈'} ${formatTick(rounded, locale)}`;
+	return formatApproxValue(value, locale);
 }
 
 /** Valeur telle qu'écrite par l'auteur : effectif, ou pourcentage. */

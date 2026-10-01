@@ -85,6 +85,6 @@ describe('ce que la substitution ne doit pas casser', () => {
 	it('n’abîme pas une commande de statistiques', () => {
 		const s = session();
 
-		expect(outputOf(runInput(s, '.stats 12,15,9'))).toContain('n=3');
+		expect(outputOf(runInput(s, '.stats 12,15,9'))).toContain('Effectif : 3');
 	});
 });

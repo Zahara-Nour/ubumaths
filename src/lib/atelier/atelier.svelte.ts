@@ -15,6 +15,7 @@
  * @module atelier/atelier
  */
 
+import { SvelteMap } from 'svelte/reactivity';
 import { MAX_LISTS } from './types';
 import type {
 	AtelierObject,
@@ -150,6 +151,16 @@ export class Atelier {
 	 */
 	revision = $state(0);
 
+	/**
+	 * Diagrammes affichés sous les listes, vue Données (outils statistiques,
+	 * Q36) : liste → partenaire des effectifs, ou null.
+	 *
+	 * ⚠️ État d'AFFICHAGE, volontairement hors de `serialize()` (Q37) : il ne
+	 * touche ni à la sauvegarde ni au lien de partage. Il ne passe pas non plus
+	 * par `revision`, qui déclencherait un enregistrement pour rien.
+	 */
+	private charts = new SvelteMap<string, { partner: string | null }>();
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -243,6 +254,13 @@ export class Atelier {
 			}
 		});
 
+		// Les diagrammes suivent le nouveau nom, de la liste comme de la partenaire
+		for (const [list, chart] of [...this.charts]) {
+			const partner = chart.partner === from ? to : chart.partner;
+			this.charts.delete(list);
+			this.charts.set(list === from ? to : list, { partner });
+		}
+
 		this.recomputeAll();
 		return { ok: true, updated };
 	}
@@ -280,9 +298,39 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
+		this.charts.delete(name);
+		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
+		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
+		for (const [list, chart] of [...this.charts]) {
+			if (chart.partner === name) this.charts.delete(list);
+		}
 		this.recomputeAll();
 
 		return { ok: true, broken };
+	}
+
+	// ---------------------------------------------------------------------------
+	// Diagrammes des listes (vue Données)
+	// ---------------------------------------------------------------------------
+
+	/** Le diagramme affiché sous cette liste, s'il y en a un. */
+	chartOf(name: string): { partner: string | null } | undefined {
+		return this.charts.get(name);
+	}
+
+	/**
+	 * Afficher ou retirer le diagramme d'une liste. Le même geste avec une autre
+	 * partenaire remplace le diagramme au lieu de le retirer.
+	 *
+	 * @returns le diagramme est-il affiché après le geste ?
+	 */
+	toggleChart(name: string, partner: string | null): boolean {
+		if (this.charts.get(name)?.partner === partner) {
+			this.charts.delete(name);
+			return false;
+		}
+		this.charts.set(name, { partner });
+		return true;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -332,6 +380,7 @@ export class Atelier {
 	 */
 	restore(state: AtelierState): RestoreReport {
 		this.items = [];
+		this.charts.clear();
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {

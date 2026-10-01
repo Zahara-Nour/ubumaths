@@ -7,6 +7,7 @@
 	 */
 	import type { AtelierObject } from '$lib/atelier/types';
 	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { useAtelier } from '$lib/atelier/context';
 
 	interface Props {
 		object: AtelierObject;
@@ -17,7 +18,15 @@
 
 	let { object, selected = false, onSelect, onAction }: Props = $props();
 
-	const actions = $derived(actionsFor(object));
+	const atelier = useAtelier();
+
+	/**
+	 * ⚠️ Avec l'atelier : sans lui, `actionsFor` retombe sur le catalogue de
+	 * repli, et les actions par partenaire (« Nuage avec M », « Diagramme avec
+	 * effectifs M ») comme la bascule « Retirer le diagramme » n'atteignaient
+	 * jamais l'écran (constaté au lot 5 des outils statistiques).
+	 */
+	const actions = $derived(actionsFor(object, atelier));
 
 	/** Les libellés français des types — l'interface ne parle pas anglais. */
 	const KIND_LABELS: Record<AtelierObject['kind'], string> = {
@@ -70,7 +79,7 @@
 					class="action"
 					aria-disabled={action.disabledReason !== undefined}
 					aria-describedby={action.disabledReason
-						? `${object.name}-${action.id}-raison`
+						? `${object.name}-${action.id.replace(':', '-')}-raison`
 						: undefined}
 					onclick={() => {
 						if (action.disabledReason !== undefined) return;
@@ -80,7 +89,7 @@
 					{action.label}
 				</button>
 				{#if action.disabledReason}
-					<span id="{object.name}-{action.id}-raison" class="raison">
+					<span id="{object.name}-{action.id.replace(':', '-')}-raison" class="raison">
 						{action.disabledReason}
 					</span>
 				{/if}
@@ -159,6 +168,9 @@
 	}
 	.action {
 		font-size: 0.75rem;
+		/* Cible d'au moins 28 px : les actions se multiplient avec les listes
+		   partenaires (WCAG 2.5.8, audit a11y du lot 5) */
+		min-height: 1.75rem;
 		padding: 0.1875rem 0.5rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;

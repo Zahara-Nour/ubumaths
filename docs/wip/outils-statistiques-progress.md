@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-3 livrés (#595, #598, #600) ; lot 4 revu, corrigé, PR ouverte
+## État : lots 1-4 livrés ; lot 5 (atelier) revu, corrigé, PR ouverte
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -301,7 +301,65 @@ Garçon/Total ; Total/Externe` : totaux toujours calculés ; case masquée vide,
   `masquer:`, `taille:`/`description:` refusées pour un tableau, erreurs du tableau situées.
   « 100 % » sans décimale : conforme à Q13 (entier exact), pas modifié.
 
-## Reste à faire (hors lots 2-4)
+## Lot 5 — atelier
+
+Worktree `../ubumaths-wt-stats-lot5`, branche `feat/stats-atelier`.
+
+Tour 8 (2026-10-01) — recommandations suivies :
+
+35. Actions sur une liste : « Statistiques » enrichi (Q1, Q3, EIQ, D1, D9…), « Diagramme en
+    bâtons » (valeurs distinctes → effectifs) ; avec une partenaire M : « Statistiques avec
+    effectifs M », « Diagramme avec effectifs M ». Pas de classes ni d'histogramme (Q5).
+36. Diagramme VIVANT sous la colonne de la liste, vue Données, même composant que le bloc ;
+    bouton qui bascule (« Retirer le diagramme ») ; ligne d'indicateurs ; bascule vers Données.
+37. Diagramme NON enregistré (ni rechargement ni lien de partage) dans ce lot.
+38. Une seule mise en forme française pour « Statistiques » et `.stats` ; `.stats` accepte des
+    effectifs (`valeurs : effectifs`) ; `.ajustement` en français.
+39. Corriger le basculement vers le Graphe après « Nuage avec M ».
+
+Constaté : `AtelierContainer.svelte:164` compare `action.id === 'scatter'`, or les ids sont
+`scatter:M` depuis `11f05261c` → « Nuage avec M » bascule sur Calcul (aucun test). Et `.stats`
+découpe sur les virgules : `.stats 12,5` = deux valeurs.
+
+### Lot 5 — fait
+
+- `statistics/format.ts` : `formatSummary`, `formatApproxValue` — une seule mise en forme
+  (action « Statistiques », `.stats`, lignes d'indicateurs des diagrammes).
+- Moteur : `.stats` accepte `;` (virgule décimale), l'ancienne forme `,`, `valeurs : effectifs` ;
+  sortie française ; `.linreg` en français (LaTeX inchangé) ; aide alignée. Golden recapturé
+  volontairement ; tests historiques passés des libellés anglais aux VALEURS françaises
+  (`.stats 42` écrit maintenant `Variance = 0` au lieu de taire la dispersion).
+- Atelier : `charts` (SvelteMap) hors `serialize()`, suit rename/remove/restore ; `chart.ts`
+  produit un texte ```barres lu par le parseur ubumark (une grammaire, mêmes contrôles) ;
+actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Données).
+- ⚠️ **Diagnostic Q39 corrigé** : dans l'écran réel, `ObjectCard.svelte` appelait
+  `actionsFor(object)` SANS l'atelier → catalogue de repli : les actions par partenaire
+  (« Nuage avec M », revue #339) n'avaient jamais atteint l'écran ; « Nuage de points » (id
+  `scatter`) basculait donc bien sur le Graphe. Corrigé : `ObjectCard` passe l'atelier ; le
+  basculement compare la racine de l'id, sans quoi `scatter:M` aurait cassé la bascule.
+- Preuves : tests rouges (assertions pour l'écran et le moteur ; import pour `format` et
+  `list-charts`, modules absents) puis verts ; 5 221 tests serveur + 304 client ;
+  `check:incremental` 0 ; eslint 0 erreur (18 avertissements préexistants dans
+  `atelier.svelte.ts`, hors du diff).
+
+- Audit a11y : annonce polie du diagramme affiché / retiré et de la bascule vers le Graphe ;
+  champ de la liste relié (`aria-describedby`) à son aperçu et au message du diagramme, sans
+  `aria-live` (pas de bavardage à la frappe) ; titre « Diagramme de L, effectifs M » ; cibles
+  d'action ≥ 28 px ; ids sans « : ».
+- Revue de code : `.stats` strict (`1,2,3 ; 4`, `3abc`, `12 15 9` donnaient des statistiques
+  FAUSSES sans erreur) et un « ; » fixe la convention pour tout l'argument ; « Retirer le
+  diagramme » possible même liste en erreur ; actions « avec effectifs » désactivées avant le
+  clic si la partenaire est en erreur ou de longueur différente ; supprimer la partenaire
+  retire ses diagrammes ; retirer ne bascule plus de vue ; test de non-enregistrement par
+  égalité de `serialize()` et `revision` inchangée ; message d'usage avec « ; ».
+
+### Question ouverte pour David (UX de l'atelier)
+
+- Avec plusieurs listes, les actions d'une liste s'accumulent : 2 + 4 × (n − 1) boutons
+  (10 avec 3 listes, 30 avec 8). Signalé par la revue de code ET l'audit a11y. Piste :
+  regrouper par partenaire (« Avec M » dépliable).
+
+## Reste à faire (hors lots 2-5)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.

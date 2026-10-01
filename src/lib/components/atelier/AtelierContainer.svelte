@@ -63,6 +63,13 @@
 	let selected = $state<string | null>(null);
 	let notices = $state<SessionNotice[]>([]);
 
+	/**
+	 * Ce qu'une action a changé hors de la vue courante (bascule d'onglet,
+	 * diagramme affiché ou retiré), dit au lecteur d'écran (WCAG 4.1.3, audit
+	 * a11y du lot 5 des outils statistiques).
+	 */
+	let announcement = $state('');
+
 	// Le cycle de vie n'a de sens que dans un navigateur : la session lit le
 	// stockage et écoute les autres onglets.
 	// `$state` et non un simple `let` : l'effet ci-dessous doit se redéclencher
@@ -159,9 +166,32 @@
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
 
-		// Un nuage se voit dans le Graphe, pas dans l'historique : c'est là que
-		// l'élève doit regarder.
-		activeView = action.id === 'scatter' ? 'graphe' : 'calcul';
+		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
+		// que l'élève doit regarder. ⚠️ Comparer la RACINE : les actions portent
+		// leur partenaire (`scatter:M`), et `action.id === 'scatter'` ne
+		// répondait plus jamais (outils statistiques, Q39).
+		const root = action.id.split(':')[0];
+		// Retirer un diagramme ne mène nulle part : on reste où l'on est
+		const chartShown = root === 'chart' && atelier.chartOf(object.name) !== undefined;
+		if (root === 'scatter') activeView = 'graphe';
+		else if (chartShown) activeView = 'donnees';
+		else if (root !== 'chart') activeView = 'calcul';
+
+		if (root === 'chart') {
+			announce(
+				atelier.chartOf(object.name)
+					? `Diagramme de ${object.name} affiché dans l’onglet Données.`
+					: `Diagramme de ${object.name} retiré.`
+			);
+		} else if (root === 'scatter') {
+			announce(`Nuage de ${object.name} affiché dans l’onglet Graphe.`);
+		}
+	}
+
+	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
+	function announce(message: string) {
+		announcement = '';
+		setTimeout(() => (announcement = message), 0);
 	}
 </script>
 
@@ -188,6 +218,7 @@
 			pas seulement affiché. La région existe toujours, sinon un lecteur
 			d'écran ne verrait jamais apparaître son contenu.
 		-->
+		<p class="sr-only" aria-live="polite" data-annonce>{announcement}</p>
 		<ul class="avis" aria-live="polite" class:vide={notices.length === 0}>
 			{#each notices as notice, i (i)}
 				<li data-kind={notice.kind}>{notice.message}</li>

@@ -256,10 +256,12 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 		{
 			french: 'stats',
 			description: 'Statistiques d’une série de nombres',
-			// ⚠️ Les VIRGULES sont obligatoires : mesuré le 2026-09-16,
-			// « .stats 12 15 9 » réussit en ne lisant que « 12 » et annonce
-			// « n=1 ». Un succès apparent, une statistique fausse.
-			example: '.stats 12,15,9'
+			// ⚠️ Un séparateur est obligatoire : mesuré le 2026-09-16,
+			// « .stats 12 15 9 » réussit en ne lisant que « 12 » et annonce un
+			// effectif de 1. Un succès apparent, une statistique fausse. Le « ; »
+			// des listes de l'atelier, avec la virgule décimale (outils
+			// statistiques, lot 5).
+			example: '.stats 12 ; 15 ; 9'
 		}
 	],
 	[
