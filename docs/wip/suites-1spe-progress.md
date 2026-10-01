@@ -1,7 +1,7 @@
 ---
 title: Suites numériques 1re SPE — questions et escalier du bloc courbe
 date: 2026-10-01
-status: lot 0 livré (#601) ; lot 1 écrit en base ; lots 2-5 en cours
+status: lots 0-5 faits ; 35 modèles neufs en brouillon (2026-10-01) ; relecture et publication par David
 ---
 
 # Suites 1re SPE — point de reprise
@@ -114,13 +114,42 @@ passé en dernier) ; renommage en base par `scripts/rename-question-subdomains.t
 ## Lots 2 à 5 — modèles neufs (brouillon)
 
 Délégués à 4 agents `pedagogy-expert` (Opus), fichiers dans `scripts/questions/suites-1spe/`
-(`<lot>-<nn>-<slug>.json`). Lot 2 : 10 modèles verts. Lot 4 : 5 modèles verts (+ 2 escaliers en
-cours). Lots 3 et 5 : en cours.
+(`<lot>-<nn>-<slug>.json`). **35 modèles créés en BROUILLON en production le 2026-10-01**
+(`create-questions.ts --publier`, relus ; base : 35 brouillons + 14 publiés dans le thème).
+Chacun : `question:specs` vert, 150 tirages par variation, réponses recalculées en Python (fractions
+exactes) ; graphiques : 200 tirages par variation passés par `parseCourbeContent`/`buildCourbeScene`
+(0 erreur, 0 avertissement, réponse recalculée depuis la suite TRACÉE) ; fiches de test compilées
+avec `compile-prod.mjs` (lots 3, 4, 5).
 
-À trancher par David (ADR 0013 : les questions en `warn` sont choisies par lui) : `form: warn`
-pour les termes généraux 2-07, 2-09, 2-10, `form: off` pour 2-08 (u_p × q^(n−p) et u_0 × qⁿ tous
-deux justes).
+| Lot | Modèles                                                                                                                                                                       |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2   | géométriques : terme suivant, précédent, u_n depuis u_0, u_b depuis u_a, raison (entière, fractionnaire), terme général (u_0, u_p) ; arithmétiques : terme général (u_0, u_p) |
+| 3   | reconnaître arith./géo. (liste, récurrence, forme explicite, nuage) ; sens de variation (r ; q et u*0 ; u*{n+1} − u_n à calculer ; conclure du signe ; nuage)                 |
+| 4   | lire un terme ; lire u_0 et r ; associer formule et nuage ; récurrences avec n ; récurrence par f ; escalier : lire un terme, comportement (QCM)                              |
+| 5   | sommes (1+…+n, arith., 1+q+…+qⁿ, géo.) ; seuil (arith. par le calcul, géo. avec tableau) ; pourcentages ; placements (nature, valeur)                                         |
 
-## Journal
+**Non créés** : les 2 modèles Python (Seuil et algorithmes › Algorithmes). Un bloc ```python sort bien
+dans le PDF, mais `FillBlanksInput.svelte`(énoncé des questions à trous) n'affiche que paragraph,
+math-block, image et heading : le code — et les tableaux markdown — sont INVISIBLES à l'écran.
+Décision David : corriger`FillBlanksInput`, ou faire ces modèles en QCM.
 
-- 2026-10-01 : spec validée, worktree `../ubumaths-wt-courbe-escalier`.
+**Défauts trouvés par les agents** :
+
+- `\textcolor{#FF5722}` (= `{{color:primary.0}}`) faisait échouer TOUT PDF de corrigé, et le
+  contenu coloré était imprimé comme du texte → corrigé, PR #602.
+- Tableau markdown avec `{{…}}` dans un énoncé : `X | Y` lu comme un tirage au choix, le tableau est
+  détruit (5-06 a donc des énoncés figés). Non corrigé.
+- `\dots` non converti en Typst (texte « dots ») ; `\cdots` utilisé. Non corrigé.
+- Une condition qui porte sur une variable `eval:` n'est jamais satisfaite (échec après 100
+  essais) ; une variable nommée `e` vaut la constante d'Euler.
+- `products` (défaut `warn`) signale `3\times2^n` / `500\times1{,}05^n` comme non optimal : mis à
+  `off` dans 2-07, 2-08, 5-07.
+- Fiche figée (`buildSerie`) : choix de QCM numérotés « 1) 2) » mais « Réponse : d) » en lettre.
+
+**À trancher par David** (en plus de la publication) :
+
+- Réglages de forme (ADR 0013) : `form: warn` en 2-07, 2-09, 2-10 ; `form: off` en 2-08 (accepte
+  aussi un calcul inachevé comme `6\times2^n\div2`).
+- 3-08 : troisième choix « ni croissante, ni décroissante » (au lieu de « on ne peut pas conclure »).
+- 3-04 (nature sur un nuage) et 4-03 (formule d'un nuage) se recoupent un peu.
+- Peu de tirages distincts dans certains modèles graphiques (3 à 10 par variation).
