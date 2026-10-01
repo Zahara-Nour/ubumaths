@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lots 1-3 livrés (#595, #598, #600) ; lot 4 revu, corrigé, PR ouverte
+## État : lots 1-4 livrés (#595, #598, #600, #604) ; lot 5 (atelier) — spécification soumise
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -301,7 +301,27 @@ Garçon/Total ; Total/Externe` : totaux toujours calculés ; case masquée vide,
   `masquer:`, `taille:`/`description:` refusées pour un tableau, erreurs du tableau situées.
   « 100 % » sans décimale : conforme à Q13 (entier exact), pas modifié.
 
-## Reste à faire (hors lots 2-4)
+## Lot 5 — atelier
+
+Worktree `../ubumaths-wt-stats-lot5`, branche `feat/stats-atelier`.
+
+Tour 8 (2026-10-01) — recommandations suivies :
+
+35. Actions sur une liste : « Statistiques » enrichi (Q1, Q3, EIQ, D1, D9…), « Diagramme en
+    bâtons » (valeurs distinctes → effectifs) ; avec une partenaire M : « Statistiques avec
+    effectifs M », « Diagramme avec effectifs M ». Pas de classes ni d'histogramme (Q5).
+36. Diagramme VIVANT sous la colonne de la liste, vue Données, même composant que le bloc ;
+    bouton qui bascule (« Retirer le diagramme ») ; ligne d'indicateurs ; bascule vers Données.
+37. Diagramme NON enregistré (ni rechargement ni lien de partage) dans ce lot.
+38. Une seule mise en forme française pour « Statistiques » et `.stats` ; `.stats` accepte des
+    effectifs (`valeurs : effectifs`) ; `.ajustement` en français.
+39. Corriger le basculement vers le Graphe après « Nuage avec M ».
+
+Constaté : `AtelierContainer.svelte:164` compare `action.id === 'scatter'`, or les ids sont
+`scatter:M` depuis `11f05261c` → « Nuage avec M » bascule sur Calcul (aucun test). Et `.stats`
+découpe sur les virgules : `.stats 12,5` = deux valeurs.
+
+## Reste à faire (hors lots 2-5)
 
 - PR « blocs non fermés » (Q25) pour `courbe`, `figure`, `stat-chart`.
 - Limite connue : des repères extérieurs de petits secteurs consécutifs peuvent se toucher.
