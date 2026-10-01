@@ -308,8 +308,12 @@ export function parseList(lines: string[]): ListNode[] {
 				}
 			}
 
+			// Marqueur plus large que « 1. » (« 10. », « 100. ») : le contenu commence plus
+			// loin, ses lignes suivantes sont en retrait d'autant (sinon un ``` décalé d'un
+			// espace n'ouvre plus de bloc de code)
+			const markerExtra = currentItem.ordered ? Math.max(0, currentItem.marker.length + 1 - 3) : 0;
 			const indentPattern = new RegExp(
-				`^[ ]{${(currentItem.indent + 1) * (currentItem.ordered ? 3 : 2)}}`
+				`^[ ]{${(currentItem.indent + 1) * (currentItem.ordered ? 3 : 2)}}[ ]{0,${markerExtra}}`
 			);
 			const trimmed = line.replace(indentPattern, '');
 
