@@ -380,3 +380,26 @@ Livré (commits 83361daae → fin de branche), tests d'abord à chaque lot :
 - **E** page `/automaths/test` (aucun modèle chargé en évaluation, `collectOnly`, envoi +
   réessai), `EvaluationResults`, `EvaluationResultsTable` (prof), meilleure note dans « Mes
   évaluations », résultats élève et boîte de réception.
+
+### Chantier 5 — PR A livrée (#565), 2026-10-01
+
+Migration `20260930160000_evaluation_tentatives.sql` fusionnée et **appliquée en production** :
+table `evaluation_attempt_questions` (graines, service_role seul), colonnes `grade`, `points_earned`,
+`points`, `status` ; restrictives INSERT (séances et réponses d'évaluation, verdict/note client
+interdits) ; policy UPDATE supprimée. Vérifié en prod : 7 policies attendues, graines illisibles
+(authenticated/anon). ⚠️ L'envoi d'une évaluation échoue jusqu'au déploiement de la PR B (0
+assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serveur`, worktree
+`../ubumaths-wt-eval-code`, types régénérés en premier commit.
+
+- **Q40 (David, 2026-10-01)** — SRS après une évaluation : une réponse en forme non optimale (½ point
+  dans la note) compte « Bien » pour la révision, comme en entraînement libre. La note juge la forme, la
+  révision juge la connaissance.
+- **Q41 (David, 2026-10-01)** — risque ACCEPTÉ : modèles publiés et générateur étant dans le navigateur
+  (entraînement libre, ADR 0001), un élève qui programme peut retrouver par essais la graine qui redonne
+  son énoncé, donc la réponse attendue d'une évaluation. Fermer ce risque imposerait la correction serveur
+  partout (écartée par 0001 et 0015). Pas d'ADR (décision réversible) ; commentaire dans
+  `public-question.ts`. À rouvrir si l'enjeu d'une note change.
+- **Q42 (David, 2026-10-01)** — la question vue par l'élève est FIGÉE au démarrage : l'instance complète
+  est enregistrée dans `evaluation_attempt_questions` (service_role seul) ; reprise et correction s'en
+  servent, un modèle modifié entre-temps ne change rien à la tentative. Petite migration additive avant
+  la PR B.
