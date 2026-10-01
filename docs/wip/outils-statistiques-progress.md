@@ -2,7 +2,7 @@
 
 Worktree `../ubumaths-wt-stats`, branche `feat/outils-statistiques`. Démarré le 2026-10-01.
 
-## État : lot 1 livré (#595) ; lot 2 (barres + circulaire) — spécification validée, tests à écrire
+## État : lot 1 livré (#595) ; lot 2 implémenté, revues `code-reviewer` + `accessibility-tester` en cours
 
 ## Existant vérifié dans le code (2026-10-01)
 
@@ -171,6 +171,26 @@ Tour 4 (2026-10-01) — recommandations suivies :
   `accessibility-tester`.
 - **PDF** : même scène (même nombre de barres / secteurs) ; fiche FR + EN, énoncé + corrigé,
   noms hostiles + bloc en erreur → `compile-prod.mjs` (typst.ts 0.6.1-rc5) 4/4, page relue.
+
+### Lot 2 — fait
+
+- `ubumark/types/stat-chart.ts`, `parser/stat-chart-parser.ts`, `utils/stat-chart-scene.ts`,
+  `generators/stat-chart-typst.ts`, `components/markdown/nodes/StatChart.svelte` ;
+  `statistics/describe.ts` gagne `categoryFrequencies`.
+- Câblage : markdown-parser (blocs repérés dans `lines` ET `originalLines`, masqués pour les
+  blocs de code, langages `barres`/`circulaire` dans les items de liste), union AST, index,
+  MarkdownRenderer, ListNode, typst-generator, markdown-import (bloc de code `barres` /
+  `circulaire`, texte source gardé même en erreur).
+- Preuves : tests rouges contre des stubs (65 puis 7 + 14), puis verts ; ubumark + rich-text +
+  statistics 3667 tests verts, composants markdown 85 ; `check:incremental` 0 ; `lint:fast` propre.
+- **PDF** : fiche de 2 exercices (noms hostiles `# $ * " \`, bloc en erreur, blocs en liste,
+  `étiquettes: angles`, `%`) passée par `rendu-fiche.ts` puis `compile-prod.mjs` (typst.ts
+  0.6.1-rc5) : 4/4 OK ; comptes `// barre` 5, `// secteur` 5, « Figure indisponible » 1 par
+  énoncé (doublés dans le corrigé). Page relue : deux défauts vus et corrigés (rayon blanc d'un
+  disque entier ; titre d'axe qui chevauchait un nom incliné → place calculée d'après le nom le
+  plus long).
+- Secteurs = polygones de la scène (pas `arc` de cetz) : même dessin écran / PDF.
+- `svelte-autofixer` : outil MCP absent de la session, non lancé.
 
 ## Questions ouvertes
 
