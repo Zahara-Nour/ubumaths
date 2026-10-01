@@ -132,7 +132,9 @@ export const actions: Actions = {
 			role: validation.data.role,
 			school_id: validation.data.school_id,
 			avatar_url: validation.data.avatar_url,
-			is_test: validation.data.is_test ?? false
+			// is_test réservé à l'admin par la base : ne l'écrire que s'il est fourni,
+			// sinon toute modification d'un compte de test échouerait.
+			...(validation.data.is_test !== undefined && { is_test: validation.data.is_test })
 		};
 
 		const { error: updateError } = await supabase
