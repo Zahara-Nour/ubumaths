@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```courbe — progression
 date: 2026-10-01
-status: en cours
+status: lots 1-3 livrés sur la branche (PR à ouvrir)
 branche: feat/bloc-courbe (worktree ../ubumaths-wt-courbe)
 ---
 
@@ -88,7 +88,7 @@ isotrope, exporteurs sans `function`).
 
 - [x] Lot 1 — types + parseur + scène (`types/courbe.ts`, `parser/courbe-parser.ts`, `utils/courbe-scene.ts`, 36 tests rouges avant : module absent)
 - [x] Lot 2 — composant + câblage + listes + Q48
-- [ ] Lot 3 — Typst + compilation prod
+- [x] Lot 3 — Typst + compilation prod
 
 ## Journal
 
@@ -109,3 +109,22 @@ isotrope, exporteurs sans `function`).
   violet n'ont pas de token → variables locales `light-dark()` dans le composant.
   Le parseur repère `courbe` dans `lines` ET `originalLines` (appariés par rang) : robuste à une
   formule `$$` multi-lignes placée avant (les blocs `line`/`trig` ne le sont pas — hors périmètre).
+- 2026-10-01 lot 3 : `generators/courbe-typst.ts` (cetz 0.3.0, même scène, primitives
+  marquées `// trace f`, `// point A`, `// borne`…), branché dans `typst-generator.ts` (listes
+  comprises). Noms de points en TEXTE italique (`$AB$` = variable inconnue → fiche entière en
+  échec) ; indice de nom de courbe entre guillemets s'il a plusieurs lettres ; bloc en erreur →
+  « Figure indisponible » sans cetz. Tailles : 4,5 / 6,5 / 7,6 cm (colonne ≈ 8,7 cm).
+  **Compilation prouvée** : fiche de 3 exercices (courbe complète avec 4 fonctions, aire,
+  asymptotes, `ln` sur `]0 ; 6]`, points `AB` et `A'` ; deux courbes en liste petite/grande ;
+  un bloc en erreur) passée par `scripts/fiches/rendu-fiche.ts` (vrai `WorksheetGenerator`,
+  énoncé + CORRIGÉ, FR + EN) puis `scripts/fiches/compile-prod.mjs` (typst.ts 0.6.1-rc5) :
+  4/4 OK, page relue à l'œil.
+  Bundle (esbuild, hors `Courbe.svelte`, mathAST parser déjà présent) : ~20 Ko minifiés, ~28 Ko
+  si `eval/compile` n'est pas déjà dans le chunk. `pnpm build` à lancer par David pour confirmer.
+
+## Limites connues (v1)
+
+- Le nom de courbe peut chevaucher une autre courbe (seuls les points nommés sont évités).
+- Rapport du cadre fixe 4:3, quelle que soit la fenêtre.
+- Export LaTeX : non (le générateur LaTeX ignore le bloc, comme avant).
+- Couleurs Typst = teintes du thème clair.

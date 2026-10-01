@@ -47,3 +47,5 @@ export type { ProbTreeTypstOptions } from './probability-tree-typst';
 
 export { generateNumberLineTypst } from './number-line-typst';
 export type { NumberLineTypstOptions } from './number-line-typst';
+export { generateCourbeTypst } from './courbe-typst';
+export type { CourbeTypstOptions } from './courbe-typst';
