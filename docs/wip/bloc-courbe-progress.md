@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```courbe — progression
 date: 2026-10-01
-status: lots 1-3 livrés sur la branche (PR à ouvrir)
+status: lots 1-3 livrés ; suites (lots S1-S3) livrées sur feat/courbe-suites
 branche: feat/bloc-courbe (worktree ../ubumaths-wt-courbe)
 ---
 
@@ -200,6 +200,23 @@ S11. Typst sans « Figure indisponible » ; compilation d'une fiche (`rendu-fich
 
 ### Lots suites
 
-- [ ] Lot S1 — types + parseur + scène (tests rouges d'abord)
-- [ ] Lot S2 — SVG + Typst + accessibilité
-- [ ] Lot S3 — compilation d'une fiche, vérifs finales
+- [x] Lot S1 — types + parseur + scène + Typst (`courbe-suites.test.ts`, rouge avant : `sequences`
+      absent)
+- [x] Lot S2 — SVG (`.courbe-terme`) + accessibilité (5 tests navigateur, 3 rouges avant)
+- [x] Lot S3 — compilation d'une fiche, vérifs finales
+
+### Journal suites
+
+- 2026-10-01 : termes calculés à l'ANALYSE (`CourbeSequence.terms`) avec `computeSequenceTerms`
+  du grapheur ; la scène filtre à la fenêtre et tronque aux plafonds (spécification forgée).
+  Avertissements : explosion / terme non défini (analyse, `node.warnings`), rangs sautés d'une
+  suite explicite, termes hors fenêtre (scène). Nom de suite = UNE lettre.
+- Piège trouvé par la compilation de la fiche : `parseCustom` ne lit `x(n)` comme un appel que
+  pour f, g, h, u, v, w — `t(n)` y devient `t*n`. D'où la réécriture TEXTUELLE `t(n)` → `(t_n)`
+  avant l'analyse, puis l'indice → variable (test rouge ajouté : t, a, p, q).
+- **Compilation prouvée** : fiche de 3 exercices (fonction + 2 suites + point ; récurrence
+  explosive `w(n+1) = w(n)^2` ; suite de premier rang 1 dans un item de liste, `taille: petite`)
+  passée par `rendu-fiche.ts` (énoncé + corrigé, FR + EN) puis `compile-prod.mjs` : 4/4 OK,
+  29 `// terme` par énoncé (20 + 4 + 5), aucun « Figure indisponible », page relue à l'œil.
+- `src/lib/grapheur/sequence.ts` désormais atteint par la suite d'intégration (via ubumark) :
+  motif ajouté au filtre `paths` de `nightly-integration.yml` (`check:integration-paths`).
