@@ -1,0 +1,363 @@
+{
+	"title": "Signe d'un trinôme sur un intervalle",
+	"description": "Du signe de a à l'extérieur des racines, du signe contraire entre",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Signe et inéquations",
+	"level": 2,
+	"delay": 30,
+	"shared": {
+		"choices": [
+			{
+				"content": "strictement positif"
+			},
+			{
+				"content": "strictement négatif"
+			},
+			{
+				"content": "il change de signe"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{s}}\\,;+\\infty\\right[$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"correctChoiceIndex": ["{{if:a>0|0|1}}"],
+			"correction": {
+				"steps": [
+					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
+					"Sur $\\left]{{s}}\\,;+\\infty\\right[$, on est à l'extérieur des racines : $P(x)$ est du signe de $a$, donc {{solution:html}}."
+				]
+			}
+		},
+		{
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]-\\infty\\,;{{r}}\\right[$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"correctChoiceIndex": ["{{if:a>0|0|1}}"],
+			"correction": {
+				"steps": [
+					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
+					"Sur $\\left]-\\infty\\,;{{r}}\\right[$, on est à l'extérieur des racines : $P(x)$ est du signe de $a$, donc {{solution:html}}."
+				]
+			}
+		},
+		{
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{r}}\\,;{{s}}\\right[$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["r < s"],
+			"correctChoiceIndex": ["{{if:a>0|1|0}}"],
+			"correction": {
+				"steps": [
+					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
+					"Sur $\\left]{{r}}\\,;{{s}}\\right[$, on est entre les racines : $P(x)$ est du signe contraire de $a$, donc {{solution:html}}."
+				]
+			}
+		},
+		{
+			"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a pour racines ${{r}}$ et ${{s}}$. Quel est le signe de $P(x)$ pour $x\\in\\left]{{eval:s-1}}\\,;{{eval:s+1}}\\right[$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "-6..5"
+				},
+				{
+					"name": "s",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-a*(r+s)"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r*s"
+				}
+			],
+			"conditions": ["s - r >= 2"],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$P$ a deux racines, ${{r}}$ et ${{s}}$, et son coefficient $a={{a}}$ est {{if:a>0|positif|négatif}}. Un trinôme est **du signe de $a$ à l'extérieur des racines** et du signe contraire entre les racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{r}}, {{s}}, +inf\n\nsign: P(x)\n  -inf,{{r}}: {{if:a>0|+|-}}\n  {{r}}: z\n  {{r}},{{s}}: {{if:a>0|-|+}}\n  {{s}}: z\n  {{s}},+inf: {{if:a>0|+|-}}\n```",
+					"L'intervalle $\\left]{{eval:s-1}}\\,;{{eval:s+1}}\\right[$ contient la racine ${{s}}$ : $P(x)$ y prend des valeurs des deux signes. Sur cet intervalle, {{solution:html}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "a=2, racines -1,3, x>3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3",
+				"b": "-4",
+				"c": "-6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a=2, x>3 : mauvais signe refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"r": "-1",
+				"s": "3",
+				"b": "-4",
+				"c": "-6"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a=-1, racines -4,2, x>2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-4",
+				"s": "2",
+				"b": "-2",
+				"c": "8"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a=-1, x>2 : mauvais signe refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"r": "-4",
+				"s": "2",
+				"b": "-2",
+				"c": "8"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a=−3, x<1 : strictement négatif",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"r": "1",
+				"s": "4",
+				"b": "15",
+				"c": "-12"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a=−3, x<1 : « change de signe » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"r": "1",
+				"s": "4",
+				"b": "15",
+				"c": "-12"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a=1, entre -2 et 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "5",
+				"b": "-3",
+				"c": "-10"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a=1, entre les racines : signe de a refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"r": "-2",
+				"s": "5",
+				"b": "-3",
+				"c": "-10"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a=-2, entre 0 et 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"r": "0",
+				"s": "3",
+				"b": "6",
+				"c": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a=-2, entre les racines : signe de a refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"r": "0",
+				"s": "3",
+				"b": "6",
+				"c": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle contenant la racine 1 : change de signe",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"s": "1",
+				"b": "4",
+				"c": "-6"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "intervalle contenant une racine : « positif » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"r": "-3",
+				"s": "1",
+				"b": "4",
+				"c": "-6"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

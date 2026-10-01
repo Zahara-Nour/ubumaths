@@ -1,0 +1,449 @@
+{
+	"title": "Variations et extremum d'une fonction du second degré",
+	"description": "Sens de variation et extremum depuis ax² + bx + c ; tableau de variations au corrigé",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Variations",
+	"level": 1,
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "h",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "-9..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "décroissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "croissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "minimum",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "{{eval:c-b^2/(4*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un polynôme du second degré avec $a={{a}}$ positif : sa parabole est tournée vers le haut, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
+					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, bottom\n```",
+					"$f$ est **décroissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **croissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **minimum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-3..-1"
+				},
+				{
+					"name": "h",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "k",
+					"expression": "-9..9"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*h^2+k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "croissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "décroissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "maximum",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "{{eval:c-b^2/(4*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un polynôme du second degré avec $a={{a}}$ négatif : sa parabole est tournée vers le bas, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
+					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, top\n```",
+					"$f$ est **croissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **décroissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **maximum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1"
+				},
+				{
+					"name": "b",
+					"expression": "1|3|5|-1|-3|-5"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "décroissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "croissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "minimum",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "{{eval:c-b^2/(4*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un polynôme du second degré avec $a={{a}}$ positif : sa parabole est tournée vers le haut, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
+					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, bottom\n```",
+					"$f$ est **décroissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **croissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **minimum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-1"
+				},
+				{
+					"name": "b",
+					"expression": "1|3|5|-1|-3|-5"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(2*a)}}"
+				},
+				{
+					"expectedAnswer": "croissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "décroissante",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "maximum",
+					"pool": ["croissante", "décroissante", "minimum", "maximum"]
+				},
+				{
+					"expectedAnswer": "{{eval:c-b^2/(4*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un polynôme du second degré avec $a={{a}}$ négatif : sa parabole est tournée vers le bas, et $f$ change de sens de variation en l'abscisse $\\alpha$ du sommet.",
+					"$$\\alpha=\\dfrac{-b}{2a}=\\dfrac{ {{eval:-b}} }{ {{eval:2*a}} }={{eval:-b/(2*a)}} \\qquad \\beta=f(\\alpha)={{eval:c-b^2/(4*a)}}$$",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-b/(2*a)}}, +inf\n\nvariation: f(x)\n  {{eval:-b/(2*a)}}: {{eval:c-b^2/(4*a)}}, top\n```",
+					"$f$ est **croissante** sur $\\left]-\\infty\\,;{{eval:-b/(2*a)}}\\right]$ puis **décroissante** sur $\\left[{{eval:-b/(2*a)}}\\,;+\\infty\\right[$ ; elle admet un **maximum** égal à ${{eval:c-b^2/(4*a)}}$, atteint en $x={{eval:-b/(2*a)}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x^2-4x+1 : décroissante puis croissante, min −3 en 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["2", "décroissante", "croissante", "minimum", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "majuscule et sans accent : « Decroissante »",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["2", "Decroissante", "croissante", "minimum", "-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "sens inversés (croissante puis décroissante)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["2", "croissante", "décroissante", "minimum", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "maximum au lieu de minimum",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["2", "décroissante", "croissante", "maximum", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "α = b/(2a) (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["-2", "décroissante", "croissante", "minimum", "-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "extremum = f(0) = c",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"h": "2",
+				"k": "-3",
+				"b": "-4",
+				"c": "1"
+			},
+			"answers": ["2", "décroissante", "croissante", "minimum", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x^2+4x+7 : min 5 en −1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"h": "-1",
+				"k": "5",
+				"b": "4",
+				"c": "7"
+			},
+			"answers": ["-1", "décroissante", "croissante", "minimum", "5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "α = −b/a (2 oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"h": "-1",
+				"k": "5",
+				"b": "4",
+				"c": "7"
+			},
+			"answers": ["-2", "décroissante", "croissante", "minimum", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-x^2-6x-5 : croissante puis décroissante, max 4 en −3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"h": "-3",
+				"k": "4",
+				"b": "-6",
+				"c": "-5"
+			},
+			"answers": ["-3", "croissante", "décroissante", "maximum", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a < 0 : sens de a > 0 donnés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"h": "-3",
+				"k": "4",
+				"b": "-6",
+				"c": "-5"
+			},
+			"answers": ["-3", "décroissante", "croissante", "maximum", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-3x^2+12x-12 : max 0 en 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"h": "2",
+				"k": "0",
+				"b": "12",
+				"c": "-12"
+			},
+			"answers": ["2", "croissante", "décroissante", "maximum", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x^2+3x+1 : min −5/4 en −3/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["-\\frac{3}{2}", "décroissante", "croissante", "minimum", "-\\frac{5}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimaux exacts −1,5 et −1,25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3",
+				"c": "1"
+			},
+			"answers": ["-1{,}5", "décroissante", "croissante", "minimum", "-1{,}25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-x^2+5x-2 : max 17/4 en 5/2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"b": "5",
+				"c": "-2"
+			},
+			"answers": ["\\frac{5}{2}", "croissante", "décroissante", "maximum", "\\frac{17}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "min au lieu de max (a < 0)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"b": "5",
+				"c": "-2"
+			},
+			"answers": ["\\frac{5}{2}", "croissante", "décroissante", "minimum", "\\frac{17}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

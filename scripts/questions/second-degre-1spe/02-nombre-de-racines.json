@@ -1,0 +1,305 @@
+{
+	"title": "Nombre de racines selon le signe du discriminant",
+	"description": "Δ donné, puis Δ à calculer",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Polynôme du second degré",
+	"status": "draft",
+	"subdomain": "Discriminant",
+	"level": 2,
+	"delay": 20,
+	"shared": {
+		"choices": [
+			{
+				"content": "aucune racine"
+			},
+			{
+				"content": "une seule racine"
+			},
+			{
+				"content": "deux racines distinctes"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..60"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$\\Delta={{d}}>0$.",
+					"Comme $\\Delta>0$, le polynôme a **deux racines distinctes**."
+				]
+			}
+		},
+		{
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta={{d}}$. Combien de racines ce polynôme a-t-il ?",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "-60..-1"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\Delta={{d}}<0$.",
+					"Comme $\\Delta<0$, le polynôme n'a **aucune racine** réelle."
+				]
+			}
+		},
+		{
+			"statement": "Le discriminant d'un polynôme du second degré vaut $\\Delta=0$. Combien de racines ce polynôme a-t-il ?",
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": ["Comme $\\Delta=0$, le polynôme a **une seule racine** (racine double)."]
+			}
+		},
+		{
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c > 0"],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant, avec $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"Comme $\\Delta>0$, le polynôme a **deux racines distinctes**."
+				]
+			}
+		},
+		{
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["b^2-4*a*c < 0"],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant, avec $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"Comme $\\Delta<0$, le polynôme n'a **aucune racine** réelle."
+				]
+			}
+		},
+		{
+			"statement": "Combien de racines le polynôme $P(x)={{eval:ax^2+bx+c}}$ a-t-il ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:-2*a*r"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a*r^2"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"On calcule le discriminant, avec $a={{a}}$, $b={{b}}$ et $c={{c}}$.",
+					"$$\\begin{align}\\Delta &= b^2-4ac \\\\ &= {{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}} \\\\ &= {{eval:b^2-4*a*c}}\\end{align}$$",
+					"Comme $\\Delta=0$, le polynôme a **une seule racine** (racine double)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Δ=17 → deux racines",
+			"variationIndex": 0,
+			"variables": {
+				"d": "17"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ=17 → « une seule » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"d": "17"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Δ=−8 → aucune racine",
+			"variationIndex": 1,
+			"variables": {
+				"d": "-8"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ=−8 → « deux racines » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"d": "-8"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Δ=0 → une seule racine",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Δ=0 → « aucune » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x^2-3x-5 : Δ=49 → deux",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2x^2-3x-5 : « aucune » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "-5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3x^2+x+7 : Δ=−83 → aucune",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "7"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3x^2+x+7 : « deux » refusé",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "7"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-2x^2+12x-18 : Δ=0 → une seule",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-2",
+				"r": "3",
+				"b": "12",
+				"c": "-18"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-2x^2+12x-18 : « deux » refusé",
+			"variationIndex": 5,
+			"variables": {
+				"a": "-2",
+				"r": "3",
+				"b": "12",
+				"c": "-18"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
