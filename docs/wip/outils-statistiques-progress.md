@@ -71,8 +71,43 @@ Tour 2 (2026-10-01) — toutes les recommandations suivies :
 13. **Arrondis d'affichage** : entier exact ; sinon ≈ à 2 décimales ; % à 1 décimale ; angles au
     degré ; `arrondi: N` ; calcul interne jamais arrondi.
 
+Tour 3 (2026-10-01) — recommandations suivies, spécification TDD du lot 1 validée :
+
+14. **`.linreg` rebranché sur `fitAffine`** au lot 1 ; son erreur « X et Y de longueurs
+    différentes » reste au niveau de la commande, avant l'appel ; sortie inchangée.
+15. **Sortie de `.stats` inchangée au lot 1** (seule la source du calcul change) ; passage en
+    français + quartiles au lot 5. Raison : `.stats`/`.ajustement` sont exposées DANS l'atelier
+    (`OFF_REGISTRY`, `commands.ts:249`).
+16. **Objectif écrit** dans `atelier-progress.md` : l'atelier a vocation à remplacer le REPL web
+    (`/cas`) et garde `WebReplEngine` comme calculateur. Une note, pas d'ADR.
+
+## Lot 1 — spécification TDD validée
+
+Module `src/lib/statistics/`, pur. Entrée invalide → `{ ok: false, message }` (français, jamais
+d'exception) ; série vide → `null`. ⚠️ **Aucun import `$lib`** dans ce module : `mathAST` n'en
+fait jamais (`pnpm math` = `tsx`, sans alias) et le moteur l'importe en relatif.
+
+- **A. Série brute** : rang de Q_p = ⌈n·p/100⌉ (entiers). `3;7;8;5;12;14;21;13;18` → médiane 12,
+  Q1 7, Q3 14, EIQ 7 (≠ TI : 6 et 16). `1..8` → méd. 4,5, Q1 2, Q3 6. `1..30` → D1 3, D9 27.
+  Ordre indifférent. Une valeur → tout = elle, EIQ/variance/étendue 0. Valeurs égales → EIQ 0.
+  Vide → `null`. `NaN`/`Infinity` → erreur qui nomme la valeur.
+- **B. Effectifs** : `0..4` / `5;8;4;2;1` → moyenne 1,3, variance 1,21, σ 1,1, médiane 1, Q1 0,
+  Q3 2 ; fréquences `.25 .4 .2 .1 .05` ; cumulées croissantes `.25 .65 .85 .95 1` (effectifs
+  `5 13 17 19 20`) ; décroissantes `1 .75 .35 .15 .05`. Dépliée = mêmes indicateurs. Effectif 0
+  gardé dans le tableau, sans effet. Pourcentages = effectifs proportionnels. Erreurs :
+  effectif < 0 ou non fini (situé), total nul, longueurs différentes. Lignes triées par valeur.
+- **C. Classes** : `[0;10[ 12, [10;20[ 18, [20;40[ 10` → moyenne aux centres 15,75, classe
+  médiane `[10;20[`, médiane estimée 130/9 ; 50 % pile en fin de classe (`20, 20`) → classe
+  `[0;10[`, estimation 10 ; densité = effectif / amplitude exposée. Erreurs : borne gauche ≥
+  droite (situé), classes non contiguës / chevauchantes (nomme les deux).
+- **D. Non-régression** : tests existants de `describeList` verts sans modification ; `.stats` et
+  `.linreg` même sortie, calcul délégué au module (test qui l'espionne) ; `STATISTICS_LIMITS`
+  10 000 valeurs (`.stats`/`.linreg` gardent 1 000) ; doc `n − 1` corrigée.
+- **Ajout constaté en préparant les tests** : `fitAffine([0.1;0.1;0.1], …)` passe le garde
+  « abscisses identiques » (moyenne 0,10000000000000002 → variance ≈ 6e-34 ≠ 0) et rendrait une
+  pente absurde. Garde réécrit en égalité des valeurs ; même chose pour la variance d'une série
+  constante (0 exact).
+
 ## Questions ouvertes
 
-- Spécification TDD du lot 1 (ci-dessous) : en attente de validation.
-- `.linreg` = 3ᵉ implémentation (ajustement recalculé, `web-repl-engine.ts` ~l.1780) : le
-  rebrancher sur `fitAffine` au lot 1 ? (reco : oui)
+(aucune pour le lot 1)
