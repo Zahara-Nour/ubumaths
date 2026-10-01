@@ -11,6 +11,8 @@
  * grille: 1 ; 2
  * f(x) = -(x+2)*(x-4)   bleu   nom=C_f
  * g(x) = 2*x+1 sur [-1 ; 4]   rouge pointillé
+ * u(n) = 2*n+1 pour n de 0 à 8   bleu   nom=u
+ * v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9   rouge
  * points: A(-2;0), B(4;0), M(2 ; f(2))
  * asymptotes: x=2 ; y=1
  * aire: f ; -2 ; 4
@@ -35,6 +37,8 @@ import type {
 	CourbeDomain,
 	CourbeFunction,
 	CourbeGrid,
+	CourbeSequence,
+	CourbeSequenceTerm,
 	CourbeIssue,
 	CourbeLabel,
 	CourbeNode,
@@ -47,6 +51,9 @@ import { COURBE_COLORS, COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '
 import type { MathNode } from '$lib/mathAST/types';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
+import { transformAST } from '$lib/mathAST/visitor';
+import { variable } from '$lib/mathAST/factory';
+import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
 
 // ============================================================================
 // CONSTANTES
@@ -58,6 +65,18 @@ const BLOCK_END_REGEX = /^```\s*$/;
 /** `f(x) = …` — nom de fonction, variable, reste de la ligne */
 const FUNCTION_LINE_REGEX =
 	/^([A-Za-z][A-Za-z0-9]*)\s*\(\s*([A-Za-z][A-Za-z0-9]*)\s*\)\s*=\s*(.*)$/;
+
+/**
+ * `v(0) = …` ou `v(n+1) = …` : terme d'une suite, argument qui n'est pas un
+ * simple nom (sinon c'est `FUNCTION_LINE_REGEX`).
+ */
+const SEQUENCE_TERM_LINE_REGEX = /^([A-Za-z][A-Za-z0-9]*)\s*\(\s*([^()]+?)\s*\)\s*=\s*(.*)$/;
+
+/** Relation de récurrence, après le « ; » : `v(n+1) = …` */
+const RECURRENCE_REGEX = /^([A-Za-z][A-Za-z0-9]*)\s*\(\s*n\s*\+\s*1\s*\)\s*=\s*(.*)$/;
+
+/** Rangs dessinés, en fin de ligne : `pour n de 0 à 8` (`a` accepté pour `à`) */
+const RANKS_REGEX = /\s+pour\s+n\s+de\s+(.+?)\s+(?:à|a)\s+(.+)$/;
 
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
@@ -94,7 +113,7 @@ export function isCourbeBlockStart(line: string): boolean {
 /** Ligne qui a la forme d'une ligne de bloc courbe (clé connue ou `f(x) = …`) */
 function looksLikeCourbeLine(line: string): boolean {
 	const trimmed = line.trim();
-	if (FUNCTION_LINE_REGEX.test(trimmed)) return true;
+	if (FUNCTION_LINE_REGEX.test(trimmed) || SEQUENCE_TERM_LINE_REGEX.test(trimmed)) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
 	return kv !== null && (KNOWN_KEYS as readonly string[]).includes(kv[1].toLowerCase());
 }
@@ -346,6 +365,29 @@ function isOption(token: string): boolean {
 	);
 }
 
+interface LineOptions {
+	body: string;
+	color: CourbeColor;
+	dashed: boolean;
+	label: CourbeLabel | null;
+}
+
+/** Les options sont les derniers mots de la ligne : on les retire par la droite. */
+function splitOptions(rest: string): LineOptions {
+	const tokens = rest.trim().split(/\s+/);
+	let color: CourbeColor = 'bleu';
+	let dashed = false;
+	let label: CourbeLabel | null = null;
+	while (tokens.length > 1 && isOption(tokens[tokens.length - 1])) {
+		const token = tokens.pop() as string;
+		const lower = token.toLowerCase();
+		if (token.startsWith('nom=')) label = parseLabel(token.slice(4));
+		else if (DASHED_WORDS.has(lower)) dashed = true;
+		else color = lower as CourbeColor;
+	}
+	return { body: tokens.join(' '), color, dashed, label };
+}
+
 function parseFunctionLine(
 	name: string,
 	variable: string,
@@ -358,20 +400,8 @@ function parseFunctionLine(
 	if (name === 'x' || name === 'y')
 		throw new LineError(`« ${name} » ne peut pas nommer une fonction`);
 
-	// Les options sont les derniers mots de la ligne : on les retire par la droite.
-	const tokens = rest.trim().split(/\s+/);
-	let color: CourbeColor = 'bleu';
-	let dashed = false;
-	let label: CourbeLabel | null = null;
-	while (tokens.length > 1 && isOption(tokens[tokens.length - 1])) {
-		const token = tokens.pop() as string;
-		const lower = token.toLowerCase();
-		if (token.startsWith('nom=')) label = parseLabel(token.slice(4));
-		else if (DASHED_WORDS.has(lower)) dashed = true;
-		else color = lower as CourbeColor;
-	}
-
-	let body = tokens.join(' ');
+	const { body: withDomain, color, dashed, label } = splitOptions(rest);
+	let body = withDomain;
 	let domain: CourbeDomain | null = null;
 	const sur = /\s+sur\s+([[\]].*)$/.exec(body);
 	if (sur) {
@@ -452,6 +482,213 @@ function parseArea(value: string, functionNames: Set<string>, line: number): Cou
 }
 
 // ============================================================================
+// SUITES
+// ============================================================================
+
+/** Rang : entier, représentable exactement (au-delà de 2^53, `n++` n'avance plus). */
+function parseRank(raw: string, what: string): number {
+	const value = evaluateConstant(raw);
+	if (!Number.isSafeInteger(value)) {
+		throw new LineError(`${what} « ${raw.trim()} » doit être un entier`);
+	}
+	return value;
+}
+
+/** `pour n de 0 à 8` retiré de la fin du corps ; rangs vérifiés. */
+function splitRanks(body: string, name: string): { body: string; from: number; to: number } {
+	const match = RANKS_REGEX.exec(body);
+	if (!match) {
+		throw new LineError(
+			`suite ${name} : préciser les rangs à la fin, par exemple « pour n de 0 à 8 »`
+		);
+	}
+	const from = parseRank(match[1], 'le premier rang');
+	const to = parseRank(match[2], 'le dernier rang');
+	if (from > to) {
+		throw new LineError(
+			`suite ${name} : le premier rang (${from}) doit être inférieur ou égal au dernier (${to})`
+		);
+	}
+	return { body: body.slice(0, match.index), from, to };
+}
+
+/**
+ * Lire l'expression d'une suite : en n, et pour une récurrence en `v(n)`,
+ * réécrit en variable (`computeSequenceTerms` du grapheur).
+ */
+function parseSequenceExpression(raw: string, name: string, recurrence: boolean): MathNode {
+	const expression = normalizeCourbeExpression(raw);
+	if (expression === '') throw new LineError(`expression de ${name} manquante`);
+	const parsed = parseExpression(expression);
+	const ast = transformAST(parsed, {
+		enterFunction: (node) => {
+			if (node.name !== name) return;
+			const [arg] = node.args;
+			const isPrevious =
+				recurrence && node.args.length === 1 && arg.type === 'variable' && arg.name === 'n';
+			if (isPrevious) return variable(PREV_TERM_VARIABLE);
+			throw new LineError(
+				recurrence
+					? `dans la relation, seul ${name}(n) est accepté (récurrence d'ordre 1)`
+					: `une suite explicite ${name}(n) ne peut pas utiliser ses propres termes : écrire ${name}(0) = … ; ${name}(n+1) = …`
+			);
+		}
+	});
+	const unknown = [...collectVariables(ast, new Set())].filter(
+		(v) => v !== 'n' && v !== PREV_TERM_VARIABLE
+	);
+	if (unknown.length > 0) {
+		throw new LineError(
+			`la suite ${name} doit être écrite en n${recurrence ? ` et ${name}(n)` : ''} seulement (« ${unknown.join(', ')} » inconnu)`
+		);
+	}
+	try {
+		compile(ast);
+	} catch (error) {
+		const detail = error instanceof Error ? ` (${error.message})` : '';
+		throw new LineError(`expression de ${name} illisible${detail}`);
+	}
+	return ast;
+}
+
+/** Rangs cités dans un avertissement : les trois premiers, puis « … » */
+function formatRanks(ranks: number[]): string {
+	const shown = ranks.slice(0, 3).join(', ');
+	return ranks.length > 3 ? `${shown}…` : shown;
+}
+
+interface ParsedSequence {
+	sequence: CourbeSequence;
+	/** Termes calculés, imputés au budget de la figure */
+	computed: number;
+	warnings: string[];
+}
+
+/**
+ * Ligne de suite : `u(n) = 2*n+1 pour n de 0 à 8` (explicite, `arg` = n) ou
+ * `v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9` (récurrente).
+ *
+ * Budget : au plus `sequenceTerms` termes calculés, `budgetLeft` pour la
+ * figure ; un terme non fini ou démesuré ARRÊTE la récurrence.
+ */
+function parseSequenceLine(
+	name: string,
+	arg: string,
+	rest: string,
+	line: number,
+	budgetLeft: number
+): ParsedSequence {
+	if (name === 'x' || name === 'y' || name === 'n') {
+		throw new LineError(`« ${name} » ne peut pas nommer une suite`);
+	}
+	const options = splitOptions(rest);
+	if (options.dashed) throw new LineError(`suite ${name} : pas de pointillé pour une suite`);
+	const head = arg.replace(/\s+/g, '');
+	const recurrence = head !== 'n';
+
+	let firstTerm: CourbeSequenceTerm | null = null;
+	let ranksBody: string;
+	if (!recurrence) {
+		ranksBody = options.body;
+	} else {
+		if (head === 'n+1') {
+			throw new LineError(
+				`récurrence sans premier terme : écrire ${name}(0) = … ; ${name}(n+1) = …`
+			);
+		}
+		const parts = splitTopLevel(options.body, ';');
+		if (parts.length < 2) {
+			throw new LineError(
+				`premier terme ${name}(${arg}) sans relation de récurrence : ajouter « ; ${name}(n+1) = … »`
+			);
+		}
+		if (parts.length > 2) throw new LineError(`suite ${name} : un seul « ; » attendu`);
+		const relation = RECURRENCE_REGEX.exec(parts[1]);
+		if (!relation) {
+			throw new LineError(`relation de récurrence mal écrite : attendu « ${name}(n+1) = … »`);
+		}
+		if (relation[1] !== name) {
+			throw new LineError(
+				`le premier terme est celui de ${name}, la relation porte sur ${relation[1]} : même nom attendu`
+			);
+		}
+		firstTerm = {
+			n: parseRank(arg, 'le rang du premier terme'),
+			value: evaluateConstant(parts[0])
+		};
+		ranksBody = relation[2];
+	}
+
+	const ranks = splitRanks(ranksBody, name);
+	const expressionText = ranks.body;
+	const start = firstTerm ? firstTerm.n : ranks.from;
+	if (firstTerm && firstTerm.n > ranks.from) {
+		throw new LineError(
+			`le premier terme ${name}(${firstTerm.n}) vient après le premier rang dessiné (${ranks.from})`
+		);
+	}
+	const count = ranks.to - start + 1;
+	if (count > COURBE_LIMITS.sequenceTerms) {
+		throw new LineError(
+			`suite ${name} : au plus ${COURBE_LIMITS.sequenceTerms} termes calculés (ici ${count})`
+		);
+	}
+	if (count > budgetLeft) {
+		throw new LineError(`au plus ${COURBE_LIMITS.totalSequenceTerms} termes de suites par figure`);
+	}
+
+	const ast = parseSequenceExpression(expressionText, name, recurrence);
+	const computedTerms = computeSequenceTerms(
+		{
+			mode: recurrence ? 'recurrence' : 'explicit',
+			ast,
+			firstIndex: start,
+			firstTerm: firstTerm?.value ?? null
+		},
+		ranks.to
+	);
+
+	const warnings: string[] = [];
+	let terms = computedTerms;
+	if (recurrence) {
+		const huge = terms.findIndex((t) => Math.abs(t.value) > COURBE_LIMITS.sequenceValue);
+		if (huge !== -1) {
+			warnings.push(
+				`${name}(${terms[huge].n}) dépasse 10^12 en valeur absolue : calcul arrêté au rang ${terms[huge].n - 1}`
+			);
+			terms = terms.slice(0, huge);
+		} else if (terms.length < count) {
+			const next = start + terms.length;
+			warnings.push(`${name}(${next}) n'est pas défini : calcul arrêté au rang ${next - 1}`);
+		}
+	} else if (terms.length < count) {
+		const present = new Set(terms.map((t) => t.n));
+		const missing: number[] = [];
+		for (let n = start; n <= ranks.to; n++) if (!present.has(n)) missing.push(n);
+		warnings.push(
+			`${name} n'est pas définie au${missing.length > 1 ? 'x' : ''} rang${missing.length > 1 ? 's' : ''} ${formatRanks(missing)}`
+		);
+	}
+
+	return {
+		sequence: {
+			name,
+			kind: recurrence ? 'recurrence' : 'explicite',
+			expression: normalizeCourbeExpression(expressionText),
+			firstIndex: ranks.from,
+			lastIndex: ranks.to,
+			firstTerm,
+			terms: terms.filter((t) => t.n >= ranks.from),
+			color: options.color,
+			label: options.label,
+			line
+		},
+		computed: count,
+		warnings
+	};
+}
+
+// ============================================================================
 // BLOC
 // ============================================================================
 
@@ -473,6 +710,8 @@ export function parseCourbeContent(source: string): CourbeNode {
 	let description: string | null = null;
 	const functions: CourbeFunction[] = [];
 	const functionTable: FunctionTable = new Map();
+	const sequences: CourbeSequence[] = [];
+	let sequenceTermsLeft: number = COURBE_LIMITS.totalSequenceTerms;
 	const deferred: {
 		key: 'points' | 'aire' | 'asymptotes';
 		value: string;
@@ -492,9 +731,26 @@ export function parseCourbeContent(source: string): CourbeNode {
 		if (content === '') return;
 		try {
 			const fn = FUNCTION_LINE_REGEX.exec(content);
+			const term = fn ? null : SEQUENCE_TERM_LINE_REGEX.exec(content);
+			if ((fn && fn[2] === 'n') || term) {
+				const [, name, arg, rest] = (fn ?? term) as RegExpExecArray;
+				const taken = functionTable.has(name) || sequences.some((s) => s.name === name);
+				if (taken) throw new LineError(`nom ${name} déjà utilisé`);
+				if (sequences.length >= COURBE_LIMITS.sequences) {
+					throw new LineError(`au plus ${COURBE_LIMITS.sequences} suites par figure`);
+				}
+				const parsed = parseSequenceLine(name, arg, rest, line, sequenceTermsLeft);
+				sequences.push(parsed.sequence);
+				sequenceTermsLeft -= parsed.computed;
+				for (const message of parsed.warnings) {
+					warnings.push({ message: `Ligne ${line} : ${message}`, line, content });
+				}
+				return;
+			}
 			if (fn) {
 				const [, name, variable, rest] = fn;
-				if (functionTable.has(name)) throw new LineError(`fonction ${name} déjà définie`);
+				const taken = functionTable.has(name) || sequences.some((s) => s.name === name);
+				if (taken) throw new LineError(`nom ${name} déjà utilisé`);
 				if (functions.length >= COURBE_LIMITS.functions) {
 					throw new LineError(`au plus ${COURBE_LIMITS.functions} fonctions par figure`);
 				}
@@ -632,6 +888,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					window: window as CourbeWindow,
 					grid,
 					functions,
+					sequences,
 					points,
 					asymptotes,
 					areas,

@@ -4,7 +4,7 @@
  *
  * Transforme une `CourbeSpec` en primitives géométriques en COORDONNÉES
  * MATHÉMATIQUES : polylignes coupées aux discontinuités et aux bords de la
- * fenêtre, disques de bornes, points, asymptotes, polygones d'aire, grille,
+ * fenêtre, disques de bornes, termes de suites, points, asymptotes, polygones d'aire, grille,
  * graduations et étiquettes.
  *
  * Module PUR, sans DOM ni store : l'écran (`Courbe.svelte`) et le PDF
@@ -54,6 +54,14 @@ export interface SceneEndpoint extends ScenePoint {
 	color: CourbeColor;
 }
 
+/** Suite : un disque par terme visible (n ; u_n), points non reliés */
+export interface SceneSequence {
+	name: string;
+	color: CourbeColor;
+	/** Termes visibles, par rang croissant */
+	terms: ScenePoint[];
+}
+
 export interface SceneTick {
 	value: number;
 	label: string;
@@ -71,6 +79,7 @@ export interface CourbeScene {
 	ticks: { x: SceneTick[]; y: SceneTick[] };
 	curves: SceneCurve[];
 	endpoints: SceneEndpoint[];
+	sequences: SceneSequence[];
 	points: { name: string; x: number; y: number }[];
 	asymptotes: { from: ScenePoint; to: ScenePoint }[];
 	areas: { color: CourbeColor; polygon: ScenePoint[] }[];
@@ -341,9 +350,19 @@ function joinNames(names: string[]): string {
 function defaultAriaLabel(spec: CourbeSpec): string {
 	const range = `x de ${formatTick(spec.window.xMin)} à ${formatTick(spec.window.xMax)}`;
 	const names = spec.functions.map((f) => f.name);
-	if (names.length === 0) return `Repère, ${range}`;
-	const head = names.length === 1 ? 'Courbe de' : 'Courbes de';
-	return `${head} ${joinNames(names)}, ${range}`;
+	const sequenceNames = (spec.sequences ?? []).map((s) => s.name);
+	const parts: string[] = [];
+	if (names.length > 0) {
+		parts.push(`${names.length === 1 ? 'Courbe de' : 'Courbes de'} ${joinNames(names)}`);
+	}
+	if (sequenceNames.length > 0) {
+		const head = sequenceNames.length === 1 ? 'suite' : 'suites';
+		parts.push(
+			`${parts.length === 0 ? head[0].toUpperCase() + head.slice(1) : head} ${joinNames(sequenceNames)}`
+		);
+	}
+	if (parts.length === 0) return `Repère, ${range}`;
+	return `${parts.join(' et ')}, ${range}`;
 }
 
 // ============================================================================
@@ -361,6 +380,7 @@ function emptyScene(spec: CourbeSpec, width: number, height: number, message: st
 		ticks: { x: [], y: [] },
 		curves: [],
 		endpoints: [],
+		sequences: [],
 		points: [],
 		asymptotes: [],
 		areas: [],
@@ -453,6 +473,35 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		if (anchor) curveLabels.push({ label: fn.label, x: anchor.x, y: anchor.y, color: fn.color });
 	});
 
+	// Suites : termes tronqués aux plafonds (spécification forgée), puis à la fenêtre.
+	const sequences: SceneSequence[] = [];
+	let termsLeft: number = COURBE_LIMITS.totalSequenceTerms;
+	for (const seq of (input.sequences ?? []).slice(0, COURBE_LIMITS.sequences)) {
+		const terms = seq.terms.slice(0, Math.min(COURBE_LIMITS.sequenceTerms, termsLeft));
+		termsLeft -= terms.length;
+		const visible: ScenePoint[] = [];
+		const hidden: number[] = [];
+		for (const t of terms) {
+			if (inside(t.n, t.value)) visible.push({ x: t.n, y: clean(t.value) });
+			else hidden.push(t.n);
+		}
+		if (hidden.length > 0) {
+			const ranks = hidden.slice(0, 3).join(', ') + (hidden.length > 3 ? '…' : '');
+			warnings.push({
+				message:
+					hidden.length === 1
+						? `Ligne ${seq.line} : 1 terme de ${seq.name} (rang ${ranks}) est hors de la fenêtre, il n'est pas dessiné`
+						: `Ligne ${seq.line} : ${hidden.length} termes de ${seq.name} (rangs ${ranks}) sont hors de la fenêtre, ils ne sont pas dessinés`,
+				line: seq.line
+			});
+		}
+		sequences.push({ name: seq.name, color: seq.color, terms: visible });
+		// Nom de la suite : près du dernier terme visible
+		const last = visible[visible.length - 1];
+		if (seq.label && last)
+			curveLabels.push({ label: seq.label, x: last.x, y: last.y, color: seq.color });
+	}
+
 	const asymptotes: CourbeScene['asymptotes'] = [];
 	for (const a of spec.asymptotes) {
 		const within =
@@ -513,6 +562,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		ticks: { x: ticksFor(xs, xStep, yAxisX), y: ticksFor(ys, yStep, xAxisY) },
 		curves,
 		endpoints,
+		sequences,
 		points,
 		asymptotes,
 		areas,
