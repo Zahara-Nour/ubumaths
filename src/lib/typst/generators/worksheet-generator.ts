@@ -51,6 +51,8 @@ import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 import { formatNumber } from '../utils';
 import { SECTION_COLOR, exerciseBadge } from '../worksheet-palette';
+// Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
+import '$lib/ubumark/generators/figure-typst-setup';
 
 // ============================================================================
 // TYPES

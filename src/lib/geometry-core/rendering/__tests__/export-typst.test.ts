@@ -24,7 +24,7 @@ describe('exportToTypst', () => {
 		f.createFreePoint(pt(3, 4), { label: 'A' });
 		const result = exportToTypst(f, viewport);
 		expect(result).toContain('circle((3, 4)');
-		expect(result).toContain('$A$');
+		expect(result).toContain('text(style: "italic", "A")');
 	});
 
 	it('exports a segment', () => {

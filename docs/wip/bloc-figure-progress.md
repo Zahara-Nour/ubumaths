@@ -1,7 +1,7 @@
 ---
 title: Bloc ubumark ```figure — progression
 date: 2026-10-01
-status: lots 1-2 livrés, lot 3 en cours
+status: lots 1-3 livrés sur la branche (PR à ouvrir)
 branche: feat/bloc-figure (worktree ../ubumaths-wt-figure)
 ---
 
@@ -73,7 +73,7 @@ angle(B, A, C, marque="carre")
 
 - [x] Lot 1 — types + parseur + scène (40 tests rouges avant : modules absents ; 6 tests geometry-core)
 - [x] Lot 2 — composant à la demande + câblage + Q48
-- [ ] Lot 3 — Typst + compilation prod
+- [x] Lot 3 — Typst + compilation prod
 
 ## Journal
 
@@ -114,3 +114,40 @@ marque="carre")`. `mtexte`/`rtexte` refusés : leur LaTeX n'a pas d'équivalent 
   Tests navigateur (`nodes/__tests__/FigureBlock.svelte.test.ts`, 12, rendus dans `<main>`) :
   chaque objet visible de la scène a sa forme (`data-element`), repère isotrope, couleur
   calculée non vide, Q48 prof/élève, contexte du renderer, bloc dans une liste.
+- 2026-10-01 lot 3 : `generators/figure-typst.ts` = `exportToTypst` de geometry-core, ALIGNÉ
+  sur la production (tests rouges avant, `export-typst-production.test.ts`) : cetz **0.3.0** (était
+  0.3.4), noms de points et textes en CHAÎNES Typst échappées (était `$AB$` → variable inconnue,
+  fiche entière en échec ; `exportToTypst` n'avait aucun appelant hors tests), options
+  `includeImport`, `annotate` (`// element <id>`), `includeViewportBounds` (cadre invisible =
+  fenêtre), `markScale` (points, codages, angles gardent leur taille quand une unité ≠ 1 cm).
+  Repère isotrope : unité = largeur (4,5 / 6,5 / 7,6 cm comme `courbe`) / (xmax − xmin).
+  **Comportement 15** : l'écran (`figureToSvg`, `data-element`) et le PDF (`// element <id>`)
+  dessinent exactement les mêmes objets (test). **Compilation prouvée** : fiche de 3 exercices
+  (figure complète : 4 points dont `AB`, polygone, angle droit, angle mesuré, codage 2 traits,
+  vecteur, 2 cercles, arc, droite, demi-droite, milieu, texte `*1* $ _x_ \ y` ; deux figures en
+  liste petite/grande ; fenêtre 100 × 60 ; un bloc en erreur) passée par
+  `scripts/fiches/rendu-fiche.ts` (vrai `WorksheetGenerator`, énoncé + CORRIGÉ, FR + EN) puis
+  `scripts/fiches/compile-prod.mjs` (typst.ts 0.6.1-rc5) : **4/4 OK**, page relue à l'œil.
+  **Comportement 16 — chunk Markdown, mesuré** : bundle ROLLUP 4.60 (le bundler de vite 7) de
+  `MarkdownRenderer.svelte`, tree-shaking par défaut, paquets npm externes (script d'analyse hors
+  dépôt). Premier essai : `typst-generator` importait `figure-typst` → **~630 Ko non minifiés de
+  geometry-core (dont `builtins.ts`, 200 Ko) dans le chunk statique** — `typst-generator` est
+  réexporté par le baril `$lib/ubumark`, importé par 19 modules dont le rendu Markdown, et rollup
+  range dans le chunk d'entrée tout module ATTEIGNABLE statiquement. Correctif : registre léger
+  `figure-typst-registry.ts` dans `typst-generator` ; le rendu réel est inscrit par
+  `figure-typst-setup.ts`, importé par les 4 producteurs de PDF (`worksheet-generator`,
+  `student-worksheet-typst`, `notebook-generator`, `exercise-typst-generator`) ; un test interdit
+  un appel à `generateTypst` sans cet import (sinon « Figure indisponible » silencieux). Après :
+  chunk Markdown = `figure-parser` seul (5 Ko) ; `FigureBlockView` + interpréteur + builtins dans
+  un chunk À LA DEMANDE (~490 Ko minifiés, ~120 Ko gzip), qui n'importe ni roughjs ni
+  `GeometryCanvas` (mathlive y est seulement re-déclaré par rollup : déjà chargé par la page).
+  À confirmer par David sur un vrai `pnpm build` (interdit aux agents).
+
+## Limites connues (v1)
+
+- Pas de découpage à la fenêtre au PDF : un objet qui dépasse la fenêtre agrandit la figure
+  (à l'écran il est coupé). Le prof est averti pour les points hors fenêtre.
+- `#` dans une chaîne du DSL : refusé par le tokenizer de geometry-core (« Chaîne non fermée »,
+  message situé) — défaut préexistant du DSL, hors périmètre.
+- Les étiquettes peuvent chevaucher les traits (placement fixe, comme geometry-core).
+- Export LaTeX : non (le générateur LaTeX ignore le bloc).

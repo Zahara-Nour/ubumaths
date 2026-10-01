@@ -33,6 +33,8 @@ import { parseMarkdown } from '$lib/ubumark';
 import { createLogger } from '$lib/utils/logger';
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+// Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
+import '$lib/ubumark/generators/figure-typst-setup';
 
 const logger = createLogger('exercise-typst-generator');
 

@@ -21,6 +21,18 @@ export interface TypstExportOptions {
 	showAxes?: boolean;
 	showLabels?: boolean;
 	showMeasures?: boolean;
+	/** Émettre `#import "@preview/cetz:…"` (défaut : oui ; non quand le document l'a déjà) */
+	includeImport?: boolean;
+	/** Commentaire `// element <id>` avant les primitives de chaque élément dessiné */
+	annotate?: boolean;
+	/** Cadre invisible aux bornes du viewport : la toile couvre toute la fenêtre */
+	includeViewportBounds?: boolean;
+	/**
+	 * Facteur des tailles FIXES (points, codages, angles, décalages d'étiquettes),
+	 * exprimées en unités du repère. Avec `scale` < 1, `markScale = 1 / scale`
+	 * leur garde leur taille sur la page.
+	 */
+	markScale?: number;
 }
 
 const MARK_RADIUS = 0.4;
@@ -33,6 +45,15 @@ function c(x: number, y: number): string {
 	const rx = Math.round(x * 1000) / 1000;
 	const ry = Math.round(y * 1000) / 1000;
 	return `(${rx}, ${ry})`;
+}
+
+/**
+ * Chaîne Typst littérale. Un nom ou un texte d'auteur n'entre JAMAIS en mode
+ * math (`$AB$` = variable inconnue) ni en markup (`#`, `$`, `*`, `_`…) : une
+ * seule erreur fait échouer tout le document.
+ */
+function typstString(text: string): string {
+	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
 }
 
 function hexToTypstColor(hex: string): string {
@@ -57,17 +78,37 @@ export function exportToTypst(
 	const showAxes = options?.showAxes ?? false;
 	const showLabels = options?.showLabels ?? true;
 	const showMeasures = options?.showMeasures ?? true;
+	const annotate = options?.annotate ?? false;
+	/** Tailles fixes (en unités du repère), multipliées par `markScale` */
+	const k = options?.markScale ?? 1;
+	const markRadius = MARK_RADIUS * k;
+	const markSpacing = MARK_SPACING * k;
+	const rightAngleSize = RIGHT_ANGLE_SIZE * k;
+	const tickHalf = TICK_HALF * k;
+	const tickSpacing = TICK_SPACING * k;
+	const size = (n: number) => Math.round(n * k * 1000) / 1000;
 
 	const lines: string[] = [];
 	const elements = figure.getAllElements();
+	/** Repère de l'élément dessiné (tests : mêmes objets à l'écran et au PDF) */
+	const tag = (id: string) => {
+		if (annotate) lines.push(`  // element ${id}`);
+	};
 
-	// Header
-	lines.push('#import "@preview/cetz:0.3.4"');
-	lines.push('');
+	// Header (cetz 0.3.0 : même version que les autres blocs du PDF)
+	if (options?.includeImport ?? true) {
+		lines.push('#import "@preview/cetz:0.3.0"');
+		lines.push('');
+	}
 	lines.push(`#cetz.canvas({`);
 	lines.push(`  import cetz.draw: *`);
 	if (scale !== 1) {
 		lines.push(`  scale(x: ${scale}, y: ${scale})`);
+	}
+	if (options?.includeViewportBounds) {
+		lines.push(
+			`  rect(${c(viewport.xMin, viewport.yMin)}, ${c(viewport.xMax, viewport.yMax)}, stroke: none)`
+		);
 	}
 
 	// Grid
@@ -108,6 +149,7 @@ export function exportToTypst(
 			const p1 = figure.getPosition(el.startId);
 			const p2 = figure.getPosition(el.endId);
 			if (!p1 || !p2) continue;
+			tag(el.id);
 			lines.push(
 				`  line(${c(geoToNumber(p1.x), geoToNumber(p1.y))}, ${c(geoToNumber(p2.x), geoToNumber(p2.y))}, stroke: ${stroke})`
 			);
@@ -123,6 +165,7 @@ export function exportToTypst(
 				viewport
 			);
 			if (!ext) continue;
+			tag(el.id);
 			lines.push(`  line(${c(ext.x1, ext.y1)}, ${c(ext.x2, ext.y2)}, stroke: ${stroke})`);
 		} else if (el.type === 'ray') {
 			const origin = figure.getPosition(el.originId);
@@ -138,6 +181,7 @@ export function exportToTypst(
 				viewport
 			);
 			if (!ext) continue;
+			tag(el.id);
 			lines.push(`  line(${c(ox, oy)}, ${c(ext.x, ext.y)}, stroke: ${stroke})`);
 		} else if (isVector(el)) {
 			const comp = figure.getVectorComponents(el.id);
@@ -155,6 +199,7 @@ export function exportToTypst(
 			}
 			const endX = startX + geoToNumber(comp.dx);
 			const endY = startY + geoToNumber(comp.dy);
+			tag(el.id);
 			lines.push(
 				`  line(${c(startX, startY)}, ${c(endX, endY)}, stroke: ${stroke}, mark: (end: "stealth", fill: ${hexToTypstColor(sty.color)}))`
 			);
@@ -175,6 +220,7 @@ export function exportToTypst(
 			const center = figure.getPosition(el.centerId);
 			if (!center) continue;
 			const r = figure.resolveParam(el.radius);
+			tag(el.id);
 			lines.push(
 				`  circle(${c(geoToNumber(center.x), geoToNumber(center.y))}, radius: ${Math.round(r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
 			);
@@ -185,6 +231,7 @@ export function exportToTypst(
 			const cx = geoToNumber(center.x);
 			const cy = geoToNumber(center.y);
 			const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+			tag(el.id);
 			lines.push(
 				`  circle(${c(cx, cy)}, radius: ${Math.round(r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
 			);
@@ -202,6 +249,7 @@ export function exportToTypst(
 				geoToNumber(p3.y)
 			);
 			if (!cc) continue;
+			tag(el.id);
 			lines.push(
 				`  circle(${c(cc.ux, cc.uy)}, radius: ${Math.round(cc.r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
 			);
@@ -256,6 +304,7 @@ export function exportToTypst(
 		const start = Math.round(startDeg * 100) / 100;
 		const stop = Math.round((startDeg + sweep) * 100) / 100;
 
+		tag(el.id);
 		lines.push(
 			`  arc(${c(cx, cy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(r * 1000) / 1000}, anchor: "origin", stroke: ${stroke})`
 		);
@@ -274,6 +323,7 @@ export function exportToTypst(
 		if (verts.some((p) => !p)) continue;
 		const pts = verts.map((p) => c(geoToNumber(p!.x), geoToNumber(p!.y)));
 		const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
+		tag(el.id);
 		lines.push(`  line(${pts.join(', ')}, close: true, stroke: ${stroke}${fillPart})`);
 	}
 
@@ -388,16 +438,17 @@ export function exportToTypst(
 		const projected = projectAngleEndpoints(el, figure, (mx, my) => ({ x: mx, y: my }));
 		if (!projected) continue;
 
-		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
-		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * MARK_SPACING : MARK_SPACING;
+		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * markRadius : markRadius;
+		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * markSpacing : markSpacing;
 
 		const geom = computeAngleGeometry(el, projected, {
 			arcRadius: baseR,
 			arcSpacing,
-			rightAngleSize: RIGHT_ANGLE_SIZE,
-			labelOffset: 0.2
+			rightAngleSize,
+			labelOffset: size(0.2)
 		});
 		if (!geom) continue;
+		tag(el.id);
 
 		const { vertexX: vx, vertexY: vy, marque } = geom;
 		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
@@ -434,9 +485,8 @@ export function exportToTypst(
 		}
 
 		if (showLabels && geom.label) {
-			const safe = geom.label.replace(/°/g, '#h(0pt)°');
 			lines.push(
-				`  content(${c(geom.labelX, geom.labelY)}, text(size: 9pt, fill: ${color})[${safe}])`
+				`  content(${c(geom.labelX, geom.labelY)}, text(size: 9pt, fill: ${color}, ${typstString(geom.label)}))`
 			);
 		}
 	}
@@ -464,15 +514,16 @@ export function exportToTypst(
 		const py = ux;
 
 		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
-		const totalWidth = (el.markCount - 1) * TICK_SPACING;
+		const totalWidth = (el.markCount - 1) * tickSpacing;
 		const startOffset = -totalWidth / 2;
 
+		tag(el.id);
 		for (let i = 0; i < el.markCount; i++) {
-			const offset = startOffset + i * TICK_SPACING;
+			const offset = startOffset + i * tickSpacing;
 			const cx = mx + ux * offset;
 			const cy = my + uy * offset;
 			lines.push(
-				`  line(${c(cx + px * TICK_HALF, cy + py * TICK_HALF)}, ${c(cx - px * TICK_HALF, cy - py * TICK_HALF)}, stroke: ${color} + 1.5pt)`
+				`  line(${c(cx + px * tickHalf, cy + py * tickHalf)}, ${c(cx - px * tickHalf, cy - py * tickHalf)}, stroke: ${color} + 1.5pt)`
 			);
 		}
 	}
@@ -488,21 +539,27 @@ export function exportToTypst(
 		const sty = resolveStyle(el, figure.defaults);
 		const color = hexToTypstColor(sty.color);
 
+		tag(el.id);
 		if (sty.pointShape === 'dot') {
-			lines.push(`  circle(${c(x, y)}, radius: 0.08, fill: ${color}, stroke: none)`);
+			lines.push(`  circle(${c(x, y)}, radius: ${size(0.08)}, fill: ${color}, stroke: none)`);
 		} else if (sty.pointShape === 'circle') {
-			lines.push(`  circle(${c(x, y)}, radius: 0.08, fill: none, stroke: ${color} + 1.5pt)`);
+			lines.push(
+				`  circle(${c(x, y)}, radius: ${size(0.08)}, fill: none, stroke: ${color} + 1.5pt)`
+			);
 		} else if (sty.pointShape === 'cross') {
-			const s = 0.1;
+			const s = size(0.1);
 			lines.push(`  line(${c(x - s, y - s)}, ${c(x + s, y + s)}, stroke: ${color} + 1.5pt)`);
 			lines.push(`  line(${c(x + s, y - s)}, ${c(x - s, y + s)}, stroke: ${color} + 1.5pt)`);
 		} else if (sty.pointShape === 'square') {
-			const s = 0.07;
+			const s = size(0.07);
 			lines.push(`  rect(${c(x - s, y - s)}, ${c(x + s, y + s)}, fill: ${color}, stroke: none)`);
 		}
 
 		if (showLabels && el.label) {
-			lines.push(`  content(${c(x + 0.2, y + 0.2)}, [$${el.label}$])`);
+			// Nom en TEXTE italique, jamais en mode math (`$AB$` : variable inconnue)
+			lines.push(
+				`  content(${c(x + size(0.2), y + size(0.2))}, text(style: "italic", ${typstString(el.label)}))`
+			);
 		}
 	}
 
@@ -530,8 +587,8 @@ export function exportToTypst(
 					const dy = geoToNumber(b!.y) - geoToNumber(a!.y);
 					const len = Math.sqrt(dx * dx + dy * dy);
 					if (len > 1e-10) {
-						mx += (-dy / len) * 0.4;
-						my += (dx / len) * 0.4;
+						mx += (-dy / len) * size(0.4);
+						my += (dx / len) * size(0.4);
 					}
 				} else if (el.autoPosition === 'bisector') {
 					const vp = positions[1]!;
@@ -548,8 +605,8 @@ export function exportToTypst(
 						const by = d1y / l1 + d2y / l2;
 						const bl = Math.sqrt(bx * bx + by * by);
 						if (bl > 1e-10) {
-							mx += (bx / bl) * 0.8;
-							my += (by / bl) * 0.8;
+							mx += (bx / bl) * size(0.8);
+							my += (by / bl) * size(0.8);
 						}
 					}
 				} else {
@@ -573,7 +630,8 @@ export function exportToTypst(
 			}
 
 			if (mx === undefined || my === undefined) continue;
-			lines.push(`  content(${c(mx, my)}, text(size: 9pt, fill: ${color})[$${text}$])`);
+			tag(el.id);
+			lines.push(`  content(${c(mx, my)}, text(size: 9pt, fill: ${color}, ${typstString(text)}))`);
 		}
 	}
 
