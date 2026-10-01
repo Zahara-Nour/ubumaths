@@ -54,7 +54,7 @@ export function resolveVariableExpression(
 	expression: string,
 	alreadyResolved: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	options?: { useDisplayValue?: boolean }
+	options?: { useDisplayValue?: boolean; markdown?: boolean }
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
 	// NOTE: expression should already be in Markdown syntax at this point

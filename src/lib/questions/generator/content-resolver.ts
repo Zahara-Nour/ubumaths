@@ -228,7 +228,8 @@ export function resolveMarkdownContent(
 	// en clair (prévu pour `a^b*a^c`) : dans un texte, « Il a gagné » deviendrait « Il 4 gagné »
 	let resolvedContent = withoutConditionals.includes('{{')
 		? resolveVariableExpression(withoutConditionals, resolvedVariables, random, {
-				useDisplayValue: true
+				useDisplayValue: true,
+				markdown: true
 			})
 		: withoutConditionals;
 
