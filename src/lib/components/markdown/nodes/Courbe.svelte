@@ -6,7 +6,8 @@
 	scène pure `buildCourbeScene` (la même que le PDF Typst).
 
 	- Repère anisotrope : la fenêtre x et y de l'auteur remplit un cadre 4:3.
-	- Suites : un disque par terme (n ; u_n), non reliés.
+	- Suites : un disque par terme (n ; u_n), non reliés ; ou, avec `escalier`,
+	  courbe de la relation, droite y = x et escalier dans le repère (u_n ; u_{n+1}).
 	- Couleurs par tokens `var(--color-*)` (clair / sombre).
 	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique).
 	- Erreur (Q48) : message situé pour le prof (`showErrors`, ou contexte posé
@@ -32,6 +33,9 @@
 
 	/** Marge autour du cadre, en px, pour les étiquettes */
 	const PAD = 26;
+
+	/** Décalage des rangs u_k de l'escalier sous l'axe, en px (sous les graduations) */
+	const RANK_OFFSET = 26;
 
 	/** Couleurs : tokens du thème ; vert et violet n'en ont pas, voir le style */
 	const COLOR_VAR: Record<CourbeColor, string> = {
@@ -75,6 +79,10 @@
 
 	let width = $derived(scene?.pixelSize.width ?? 0);
 	let height = $derived(scene?.pixelSize.height ?? 0);
+	/** Place sous le cadre pour les rangs u_k quand l'axe des abscisses est en bas */
+	let bottomExtra = $derived(
+		scene?.sequences.some((s) => (s.staircase?.termLabels.length ?? 0) > 0) ? RANK_OFFSET : 0
+	);
 
 	function sx(x: number): number {
 		if (!scene) return 0;
@@ -108,7 +116,7 @@
 		<svg
 			role="img"
 			aria-label={scene.ariaLabel}
-			viewBox="0 0 {width + 2 * PAD} {height + 2 * PAD}"
+			viewBox="0 0 {width + 2 * PAD} {height + 2 * PAD + bottomExtra}"
 			style:max-width="{width + 2 * PAD}px"
 			class="courbe-svg"
 		>
@@ -202,6 +210,45 @@
 						style:stroke={COLOR_VAR[curve.color]}
 					/>
 				{/each}
+			{/each}
+
+			<!-- Escaliers : droite y = x, relation (noir), rappels, escalier, rangs u_k -->
+			{#each scene.sequences as seq, s (s)}
+				{#if seq.staircase}
+					{#each seq.staircase.diagonal as poly, i (i)}
+						<polyline class="courbe-diagonale" points={pointsAttr(poly)} />
+					{/each}
+					{#each seq.staircase.curve as poly, i (i)}
+						<polyline class="courbe-relation" points={pointsAttr(poly)} />
+					{/each}
+					{#each seq.staircase.guides as g, i (i)}
+						<line
+							class="courbe-rappel"
+							x1={sx(g.from.x)}
+							y1={sy(g.from.y)}
+							x2={sx(g.to.x)}
+							y2={sy(g.to.y)}
+							style:stroke={COLOR_VAR[seq.color]}
+						/>
+					{/each}
+					{#each seq.staircase.steps as poly, i (i)}
+						<polyline
+							class="courbe-escalier"
+							points={pointsAttr(poly)}
+							style:stroke={COLOR_VAR[seq.color]}
+						/>
+					{/each}
+					{#each seq.staircase.termLabels as l, i (i)}
+						<text
+							class="courbe-rang"
+							x={sx(l.x)}
+							y={sy(scene.axes.xAxisY) + RANK_OFFSET}
+							text-anchor="middle"
+							style:fill={COLOR_VAR[seq.color]}
+							>{seq.name}<tspan class="courbe-indice" dy="3">{l.n}</tspan></text
+						>
+					{/each}
+				{/if}
 			{/each}
 
 			<!-- Bornes du domaine : disque plein (incluse) ou vide (exclue) -->
@@ -328,6 +375,36 @@
 
 	.courbe-trace.pointille {
 		stroke-dasharray: 6 4;
+	}
+
+	.courbe-diagonale {
+		fill: none;
+		stroke: var(--color-muted-foreground);
+		stroke-width: 1.2;
+		stroke-dasharray: 5 4;
+	}
+
+	.courbe-relation {
+		fill: none;
+		stroke: var(--color-foreground);
+		stroke-width: 2;
+		stroke-linejoin: round;
+	}
+
+	.courbe-rappel {
+		stroke-width: 1;
+		stroke-dasharray: 2 3;
+	}
+
+	.courbe-escalier {
+		fill: none;
+		stroke-width: 1.6;
+		stroke-linejoin: round;
+	}
+
+	.courbe-rang {
+		font-size: 11px;
+		font-style: italic;
 	}
 
 	.courbe-borne {

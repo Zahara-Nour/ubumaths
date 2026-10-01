@@ -181,6 +181,42 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		);
 	}
 
+	// Escaliers : y = x, courbe de la relation (noir), rappels, escalier, rangs
+	for (const seq of scene.sequences) {
+		const st = seq.staircase;
+		if (!st) continue;
+		const color = TYPST_COLORS[seq.color];
+		for (const poly of st.diagonal) {
+			lines.push('  // diagonale');
+			lines.push(
+				`  line(${path(poly)}, stroke: (paint: luma(110), thickness: 0.6pt, dash: "dashed"))`
+			);
+		}
+		for (const poly of st.curve) {
+			lines.push(`  // relation ${seq.name}`);
+			lines.push(`  line(${path(poly)}, stroke: (paint: black, thickness: 1.1pt, join: "round"))`);
+		}
+		for (const g of st.guides) {
+			lines.push(`  // rappel ${seq.name}`);
+			lines.push(
+				`  line(${P(g.from)}, ${P(g.to)}, stroke: (paint: ${color}, thickness: 0.5pt, dash: "dotted"))`
+			);
+		}
+		for (const poly of st.steps) {
+			lines.push(`  // escalier ${seq.name}`);
+			lines.push(
+				`  line(${path(poly)}, stroke: (paint: ${color}, thickness: 0.9pt, join: "round"))`
+			);
+		}
+		// Sous les graduations de l'axe des abscisses
+		for (const l of st.termLabels) {
+			lines.push(`  // rang ${seq.name}`);
+			lines.push(
+				`  content((${X(l.x)}, ${fmt(Number(ax) - 0.38)}), anchor: "north", text(size: 7pt, fill: ${color})[$${seq.name}_(${l.n})$])`
+			);
+		}
+	}
+
 	// Termes des suites : un disque par terme, non reliés
 	for (const seq of scene.sequences) {
 		const color = TYPST_COLORS[seq.color];

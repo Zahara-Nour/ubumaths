@@ -105,6 +105,21 @@ export interface CourbeSequenceTerm {
 }
 
 /**
+ * Escalier d'une récurrence `u(n+1) = f(u(n))` (option `escalier`) : le repère
+ * devient (u_n ; u_{n+1}), on y trace la courbe de f, la droite y = x et
+ * l'escalier, à la place du nuage de points.
+ */
+export interface CourbeStaircase {
+	/** Option `termes` : rappels vers l'axe des abscisses et étiquettes u_0, u_1… */
+	showTerms: boolean;
+	/**
+	 * Relation f : AST où `u(n)` est la variable `PREV_TERM_VARIABLE` du
+	 * grapheur (`createRecurrenceFunctionEvaluator` l'évalue en x).
+	 */
+	relation: MathNode;
+}
+
+/**
  * Suite numérique : `u(n) = 2*n+1 pour n de 0 à 8` (explicite) ou
  * `v(0) = 1 ; v(n+1) = 0.5*v(n)+2 pour n de 0 à 9` (récurrente).
  *
@@ -124,6 +139,8 @@ export interface CourbeSequence {
 	firstTerm: CourbeSequenceTerm | null;
 	/** Termes calculés de rang n0 à n1, rangs non définis absents */
 	terms: CourbeSequenceTerm[];
+	/** null : nuage de points (n ; u_n) */
+	staircase: CourbeStaircase | null;
 	color: CourbeColor;
 	label: CourbeLabel | null;
 	line: number;

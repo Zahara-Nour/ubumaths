@@ -101,6 +101,12 @@ const KNOWN_KEYS = [
 
 const DASHED_WORDS = new Set(['pointillé', 'pointille', 'pointillés', 'pointilles']);
 
+/** Option d'une suite récurrente : escalier dans le repère (u_n ; u_{n+1}) */
+const STAIRCASE_WORD = 'escalier';
+
+/** Option de l'escalier : rappels et étiquettes u_0, u_1… sur l'axe des abscisses */
+const TERMS_WORD = 'termes';
+
 // ============================================================================
 // DÉTECTION
 // ============================================================================
@@ -361,6 +367,8 @@ function isOption(token: string): boolean {
 	return (
 		(COURBE_COLORS as readonly string[]).includes(token.toLowerCase()) ||
 		DASHED_WORDS.has(token.toLowerCase()) ||
+		token.toLowerCase() === STAIRCASE_WORD ||
+		token.toLowerCase() === TERMS_WORD ||
 		token.startsWith('nom=')
 	);
 }
@@ -370,6 +378,8 @@ interface LineOptions {
 	color: CourbeColor;
 	dashed: boolean;
 	label: CourbeLabel | null;
+	staircase: boolean;
+	terms: boolean;
 }
 
 /** Les options sont les derniers mots de la ligne : on les retire par la droite. */
@@ -378,14 +388,18 @@ function splitOptions(rest: string): LineOptions {
 	let color: CourbeColor = 'bleu';
 	let dashed = false;
 	let label: CourbeLabel | null = null;
+	let staircase = false;
+	let terms = false;
 	while (tokens.length > 1 && isOption(tokens[tokens.length - 1])) {
 		const token = tokens.pop() as string;
 		const lower = token.toLowerCase();
 		if (token.startsWith('nom=')) label = parseLabel(token.slice(4));
 		else if (DASHED_WORDS.has(lower)) dashed = true;
+		else if (lower === STAIRCASE_WORD) staircase = true;
+		else if (lower === TERMS_WORD) terms = true;
 		else color = lower as CourbeColor;
 	}
-	return { body: tokens.join(' '), color, dashed, label };
+	return { body: tokens.join(' '), color, dashed, label, staircase, terms };
 }
 
 function parseFunctionLine(
@@ -400,7 +414,12 @@ function parseFunctionLine(
 	if (name === 'x' || name === 'y')
 		throw new LineError(`« ${name} » ne peut pas nommer une fonction`);
 
-	const { body: withDomain, color, dashed, label } = splitOptions(rest);
+	const { body: withDomain, color, dashed, label, staircase, terms } = splitOptions(rest);
+	if (staircase || terms) {
+		throw new LineError(
+			`« ${staircase ? STAIRCASE_WORD : TERMS_WORD} » s'emploie avec une suite récurrente, pas avec la fonction ${name}`
+		);
+	}
 	let body = withDomain;
 	let domain: CourbeDomain | null = null;
 	const sur = /\s+sur\s+([[\]].*)$/.exec(body);
@@ -601,6 +620,14 @@ function parseSequenceLine(
 	if (options.dashed) throw new LineError(`suite ${name} : pas de pointillé pour une suite`);
 	const head = arg.replace(/\s+/g, '');
 	const recurrence = head !== 'n';
+	if (options.terms && !options.staircase) {
+		throw new LineError(`suite ${name} : « ${TERMS_WORD} » s'emploie avec « ${STAIRCASE_WORD} »`);
+	}
+	if (options.staircase && !recurrence) {
+		throw new LineError(
+			`suite ${name} : l'escalier demande une suite récurrente (${name}(0) = … ; ${name}(n+1) = …)`
+		);
+	}
 
 	let firstTerm: CourbeSequenceTerm | null = null;
 	let ranksBody: string;
@@ -654,6 +681,11 @@ function parseSequenceLine(
 	}
 
 	const ast = parseSequenceExpression(expressionText, name, recurrence);
+	if (options.staircase && collectVariables(ast, new Set()).has('n')) {
+		throw new LineError(
+			`suite ${name} : l'escalier demande une relation ${name}(n+1) = f(${name}(n)) sans n`
+		);
+	}
 	const computedTerms = computeSequenceTerms(
 		{
 			mode: recurrence ? 'recurrence' : 'explicit',
@@ -695,6 +727,7 @@ function parseSequenceLine(
 			lastIndex: ranks.to,
 			firstTerm,
 			terms: terms.filter((t) => t.n >= ranks.from),
+			staircase: options.staircase ? { showTerms: options.terms, relation: ast } : null,
 			color: options.color,
 			label: options.label,
 			line
@@ -850,6 +883,16 @@ export function parseCourbeContent(source: string): CourbeNode {
 			fail(line, content, error);
 		}
 	});
+
+	// Escalier (repère u_n ; u_{n+1}) et nuage (repère n ; u_n) : axes incompatibles
+	const cloud = sequences.find((s) => s.staircase === null);
+	if (cloud && sequences.some((s) => s.staircase !== null)) {
+		errors.push({
+			message: `Ligne ${cloud.line} : une figure ne peut pas mêler un escalier (repère uₙ ; uₙ₊₁) et le nuage de points de ${cloud.name} (repère n ; uₙ)`,
+			line: cloud.line,
+			content: lines[cloud.line - 1].trim()
+		});
+	}
 
 	const points: CourbePoint[] = [];
 	const asymptotes: CourbeAsymptote[] = [];
