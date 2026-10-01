@@ -235,10 +235,36 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 		domains: [
 			{
 				domain: 'Apprivoiser',
-				subdomains: ['Calculer un terme', 'Ecriture des termes', 'Deviner le terme général']
+				subdomains: ['Calculer un terme', 'Écriture des termes', 'Deviner le terme général']
 			},
-			{ domain: 'Limites', subdomains: ['Determiner une limite'] },
-			{ domain: 'Suites arithmétiques', subdomains: ['Calculer un terme', 'Determiner la raison'] }
+			{
+				domain: 'Représentation graphique',
+				subdomains: ['Lire un terme', 'Associer formule et nuage']
+			},
+			{
+				domain: 'Suites arithmétiques',
+				subdomains: ['Calculer un terme', 'Déterminer la raison', 'Terme général']
+			},
+			{
+				domain: 'Suites géométriques',
+				subdomains: ['Calculer un terme', 'Déterminer la raison', 'Terme général']
+			},
+			{ domain: 'Reconnaître une suite', subdomains: ['Arithmétique ou géométrique'] },
+			{
+				domain: 'Sens de variation',
+				subdomains: [
+					'Suites arithmétiques et géométriques',
+					'Différence de deux termes',
+					'Lecture graphique'
+				]
+			},
+			{
+				domain: 'Sommes',
+				subdomains: ['Somme des entiers', 'Suites arithmétiques', 'Suites géométriques']
+			},
+			{ domain: 'Seuil et algorithmes', subdomains: ['Seuil', 'Algorithmes'] },
+			{ domain: 'Modélisation', subdomains: ['Pourcentages', 'Placements'] },
+			{ domain: 'Limites', subdomains: ['Déterminer une limite'] }
 		]
 	}
 ];
