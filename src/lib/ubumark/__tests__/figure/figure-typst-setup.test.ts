@@ -22,9 +22,25 @@ function files(dir: string): string[] {
 }
 
 describe('figure → Typst : rendu inscrit par les producteurs de PDF', () => {
+	// Tout module qui IMPORTE `generateTypst` (renommé ou non : `generateTypst as gen`),
+	// ou qui l'appelle, est un producteur de PDF.
+	const IMPORTS_GENERATE = /import\s*\{[^}]*\bgenerateTypst\b[^}]*\}\s*from/;
 	const callers = files(SRC).filter((f) => {
 		if (f.endsWith('ubumark/generators/typst-generator.ts')) return false;
-		return /\bgenerateTypst\(/.test(readFileSync(f, 'utf8'));
+		if (/ubumark\/(index|generators\/index)\.ts$/.test(f)) return false; // barils : réexport
+		const source = readFileSync(f, 'utf8');
+		return IMPORTS_GENERATE.test(source) || /\bgenerateTypst\(/.test(source);
+	});
+
+	it('un import renommé est repéré', () => {
+		expect(IMPORTS_GENERATE.test("import { generateTypst as gen } from '$lib/ubumark';")).toBe(
+			true
+		);
+		expect(
+			IMPORTS_GENERATE.test(
+				"import {\n\tescapeTypst,\n\tgenerateTypst as g\n} from '$lib/ubumark';"
+			)
+		).toBe(true);
 	});
 
 	it('les producteurs connus sont trouvés', () => {
