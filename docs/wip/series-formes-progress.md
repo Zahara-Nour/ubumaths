@@ -410,3 +410,16 @@ assignation en prod). PR B (code) en cours : branche `feat/evaluation-notee-serv
   l'évaluation range et renvoie des indices d'origine.
 - ⚠️ Vercel : quota quotidien de déploiements épuisé le 2026-09-30 (pushes sur `main`, docs compris, et
   aperçus de PR) — production restée sur #562 ; PR B à déployer dès que le quota se libère.
+
+### Chantier 5 terminé (#565, #566, #567, #568, #569), en production le 2026-10-01
+
+- **#568** : évaluation tirée, corrigée et notée par le serveur (Q32-Q42) ; revues `code-reviewer` ×2 et
+  `security-auditor`, tous bloquants corrigés ; suite d'intégration complète verte (129 fichiers).
+- **#567** : QCM mélangés corrigés sur la position affichée (bug en prod, aucune réponse d'élève touchée).
+- **#569** : plus d'aperçu Vercel pour les branches (quota quotidien épuisé le 2026-09-30).
+- Déploiement de production vérifié (`e46065486`) : `/automaths` 200, route de démarrage présente,
+  ancienne API `/api/assessments` absente. L'envoi d'une évaluation refonctionne en production.
+- Restes, sans urgence : page « Assigner » encore sur la case à cocher Shadcn directe ; doublon
+  `src/lib/questions/generator/random-generator.ts` (suppression non tranchée par David) ; deux tests
+  instables (`vip-card-rarity-distribution`, `chapter-worksheet-publish-distributes`) ;
+  `svelte-autofixer` jamais passé sur les `.svelte` des chantiers 4-5 (MCP indisponible).
