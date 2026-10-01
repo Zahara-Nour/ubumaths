@@ -41,9 +41,12 @@ const LINE_PREFIX = /^Ligne \d+ : /;
 // Fonctions
 // =============================================================================
 
-/** Un nombre écrit comme l'élève l'écrit : virgule décimale, signe moins ASCII. */
+/**
+ * Un nombre écrit comme l'élève l'écrit : virgule décimale, signe moins ASCII,
+ * au plus 2 décimales — une valeur saisie `1/3` vaut 0,333… (Q45).
+ */
 function written(value: number): string {
-	return String(value).replace('.', ',');
+	return String(Math.round(value * 100) / 100).replace('.', ',');
 }
 
 function listNamed(atelier: Atelier, name: string): ListObject | null {
