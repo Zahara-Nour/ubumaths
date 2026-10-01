@@ -2576,6 +2576,7 @@ export type Database = {
           category_key: string
           created_at: string
           delay_seconds: number
+          instance: Json | null
           position: number
           seed: number
           template_id: string
@@ -2585,6 +2586,7 @@ export type Database = {
           category_key: string
           created_at?: string
           delay_seconds: number
+          instance?: Json | null
           position: number
           seed: number
           template_id: string
@@ -2594,6 +2596,7 @@ export type Database = {
           category_key?: string
           created_at?: string
           delay_seconds?: number
+          instance?: Json | null
           position?: number
           seed?: number
           template_id?: string
