@@ -1,0 +1,223 @@
+{
+	"id": "1239554b-d442-4be6-8867-d9dc38311999",
+	"title": "Calculer un terme",
+	"description": "A l'aide d'une formule de récurrence, deuxième terme",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Calculer un terme",
+	"level": 3,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c;+}}$\n\n$u_2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b*(a)+(c)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:b*(d)+(c)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c;+}}$",
+					"$$u_1={{b}}u_0{{eval:c;+}}= {{b}} \\times {{eval:a;()}} {{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{d}}}$$",
+					"$u_2={{b}}u_1{{eval:c;+}}= {{b}} \\times \\textcolor{{{color:primary.0}}}{{{eval:d;()}}} {{eval:c;+}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+2*(c)+2}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=u_n+2n{{eval:c;+}}$\n\n$u_2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a+(c)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_0={{a}}$ et $u_{n+1}=u_n+2n{{eval:c;+}}$ : attention, $n$ change à chaque étape.",
+					"$$u_1=u_0+2\\times 0{{eval:c;+}}={{a}}{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{d}}}$$",
+					"$u_2=u_1+2\\times 1{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:d;()}}}+2{{eval:c;+}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:4*(a)-1}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=2u_n-n$\n\n$u_2=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "eval:2*(a)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u_0={{a}}$ et $u_{n+1}=2u_n-n$ : attention, $n$ change à chaque étape.",
+					"$$u_1=2u_0-0=2\\times{{eval:a;()}}=\\textcolor{{{color:primary.0}}}{{{d}}}$$",
+					"$u_2=2u_1-1=2\\times\\textcolor{{{color:primary.0}}}{{{eval:d;()}}}-1={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["49"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "-2",
+				"d": "-17",
+				"f": "49"
+			},
+			"description": "u_2 avec u_0=5, u_{n+1}=-3u_n-2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-17"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "-2",
+				"d": "-17",
+				"f": "49"
+			},
+			"description": "s'arrête à u_1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["51-2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"b": "-3",
+				"c": "-2",
+				"d": "-17",
+				"f": "49"
+			},
+			"description": "calcul non terminé",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"c": "-3"
+			},
+			"description": "u_1=2, u_2=2+2-3=1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"c": "-3"
+			},
+			"description": "n=0 aux deux étapes (2+0-3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2+2-3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "5",
+				"c": "-3"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-13"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3"
+			},
+			"description": "u_1=-6, u_2=-13",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3"
+			},
+			"description": "n oublié (2×(-6))",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3"
+			},
+			"description": "n=1 retiré au premier pas aussi",
+			"variationIndex": 2
+		}
+	]
+}

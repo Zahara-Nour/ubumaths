@@ -1,0 +1,205 @@
+{
+	"id": "0af4bf32-b97e-493d-bea4-917b6bbdf6f2",
+	"title": "Deviner le terme général à partir d'une liste des premiers termes",
+	"description": "Suite arithmétique",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Apprivoiser",
+	"subdomain": "Deviner le terme général",
+	"level": 1,
+	"delay": 30,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:b;+}}n"
+				}
+			],
+			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n$${{c}} \\quad {{d}} \\quad {{f}} \\quad {{g}} \\quad {{h}}$$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a+(b)"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a+(b)*2"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a+(b)*3"
+				},
+				{
+					"name": "h",
+					"expression": "eval:a+(b)*4"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:{{b}}>=0|Le premier terme de la suite est $u_0={{c}}$ et on ajoute ${{b}}$ entre chaque terme, donc $u_n={{solution}}$.|Le premier terme de la suite est $u_0={{c}}$ et on enlève ${{eval:-(b)}}$ entre chaque terme, donc $u_n={{solution}}$.}}"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}{{eval:b;+}}n"
+				}
+			],
+			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_1$ :\n\n$${{c}} \\quad {{d}} \\quad {{f}} \\quad {{g}} \\quad {{h}}$$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a+(b)"
+				},
+				{
+					"name": "d",
+					"expression": "eval:a+(b)*2"
+				},
+				{
+					"name": "f",
+					"expression": "eval:a+(b)*3"
+				},
+				{
+					"name": "g",
+					"expression": "eval:a+(b)*4"
+				},
+				{
+					"name": "h",
+					"expression": "eval:a+(b)*5"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Entre deux termes consécutifs, la différence est toujours ${{b}}$ : la suite est arithmétique de raison ${{b}}$.",
+					"Attention, la liste commence à $u_1={{c}}$ : le terme de rang $0$ est $u_0=u_1-({{b}})=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
+					"Donc $u_n={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["9-7n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7"
+			},
+			"description": "9, 2, -5… : 9-7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-7n+9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7"
+			},
+			"description": "ordre inversé -7n+9",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9+7n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7"
+			},
+			"description": "raison de mauvais signe 9+7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2-7n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "9",
+				"b": "-7"
+			},
+			"description": "u_1 pris comme premier terme : 2-7n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9n+5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "9"
+			},
+			"description": "5, 14, 23… : 9n+5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4+3n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "u_1=7 : u_n=4+3n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3n+4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "ordre libre",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7+3n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"description": "u_1 pris pour u_0",
+			"variationIndex": 1
+		}
+	]
+}

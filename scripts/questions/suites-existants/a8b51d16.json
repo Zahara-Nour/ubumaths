@@ -1,0 +1,168 @@
+{
+	"id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+	"title": "Calculer un terme d'une suite arithmétique",
+	"description": "Calculer un terme éloigné, ou un terme de rang inférieur",
+	"grades": ["1_SPE"],
+	"theme": "Suites",
+	"domain": "Suites arithmétiques",
+	"subdomain": "Calculer un terme",
+	"level": 4,
+	"delay": 30,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v+(b-a)*(r)}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{r}}$, et $u_{{a}}={{v}}$.\n\n$u_{{b}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "20..50"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "v",
+					"expression": "2..30;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"De $u_{ {{a}} }$ à $u_{ {{b}} }$, on ajoute $\\textcolor{{{color:primary.0}}}{{{eval:b-a}}}$ fois la raison : $u_{ {{b}} }=u_{ {{a}} }+\\textcolor{{{color:primary.0}}}{{{eval:b-a}}}\\times{{eval:r;()}}={{v}}{{eval:(b-a)*(r);+}}={{solution}}$"
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v-k*(r)}}"
+				}
+			],
+			"statement": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{r}}$, et $u_{{a}}={{v}}$.\n\n$u_{{b}}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "8..15"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a-k"
+				},
+				{
+					"name": "r",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "v",
+					"expression": "2..30;±"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$u_{ {{b}} }$ vient $\\textcolor{{{color:primary.0}}}{{{k}}}$ rangs AVANT $u_{ {{a}} }$ : on retire $\\textcolor{{{color:primary.0}}}{{{k}}}$ fois la raison. $u_{ {{b}} }=u_{ {{a}} }-\\textcolor{{{color:primary.0}}}{{{k}}}\\times{{eval:r;()}}={{v}}{{eval:-k*(r);+}}={{solution}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["198"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "50",
+				"r": "4",
+				"v": "10"
+			},
+			"description": "u_3=10, r=4 → u_50=10+47×4=198",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["210"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "3",
+				"b": "50",
+				"r": "4",
+				"v": "10"
+			},
+			"description": "rang 50 au lieu de 47 (10+50×4)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["10+47\\times4"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "3",
+				"b": "50",
+				"r": "4",
+				"v": "10"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["17"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "10",
+				"k": "4",
+				"r": "-3",
+				"v": "5"
+			},
+			"description": "u_10=5, r=-3 → u_6=5+12=17",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "10",
+				"k": "4",
+				"r": "-3",
+				"v": "5"
+			},
+			"description": "raison ajoutée au lieu d'être retirée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["5+12"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "10",
+				"k": "4",
+				"r": "-3",
+				"v": "5"
+			},
+			"description": "calcul non effectué",
+			"variationIndex": 1
+		}
+	]
+}
