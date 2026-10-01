@@ -3,7 +3,7 @@
  *
  * Une case en `rulesSuffice` est jugée par le validateur : toute bonne réponse
  * est verte, pas seulement celle tirée ; de même un décimal exact dans une case
- * `acceptDecimal`. Les autres cases gardent la
+ * `acceptDecimal`, et toute case « intervalles ». Les autres cases gardent la
  * comparaison textuelle historique.
  */
 
@@ -17,6 +17,8 @@ export function computeBlankVerdicts(values: string[], instance: QuestionInstanc
 	return values.slice(0, blanks.length).map((value, i) => {
 		const blank = blanks[i];
 		if (rulesDecide(blank)) return isBlankValueCorrect(value, blank, instance);
+		// Ensemble en notation intervalle : jugé sur l'ensemble (ordre, écriture de MathLive)
+		if (blank.answerKind === 'intervalles') return isBlankValueCorrect(value, blank, instance);
 		// Décimal exact accepté (`acceptDecimal`) : « 0,5 » pour ½ est vert, jugé par sa valeur
 		if (blank.acceptDecimal === true && isSimpleNumberLatex(value)) {
 			return isBlankValueCorrect(value, blank, instance);

@@ -35,6 +35,8 @@ export interface PublicBlank {
 	/** Touches de l'onglet « Unités » (famille de grandeurs, jamais l'unité attendue seule) */
 	unitKeys?: string[];
 	graphicalConfig?: InstanceBlank['graphicalConfig'];
+	/** Nature de la réponse (clavier « Intervalles ») — le drapeau seul, jamais l'attendu */
+	answerKind?: InstanceBlank['answerKind'];
 }
 
 export interface PublicQuestion {
@@ -69,6 +71,7 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 		}
 	}
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
+	if (blank.answerKind) result.answerKind = blank.answerKind;
 	return result;
 }
 
@@ -150,7 +153,8 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		type: blank.type,
 		...(blank.prefilled && { prefilled: blank.prefilled }),
 		...(blank.unit && { unit: blank.unit }),
-		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig })
+		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
+		...(blank.answerKind && { answerKind: blank.answerKind })
 	}));
 	if (question.expressions?.length) instance.expressions = question.expressions;
 	return instance;

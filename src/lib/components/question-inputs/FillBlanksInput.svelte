@@ -31,6 +31,7 @@
 	import { parseMarkdown } from '$lib/ubumark';
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
+	import type { MathfieldElement } from 'mathlive';
 	import {
 		hasPrompts,
 		expressionToFlashLatex,
@@ -40,6 +41,7 @@
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
+	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 
 	// Node components (reuse from MarkdownRenderer)
@@ -219,45 +221,83 @@
 		);
 	});
 
+	// Cases « intervalles » à remplir (identifiants de leurs \placeholder) : onglet
+	// « Intervalles » et smartFence coupé dans LEURS champs seulement
+	let intervalPromptIds = $derived(
+		flashMode || effectiveDisabled
+			? []
+			: blanks.flatMap((blank, index) =>
+					blank.type === 'math' && blank.answerKind === 'intervalles' ? [String(index)] : []
+				)
+	);
+	let hasIntervalBlank = $derived(intervalPromptIds.length > 0);
+
 	let container: HTMLDivElement | undefined = $state();
 
+	/** Champ MathLive (sans importer mathlive à l'exécution : le composant est rendu côté serveur) */
+	function isMathField(target: EventTarget | null): target is MathfieldElement {
+		return target instanceof HTMLElement && target.tagName === 'MATH-FIELD';
+	}
+
 	/**
-	 * Onglet « Unités » du clavier virtuel MathLive.
+	 * Onglets « Unités » / « Intervalles » du clavier virtuel MathLive.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
-	 * par tous les champs de la page : l'onglet est ajouté quand le focus ENTRE
-	 * dans cette question et retiré quand il en SORT (ou au démontage). Une autre
+	 * par tous les champs de la page : les onglets sont ajoutés quand le focus ENTRE
+	 * dans cette question et retirés quand il en SORT (ou au démontage). Une autre
 	 * question, un autre champ MathLive, retrouvent ainsi le clavier par défaut.
 	 * `focusin`/`focusout` remontent depuis le shadow DOM du math-field ; les
 	 * touches du clavier virtuel ne prennent pas le focus, donc ne le font pas sortir.
+	 *
+	 * Case « intervalles » : le champ qui la contient passe en `smartFence = false` quand
+	 * il prend le focus, et retrouve son réglage quand il le perd (ou au démontage).
+	 * Mesuré au vrai clavier (2026-10-01) : avec `smartFence`, taper `[` ouvre une
+	 * paire `\left\lbrack…\right\rbrack` refermée d'office, et `[2;3[` devient
+	 * illisible (docs/wip/reponse-intervalles-progress.md).
 	 */
 	$effect(() => {
 		const element = container;
-		if (!element || unitKeys.length === 0) return;
+		const layouts = [
+			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
+			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : [])
+		];
+		if (!element || layouts.length === 0) return;
 
-		const layout = buildUnitsKeyboardLayout(unitKeys);
+		const promptIds = intervalPromptIds;
 		let applied = false;
+		// Champs dont smartFence a été coupé → leur réglage d'origine
+		const smartFenceBefore = new Map<MathfieldElement, boolean>();
 
+		const restoreSmartFence = () => {
+			for (const [field, value] of smartFenceBefore) field.smartFence = value;
+			smartFenceBefore.clear();
+		};
 		const restoreDefault = () => {
+			restoreSmartFence();
 			if (!applied) return;
 			applied = false;
 			const keyboard = window.mathVirtualKeyboard;
 			if (keyboard) keyboard.layouts = 'default';
 		};
-		const addUnitsTab = () => {
+		const addTabs = (event?: FocusEvent) => {
+			const field = event?.target ?? document.activeElement;
+			if (isMathField(field) && field.getPrompts().some((id) => promptIds.includes(id))) {
+				if (!smartFenceBefore.has(field)) smartFenceBefore.set(field, field.smartFence);
+				field.smartFence = false;
+			}
 			const keyboard = window.mathVirtualKeyboard;
 			if (!keyboard) return;
-			keyboard.layouts = ['default', layout];
+			keyboard.layouts = ['default', ...layouts];
 			applied = true;
 		};
 
-		element.addEventListener('focusin', addUnitsTab);
+		element.addEventListener('focusin', addTabs);
 		element.addEventListener('focusout', restoreDefault);
 		// Déjà focalisé quand l'onglet change (unités recalculées) : l'appliquer tout de suite
-		if (element.contains(document.activeElement)) addUnitsTab();
+		if (element.contains(document.activeElement)) addTabs();
 
 		return () => {
-			element.removeEventListener('focusin', addUnitsTab);
+			element.removeEventListener('focusin', addTabs);
 			element.removeEventListener('focusout', restoreDefault);
 			restoreDefault();
 		};

@@ -44,6 +44,7 @@ import { normalizeExpression } from '$lib/ubumark/parameterization';
 import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
+import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
 
@@ -352,6 +353,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// (left-to-right, consecutive, 0-based). If that contract changes,
 				// this lookup silently returns undefined.
 				const expressionName = blankResult.expressionNameByIndex?.[i];
+				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
 				const resolved: InstanceBlank = {
 					expectedAnswer,
 					type: blankResult.blankTypes[i],
@@ -374,6 +376,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					...((blank.acceptDecimal ?? resolvedVariation.blankDefaults?.acceptDecimal) && {
 						acceptDecimal: true
 					}),
+					...(answerKind && { answerKind }),
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
 				};
@@ -393,7 +396,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {
-					resolved.expectedAnswerLatex = convertToLatex(resolved.expectedAnswer);
+					// Ensemble en notation intervalle : ni expression ni calcul, rendu à part
+					resolved.expectedAnswerLatex =
+						resolved.answerKind === 'intervalles'
+							? expectedIntervalsLatex(resolved.expectedAnswer)
+							: convertToLatex(resolved.expectedAnswer);
 				}
 				return resolved;
 			});

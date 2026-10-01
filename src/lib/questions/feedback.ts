@@ -69,6 +69,11 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 	unit: {
 		single: "L'unité n'est pas celle attendue.",
 		multiple: "L'unité n'est pas celle attendue."
+	},
+	// Réponse « intervalles » juste mais à réécrire (message précis : interval-answer.ts)
+	intervalForm: {
+		single: "L'ensemble est juste, mais son écriture peut être simplifiée.",
+		multiple: 'Un ensemble est juste, mais son écriture peut être simplifiée.'
 	}
 } as const;
 

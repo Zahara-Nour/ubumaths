@@ -50,6 +50,7 @@
 		sharedBlankUnitExpected: boolean;
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
+		sharedBlankIntervals: boolean;
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
@@ -74,6 +75,7 @@
 		sharedBlankUnitExpected = $bindable(),
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
+		sharedBlankIntervals = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
 		sharedVariableHelpOpen = $bindable()
@@ -311,6 +313,11 @@
 							<MyCheckbox
 								bind:checked={sharedBlankAcceptDecimal}
 								label="Accepter le décimal exact"
+							/>
+							<!-- Ensemble de solutions : ]-∞;-2[∪]3;+∞[ (clavier « Intervalles ») -->
+							<MyCheckbox
+								bind:checked={sharedBlankIntervals}
+								label="Réponse : ensemble en intervalles"
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>

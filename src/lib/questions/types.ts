@@ -215,6 +215,12 @@ export type QuestionVariable = SharedVariable;
  *   ]
  * }
  */
+/** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
+export type AnswerKind = 'intervalles';
+
+/** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
+export const ANSWER_KINDS = ['intervalles'] as const satisfies readonly AnswerKind[];
+
 /**
  * Default validation settings applied to all blanks in a question.
  * Per-blank fields override these when defined.
@@ -228,6 +234,8 @@ export interface BlankDefaults {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.answerKind` */
+	answerKind?: AnswerKind;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -266,6 +274,15 @@ export interface TemplateBlank {
 	 * (0,33 pour 1/3) reste faux ; toute autre écriture est jugée comme avant.
 	 */
 	acceptDecimal?: boolean;
+	/**
+	 * Nature de la réponse, quand ce n'est pas une expression :
+	 * `'intervalles'` = un ensemble de réels en notation intervalle (ensemble de
+	 * solutions d'une inéquation). Réponse attendue écrite par l'auteur, bornes en
+	 * syntaxe maison : `]-\infty;{{x1}}[\cup]{{x2}};+\infty[`. Jugée par
+	 * `questions/intervals/interval-answer.ts` ; écriture réglée par la contrainte
+	 * `intervalForm`.
+	 */
+	answerKind?: AnswerKind;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -624,6 +641,8 @@ export interface InstanceBlank {
 	rulesSuffice?: boolean;
 	/** Voir `TemplateBlank.acceptDecimal` (fusionné avec blankDefaults) */
 	acceptDecimal?: boolean;
+	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
+	answerKind?: AnswerKind;
 
 	/** Unit config (merged) */
 	unit?: {
@@ -865,7 +884,8 @@ export type ConstraintId =
 	| 'signs'
 	| 'reducedFractions'
 	| 'percent'
-	| 'unit';
+	| 'unit'
+	| 'intervalForm';
 
 /**
  * How to handle constraint violations (ordered by decreasing severity)
@@ -919,6 +939,12 @@ export interface ConstraintOptions {
 	percent?: ConstraintMode;
 	// Unit matching (numerical_with_unit questions)
 	unit?: ConstraintMode;
+	/**
+	 * Réponse « intervalles » juste mais à réécrire (intervalles contigus non
+	 * réunis, `[3;3]` pour `{3}`, borne non simplifiée) : `warn` (défaut) = ½,
+	 * `strict` = mauvaise forme, `off` = juste.
+	 */
+	intervalForm?: ConstraintMode;
 }
 
 // ============================================================================

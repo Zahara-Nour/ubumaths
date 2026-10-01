@@ -10,6 +10,26 @@
 import type { Domain } from '../types';
 import type { DomainComparison } from './types';
 import { intersect, difference, isEmpty, isUniversal } from '../algebra';
+import { intervalDomain, closedInterval } from '../factory';
+
+// =============================================================================
+// Canonical form
+// =============================================================================
+
+/**
+ * Points exclus remplacés par la coupure des intervalles : ℝ \ {2} devient
+ * ]-∞ ; 2[ ∪ ]2 ; +∞[. `difference` ignore les points exclus du domaine
+ * retranché ; sans cette forme, ℝ \ {2} et ]-∞ ; 2[ ∪ ]2 ; +∞[ seraient
+ * jugés différents.
+ */
+export function expandExcludedPoints(domain: Domain): Domain {
+	if (domain.kind !== 'interval_set' || domain.excludedPoints.length === 0) return domain;
+	return domain.excludedPoints.reduce<Domain>(
+		(result, point) =>
+			difference(result, intervalDomain([closedInterval(point.value, point.value)])),
+		intervalDomain([...domain.intervals])
+	);
+}
 
 // =============================================================================
 // Main API
@@ -39,7 +59,9 @@ import { intersect, difference, isEmpty, isUniversal } from '../algebra';
  * // { areEqual: false, studentIsSuperset: true, studentExtra: ]-∞ ; 0], ... }
  * ```
  */
-export function compareDomains(student: Domain, correct: Domain): DomainComparison {
+export function compareDomains(studentDomain: Domain, correctDomain: Domain): DomainComparison {
+	const student = expandExcludedPoints(studentDomain);
+	const correct = expandExcludedPoints(correctDomain);
 	// Compute intersection and differences
 	const intersectionDomain = intersect(student, correct);
 	const studentMissingDomain = difference(correct, student);
@@ -76,7 +98,9 @@ export function compareDomains(student: Domain, correct: Domain): DomainComparis
  * @param b - Second domain
  * @returns true if the domains are equal
  */
-export function domainsAreEqual(a: Domain, b: Domain): boolean {
+export function domainsAreEqual(domainA: Domain, domainB: Domain): boolean {
+	const a = expandExcludedPoints(domainA);
+	const b = expandExcludedPoints(domainB);
 	// Quick checks for special cases
 	if (a.kind === 'empty' && b.kind === 'empty') return true;
 	if (a.kind === 'universal' && b.kind === 'universal') return true;

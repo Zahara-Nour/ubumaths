@@ -378,6 +378,9 @@
 	let sharedBlankAcceptDecimal = $state(
 		initialTemplate?.shared?.blankDefaults?.acceptDecimal ?? false
 	);
+	let sharedBlankIntervals = $state(
+		initialTemplate?.shared?.blankDefaults?.answerKind === 'intervalles'
+	);
 	let sharedValidationRulesJson = $state(
 		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
@@ -767,6 +770,7 @@
 		}
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
+		if (sharedBlankIntervals) blankDefaults.answerKind = 'intervalles';
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -916,6 +920,7 @@
 		sharedBlankUnitRequired = t.shared?.blankDefaults?.unit?.required || '';
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
+		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 
@@ -1570,6 +1575,7 @@
 			bind:sharedBlankUnitExpected
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
+			bind:sharedBlankIntervals
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
 			bind:sharedVariableHelpOpen

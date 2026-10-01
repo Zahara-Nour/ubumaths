@@ -47,6 +47,10 @@ import {
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
 import type { DurationFormIssue } from '$lib/questions/units/composite-duration';
 import { rulesDecide } from '$lib/questions/rules-suffice';
+import {
+	judgeIntervalAnswer,
+	DEFAULT_INTERVAL_FORM_MODE
+} from '$lib/questions/intervals/interval-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 
 // ============================================================================
@@ -749,6 +753,12 @@ function validateBlankValue(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): boolean {
+	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
+	if (blank.answerKind === 'intervalles') {
+		const { status } = judgeIntervalAnswer(userAnswer, blank.expectedAnswer);
+		return status !== 'incorrect' && status !== 'empty';
+	}
+
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -829,6 +839,39 @@ function feedbackOf(
 }
 
 /**
+ * Case « intervalles » : verdict de `judgeIntervalAnswer` dans la forme de
+ * `validateSingleBlank`. Une écriture à reprendre (juste) porte la contrainte
+ * `intervalForm`, avec la sévérité de son réglage.
+ */
+function intervalBlankResult(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const mode = instance.options?.constraints?.intervalForm ?? DEFAULT_INTERVAL_FORM_MODE;
+	const { status, feedback } = judgeIntervalAnswer(answer, blank.expectedAnswer, mode);
+	switch (status) {
+		case 'correct':
+			return { isCorrect: true, status: 'correct' };
+		case 'empty':
+			return { isCorrect: false, status: 'empty' };
+		case 'unoptimal_form':
+		case 'bad_form': {
+			const severity = status === 'bad_form' ? 'error' : 'warning';
+			const message = feedback ?? CONSTRAINT_FEEDBACK.intervalForm.single;
+			return {
+				isCorrect: status === 'unoptimal_form',
+				status,
+				feedback: message,
+				constraintViolations: [{ constraint: 'intervalForm', severity, feedback: message }]
+			};
+		}
+		default:
+			return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+	}
+}
+
+/**
  * Full per-blank pipeline: validationRules -> inferred mode -> requiredForm -> constraints.
  */
 function validateSingleBlank(
@@ -845,6 +888,11 @@ function validateSingleBlank(
 	// 0. Empty answer — skip all checks
 	if (!userAnswer.trim()) {
 		return { isCorrect: false, status: 'empty' };
+	}
+
+	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts
+	if (blank.answerKind === 'intervalles') {
+		return intervalBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1241,6 +1289,13 @@ function matchedAnswerForm(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
+	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
+	if (blank.answerKind === 'intervalles') {
+		const result = intervalBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+
 	let worstStatus: ValidationStatus = 'correct';
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 

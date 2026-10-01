@@ -12,9 +12,15 @@
 
 import type { MathNode } from '../../types';
 import { number } from '$lib/mathAST/factory';
-import { numericNode } from '../../common/numeric';
+import { parseLatexSafe } from '../../parser';
+import { parseCustom } from '../../parser/custom';
+import { evaluate } from '../../eval';
 import type { Domain, Interval } from '../types';
-import type { ParseStudentDomainResult } from './types';
+import type {
+	ParseStudentDomainResult,
+	ParseStudentDomainPiecesResult,
+	StudentDomainPiece
+} from './types';
 import {
 	intervalDomain,
 	emptyDomain,
@@ -30,6 +36,7 @@ import {
 	greaterThanOrEqualInterval
 } from '../factory';
 import { union, excludePoints } from '../algebra';
+import { expandExcludedPoints } from './compare-domains';
 
 // =============================================================================
 // Main API
@@ -63,6 +70,22 @@ export function parseStudentDomain(
 	input: string,
 	variable: string = 'x'
 ): ParseStudentDomainResult {
+	const result = parseStudentDomainPieces(input, variable);
+	if (!result.success) return result;
+	return { success: true, domain: result.domain, format: result.format };
+}
+
+/**
+ * Comme `parseStudentDomain`, mais rend aussi les MORCEAUX tels qu'écrits par
+ * l'élève, avant toute fusion : chaque intervalle d'une réunion (bornes non
+ * réordonnées, crochets d'origine), chaque ensemble de points. Le jugement
+ * d'une réponse en a besoin pour dire « réunis ces intervalles », « écris
+ * {3} plutôt que [3 ; 3] » ou « l'infini est toujours exclu ».
+ */
+export function parseStudentDomainPieces(
+	input: string,
+	variable: string = 'x'
+): ParseStudentDomainPiecesResult {
 	// Normalize input: trim and normalize Unicode
 	const normalizedInput = normalizeInput(input);
 
@@ -71,10 +94,10 @@ export function parseStudentDomain(
 	}
 
 	// Try each parser in order of specificity
-	const parsers: Array<() => ParseStudentDomainResult> = [
-		() => parseSetNotation(normalizedInput),
+	const parsers: Array<() => ParseStudentDomainPiecesResult> = [
+		() => asSinglePiece(normalizedInput, parseSetNotation(normalizedInput)),
 		() => parseIntervalNotation(normalizedInput),
-		() => parseConditionNotation(normalizedInput, variable)
+		() => asSinglePiece(normalizedInput, parseConditionNotation(normalizedInput, variable))
 	];
 
 	for (const parser of parsers) {
@@ -91,16 +114,88 @@ export function parseStudentDomain(
 	};
 }
 
+/** Un résultat d'un seul tenant (ensemble, condition) vu comme un morceau unique */
+function asSinglePiece(
+	source: string,
+	result: ParseStudentDomainResult
+): ParseStudentDomainPiecesResult {
+	if (!result.success) return result;
+	return {
+		success: true,
+		domain: result.domain,
+		format: result.format,
+		pieces: [{ source, domain: result.domain }]
+	};
+}
+
 // =============================================================================
 // Input Normalization
 // =============================================================================
+
+/** Commande LaTeX `\nom` entière (pas le début d'une plus longue : `\le` ≠ `\left`) */
+function latexCommand(name: string): RegExp {
+	return new RegExp(`\\\\${name}(?![a-zA-Z])`, 'g');
+}
+
+/**
+ * Écritures LaTeX (MathLive, auteur) ramenées à la notation que lisent les
+ * analyseurs ci-dessous. Les bornes gardent leur LaTeX (`\frac`, `\sqrt`,
+ * `\pi`) : `parseEndpointValue` les lit avec le parseur de mathAST.
+ *
+ * Écritures mesurées au vrai clavier de MathLive (docs/wip/reponse-intervalles-progress.md) :
+ * `\left\lbrack…\right\rbrack`, `\lbrace3\rbrace`, `\{3\}`, `]\,2\,;\,3\,[`,
+ * `\frac{]3}{2}` (« / » tapé juste après « ] » emporte le crochet au numérateur).
+ */
+function normalizeLatex(input: string): string {
+	return (
+		input
+			// Crochet emporté au numérateur d'une fraction : \frac{]3}{2} → ]\frac{3}{2}
+			.replace(/\\frac\{([[\]])/g, '$1\\frac{')
+			// Délimiteurs extensibles : \left\lbrack → \lbrack, \right. → rien
+			.replace(/\\(?:left|right)\./g, '')
+			.replace(latexCommand('left'), '')
+			.replace(latexCommand('right'), '')
+			.replace(latexCommand('lbrack'), '[')
+			.replace(latexCommand('rbrack'), ']')
+			// Accolades d'ensemble
+			.replace(latexCommand('lbrace'), '{')
+			.replace(latexCommand('rbrace'), '}')
+			.replace(/\\\{/g, '{')
+			.replace(/\\\}/g, '}')
+			// Décimal à virgule de MathLive
+			.replace(/\{,\}/g, ',')
+			// Espaces LaTeX
+			.replace(/\\[,:;!]|\\ (?!\s*\{)/g, '') // « \ {0} » (privé de) reste
+			.replace(latexCommand('q?quad'), '')
+			.replace(/~/g, '')
+			// Symboles d'ensemble
+			.replace(latexCommand('infty'), '∞')
+			.replace(latexCommand('cup'), '∪')
+			.replace(latexCommand('cap'), '∩')
+			.replace(latexCommand('setminus'), '∖')
+			.replace(latexCommand('backslash'), '∖')
+			.replace(/\\mathbb\s*\{\s*R\s*\}/g, 'ℝ')
+			.replace(/\\mathbb\s*R/g, 'ℝ')
+			.replace(latexCommand('R(?:eals)?'), 'ℝ')
+			.replace(latexCommand('emptyset'), '∅')
+			.replace(latexCommand('varnothing'), '∅')
+			// Comparaisons
+			.replace(latexCommand('leq?'), '<=')
+			.replace(latexCommand('leqslant'), '<=')
+			.replace(latexCommand('geq?'), '>=')
+			.replace(latexCommand('geqslant'), '>=')
+			.replace(latexCommand('neq?'), '!=')
+			.replace(latexCommand('lt'), '<')
+			.replace(latexCommand('gt'), '>')
+	);
+}
 
 /**
  * Normalize input string for parsing.
  */
 function normalizeInput(input: string): string {
 	return (
-		input
+		normalizeLatex(input.trim())
 			.trim()
 			// Normalize unicode
 			.replace(/−/g, '-') // minus sign
@@ -109,21 +204,10 @@ function normalizeInput(input: string): string {
 			.replace(/∞/g, 'inf') // infinity
 			.replace(/\+inf/gi, '+inf') // positive infinity
 			.replace(/-inf/gi, '-inf') // negative infinity
-			.replace(/\\infty/gi, 'inf') // LaTeX infinity
-			.replace(/\\cup/g, '∪') // LaTeX union
-			.replace(/\\cap/g, '∩') // LaTeX intersection
-			.replace(/\\setminus/g, '\\') // LaTeX set minus
-			.replace(/\\mathbb\{R\}/g, 'ℝ') // LaTeX reals
-			.replace(/\\R/g, 'ℝ') // LaTeX reals shortcut
-			.replace(/\\pi/g, 'π') // LaTeX pi
-			.replace(/\\sqrt\{([^}]+)\}/g, '√$1') // LaTeX sqrt
 			// Normalize comparison operators
 			.replace(/≤/g, '<=')
 			.replace(/≥/g, '>=')
 			.replace(/≠/g, '!=')
-			.replace(/\\leq?/g, '<=')
-			.replace(/\\geq?/g, '>=')
-			.replace(/\\neq?/g, '!=')
 			// Normalize spaces
 			.replace(/\s+/g, ' ')
 			// Normalize French connectors
@@ -203,7 +287,7 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 	}
 
 	// ℝ \ {a, b, c} (reals minus points)
-	const setMinusMatch = trimmed.match(/^[ℝR]\s*[\\∖]\s*\{([^}]+)\}$/);
+	const setMinusMatch = trimmed.match(/^[ℝR]\s*(?:∖|\\(?![a-zA-Z]))\s*\{(.+)\}$/);
 	if (setMinusMatch) {
 		const pointsStr = setMinusMatch[1];
 		const pointsResult = parseExcludedPoints(pointsStr);
@@ -221,6 +305,19 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 		return { success: true, domain: emptyDomain(), format: 'set_notation' };
 	}
 
+	// {a} ou {a ; b} : ensemble fini de points (chacun = intervalle [a ; a])
+	const pointsMatch = trimmed.match(/^\{(.+)\}$/);
+	if (pointsMatch) {
+		const pointsResult = parseExcludedPoints(pointsMatch[1]);
+		if (pointsResult.success) {
+			const domain = pointsResult.points.reduce<Domain>(
+				(result, point) => union(result, intervalDomain([closedInterval(point, point)])),
+				emptyDomain()
+			);
+			return { success: true, domain, format: 'set_notation' };
+		}
+	}
+
 	return { success: false, error: 'Not a set notation' };
 }
 
@@ -233,9 +330,11 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 function parseExcludedPoints(
 	input: string
 ): { success: true; points: MathNode[] } | { success: false } {
-	const sep = input.includes(';') ? ';' : ',';
+	// Virgule ENTRE DEUX CHIFFRES = virgule décimale (MathLive : `{0,5}`) ; toute autre
+	// virgule sépare (écriture historique `{0, 1}`) ; le point-virgule l'emporte.
+	const separator = input.includes(';') ? ';' : /(?<!\d),|,(?!\d)/;
 	const parts = input
-		.split(sep)
+		.split(separator)
 		.map((s) => s.trim())
 		.filter(Boolean);
 	const points: MathNode[] = [];
@@ -260,53 +359,58 @@ function parseExcludedPoints(
  *
  * Accepts both ';' (preferred French school convention) and ',' (legacy/English)
  * as bound separators, for backwards compatibility with student input habits.
+ * Rend chaque morceau de la réunion tel qu'écrit, et leur réunion.
  */
-function parseIntervalNotation(input: string): ParseStudentDomainResult {
-	const trimmed = input.trim();
-
-	// Check for union of intervals
-	if (trimmed.includes('∪') || trimmed.includes('U')) {
-		const parts = trimmed
-			.split(/[∪U]/)
-			.map((s) => s.trim())
-			.filter(Boolean);
-		let result: Domain = emptyDomain();
-
-		for (const part of parts) {
-			const intervalResult = parseSingleInterval(part);
-			if (!intervalResult.success) {
-				return intervalResult;
-			}
-			result = union(result, intervalResult.domain);
-		}
-
-		return { success: true, domain: result, format: 'interval' };
+function parseIntervalNotation(input: string): ParseStudentDomainPiecesResult {
+	const parts = input
+		.trim()
+		.split(/[∪U]/)
+		.map((s) => s.trim());
+	if (parts.some((part) => part.length === 0)) {
+		return { success: false, error: 'Réunion incomplète' };
 	}
 
-	// Check for domain with excluded points: ]0, +∞[ \ {1}
-	const withExcludedMatch = trimmed.match(/^(.+?)\s*[\\∖]\s*\{([^}]+)\}$/);
+	const pieces: StudentDomainPiece[] = [];
+	let result: Domain = emptyDomain();
+	for (const part of parts) {
+		const piece = parsePiece(part);
+		if (!piece.success) return piece;
+		pieces.push(piece.piece);
+		// `union` ignore les points exclus : les développer d'abord (]0;5[ \ {2} → ]0;2[ ∪ ]2;5[)
+		result = union(result, expandExcludedPoints(piece.piece.domain));
+	}
+
+	return { success: true, domain: result, format: 'interval', pieces };
+}
+
+/** Un morceau d'une réunion : intervalle, intervalle privé de points, ensemble */
+function parsePiece(
+	part: string
+): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
+	const set = parseSetNotation(part);
+	if (set.success) return { success: true, piece: { source: part, domain: set.domain } };
+
+	// Domain with excluded points: ]0, +∞[ \ {1}
+	const withExcludedMatch = part.match(/^(.+?)\s*(?:∖|\\(?![a-zA-Z]))\s*\{(.+)\}$/);
 	if (withExcludedMatch) {
-		const intervalPart = withExcludedMatch[1].trim();
-		const pointsPart = withExcludedMatch[2];
+		const intervalResult = parseSingleInterval(withExcludedMatch[1].trim());
+		if (!intervalResult.success) return intervalResult;
 
-		const intervalResult = parseSingleInterval(intervalPart);
-		if (!intervalResult.success) {
-			return intervalResult;
-		}
-
-		const pointsResult = parseExcludedPoints(pointsPart);
+		const pointsResult = parseExcludedPoints(withExcludedMatch[2]);
 		if (!pointsResult.success) {
 			return { success: false, error: 'Points exclus non reconnus' };
 		}
 
 		return {
 			success: true,
-			domain: excludePoints(intervalResult.domain, pointsResult.points),
-			format: 'interval'
+			piece: {
+				source: part,
+				domain: excludePoints(intervalResult.piece.domain, pointsResult.points)
+			}
 		};
 	}
 
-	return parseSingleInterval(trimmed);
+	return parseSingleInterval(part);
 }
 
 /**
@@ -317,7 +421,9 @@ function parseIntervalNotation(input: string): ParseStudentDomainResult {
  * `(0.5, 1)` with French decimal notation). Otherwise fall back to `,` as the
  * separator (legacy / English style).
  */
-function parseSingleInterval(input: string): ParseStudentDomainResult {
+function parseSingleInterval(
+	input: string
+): { success: true; piece: StudentDomainPiece } | { success: false; error: string } {
 	const trimmed = input.trim();
 
 	// Detect separator: prefer ';' if present (handles French decimal commas).
@@ -371,8 +477,12 @@ function parseSingleInterval(input: string): ParseStudentDomainResult {
 
 	return {
 		success: true,
-		domain: intervalDomain([interval]),
-		format: 'interval'
+		piece: {
+			source: trimmed,
+			domain: intervalDomain([interval]),
+			interval,
+			bounds: [leftValueStr.trim(), rightValueStr.trim()]
+		}
 	};
 }
 
@@ -568,7 +678,15 @@ function parseSingleCondition(input: string, variable: string): ParseStudentDoma
 // =============================================================================
 
 /**
- * Parse an endpoint value string into a MathNode.
+ * Borne écrite par l'élève ou l'auteur → MathNode EXACT (fraction, radical, π
+ * gardés tels quels : la comparaison passe par `compareNumericNodes`).
+ *
+ * - infinis ;
+ * - LaTeX (`\\frac{3}{2}`, `1-\\sqrt2`, `\\frac{\\pi}{2}`) → parseur LaTeX de mathAST ;
+ * - sinon syntaxe maison (`3/2`, `1-sqrt(2)`, `-1.5`) → parseur maison ;
+ * - écritures Unicode historiques (`√2`, `π`) ramenées au LaTeX.
+ *
+ * Une borne qui n'est pas un nombre réel (variable, texte) → null.
  */
 function parseEndpointValue(input: string): MathNode | null {
 	const trimmed = input.trim();
@@ -581,57 +699,70 @@ function parseEndpointValue(input: string): MathNode | null {
 		return bound('-inf');
 	}
 
-	// Special constants
-	if (trimmed === 'π' || trimmed === 'pi') {
-		return bound('\\pi');
-	}
-	if (trimmed === 'e') {
-		return bound('e');
-	}
-	if (trimmed === '√2' || trimmed === 'sqrt(2)' || trimmed === 'sqrt2') {
-		return bound('sqrt(2)');
-	}
-	if (trimmed === '√3' || trimmed === 'sqrt(3)' || trimmed === 'sqrt3') {
-		return bound('sqrt(3)');
-	}
+	// Borne hostile (radicaux imbriqués : coût ×9 par niveau à l'évaluation) : refusée
+	// AVANT toute lecture
+	if (isBoundTooComplex(trimmed)) return null;
 
-	// Negative constants
-	if (trimmed === '-π' || trimmed === '-pi') {
-		return bound('-\\pi');
-	}
-	if (trimmed === '-e') {
-		return bound('-e');
-	}
+	const latex = trimmed
+		// Écritures historiques : π, pi, √2, √(…), sqrt2
+		.replace(/π|(?<!\\)\bpi\b/g, '\\pi ')
+		.replace(/√\s*\(([^()]*)\)/g, '\\sqrt{$1}')
+		.replace(/√\s*(\d+(?:[.,]\d+)?|[a-zA-Z])/g, '\\sqrt{$1}')
+		.replace(/(?<!\\)\bsqrt(\d+)/g, 'sqrt($1)')
+		// Virgule décimale (le séparateur de bornes est déjà retiré)
+		.replace(/(\d),(\d)/g, '$1.$2')
+		.trim();
+	if (latex.length === 0) return null;
 
-	// Fractions of pi (π/2, π/3, etc.)
-	const piFractionMatch = trimmed.match(/^([+-]?)π?\/?(\d+)?$/);
-	if (piFractionMatch && trimmed.includes('π')) {
-		// Handle π/2, 2π, etc. - simplified for common cases
-		if (trimmed === 'π/2') {
-			return bound('\\pi/2');
-		}
-		if (trimmed === '-π/2') {
-			return bound('-\\pi/2');
-		}
-	}
+	const node = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
+	return node && isRealConstant(node) ? node : null;
+}
 
-	// Numbers (including negative and decimal)
-	const num = parseFloat(trimmed);
-	if (!isNaN(num) && isFinite(num)) {
-		return numericNode(num);
-	}
+/** Longueur maximale d'une borne (la plus longue utile : `\\dfrac{-3-\\sqrt{13}}{4}`, 22) */
+export const MAX_BOUND_LENGTH = 60;
 
-	// Fractions (a/b)
-	const fractionMatch = trimmed.match(/^([+-]?\d+)\s*\/\s*(\d+)$/);
-	if (fractionMatch) {
-		const num = parseFloat(fractionMatch[1]);
-		const den = parseFloat(fractionMatch[2]);
-		if (!isNaN(num) && !isNaN(den) && den !== 0) {
-			return number(num / den);
-		}
-	}
+/** Profondeur maximale d'imbrication d'une borne (accolades, parenthèses, radicaux, puissances) */
+export const MAX_BOUND_DEPTH = 4;
 
-	return null;
+/**
+ * Borne trop longue ou trop imbriquée pour être évaluée sans risque : le coût
+ * d'évaluation de radicaux imbriqués croît d'environ ×9 par niveau (12 niveaux :
+ * 2 s, 50 : plusieurs minutes, serveur des évaluations bloqué).
+ */
+export function isBoundTooComplex(text: string): boolean {
+	if (text.length > MAX_BOUND_LENGTH) return true;
+	let depth = 0;
+	let maxDepth = 0;
+	for (const char of text) {
+		if (char === '{' || char === '(') maxDepth = Math.max(maxDepth, ++depth);
+		else if (char === '}' || char === ')') depth--;
+	}
+	// Radicaux, fractions, puissances, factorielles : imbriqués même sans accolades (`\\sqrt\\sqrt2`)
+	const operators = text.match(/sqrt|√|frac|\^|!/g)?.length ?? 0;
+	return maxDepth > MAX_BOUND_DEPTH || operators > MAX_BOUND_DEPTH;
+}
+
+function parseLatexBound(latex: string): MathNode | null {
+	const result = parseLatexSafe(latex);
+	return result.errors.length === 0 ? result.ast : null;
+}
+
+function parseCustomBound(text: string): MathNode | null {
+	try {
+		return parseCustom(text);
+	} catch {
+		return null;
+	}
+}
+
+/** Nombre réel calculable (aucune variable libre, hors constantes comme e) */
+function isRealConstant(node: MathNode): boolean {
+	try {
+		const result = evaluate(node, { mode: 'decimal' });
+		return result.status === 'value' && typeof result.value === 'number' && isFinite(result.value);
+	} catch {
+		return false;
+	}
 }
 
 // =============================================================================
