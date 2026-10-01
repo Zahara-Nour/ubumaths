@@ -104,13 +104,19 @@ export async function setContentPublication(
 	// donc une date future ne publierait rien — et le professeur croirait avoir
 	// publié. Programmer une publication est un autre geste, qui n'existe pas
 	// encore.
+	//
+	// ⚠️ La date envoyée ici n'est qu'une intention : le trigger
+	// `published_at_horloge_base` la remplace par le `now()` de la BASE. La
+	// policy compare avec l'horloge de Postgres ; une date de Node en avance de
+	// quelques dizaines de ms laissait le contenu invisible tant que durait
+	// l'avance. La date renvoyée est donc celle relue en base.
 	const publishedAt = input.published ? new Date().toISOString() : null;
 
 	const { data, error } = await supabase
 		.from(table)
 		.update({ published_at: publishedAt })
 		.eq('id', input.itemId)
-		.select('id, chapter_id')
+		.select('id, chapter_id, published_at')
 		.single();
 
 	// PGRST116 = aucune ligne rendue. Ce n'est pas une panne : soit l'élément
@@ -137,7 +143,7 @@ export async function setContentPublication(
 	}
 
 	return {
-		data: { itemId: data.id, chapterId: data.chapter_id, publishedAt },
+		data: { itemId: data.id, chapterId: data.chapter_id, publishedAt: data.published_at ?? null },
 		error: null
 	};
 }
@@ -176,14 +182,17 @@ export async function listDistributedWorksheetIds(
 		return { data: new Set(), error: null };
 	}
 
-	const maintenant = new Date().toISOString();
 	const { data, error } = await supabase
 		.from('worksheet_assignments')
 		.select('worksheet_id, worksheet_assignment_classes!inner(class_id)')
 		.in('worksheet_id', worksheetIds)
 		.eq('status', 'active')
 		.eq('worksheet_assignment_classes.class_id', classId)
-		.or(`available_from.is.null,available_from.lte.${maintenant}`);
+		// `now` et non une date de Node : Postgres lit la valeur spéciale `now`
+		// comme son propre `now()`, l'horloge de `student_has_worksheet_access`.
+		// Une date de Node en retard ratait l'affectation tout juste créée (défaut
+		// `now()` de la base) et le garde d'idempotence en distribuait une seconde.
+		.or('available_from.is.null,available_from.lte.now');
 
 	if (error) {
 		console.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
