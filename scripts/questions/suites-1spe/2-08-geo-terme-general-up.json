@@ -10,7 +10,7 @@
 	"delay": 40,
 	"options": {
 		"constraints": {
-			"form": "off",
+			"form": "warn",
 			"products": "off"
 		}
 	},
@@ -29,7 +29,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-1}"
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-1}",
+					"requiredForm": {
+						"pattern": "a * b^c"
+					}
 				}
 			],
 			"correction": {
@@ -57,7 +60,10 @@
 			],
 			"blanks": [
 				{
-					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-{{p}}}"
+					"expectedAnswer": "{{c}}\\times{{eval:q;()}}^{n-{{p}}}",
+					"requiredForm": {
+						"pattern": "a * b^c"
+					}
 				}
 			],
 			"correction": {
@@ -231,6 +237,46 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"answers": ["5\\times3^n\\div9"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"q": "3"
+			},
+			"description": "calcul inachevé (u_0 × q^n ÷ 9) refusé : forme a × b^c exigée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3^{n-2}\\times5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"c": "5",
+				"q": "3"
+			},
+			"description": "facteurs dans l'autre ordre",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["6\\times2^n\\div2"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"c": "6",
+				"q": "2"
+			},
+			"description": "calcul inachevé (u_1 × q^n ÷ q) refusé : forme a × b^c exigée",
+			"variationIndex": 0
 		}
 	]
 }
