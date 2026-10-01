@@ -390,8 +390,11 @@ async function fetchWorksheetItems(
 	userId: string,
 	classIds: string[]
 ): Promise<WorkItem[]> {
-	const nowIso = new Date().toISOString();
-	const availabilityClause = `available_from.is.null,available_from.lte.${nowIso}`;
+	// `now` évalué par Postgres, pas l'heure de Node : la RLS compare
+	// `available_from <= now()` avec l'horloge de la base. Une heure de Node en
+	// retard cachait une fiche que l'élève avait déjà le droit de lire — celle
+	// tout juste distribuée, dont `available_from` vaut le `now()` de la base.
+	const availabilityClause = 'available_from.is.null,available_from.lte.now';
 
 	// Les affectations visant l'une des classes de l'élève, lues dans la JONCTION.
 	//

@@ -72,7 +72,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				{ count: 'exact' }
 			)
 			.eq('status', 'active')
-			.or(`available_from.is.null,available_from.lte.${new Date().toISOString()}`);
+			// `now` évalué par Postgres (même horloge que la RLS) : une heure de Node
+			// en retard cachait la fiche tout juste distribuée.
+			.or('available_from.is.null,available_from.lte.now');
 
 		// Restriction à une classe : la JONCTION, pas la colonne historique.
 		//

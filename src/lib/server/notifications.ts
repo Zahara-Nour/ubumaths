@@ -293,7 +293,9 @@ export async function getUnreadNotifications(
 			`
 			)
 			.is('deleted_at', null)
-			.gt('expires_at', new Date().toISOString())
+			// `now` évalué par Postgres, comme la policy (`expires_at > now()`) : une
+			// heure de Node en avance cachait une notification pas encore expirée.
+			.gt('expires_at', 'now')
 			.or(conditions.join(','))
 			.order('priority', { ascending: false })
 			.order('created_at', { ascending: false });
