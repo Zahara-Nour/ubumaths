@@ -199,6 +199,29 @@ describe('StatChart — tableau croisé (lot 4)', () => {
 		expect(hint.getBoundingClientRect().width).toBeLessThanOrEqual(1);
 	});
 
+	// Audit a11y du lot 4 : un tableau qui déborde doit défiler au clavier
+	it('zone de défilement focalisable, nommée par la légende du tableau', async () => {
+		const node = parseStatChartContent('tableau-croise', `titre: Régime\n${TABLE}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const region = screen.container.querySelector('[role="region"]')!;
+		const caption = screen.container.querySelector('caption')!;
+
+		expect(region.getAttribute('tabindex')).toBe('0');
+		expect(region.getAttribute('aria-labelledby')).toBe(caption.id);
+	});
+
+	it('case à compléter : assez large pour écrire, et repérable à l’œil', async () => {
+		const node = parseStatChartContent('tableau-croise', `${TABLE}\nmasquer: Fille/Externe`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cell = screen.container.querySelector<HTMLTableCellElement>('td.stat-case-vide')!;
+		const filled = screen.container.querySelectorAll<HTMLTableCellElement>('tbody td')[1];
+
+		expect(cell.getBoundingClientRect().width).toBeGreaterThanOrEqual(50);
+		expect(getComputedStyle(cell).backgroundColor).not.toBe(
+			getComputedStyle(filled).backgroundColor
+		);
+	});
+
 	it('sans titre : légende accessible « Tableau croisé »', async () => {
 		const node = parseStatChartContent('tableau-croise', TABLE);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

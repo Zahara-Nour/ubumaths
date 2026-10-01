@@ -235,6 +235,27 @@ describe('tableau croisé — scène', () => {
 		expect(sceneOf(BASE).accessibleTitle).toBe('Tableau croisé');
 	});
 
+	// Audit a11y du lot 4 : textes lus dans la langue du document, et sans symbole muet
+	it('textes accessibles selon la langue du document', () => {
+		expect(sceneOf(BASE).hiddenLabel).toBe('case à compléter');
+		expect(sceneOf(BASE, 'en').hiddenLabel).toBe('blank cell');
+		expect(sceneOf(BASE, 'en').accessibleTitle).toBe('Contingency table');
+	});
+
+	it('fréquence non définie : « — » à l’écran, « non définie » au lecteur d’écran', () => {
+		const zeros = BASE.replace('45 ; 120', '0 ; 0');
+		const cell = sceneOf(`${zeros}\nafficher: fréquences par ligne`).rows[0].cells[0];
+
+		expect(cell).toMatchObject({ text: '—', srText: 'non définie' });
+	});
+
+	it('coin « Sexe \\ Régime » lu comme « lignes : Sexe, colonnes : Régime »', () => {
+		const scene = sceneOf(`${BASE}\ncoin: Sexe \\ Régime`);
+
+		expect(scene.cornerSpoken).toBe('lignes : Sexe, colonnes : Régime');
+		expect(sceneOf(`${BASE}\ncoin: Effectifs`).cornerSpoken).toBe('Effectifs');
+	});
+
 	it('les fréquences viennent du module statistique', () => {
 		vi.mocked(crossTableModule.crossTable).mockClear();
 

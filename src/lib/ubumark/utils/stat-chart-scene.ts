@@ -196,12 +196,18 @@ export interface SceneCell {
 	text: string;
 	/** Case à compléter (`masquer:`, ou `?` et les totaux qui en dépendent) */
 	hidden: boolean;
+	/** Ce que lit le lecteur d'écran à la place de `text` (« — » est muet), sinon null */
+	srText: string | null;
 }
 
 export interface CrossTableScene extends SceneCommon {
 	kind: 'tableau-croise';
 	/** Coin haut-gauche, ou null */
 	corner: string | null;
+	/** Le coin tel que le lit un lecteur d'écran : `Sexe \ Régime` → « lignes : Sexe, colonnes : Régime » */
+	cornerSpoken: string | null;
+	/** Ce qu'annonce une case à compléter, dans la langue du document */
+	hiddenLabel: string;
 	/** En-têtes des colonnes, `Total` compris */
 	columnHeaders: string[];
 	/** Lignes, `Total` comprise : en-tête et cases */
@@ -266,6 +272,27 @@ const KIND_TITLE = {
 
 /** Nom de la ligne et de la colonne des totaux */
 const TOTAL = 'Total';
+
+/** Textes lus par le lecteur d'écran d'un tableau croisé, selon la langue du document */
+const CROSS_TABLE_SPOKEN: Record<
+	ContentLocale,
+	{ title: string; hidden: string; undefined: string; rows: string; columns: string }
+> = {
+	fr: {
+		title: 'Tableau croisé',
+		hidden: 'case à compléter',
+		undefined: 'non définie',
+		rows: 'lignes',
+		columns: 'colonnes'
+	},
+	en: {
+		title: 'Contingency table',
+		hidden: 'blank cell',
+		undefined: 'undefined',
+		rows: 'rows',
+		columns: 'columns'
+	}
+};
 
 // ============================================================================
 // FORMATAGE
@@ -772,16 +799,25 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 	const isMasked = (row: string, column: string) =>
 		table.masked.some((m) => m.row === row && m.column === column);
 
-	const format = (value: number | null): string => {
-		// Fréquence non définie (ligne ou colonne toute nulle)
-		if (value === null) return '—';
-		if (display === 'effectifs') return formatValue(value, spec.unit, locale);
-		return `${formatRounded(value * 100, 1, locale)} %`;
+	const spoken = CROSS_TABLE_SPOKEN[locale];
+	const cell = (row: string, column: string, value: number | null, unknown: boolean): SceneCell => {
+		if (unknown || isMasked(row, column)) return { text: '', hidden: true, srText: null };
+		// Fréquence non définie (ligne ou colonne toute nulle) : « — » est muet
+		if (value === null) return { text: '—', hidden: false, srText: spoken.undefined };
+		const text =
+			display === 'effectifs'
+				? formatValue(value, spec.unit, locale)
+				: `${formatRounded(value * 100, 1, locale)} %`;
+		return { text, hidden: false, srText: null };
 	};
-	const cell = (row: string, column: string, value: number | null, unknown: boolean): SceneCell =>
-		unknown || isMasked(row, column)
-			? { text: '', hidden: true }
-			: { text: format(value), hidden: false };
+	// `Sexe \ Régime` : le « \ » serait lu « barre oblique inversée »
+	const cornerParts = table.corner?.split('\\').map((part) => part.trim()) ?? [];
+	const cornerSpoken =
+		table.corner === null
+			? null
+			: cornerParts.length === 2 && cornerParts.every((part) => part !== '')
+				? `${spoken.rows} : ${cornerParts[0]}, ${spoken.columns} : ${cornerParts[1]}`
+				: table.corner;
 
 	const bodyRows = rows.map((name, i) => {
 		const line = columns.map((column, j) =>
@@ -801,12 +837,14 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 	return {
 		kind: 'tableau-croise',
 		title: spec.title,
-		accessibleTitle: KIND_TITLE['tableau-croise'],
+		accessibleTitle: spoken.title,
 		// Un <table> se décrit lui-même (en-têtes de lignes et de colonnes)
-		description: spec.description ?? KIND_TITLE['tableau-croise'],
+		description: spec.description ?? spoken.title,
 		pixelSize: { width: 0, height: 0 },
 		indicators: [],
 		corner: table.corner,
+		cornerSpoken,
+		hiddenLabel: spoken.hidden,
 		columnHeaders: showTotals ? [...columns, TOTAL] : [...columns],
 		rows: bodyRows
 	};
