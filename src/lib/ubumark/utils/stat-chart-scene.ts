@@ -718,7 +718,9 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 	const listed = points.map(
 		(p) => `${formatRounded(p.y, 1, locale)} % en ${formatTick(p.x, locale)}`
 	);
-	const read = readings.length > 0 ? ` ${readings.map((r) => r.text).join(', ')}.` : '';
+	// « Me » est prononcé « mé » par les lecteurs d'écran : en toutes lettres ici
+	const spoken = readings.map((r) => (r.name === 'Me' ? r.text.replace(/^Me/, 'Médiane') : r.text));
+	const read = spoken.length > 0 ? ` ${spoken.join(', ')}.` : '';
 	const title = `${KIND_TITLE['frequences-cumulees']} ${spec.direction}`;
 
 	return {

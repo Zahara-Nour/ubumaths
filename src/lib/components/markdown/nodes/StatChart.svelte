@@ -275,20 +275,7 @@
 
 				<!-- Graduations verticales, ou quadrillage d'un histogramme à carreaux -->
 				<g class="stat-graduations" aria-hidden="true">
-					{#if histogram?.mode === 'carreaux'}
-						{#each histogram.grid.xs as x, i (i)}
-							<line class="stat-grille" x1={cx(x)} y1={cy(0)} x2={cx(x)} y2={cy(classYMax)} />
-						{/each}
-						{#each histogram.grid.ys as y, i (i)}
-							<line
-								class="stat-grille"
-								x1={cx(classChart.xMin)}
-								y1={cy(y)}
-								x2={cx(classChart.xMax)}
-								y2={cy(y)}
-							/>
-						{/each}
-					{:else}
+					{#if histogram?.mode !== 'carreaux'}
 						{#each classChart.ticks as tick, i (i)}
 							<line
 								class="stat-grille"
@@ -323,18 +310,30 @@
 							height={cy(0) - cy(rect.height)}
 							style:fill={COLOR_VAR[histogram.color]}
 						/>
+						<!-- Au-dessus, pas dedans : un rectangle bas ou nul le cachait, et le
+						     texte clair sur rouge ou bleu sombre manquait de contraste (audit a11y) -->
 						{#if histogram.showValues}
 							<text
-								class="stat-valeur stat-valeur-interieure"
+								class="stat-valeur"
 								x={(cx(rect.lower) + cx(rect.upper)) / 2}
-								y={(cy(rect.height) + cy(0)) / 2}
-								text-anchor="middle"
-								dominant-baseline="central">{rect.valueLabel}</text
+								y={cy(rect.height) - 4}
+								text-anchor="middle">{rect.valueLabel}</text
 							>
 						{/if}
 					{/each}
 				{/if}
 
+				<!-- Quadrillage du mode carreaux : APRÈS les rectangles, pour compter dedans -->
+				{#if histogram?.mode === 'carreaux'}
+					<g class="stat-quadrillage" aria-hidden="true">
+						{#each histogram.grid.xs as x, i (i)}
+							<line x1={cx(x)} y1={cy(0)} x2={cx(x)} y2={cy(classYMax)} />
+						{/each}
+						{#each histogram.grid.ys as y, i (i)}
+							<line x1={cx(classChart.xMin)} y1={cy(y)} x2={cx(classChart.xMax)} y2={cy(y)} />
+						{/each}
+					</g>
+				{/if}
 				{#if cumulative}
 					<polyline
 						class="stat-polygone"
@@ -462,8 +461,13 @@
 			</div>
 		{/if}
 
+		<!-- Une liste : « · » n'est ni lu ni marqué d'une pause par les lecteurs d'écran -->
 		{#if scene.indicators.length > 0}
-			<p class="stat-indicateurs">{scene.indicators.join(' · ')}</p>
+			<ul class="stat-indicateurs">
+				{#each scene.indicators as indicator, i (i)}
+					<li>{indicator}</li>
+				{/each}
+			</ul>
 		{/if}
 
 		{#if errorsVisible && node.warnings.length > 0}
@@ -589,14 +593,18 @@
 		gap: 0.4rem;
 	}
 
+	/* Bordure couleur du fond, comme les secteurs : sépare deux classes de même
+	   couleur au moins à 3:1 dans les deux thèmes (audit a11y) */
 	.stat-rectangle {
-		stroke: var(--color-foreground);
-		stroke-width: 0.75;
+		stroke: var(--color-background);
+		stroke-width: 1.5;
 	}
 
-	.stat-svg .stat-valeur-interieure {
-		fill: var(--color-background);
-		font-weight: 700;
+	/* Mode carreaux : le quadrillage est la seule échelle, il passe DEVANT les
+	   rectangles pour qu'on y compte les carreaux, et doit atteindre ~3:1 */
+	.stat-quadrillage line {
+		stroke: color-mix(in oklab, var(--color-foreground) 50%, transparent);
+		stroke-width: 0.75;
 	}
 
 	.stat-polygone {
@@ -605,22 +613,39 @@
 		stroke-linejoin: round;
 	}
 
+	/* 1,5 px : sinon confondu avec la ligne de grille qu'il recouvre (audit a11y) */
 	.stat-lecture polyline {
 		fill: none;
 		stroke: var(--color-foreground);
-		stroke-width: 1;
+		stroke-width: 1.5;
 		stroke-dasharray: 4 3;
+	}
+
+	/* Halo couleur du fond : l'étiquette reste lisible sur la grille ou le polygone */
+	.stat-svg .stat-lecture text {
+		paint-order: stroke;
+		stroke: var(--color-background);
+		stroke-width: 3px;
 	}
 
 	.stat-legende-aire,
 	.stat-indicateurs {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
 		gap: 0.4rem;
 		margin: 0.25rem 0 0;
+		padding: 0;
+		list-style: none;
 		font-size: 0.875rem;
 		text-align: center;
+	}
+
+	/* Séparateur visuel seulement : texte de remplacement vide pour les lecteurs d'écran */
+	.stat-indicateurs li + li::before {
+		content: '·' / '';
+		margin-right: 0.4rem;
 	}
 
 	.stat-carreau {

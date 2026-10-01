@@ -147,9 +147,26 @@ describe('StatChart — histogramme et polygone (lot 3)', () => {
 		);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });
 
-		expect(screen.container.querySelector('.stat-indicateurs')?.textContent).toBe(
-			'Effectif total : 40 · Moyenne = 15,75'
+		// Une liste : « · » n'est ni lu ni marqué d'une pause par les lecteurs d'écran (audit a11y)
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
 		);
+		expect(items).toEqual(['Effectif total : 40', 'Moyenne = 15,75']);
+	});
+
+	// Audit a11y : un effectif écrit DANS le rectangle disparaissait (rectangle bas, effectif 0)
+	// ou manquait de contraste (rouge, bleu en sombre)
+	it('valeurs: oui — l’effectif est écrit au-dessus du rectangle, même nul', async () => {
+		const node = parseStatChartContent('histogramme', 'valeurs: oui\n[0 ; 10[ = 0\n[10 ; 20[ = 5');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = screen.container.querySelectorAll<SVGRectElement>('.stat-rectangle');
+		const labels = screen.container.querySelectorAll<SVGTextElement>('.stat-valeur');
+
+		expect(labels.length).toBe(2);
+		labels.forEach((label, i) => {
+			const top = rects[i].getBoundingClientRect().top;
+			expect(label.getBoundingClientRect().bottom).toBeLessThanOrEqual(top + 1);
+		});
 	});
 });
 

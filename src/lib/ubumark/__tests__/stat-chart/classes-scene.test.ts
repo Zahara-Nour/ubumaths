@@ -171,6 +171,15 @@ describe('polygone des fréquences cumulées', () => {
 		]);
 	});
 
+	// Audit a11y : « Me » est prononcé « mé » par les lecteurs d'écran
+	it('la description dit « Médiane » en toutes lettres, l’écran garde « Me »', () => {
+		const scene = cumulative(`lecture: médiane\n${TRAJETS}`);
+
+		expect(scene.readings[0].text).toBe('Me ≈ 14,44');
+		expect(scene.description).toContain('Médiane ≈ 14,44');
+		expect(scene.description).not.toContain('Me ≈');
+	});
+
 	it('pas de lecture par défaut', () => {
 		expect(cumulative(TRAJETS).readings).toEqual([]);
 	});

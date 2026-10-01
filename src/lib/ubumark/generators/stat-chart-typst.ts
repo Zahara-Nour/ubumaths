@@ -252,27 +252,30 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 	const color = TYPST_COLORS[scene.color];
 	const lines: string[] = ['  import cetz.draw: *'];
 
-	if (scene.mode === 'axe') {
-		lines.push('  // graduations', ...valueTicks(scene.ticks, W, Y));
-	} else {
-		lines.push('  // quadrillage');
-		for (const x of scene.grid.xs) {
-			lines.push(`  line((${X(x)}, 0), (${X(x)}, ${fmt(H)}), stroke: 0.3pt + luma(205))`);
-		}
-		for (const y of scene.grid.ys) {
-			lines.push(`  line((0, ${Y(y)}), (${fmt(W)}, ${Y(y)}), stroke: 0.3pt + luma(205))`);
-		}
-	}
+	if (scene.mode === 'axe') lines.push('  // graduations', ...valueTicks(scene.ticks, W, Y));
 
 	for (const rect of scene.rects) {
 		lines.push('  // rectangle');
+		// Bordure blanche : sépare deux classes voisines de même couleur
 		lines.push(
-			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${color}, stroke: 0.5pt + black)`
+			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${color}, stroke: 0.8pt + white)`
 		);
+		// Au-dessus du rectangle, comme à l'écran : un rectangle bas ou nul le cachait
 		if (scene.showValues) {
 			lines.push(
-				`  content((${X((rect.lower + rect.upper) / 2)}, ${fmt(Number(Y(rect.height)) / 2)}), text(size: 6.5pt, fill: white, weight: "bold")${textContent(rect.valueLabel)})`
+				`  content((${X((rect.lower + rect.upper) / 2)}, ${fmt(Number(Y(rect.height)) + 0.06)}), anchor: "south", text(size: 6.5pt)${textContent(rect.valueLabel)})`
 			);
+		}
+	}
+
+	// Mode carreaux : le quadrillage APRÈS les rectangles, pour y compter les carreaux
+	if (scene.mode === 'carreaux') {
+		lines.push('  // quadrillage');
+		for (const x of scene.grid.xs) {
+			lines.push(`  line((${X(x)}, 0), (${X(x)}, ${fmt(H)}), stroke: 0.4pt + luma(120))`);
+		}
+		for (const y of scene.grid.ys) {
+			lines.push(`  line((0, ${Y(y)}), (${fmt(W)}, ${Y(y)}), stroke: 0.4pt + luma(120))`);
 		}
 	}
 
