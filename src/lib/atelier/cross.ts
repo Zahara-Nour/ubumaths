@@ -14,6 +14,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
+import { individualEntries } from './parse';
 import type { StatChartSpec } from '$lib/ubumark/types/stat-chart';
 import type { CrossTableDisplay } from '$lib/ubumark/types/stat-chart';
 import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
@@ -63,6 +64,9 @@ export function crossProblem(rows: ListObject, columns: ListObject): string | un
 		if (!isQualitative(list)) {
 			return `${list.name} est une liste de nombres : le tableau croisé croise deux listes de mots.`;
 		}
+		// Un trou décalerait les individus suivants (revue de `.filtrer`)
+		const read = individualEntries(list.definition, true);
+		if ('hole' in read) return holeMessage(list.name, read.hole);
 	}
 	// `Total` est réservé aux totaux du tableau, comme dans un bloc de la v1
 	// (sinon deux colonnes « Total », revue)
@@ -77,6 +81,20 @@ export function crossProblem(rows: ListObject, columns: ListObject): string | un
 		return `${rows.name} a ${a} entrées et ${columns.name} ${b} : il faut une entrée par individu.`;
 	}
 	return undefined;
+}
+
+/** Le message d'une liste trouée : il dit pourquoi, et où */
+export function holeMessage(name: string, position: number): string {
+	return `L'entrée n° ${position} de ${name} est vide ou illisible : il faut une entrée par individu, dans le même ordre que les autres listes.`;
+}
+
+/**
+ * Une modalité qu'on peut citer telle quelle dans `.filtrer` : sans `et`, `ou`,
+ * `non`, `si` en mot, ni parenthèse, ni opérateur (revue : `noir et blanc`
+ * donnait une piste refusée)
+ */
+function quotable(label: string): boolean {
+	return !/[()<>=≠≤≥!]/.test(label) && !/(^|\s)(et|ou|non|si)(\s|$)/i.test(label);
 }
 
 /** Les modalités distinctes, dans l'ordre d'apparition (Q88) */
@@ -145,7 +163,16 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 	const count = rowCategories.length;
 	return {
 		ok: true,
-		text: `Tableau croisé de ${rowsName} (lignes) et ${columnsName} (colonnes), ${count} individu${count > 1 ? 's' : ''}`,
+		text: [
+			`Tableau croisé de ${rowsName} (lignes) et ${columnsName} (colonnes), ${count} individu${count > 1 ? 's' : ''}`,
+			// Q90 : la piste vers `.filtrer`, avec les noms et des modalités réelles —
+			// seulement si elles se citent telles quelles
+			...(quotable(rowLabels[0]) && quotable(columnLabels[0])
+				? [
+						`Pour filtrer : .filtrer ${rowsName} = ${rowLabels[0]} et ${columnsName} = ${columnLabels[0]}`
+					]
+				: [])
+		].join('\n'),
 		chart: buildStatChartScene(spec, { locale: 'fr' })
 	};
 }

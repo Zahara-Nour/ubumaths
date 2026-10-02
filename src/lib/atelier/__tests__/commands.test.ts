@@ -128,11 +128,18 @@ describe('le catalogue des commandes', () => {
 				const staged = command.exampleSetup !== undefined;
 				const created = staged && atelier.objects.length > before;
 				const drawn = staged && result.kind === 'commande' && result.chart !== undefined;
+				// `.filtrer` compte des individus : la réponse EST la ligne (Q90). Pour
+				// elle seule, et sous sa forme de comptage (revue : « une ligne non
+				// vide » valait pour toutes les commandes à décor)
+				const answered =
+					command.name === 'filter' &&
+					result.kind === 'commande' &&
+					/^\d+ individus? sur \d+ /.test(result.output);
 				expect(
 					{
 						commande: command.french,
 						kind: result.kind,
-						repond: latex !== undefined || created || drawn
+						repond: latex !== undefined || created || drawn || answered
 					},
 					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
 				).toMatchObject({ kind: 'commande', repond: true });

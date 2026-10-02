@@ -215,6 +215,27 @@ export function readListValue(raw: string): number | null {
 	return readNumber(text);
 }
 
+/**
+ * Les entrées d'une liste, une par INDIVIDU, telles que tapées — ou la place
+ * du premier trou (`12 ; ; 15`, ou une entrée illisible `1/0`). Un point-virgule
+ * final ne compte pas.
+ *
+ * ⚠️ Pour `.filtrer` et `.croiser` (Q89-Q90) : la liste analysée ÉCARTE ces
+ * entrées, et les individus suivants se décalaient en silence d'une liste à
+ * l'autre (revue : la note d'un autre élève était rendue).
+ */
+export function individualEntries(
+	definition: string,
+	qualitative: boolean
+): { entries: string[] } | { hole: number } {
+	const parts = definition.split(';').map((part) => part.trim());
+	while (parts.length > 0 && parts[parts.length - 1] === '') parts.pop();
+	const hole = parts.findIndex(
+		(part) => part === '' || (!qualitative && readListValue(part) === null)
+	);
+	return hole === -1 ? { entries: parts } : { hole: hole + 1 };
+}
+
 /** Un MOT (Q84) : au moins une lettre. `1/0` n'en est pas un, il reste « ignoré » (Q45). */
 const WORD = /\p{L}/u;
 

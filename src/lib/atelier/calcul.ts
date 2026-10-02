@@ -24,6 +24,7 @@ import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } fro
 import { renderResult } from './render';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
+import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
@@ -247,7 +248,9 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	frequency: frequencyCommand,
 	samples: samplesCommand,
 	// Tableau croisé (Q89) : lit des NOMS de listes, pas de hasard
-	cross: (atelier, argument) => crossCommand(atelier, argument)
+	cross: (atelier, argument) => crossCommand(atelier, argument),
+	// Filtre (Q90) : lit des NOMS de listes, pas de hasard
+	filter: (atelier, argument) => filterCommand(atelier, argument)
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
