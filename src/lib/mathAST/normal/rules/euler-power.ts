@@ -36,8 +36,8 @@
  * 2,718, donc cette écriture était déjà cassée partout ailleurs.
  */
 
-import { func, number } from '../../factory';
-import { isEulerConstant, isFunction, isNumber, isVariable } from '../../guards';
+import { func, multiply, number } from '../../factory';
+import { isDelimiter, isEulerConstant, isFunction, isNumber, isVariable } from '../../guards';
 import { mapNode } from '../../transforms';
 import type { MathNode } from '../../types';
 
@@ -74,6 +74,13 @@ function isExpOfOne(node: MathNode): boolean {
 	);
 }
 
+/** Le contenu sous des parenthèses de groupement, sinon le nœud lui-même. */
+function unwrapDelimiters(node: MathNode): MathNode {
+	let current = node;
+	while (isDelimiter(current)) current = current.content;
+	return current;
+}
+
 /**
  * Réécrit un nœud s'il est une puissance de `e`, ou `e` tout court.
  * `null` quand il n'y a rien à faire.
@@ -81,6 +88,17 @@ function isExpOfOne(node: MathNode): boolean {
 function expandEulerPowerAt(node: MathNode): MathNode | null {
 	if (node.type === 'superscript' && (isEulerLetter(node.base) || isExpOfOne(node.base))) {
 		return func('exp', [node.superscript]);
+	}
+
+	// `(e^{a})^{n}` → `exp(a·n)`, vrai pour tous réels `a`, `n`. De bas en haut,
+	// la base est déjà `exp(a)` (sous ses parenthèses). Sans ce cas, un exposant
+	// extérieur SYMBOLIQUE laissait une puissance opaque : un `SymbolicFactor` ne
+	// porte qu'un exposant rationnel, et `(e^{2})^{n} ≢ e^{2n}` rendait faux.
+	if (node.type === 'superscript') {
+		const base = unwrapDelimiters(node.base);
+		if (isFunction(base) && base.name === 'exp' && base.args.length === 1) {
+			return func('exp', [multiply(base.args[0], node.superscript, 'implicit')]);
+		}
 	}
 
 	// `e` seul vaut `exp(1)` : sans ça, `e^{x+1}/e` ne se simplifierait pas,

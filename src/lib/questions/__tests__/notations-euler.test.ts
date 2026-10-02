@@ -80,3 +80,12 @@ describe('parseur : lettre droite \\mathrm{x}', () => {
 		expect(parseLatex('\\mathrm e')).toEqual(parseLatex('e'));
 	});
 });
+
+describe('polynôme divisé par une exponentielle', () => {
+	it('(-2x-1)e^{-x} attendu : \\frac{-2x-1}{e^{x}} n’est plus faux (autre forme)', () => {
+		expect(verdicts('(-2x-1)e^{-x}', ['\\frac{-2x-1}{e^{x}}', '\\frac{-2x-2}{e^{x}}'])).toEqual({
+			'\\frac{-2x-1}{e^{x}}': 'bad_form',
+			'\\frac{-2x-2}{e^{x}}': 'incorrect'
+		});
+	});
+});

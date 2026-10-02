@@ -2125,8 +2125,49 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx)),
 		abortChecker: ctx?.abortChecker
 	});
-	const form = mergeNegativeBasePowers(normalize(withArcs, ctx), ctx);
+	const form = promoteEulerPowers(mergeNegativeBasePowers(normalize(withArcs, ctx), ctx));
 	return reducePythagorasInNormalForm(form, ctx);
+}
+
+// =============================================================================
+// Puissances de la constante d'Euler (chemin de l'équivalence seul)
+// =============================================================================
+
+/**
+ * `euler^k` (k ≠ 1) devient `exp(k)` dans chaque monôme.
+ *
+ * `e\times e` arrive ici comme `exp(1)·exp(1)`, que la normalisation range en
+ * `euler²` (`exp(1)` s'écrit `e`, cf. `expNodeFor`) ; `e^{2}` arrive comme
+ * `exp(2)`. Sans vraie exponentielle dans le monôme, `combineExpInMonomial` ne
+ * promeut pas la constante, et les deux formes ne se rencontraient jamais :
+ * `e\times e ≢ e^{2}` rendait faux.
+ *
+ * ⚠️ Ici seulement : sur la forme NORMALE, promouvoir `e²` cassait le solveur
+ * (cf. `hasRealExpFactor`). `euler¹` reste la constante, forme canonique de
+ * `exp(1)`.
+ */
+function promoteEulerPowers(form: NormalForm): NormalForm {
+	const numerator = promoteEulerPowersInPolynomial(form.numerator);
+	const denominator = promoteEulerPowersInPolynomial(form.denominator);
+	if (numerator === null && denominator === null) return form;
+	return normalFormFromFraction(numerator ?? form.numerator, denominator ?? form.denominator);
+}
+
+/** Le polynôme réécrit, ou `null` si aucun monôme n'a bougé. */
+function promoteEulerPowersInPolynomial(polynomial: readonly NormalTerm[]): NormalTerm[] | null {
+	let changed = false;
+	const terms = polynomial.map((term) => {
+		const monomial = term.monomial.map((factor) => {
+			if (!isEulerConstant(factor.base) || isOne(factor.exponent)) return factor;
+			changed = true;
+			const argument = denormalize(
+				normalizeNode(scaleNodeByRational(number('1'), factor.exponent))
+			);
+			return symbolicFactor(expNodeFor(argument), ONE);
+		});
+		return { coefficient: term.coefficient, monomial: sortSymbolicFactors(monomial) };
+	});
+	return changed ? collectLikeTerms(terms) : null;
 }
 
 // =============================================================================
@@ -5294,6 +5335,47 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 }
 
 /**
+ * `P / (c·exp(u)·R)` → `(P·exp(-u)) / (c·R)` quand `P` a plusieurs termes.
+ *
+ * ⚠️ Seulement si le dénominateur porte une VRAIE exponentielle (nœud `exp`) :
+ * comme dans `combineExpInMonomial`, la constante d'Euler isolée n'est pas
+ * promue — `(x+1)/e` garde sa forme. Chaque terme est ensuite recombiné par
+ * `combineExpInMonomial`, puis les termes devenus semblables regroupés.
+ */
+function moveDenominatorExpIntoPolynomial(
+	numerator: readonly NormalTerm[],
+	denTerm: NormalTerm
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	if (!hasRealExpFactor(denTerm.monomial)) {
+		return { numerator: [...numerator], denominator: [denTerm] };
+	}
+
+	const movedFactors: import('./types').SymbolicFactor[] = [];
+	const denOtherFactors: import('./types').SymbolicFactor[] = [];
+	for (const factor of denTerm.monomial) {
+		if (isExpLikeBase(factor.base)) {
+			movedFactors.push(symbolicFactor(factor.base, negRational(factor.exponent)));
+		} else {
+			denOtherFactors.push(factor);
+		}
+	}
+
+	const newNumerator: NormalTerm[] = numerator.map((term) => ({
+		coefficient: term.coefficient,
+		// `combineExpInMonomial` rend le monôme tel quel s'il n'a qu'une
+		// exponentielle d'exposant 1 : le trier, il vient d'être concaténé.
+		monomial: sortSymbolicFactors(combineExpInMonomial([...term.monomial, ...movedFactors]))
+	}));
+
+	return {
+		numerator: collectLikeTerms(newNumerator),
+		denominator: [
+			{ coefficient: denTerm.coefficient, monomial: sortSymbolicFactors(denOtherFactors) }
+		]
+	};
+}
+
+/**
  * Combines exp factors across numerator and denominator.
  * exp(a)/exp(b) → exp(a-b)/1
  *
@@ -5304,6 +5386,16 @@ function combineExpAcrossFraction(
 	numerator: readonly NormalTerm[],
 	denominator: readonly NormalTerm[]
 ): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	// Numérateur à plusieurs termes, dénominateur monôme : `(x+1)/exp(x)`.
+	// Les exponentielles du dénominateur descendent dans CHAQUE terme du
+	// numérateur, `(x+1)/exp(x) → x·exp(-x)+exp(-x)`. Sans ce cas, la forme
+	// gardait la fraction là où `(x+1)e^{-x}` donne le polynôme : une réponse
+	// juste était comptée fausse dès que le facteur devant l'exponentielle
+	// était une somme.
+	if (numerator.length > 1 && denominator.length === 1) {
+		return moveDenominatorExpIntoPolynomial(numerator, denominator[0]);
+	}
+
 	// Only handle single-term cases for simplicity
 	if (numerator.length !== 1 || denominator.length !== 1) {
 		return { numerator: [...numerator], denominator: [...denominator] };
