@@ -1,7 +1,7 @@
 ---
 title: Variables aléatoires 1re SPE — questions
 date: 2026-10-02
-status: 15 modèles en brouillon (2026-10-02)
+status: 17 modèles en brouillon (2026-10-02)
 ---
 
 # Variables aléatoires 1re SPE — point de reprise
@@ -37,15 +37,17 @@ moitié loin de zéro ; lois de somme 1 ; V par définition = König-Huygens) ; 
 `probability-tree` ; aucun `imaginaryI` ni `{{` résiduel ; PDF compilés 4/4 (compilateur de prod),
 pages relues. Espace insécable avant « € ».
 
-## Question ouverte pour David
+## Ajout après la PR #658 (« oui » de David, 2026-10-02)
 
-Décision 3 FAUSSE : le programme (`docs/wip/referentiel/1re-spe-programme.md`) liste « Linéarité
-de l'espérance » (`1SPE-159`) et König-Huygens (`1SPE-160`) en 1re SPE ; V(aX+b) n'y figure pas.
-Aucun modèle ne traite E(aX+b) → ajouter un modèle ? Aussi non fait : QCM « jeu favorable /
-équitable / défavorable » (plafond de modèles de l'agent).
+Décision 3 était FAUSSE : la linéarité de l'espérance (`1SPE-159`) est au programme de 1re ;
+V(aX+b) n'y est pas. Ajoutés en brouillon : `B-07-linearite-esperance` (E(aX+b), 3 variations,
+dont une inverse) et `C-03-jeu-favorable-equitable` (QCM favorable / équitable / défavorable, ordre
+fixe, index piloté par le signe de E(G) ; cas équitable 29 à 34 % des tirages). Specs 16/16 et
+18/18, 450 tirages chacun recalculés en Python (0 écart), PDF 4/4. Correction du QCM : le raccourci
+« sommes reçues − mise » (juste mais non expliqué) a été retiré.
 
 ## Défauts moteur relevés (non corrigés, contournés ; cf. `docs/ref/fiches-exercices.md`)
 
 `%` et `or` refusés dans une condition ; `{{eval:E;();d}}` fait échouer la génération ; variable
 calculée sans `eval` substituée sans parenthèses ; `{{eval:sqrt(21/25)}}` rendu `\dfrac{1}{5}\sqrt{21}` ;
-`1,136` pour un arrondi au centième jugé « incorrect » sans message de forme ; `x_i` → `x_\imaginaryI`.
+`1,136` pour un arrondi au centième jugé « incorrect » sans message de forme ; `x_i` → `x_\imaginaryI` ; pas de `sign()` dans `eval` ; `;d;()` échoue aussi.
