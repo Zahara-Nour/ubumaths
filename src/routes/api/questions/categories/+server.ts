@@ -8,13 +8,18 @@
  * {
  *   themes: string[],
  *   domains: string[],
- *   subdomains: string[]
+ *   subdomains: string[],
+ *   entries: { theme, domain, subdomain }[]  // triplets distincts, triés
  * }
+ *
+ * `entries` permet à l'éditeur de filtrer Domaine par Thème et Sous-domaine
+ * par Thème + Domaine ; les trois listes plates restent pour la rétrocompatibilité.
  */
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { distinctCategoryEntries } from '$lib/questions/category-options';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -50,7 +55,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({
 			themes,
 			domains,
-			subdomains
+			subdomains,
+			entries: distinctCategoryEntries(templates ?? [])
 		});
 	} catch (err) {
 		console.error('Error in GET /api/questions/categories:', err);
