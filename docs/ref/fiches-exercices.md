@@ -158,15 +158,13 @@ Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas 
 
 ### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
 
-Non corrigés dans le moteur — à contourner dans le modèle :
+Corrigés dans le moteur le 2026-10-02 (#616 et la PR `fix/pieges-generation`), ne plus
+contourner : réponse attendue réduite à `e` ou `i` ; `{{eval:…}}` contenant e (rendu
+`\exponentialE`, accepté comme e) ; nom de variable avec un chiffre (`u1`, `q2`) dans une
+condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`).
 
-- **Réponse attendue réduite à `e`** (e¹) : la génération échoue (« Variable "e" not found »,
-  substitution des noms nus). Exclure ces tirages par une condition.
-- **`{{eval:…}}` qui contient e** produit `\euler` dans l'attendu : les bonnes réponses sont alors
-  refusées. Écrire e en dur hors de l'eval : `{{a}}e^{ {{eval:a*x+b}} }`.
-- **Condition sur une variable `eval:`** : jamais satisfaite, le tirage échoue après 100 essais.
-  Écrire la condition sur les variables de base (`p*a+b != a`, pas `u1 != a`).
-- **`{{b;+}}`** fait échouer le tirage : écrire `{{eval:b;+}}`.
+Toujours vrai :
+
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
   comme un tirage) : une variation par cas.
