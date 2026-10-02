@@ -282,3 +282,14 @@ describe('liste qualitative', () => {
 		expect(sectors.length).toBe(2);
 	});
 });
+
+// Q92 : l'aperçu dit pourquoi une liste mélangée est qualitative
+describe('liste mélangée', () => {
+	it('« liste qualitative, à cause de « 2x » »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 2x ; 15' });
+		const { container } = await openData(atelier);
+
+		expect(container.textContent).toContain('liste qualitative, à cause de « 2x » · 3 entrées');
+	});
+});

@@ -135,6 +135,8 @@ export interface ListObject extends AtelierObjectBase {
 	 * nombres ; `values` est alors vide.
 	 */
 	readonly categories?: readonly string[];
+	/** La 1re entrée-mot d'une liste qui mélange nombres et mots (Q92) : l'aperçu la nomme */
+	readonly qualitativeBecause?: string;
 }
 
 export type AtelierObject = ValueObject | FunctionObject | SequenceObject | ListObject;
