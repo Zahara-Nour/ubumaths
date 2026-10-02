@@ -156,6 +156,38 @@ toute la classe.
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
+### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
+
+Non corrigés dans le moteur — à contourner dans le modèle :
+
+- **Réponse attendue réduite à `e`** (e¹) : la génération échoue (« Variable "e" not found »,
+  substitution des noms nus). Exclure ces tirages par une condition.
+- **`{{eval:…}}` qui contient e** produit `\euler` dans l'attendu : les bonnes réponses sont alors
+  refusées. Écrire e en dur hors de l'eval : `{{a}}e^{ {{eval:a*x+b}} }`.
+- **Condition sur une variable `eval:`** : jamais satisfaite, le tirage échoue après 100 essais.
+  Écrire la condition sur les variables de base (`p*a+b != a`, pas `u1 != a`).
+- **`{{b;+}}`** fait échouer le tirage : écrire `{{eval:b;+}}`.
+- **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
+- **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
+  comme un tirage) : une variation par cas.
+
+Règles d'écriture qui évitent un défaut :
+
+- Indice variable dans un **corrigé** : `u_{ {{a}} }`, jamais `u_{{a}}` (rendu « u₁0 » pour 10 ;
+  l'énoncé, lui, est renormalisé).
+- Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
+- Case de l'énoncé : `$x=?$` (le `?` devient la case).
+- Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
+  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+- Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
+  échouer tout le PDF.
+- Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
+
+Corrigés dans le moteur (ne plus contourner) : notations `\exp`, `\exponentialE`, `\mathrm{e}`
+(#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
+cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
+et liste dans l'énoncé d'une question à trous (#607).
+
 ## 3. Choix faits avec David
 
 - **Fiches les plus complètes possible** : elles incluent les exercices existants du thème, sans
