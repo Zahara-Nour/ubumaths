@@ -29,7 +29,13 @@ import {
 	textToSVG,
 	vectorToSVG
 } from '$lib/geometry-core/rendering/svg-primitives';
-import { isPointElement, isVector } from '$lib/geometry-core/types/elements';
+import { isPointElement, isText, isVector } from '$lib/geometry-core/types/elements';
+import {
+	labelDirection,
+	labelOffset,
+	svgTextPlacement,
+	textAnchorDirection
+} from '$lib/geometry-core/rendering/label-placement';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 
 // ============================================================================
@@ -77,7 +83,9 @@ export type FigureShape =
 			x: number;
 			y: number;
 			text: string;
-			anchor: 'start' | 'middle';
+			anchor: 'start' | 'middle' | 'end';
+			/** `alphabetic` : `y` = ligne de base ; `middle` : `y` = milieu (étiquettes d'angle) */
+			baseline: 'alphabetic' | 'middle';
 			/** Nom de point : en italique */
 			italic: boolean;
 	  });
@@ -98,6 +106,12 @@ export const FIGURE_PIXEL_WIDTH: Record<FigureSize, number> = {
 	moyenne: 400,
 	grande: 560
 };
+
+/**
+ * Taille des noms et textes à l'écran, en px : DOIT valoir le `font-size` de
+ * `.figure-etiquette` (`FigureBlockView.svelte`) — le placement en dépend.
+ */
+export const FIGURE_LABEL_FONT_PX = 13;
 
 /** Couleur par défaut des objets (noire au PDF) : couleur du texte à l'écran, claire ou sombre. */
 const SCREEN_DEFAULT_COLOR = 'var(--color-foreground)';
@@ -205,6 +219,7 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 				y: svg.labelY,
 				text: svg.label,
 				anchor: 'middle',
+				baseline: 'middle',
 				italic: false
 			});
 		}
@@ -236,34 +251,49 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 		const sty = resolveStyle(el, figure.defaults);
 		const color = screenColor(sty.color);
 		shapes.push({ elementId: el.id, color, kind: 'dot', cx: svg.cx, cy: svg.cy, r: sty.pointSize });
-		if (el.label) {
+		if (el.label && !el.labelHidden) {
+			// Même table que l'export Typst (`label-placement.ts`) : même côté, même ancrage
+			const dir = labelDirection(el.labelPosition);
+			const off = el.labelOffset
+				? { dx: el.labelOffset.dx, dy: -el.labelOffset.dy }
+				: labelOffset(dir, sty.pointSize + 3, sty.pointSize + 2);
+			const placed = svgTextPlacement(svg.cx + off.dx, svg.cy - off.dy, dir, FIGURE_LABEL_FONT_PX);
 			shapes.push({
 				elementId: el.id,
 				color,
 				kind: 'label',
-				x: svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 3),
-				y: svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2)),
+				x: placed.x,
+				y: placed.y,
 				text: el.label,
-				anchor: 'start',
+				anchor: placed.anchor,
+				baseline: 'alphabetic',
 				italic: true
 			});
 		}
 	}
 
 	// Passe 6 : textes
+	// Centrés par défaut, comme au PDF (`content` de cetz) ; `ancre=` choisit le point posé
 	for (const el of elements) {
-		if (el.type !== 'text') continue;
+		if (!isText(el)) continue;
 		const svg = textToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		const sty = resolveStyle(el, figure.defaults);
+		const placed = svgTextPlacement(
+			svg.x,
+			svg.y,
+			textAnchorDirection(el.textAnchor),
+			FIGURE_LABEL_FONT_PX
+		);
 		shapes.push({
 			elementId: el.id,
 			color: screenColor(sty.color),
 			kind: 'label',
-			x: svg.x,
-			y: svg.y,
+			x: placed.x,
+			y: placed.y,
 			text: svg.text,
-			anchor: 'start',
+			anchor: placed.anchor,
+			baseline: 'alphabetic',
 			italic: false
 		});
 	}

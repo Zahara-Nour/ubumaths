@@ -14,6 +14,13 @@ import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
 import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
+import {
+	cetzAnchor,
+	labelDirection,
+	labelOffset,
+	textAnchorDirection,
+	type Direction
+} from './label-placement';
 
 export interface TypstExportOptions {
 	scale?: number;
@@ -40,6 +47,16 @@ const MARK_SPACING = 0.12;
 const RIGHT_ANGLE_SIZE = 0.3;
 const TICK_HALF = 0.15;
 const TICK_SPACING = 0.08;
+
+/** Écart point ↔ boîte du nom (unités du repère, × `markScale`) : ≈ 6 px / 5 px à l'écran */
+const LABEL_GAP = 0.15;
+const LABEL_GAP_DIAGONAL_Y = 0.125;
+
+/** `, anchor: "…"` de `content` ; rien pour le centre (défaut de cetz) */
+function anchorArg(dir: Direction): string {
+	const anchor = cetzAnchor(dir);
+	return anchor ? `, anchor: "${anchor}"` : '';
+}
 
 function c(x: number, y: number): string {
 	const rx = Math.round(x * 1000) / 1000;
@@ -572,10 +589,14 @@ export function exportToTypst(
 			lines.push(`  rect(${c(x - s, y - s)}, ${c(x + s, y + s)}, fill: ${color}, stroke: none)`);
 		}
 
-		if (showLabels && el.label) {
-			// Nom en TEXTE italique, jamais en mode math (`$AB$` : variable inconnue)
+		if (showLabels && el.label && !el.labelHidden) {
+			// Même table que l'écran du bloc figure (`label-placement.ts`) : le nom
+			// s'écrit du côté choisi, sa boîte posée contre le point par l'ancre cetz.
+			// Nom en TEXTE italique, jamais en mode math (`$AB$` : variable inconnue).
+			const dir = labelDirection(el.labelPosition);
+			const off = labelOffset(dir, size(LABEL_GAP), size(LABEL_GAP_DIAGONAL_Y));
 			lines.push(
-				`  content(${c(x + size(0.2), y + size(0.2))}, text(style: "italic", ${typstString(el.label)}))`
+				`  content(${c(x + off.dx, y + off.dy)}${anchorArg(dir)}, text(style: "italic", ${typstString(el.label)}))`
 			);
 		}
 	}
@@ -648,7 +669,11 @@ export function exportToTypst(
 
 			if (mx === undefined || my === undefined) continue;
 			tag(el.id);
-			lines.push(`  content(${c(mx, my)}, text(size: 9pt, fill: ${color}, ${typstString(text)}))`);
+			// Centré par défaut ; `ancre=` (textes simples) pose un autre point de la boîte
+			const dir = textAnchorDirection(el.type === 'text' ? el.textAnchor : undefined);
+			lines.push(
+				`  content(${c(mx, my)}${anchorArg(dir)}, text(size: 9pt, fill: ${color}, ${typstString(text)}))`
+			);
 		}
 	}
 

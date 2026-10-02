@@ -44,10 +44,33 @@ export interface GeoStyle {
 // Common properties
 // =============================================================================
 
+/**
+ * Direction d'un texte par rapport à un point de référence (DSL : `haut`,
+ * `bas-gauche`…). Nom d'un point : côté où le nom est écrit (`etiquette=`).
+ */
+export const LABEL_POSITIONS = [
+	'top',
+	'bottom',
+	'left',
+	'right',
+	'top-left',
+	'top-right',
+	'bottom-left',
+	'bottom-right'
+] as const;
+export type LabelPosition = (typeof LABEL_POSITIONS)[number];
+
+/** Point de la boîte d'un texte posé sur sa position (DSL `ancre=`, comme l'`anchor` de cetz). */
+export type TextAnchor = LabelPosition | 'center';
+
 export interface GeoElementBase {
 	readonly id: string;
 	readonly label?: string;
 	readonly labelOffset?: { readonly dx: number; readonly dy: number };
+	/** Côté du nom (DSL `etiquette=`) ; absent = en haut à droite. Rendu : bloc figure + Typst. */
+	readonly labelPosition?: LabelPosition;
+	/** Nom masqué, l'objet restant dessiné (DSL `etiquette="aucune"`) */
+	readonly labelHidden?: boolean;
 	readonly color: string;
 	readonly visible: boolean;
 	readonly style?: GeoStyle;
@@ -509,6 +532,8 @@ export interface GeoText extends GeoElementBase {
 	readonly autoPosition?: 'midpoint' | 'bisector' | 'centroid';
 	/** Target point IDs for auto-positioning */
 	readonly autoTargetIds?: readonly string[];
+	/** Point du texte posé sur sa position (DSL `ancre=`) ; absent = centre */
+	readonly textAnchor?: TextAnchor;
 	readonly dependsOn: readonly string[];
 }
 

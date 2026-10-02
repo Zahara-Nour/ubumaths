@@ -111,7 +111,7 @@
 						y={s.y}
 						style:fill={s.color}
 						text-anchor={s.anchor}
-						dominant-baseline={s.anchor === 'middle' ? 'middle' : undefined}>{s.text}</text
+						dominant-baseline={s.baseline === 'middle' ? 'middle' : undefined}>{s.text}</text
 					>
 				{/if}
 			{/each}
@@ -143,6 +143,7 @@
 		font-family: inherit;
 	}
 
+	/* 13px = FIGURE_LABEL_FONT_PX (figure-svg.ts) : le placement des noms en dépend */
 	.figure-etiquette {
 		font-size: 13px;
 		stroke: var(--color-background);
