@@ -68,10 +68,26 @@ import {
 	maskSpans,
 	parseDetailKind
 } from '../utils/detail-kinds';
-import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
-import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
-import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
-import { findNumberLineBlocks, parseNumberLine } from './number-line-parser';
+import {
+	findVariationBlocks,
+	parseVariationTable,
+	isVariationBlockStart
+} from './variation-table-parser';
+import {
+	findProbTreeBlocks,
+	parseProbabilityTree,
+	isProbTreeBlockStart
+} from './probability-tree-parser';
+import {
+	findTrigCircleBlocks,
+	parseTrigCircle,
+	isTrigCircleBlockStart
+} from './trig-circle-parser';
+import {
+	findNumberLineBlocks,
+	parseNumberLine,
+	isNumberLineBlockStart
+} from './number-line-parser';
 import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
@@ -1547,6 +1563,53 @@ function parseTextFormattingPipeline(text: string): InlineNode[] {
  * @returns Array of block nodes
  */
 /**
+ * Les blocs ```variation / ```probtree / ```trig / ```line ouverts en tête de
+ * `lines` (Q66 dans les listes) : leur fin selon leur repérage, et leur nœud
+ * — ou leur source en bloc de code s'ils sont invalides (Q64). null sinon.
+ */
+function specialBlockFromLines(lines: string[]): { node: BlockNode; endIndex: number } | null {
+	const opener = lines[0];
+	const kinds = [
+		{
+			is: isVariationBlockStart,
+			find: findVariationBlocks,
+			parse: parseVariationTable,
+			language: 'variation'
+		},
+		{
+			is: isProbTreeBlockStart,
+			find: findProbTreeBlocks,
+			parse: parseProbabilityTree,
+			language: 'probtree'
+		},
+		{
+			is: isTrigCircleBlockStart,
+			find: findTrigCircleBlocks,
+			parse: parseTrigCircle,
+			language: 'trig'
+		},
+		{
+			is: isNumberLineBlockStart,
+			find: findNumberLineBlocks,
+			parse: parseNumberLine,
+			language: 'line'
+		}
+	] as const;
+	const kind = kinds.find((k) => k.is(opener));
+	if (!kind) return null;
+	const endIndex = kind.find(lines)[0]?.endIndex ?? 0;
+	// Les parseurs lisent jusqu'à `end` EXCLU (la fence de fin)
+	const closed = endIndex > 0 && isSpecialBlockEnd(lines[endIndex]);
+	const end = closed ? endIndex : endIndex + 1;
+	const node: BlockNode = kind.parse(lines, 0, end).node ?? {
+		type: 'code-block',
+		language: kind.language,
+		code: lines.slice(1, end).join('\n')
+	};
+	return { node, endIndex };
+}
+
+/**
  * Le texte d'un item de liste entre deux blocs de code : paragraphes, mais
  * aussi blocs ```courbe / ```figure / statistiques NON FERMÉS — le motif des
  * blocs de code exige une clôture, et sans ce repérage leur texte s'affichait
@@ -1562,7 +1625,13 @@ function textWithUnclosedBlocks(
 	const opens = (line: string) =>
 		isCourbeBlockStart(line.trim()) ||
 		isFigureBlockStart(line.trim()) ||
-		isStatChartBlockStart(line.trim()) !== null;
+		isStatChartBlockStart(line.trim()) !== null ||
+		[
+			isVariationBlockStart,
+			isProbTreeBlockStart,
+			isTrigCircleBlockStart,
+			isNumberLineBlockStart
+		].some((is) => is(line.trim()));
 	const start = lines.findIndex(opens);
 
 	const paragraph = (raw: string): BlockNode[] => {
@@ -1577,7 +1646,22 @@ function textWithUnclosedBlocks(
 	const opener = rest[0];
 	let node: BlockNode;
 	let endIndex: number;
-	if (isCourbeBlockStart(opener)) {
+	// Blocs spéciaux (Q66) : le retrait RELATIF est gardé (les lignes d'un
+	// tableau de variations sont en retrait sous leur en-tête)
+	const margin = lines[start].length - lines[start].trimStart().length;
+	const special = specialBlockFromLines(
+		lines
+			.slice(start)
+			.map((line) =>
+				restoreMathPlaceholders(
+					line.slice(Math.min(margin, line.length - line.trimStart().length)).trimEnd(),
+					placeholders
+				)
+			)
+	);
+	if (special) {
+		({ node, endIndex } = special);
+	} else if (isCourbeBlockStart(opener)) {
 		endIndex = findCourbeBlocks(rest)[0]?.endIndex ?? 0;
 		node = parseCourbe(rest, 0, endIndex);
 	} else if (isFigureBlockStart(opener)) {
@@ -1623,7 +1707,13 @@ function swallowsForeignBlock(
 			: isStatChartBlockStart(opener) !== null
 				? findStatChartBlocks(lines)
 				: null;
-	if (ranges === null) return false;
+	if (ranges === null) {
+		// ```variation / probtree / trig / line (Q66) : leur repérage n'a pas
+		// d'indicateur « fermé », mais s'arrête AVANT la dernière ligne quand
+		// le ``` trouvé ferait lire du texte comme contenu
+		const special = specialBlockFromLines(lines);
+		return special !== null && special.endIndex !== lines.length - 1;
+	}
 	return !(ranges[0]?.closed && ranges[0].endIndex === lines.length - 1);
 }
 
