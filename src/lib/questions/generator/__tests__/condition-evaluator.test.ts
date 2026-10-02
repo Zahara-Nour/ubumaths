@@ -147,4 +147,44 @@ describe('evaluateConditions', () => {
 		// since all variables should be resolved before condition evaluation.
 		expect(evaluateConditions(['x != 0'], makeVars({ a: 3 }))).toBe(true);
 	});
+
+	// =========================================================================
+	// Virgule entre deux chiffres dans un appel de fonction : séparateur d'arguments
+	// (avant le correctif, `mod(16,4)` se lisait `mod(16.4)` et la condition mentait)
+	// =========================================================================
+
+	describe("virgule dans un appel de fonction = séparateur d'arguments", () => {
+		it('mod(16,4)!=0 → faux (16 est divisible par 4)', () => {
+			expect(evaluateConditions(['mod(16,4)!=0'], [])).toBe(false);
+		});
+
+		it('mod(17,4)!=0 → vrai', () => {
+			expect(evaluateConditions(['mod(17,4)!=0'], [])).toBe(true);
+		});
+
+		it('mod(b^2-a^2,4)=0 avec a=3, b=5 → vrai (25-9=16)', () => {
+			// La substitution produit `…{3}^2,4` : le `2,4` ne doit pas devenir 2,4
+			expect(evaluateConditions(['mod(b^2-a^2,4)=0'], makeVars({ a: 3, b: 5 }))).toBe(true);
+			expect(evaluateConditions(['mod(b^2-a^2,4)!=0'], makeVars({ a: 3, b: 5 }))).toBe(false);
+		});
+
+		it('gcd(12,8)=4 → vrai', () => {
+			expect(evaluateConditions(['gcd(12,8)=4'], [])).toBe(true);
+		});
+
+		it('ambiguïté max(2,5) : le séparateur l’emporte → 5', () => {
+			expect(evaluateConditions(['max(2,5)=5'], [])).toBe(true);
+		});
+
+		it('décimal à virgule HORS appel de fonction : sens inchangé (a>2,5)', () => {
+			expect(evaluateConditions(['a>2,5'], makeVars({ a: 3 }))).toBe(true);
+			expect(evaluateConditions(['a>2,5'], makeVars({ a: 2 }))).toBe(false);
+			expect(evaluateConditions(['abs(a)>2,5'], makeVars({ a: -3 }))).toBe(true);
+		});
+
+		it('décimal à virgule dans des parenthèses de groupement, même dans un appel', () => {
+			// mod((2,5)*4,3) = mod(10,3) = 1
+			expect(evaluateConditions(['mod((2,5)*4,3)=1'], [])).toBe(true);
+		});
+	});
 });
