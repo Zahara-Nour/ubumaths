@@ -7,11 +7,15 @@
 	- Rich content support (paragraphs, lists, etc.)
 	- Styled border and background
 	- Accessible styling
+	- Encadré typé `> [!méthode|rappel|attention]` (ADR 0017) : libellé visible,
+	  couleurs du type ; le rappel porte `callout-reminder` (marge, cf. MarkdownRenderer)
 
 	@see types.ts BlockquoteNode for the AST node type
 -->
 <script lang="ts">
-	import type { BlockNode, InlineNode, ListItemNode } from '$lib/ubumark';
+	import type { BlockNode, CalloutKind, InlineNode, ListItemNode } from '$lib/ubumark';
+	import { DETAIL_KIND_LABELS } from '$lib/ubumark';
+	import { CALLOUT_CLASSES, CALLOUT_LABEL_CLASSES } from '../detail-styles';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import MathBlock from './MathBlock.svelte';
@@ -25,10 +29,12 @@
 
 	interface Props {
 		children: BlockNode[];
+		/** Encadré typé ; absent pour une citation ordinaire */
+		callout?: CalloutKind;
 		class?: string;
 	}
 
-	let { children, class: className = '' }: Props = $props();
+	let { children, callout, class: className = '' }: Props = $props();
 
 	/**
 	 * Type guards for different block node types
@@ -83,7 +89,7 @@
 
 	function isBlockquoteNode(
 		node: BlockNode
-	): node is { type: 'blockquote'; children: BlockNode[] } {
+	): node is { type: 'blockquote'; children: BlockNode[]; callout?: CalloutKind } {
 		return node.type === 'blockquote';
 	}
 
@@ -94,9 +100,7 @@
 	}
 </script>
 
-<blockquote
-	class="my-4 border-l-4 border-muted-foreground/30 bg-muted/30 py-2 pl-4 text-foreground italic {className}"
->
+{#snippet content()}
 	{#each children as child, index (index)}
 		{#if isParagraphNode(child)}
 			<ParagraphNode children={child.children} />
@@ -133,11 +137,33 @@
 			/>
 		{:else if isBlockquoteNode(child)}
 			<!-- Recursive blockquote rendering -->
-			<Blockquote children={child.children} />
+			<Blockquote children={child.children} callout={child.callout} />
 		{:else if isCodeBlockNode(child)}
 			<CodeBlock code={child.code} language={child.language} />
 		{:else if child.type === 'horizontal-rule'}
 			<HorizontalRule />
 		{/if}
 	{/each}
-</blockquote>
+{/snippet}
+
+{#if callout}
+	<div
+		role="note"
+		aria-label={DETAIL_KIND_LABELS[callout]}
+		data-callout={callout}
+		class="callout callout-{callout} my-4 rounded-md border-l-4 px-4 py-2 text-foreground {CALLOUT_CLASSES[
+			callout
+		]} {className}"
+	>
+		<p class="mb-1 text-sm font-semibold {CALLOUT_LABEL_CLASSES[callout]}">
+			{DETAIL_KIND_LABELS[callout]}
+		</p>
+		{@render content()}
+	</div>
+{:else}
+	<blockquote
+		class="my-4 border-l-4 border-muted-foreground/30 bg-muted/30 py-2 pl-4 text-foreground italic {className}"
+	>
+		{@render content()}
+	</blockquote>
+{/if}

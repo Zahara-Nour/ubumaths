@@ -163,6 +163,15 @@
 	});
 
 	/**
+	 * Un rappel `> [!rappel]` au premier niveau : sur grand écran, il se place en
+	 * marge, sur la ligne du bloc qui le précède (grille à deux colonnes, cf.
+	 * styles). Seuls ces documents passent en grille : aucun effet ailleurs.
+	 */
+	let hasMarginNotes = $derived(
+		ast?.children.some((node) => node.type === 'blockquote' && node.callout === 'reminder') ?? false
+	);
+
+	/**
 	 * Budget des blocs ```figure / ```courbe, partagé par tout le document (rendus
 	 * imbriqués compris) : un nouveau budget à chaque nouveau contenu.
 	 */
@@ -207,7 +216,7 @@
 </script>
 
 {#if mode === 'rendered' || mode === 'both'}
-	<div class="markdown-content {className}">
+	<div class="markdown-content {className}" class:has-margin-notes={hasMarginNotes}>
 		{#if ast}
 			<!-- Key includes genericFunctions to force re-render when it changes -->
 			{#each ast.children as node, i (`${i}-${genericFunctions?.names?.length ?? 0}`)}
@@ -290,7 +299,7 @@
 				{:else if node.type === 'code-block'}
 					<CodeBlock code={node.code} language={node.language} />
 				{:else if node.type === 'blockquote'}
-					<Blockquote children={node.children} />
+					<Blockquote children={node.children} callout={node.callout} />
 				{:else if node.type === 'variation-table'}
 					<VariationTable {node} />
 				{:else if node.type === 'probability-tree'}
@@ -330,5 +339,29 @@
 
 	.markdown-content > :global(*:last-child) {
 		margin-bottom: 0;
+	}
+
+	/*
+	 * Rappels en marge (ADR 0017, D8). Placement automatique de la grille : un
+	 * rappel (colonne 2) reste sur la ligne du bloc qui le précède (colonne 1),
+	 * le bloc suivant repart à la ligne. Téléphone : flux normal, rappel dessous.
+	 */
+	@media (min-width: 768px) {
+		.markdown-content.has-margin-notes {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+
+		.markdown-content.has-margin-notes > :global(*) {
+			grid-column: 1;
+		}
+
+		.markdown-content.has-margin-notes > :global(.callout-reminder) {
+			grid-column: 2;
+			align-self: start;
+			width: 14rem;
+			margin-top: 0;
+			margin-left: 1rem;
+		}
 	}
 </style>

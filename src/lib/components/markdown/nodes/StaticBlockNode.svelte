@@ -65,7 +65,7 @@
 {:else if node.type === 'code-block'}
 	<CodeBlock code={node.code} language={node.language} />
 {:else if node.type === 'blockquote'}
-	<Blockquote children={node.children} />
+	<Blockquote children={node.children} callout={node.callout} />
 {:else if node.type === 'variation-table'}
 	<VariationTable {node} />
 {:else if node.type === 'probability-tree'}

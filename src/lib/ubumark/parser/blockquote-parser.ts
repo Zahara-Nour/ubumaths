@@ -21,6 +21,7 @@
  */
 
 import type { BlockquoteNode } from '../types';
+import { CALLOUT_MARKER_REGEX, parseCalloutKind, type CalloutKind } from '../utils/detail-kinds';
 
 // ============================================================================
 // TYPES
@@ -271,6 +272,29 @@ export function extractBlockquoteContent(lines: string[]): string[] {
 	// Extract the temporary _contentLines property
 	const node = parsed as BlockquoteNode & { _contentLines?: string[] };
 	return node._contentLines || [];
+}
+
+/**
+ * Encadré typé (ADR 0017) : `[!méthode]`, `[!rappel]` ou `[!attention]` en
+ * tête de la première ligne de contenu. Le marqueur est retiré ; le reste de
+ * la ligne (s'il y en a) reste le début du contenu. Type inconnu : citation
+ * ordinaire, lignes intactes.
+ *
+ * @param contentLines - Lignes de contenu (marqueurs `>` déjà retirés)
+ */
+export function extractCalloutMarker(contentLines: string[]): {
+	callout?: CalloutKind;
+	lines: string[];
+} {
+	const first = contentLines[0];
+	const match = first?.match(CALLOUT_MARKER_REGEX);
+	const callout = match ? parseCalloutKind(match[1]) : null;
+	if (!match || !callout) return { lines: contentLines };
+	const rest = match[2].trim();
+	return {
+		callout,
+		lines: rest ? [rest, ...contentLines.slice(1)] : contentLines.slice(1)
+	};
 }
 
 /**

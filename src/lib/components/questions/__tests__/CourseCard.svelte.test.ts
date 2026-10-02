@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import QuestionCard from '../QuestionCard.svelte';
 import FlashCard from '../FlashCard.svelte';
+import CourseCardBack from '../CourseCardBack.svelte';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { AnswerData } from '$lib/types/question-display';
 import { resolvedMarkdown, templateMarkdown } from '$lib/ubumark';
@@ -143,5 +144,40 @@ describe('carte de cours — verso en étapes générées (mode B)', () => {
 		const back = container.querySelector('[data-testid="course-card-back"]');
 		expect(back).not.toBeNull();
 		expect(back?.textContent ?? '').toContain('42');
+	});
+});
+
+/**
+ * Correction concise / détaillée (ADR 0017) : le verso d'une carte de cours
+ * s'ouvre concis, le rappel n'apparaît qu'après « Voir le détail ».
+ */
+describe('carte de cours — verso concis par défaut (CourseCardBack)', () => {
+	it('rappel masqué, puis visible avec son libellé', async () => {
+		try {
+			localStorage.removeItem('chiphre:correction-detail');
+		} catch {
+			// stockage indisponible
+		}
+		const { container } = await render(CourseCardBack, {
+			correction: {
+				steps: [
+					resolvedMarkdown(
+						'On détermine son ensemble de définition.\n\n> [!rappel] Une racine carrée exige un radicande positif.'
+					)
+				]
+			}
+		});
+		expect(container.textContent).toContain('ensemble de définition');
+		expect(container.textContent).not.toContain('radicande positif');
+
+		container.querySelector<HTMLButtonElement>('button[aria-expanded]')?.click();
+		await tick();
+		expect(container.textContent).toContain('radicande positif');
+		expect(container.textContent).toContain('Rappel');
+		try {
+			localStorage.removeItem('chiphre:correction-detail');
+		} catch {
+			// stockage indisponible
+		}
 	});
 });

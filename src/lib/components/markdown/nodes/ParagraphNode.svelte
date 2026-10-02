@@ -27,6 +27,7 @@
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
+	import { inlineDetailClass } from '../detail-styles';
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
 	import InternalLink from './InternalLink.svelte';
@@ -163,6 +164,7 @@
 				bold={child.bold}
 				italic={child.italic}
 				code={child.code}
+				detail={child.detail}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
@@ -212,6 +214,13 @@
 						/>
 					{/key}
 				{/if}
+			{:else if child.detail}
+				<!-- Formule d'un détail en ligne `[…]{.rappel}` (ADR 0017) -->
+				<span class={inlineDetailClass(child.detail)}>
+					{#key child.expression}
+						<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+					{/key}
+				</span>
 			{:else}
 				{#key child.expression}
 					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />

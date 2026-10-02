@@ -35,6 +35,7 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 	import CourseCardBack from './CourseCardBack.svelte';
+	import CorrectionView from './CorrectionView.svelte';
 
 	const logger = createLogger('FlashCard');
 
@@ -517,7 +518,8 @@
 
 							{#if correctionMarkdown}
 								<div class="correction-steps">
-									<MarkdownRenderer content={correctionMarkdown} />
+									<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
+									<CorrectionView markdown={correctionMarkdown} />
 								</div>
 							{/if}
 						{/if}

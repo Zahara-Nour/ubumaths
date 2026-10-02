@@ -347,3 +347,44 @@ describe('FlashCard — prop flippable', () => {
 		expect(container.textContent).toContain('Combien font');
 	});
 });
+
+/**
+ * Correction concise / détaillée (ADR 0017) : au verso, le détail est masqué
+ * par défaut, l'interrupteur le révèle.
+ */
+describe('FlashCard — correction concise par défaut', () => {
+	it('verso : détail masqué, « Voir le détail » le montre', async () => {
+		try {
+			localStorage.removeItem('chiphre:correction-detail');
+		} catch {
+			// stockage indisponible
+		}
+		const { container } = await render(FlashCard, {
+			instance: {
+				templateId: 'test',
+				statement: resolvedMarkdown('Calcule. $$2 \\times 80$$'),
+				blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
+				correction: {
+					steps: [resolvedMarkdown('On multiplie 2 par 8 dizaines [soit 16 dizaines]{.calcul}.')]
+				},
+				grades: ['6'],
+				theme: 'Entiers',
+				domain: 'Multiplier',
+				level: 1,
+				generatedAt: new Date().toISOString()
+			} as unknown as QuestionInstance
+		});
+		const face = container.querySelector<HTMLElement>('.flip-card-back');
+		expect(face?.textContent).toContain('On multiplie 2 par 8 dizaines');
+		expect(face?.textContent).not.toContain('soit 16 dizaines');
+
+		face?.querySelector<HTMLButtonElement>('button[aria-expanded]')?.click();
+		await new Promise((r) => setTimeout(r, 0));
+		expect(face?.textContent).toContain('soit 16 dizaines');
+		try {
+			localStorage.removeItem('chiphre:correction-detail');
+		} catch {
+			// stockage indisponible
+		}
+	});
+});
