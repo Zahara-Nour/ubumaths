@@ -203,9 +203,13 @@ describe('gains collatéraux', () => {
 
 	it('la garde d’indice retire un faux positif de main : ∛x·∛y ≢ √(xy)', () => {
 		expect(eq('\\sqrt[3]{x}\\sqrt[3]{y}', '\\sqrt{xy}')).toBe(false);
-		// Contrepartie : `∛x·∛y ≡ ∛(xy)`, vrai, n'est plus prouvé. Faux négatif
-		// assumé — la fusion ne sait pas transporter l'indice.
-		expect(eq('\\sqrt[3]{x}\\sqrt[3]{y}', '\\sqrt[3]{xy}')).toBe(false);
+		// `∛x·∛y ≡ ∛(xy)`, vrai pour tout réel (indice impair), était un faux
+		// négatif assumé : la fusion ne sait pas transporter l'indice. Il est
+		// prouvé depuis que la comparaison distribue `∛(xy)` en `∛x·∛y`
+		// (`rules/nth-root-power.ts`).
+		expect(eq('\\sqrt[3]{x}\\sqrt[3]{y}', '\\sqrt[3]{xy}')).toBe(true);
+		// Indice pair : `⁴√(xy)` est défini pour x, y < 0, pas `⁴√x·⁴√y`.
+		expect(eq('\\sqrt[4]{x}\\sqrt[4]{y}', '\\sqrt[4]{xy}')).toBe(false);
 	});
 
 	it.each([
