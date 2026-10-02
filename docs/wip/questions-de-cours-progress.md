@@ -57,3 +57,31 @@ decks` + `chapter_sections` ; aucun lien vers `question_templates`.
 - Nettoyage des paquets inutile : `srs_cards` = 0 ligne en prod (aucune question de cours dans un paquet).
 - Deux sources pour « carte de cours » : la colonne `type` (filtre du catalogue) et `options.courseCard`
   (`isCourseQuestion`) — cohérentes car `type` est dérivé à l'enregistrement.
+
+## Étape 2 — séries de chapitre (décisions de David, 2026-10-02)
+
+**Changement de conception (lecture « a »)** : on ne rattache pas des questions une à une ; le chapitre est
+relié à une **série** (composée au panier, ex. catégorie Fonctions › Étude de fonction › Méthode). Q111 (table
+« questions du chapitre ») est remplacée par une table **« séries du chapitre »**. L'étape 3 (paquet calculé)
+partira des questions de la série.
+
+**Accès (Q123 corrigée, validée)** : les élèves d'une classe peuvent lire les rattachements publiés des chapitres
+**visibles** de leur classe **et les séries elles-mêmes** (titre, niveau, catégories) ; pas les séries programmées
+ou masquées, ni celles d'une autre classe, ni les séries non rattachées du professeur. `student_can_read_series`
+passe de « série d'une évaluation assignée » à « … **ou** rattachée à un chapitre visible et publié de sa classe ».
+Anon : rien. Personne ne perd d'accès. (Correction : avant, l'élève ne lisait une série enregistrée QUE via une
+évaluation assignée ; le lien sans connexion porte les catégories dans l'URL.)
+
+**Spécification (validée)**
+
+- S1 Prof : « Ajouter une série » (séries enregistrées : titre, nombre de questions ; ou composer au panier).
+- S2 Publication : immédiate / programmée / masquée (comme les autres contenus, ADR 0005).
+- S3 Place dans le plan (section, `section_id` / `section_order`), déplaçable.
+- S4 Retirer = détacher (la série reste).
+- S5 / Q124 (a) Forme choisie au rattachement : flash-cards par défaut, ou entraînement.
+- S6 Élève : lien au titre de la série, lancé dans la forme choisie, sans note ni évaluation.
+- S7 Programmée / masquée : invisible.
+- S8–S10 Accès testé en intégration AVANT la migration (rouge sans elle) : lecture élève restreinte ; élève sans
+  écriture (vérifié par le nombre de lignes) ; prof / admin tout ; anon rien ; non-régression des séries
+  d'évaluation.
+- Q125 oui : le lien suit la série (modification visible ; une série est retirée à chaque usage).
