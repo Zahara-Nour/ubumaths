@@ -168,6 +168,40 @@ export function formatTick(value: number, locale: ContentLocale = 'fr'): string 
 	return v < 0 ? `−${decimal}` : decimal;
 }
 
+/** Plus grand dénominateur reconnu pour un pas multiple de π (π/12 au plus fin) */
+const MAX_PI_DENOMINATOR = 12;
+
+/**
+ * Pas multiple rationnel de π (`pi/2`, `2*pi/3`) : la fraction p/q telle que
+ * pas = (p/q)·π, sinon null (pas ordinaire, graduations décimales).
+ */
+function piRatio(step: number): { p: number; q: number } | null {
+	const ratio = step / Math.PI;
+	for (let q = 1; q <= MAX_PI_DENOMINATOR; q++) {
+		const p = Math.round(ratio * q);
+		if (p !== 0 && Math.abs(ratio * q - p) < 1e-9) return { p, q };
+	}
+	return null;
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? Math.abs(a) : gcd(b, a % b);
+}
+
+/** Étiquette de la k-ième graduation d'un pas (p/q)·π : « −π », « π/2 », « 3π/2 », « 2π ». */
+function piTickLabel(k: number, ratio: { p: number; q: number }): string {
+	let num = k * ratio.p;
+	let den = ratio.q;
+	if (num === 0) return '0';
+	const g = gcd(num, den);
+	num /= g;
+	den /= g;
+	const sign = num < 0 ? '−' : '';
+	const n = Math.abs(num);
+	const head = n === 1 ? 'π' : `${n}π`;
+	return den === 1 ? `${sign}${head}` : `${sign}${head}/${den}`;
+}
+
 /** Multiples entiers du pas compris dans [min ; max] */
 function multiples(step: number, min: number, max: number): number[] {
 	if (!(step > 0) || !Number.isFinite(step) || !Number.isFinite(min) || !Number.isFinite(max)) {
@@ -537,10 +571,15 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 
 	const ticksFor = (values: number[], step: number, axisCross: number): SceneTick[] => {
 		const stride = Math.max(1, Math.ceil(values.length / MAX_LABELS_PER_AXIS));
+		// Pas multiple de π (`grille: pi/2`) : graduations en π, pas « 1,5707963… »
+		const ratio = piRatio(step);
 		return values
 			.filter((v) => !originVisible || Math.abs(v - axisCross) > EPSILON)
 			.filter((v) => Math.round(v / step) % stride === 0)
-			.map((value) => ({ value, label: formatTick(value, locale) }));
+			.map((value) => ({
+				value,
+				label: ratio ? piTickLabel(Math.round(value / step), ratio) : formatTick(value, locale)
+			}));
 	};
 
 	const curves: SceneCurve[] = [];
