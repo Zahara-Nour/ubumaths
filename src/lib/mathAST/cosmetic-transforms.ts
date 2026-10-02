@@ -470,8 +470,54 @@ export function removeSignsAST(ast: MathNode): MathNode {
 }
 
 /**
+ * Le facteur s'écrit-il en commençant par un chiffre ? `2^n`, `1{,}05^n`, `3x`
+ * oui ; `x`, `(x+1)`, `\\sqrt{2}`, `-3` non (le signe ou la parenthèse sépare).
+ */
+function startsWithDigit(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'superscript':
+		case 'subscript':
+			return startsWithDigit(node.base);
+		case 'multiplication':
+			return startsWithDigit(node.left);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Le facteur s'écrit-il en finissant par un chiffre SUR LA LIGNE ? `3`, `x3`
+ * oui ; `x`, `2^n`, `e^{3x-2}` non (l'exposant est en hauteur, le chiffre
+ * suivant ne s'y colle pas).
+ */
+function endsWithDigit(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'opposite':
+		case 'positive':
+			return endsWithDigit(node.operand);
+		case 'multiplication':
+			return endsWithDigit(node.right);
+		default:
+			return false;
+	}
+}
+
+/** Sans signe, deux chiffres se toucheraient : `3\\times2^n` se lirait `32^n` */
+function digitsWouldTouch(left: MathNode, right: MathNode): boolean {
+	return endsWithDigit(left) && startsWithDigit(right);
+}
+
+/**
  * Remove explicit multiplication operators where implicit is possible.
  * 2 × x → 2x (implicit), but 2 × 3 stays (ambiguous)
+ *
+ * Le × est NÉCESSAIRE quand deux chiffres se toucheraient sans lui :
+ * `3\\times2^n` (→ `32^n`), `500\\times1{,}05^n`. Il reste, et la contrainte
+ * `products` ne le signale pas. `e^{x}\\times3` reste signalé (`3e^{x}`).
  */
 export function removeMultOperatorAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
@@ -482,6 +528,9 @@ export function removeMultOperatorAST(ast: MathNode): MathNode {
 
 		// Can't make implicit between two pure numbers (23 would be ambiguous)
 		if (isPureNumber(node.left) && isPureNumber(node.right)) return node;
+
+		// Deux chiffres se toucheraient : le × est nécessaire
+		if (digitsWouldTouch(node.left, node.right)) return node;
 
 		// Convert to implicit
 		return multiply(node.left, node.right, 'implicit');
@@ -597,9 +646,18 @@ export function sortTermsAndFactorsAST(ast: MathNode): MathNode {
 			// commutatives ne se rejoignaient plus, ce que cette fonction existe
 			// précisément pour garantir.
 			const reordered = [...factors].sort((a, b) => compareFactors(a.factor, b.factor));
-			const sorted = reordered.map((f, i) => ({ factor: f.factor, style: factors[i].style }));
+			// Un facteur implicite rangé derrière un nombre (`2^n 3` → `3 2^n`) ne
+			// doit pas s'y coller : `32^n`. Le × revient, comme à l'écriture.
+			const sorted = reordered.map((f, i) => {
+				const style = factors[i].style;
+				const touching =
+					i > 0 && style === 'implicit' && digitsWouldTouch(reordered[i - 1].factor, f.factor);
+				return { factor: f.factor, style: touching ? ('cross' as const) : style };
+			});
 
-			const changed = sorted.some((f, i) => f.factor !== factors[i].factor);
+			const changed = sorted.some(
+				(f, i) => f.factor !== factors[i].factor || f.style !== factors[i].style
+			);
 			if (!changed) return node;
 
 			return unflattenProduct(sorted) ?? node;
@@ -994,10 +1052,15 @@ export function cosmeticViolations(
 	return violations;
 }
 
-/** Multiplication « * » (style `star`) réécrite en « × » (style `cross`) */
+/**
+ * Multiplication « * » (style `star`) ou « · » (style `dot`) réécrite en « × »
+ * (style `cross`). Le point ne disparaissait jusqu'ici qu'avec le retrait du
+ * signe (`products`) ; devant un facteur qui commence par un chiffre, le signe
+ * reste (`3\cdot2^n`) et doit valoir `3\times2^n`.
+ */
 function withCrossMultiplication(ast: MathNode): MathNode {
 	return mapNode(ast, (node) =>
-		node.type === 'multiplication' && node.displayStyle === 'star'
+		node.type === 'multiplication' && (node.displayStyle === 'star' || node.displayStyle === 'dot')
 			? { ...node, displayStyle: 'cross' }
 			: node
 	);

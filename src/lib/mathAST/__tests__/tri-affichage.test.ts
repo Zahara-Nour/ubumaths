@@ -143,7 +143,8 @@ describe('ce que ce tri ne fait PAS', () => {
 	/**
 	 * ⚠️ **Cette fonction trie ; elle ne simplifie pas.** Deux facteurs
 	 * numériques passent tous deux devant et se retrouvent côte à côte :
-	 * `3 (x^2+1)^2 × 2x` devient `2 3 x (x^2+1)^2`, où « 2 3 » se lit vingt-trois.
+	 * `3 (x^2+1)^2 × 2x` devient `2 \times 3 x (x^2+1)^2` (le × évite, depuis le
+	 * 2026-10-02, le « 2 3 » qui se lisait vingt-trois).
 	 *
 	 * Ce n'est pas un défaut de ce lot mais sa LIMITE : regrouper `2 × 3` en `6`
 	 * est le travail de la simplification. Pour sa raison d'être — normaliser
@@ -162,8 +163,10 @@ describe('ce que ce tri ne fait PAS', () => {
 			'implicit'
 		);
 
+		// Depuis le 2026-10-02 : deux chiffres qui se toucheraient (« 2 3 », lu
+		// vingt-trois) sont séparés par un × — jamais `23x`, jamais `32^n`.
 		expect(toLatex(sortTermsAndFactorsAST(trois_x_fois_deux)).replace(/\s+/g, ' ').trim()).toBe(
-			'2 3 x'
+			'2 \\times 3 x'
 		);
 	});
 
