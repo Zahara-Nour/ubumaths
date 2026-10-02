@@ -21,6 +21,7 @@ import type {
 	StatChartDatum,
 	StatChartDirection,
 	StatChartLabels,
+	SimulationData,
 	StatChartSpec,
 	StatChartUnit
 } from '../types/stat-chart';
@@ -37,10 +38,18 @@ import {
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
 import { carreauGrid, usesCarreaux } from './stat-chart-carreaux';
 import { crossTable } from '$lib/statistics/cross-table';
-import { formatApproxValue, formatLawIndicators } from '$lib/statistics/format';
+import {
+	formatApproxValue,
+	formatFraction,
+	formatLawIndicators,
+	formatStatNumber
+} from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
-import { simulateCounts } from '$lib/statistics/simulation';
+import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
+// ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
+// `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
+import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
 import { createRandomSource } from '$lib/utils/random';
 
 // ============================================================================
@@ -1095,12 +1104,108 @@ function groupedCount(value: number, locale: ContentLocale): string {
 	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 }
 
-function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): SimulationScene {
+/** Un réel au millième, écrit selon la langue (moyennes, σ, marge) */
+function thousandth(value: number, locale: ContentLocale): string {
+	return formatStatNumber(Number(value.toFixed(3)), locale);
+}
+
+/** Ligne écrite sous la figure : la graine qui refait les mêmes tirages */
+function seedLine(seed: number, locale: ContentLocale): string {
+	return locale === 'en' ? `seed ${seed}` : `graine ${seed}`;
+}
+
+/**
+ * Mode `moyenne` (lot 3 PR b) : la moyenne des tirages selon leur nombre et la
+ * droite E(X) — le graphique de `.fréquence` dans l'atelier.
+ */
+function buildSimulatedMeanScene(
+	spec: StatChartSpec,
+	simulation: SimulationData,
+	law: { values: Fraction[]; probabilities: Fraction[] },
+	locale: ContentLocale
+): MeanScene {
+	const n = simulation.draws;
+	const outcome = simulateRunningMean(
+		law.values,
+		law.probabilities,
+		n,
+		createRandomSource(simulation.seed)
+	);
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+	const { means, expectation } = outcome.value;
+	const exact = formatFraction(expectation);
+	const last = thousandth(means[n - 1], locale);
+	const count = groupedCount(n, locale);
+	const summary =
+		locale === 'en'
+			? `${n === 1 ? 'mean of the single draw' : `mean of the ${count} draws`}: ${last}; expectation E(${simulation.variable}) = ${exact}`
+			: `${n === 1 ? 'moyenne du seul tirage' : `moyenne des ${count} tirages`} : ${last} ; espérance E(${simulation.variable}) = ${exact}`;
+	return {
+		...buildRunningMeanScene(means, expectation.toNumber(), exact, locale),
+		title: spec.title,
+		indicators: [summary, seedLine(simulation.seed, locale)]
+	};
+}
+
+/**
+ * Mode `échantillons` (lot 3 PR b) : l'histogramme des moyennes de N
+ * échantillons de taille n, classes de μ ± 2σ/√n en couleur — le graphique de
+ * `.échantillons` dans l'atelier.
+ */
+function buildSimulatedSamplesScene(
+	spec: StatChartSpec,
+	simulation: SimulationData,
+	law: { values: Fraction[]; probabilities: Fraction[] },
+	locale: ContentLocale
+): HistogramScene {
+	const N = simulation.samples;
+	const outcome = simulateSamples(
+		law.values,
+		law.probabilities,
+		N,
+		simulation.sampleSize,
+		createRandomSource(simulation.seed)
+	);
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+	const { means, expectation, deviation, margin, within } = outcome.value;
+	const exact = formatFraction(expectation);
+	const sigma = thousandth(deviation, locale);
+	const gap = thousandth(margin, locale);
+	const total = groupedCount(N, locale);
+	const k = groupedCount(within, locale);
+	const interval = '[μ − 2σ/√n ; μ + 2σ/√n]';
+	const lines =
+		locale === 'en'
+			? [
+					`μ = ${exact}; σ ≈ ${sigma}; 2σ/√n ≈ ${gap}`,
+					`${k} ${within === 1 ? 'sample' : 'samples'} out of ${total} ${within === 1 ? 'has' : 'have'} a mean in ${interval}`
+				]
+			: [
+					`μ = ${exact} ; σ ≈ ${sigma} ; 2σ/√n ≈ ${gap}`,
+					// 0 et 1 au singulier, en français
+					`${k} ${within > 1 ? 'échantillons' : 'échantillon'} sur ${total} ${within > 1 ? 'ont' : 'a'} une moyenne dans ${interval}`
+				];
+	return {
+		...buildSampleMeansScene(means, expectation.toNumber(), margin, locale),
+		title: spec.title,
+		indicators: [...lines, seedLine(simulation.seed, locale)]
+	};
+}
+
+function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
 	const simulation = spec.simulation;
 	if (simulation === null) throw new Error('Simulation sans données');
+	const law = {
+		values: simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
+		probabilities: simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO)
+	};
+	if (simulation.mode === 'moyenne') return buildSimulatedMeanScene(spec, simulation, law, locale);
+	if (simulation.mode === 'échantillons') {
+		return buildSimulatedSamplesScene(spec, simulation, law, locale);
+	}
 	const outcome = simulateCounts(
-		simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
-		simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO),
+		law.values,
+		law.probabilities,
 		simulation.draws,
 		createRandomSource(simulation.seed)
 	);

@@ -115,6 +115,23 @@ describe('lecture de n et affichage (revue)', () => {
 	});
 });
 
+describe('fréquence au millième', () => {
+	it('arrondi juste sur un demi : 3 sur 80 = 0,0375 → 0,038 (toFixed donnait 0,037)', () => {
+		const lists = { L: '1 ; 2', M: '1/20 ; 19/20' };
+		// Une graine pour laquelle la valeur 1 sort 3 fois sur 80
+		const seed = Array.from({ length: 2000 }, (_, i) => i).find((g) => {
+			const s = session(lists, g);
+			runInput(s, '.simuler L M 80');
+			return listNamed(s, 'N').values[0] === 3;
+		});
+		expect(seed, 'aucune graine ne donne 3 sur 80').toBeDefined();
+		const result = runInput(session(lists, seed), '.simuler L M 80');
+		const lines = result.kind === 'commande' ? result.output.split('\n') : [];
+
+		expect(lines[1]).toBe('1 : 3 fois, fréquence 0,038 — probabilité 1/20');
+	});
+});
+
 describe('cas d’erreur — message, rien de créé', () => {
 	it.each([
 		[

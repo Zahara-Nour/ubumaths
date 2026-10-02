@@ -86,7 +86,7 @@ export interface LawData {
 	indicators: LawIndicator[];
 }
 
-/** Ce que simule un bloc ```simulation (v2, lot 3) ; seul `tirages` est livré */
+/** Ce que simule un bloc ```simulation (v2, lot 3) */
 export const SIMULATION_MODES = ['tirages', 'moyenne', 'échantillons'] as const;
 export type SimulationMode = (typeof SIMULATION_MODES)[number];
 
@@ -101,8 +101,12 @@ export interface SimulationData {
 	/** Toutes connues : une probabilité « ? » ne se simule pas */
 	probabilities: string[];
 	mode: SimulationMode;
-	/** Nombre de tirages */
+	/** Nombre de tirages (modes `tirages` et `moyenne`) */
 	draws: number;
+	/** Mode `échantillons` : N échantillons… */
+	samples: number;
+	/** … de taille n */
+	sampleSize: number;
 	seed: number;
 }
 
@@ -242,6 +246,10 @@ export const STAT_CHART_LIMITS = {
 	simulationDraws: 10_000,
 	/** Graine d'un bloc ```simulation : au plus 9 chiffres */
 	simulationSeed: 999_999_999,
+	/** Échantillons, et taille d'un échantillon, d'un bloc ```simulation */
+	simulationSamples: 1000,
+	/** Tirages en tout du mode `échantillons` (N × n) */
+	simulationSampleDraws: 100_000,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */
