@@ -226,7 +226,10 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 				domain: 'Polynôme du second degré',
 				subdomains: ['Apprivoiser', 'Racines', 'Vrai ou Faux']
 			},
-			{ domain: 'Dérivation', subdomains: ['Apprivoiser'] },
+			{
+				domain: 'Dérivation',
+				subdomains: ['Apprivoiser', 'Nombre dérivé', 'Tangente', 'Fonctions dérivées', 'Variations']
+			},
 			{
 				domain: 'Fonction exponentielle',
 				subdomains: [
