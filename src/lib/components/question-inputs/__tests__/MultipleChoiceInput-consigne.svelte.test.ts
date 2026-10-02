@@ -44,6 +44,6 @@ describe('MultipleChoiceInput — consigne « plusieurs réponses »', () => {
 	it('réponse unique : pas de consigne « plusieurs réponses »', async () => {
 		await render(MultipleChoiceInput, { props: { choices, multipleAnswers: false } });
 		await expect.element(page.getByText(CONSIGNE)).not.toBeInTheDocument();
-		await expect.element(page.getByText('Sélectionnez une réponse')).toBeVisible();
+		await expect.element(page.getByText('Choisis une réponse.')).toBeVisible();
 	});
 });

@@ -231,7 +231,7 @@ export function getAnswerPlaceholder(answerType: string): string {
 		case 'text':
 			return 'Entrez votre réponse...';
 		case 'qcm':
-			return 'Sélectionnez une ou plusieurs réponses';
+			return 'Choisis une ou plusieurs réponses.';
 		case 'math':
 			return 'Entrez une expression mathématique...';
 		default:

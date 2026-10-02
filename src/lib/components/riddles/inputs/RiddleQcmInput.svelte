@@ -39,7 +39,7 @@
 
 <div class="space-y-3">
 	<Label>
-		{multipleAnswers ? 'Sélectionnez une ou plusieurs réponses' : 'Sélectionnez une réponse'}
+		{multipleAnswers ? 'Choisis une ou plusieurs réponses.' : 'Choisis une réponse.'}
 	</Label>
 
 	<div class="space-y-2">

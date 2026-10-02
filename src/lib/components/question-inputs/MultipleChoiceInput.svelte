@@ -173,7 +173,7 @@
 	<!-- Aide de la réponse unique (la consigne « plusieurs réponses » est au-dessus) -->
 	{#if !multipleAnswers && !disabled && !showValidation}
 		<div class="helper-text">
-			<span class="text-xs text-muted-foreground"> Sélectionnez une réponse </span>
+			<span class="text-xs text-muted-foreground"> Choisis une réponse. </span>
 		</div>
 	{/if}
 </div>
