@@ -1,0 +1,582 @@
+{
+	"title": "Parmi les… : modéliser un tableau croisé ou un sondage",
+	"description": "Tableau d'effectifs, sondage décrit en texte ou tableau de fréquences en contexte (lycée, trajets, sport) : P_A(B) et P_B(A) en valeur exacte, le « parmi les … » fixant l'univers",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"status": "draft",
+	"subdomain": "Problèmes en contexte",
+	"level": 3,
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n|---|---|---|---|\n| Demi-pensionnaire | ${{sd}}$ | ${{pd}}$ | ${{td}}$ |\n| Externe | ${{se}}$ | ${{pe}}$ | ${{te}}$ |\n\n1. On choisit un élève au hasard **parmi les demi-pensionnaires**. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi les élèves de seconde**. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "30..70"
+				},
+				{
+					"name": "y",
+					"expression": "30..70"
+				},
+				{
+					"name": "z",
+					"expression": "30..70"
+				},
+				{
+					"name": "k",
+					"expression": "15..45"
+				},
+				{
+					"name": "m",
+					"expression": "15..45"
+				},
+				{
+					"name": "n",
+					"expression": "15..45"
+				},
+				{
+					"name": "sd",
+					"expression": "eval:2*x"
+				},
+				{
+					"name": "pd",
+					"expression": "eval:2*y"
+				},
+				{
+					"name": "td",
+					"expression": "eval:2*z"
+				},
+				{
+					"name": "se",
+					"expression": "eval:2*k"
+				},
+				{
+					"name": "pe",
+					"expression": "eval:2*m"
+				},
+				{
+					"name": "te",
+					"expression": "eval:2*n"
+				}
+			],
+			"conditions": ["x+y+z != x+k"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sd/(sd+pd+td)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:sd/(sd+se)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $D$ l'événement « l'élève est demi-pensionnaire » et $S$ l'événement « l'élève est en seconde ». On complète le tableau par les totaux :\n\n| Régime | Seconde | Première | Terminale | Total |\n|---|---|---|---|---|\n| Demi-pensionnaire | ${{sd}}$ | ${{pd}}$ | ${{td}}$ | ${{eval:sd+pd+td}}$ |\n| Externe | ${{se}}$ | ${{pe}}$ | ${{te}}$ | ${{eval:se+pe+te}}$ |\n| Total | ${{eval:sd+se}}$ | ${{eval:pd+pe}}$ | ${{eval:td+te}}$ | ${{eval:sd+pd+td+se+pe+te}}$ |",
+					"« Parmi les demi-pensionnaires » : l'univers est réduit aux ${{eval:sd+pd+td}}$ demi-pensionnaires, dont ${{sd}}$ sont en seconde. $$p_1=P_{D}(S)=\\dfrac{ {{sd}} }{ {{eval:sd+pd+td}} }={{eval:sd/(sd+pd+td)}}$$",
+					"« Parmi les élèves de seconde » : l'univers est réduit aux ${{eval:sd+se}}$ élèves de seconde, dont ${{sd}}$ sont demi-pensionnaires. $$p_2=P_{S}(D)=\\dfrac{ {{sd}} }{ {{eval:sd+se}} }={{eval:sd/(sd+se)}}$$",
+					"Conclusion : $p_1=P_{D}(S)={{eval:sd/(sd+pd+td)}}$ et $p_2=P_{S}(D)={{eval:sd/(sd+se)}}$. Les deux probabilités ont le même numérateur mais pas le même univers : $P_{D}(S)\\neq P_{S}(D)$."
+				]
+			}
+		},
+		{
+			"statement": "On a interrogé les ${{N}}$ élèves d'un lycée sur leur trajet. ${{b}}$ élèves prennent le bus, ${{l}}$ élèves habitent à plus de $10$ km du lycée, et ${{c}}$ élèves prennent le bus **et** habitent à plus de $10$ km.\n\n1. On choisit un élève au hasard **parmi ceux qui habitent à plus de 10 km**. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi ceux qui prennent le bus**. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "40..60"
+				},
+				{
+					"name": "r",
+					"expression": "70..140"
+				},
+				{
+					"name": "h",
+					"expression": "50..120"
+				},
+				{
+					"name": "g",
+					"expression": "20..45"
+				},
+				{
+					"name": "N",
+					"expression": "eval:10*q"
+				},
+				{
+					"name": "b",
+					"expression": "eval:2*r"
+				},
+				{
+					"name": "l",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "c",
+					"expression": "eval:2*g"
+				}
+			],
+			"conditions": ["r != h", "g < h", "2*r+2*h-2*g <= 10*q - 20"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/l}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c/b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $B$ l'événement « l'élève prend le bus » et $L$ l'événement « l'élève habite à plus de 10 km ». L'énoncé donne les effectifs : ${{b}}$ élèves dans $B$, ${{l}}$ dans $L$ et ${{c}}$ dans $B\\cap L$.",
+					"« Parmi ceux qui habitent à plus de 10 km » : l'univers est réduit aux ${{l}}$ élèves de $L$, dont ${{c}}$ prennent le bus. $$p_1=P_{L}(B)=\\dfrac{ {{c}} }{ {{l}} }={{eval:c/l}}$$",
+					"« Parmi ceux qui prennent le bus » : l'univers est réduit aux ${{b}}$ élèves de $B$, dont ${{c}}$ habitent à plus de 10 km. $$p_2=P_{B}(L)=\\dfrac{ {{c}} }{ {{b}} }={{eval:c/b}}$$",
+					"Conclusion : $p_1=P_{L}(B)={{eval:c/l}}$ et $p_2=P_{B}(L)={{eval:c/b}}$. L'effectif total ${{N}}$ ne sert pas : il donnerait $P(B\\cap L)=\\dfrac{ {{c}} }{ {{N}} }$, une autre probabilité."
+				]
+			}
+		},
+		{
+			"statement": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n| | Sport en club | Pas de sport en club |\n|---|---|---|\n| Fille | ${{x1}}\\,\\%$ | ${{x2}}\\,\\%$ |\n| Garçon | ${{x3}}\\,\\%$ | ${{x4}}\\,\\%$ |\n\n1. On choisit un élève au hasard **parmi ceux qui pratiquent un sport en club**. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi les filles**. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2=?$",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "6..14"
+				},
+				{
+					"name": "v",
+					"expression": "10..18"
+				},
+				{
+					"name": "o",
+					"expression": "6..14"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:2*f"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:2*v"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:2*o"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:100-2*f-2*v-2*o"
+				}
+			],
+			"conditions": ["v != o", "f != v"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x1/(x1+x3)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:x1/(x1+x2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $F$ l'événement « l'élève est une fille » et $C$ l'événement « l'élève pratique un sport en club ». Le tableau donne $P(F\\cap C)={{eval:x1/100;d}}$ ; on calcule $P(C)={{eval:x1/100;d}}+{{eval:x3/100;d}}={{eval:(x1+x3)/100;d}}$ et $P(F)={{eval:x1/100;d}}+{{eval:x2/100;d}}={{eval:(x1+x2)/100;d}}$.",
+					"« Parmi ceux qui pratiquent un sport en club » : on conditionne par $C$. $$p_1=P_{C}(F)=\\dfrac{P(F\\cap C)}{P(C)}=\\dfrac{ {{eval:x1/100;d}} }{ {{eval:(x1+x3)/100;d}} }={{eval:x1/(x1+x3)}}$$",
+					"« Parmi les filles » : on conditionne par $F$. $$p_2=P_{F}(C)=\\dfrac{P(F\\cap C)}{P(F)}=\\dfrac{ {{eval:x1/100;d}} }{ {{eval:(x1+x2)/100;d}} }={{eval:x1/(x1+x2)}}$$",
+					"Conclusion : $p_1=P_{C}(F)={{eval:x1/(x1+x3)}}$ et $p_2=P_{F}(C)={{eval:x1/(x1+x2)}}$. Le pourcentage ${{x1}}\\,\\%$ lu dans le tableau est $P(F\\cap C)$, pas une probabilité conditionnelle."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 8/27 et 4/7",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{8}{27}", "\\frac{4}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : fractions non réduites 80/270 et 80/140",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{80}{270}", "\\frac{80}{140}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions", "reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 0 : réponses échangées (P_{S}(D) puis P_{D}(S))",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{4}{7}", "\\frac{8}{27}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P(D∩S) = 80/450 dans les deux cases",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{8}{45}", "\\frac{8}{45}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : p1 confondu avec P(S) = 140/450",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{14}{45}", "\\frac{4}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : p2 arrondi 0,57 (valeur exacte demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{8}{27}", "0{,}57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : p2 en pourcentage",
+			"variationIndex": 0,
+			"variables": {
+				"x": "40",
+				"y": "50",
+				"z": "45",
+				"k": "30",
+				"m": "35",
+				"n": "25"
+			},
+			"answers": ["\\frac{8}{27}", "57{,}14\\%"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : sd=120, D=300, S=200 : 2/5 et 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"x": "60",
+				"y": "40",
+				"z": "50",
+				"k": "40",
+				"m": "30",
+				"n": "20"
+			},
+			"answers": ["\\frac{2}{5}", "\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimaux exacts 0,4 et 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"x": "60",
+				"y": "40",
+				"z": "50",
+				"k": "40",
+				"m": "30",
+				"n": "20"
+			},
+			"answers": ["0{,}4", "0{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentages 40 % et 60 %",
+			"variationIndex": 0,
+			"variables": {
+				"x": "60",
+				"y": "40",
+				"z": "50",
+				"k": "40",
+				"m": "30",
+				"n": "20"
+			},
+			"answers": ["40\\%", "60\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form", "form"]
+			}
+		},
+		{
+			"description": "variation 1 : N=500, b=200, l=160, c=60 : 3/8 et 3/10",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["\\frac{3}{8}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : décimaux exacts 0,375 et 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["0{,}375", "0{,}3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : réponses échangées (3/10 puis 3/8)",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : effectif total utilisé : 60/500",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{3}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : p1 = card(L)/N = 160/500",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["\\frac{8}{25}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : non réduites 60/160 et 60/200",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["\\frac{60}{160}", "\\frac{60}{200}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions", "reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage 37,5 %",
+			"variationIndex": 1,
+			"variables": {
+				"q": "50",
+				"r": "100",
+				"h": "80",
+				"g": "30"
+			},
+			"answers": ["37{,}5\\%", "\\frac{3}{10}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : N=600, b=180, l=210, c=42 : 1/5 et 7/30",
+			"variationIndex": 1,
+			"variables": {
+				"q": "60",
+				"r": "90",
+				"h": "105",
+				"g": "21"
+			},
+			"answers": ["\\frac{1}{5}", "\\frac{7}{30}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : 7/30 arrondi 0,23",
+			"variationIndex": 1,
+			"variables": {
+				"q": "60",
+				"r": "90",
+				"h": "105",
+				"g": "21"
+			},
+			"answers": ["\\frac{1}{5}", "0{,}23"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 18 %, 30 %, 24 %, 28 % : 3/7 et 3/8",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["\\frac{3}{7}", "\\frac{3}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : p2 en décimal exact 0,375",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["\\frac{3}{7}", "0{,}375"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : réponses échangées",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["\\frac{3}{8}", "\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P(F∩C) = 0,18 lu dans le tableau",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["0{,}18", "0{,}18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : p1 en pourcentage",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["42{,}86\\%", "\\frac{3}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : écrit avec les pourcentages 18/42 et 18/48",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["\\frac{18}{42}", "\\frac{18}{48}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions", "reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 2 : p2 = 37,5 % (pourcentage)",
+			"variationIndex": 2,
+			"variables": {
+				"f": "9",
+				"v": "15",
+				"o": "12"
+			},
+			"answers": ["\\frac{3}{7}", "37{,}5\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

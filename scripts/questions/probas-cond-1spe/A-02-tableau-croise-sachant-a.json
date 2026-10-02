@@ -1,0 +1,297 @@
+{
+	"title": "Tableau croisé : probabilités conditionnelles sachant A",
+	"description": "Calculer P_A(B) puis P_Ā(B) dans un tableau d'effectifs à double entrée",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Tableaux croisés",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_A(B)=?$\n\n$P_{\\overline{A}}(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..60"
+				},
+				{
+					"name": "b",
+					"expression": "4..60"
+				},
+				{
+					"name": "c",
+					"expression": "4..60"
+				},
+				{
+					"name": "d",
+					"expression": "4..60"
+				}
+			],
+			"conditions": ["gcd(a,a+b) > 1", "gcd(c,c+d) > 1", "a*(c+d) != c*(a+b)", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/(a+b)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c/(c+d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sachant $A$, on ne regarde que la ligne $A$ : ${{eval:a+b}}$ élèves pratiquent un sport, dont ${{a}}$ jouent d'un instrument. $P_A(B)=\\dfrac{ {{a}} }{ {{eval:a+b}} }=\\textcolor{{{color:primary.0}}}{{{eval:a/(a+b)}} }$.",
+					"Sachant $\\overline{A}$, on ne regarde que la ligne $\\overline{A}$ : ${{eval:c+d}}$ élèves ne pratiquent pas de sport, dont ${{c}}$ jouent d'un instrument. $P_{\\overline{A}}(B)=\\dfrac{ {{c}} }{ {{eval:c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:c/(c+d)}} }$.",
+					"Le dénominateur est le total de la ligne, pas l'effectif total."
+				]
+			}
+		},
+		{
+			"statement": "Une coopérative trie ses pommes. On note $A$ l'événement « la pomme vient du verger nord » et $B$ l'événement « la pomme est de premier choix ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit une pomme au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_A(B)=?$\n\n$P_{\\overline{A}}(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..60"
+				},
+				{
+					"name": "b",
+					"expression": "4..60"
+				},
+				{
+					"name": "c",
+					"expression": "4..60"
+				},
+				{
+					"name": "d",
+					"expression": "4..60"
+				}
+			],
+			"conditions": ["gcd(a,a+b) > 1", "gcd(c,c+d) > 1", "a*(c+d) != c*(a+b)", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/(a+b)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:c/(c+d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sachant $A$, on ne regarde que la ligne $A$ : ${{eval:a+b}}$ pommes viennent du verger nord, dont ${{a}}$ de premier choix. $P_A(B)=\\dfrac{ {{a}} }{ {{eval:a+b}} }=\\textcolor{{{color:primary.0}}}{{{eval:a/(a+b)}} }$.",
+					"Sachant $\\overline{A}$, on ne regarde que la ligne $\\overline{A}$ : ${{eval:c+d}}$ pommes ne viennent pas du verger nord, dont ${{c}}$ de premier choix. $P_{\\overline{A}}(B)=\\dfrac{ {{c}} }{ {{eval:c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:c/(c+d)}} }$.",
+					"Le dénominateur est le total de la ligne, pas l'effectif total."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 12/40 et 15/60 → 3/10 et 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimaux 0,3 et 0,25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["0,3", "0,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : P(A∩B) = 12/100 pris pour P_A(B)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P_B(A) = 12/27 pris pour P_A(B)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{4}{9}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P_Ā(B) avec le total général 15/100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{3}{20}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P_Ā(B) pris pour 1 − P_A(B) = 7/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 30 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["30\\%", "\\frac{1}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : 12/40 et 15/60 → 3/10 et 1/4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimaux 0,3 et 0,25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["0,3", "0,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : P(A∩B) = 12/100 pris pour P_A(B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P_B(A) = 12/27 pris pour P_A(B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{4}{9}", "\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P_Ā(B) avec le total général 15/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{3}{20}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P_Ā(B) pris pour 1 − P_A(B) = 7/10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{7}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 30 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "15",
+				"d": "45"
+			},
+			"answers": ["30\\%", "\\frac{1}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

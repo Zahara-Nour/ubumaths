@@ -1,0 +1,265 @@
+{
+	"title": "Tableau croisé : probabilité de A sachant B",
+	"description": "Calculer P_B(A) dans un tableau à double entrée, d'effectifs ou de pourcentages, sans la confondre avec P_A(B)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Tableaux croisés",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..60"
+				},
+				{
+					"name": "b",
+					"expression": "4..60"
+				},
+				{
+					"name": "c",
+					"expression": "4..60"
+				},
+				{
+					"name": "d",
+					"expression": "4..60"
+				}
+			],
+			"conditions": ["gcd(a,a+c) > 1", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/(a+c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sachant $B$, on ne regarde que la colonne $B$ : ${{eval:a+c}}$ salariés habitent en ville, dont ${{a}}$ viennent en transports en commun.",
+					"$P_B(A)=\\dfrac{ {{a}} }{ {{eval:a+c}} }=\\textcolor{{{color:primary.0}}}{{{eval:a/(a+c)}} }$.",
+					"Attention : $P_A(B)=\\dfrac{ {{a}} }{ {{eval:a+b}} }$ (total de la ligne $A$) est une autre probabilité."
+				]
+			}
+		},
+		{
+			"statement": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}\\,\\%$ | ${{b}}\\,\\%$ | ${{eval:a+b}}\\,\\%$ |\n| $\\overline{A}$ | ${{c}}\\,\\%$ | ${{d}}\\,\\%$ | ${{eval:c+d}}\\,\\%$ |\n| Total | ${{eval:a+c}}\\,\\%$ | ${{eval:b+d}}\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..30"
+				},
+				{
+					"name": "b",
+					"expression": "5..35"
+				},
+				{
+					"name": "c",
+					"expression": "5..30"
+				},
+				{
+					"name": "d",
+					"expression": "eval:100-a-b-c"
+				}
+			],
+			"conditions": ["gcd(a,a+c) > 1", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/(a+c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sachant $B$, on ne regarde que la colonne $B$ : ${{eval:a+c}}\\,\\%$ des habitants utilisent un vélo, et ${{a}}\\,\\%$ des habitants ont moins de 30 ans et utilisent un vélo.",
+					"$P_B(A)=\\dfrac{ {{a}} }{ {{eval:a+c}} }=\\textcolor{{{color:primary.0}}}{{{eval:a/(a+c)}} }$.",
+					"Attention : $P_A(B)=\\dfrac{ {{a}} }{ {{eval:a+b}} }$ (total de la ligne $A$) est une autre probabilité."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 12/30 → 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimal 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["0,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : P_A(B) = 12/40 pris pour P_B(A)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P(A∩B) = 12/100 pris pour P_B(A)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 40 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["40\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : 12/30 non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{12}{30}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : 12/30 → 2/5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimal 0,4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["0,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : P_A(B) = 12/40 pris pour P_B(A)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P(A∩B) = 12/100 pris pour P_B(A)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 40 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["40\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : 12/30 non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{12}{30}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

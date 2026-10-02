@@ -1,0 +1,352 @@
+{
+	"title": "Probabilité d'un chemin dans un arbre pondéré",
+	"description": "P(A∩B) = P(A) × P_A(B) : on multiplie les probabilités le long du chemin",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b != c", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le produit des probabilités portées par ses branches.",
+					"$P(A\\cap B)=P(A)\\times P_A(B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:0.{{eval:9-t}}{{eval:10-u}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{A}\\cap \\overline{B})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["u != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-a)*(100-10*t-u)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le produit des probabilités portées par ses branches.",
+					"$P(\\overline{A}\\cap \\overline{B})=P(\\overline{A})\\times P_{\\overline{A}}(\\overline{B})=0.{{eval:10-a}}\\times0.{{eval:9-t}}{{eval:10-u}}={{eval:(10-a)*(100-10*t-u)/1000}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:{{n}}/{{d}}\n  B:{{r}}/{{s}}\n  \\overline{B}:{{eval:s-r}}/{{s}}\n\\overline{A}:{{eval:d-n}}/{{d}}\n  B:{{m}}/{{q}}\n  \\overline{B}:{{eval:q-m}}/{{q}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap \\overline{B})=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "3..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..8"
+				}
+			],
+			"conditions": [
+				"n < d",
+				"gcd(n, d) = 1",
+				"r < s",
+				"gcd(r, s) = 1",
+				"m < q",
+				"gcd(m, q) = 1",
+				"s != d"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(s-r)/(d*s)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La probabilité d'un chemin est le produit des probabilités portées par ses branches.",
+					"$P(A\\cap \\overline{B})=P(A)\\times P_A(\\overline{B})=\\dfrac{ {{n}} }{ {{d}} }\\times\\dfrac{ {{eval:s-r}} }{ {{s}} }={{eval:n*(s-r)/(d*s)}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 0,3 × 0,6 = 9/50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{9}{50}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimal exact 0,18 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentage 18 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["18\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : fraction non réduite 18/100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{18}{100}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 0 : somme au lieu du produit (0,9)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_A(B) seule (0,6)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : 0,6 × 0,68 = 51/125",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["\\frac{51}{125}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : décimal exact 0,408 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.408"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage 40,8 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["40.8\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : arrondi 0,41 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.41"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : chemin A∩B au lieu de Ā∩B̄ (0,4 × 0,7)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 2/5 × 1/3 = 2/15",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{2}{15}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : somme au lieu du produit (11/15)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{11}{15}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : branche B au lieu de B̄ (2/5 × 2/3)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{4}{15}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : pourcentage refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{40}{3}\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

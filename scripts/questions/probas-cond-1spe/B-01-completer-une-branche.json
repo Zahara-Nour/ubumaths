@@ -1,0 +1,356 @@
+{
+	"title": "Compléter une branche d'un arbre pondéré",
+	"description": "Arbre à deux niveaux dont une pondération manque : la somme des branches issues d'un même nœud vaut 1",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:?\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne la pondération manquante, en fraction irréductible.\n\n$P(\\overline{A})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != 5", "b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-a/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La somme des probabilités des branches issues d'un même nœud vaut $1$.",
+					"$P(\\overline{A})=1-P(A)=1-0.{{a}}=0.{{eval:10-a}}$, soit ${{eval:1-a/10}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:?\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne la pondération manquante, en fraction irréductible.\n\n$P_A(\\overline{B})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["u != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1-(10*t+u)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux branches issues du nœud $A$ portent $P_A(B)$ et $P_A(\\overline{B})$ : leur somme vaut $1$.",
+					"$P_A(\\overline{B})=1-P_A(B)=1-0.{{t}}{{u}}=0.{{eval:9-t}}{{eval:10-u}}$, soit ${{eval:1-(10*t+u)/100}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:{{n}}/{{d}}\n  B:{{r}}/{{s}}\n  \\overline{B}:{{eval:s-r}}/{{s}}\n\\overline{A}:{{eval:d-n}}/{{d}}\n  B:{{m}}/{{q}}\n  \\overline{B}:?\n```\n\nDonne la pondération manquante, en fraction irréductible.\n\n$P_{\\overline{A}}(\\overline{B})=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "3..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "3..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..8"
+				}
+			],
+			"conditions": [
+				"n < d",
+				"gcd(n, d) = 1",
+				"r < s",
+				"gcd(r, s) = 1",
+				"m < q",
+				"gcd(m, q) = 1",
+				"2*m != q",
+				"q != s"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(q-m)/q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les deux branches issues du nœud $\\overline{A}$ portent $P_{\\overline{A}}(B)$ et $P_{\\overline{A}}(\\overline{B})$ : leur somme vaut $1$.",
+					"$P_{\\overline{A}}(\\overline{B})=1-P_{\\overline{A}}(B)=1-\\dfrac{ {{m}} }{ {{q}} }=\\dfrac{ {{eval:q-m}} }{ {{q}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : P(A)=0,3 → P(Ā)=7/10",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimal exact 0,7 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentage 70 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["70\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : P(A) recopiée (0,3)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : branche voisine recopiée (P_A(B̄)=0,4)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_A(B)=0,32 → P_A(B̄)=17/25",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "3",
+				"u": "2",
+				"c": "7"
+			},
+			"answers": ["\\frac{17}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : décimal exact 0,68 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "3",
+				"u": "2",
+				"c": "7"
+			},
+			"answers": ["0.68"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage 68 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "3",
+				"u": "2",
+				"c": "7"
+			},
+			"answers": ["68\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : fraction non réduite 68/100",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "3",
+				"u": "2",
+				"c": "7"
+			},
+			"answers": ["\\frac{68}{100}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 1 : complément de P(A) au lieu de P_A(B) (0,6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"t": "3",
+				"u": "2",
+				"c": "7"
+			},
+			"answers": ["0.6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_Ā(B)=3/7 → P_Ā(B̄)=4/7",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{4}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : arrondi 0,57 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["0.57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : pourcentage refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{400}{7}\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : P_Ā(B) recopiée (3/7)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P(Ā) donnée au lieu de P_Ā(B̄) (3/5)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "3",
+				"r": "2",
+				"q": "7",
+				"m": "3"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
