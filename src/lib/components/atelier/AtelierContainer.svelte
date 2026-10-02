@@ -171,13 +171,16 @@
 		// leur partenaire (`scatter:M`), et `action.id === 'scatter'` ne
 		// répondait plus jamais (outils statistiques, Q39).
 		const root = action.id.split(':')[0];
+		// Diagramme en bâtons / en barres (`chart`) ou circulaire (`pie`, Q88) :
+		// même destination, l'onglet Données (revue : `pie` menait à Calcul)
+		const isChart = root === 'chart' || root === 'pie';
 		// Retirer un diagramme ne mène nulle part : on reste où l'on est
-		const chartShown = root === 'chart' && atelier.chartOf(object.name) !== undefined;
+		const chartShown = isChart && atelier.chartOf(object.name) !== undefined;
 		if (root === 'scatter') activeView = 'graphe';
 		else if (chartShown) activeView = 'donnees';
-		else if (root !== 'chart') activeView = 'calcul';
+		else if (!isChart) activeView = 'calcul';
 
-		if (root === 'chart') {
+		if (isChart) {
 			announce(
 				atelier.chartOf(object.name)
 					? `Diagramme de ${object.name} affiché dans l’onglet Données.`

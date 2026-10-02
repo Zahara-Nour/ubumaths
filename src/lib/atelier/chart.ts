@@ -14,7 +14,7 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import { isList, type ListObject } from './types';
+import { isList, isQualitative, type ListObject } from './types';
 import { summarizeTable } from '$lib/statistics/describe';
 import { Fraction } from '$lib/statistics/fraction';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -23,6 +23,9 @@ import { STAT_CHART_LIMITS, type StatChartNode } from '$lib/ubumark/types/stat-c
 // =============================================================================
 // Types
 // =============================================================================
+
+/** Le genre de diagramme d'une liste : la v1 n'a que les bâtons ; circulaire pour une liste qualitative */
+export type ListChartKind = 'barres' | 'circulaire';
 
 export type ListChart =
 	| { readonly ok: true; readonly node: StatChartNode }
@@ -64,13 +67,56 @@ function listNamed(atelier: Atelier, name: string): ListObject | null {
 	return object !== undefined && isList(object) ? object : null;
 }
 
+/** Les modalités d'une liste qualitative et leurs effectifs, dans l'ordre d'apparition (Q88) */
+export function categoryCounts(categories: readonly string[]): { label: string; count: number }[] {
+	const counts = new Map<string, number>();
+	for (const category of categories) counts.set(category, (counts.get(category) ?? 0) + 1);
+	return [...counts].map(([label, count]) => ({ label, count }));
+}
+
+/** Diagramme en barres ou circulaire des modalités d'une liste qualitative (Q88) */
+function qualitativeChart(
+	name: string,
+	categories: readonly string[],
+	kind: ListChartKind
+): ListChart {
+	if (categories.length === 0) {
+		return { ok: false, message: `« ${name} » n'a pas encore de valeurs.` };
+	}
+	// ⚠️ Les modalités passent par des jetons neutres (`m1`, `m2`…), remplacés
+	// ensuite : écrite telle quelle, `titre: Z` était lue comme une OPTION du
+	// diagramme (revue). Le parseur ne voit jamais le texte de l'élève.
+	const rows = categoryCounts(categories);
+	const source = [
+		`titre: Diagramme de ${name}`,
+		...(kind === 'barres' ? [`axes: ${name} ; Effectif`] : []),
+		...rows.map(({ count }, i) => `m${i + 1} = ${count}`)
+	].join('\n');
+	const node = parseStatChartContent(kind, source);
+	if (node.spec === null) {
+		return {
+			ok: false,
+			message: node.errors[0]?.message.replace(LINE_PREFIX, '') ?? 'Diagramme impossible.'
+		};
+	}
+	const data = node.spec.data.map((datum, i) => ({ ...datum, label: rows[i].label }));
+	return { ok: true, node: { ...node, spec: { ...node.spec, data } } };
+}
+
 /**
- * Le diagramme en bâtons de la liste `name`, effectifs pris dans `partner`
- * (ou 1 par valeur), ou pourquoi il n'y en a pas.
+ * Le diagramme de la liste `name` : en bâtons, effectifs pris dans `partner`
+ * (ou 1 par valeur) ; pour une liste qualitative, en barres ou circulaire
+ * (Q88). Ou pourquoi il n'y en a pas.
  */
-export function listChart(atelier: Atelier, name: string, partner: string | null): ListChart {
+export function listChart(
+	atelier: Atelier,
+	name: string,
+	partner: string | null,
+	kind: ListChartKind = 'barres'
+): ListChart {
 	const list = listNamed(atelier, name);
 	if (list === null) return { ok: false, message: `« ${name} » n'est pas une liste.` };
+	if (isQualitative(list)) return qualitativeChart(name, list.categories, kind);
 	if (list.values.length === 0) {
 		return { ok: false, message: `« ${name} » n'a pas encore de valeurs.` };
 	}

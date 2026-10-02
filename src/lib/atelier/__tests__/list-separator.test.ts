@@ -62,8 +62,10 @@ describe('le séparateur d’une liste', () => {
 	});
 
 	// §4 E1 : une valeur non numérique est ignorée ET signalée
+	// Q84 : un MOT (`abc`) rend la liste qualitative ; une entrée sans lettre
+	// qui ne se lit pas (`1/0`) reste ignorée et comptée
 	it('ignore et compte une valeur qui n’est pas un nombre', () => {
-		const parsed = listOf('12 ; abc ; 9');
+		const parsed = listOf('12 ; 1/0 ; 9');
 
 		expect(parsed.values).toEqual([12, 9]);
 		expect(parsed.skipped).toBe(1);
@@ -71,6 +73,6 @@ describe('le séparateur d’une liste', () => {
 	});
 
 	it('n’accuse pas la virgule quand la liste est déjà bien séparée', () => {
-		expect(listOf('12 ; abc ; 9').error).toBeUndefined();
+		expect(listOf('12 ; 1/0 ; 9').error).toBeUndefined();
 	});
 });

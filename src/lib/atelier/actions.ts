@@ -17,7 +17,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import { isValue, isList } from './types';
+import { isValue, isList, isQualitative } from './types';
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -171,7 +171,10 @@ function partnerActions(
 	// Outils statistiques, lot 5 (Q35) : la partenaire peut aussi donner les
 	// EFFECTIFS des valeurs de cette liste
 	return partners.flatMap((partner) => {
-		const reason = countsProblem(object, partner);
+		// Une partenaire QUALITATIVE ne se prête à aucune de ces actions (Q88) :
+		// visibles, désactivées, avec la raison
+		const words = isList(partner) && isQualitative(partner) ? wordsReason(partner.name) : undefined;
+		const reason = words ?? countsProblem(object, partner);
 		const withCounts = (action: ObjectAction): ObjectAction =>
 			reason === undefined ? action : { ...action, disabledReason: reason };
 		const actions: ObjectAction[] = [
@@ -188,7 +191,7 @@ function partnerActions(
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
 			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
-		];
+		].map((action) => (words === undefined ? action : { ...action, disabledReason: words }));
 		// Le nom de la partenaire voyage avec l'action : la carte les regroupe dessus
 		return actions.map((action) => ({ ...action, partner: partner.name }));
 	});
@@ -211,6 +214,26 @@ function countsProblem(object: AtelierObject, partner: AtelierObject): string | 
 		return `${object.name} a ${object.values.length} valeur(s) et ${partner.name} ${partner.values.length} : il faut un effectif par valeur.`;
 	}
 	return undefined;
+}
+
+/** La raison d'une action numérique refusée à une liste qualitative (Q88) */
+export function wordsReason(name: string): string {
+	return `${name} contient des mots : action pour une liste de nombres.`;
+}
+
+/**
+ * Les actions d'une liste QUALITATIVE (Q88) : effectifs, barres, circulaire ;
+ * « Statistiques » reste visible, désactivée avec sa raison. Aucune action à
+ * deux listes pour l'instant (« Tableau croisé avec M » arrive avec `.croiser`)
+ * : six boutons désactivés dépasseraient le plafond de 10 (Q78).
+ */
+function qualitativeActions(name: string): ObjectAction[] {
+	return [
+		{ id: 'counts', label: 'Effectifs' },
+		{ id: 'chart', label: 'Diagramme en barres' },
+		{ id: 'pie', label: 'Diagramme circulaire' },
+		{ ...BY_KIND.list[0], disabledReason: wordsReason(name) }
+	];
 }
 
 /** Pourquoi un objet ne peut rien produire, s'il ne peut rien produire. */
@@ -242,14 +265,16 @@ export function actionsFor(
 
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
-		isList(object) && atelier !== undefined
-			? [
-					BY_KIND.list[0],
-					BY_KIND.list[1],
-					...otherChartRemoval(object, atelier, partner),
-					...partnerActions(object, atelier, partner)
-				]
-			: BY_KIND[object.kind];
+		isList(object) && isQualitative(object)
+			? qualitativeActions(object.name)
+			: isList(object) && atelier !== undefined
+				? [
+						BY_KIND.list[0],
+						BY_KIND.list[1],
+						...otherChartRemoval(object, atelier, partner),
+						...partnerActions(object, atelier, partner)
+					]
+				: BY_KIND[object.kind];
 
 	const specific = catalogue.map((action) => {
 		// « Tracer » devient « Retirer du graphe » quand la courbe est là : un
@@ -260,8 +285,13 @@ export function actionsFor(
 		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
 		// qui l'a affiché le retire
 		const [root, partner] = action.id.split(':');
+		const shown = atelier?.chartOf(object.name);
+		const shownKind = shown?.kind ?? 'barres';
 		const removesChart =
-			root === 'chart' && atelier?.chartOf(object.name)?.partner === (partner ?? null);
+			shown !== undefined &&
+			shown.partner === (partner ?? null) &&
+			((root === 'chart' && shownKind === 'barres') ||
+				(root === 'pie' && shownKind === 'circulaire'));
 		if (removesChart) {
 			// Retirer reste possible quoi qu'il arrive à la liste ou à sa partenaire
 			return {
