@@ -44,3 +44,17 @@ Manche 2 (2026-10-02), lot 1 « simulation » — toutes les recommandations sui
 76. **Graine** : nouvelle à chaque simulation, affichée (« graine 4821 »), gardée dans l'URL.
 77. **Saisie de n** : actions sur la carte de la liste des probabilités avec un petit champ
     (défaut 100), et commande dans la vue Calcul (`simuler(L, M, 1000)`). Bloc des fiches : lot à part.
+
+Manche 3 (2026-10-02), en cours de PR (b) — recommandations suivies :
+
+78. **Plafond de boutons par carte : 10** (Q46 disait 9). Un seul bouton de simulation sur la carte
+    des valeurs (« Simuler avec probabilités M », prépare `.simuler L M 100`, convention de l'atelier :
+    l'action prépare la saisie) ; `.fréquence` et `.échantillons` restent des commandes, proposées
+    par le résultat de `.simuler`. Écart assumé avec Q77 (trois boutons, carte de M).
+79. **Garde du catalogue** : un exemple peut déclarer son décor (`exampleSetup`, listes L et M) ; il
+    doit alors créer un objet ou afficher une formule.
+
+## Livré
+
+- (a) moteur `src/lib/statistics/simulation.ts` — #652.
+- (b) `.simuler` dans l'atelier — #655 (en CI).
