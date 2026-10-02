@@ -1,6 +1,6 @@
 /**
- * Les lignes que le parseur lit comme blocs fermés (Q60)
- * ======================================================
+ * Les lignes que le parseur lit comme blocs (Q60)
+ * ===============================================
  *
  * Partagé par `parseMarkdown` (formules non extraites de ces lignes) et le
  * pré-passage des fences indentées (Q65 : un `$$` situé dans un de ces blocs
@@ -18,10 +18,18 @@ import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
 
-/** Une fence nue : ``` ou ~~~, rien après */
-export const isFenceLine = (line: string | undefined) =>
-	line !== undefined && /^(`{3,}|~{3,})\s*$/.test(line.trim());
+/**
+ * La fin d'un bloc spécial : ``` seul, à la marge — la même règle que les
+ * `isBlockEnd` de leurs parseurs (revue : `~~~` passait pour une fin)
+ */
+export const isSpecialBlockEnd = (line: string | undefined) =>
+	line !== undefined && /^```\s*$/.test(line);
 
+/**
+ * Les lignes que le parseur lit comme BLOCS (Q60) : code, ```courbe,
+ * ```figure, statistiques, ```variation, ```probtree, ```trig, ```line —
+ * chacun selon son propre repérage, comme `parseBlocks`. Triées, fusionnées.
+ */
 export function blockLineRanges(lines: string[]): [number, number][] {
 	const special = [
 		...findVariationBlocks(lines),
@@ -36,11 +44,16 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 	const masked = lines.map((line, index) =>
 		special.some(([start, end]) => index >= start && index <= end) ? '' : line
 	);
-	const code = findCodeBlocks(masked).map((r): [number, number] => [r.startIndex, r.endIndex]);
+	// ⚠️ Un bloc de code NON FERMÉ n'est pas protégé (Q60) : il court jusqu'à
+	// la fin du document, et un ``` resté seul dans une formule `$$` sur
+	// plusieurs lignes aurait changé toute la suite en code. Un bloc spécial
+	// non fermé, lui, s'arrête à sa première ligne vide (Q63) : protégé, sinon
+	// il affichait `§M:0§` (revue)
+	const code = findCodeBlocks(masked)
+		.filter((r) => r.closeFence !== undefined && r.endIndex > r.startIndex)
+		.map((r): [number, number] => [r.startIndex, r.endIndex]);
 
-	// Fermé : la plage finit sur une fence nue, après l'ouvrante
-	const closed = ([start, end]: [number, number]) => end > start && isFenceLine(lines[end]);
-	const sorted = [...special, ...code].filter(closed).sort((a, b) => a[0] - b[0]);
+	const sorted = [...special, ...code].sort((a, b) => a[0] - b[0]);
 	const merged: [number, number][] = [];
 	for (const [start, end] of sorted) {
 		const last = merged.at(-1);

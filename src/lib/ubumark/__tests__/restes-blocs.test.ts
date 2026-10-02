@@ -60,6 +60,29 @@ describe('Q63 — un bloc spécial non fermé s’arrête à la première ligne 
 	});
 });
 
+describe('bloc spécial non fermé : formules intactes (revue)', () => {
+	it('```variation non fermé invalide : sa source exactement écrite', () => {
+		const nodes = children('intro\n\n```variation\nnawak $a$ et ~b~');
+
+		expect(nodes.find((n) => n.type === 'code-block')).toMatchObject({
+			code: 'nawak $a$ et ~b~'
+		});
+	});
+
+	it('```line non fermé dont la dernière ligne est `~~~` : elle n’est pas perdue', () => {
+		const nodes = children('```line\nnawak\n~~~');
+
+		expect(JSON.stringify(nodes)).toContain('~~~');
+	});
+
+	it('formule sur plusieurs lignes dans un bloc spécial non fermé : chaque bloc garde son code', () => {
+		const md = '```variation\nvariable: x\n$$\na\n\nb\n$$\n~~~py\nq $z$\n~~~\n\n~~~js\nw $y$\n~~~';
+		const js = children(md).find((n) => (n as { language?: string }).language === 'js');
+
+		expect(js).toMatchObject({ code: 'w $y$' });
+	});
+});
+
 describe('Q64 — un bloc spécial invalide montre sa source', () => {
 	it('```variation fermé mais invalide : sa source en bloc de code, la suite intacte', () => {
 		const nodes = children('avant\n\n```variation\nn importe quoi\n```\n\naprès');

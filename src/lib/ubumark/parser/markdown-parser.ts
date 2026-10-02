@@ -61,7 +61,7 @@ import {
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { dedentIndentedFences } from './indented-fences';
-import { blockLineRanges, isFenceLine } from './block-ranges';
+import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
 	INLINE_DETAIL_REGEX,
@@ -403,15 +403,6 @@ export function parseMarkdown(markdown: string, options: ParseOptions = {}): Doc
 	};
 }
 
-/**
- * Les lignes que le parseur lit comme BLOCS FERMÉS (Q60) : code, ```courbe,
- * ```figure, statistiques, ```variation, ```probtree, ```trig, ```line —
- * chacun selon son propre repérage, comme `parseBlocks`. Triées, fusionnées.
- *
- * ⚠️ Un bloc non fermé n'est PAS protégé (Q60) : un ``` resté seul dans une
- * formule `$$` sur plusieurs lignes aurait sinon changé toute la suite du
- * document en code (revue).
- */
 // ============================================================================
 // BLOCK PARSING
 // ============================================================================
@@ -577,7 +568,7 @@ function parseBlocks(
 			const { range, parse, language } = special;
 			// Les parseurs lisent jusqu'à `end` EXCLU (la fence de fin) : un bloc
 			// non fermé (Q63) perdait sinon sa dernière ligne
-			const closed = isFenceLine(lines[range.endIndex]) && range.endIndex > range.startIndex;
+			const closed = isSpecialBlockEnd(lines[range.endIndex]) && range.endIndex > range.startIndex;
 			const result = parse(lines, range.startIndex, closed ? range.endIndex : range.endIndex + 1);
 			if (result.node) {
 				// ```trig porte ses erreurs dans le nœud (message au prof,
