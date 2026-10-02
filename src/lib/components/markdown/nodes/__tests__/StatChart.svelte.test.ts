@@ -11,7 +11,11 @@ import StatChart from '../StatChart.svelte';
 import ListNode from '../ListNode.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene, type PieScene } from '$lib/ubumark/utils/stat-chart-scene';
+import {
+	buildStatChartScene,
+	type PieScene,
+	type SimulationScene
+} from '$lib/ubumark/utils/stat-chart-scene';
 import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
 import { DOCUMENT_FIGURE_LIMITS } from '../../render-budget';
 
@@ -254,6 +258,55 @@ describe('StatChart — loi d’une variable aléatoire (lot 6)', () => {
 
 		expect(cell.textContent?.trim()).toBe('case à compléter');
 		expect(cell.getBoundingClientRect().width).toBeGreaterThanOrEqual(50);
+	});
+});
+
+describe('StatChart — bloc simulation (v2, lot 3)', () => {
+	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
+
+	it('une ligne par valeur, effectifs qui font n, légende des tirages', async () => {
+		const node = parseStatChartContent('simulation', `${DIE}\ntirages: 600\ngraine: 42`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+		const columns = [...table.querySelectorAll('th[scope="col"]')].map((th) => th.textContent);
+		const rows = [...table.querySelectorAll('tbody tr')];
+		const counts = rows.map((tr) => Number(tr.querySelectorAll('td')[0].textContent));
+
+		expect(table.querySelector('caption')?.textContent).toBe(
+			'Simulation de 600 tirages (graine 42)'
+		);
+		expect(columns).toEqual(['xi', 'Effectif', 'Fréquence observée', 'Probabilité']);
+		expect(rows.map((tr) => tr.querySelector('th[scope="row"]')?.textContent)).toEqual([
+			'1',
+			'2',
+			'3',
+			'4',
+			'5',
+			'6'
+		]);
+		expect(counts.reduce((a, b) => a + b, 0)).toBe(600);
+		expect(rows[0].querySelectorAll('td')[2].textContent).toBe('1/6');
+	});
+
+	it('mêmes nombres que la scène, donc que le PDF', async () => {
+		const node = parseStatChartContent('simulation', `${DIE}\ntirages: 600\ngraine: 42`);
+		const scene = buildStatChartScene(node.spec!) as SimulationScene;
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cells = [...screen.container.querySelectorAll('tbody tr')].map((tr) =>
+			[...tr.querySelectorAll('td')].map((td) => td.textContent)
+		);
+
+		expect(cells).toEqual(scene.rows.map((r) => [r.count, r.frequency, r.probability]));
+	});
+
+	it('le titre de l’auteur, puis la légende, dans <caption>', async () => {
+		const node = parseStatChartContent('simulation', `${DIE}\ntitre: Cent lancers`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('figcaption')).toBeNull();
+		expect(screen.container.querySelector('caption')?.textContent).toBe(
+			'Cent lancersSimulation de 100 tirages (graine 1)'
+		);
 	});
 });
 
