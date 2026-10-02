@@ -12,6 +12,7 @@
  * ```trig
  * preset: quarters
  * angles: pi/5, 7*pi/6
+ * points: M = 2*pi/3, N = -pi/4
  * equation: cos(x) > 1/2
  * mode: arc
  * display: circle+table
@@ -39,10 +40,12 @@ import type {
 	TrigCircleParseError,
 	TrigCircleParseWarning,
 	TrigCircleParseResult,
-	TrigCircleBlockRange
+	TrigCircleBlockRange,
+	TrigNamedPoint
 } from '../types/trig-circle';
 import {
 	DEFAULT_TRIG_CIRCLE_CONFIG,
+	TRIG_MAX_NAMED_POINTS,
 	getPresetAngles,
 	REMARKABLE_ANGLES
 } from '../types/trig-circle';
@@ -85,6 +88,25 @@ const VALID_TRIG_FUNCTIONS: TrigFunction[] = ['cos', 'sin', 'tan'];
  * Valid operators
  */
 const VALID_OPERATORS: TrigOperator[] = ['=', '<', '>', '<=', '>='];
+
+/** Clés reconnues, citées dans le message d'une clé inconnue */
+const KNOWN_KEYS = [
+	'preset',
+	'angles',
+	'points',
+	'equation',
+	'mode',
+	'display',
+	'projections',
+	'color',
+	'grid',
+	'axes',
+	'labels',
+	'values'
+];
+
+/** Nom de point : une lettre, des chiffres (indice), des primes (`'` ou `′`) */
+const POINT_NAME_REGEX = /^([A-Za-z])(\d*)(['′]*)$/;
 
 // ============================================================================
 // DETECTION FUNCTIONS
@@ -593,26 +615,14 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 	// Normalize input to array of lines
 	const lines = typeof content === 'string' ? content.split('\n') : content;
 
-	// Check for empty content
-	if (lines.length === 0 || (lines.length === 1 && lines[0].trim() === '')) {
-		// Empty block - use defaults
-		const config = { ...DEFAULT_TRIG_CIRCLE_CONFIG };
-		const angles = getPresetAngles(config.preset);
-
-		return {
-			node: {
-				type: 'trig-circle',
-				config,
-				angles
-			},
-			errors: [],
-			warnings: []
-		};
-	}
-
 	// Parse configuration
 	const config: TrigCircleConfig = { ...DEFAULT_TRIG_CIRCLE_CONFIG };
 	let equation: TrigEquation | undefined;
+	const points: TrigNamedPoint[] = [];
+
+	/** Erreur située : « Ligne N : … », comme le bloc ```courbe */
+	const fail = (lineNum: number, message: string, line: string) =>
+		errors.push({ message: `Ligne ${lineNum} : ${message}`, line: lineNum, content: line });
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].trim();
@@ -626,11 +636,7 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 		// Parse key: value pairs
 		const colonIndex = line.indexOf(':');
 		if (colonIndex === -1) {
-			warnings.push({
-				message: `Invalid line format, expected "key: value"`,
-				line: lineNum,
-				context: line
-			});
+			fail(lineNum, `ligne illisible « ${line} » (forme attendue : « clé: valeur »)`, line);
 			continue;
 		}
 
@@ -643,11 +649,11 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				if (VALID_PRESETS.includes(value.toLowerCase() as TrigPreset)) {
 					config.preset = value.toLowerCase() as TrigPreset;
 				} else {
-					errors.push({
-						message: `Invalid preset "${value}", expected: ${VALID_PRESETS.join(', ')}`,
-						line: lineNum,
-						content: line
-					});
+					fail(
+						lineNum,
+						`preset inconnu « ${value} » (possibles : ${VALID_PRESETS.join(', ')})`,
+						line
+					);
 				}
 				break;
 
@@ -655,21 +661,25 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				config.customAngles = parseAngleList(value);
 				if (config.customAngles.length === 0 && value.trim() !== '') {
 					warnings.push({
-						message: `Could not parse any angles from "${value}"`,
+						message: `Ligne ${lineNum} : aucun angle lisible dans « ${value} »`,
 						line: lineNum,
 						context: line
 					});
 				}
 				break;
 
+			case 'points':
+				parseNamedPoints(value, points, (message) => fail(lineNum, message, line));
+				break;
+
 			case 'equation':
 				equation = parseEquation(value) ?? undefined;
 				if (!equation) {
-					errors.push({
-						message: `Invalid equation format "${value}", expected: cos(x) = 1/2, sin(x) > √2/2, etc.`,
-						line: lineNum,
-						content: line
-					});
+					fail(
+						lineNum,
+						`équation illisible « ${value} » (exemples : cos(x) = 1/2, sin(x) > √2/2)`,
+						line
+					);
 				}
 				break;
 
@@ -677,11 +687,7 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				if (VALID_MODES.includes(value.toLowerCase() as TrigDisplayMode)) {
 					config.mode = value.toLowerCase() as TrigDisplayMode;
 				} else {
-					errors.push({
-						message: `Invalid mode "${value}", expected: ${VALID_MODES.join(', ')}`,
-						line: lineNum,
-						content: line
-					});
+					fail(lineNum, `mode inconnu « ${value} » (possibles : ${VALID_MODES.join(', ')})`, line);
 				}
 				break;
 
@@ -689,11 +695,11 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				if (VALID_DISPLAY_TYPES.includes(value.toLowerCase() as TrigDisplayType)) {
 					config.display = value.toLowerCase() as TrigDisplayType;
 				} else {
-					errors.push({
-						message: `Invalid display "${value}", expected: ${VALID_DISPLAY_TYPES.join(', ')}`,
-						line: lineNum,
-						content: line
-					});
+					fail(
+						lineNum,
+						`affichage inconnu « ${value} » (possibles : ${VALID_DISPLAY_TYPES.join(', ')})`,
+						line
+					);
 				}
 				break;
 
@@ -723,26 +729,45 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				break;
 
 			default:
-				warnings.push({
-					message: `Unknown configuration key "${rawKey}"`,
-					line: lineNum,
-					context: line
-				});
+				// Une clé inconnue était ignorée en silence : l'auteur ne savait pas
+				// pourquoi `noms: M` ne dessinait rien (2026-10-02)
+				fail(
+					lineNum,
+					`clé inconnue « ${rawKey} » (clés possibles : ${KNOWN_KEYS.join(', ')})`,
+					line
+				);
 		}
 	}
 
-	// If we have errors, return early
-	if (errors.length > 0) {
-		return { node: null, errors, warnings };
-	}
-
 	// Validate custom preset requires angles
-	if (config.preset === 'custom' && config.customAngles.length === 0 && !equation) {
+	if (
+		errors.length === 0 &&
+		config.preset === 'custom' &&
+		config.customAngles.length === 0 &&
+		points.length === 0 &&
+		!equation
+	) {
 		errors.push({
-			message: 'Preset "custom" requires at least one angle in "angles:" or an "equation:"',
+			message:
+				'Le preset « custom » demande au moins un angle (« angles: »), un point (« points: ») ou une équation (« equation: »)',
 			content: 'preset: custom'
 		});
-		return { node: null, errors, warnings };
+	}
+
+	// Bloc en erreur : un nœud quand même, qui porte ses erreurs — le renderer
+	// montre le message au prof et un cadre neutre à l'élève (comme ```courbe)
+	if (errors.length > 0) {
+		return {
+			node: {
+				type: 'trig-circle',
+				config: { ...DEFAULT_TRIG_CIRCLE_CONFIG },
+				angles: [],
+				points: [],
+				errors
+			},
+			errors,
+			warnings
+		};
 	}
 
 	// Store equation in config
@@ -774,10 +799,56 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 		type: 'trig-circle',
 		config,
 		angles: uniqueAngles,
-		solution
+		solution,
+		points,
+		errors: []
 	};
 
 	return { node, errors: [], warnings };
+}
+
+/**
+ * Ajoute à `points` les points de `M = 2*pi/3, N = -pi/4`. Plusieurs lignes
+ * `points:` s'additionnent : le doublon et le plafond portent sur l'ensemble.
+ */
+function parseNamedPoints(
+	value: string,
+	points: TrigNamedPoint[],
+	fail: (message: string) => void
+): void {
+	if (value === '') {
+		fail('« points: » sans point (exemple : points: M = 2*pi/3, N = -pi/4)');
+		return;
+	}
+	for (const item of value.split(',').map((s) => s.trim())) {
+		const eq = item.match(/^(\S+)\s*=\s*(.+)$/);
+		if (!eq) {
+			fail(`point mal écrit « ${item} » (forme attendue : M = 2*pi/3)`);
+			return;
+		}
+		const name = eq[1];
+		const parts = name.match(POINT_NAME_REGEX);
+		if (!parts) {
+			fail(
+				`nom de point invalide « ${name} » (une lettre, éventuellement suivie de chiffres ou de primes : M, A1, M')`
+			);
+			return;
+		}
+		const angle = parseAngleExpression(eq[2]);
+		if (!angle) {
+			fail(`angle illisible « ${eq[2].trim()} » pour le point ${name}`);
+			return;
+		}
+		if (points.some((p) => p.name === name)) {
+			fail(`point « ${name} » défini deux fois`);
+			return;
+		}
+		if (points.length >= TRIG_MAX_NAMED_POINTS) {
+			fail(`${TRIG_MAX_NAMED_POINTS} points nommés au plus`);
+			return;
+		}
+		points.push({ name, base: parts[1], sub: parts[2], primes: parts[3].length, angle });
+	}
 }
 
 // ============================================================================

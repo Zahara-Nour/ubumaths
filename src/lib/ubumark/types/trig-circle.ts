@@ -51,6 +51,34 @@ export interface TrigAngle {
 	latex?: string;
 }
 
+/**
+ * Point NOMMÉ du cercle (`points: M = 2*pi/3, N = -pi/4`).
+ *
+ * Dessiné avec son nom, jamais avec sa valeur : c'est l'élève qui la cherche.
+ * Le nom est une lettre, éventuellement suivie de chiffres (indice) puis de
+ * primes : `M`, `A1`, `M'`.
+ */
+export interface TrigNamedPoint {
+	/** Nom tel qu'écrit : `M`, `A1`, `M'` */
+	name: string;
+	/** Lettre de base (`A` pour `A1'`) */
+	base: string;
+	/** Chiffres, affichés en indice (`1` pour `A1'`), vide sinon */
+	sub: string;
+	/** Nombre de primes */
+	primes: number;
+	/** Angle du point */
+	angle: TrigAngle;
+}
+
+/** Plafond de points nommés par bloc */
+export const TRIG_MAX_NAMED_POINTS = 8;
+
+/** Un angle tombe-t-il sur un point nommé ? (sa valeur ne s'affiche alors pas) */
+export function isNamedPointAngle(points: TrigNamedPoint[] | undefined, radians: number): boolean {
+	return (points ?? []).some((p) => Math.abs(p.angle.radians - radians) < 1e-6);
+}
+
 // ============================================================================
 // EQUATION TYPES
 // ============================================================================
@@ -234,6 +262,13 @@ export interface TrigCircleNode extends BaseNode {
 	angles: TrigAngle[];
 	/** Computed solution if an equation was provided */
 	solution?: TrigSolution;
+	/** Points nommés (`points:`), dessinés en plus des angles, sans leur valeur */
+	points?: TrigNamedPoint[];
+	/**
+	 * Erreurs situées (« Ligne N : … »). Non vide : la figure n'est pas
+	 * dessinée — message au prof, « Figure indisponible » à l'élève (comme ```courbe).
+	 */
+	errors?: TrigCircleParseError[];
 	/**
 	 * Texte source du bloc, sans les délimiteurs.
 	 *
