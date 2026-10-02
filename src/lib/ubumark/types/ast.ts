@@ -623,4 +623,9 @@ export interface InputState {
 	type: 'text' | 'math' | 'graphical';
 	/** Validation state: true=correct, false=incorrect, null=not validated */
 	isCorrect: boolean | null;
+	/**
+	 * Juste mais forme non optimale (R12, ambre) : n'a d'effet qu'avec
+	 * `isCorrect: true`. Absent = comportement historique (vert / rouge).
+	 */
+	unoptimal?: boolean;
 }

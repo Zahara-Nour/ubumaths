@@ -7,7 +7,7 @@
 
 	Features:
 	- Inline rendering within text flow
-	- Validation state styling (correct/incorrect/neutral)
+	- Validation state styling (correct/unoptimal/incorrect/neutral)
 	- Keyboard handling (Enter to submit)
 	- Accessibility support (aria-label, aria-invalid)
 
@@ -27,6 +27,8 @@
 		disabled?: boolean;
 		/** Validation state: true=correct, false=incorrect, null=not validated */
 		isCorrect?: boolean | null;
+		/** Juste mais forme non optimale (ambre) ; seulement avec `isCorrect: true` */
+		unoptimal?: boolean;
 		/** Callback when value changes */
 		onValueChange?: (value: string) => void;
 		/** Callback when user submits (Enter key) */
@@ -40,10 +42,22 @@
 		value = $bindable(''),
 		disabled = false,
 		isCorrect = null,
+		unoptimal = false,
 		onValueChange,
 		onSubmit,
 		class: className = ''
 	}: Props = $props();
+
+	// Identifiant du libellé d'état (lu par aria-describedby)
+	const uid = $props.id();
+	const stateId = `${uid}-etat`;
+
+	// L'état ne doit pas passer par la seule couleur : libellé pour lecteur d'écran
+	const STATE_LABELS = {
+		correct: 'réponse juste',
+		unoptimal: 'réponse juste, forme à améliorer',
+		incorrect: 'réponse fausse'
+	} as const;
 
 	/**
 	 * Handle input events - update value and notify parent
@@ -64,6 +78,17 @@
 		}
 	}
 
+	// État d'affichage : la forme non optimale (ambre) n'existe que sur une réponse juste
+	let validationState: 'correct' | 'unoptimal' | 'incorrect' | undefined = $derived(
+		isCorrect === true
+			? unoptimal
+				? 'unoptimal'
+				: 'correct'
+			: isCorrect === false
+				? 'incorrect'
+				: undefined
+	);
+
 	/**
 	 * Compute CSS classes based on validation state
 	 */
@@ -81,7 +106,8 @@
 			// Disabled state
 			'disabled:opacity-50 disabled:cursor-not-allowed',
 			// Validation states
-			isCorrect === true && 'border-green-500/80 bg-green-500/10',
+			validationState === 'correct' && 'border-green-500/80 bg-green-500/10',
+			validationState === 'unoptimal' && 'border-warning/80 bg-warning/10',
 			isCorrect === false && 'border-destructive/80 bg-destructive/10',
 			isCorrect === null && 'border-border',
 			// Custom classes
@@ -99,6 +125,9 @@
 	class={inputClasses}
 	aria-label="Reponse {index}"
 	aria-invalid={isCorrect === false ? 'true' : undefined}
+	aria-describedby={validationState ? stateId : undefined}
+	data-state={validationState}
 	autocomplete="off"
 	spellcheck="false"
-/>
+/>{#if validationState}<span id={stateId} class="sr-only">{STATE_LABELS[validationState]}</span
+	>{/if}

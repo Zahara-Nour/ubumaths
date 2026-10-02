@@ -7,7 +7,7 @@
 
 	Features:
 	- Editable prompts within readonly math expression
-	- Validation state styling (correct/incorrect/neutral)
+	- Validation state styling (correct/unoptimal/incorrect/neutral)
 	- Two display modes: inline and block
 	- Callbacks for prompt value changes
 
@@ -96,6 +96,43 @@
 
 	let mathField: HTMLElement | undefined = $state();
 
+	// Cases justes mais de forme non optimale (R12, ambre)
+	let unoptimalPrompts = $derived(
+		promptIndices.filter((idx) =>
+			inputs.some((i) => i.index === idx && i.isCorrect === true && i.unoptimal === true)
+		)
+	);
+	// MathLive ne connaît que « correct » / « incorrect » : l'ambre passe par la couleur
+	// « correct » de TOUTE la formule. Appliquée seulement si aucune case de la formule
+	// n'est pleinement juste (sinon elle virerait à l'ambre à tort).
+	let amberField = $derived(
+		unoptimalPrompts.length > 0 &&
+			!promptIndices.some((idx) =>
+				inputs.some((i) => i.index === idx && i.isCorrect === true && i.unoptimal !== true)
+			)
+	);
+	// L'état ne doit pas passer par la seule couleur : un libellé par case corrigée
+	const uid = $props.id();
+	const statesId = `${uid}-etats`;
+	let stateLabels = $derived(
+		promptIndices.flatMap((idx) => {
+			const input = inputs.find((i) => i.index === idx);
+			if (!input || input.isCorrect === null) return [];
+			const label =
+				input.isCorrect === false
+					? 'fausse'
+					: input.unoptimal === true
+						? 'forme à améliorer'
+						: 'juste';
+			return [`Case ${idx + 1} : ${label}`];
+		})
+	);
+	let describedBy = $derived(stateLabels.length > 0 ? statesId : undefined);
+
+	let unoptimalAttr = $derived(
+		unoptimalPrompts.length > 0 ? unoptimalPrompts.join(' ') : undefined
+	);
+
 	/**
 	 * Handle input events from the math field
 	 * Extracts values from all prompts and notifies parent
@@ -176,9 +213,13 @@
 			bind:this={mathField}
 			oninput={handleInput}
 			class="math-prompt-block"
+			class:math-prompt-unoptimal={amberField}
+			data-unoptimal-prompts={unoptimalAttr}
+			aria-describedby={describedBy}
 		>
 			{latex}
 		</math-field>
+		{#if describedBy}<span id={statesId} class="sr-only">{stateLabels.join(' ; ')}</span>{/if}
 	</div>
 {:else}
 	<math-field
@@ -187,9 +228,13 @@
 		bind:this={mathField}
 		oninput={handleInput}
 		class="math-prompt-inline {className}"
+		class:math-prompt-unoptimal={amberField}
+		data-unoptimal-prompts={unoptimalAttr}
+		aria-describedby={describedBy}
 	>
 		{latex}
-	</math-field>
+	</math-field>{#if describedBy}<span id={statesId} class="sr-only">{stateLabels.join(' ; ')}</span
+		>{/if}
 {/if}
 
 <style>
@@ -227,6 +272,11 @@
 	:global(math-field[readonly] .ML__prompt.ML__correct) {
 		background-color: hsl(142.1 76.2% 36.3% / 0.2);
 		border: 1px solid hsl(142.1 76.2% 36.3% / 0.5);
+	}
+
+	/* Forme non optimale (R12) : la couleur « correct » de MathLive passe à l'ambre */
+	:global(math-field.math-prompt-unoptimal) {
+		--correct-color: var(--color-warning);
 	}
 
 	/* Incorrect state */
