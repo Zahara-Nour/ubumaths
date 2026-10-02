@@ -12,3 +12,15 @@ a la forme d'une ligne du bloc (courbe, statistiques) ou ne contient pas de mark
   (le cas visé) bien détecté. Production NON mesurée : MCP Supabase non autorisé dans la session.
 - Limite connue (préexistante sur `main`) : dans un item de liste, un bloc spécial suivi plus
   loin d'un ``` est encore lu par l'ancienne regex des blocs de code.
+
+## Suite : la même règle dans les items de liste (Q52)
+
+Branche `fix/blocs-non-fermes-listes`. `swallowsForeignBlock` (`markdown-parser.ts`) rejoue la
+règle du premier niveau sur le bloc trouvé par la regex des blocs de code : un bloc non fermé
+n'avale plus le ```python qui le suit, sa ligne d'ouverture reste au texte (`textWithUnclosedBlocks`).
+
+- Empreinte : 632 .md suivis du dépôt, AST avant/après identiques ; témoin (le cas visé) changé.
+- ⚠️ Trouvé en mesurant, PRÉEXISTANT sur main : `parseMarkdown` ne termine pas sur 7 .md du dépôt
+  (docs d'architecture : arborescences + listes avec blocs de code). Écartés de l'empreinte,
+  diagnostic à part.
+- Revue : 0 bug ; témoins ajoutés (ligne fautive → fermé ; phrase après une ligne vide → non fermé).

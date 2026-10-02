@@ -147,3 +147,65 @@ describe('un bloc non fermé dans un item de liste devient un nœud en erreur', 
 		expect(errorsOf(children.find((c) => c.type === 'stat-chart'))).toEqual([]);
 	});
 });
+
+// =============================================================================
+// Bloc non fermé suivi d'un bloc de code, dans un item de liste (Q52)
+// =============================================================================
+
+describe('dans un item de liste, un bloc non fermé n’avale plus le bloc de code suivant', () => {
+	const inItem = (block: string[]) => {
+		const md = ['1. Lire :', '', ...indent(block)].join('\n');
+		const list = parseMarkdown(md).children[0] as ListNode;
+		return list.items[0].children as BlockNode[];
+	};
+	const PYTHON = ['', '```python', 'print(1)', '```'];
+
+	it.each([
+		['courbe', ['```courbe', 'x: -1 ; 1', 'y: -1 ; 1']],
+		['figure', FIGURE],
+		['stat-chart', ['```barres', 'A = 1', 'B = 2']]
+	])(
+		'%s non fermé, puis ```python fermé : le bloc en erreur, puis le code intact',
+		(type, block) => {
+			const children = inItem([...block, ...PYTHON]);
+
+			expect(types(children)).toEqual(['paragraph', type, 'code-block']);
+			expect(errorsOf(children[1]).join(' ')).toMatch(/non fermé/);
+			expect(children[2]).toMatchObject({
+				type: 'code-block',
+				language: 'python',
+				code: 'print(1)'
+			});
+		}
+	);
+
+	it('témoin : un bloc fermé suivi d’un bloc de code se lit comme avant', () => {
+		const children = inItem(['```barres', 'A = 1', '```', ...PYTHON]);
+
+		expect(types(children)).toEqual(['paragraph', 'stat-chart', 'code-block']);
+		expect(errorsOf(children[1])).toEqual([]);
+	});
+
+	it('témoin : une ligne fautive (pas du texte) laisse le bloc fermé, le code suit', () => {
+		const children = inItem(['```courbe', 'x: -1 ; 1', '', 'zzz', '```', ...PYTHON]);
+
+		expect(types(children)).toEqual(['paragraph', 'courbe', 'code-block']);
+		expect(errorsOf(children[1]).join(' ')).not.toMatch(/non fermé/);
+	});
+
+	// Règle Q47, la même qu'au premier niveau : une phrase après une ligne vide
+	// ouvre un paragraphe, le ``` suivant ne ferme donc pas le bloc
+	it('témoin : une phrase après une ligne vide rend le bloc non fermé', () => {
+		const children = inItem(['```courbe', 'x: -1 ; 1', '', 'Voici la courbe de f', '```']);
+
+		expect(types(children).slice(0, 2)).toEqual(['paragraph', 'courbe']);
+		expect(errorsOf(children[1]).join(' ')).toMatch(/non fermé/);
+	});
+
+	it('témoin : un bloc fermé qui contient une ligne vide reste fermé', () => {
+		const children = inItem(['```courbe', 'x: -1 ; 1', '', 'y: -1 ; 1', '```']);
+
+		expect(types(children)).toEqual(['paragraph', 'courbe']);
+		expect(errorsOf(children[1])).toEqual([]);
+	});
+});
