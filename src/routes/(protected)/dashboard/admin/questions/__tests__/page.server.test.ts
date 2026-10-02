@@ -82,6 +82,29 @@ function fakeQuery(table: Row[]) {
 			);
 			return builder;
 		},
+		// `or('type.eq.course_card,options->>courseQuestion.eq.true')` : liste de
+		// `colonne.eq.valeur`, colonne jsonb lue en texte via `->>`, comme PostgREST
+		or: (expression: string) => {
+			const clauses = expression.split(',').map((clause) => {
+				const [path, operator, ...rest] = clause.split('.');
+				if (operator !== 'eq') throw new Error(`opérateur non simulé : ${operator}`);
+				return { path, value: rest.join('.') };
+			});
+			filters.push((candidate) =>
+				clauses.some(({ path, value }) => {
+					const [column, key] = path.split('->>');
+					const cell = candidate[column];
+					const text =
+						key === undefined
+							? cell
+							: cell && typeof cell === 'object'
+								? (cell as Row)[key]
+								: undefined;
+					return text !== undefined && text !== null && String(text) === value;
+				})
+			);
+			return builder;
+		},
 		gte: (column: string, value: number) => {
 			filters.push((candidate) => (candidate[column] as number) >= value);
 			return builder;
@@ -174,5 +197,58 @@ describe('page admin des modèles — filtres communs aux deux onglets', () => {
 
 		expect(result.publishedIds).toHaveLength(5);
 		expect(result.drafts).toHaveLength(7);
+	});
+});
+
+// Q110 b / Q115 : filtre « Questions de cours » = marqueur `options.courseQuestion`
+// OU carte de cours (une carte de cours est toujours une question de cours).
+describe('page admin des modèles — filtre « Questions de cours »', () => {
+	function catalogue(): Row[] {
+		return [
+			...rows(3, 'draft', 'Entiers'),
+			...rows(2, 'draft', 'Polynômes', { options: { courseQuestion: true } }),
+			...rows(1, 'draft', 'Fonctions', {
+				type: 'course_card',
+				options: { courseCard: true }
+			}),
+			...rows(4, 'published', 'Entiers', { options: { courseQuestion: false } }),
+			...rows(5, 'published', 'Polynômes', { options: { courseQuestion: true } })
+		];
+	}
+
+	it('sans le filtre : tous les modèles (inchangé)', async () => {
+		const result = await loadPage(catalogue());
+
+		expect(result.drafts).toHaveLength(6);
+		expect(result.publishedIds).toHaveLength(9);
+		expect(result.filters.courseQuestion).toBe(false);
+	});
+
+	it('avec le filtre : questions de cours et cartes de cours, dans les deux onglets', async () => {
+		const result = await loadPage(catalogue(), '?courseQuestion=1');
+
+		expect(result.drafts.map((draft) => draft.theme).sort()).toEqual([
+			'Fonctions',
+			'Polynômes',
+			'Polynômes'
+		]);
+		expect(result.templates).toHaveLength(5);
+		expect(result.publishedIds).toHaveLength(5);
+		expect(result.total).toBe(5);
+		expect(result.filters.courseQuestion).toBe(true);
+	});
+
+	it('se combine avec les autres filtres', async () => {
+		const result = await loadPage(catalogue(), '?courseQuestion=1&theme=Fonctions');
+
+		expect(result.drafts).toHaveLength(1);
+		expect(result.publishedIds).toHaveLength(0);
+	});
+
+	it('valeur inattendue du paramètre → filtre inactif', async () => {
+		const result = await loadPage(catalogue(), '?courseQuestion=peut-etre');
+
+		expect(result.drafts).toHaveLength(6);
+		expect(result.filters.courseQuestion).toBe(false);
 	});
 });

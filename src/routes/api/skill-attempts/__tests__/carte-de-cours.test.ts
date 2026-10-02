@@ -147,6 +147,16 @@ describe('POST /api/skill-attempts — source', () => {
 		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
 	});
 
+	// Q113 : une question de cours n'entre jamais dans le paquet Programme, mais
+	// elle reste corrigée par l'application (source auto).
+	it('question de cours publiée taguée : trace auto, pas ajoutée au paquet Programme', async () => {
+		optionsDuModele = { courseQuestion: true };
+		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
+		await poster({ template_id: MODELE, success: true });
+		expect(attemptsInseres[0]).toMatchObject({ source: 'auto' });
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
 	it('question publiée taguée : ajoutée au paquet Programme (inchangé)', async () => {
 		pointsDuModele = [{ point_id: '33333333-3333-4333-8333-333333333333' }];
 		await poster({ template_id: MODELE, success: true });

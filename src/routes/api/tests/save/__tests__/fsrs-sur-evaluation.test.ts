@@ -42,6 +42,8 @@ const MODELE_B = '33333333-3333-4333-8333-333333333333';
 let attemptsInseres: Record<string, unknown>[];
 /** Modèles marqués « carte de cours » en base (`options.courseCard`). */
 let cartesDeCours: string[];
+/** Modèles marqués « question de cours » en base (`options.courseQuestion`, Q110). */
+let questionsDeCours: string[];
 /** La ligne insérée dans `test_sessions`. */
 let sessionInseree: Record<string, unknown> | null;
 
@@ -66,11 +68,18 @@ function lireModeles(voitBrouillons: boolean) {
 				.filter((id) => voitBrouillons || !modelesEnBrouillon.includes(id))
 				.map((id) => ({
 					id,
-					options: cartesDeCours.includes(id) ? { courseCard: true } : null
+					options: optionsDe(id)
 				})),
 			error: null
 		};
 	};
+}
+
+/** `options` (jsonb) d'un modèle, selon les marqueurs du cas. */
+function optionsDe(id: string): Record<string, boolean> | null {
+	if (cartesDeCours.includes(id)) return { courseCard: true };
+	if (questionsDeCours.includes(id)) return { courseQuestion: true };
+	return null;
 }
 
 /** INSERT … `.select('id')` : rend les lignes « écrites » (aucune si `refusRlsSilencieux`). */
@@ -101,10 +110,21 @@ function fauxSupabase() {
 				};
 			}
 			if (table === 'question_template_points') {
-				// Seul le modèle A est tagué à un point de programme.
+				// Seul le modèle A est tagué à un point de programme. Le modèle est lu
+				// avec les droits de l'élève : un brouillon est caché (null).
 				return {
 					select: () => ({
-						in: async () => ({ data: [{ template_id: MODELE_A }], error: null })
+						in: async () => ({
+							data: [
+								{
+									template_id: MODELE_A,
+									question_templates: modelesEnBrouillon.includes(MODELE_A)
+										? null
+										: { options: optionsDe(MODELE_A), status: 'published' }
+								}
+							],
+							error: null
+						})
 					})
 				};
 			}
@@ -187,6 +207,7 @@ describe('enregistrement d’une évaluation', () => {
 	beforeEach(() => {
 		attemptsInseres = [];
 		cartesDeCours = [];
+		questionsDeCours = [];
 		sessionInseree = null;
 		addBuddyXpFromTest.mockClear();
 		refusRlsSilencieux = false;
@@ -315,6 +336,22 @@ describe('enregistrement d’une évaluation', () => {
 
 	it('carte : jamais ajoutée à un paquet (pas de deck Programme), même taguée', async () => {
 		cartesDeCours = [MODELE_A]; // A est tagué à un point de programme
+		await enregistrer([reponse(MODELE_A, true, 0)]);
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	// Q113 : une question de cours (pas une carte) reste notée, mais n'entre
+	// jamais dans le paquet Programme.
+	it('question de cours taguée : notée (source auto), jamais ajoutée au paquet Programme', async () => {
+		questionsDeCours = [MODELE_A];
+		await enregistrer([reponse(MODELE_A, true, 0)]);
+		expect(attemptsInseres[0]).toMatchObject({ template_id: MODELE_A, source: 'auto' });
+		expect(sessionInseree).toMatchObject({ score: 10, total_questions: 1 });
+		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
+	});
+
+	it('modèle tagué repassé en brouillon : pas ajouté au paquet Programme', async () => {
+		modelesEnBrouillon = [MODELE_A];
 		await enregistrer([reponse(MODELE_A, true, 0)]);
 		expect(ensureProgrammeDeckCard).not.toHaveBeenCalled();
 	});

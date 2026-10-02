@@ -6,7 +6,8 @@
  *   avec `source='srs'` et le `grade` brut conservé.
  * - Le trigger PG recalcule `student_point_state` pour chaque point tagué.
  * - Si la carte est dans un deck autre que Programme, on l'ajoute aussi au Programme
- *   pour cohérence (idempotent).
+ *   pour cohérence (idempotent) — sauf question de cours ou brouillon (Q113,
+ *   `entersProgrammeDeck`).
  * - Pour les cartes custom (front/back libre), aucun skill_attempts n'est créé.
  *
  * Spec : docs/wip/srs-fsrs-spec-tdd.md §2
@@ -20,6 +21,7 @@ import { submitReviewSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -42,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// les skills tagués famille knowledge — économise 1 SELECT vs isTemplateTaggedFamilyA.
 		const { data: card, error: cardError } = await supabase
 			.from('srs_cards')
-			.select('*, question_templates(question_template_points(point_id))')
+			.select('*, question_templates(options, status, question_template_points(point_id))')
 			.eq('id', body.cardId)
 			.single();
 
@@ -112,16 +114,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				// Non bloquant : la review FSRS reste enregistrée.
 			} else {
 				// Auto-ajout au deck Programme si le template est tagué sur un point.
-				// Le tagging est déjà disponible via la nested query du card SELECT
-				// (cf. refactor #2.3), aucune query supplémentaire nécessaire.
+				// Le tagging, les options et le statut viennent de la nested query du
+				// card SELECT (cf. refactor #2.3), aucune query supplémentaire.
+				// Règle partagée (Q113) : jamais une question de cours, ni un brouillon.
 				type LinkRow = { point_id: string };
-				type TemplateNested = { question_template_points?: LinkRow[] };
-				const taggedPointIds = (
-					(card.question_templates as unknown as TemplateNested | null)?.question_template_points ??
-					[]
-				).map((l) => l.point_id);
+				type TemplateNested = {
+					options?: unknown;
+					status?: string | null;
+					question_template_points?: LinkRow[];
+				};
+				const template = card.question_templates as unknown as TemplateNested | null;
+				const taggedPointIds = (template?.question_template_points ?? []).map((l) => l.point_id);
 
-				if (taggedPointIds.length > 0) {
+				if (taggedPointIds.length > 0 && entersProgrammeDeck(template)) {
 					try {
 						await ensureProgrammeDeckCard(supabase, user.id, card.template_id);
 					} catch (progErr) {

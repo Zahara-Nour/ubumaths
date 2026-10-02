@@ -47,6 +47,10 @@
 		acceptableOf,
 		customRequiredForm
 	} from '$lib/questions/form-options';
+	import {
+		applyCourseQuestionOption,
+		readCourseQuestionOption
+	} from '$lib/questions/course-question';
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -58,6 +62,7 @@
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
+	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
 	import CategorySelector from './CategorySelector.svelte';
@@ -291,6 +296,8 @@
 	// Template options state
 	let optOrderIndependent = $state(initialTemplate?.options?.orderIndependent ?? false);
 	let optShuffleChoices = $state(initialTemplate?.options?.shuffleChoices ?? true);
+	// Question de cours (Q110 b) : marqueur d'intention, forcé pour une carte de cours
+	let optCourseQuestion = $state(readCourseQuestionOption(initialTemplate?.options));
 	let optAllowBracketsInFirstNegativeTerm = $state(
 		initialTemplate?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
 	);
@@ -813,6 +820,8 @@
 		if (Object.keys(constraints).length > 0) options.constraints = constraints;
 		// Carte de cours : marqueur explicite, lu par getQuestionType()
 		if (questionType === 'course_card') options.courseCard = true;
+		// Question de cours : case cochée, ou carte de cours (forcée)
+		applyCourseQuestionOption(options, { checked: optCourseQuestion, questionType });
 		// Hypothèses de l'énoncé : lignes telles quelles, le schéma refuse les invalides
 		const answerAssumptions = rowsToAssumptions(assumptionRows);
 		if (answerAssumptions) options.answerAssumptions = answerAssumptions;
@@ -882,6 +891,7 @@
 		// Validation options
 		optOrderIndependent = t.options?.orderIndependent ?? false;
 		optShuffleChoices = t.options?.shuffleChoices ?? true;
+		optCourseQuestion = readCourseQuestionOption(t.options);
 		optAllowBracketsInFirstNegativeTerm =
 			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
 		constraintModes = Object.fromEntries(
@@ -1389,6 +1399,11 @@
 				<Input id="delay" type="number" min="0" bind:value={delay} />
 			</div>
 		</div>
+
+		<CourseQuestionToggle
+			bind:checked={optCourseQuestion}
+			isCourseCard={questionType === 'course_card'}
+		/>
 
 		<!-- Categorization Fields -->
 		<!--

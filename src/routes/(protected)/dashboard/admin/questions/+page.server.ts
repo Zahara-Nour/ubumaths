@@ -24,6 +24,7 @@
  * - Includes total count for pagination
  */
 
+import { COURSE_QUESTION_FILTER } from '$lib/questions/course-question';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
@@ -41,6 +42,8 @@ interface TemplateFilters {
 	subdomain: string | null;
 	minLevel: string | null;
 	maxLevel: string | null;
+	/** Questions de cours seulement (`?courseQuestion=1`, Q110 b) */
+	courseQuestion: boolean;
 }
 
 /** Ce que `applyTemplateFilters` utilise d'une requête PostgREST */
@@ -49,11 +52,17 @@ interface FilterableQuery {
 	overlaps(column: string, value: string[]): this;
 	gte(column: string, value: number): this;
 	lte(column: string, value: number): this;
+	or(filters: string): this;
 }
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
+
+/**
+ * Question de cours : marqueur `options.courseQuestion` OU carte de cours (une
+ * carte de cours est toujours une question de cours, cf. `isCourseQuestion`).
+ */
 
 /** Plafond de lignes par requête côté PostgREST */
 const ID_PAGE_SIZE = 1000;
@@ -84,6 +93,7 @@ function applyTemplateFilters<Q extends FilterableQuery>(query: Q, filters: Temp
 	if (!isNaN(minLevel)) filtered = filtered.gte('level', minLevel);
 	const maxLevel = filters.maxLevel ? parseInt(filters.maxLevel) : NaN;
 	if (!isNaN(maxLevel)) filtered = filtered.lte('level', maxLevel);
+	if (filters.courseQuestion) filtered = filtered.or(COURSE_QUESTION_FILTER);
 	return filtered;
 }
 
@@ -105,6 +115,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const minLevelFilter = url.searchParams.get('minLevel'); // Minimum difficulty level
 	const maxLevelFilter = url.searchParams.get('maxLevel'); // Maximum difficulty level
 	const searchFilter = url.searchParams.get('search'); // Full-text search term
+	// Questions de cours seulement : seule la valeur « 1 » active le filtre
+	const courseQuestionFilter = url.searchParams.get('courseQuestion') === '1';
 	const sortField = url.searchParams.get('sort') || 'created_at'; // Sort column
 	const sortOrder = url.searchParams.get('order') || 'desc'; // Sort direction
 	const page = parseInt(url.searchParams.get('page') || '1'); // Current page number
@@ -131,7 +143,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		domain: domainFilter,
 		subdomain: subdomainFilter,
 		minLevel: minLevelFilter,
-		maxLevel: maxLevelFilter
+		maxLevel: maxLevelFilter,
+		courseQuestion: courseQuestionFilter
 	};
 	// Recherche plein texte (`searchFilter`) toujours désactivée : elle attend un index
 	// tsvector sur `variations` (migration à écrire, GIN + config 'french').
@@ -242,6 +255,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				subdomain: subdomainFilter,
 				minLevel: minLevelFilter,
 				maxLevel: maxLevelFilter,
+				courseQuestion: courseQuestionFilter,
 				search: searchFilter
 			},
 			categories: {

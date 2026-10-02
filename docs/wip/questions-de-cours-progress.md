@@ -30,4 +30,22 @@ decks` + `chapter_sections` ; aucun lien vers `question_templates`.
   exclusion des cartes).
 - 4 cartes `course_card` publiées, 0 point du programme ; 0 série ne pointe sur « Flash ».
 
-## Étape 1 — en cours
+## Étape 1 — code fait, non commité (2026-10-02)
+
+- **Marqueur** : `options.courseQuestion` (types, `optionsSchema` + schéma strict, `migration-review`) ;
+  `isCourseQuestion()` dans `questions/types.ts` (= marqueur OU carte de cours) ; recopié sur l'instance
+  (le générateur copie déjà `options`).
+- **Éditeur** : `CourseQuestionToggle.svelte` (MyCheckbox + aide) sous le type ; carte de cours → cochée,
+  désactivée, et `courseQuestion: true` écrit à l'enregistrement (`questions/course-question.ts`).
+- **Catalogue admin** : case « Questions de cours » (`?courseQuestion=1`, filtre serveur
+  `type = course_card OU options->>courseQuestion = true`, deux onglets) ; badge « Cours » sur
+  `QuestionTemplateCard` et dans les deux tableaux. Le catalogue des séries n'a pas de filtre par type :
+  rien ajouté.
+- **Q113** : règle unique `entersProgrammeDeck()` (`server/srs/programme-deck-rule.ts`) = modèle lu ET
+  publié ET pas question de cours ; appliquée à `api/skill-attempts`, `recordSeriesReviews` (lit
+  `question_templates(options, status)` avec le lien) et `api/srs/review/submit` (idem, dans la jointure
+  de la carte). Effet de bord voulu : un brouillon n'entre plus dans le paquet par `tests/save` ni par
+  `srs/review/submit` (comme `skill-attempts` déjà).
+- **Glossaire** : `class_chapters`, `options.courseQuestion`.
+- À faire par la session principale : test d'intégration de la jointure
+  `question_template_points → question_templates` sous RLS élève (non lancé : `db:*` interdit ici).
