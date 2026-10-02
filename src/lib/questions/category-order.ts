@@ -238,6 +238,17 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 					'Suites et modélisation'
 				]
 			},
+			{
+				domain: 'Fonctions trigonométriques',
+				subdomains: [
+					'Cercle et radians',
+					"Cosinus et sinus d'un réel",
+					'Propriétés',
+					'Fonctions cosinus et sinus',
+					'Équations',
+					'Inéquations'
+				]
+			},
 			{ domain: 'Etude de fonction', subdomains: ['Flash'] }
 		]
 	},

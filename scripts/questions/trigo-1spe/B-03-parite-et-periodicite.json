@@ -1,0 +1,507 @@
+{
+	"title": "Parité et périodicité de cosinus et sinus",
+	"description": "Reconnaître une fonction paire, impaire ou ni l'une ni l'autre ; période 2π",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos x$.\n\nLa fonction $f$ est :",
+			"variables": [],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ et, pour tout réel $x$, $f(-x)=\\cos(-x)=\\cos x=f(x)$.",
+					"La fonction cosinus est donc **paire** : sa courbe est symétrique par rapport à l'axe des ordonnées."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin x$.\n\nLa fonction $f$ est :",
+			"variables": [],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$\\mathbb{R}$ est symétrique par rapport à $0$ et, pour tout réel $x$, $f(-x)=\\sin(-x)=-\\sin x=-f(x)$.",
+					"La fonction sinus est donc **impaire** : sa courbe est symétrique par rapport à l'origine."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{k}}x)$.\n\nLa fonction $f$ est :",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..4"
+				}
+			],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=\\sin(-{{k}}x)=-\\sin({{k}}x)=-f(x)$ car la fonction sinus est impaire.",
+					"La fonction $f$ est donc **impaire**."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos x{{k;+}}$.\n\nLa fonction $f$ est :",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				}
+			],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=\\cos(-x){{k;+}}=\\cos x{{k;+}}=f(x)$ car la fonction cosinus est paire.",
+					"La fonction $f$ est donc **paire**."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x\\sin x$.\n\nLa fonction $f$ est :",
+			"variables": [],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=(-x)\\sin(-x)=(-x)\\times(-\\sin x)=x\\sin x=f(x)$.",
+					"La fonction $f$ est donc **paire** (produit de deux fonctions impaires)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x\\cos x$.\n\nLa fonction $f$ est :",
+			"variables": [],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $f(-x)=(-x)\\cos(-x)=-x\\cos x=-f(x)$.",
+					"La fonction $f$ est donc **impaire** (produit d'une fonction impaire et d'une fonction paire)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin x{{k;+}}$.\n\nLa fonction $f$ est :",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				}
+			],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$f(0)={{k}}\\neq0$ : une fonction impaire définie en $0$ y vaut $0$, donc $f$ n'est pas impaire.",
+					"$f\\left(\\dfrac{\\pi}{2}\\right)={{eval:1+k}}$ et $f\\left(-\\dfrac{\\pi}{2}\\right)={{eval:k-1}}$ : ces valeurs sont différentes, donc $f$ n'est pas paire.",
+					"La fonction $f$ n'est **ni paire ni impaire**."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x+\\cos x$.\n\nLa fonction $f$ est :",
+			"variables": [],
+			"choices": [
+				{
+					"content": "paire"
+				},
+				{
+					"content": "impaire"
+				},
+				{
+					"content": "ni paire ni impaire"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"$f(0)=1\\neq0$, donc $f$ n'est pas impaire.",
+					"$f(\\pi)=\\pi-1$ et $f(-\\pi)=-\\pi-1$ : ces valeurs sont différentes, donc $f$ n'est pas paire.",
+					"La fonction $f$ n'est **ni paire ni impaire**."
+				]
+			}
+		},
+		{
+			"statement": "Complète : pour tout réel $x$, $\\sin(x+\\ldots)=\\sin x$, et c'est la plus petite valeur strictement positive qui convient.",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$2\\pi$"
+				},
+				{
+					"content": "$\\pi$"
+				},
+				{
+					"content": "$\\dfrac{\\pi}{2}$"
+				},
+				{
+					"content": "$1$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La fonction sinus est périodique de période $2\\pi$ : $\\sin(x+2\\pi)=\\sin x$.",
+					"Attention : $\\sin(x+\\pi)=-\\sin x$, ce n'est pas $\\sin x$.",
+					"Réponse : $\\textcolor{{{color:primary.0}}}{2\\pi }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : f(x)=\\cos x, « paire » accepté",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : f(x)=\\cos x, « impaire » refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : f(x)=\\cos x, « ni paire ni impaire » refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : f(x)=\\sin x, « paire » refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : f(x)=\\sin x, « impaire » accepté",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : f(x)=\\sin x, « ni paire ni impaire » refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : f(x)=\\sin(kx), « paire » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : f(x)=\\sin(kx), « impaire » accepté",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : f(x)=\\sin(kx), « ni paire ni impaire » refusé",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : f(x)=\\cos x+k, « paire » accepté",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : f(x)=\\cos x+k, « impaire » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : f(x)=\\cos x+k, « ni paire ni impaire » refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : f(x)=x\\sin x, « paire » accepté",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : f(x)=x\\sin x, « impaire » refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : f(x)=x\\sin x, « ni paire ni impaire » refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 : f(x)=x\\cos x, « paire » refusé",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 : f(x)=x\\cos x, « impaire » accepté",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 5 : f(x)=x\\cos x, « ni paire ni impaire » refusé",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 6 : f(x)=\\sin x+k, « paire » refusé",
+			"variationIndex": 6,
+			"variables": {
+				"k": "-1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 6 : f(x)=\\sin x+k, « impaire » refusé",
+			"variationIndex": 6,
+			"variables": {
+				"k": "-1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 6 : f(x)=\\sin x+k, « ni paire ni impaire » accepté",
+			"variationIndex": 6,
+			"variables": {
+				"k": "-1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 7 : f(x)=x+\\cos x, « paire » refusé",
+			"variationIndex": 7,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 7 : f(x)=x+\\cos x, « impaire » refusé",
+			"variationIndex": 7,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 7 : f(x)=x+\\cos x, « ni paire ni impaire » accepté",
+			"variationIndex": 7,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 8 : « 2π » accepté",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 8 : « π » refusé",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 8 : « π/2 » refusé",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 8 : « 1 » refusé",
+			"variationIndex": 8,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

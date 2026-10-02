@@ -1,0 +1,444 @@
+{
+	"title": "Angles associés : simplifier une somme",
+	"description": "Somme de cosinus et sinus d'angles associés, à réduire en a cos x + b sin x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Propriétés",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Simplifie l'expression suivante, pour tout réel $x$.\n\n$A={{a}}\\cos(\\pi-x)+{{b}}\\cos(x+2\\pi)$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+m"
+				}
+			],
+			"conditions": ["b >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(\\pi-x)=-\\cos x$ et $\\cos(x+2\\pi)=\\cos x$ (période $2\\pi$).",
+					"$A=-{{a}}\\cos x+{{b}}\\cos x=\\textcolor{{{color:primary.0}}}{{{m}}\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression suivante, pour tout réel $x$.\n\n$A={{a}}\\sin(\\pi-x)+{{b}}\\sin(\\pi+x)$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:b+m"
+				}
+			],
+			"conditions": ["a >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin(\\pi-x)=\\sin x$ et $\\sin(\\pi+x)=-\\sin x$.",
+					"$A={{a}}\\sin x-{{b}}\\sin x=\\textcolor{{{color:primary.0}}}{{{m}}\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression suivante, pour tout réel $x$.\n\n$A=\\cos(\\pi-x)+\\cos(-x)+\\sin(\\pi+x)+\\sin x$\n\n$A=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(\\pi-x)=-\\cos x$, $\\cos(-x)=\\cos x$ et $\\sin(\\pi+x)=-\\sin x$.",
+					"$A=-\\cos x+\\cos x-\\sin x+\\sin x=\\textcolor{{{color:primary.0}}}{0 }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression suivante, pour tout réel $x$.\n\n$A={{a}}\\cos(-x)+{{b}}\\sin(\\pi-x)+{{c}}\\cos(\\pi+x)+{{d}}\\sin(-x)$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "a",
+					"expression": "eval:c+m"
+				},
+				{
+					"name": "b",
+					"expression": "eval:d+n"
+				}
+			],
+			"conditions": ["a >= 2", "b >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{m}}\\cos x{{n;+}}\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos(-x)=\\cos x$, $\\sin(\\pi-x)=\\sin x$, $\\cos(\\pi+x)=-\\cos x$ et $\\sin(-x)=-\\sin x$.",
+					"$A={{a}}\\cos x+{{b}}\\sin x-{{c}}\\cos x-{{d}}\\sin x=\\textcolor{{{color:primary.0}}}{{{m}}\\cos x{{n;+}}\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression suivante, pour tout réel $x$.\n\n$A=\\cos\\left(\\dfrac{\\pi}{2}-x\\right)+\\sin(\\pi+x)+\\sin\\left(\\dfrac{\\pi}{2}-x\\right)+\\cos(-x)$\n\n$A=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)=\\sin x$, $\\sin(\\pi+x)=-\\sin x$, $\\sin\\left(\\dfrac{\\pi}{2}-x\\right)=\\cos x$ et $\\cos(-x)=\\cos x$.",
+					"$A=\\sin x-\\sin x+\\cos x+\\cos x=\\textcolor{{{color:primary.0}}}{2\\cos x }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 3cos(π−x)+5cos(x+2π) = 2cos x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"answers": ["2\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : 2cos(x) avec parenthèses",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"answers": ["2\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : cos(π−x) pris pour cos x : 8cos x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"answers": ["8\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : signe : −2cos x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"answers": ["-2\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : somme non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"m": "2",
+				"b": "5"
+			},
+			"answers": ["-3\\cos x+5\\cos x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : 2sin(π−x)+6sin(π+x) = −4sin x",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"m": "-4",
+				"a": "2"
+			},
+			"answers": ["-4\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : sin(π+x) pris pour sin x : 8sin x",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"m": "-4",
+				"a": "2"
+			},
+			"answers": ["8\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : signe : 4sin x",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"m": "-4",
+				"a": "2"
+			},
+			"answers": ["4\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : somme non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"b": "6",
+				"m": "-4",
+				"a": "2"
+			},
+			"answers": ["2\\sin x-6\\sin x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : somme nulle : 0",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : cos(π−x) pris pour cos x : 2cos x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : sin(π+x) pris pour sin x : 2sin x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["2\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : somme non réduite",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\cos x+\\cos x-\\sin x+\\sin x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 3 : = 2cos x − 2sin x",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["2\\cos x-2\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : ordre des termes inversé",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["-2\\sin x+2\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : factorisé : 2(cos x − sin x), forme développée attendue",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["2(\\cos x-\\sin x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 3 : sin(−x) pris pour sin x : 2cos x + 6sin x",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["2\\cos x+6\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : cos(π+x) pris pour cos x : 8cos x − 2sin x",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["8\\cos x-2\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : somme non réduite",
+			"variationIndex": 3,
+			"variables": {
+				"c": "3",
+				"d": "4",
+				"m": "2",
+				"n": "-2",
+				"a": "5",
+				"b": "2"
+			},
+			"answers": ["5\\cos x+2\\sin x-3\\cos x-4\\sin x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 4 : = 2cos x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : cos(x) avec parenthèses",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : π/2 − x non échangé : 2sin x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : sin(π+x) pris pour sin x : 2sin x + 2cos x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["2\\sin x+2\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : somme non réduite",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\sin x-\\sin x+\\cos x+\\cos x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

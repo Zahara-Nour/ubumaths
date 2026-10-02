@@ -91,6 +91,21 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Fonctions trigonométriques : sous-domaines par notion', () => {
+		const subdomains = [
+			'Inéquations',
+			'Propriétés',
+			"Cosinus et sinus d'un réel",
+			'Cercle et radians'
+		].map((subdomain) => ({ theme: 'Fonctions', domain: 'Fonctions trigonométriques', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Cercle et radians',
+			"Cosinus et sinus d'un réel",
+			'Propriétés',
+			'Inéquations'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',

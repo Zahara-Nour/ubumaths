@@ -1,0 +1,780 @@
+{
+	"title": "Cosinus et sinus d'angles associés",
+	"description": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cosinus et sinus d'un réel",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{5\\pi}{6}|-\\frac{7\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{6}$ : ils ont le même sinus et des cosinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6, pi/6\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{6}\\right)=\\frac{\\sqrt{3}}{2}$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=\\frac{1}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{3}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{1}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-\\frac{\\pi}{4}|\\frac{7\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{4}$ : ils ont le même cosinus et des sinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4, pi/4\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{2}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{2}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{4\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{3}$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3, pi/3\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{3}\\right)=\\frac{1}{2}$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=\\frac{\\sqrt{3}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{1}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{3}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{3\\pi}{4}|-\\frac{5\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{4}$ : ils ont le même sinus et des cosinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4, pi/4\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{2}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{2}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-\\frac{\\pi}{3}|\\frac{5\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{3}$ : ils ont le même cosinus et des sinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3, pi/3\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{3}\\right)=\\frac{1}{2}$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=\\frac{\\sqrt{3}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{1}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{3}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{7\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{6}$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6, pi/6\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{6}\\right)=\\frac{\\sqrt{3}}{2}$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=\\frac{1}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{3}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{1}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{2\\pi}{3}|-\\frac{4\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des ordonnées du point associé à $\\frac{\\pi}{3}$ : ils ont le même sinus et des cosinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3, pi/3\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{3}\\right)=\\frac{1}{2}$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=\\frac{\\sqrt{3}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{1}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{3}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-\\frac{\\pi}{6}|\\frac{11\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'axe des abscisses du point associé à $\\frac{\\pi}{6}$ : ils ont le même cosinus et des sinus opposés.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6, pi/6\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{6}\\right)=\\frac{\\sqrt{3}}{2}$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=\\frac{1}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{3}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{1}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{5\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point associé à ${{r}}$ est le symétrique par rapport à l'origine $O$ du point associé à $\\frac{\\pi}{4}$ : leurs cosinus sont opposés, et leurs sinus aussi.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4, pi/4\nprojections: true\n```",
+					"On sait que $\\cos\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=\\frac{\\sqrt{2}}{2}$, donc $\\cos\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{2}}{2} }$ et $\\sin\\left({{r}}\\right)=\\textcolor{{{color:primary.0}}}{-\\frac{\\sqrt{2}}{2} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "5π/6 : cos et sin justes",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-7π/6 : même point, mêmes valeurs",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-\\frac{7\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/6 : erreur de signe sur le sinus",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/6 : cos et sin intervertis",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/4 : cos et sin justes",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7π/4 : même point, mêmes valeurs",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{7\\pi}{4}"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/4 : erreur de signe sur le sinus",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4π/3 : cos et sin justes",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-2π/3 : même point, mêmes valeurs",
+			"variationIndex": 2,
+			"variables": {
+				"r": "-\\frac{2\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4π/3 : erreur de signe sur le sinus",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "4π/3 : cos et sin intervertis",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3π/4 : cos et sin justes",
+			"variationIndex": 3,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-5π/4 : même point, mêmes valeurs",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{5\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "3π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 3,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3π/4 : erreur de signe sur le sinus",
+			"variationIndex": 3,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/3 : cos et sin justes",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5π/3 : même point, mêmes valeurs",
+			"variationIndex": 4,
+			"variables": {
+				"r": "\\frac{5\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/3 : erreur de signe sur le sinus",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/3 : cos et sin intervertis",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7π/6 : cos et sin justes",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-5π/6 : même point, mêmes valeurs",
+			"variationIndex": 5,
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7π/6 : erreur de signe sur le sinus",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "7π/6 : cos et sin intervertis",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{7\\pi}{6}"
+			},
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2π/3 : cos et sin justes",
+			"variationIndex": 6,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-4π/3 : même point, mêmes valeurs",
+			"variationIndex": 6,
+			"variables": {
+				"r": "-\\frac{4\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2π/3 : erreur de signe sur le cosinus",
+			"variationIndex": 6,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2π/3 : erreur de signe sur le sinus",
+			"variationIndex": 6,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2π/3 : cos et sin intervertis",
+			"variationIndex": 6,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/6 : cos et sin justes",
+			"variationIndex": 7,
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "11π/6 : même point, mêmes valeurs",
+			"variationIndex": 7,
+			"variables": {
+				"r": "\\frac{11\\pi}{6}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-π/6 : erreur de signe sur le cosinus",
+			"variationIndex": 7,
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/6 : erreur de signe sur le sinus",
+			"variationIndex": 7,
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π/6 : cos et sin intervertis",
+			"variationIndex": 7,
+			"variables": {
+				"r": "-\\frac{\\pi}{6}"
+			},
+			"answers": ["-\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/4 : cos et sin justes",
+			"variationIndex": 8,
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-3π/4 : même point, mêmes valeurs",
+			"variationIndex": 8,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "5π/4 : erreur de signe sur le cosinus",
+			"variationIndex": 8,
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "-\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/4 : erreur de signe sur le sinus",
+			"variationIndex": 8,
+			"variables": {
+				"r": "\\frac{5\\pi}{4}"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/6 : sin = 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["-\\frac{\\sqrt{3}}{2}", "0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4π/3 : cos = −0,5",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["-0{,}5", "-\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "4π/3 : valeur approchée −0,87",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{4\\pi}{3}"
+			},
+			"answers": ["-\\frac{1}{2}", "-0{,}87"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

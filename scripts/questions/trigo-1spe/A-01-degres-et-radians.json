@@ -1,0 +1,279 @@
+{
+	"title": "Convertir des degrés en radians",
+	"description": "Degrés ↔ radians pour les angles usuels (30°, 45°, 60°, 90°… et leurs multiples), fraction de π réduite",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+				},
+				{
+					"name": "d",
+					"expression": "eval:r*180/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+					"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+					"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+				]
+			}
+		},
+		{
+			"statement": "Convertis en degrés un angle de ${{r}}$ radians.\n\n${{r}}\\text{ rad}=?\\,^\\circ$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+				},
+				{
+					"name": "d",
+					"expression": "eval:r*180/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\pi$ radians correspondent à $180^\\circ$ : on remplace $\\pi$ par $180^\\circ$.",
+					"${{r}}={{eval:r/\\pi}}\\times\\pi$, donc ${{r}}\\text{ rad}={{eval:r/\\pi}}\\times180^\\circ=\\textcolor{{{color:primary.0}}}{{{d}}^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{12}|\\frac{5\\pi}{12}|\\frac{7\\pi}{12}|\\frac{\\pi}{10}|\\frac{\\pi}{5}|\\frac{2\\pi}{5}|\\frac{3\\pi}{5}|\\frac{\\pi}{9}|\\frac{2\\pi}{9}|\\frac{\\pi}{18}"
+				},
+				{
+					"name": "d",
+					"expression": "eval:r*180/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$180^\\circ$ correspondent à $\\pi$ radians : pour passer des degrés aux radians, on multiplie par $\\dfrac{\\pi}{180}$.",
+					"${{d}}^\\circ=\\dfrac{ {{d}} }{180}\\times\\pi$ rad et $\\dfrac{ {{d}} }{180}={{eval:d/180}}$.",
+					"Donc ${{d}}^\\circ=\\textcolor{{{color:primary.0}}}{{{r}} }$ rad."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "150° = 5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "fraction non réduite 150π/180",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{150\\pi}{180}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "fraction renversée 6π/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{6\\pi}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "degrés recopiés : 150",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "180° = π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\pi"
+			},
+			"answers": ["\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "360° = 2π",
+			"variationIndex": 0,
+			"variables": {
+				"r": "2\\pi"
+			},
+			"answers": ["2\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "45° : π/4",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "45° : 4π refusé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{\\pi}{4}"
+			},
+			"answers": ["4\\pi"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "5π/6 rad = 150°",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π remplacé par 3,14 : 2,617",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["2{,}617"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "30 au lieu de 150 (numérateur oublié)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "3π/2 rad = 270°",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{3\\pi}{2}"
+			},
+			"answers": ["270"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "calcul non effectué 5×180/6",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{5\\times180}{6}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["reducedFractions", "form"]
+			}
+		},
+		{
+			"description": "75° = 5π/12",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{5\\pi}{12}"
+			},
+			"answers": ["\\frac{5\\pi}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "75° : 75π/180 non réduit",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{5\\pi}{12}"
+			},
+			"answers": ["\\frac{75\\pi}{180}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "75° : 12π/5 renversé",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{5\\pi}{12}"
+			},
+			"answers": ["\\frac{12\\pi}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "36° = π/5",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{5}"
+			},
+			"answers": ["\\frac{\\pi}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
