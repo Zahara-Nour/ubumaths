@@ -102,7 +102,8 @@ function grouped(value: number): string {
 
 /** Une fréquence en français, au millième : 0,173 */
 function frequency(count: number, n: number): string {
-	return formatStatNumber(Number((count / n).toFixed(3)), 'fr');
+	// Millièmes ENTIERS : `toFixed` sur 3/80 = 0,0375 rendait 0,037 (revue #671)
+	return formatStatNumber(Math.round((count * 1000) / n) / 1000, 'fr');
 }
 
 /** Les deux listes nommées et leur loi en fractions, ou le refus */

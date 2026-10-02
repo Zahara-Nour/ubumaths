@@ -264,6 +264,42 @@ describe('StatChart — loi d’une variable aléatoire (lot 6)', () => {
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 
+	it('mode moyenne : la courbe, la droite E(X), la graine sous la figure', async () => {
+		const node = parseStatChartContent('simulation', `${DIE}\nmode: moyenne\ngraine: 42`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
+		);
+
+		expect(screen.container.querySelector('svg[role="img"]')).not.toBeNull();
+		expect(screen.container.querySelector('.stat-reference')).not.toBeNull();
+		expect(items[0]).toMatch(/^moyenne des 100 tirages : .* ; espérance E\(X\) = 7\/2$/);
+		expect(items[1]).toBe('graine 42');
+	});
+
+	it('mode échantillons : classes hors de μ ± 2σ/√n en gris, la phrase, la graine', async () => {
+		const node = parseStatChartContent(
+			'simulation',
+			`${DIE}\nmode: échantillons\néchantillons: 200\ntaille: 50\ngraine: 42`
+		);
+		const scene = buildStatChartScene(node.spec!);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = [...screen.container.querySelectorAll('rect.stat-rectangle')];
+		const grey = rects.filter((r) => r.classList.contains('stat-rectangle-hors'));
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
+		);
+
+		expect(scene.kind).toBe('histogramme');
+		expect(grey.length).toBeGreaterThan(0);
+		expect(rects.length).toBeGreaterThan(grey.length);
+		expect(grey.length).toBe(
+			scene.kind === 'histogramme' ? scene.rects.filter((r) => r.highlighted === false).length : -1
+		);
+		expect(items).toEqual(scene.indicators);
+		expect(items[1]).toMatch(/échantillons sur 200 ont une moyenne dans/);
+	});
+
 	it('une ligne par valeur, effectifs qui font n, légende des tirages', async () => {
 		const node = parseStatChartContent('simulation', `${DIE}\ntirages: 600\ngraine: 42`);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

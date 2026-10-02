@@ -256,13 +256,6 @@ describe('simulation — erreurs situées', () => {
 		expect(errorOf(`${DIE}\nindicateurs: espérance`)).toMatch(/ne s'applique pas aux simulations/);
 	});
 
-	it('modes moyenne et échantillons : arrivent bientôt', () => {
-		expect(errorOf(`${DIE}\nmode: moyenne`)).toBe('Ligne 3 : mode « moyenne » : arrive bientôt');
-		expect(errorOf(`${DIE}\nmode: échantillons`)).toBe(
-			'Ligne 3 : mode « échantillons » : arrive bientôt'
-		);
-	});
-
 	it('les options des simulations ne s’appliquent pas aux autres blocs', () => {
 		expect(parseStatChartContent('loi', `${DIE}\ntirages: 10`).errors[0].message).toMatch(
 			/ne s'applique pas aux lois/
@@ -272,7 +265,7 @@ describe('simulation — erreurs situées', () => {
 		expect(law).toContain('indicateurs');
 		expect(law).not.toContain('tirages');
 		expect(errorOf(`${DIE}\ntirage: beaucoup`)).toBe(
-			'Ligne 3 : option « tirage » inconnue (options : titre, mode, tirages, graine)'
+			'Ligne 3 : option « tirage » inconnue (options : titre, taille, mode, tirages, graine, échantillons)'
 		);
 	});
 });

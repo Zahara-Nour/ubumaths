@@ -100,6 +100,8 @@ interface Options {
 	simulationMode: SimulationMode;
 	draws: number;
 	seed: number;
+	samples: number;
+	sampleSize: number;
 }
 
 /** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
@@ -160,7 +162,8 @@ const OPTION_KEYS = [
 	'coin',
 	'mode',
 	'tirages',
-	'graine'
+	'graine',
+	'echantillons'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -175,7 +178,8 @@ const FIGURE_KINDS: readonly StatChartKind[] = [
 
 const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	// Un <table> n'a ni taille de figure ni description d'image (revue du lot 4)
-	taille: FIGURE_KINDS,
+	// Une simulation y lit la taille d'un échantillon (mode `échantillons`)
+	taille: [...FIGURE_KINDS, 'simulation'],
 	description: FIGURE_KINDS,
 	axes: ['barres', 'histogramme', 'frequences-cumulees'],
 	valeurs: ['barres', 'histogramme'],
@@ -193,13 +197,15 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	coin: ['tableau-croise'],
 	mode: ['simulation'],
 	tirages: ['simulation'],
-	graine: ['simulation']
+	graine: ['simulation'],
+	echantillons: ['simulation']
 };
 
 /** Options dont l'auteur écrit l'accent */
 const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	etiquettes: 'étiquettes',
-	legende: 'légende'
+	legende: 'légende',
+	echantillons: 'échantillons'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -408,7 +414,9 @@ function parseIndicators(raw: string): StatChartIndicator[] {
 function applyOption(kind: StatChartKind, key: OptionKey, value: string, options: Options): void {
 	const allowed = OPTION_KINDS[key];
 	if (allowed !== undefined && !allowed.includes(kind)) {
-		const names = allowed.map((k) => KIND_NAME[k]).join(', ');
+		// `taille:` d'une simulation est celle d'un échantillon, pas d'une figure
+		const shown = key === 'taille' ? FIGURE_KINDS : allowed;
+		const names = shown.map((k) => KIND_NAME[k]).join(', ');
 		throw new LineError(
 			`l'option « ${key} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${names})`
 		);
@@ -432,7 +440,29 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			return;
 		}
 		case 'taille':
+			if (kind === 'simulation') {
+				if ((COURBE_SIZES as readonly string[]).includes(normalizeKey(value.trim()))) {
+					throw new LineError(
+						'taille : celle d’un échantillon (mode échantillons), pas de la figure'
+					);
+				}
+				options.sampleSize = parseWhole(
+					value,
+					1,
+					STAT_CHART_LIMITS.simulationSamples,
+					'taille : un entier entre 1 et 1 000'
+				);
+				return;
+			}
 			options.size = oneOf(value, COURBE_SIZES, 'taille');
+			return;
+		case 'echantillons':
+			options.samples = parseWhole(
+				value,
+				1,
+				STAT_CHART_LIMITS.simulationSamples,
+				'échantillons : un entier entre 1 et 1 000'
+			);
 			return;
 		case 'couleur':
 			options.color = oneOf(value, COURBE_COLORS, 'couleur');
@@ -537,15 +567,50 @@ function parseWhole(raw: string, min: number, max: number, message: string): num
 	return value;
 }
 
-/** `mode:` d'une simulation : seul `tirages` est livré (v2, lot 3 PR a) */
+/** `mode:` d'une simulation : `tirages`, `moyenne` ou `échantillons` (accent facultatif) */
 function parseSimulationMode(raw: string): SimulationMode {
 	const written = raw.trim();
 	const mode = SIMULATION_MODES.find((m) => normalizeKey(m) === normalizeKey(written));
 	if (mode === undefined) {
 		throw new LineError(`mode « ${written} » inconnu (choisir : ${SIMULATION_MODES.join(', ')})`);
 	}
-	if (mode !== 'tirages') throw new LineError(`mode « ${mode} » : arrive bientôt`);
 	return mode;
+}
+
+/**
+ * Options d'une simulation qui dépendent du mode, une fois tout lu : le mode
+ * peut s'écrire après elles. Rend l'erreur située, ou null.
+ */
+function checkSimulationOptions(
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): StatChartIssue | null {
+	const at = (line: number, message: string) => ({ message: `Ligne ${line} : ${message}`, line });
+	const bySamples = options.simulationMode === 'échantillons';
+	if (bySamples && optionLines.tirages !== undefined) {
+		return at(
+			optionLines.tirages,
+			'tirages : pas en mode échantillons (écrire échantillons: et taille:)'
+		);
+	}
+	if (!bySamples) {
+		for (const key of ['echantillons', 'taille'] as const) {
+			const line = optionLines[key];
+			if (line !== undefined) {
+				return at(line, `${OPTION_SPELLING[key] ?? key} : seulement en mode échantillons`);
+			}
+		}
+		return null;
+	}
+	const total = options.samples * options.sampleSize;
+	if (total > STAT_CHART_LIMITS.simulationSampleDraws) {
+		const line = Math.max(optionLines.echantillons ?? 0, optionLines.taille ?? 0);
+		return at(
+			line,
+			`échantillons × taille : au plus 100 000 tirages (ici ${String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')})`
+		);
+	}
+	return null;
 }
 
 function parseLawIndicators(raw: string): LawIndicator[] {
@@ -875,7 +940,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		lawMasked: [],
 		simulationMode: 'tirages',
 		draws: 100,
-		seed: 1
+		seed: 1,
+		samples: 100,
+		sampleSize: 100
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1027,6 +1094,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	let table: CrossTableData | null = null;
 	let law: LawData | null = null;
 	let simulation: SimulationData | null = null;
+	if (errors.length === 0 && isSimulation) {
+		const problem = checkSimulationOptions(options, optionLines);
+		if (problem) errors.push(problem);
+	}
 	if (errors.length === 0 && isLaw) {
 		const checked = checkLaw(lawVariable, lawProbabilities, options, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
@@ -1038,7 +1109,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				probabilities: checked.law.probabilities.map((p) => p ?? ''),
 				mode: options.simulationMode,
 				draws: options.draws,
-				seed: options.seed
+				seed: options.seed,
+				samples: options.samples,
+				sampleSize: options.sampleSize
 			};
 		} else law = checked.law;
 	} else if (errors.length === 0 && isTable) {

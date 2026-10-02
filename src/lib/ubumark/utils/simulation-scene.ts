@@ -5,7 +5,8 @@
  * Outils statistiques v2, PR (c) (Q80-Q82, 2026-10-02). Les graphiques de
  * `.fréquence` et `.échantillons` se dessinent sous la ligne de la commande,
  * avec le même composant SVG que les blocs (`StatChart.svelte`), à partir
- * d'une scène construite ici. Aucun bloc ubumark ne les produit.
+ * d'une scène construite ici. Le bloc ```simulation (modes `moyenne` et
+ * `échantillons`, lot 3) les reprend.
  *
  * @module ubumark/utils/simulation-scene
  */
@@ -30,6 +31,36 @@ import {
 /** Points dessinés de la courbe au plus : invisible à l'œil, léger (Q81) */
 export const RUNNING_MEAN_MAX_POINTS = 500;
 
+/** Textes des deux graphiques, selon la langue du document (bloc ```simulation) */
+const TEXT = {
+	fr: {
+		sampleAxis: 'Moyenne de l’échantillon',
+		countAxis: 'Effectif',
+		samplesDescription: (count: string, classes: string) =>
+			`Histogramme des ${count} moyennes d’échantillons ; en couleur, les classes entre μ − 2σ/√n et μ + 2σ/√n : ${classes}.`,
+		meanTitle: 'Moyenne des tirages selon leur nombre',
+		meanFirst: (first: string, e: string) =>
+			`Moyenne du premier tirage : ${first}, pour une espérance de ${e}.`,
+		meanMany: (n: string, first: string, last: string, e: string) =>
+			`Moyenne des ${n} premiers tirages : elle passe de ${first} à ${last}, pour une espérance de ${e}.`,
+		expectation: (e: string) => `espérance ${e}`,
+		meanAxes: { x: 'Nombre de tirages', y: 'Moyenne' }
+	},
+	en: {
+		sampleAxis: 'Sample mean',
+		countAxis: 'Count',
+		samplesDescription: (count: string, classes: string) =>
+			`Histogram of the ${count} sample means; in colour, the classes between μ − 2σ/√n and μ + 2σ/√n: ${classes}.`,
+		meanTitle: 'Mean of the draws by their number',
+		meanFirst: (first: string, e: string) =>
+			`Mean of the first draw: ${first}, for an expectation of ${e}.`,
+		meanMany: (n: string, first: string, last: string, e: string) =>
+			`Mean of the first ${n} draws: it goes from ${first} to ${last}, for an expectation of ${e}.`,
+		expectation: (e: string) => `expectation ${e}`,
+		meanAxes: { x: 'Number of draws', y: 'Mean' }
+	}
+} as const;
+
 /** Écart visé entre deux graduations, en px (comme les diagrammes) */
 const TICK_TARGET_PX = 40;
 
@@ -37,14 +68,24 @@ const TICK_TARGET_PX = 40;
 // FONCTIONS
 // ============================================================================
 
-/** 5000 → « 5 000 » */
-function grouped(value: number): string {
-	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+/** 5000 → « 5 000 », ou « 5,000 » dans un document anglais */
+function grouped(value: number, locale: ContentLocale = 'fr'): string {
+	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, locale === 'en' ? ',' : ' ');
 }
 
 /** Un réel arrondi au millième, écrit selon la langue */
-function rounded(value: number, locale: ContentLocale): string {
-	return formatTick(Number(value.toFixed(3)), locale);
+function rounded(value: number, locale: ContentLocale, decimals = 3): string {
+	// `Math.round`, pas `toFixed` : 3,5875 donnait 3,587 (revue)
+	const factor = 10 ** decimals;
+	return formatTick(Math.round(value * factor) / factor, locale);
+}
+
+/**
+ * Décimales des bornes : au moins trois, assez pour que deux bornes voisines
+ * restent distinctes quand l'amplitude est minuscule (σ = 0,005, revue).
+ */
+function boundDecimals(width: number): number {
+	return Math.min(10, Math.max(3, Math.ceil(-Math.log10(width)) + 1));
 }
 
 /** Une borne de classe sans bruit flottant (3,3299999 → 3,33) */
@@ -86,6 +127,7 @@ export function buildSampleMeansScene(
 		return margin > 0 && t > 1e-9 ? Math.ceil(t - 1e-9) - 1 : Math.floor(t + 1e-9);
 	};
 
+	const decimals = boundDecimals(width);
 	const first = Math.min(...means.map(indexOf));
 	const last = Math.max(...means.map(indexOf));
 	const counts = new Array<number>(last - first + 1).fill(0);
@@ -97,8 +139,10 @@ export function buildSampleMeansScene(
 		const rightOfMu = margin > 0 && first + i >= 0 && lower > mu;
 		const opening = rightOfMu ? ']' : '[';
 		const closing = rightOfMu || (margin > 0 && first + i === 0) ? ']' : '[';
+		// Bornes au millième : μ ± k·σ/√n n'est presque jamais décimal, et
+		// « 2,53390821692 » rendait l'axe illisible (fiche compilée, lot 3 PR b)
 		return {
-			label: `${opening}${formatTick(lower, locale)} ; ${formatTick(upper, locale)}${closing}`,
+			label: `${opening}${rounded(lower, locale, decimals)} ; ${rounded(upper, locale, decimals)}${closing}`,
 			value: count,
 			interval: { lower, upper },
 			line: i + 1
@@ -110,9 +154,12 @@ export function buildSampleMeansScene(
 		data,
 		unit: 'effectifs',
 		title: null,
-		axes: { x: 'Moyenne de l’échantillon', y: null },
+		axes: { x: TEXT[locale].sampleAxis, y: TEXT[locale].countAxis },
 		// Les classes et leurs effectifs, comme la description d'un bloc (revue a11y)
-		description: `Histogramme des ${grouped(means.length)} moyennes d’échantillons ; en couleur, les classes entre μ − 2σ/√n et μ + 2σ/√n : ${data.map((d) => `${d.label} ${d.value}`).join(', ')}.`,
+		description: TEXT[locale].samplesDescription(
+			grouped(means.length, locale),
+			data.map((d) => `${d.label} ${d.value}`).join(', ')
+		),
 		size: 'moyenne',
 		showValues: false,
 		color: 'bleu',
@@ -133,6 +180,10 @@ export function buildSampleMeansScene(
 			: lower <= mu && mu < upper;
 	return {
 		...scene,
+		xTicks: scene.xTicks.map((tick) => ({
+			...tick,
+			label: rounded(tick.value, locale, decimals)
+		})),
 		rects: scene.rects.map((rect) => ({ ...rect, highlighted: inside(rect.lower, rect.upper) }))
 	};
 }
@@ -178,11 +229,16 @@ export function buildRunningMeanScene(
 	return {
 		kind: 'moyenne-selon-n',
 		title: null,
-		accessibleTitle: 'Moyenne des tirages selon leur nombre',
+		accessibleTitle: TEXT[locale].meanTitle,
 		description:
 			n === 1
-				? `Moyenne du premier tirage : ${rounded(means[0], locale)}, pour une espérance de ${expectationText}.`
-				: `Moyenne des ${grouped(n)} premiers tirages : elle passe de ${rounded(means[0], locale)} à ${rounded(means[n - 1], locale)}, pour une espérance de ${expectationText}.`,
+				? TEXT[locale].meanFirst(rounded(means[0], locale), expectationText)
+				: TEXT[locale].meanMany(
+						grouped(n, locale),
+						rounded(means[0], locale),
+						rounded(means[n - 1], locale),
+						expectationText
+					),
 		pixelSize: { width, height },
 		indicators: [],
 		xMin: 1,
@@ -191,10 +247,13 @@ export function buildRunningMeanScene(
 		yMax,
 		points,
 		// Abscisses entières : groupées comme le texte (« 10 000 »)
-		xTicks: ticksBetween(1, xMax, xStep, locale).map((t) => ({ ...t, label: grouped(t.value) })),
+		xTicks: ticksBetween(1, xMax, xStep, locale).map((t) => ({
+			...t,
+			label: grouped(t.value, locale)
+		})),
 		ticks: ticksBetween(yMin, yMax, yStep, locale),
-		reference: { value: expectation, label: `espérance ${expectationText}` },
-		axisTitles: { x: 'Nombre de tirages', y: 'Moyenne' },
+		reference: { value: expectation, label: TEXT[locale].expectation(expectationText) },
+		axisTitles: { ...TEXT[locale].meanAxes },
 		color: 'bleu'
 	};
 }

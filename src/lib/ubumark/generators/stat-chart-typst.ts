@@ -75,6 +75,9 @@ const PIE_COLORS = [
 const UNAVAILABLE =
 	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';
 
+/** Classes hors de μ ± 2σ/√n (moyennes d'échantillons) : grises, comme à l'écran */
+const OUTSIDE_COLOR = 'luma(150)';
+
 const CETZ_IMPORT = '#import "@preview/cetz:0.3.0"';
 
 // ============================================================================
@@ -261,7 +264,7 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 		lines.push('  // rectangle');
 		// Bordure blanche : sépare deux classes voisines de même couleur
 		lines.push(
-			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${color}, stroke: 0.8pt + white)`
+			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${rect.highlighted === false ? OUTSIDE_COLOR : color}, stroke: 0.8pt + white)`
 		);
 		// Au-dessus du rectangle, comme à l'écran : un rectangle bas ou nul le cachait
 		if (scene.showValues) {
