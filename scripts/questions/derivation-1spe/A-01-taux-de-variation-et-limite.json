@@ -1,0 +1,179 @@
+{
+	"title": "Taux de variation et nombre dérivé",
+	"description": "Taux de variation de x² ou x² + bx entre a et a + h, simplifié en fonction de h, puis sa limite f′(a) quand h tend vers 0",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Nombre dérivé",
+	"level": 1,
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}+h"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)=({{a}}+h)^2={{eval:a^2}}{{eval:2*a;+}}h+h^2$ et $f({{a}})={{eval:a^2}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a}}h+h^2$.",
+					"Pour $h\\neq0$, on simplifie par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{h({{eval:2*a}}+h)}{h}={{eval:2*a}}+h$$",
+					"Quand $h$ tend vers $0$, ${{eval:2*a}}+h$ tend vers ${{eval:2*a}}$.",
+					"Conclusion : le taux de variation vaut ${{eval:2*a}}+h$ et $f'({{a}})={{eval:2*a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+b*x}}$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["2*a+b != 0", "abs(2*a+b) != 1", "a+b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a+b}}+h"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}}+h)=({{a}}+h)^2{{b;+}}({{a}}+h)={{eval:a^2+a*b}}{{eval:2*a+b;+}}h+h^2$ et $f({{a}})={{eval:a^2+a*b}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a+b}}h+h^2$.",
+					"Pour $h\\neq0$, on simplifie par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{h({{eval:2*a+b}}+h)}{h}={{eval:2*a+b}}+h$$",
+					"Quand $h$ tend vers $0$, ${{eval:2*a+b}}+h$ tend vers ${{eval:2*a+b}}$.",
+					"Conclusion : le taux de variation vaut ${{eval:2*a+b}}+h$ et $f'({{a}})={{eval:2*a+b}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=3 : 6+h et 6",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["6+h", "6"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : a=3 : h+6 (ordre des termes)",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["h+6", "6"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : a=3 : h non simplifié (6h+h²)/h",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["\\frac{6h+h^2}{h}", "6"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 0 : a=3 : limite prise trop tôt (6 dans la 1re case)",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["6", "6"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a=3 : f(3)=9 au lieu de f′(3)",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["6+h", "9"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a=3 : h² oublié dans le développement (6)",
+			"variationIndex": 0,
+			"variables": { "a": "3" },
+			"answers": ["6+2h", "6"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a=−2 : −4+h et −4",
+			"variationIndex": 0,
+			"variables": { "a": "-2" },
+			"answers": ["-4+h", "-4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : a=−2 : signe de a perdu (4+h)",
+			"variationIndex": 0,
+			"variables": { "a": "-2" },
+			"answers": ["4+h", "4"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : x²+3x, a=2 : 7+h et 7",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2" },
+			"answers": ["7+h", "7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²+3x, a=2 : h+7",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2" },
+			"answers": ["h+7", "7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²+3x, a=2 : b oublié (4+h)",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2" },
+			"answers": ["4+h", "4"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : x²+3x, a=2 : f(2)=10 au lieu de f′(2)",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2" },
+			"answers": ["7+h", "10"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : x²+3x, a=2 : h non simplifié (7h+h²)/h",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2" },
+			"answers": ["\\frac{7h+h^2}{h}", "7"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 1 : x²−5x, a=−1 : −7+h et −7",
+			"variationIndex": 1,
+			"variables": { "b": "-5", "a": "-1" },
+			"answers": ["-7+h", "-7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−5x, a=−1 : signe de a perdu (−3+h)",
+			"variationIndex": 1,
+			"variables": { "b": "-5", "a": "-1" },
+			"answers": ["-3+h", "-3"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

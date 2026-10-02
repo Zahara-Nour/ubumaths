@@ -1,7 +1,7 @@
 ---
 title: Dérivation 1re SPE — questions
 date: 2026-10-02
-status: lot 0 en cours (2 PR) ; modèles en cours (3 agents)
+status: #637 mergée, #638 en CI ; 16 modèles en brouillon + 74d77343 corrigé (2026-10-02)
 ---
 
 # Dérivation 1re SPE — point de reprise
@@ -26,3 +26,29 @@ Décisions validées (« ok » sur mes recommandations) :
 | A   | Nombre dérivé (taux, f′(a) calculé, lu), Tangente (à partir de f(a), f′(a) ; calcul complet ; lue) |
 | B   | Fonctions dérivées (polynômes, ku et sommes, produit, quotient, 1/v, composée)                     |
 | C   | Variations (signe de f′, intervalles de croissance, extremum degré 3, courbe de f′) + 74d77343     |
+
+**16 modèles créés en BROUILLON en production le 2026-10-02** (A : 6, B : 6, C : 4) et `74d77343`
+corrigé en place (lot `derivation` de `update-published-questions.ts` ; aucun usage élève vérifié ;
+astuce `x|x` retirée ; variations k√x, kxⁿ, kx + b, b/x avec b < 0, −k√x ajoutées en fin de liste ;
+preuve rouge : 3/22 specs vertes sur le contenu d'avant). Chaque modèle : `question:specs` vert, 150
+tirages par variation, réponses recalculées en Python (sympy pour B) ; figures : tangente tracée
+tangente à la courbe tracée, lecture sur la grille ; PDF compilés 4/4.
+
+Formes : `warn` pour « calcule f′(x) » ; `strict` pour A-01 (taux simplifié), A-04, A-05 (équation
+réduite), C-01 à C-04.
+
+## Défauts trouvés en route
+
+- #638 : puissances fractionnaires ≡ racines (`\frac12 x^{-\frac12}` jugé faux pour `\frac{1}{2\sqrt x}`).
+- **`simplify` AFFICHE une valeur fausse** : `(4x+1)^{\frac12}` → `4x+1`, `2^{\frac12}` → `2`,
+  `(x+1)^{\frac32}` → LaTeX défectueux (utilisé par l'analyse du grapheur). À corriger après #638
+  (même fichier `normal/normalize.ts`).
+- Conditions : `==` toujours FAUX, sans erreur (écrire `=`) ; 0 modèle de production touché (mesuré).
+- Bloc courbe : le nom d'une courbe s'écarte des points, pas des autres noms (« C_f » + « T » → « CT ») ;
+  contourné en retirant les noms dans A-03, A-06.
+
+## Points à relire (David)
+
+- B-04 v2 (quotient, signe à étudier) : `warn` ; « sous forme factorisée » + `strict` possible.
+- B-06, a < 0 : `12(3x-2)^3` pour `-12(-3x+2)^3` est « non optimal » (écriture juste).
+- A-01 en `strict` : `(6h+h^2)/h` (non simplifié) est « mauvaise forme ».

@@ -1,0 +1,174 @@
+{
+	"title": "Équation d'une tangente connaissant f(a) et f′(a)",
+	"description": "Équation réduite y = mx + p de la tangente au point d'abscisse a, à partir des valeurs données de f(a) et f′(a)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Tangente",
+	"level": 1,
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$, de courbe représentative $\\mathcal{C}_f$. On sait que $f({{a}})={{b}}$ et $f'({{a}})={{m}}$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "2..6;±"
+				}
+			],
+			"conditions": ["m != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*x+b-m*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$.",
+					"Ici $a={{a}}$, $f'({{a}})={{m}}$ et $f({{a}})={{b}}$ : $$y={{m}}(x{{eval:-a;+}}){{b;+}}={{eval:m*x}}{{eval:-m*a;+}}{{b;+}}={{eval:m*x+b-m*a}}$$",
+					"Conclusion : $T$ a pour équation $y={{eval:m*x+b-m*a}}$."
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction dérivable sur $\\mathbb{R}$, de courbe représentative $\\mathcal{C}_f$. On sait que $f({{a}})={{b}}$ et $f'({{a}})={{m}}$.\n\nDonne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-5..-1"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "2..6;±"
+				}
+			],
+			"conditions": ["m != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*x+b-m*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$.",
+					"Ici $a={{a}}$, $f'({{a}})={{m}}$ et $f({{a}})={{b}}$. Attention au signe : $x-({{a}})=x{{eval:-a;+}}$. $$y={{m}}(x{{eval:-a;+}}){{b;+}}={{eval:m*x}}{{eval:-m*a;+}}{{b;+}}={{eval:m*x+b-m*a}}$$",
+					"Conclusion : $T$ a pour équation $y={{eval:m*x+b-m*a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=2, f(2)=5, f′(2)=3 : 3x−1",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["3x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : −1+3x (ordre des termes)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["-1+3x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : y=3x−1 (préfixe recopié)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["y=3x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : 3(x−2)+5 : pas réduite",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["3(x-2)+5"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 0 : 3x+11 (3(x+2)+5, signe de a)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["3x+11"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : 5x−7 (f(a) et f′(a) échangés)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["5x-7"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : 3x+5 (f(a) pris pour l'ordonnée à l'origine)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["3x+5"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : 3x−6 (f(a) oublié)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "5", "m": "3" },
+			"answers": ["3x-6"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : a=−3, f(−3)=4, f′(−3)=−2 : −2x−2",
+			"variationIndex": 1,
+			"variables": { "a": "-3", "b": "4", "m": "-2" },
+			"answers": ["-2x-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : −2−2x (ordre des termes)",
+			"variationIndex": 1,
+			"variables": { "a": "-3", "b": "4", "m": "-2" },
+			"answers": ["-2-2x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : −2x+10 (−2(x−3)+4, signe de a oublié)",
+			"variationIndex": 1,
+			"variables": { "a": "-3", "b": "4", "m": "-2" },
+			"answers": ["-2x+10"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : −2(x+3)+4 : pas réduite",
+			"variationIndex": 1,
+			"variables": { "a": "-3", "b": "4", "m": "-2" },
+			"answers": ["-2(x+3)+4"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 1 : 4x+10 (f(a) et f′(a) échangés)",
+			"variationIndex": 1,
+			"variables": { "a": "-3", "b": "4", "m": "-2" },
+			"answers": ["4x+10"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

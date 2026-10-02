@@ -1,0 +1,207 @@
+{
+	"title": "Dériver un polynôme",
+	"description": "Dérivée d'un polynôme de degré 2 ou 3, coefficients entiers ou fractionnaires simples",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2{{eval:b;+}}x{{eval:c;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}x{{eval:b;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^2)'=2x$, $(x)'=1$ et la dérivée d'une constante est nulle.",
+					"$$f'(x)={{a}}\\times2x{{eval:b;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a}}x{{eval:b;+}} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{eval:b;+}}x^2{{eval:c;+}}x{{eval:d;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^3)'=3x^2$, $(x^2)'=2x$, $(x)'=1$ et la dérivée d'une constante est nulle.",
+					"$$f'(x)={{a}}\\times3x^2{{eval:b;+}}\\times2x{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:c;+}} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:a/3}}x^3{{eval:b/2;+}}x^2{{eval:c;+}}x$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|5|-2|-4|-5"
+				},
+				{
+					"name": "b",
+					"expression": "3|5|7|-3|-5|-7"
+				},
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}x^2{{eval:b;+}}x{{eval:c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^3)'=3x^2$, $(x^2)'=2x$ et $(x)'=1$.",
+					"Les fractions se simplifient : $3\\times{{eval:a/3;()}}={{a}}$ et $2\\times{{eval:b/2;()}}={{b}}$.",
+					"$$f'(x)=\\textcolor{{{color:primary.0}}}{ {{a}}x^2{{eval:b;+}}x{{eval:c;+}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3x²−5x+2 : 6x−5",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-5", "c": "2" },
+			"answers": ["6x-5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "termes dans l'autre ordre : −5+6x",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-5", "c": "2" },
+			"answers": ["-5+6x"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "calcul non effectué : 3×2x−5 (non optimal)",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-5", "c": "2" },
+			"answers": ["3\\times2x-5"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "facteur 2 oublié : 3x−5",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-5", "c": "2" },
+			"answers": ["3x-5"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "constante gardée : 6x−5+2",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-5", "c": "2" },
+			"answers": ["6x-5+2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a < 0 : −4x²+7x−1 → −8x+7",
+			"variationIndex": 0,
+			"variables": { "a": "-4", "b": "7", "c": "-1" },
+			"answers": ["-8x+7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "2x³−3x²+4x−1 : 6x²−6x+4",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "-3", "c": "4", "d": "-1" },
+			"answers": ["6x^2-6x+4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "calcul non effectué : 2×3x²−3×2x+4 (non optimal)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "-3", "c": "4", "d": "-1" },
+			"answers": ["2\\times3x^2-3\\times2x+4"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "terme en x oublié : 6x²−6x",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "-3", "c": "4", "d": "-1" },
+			"answers": ["6x^2-6x"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "exposant non abaissé : 6x³−6x²+4x",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "-3", "c": "4", "d": "-1" },
+			"answers": ["6x^3-6x^2+4x"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "⅔x³−³⁄₂x²+5x : 2x²−3x+5",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "-3", "c": "5" },
+			"answers": ["2x^2-3x+5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "fractions non simplifiées : 3×⅔x²−2×³⁄₂x+5 (non optimal)",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "-3", "c": "5" },
+			"answers": ["3\\times\\frac{2}{3}x^2-2\\times\\frac{3}{2}x+5"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["products", "form"] }
+		},
+		{
+			"description": "coefficients non multipliés : ⅔x²−³⁄₂x+5",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "-3", "c": "5" },
+			"answers": ["\\frac{2}{3}x^2-\\frac{3}{2}x+5"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a < 0 : −⁵⁄₃x³+⁷⁄₂x²−4x → −5x²+7x−4",
+			"variationIndex": 2,
+			"variables": { "a": "-5", "b": "7", "c": "-4" },
+			"answers": ["-5x^2+7x-4"],
+			"expected": { "status": "correct" }
+		}
+	]
+}

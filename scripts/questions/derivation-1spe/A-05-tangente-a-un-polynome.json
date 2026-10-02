@@ -1,0 +1,212 @@
+{
+	"title": "Équation de la tangente à un polynôme",
+	"description": "Calcul de f(a), de f′(a) puis de l'équation réduite de la tangente au point d'abscisse a, pour un polynôme de degré 2 ou 3",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Tangente",
+	"level": 2,
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^2+n*x+c}}$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f({{a}})$ et $f'({{a}})$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$f({{a}})=?$\n\n$f'({{a}})=?$\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:m*a^2+n*a+c"
+				},
+				{
+					"name": "fpa",
+					"expression": "eval:2*m*a+n"
+				}
+			],
+			"conditions": ["fa != 0", "fpa != 0", "abs(fpa) != 1", "fpa != fa"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fa}}"
+				},
+				{
+					"expectedAnswer": "{{fpa}}"
+				},
+				{
+					"expectedAnswer": "{{eval:fpa*x+fa-fpa*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}})={{eval:m*a^2}}{{eval:n*a;+}}{{c;+}}={{fa}}$.",
+					"$f'(x)={{eval:2*m*x+n}}$, donc $f'({{a}})={{eval:2*m*a}}{{n;+}}={{fpa}}$.",
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}={{eval:fpa*x+fa-fpa*a}}$$",
+					"Conclusion : $f({{a}})={{fa}}$, $f'({{a}})={{fpa}}$ et $T$ a pour équation $y={{eval:fpa*x+fa-fpa*a}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^3+q*x+c}}$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f({{a}})$ et $f'({{a}})$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$f({{a}})=?$\n\n$f'({{a}})=?$\n\n$y=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "fa",
+					"expression": "eval:m*a^3+q*a+c"
+				},
+				{
+					"name": "fpa",
+					"expression": "eval:3*m*a^2+q"
+				}
+			],
+			"conditions": ["fa != 0", "fpa != 0", "abs(fpa) != 1", "fpa != fa"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{fa}}"
+				},
+				{
+					"expectedAnswer": "{{fpa}}"
+				},
+				{
+					"expectedAnswer": "{{eval:fpa*x+fa-fpa*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f({{a}})={{eval:m*a^3}}{{eval:q*a;+}}{{c;+}}={{fa}}$.",
+					"$f'(x)={{eval:3*m*x^2+q}}$, donc $f'({{a}})={{eval:3*m*a^2}}{{q;+}}={{fpa}}$.",
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}={{eval:fpa*x+fa-fpa*a}}$$",
+					"Conclusion : $f({{a}})={{fa}}$, $f'({{a}})={{fpa}}$ et $T$ a pour équation $y={{eval:fpa*x+fa-fpa*a}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : f(x)=2x²−3x+4, a=2 : f(2)=6, f′(2)=5, y=5x−4",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "5", "5x-4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : y=5x−4 (préfixe recopié)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "5", "y=5x-4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : f(a) et f′(a) échangés dans l'équation : 6x−7",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "5", "6x-7"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : signe de a dans x − a : 5(x+2)+6 = 5x+16",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "5", "5x+16"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : 5(x−2)+6 : pas réduite",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "5", "5(x-2)+6"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 0 : f′(2) pris pour f(2)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "4", "a": "2", "fa": "6", "fpa": "5" },
+			"answers": ["6", "6", "6x-6"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a=−1, f(x)=−x²+4x+2 : f(−1)=−3, f′(−1)=6, y=6x+3",
+			"variationIndex": 0,
+			"variables": { "m": "-1", "n": "4", "c": "2", "a": "-1", "fa": "-3", "fpa": "6" },
+			"answers": ["-3", "6", "6x+3"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : a=−1 : signe de a oublié, 6(x−1)−3 = 6x−9",
+			"variationIndex": 0,
+			"variables": { "m": "-1", "n": "4", "c": "2", "a": "-1", "fa": "-3", "fpa": "6" },
+			"answers": ["-3", "6", "6x-9"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : f(x)=x³−2x+5, a=2 : f(2)=9, f′(2)=10, y=10x−11",
+			"variationIndex": 1,
+			"variables": { "m": "1", "q": "-2", "c": "5", "a": "2", "fa": "9", "fpa": "10" },
+			"answers": ["9", "10", "10x-11"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : (x³)′ pris pour 3x : f′(2)=4, y=4x+1",
+			"variationIndex": 1,
+			"variables": { "m": "1", "q": "-2", "c": "5", "a": "2", "fa": "9", "fpa": "10" },
+			"answers": ["9", "4", "4x+1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : 10(x−2)+9 : pas réduite",
+			"variationIndex": 1,
+			"variables": { "m": "1", "q": "-2", "c": "5", "a": "2", "fa": "9", "fpa": "10" },
+			"answers": ["9", "10", "10(x-2)+9"],
+			"expected": { "status": "bad_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 1 : a=−1, f(x)=−2x³+3x−4 : f(−1)=−5, f′(−1)=−3, y=−3x−8",
+			"variationIndex": 1,
+			"variables": { "m": "-2", "q": "3", "c": "-4", "a": "-1", "fa": "-5", "fpa": "-3" },
+			"answers": ["-5", "-3", "-3x-8"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : a=−1 : signe de a oublié, −3(x−1)−5 = −3x−2",
+			"variationIndex": 1,
+			"variables": { "m": "-2", "q": "3", "c": "-4", "a": "-1", "fa": "-5", "fpa": "-3" },
+			"answers": ["-5", "-3", "-3x-2"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

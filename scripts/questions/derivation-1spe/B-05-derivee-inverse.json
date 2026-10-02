@@ -1,0 +1,199 @@
+{
+	"title": "Dériver l'inverse d'une fonction",
+	"description": "Dérivée de 1/v et de k/v, v affine ou du second degré",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 5,
+	"status": "draft",
+	"delay": 60,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)=\\frac{1}{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["gcd(a,b) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{a}} }{({{a}}x{{eval:b;+}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=\\frac{1}{v}$ : $\\left(\\frac{1}{v}\\right)'=-\\frac{v'}{v^2}$.",
+					"Avec $v(x)={{a}}x{{eval:b;+}}$ : $v'(x)={{a}}$.",
+					"$$f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{a}} }{({{a}}x{{eval:b;+}})^2} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)=\\frac{ {{k}} }{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["gcd(a,b) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{eval:k*a}} }{({{a}}x{{eval:b;+}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=k\\times\\frac{1}{v}$ avec $k={{k}}$ : $\\left(\\frac{k}{v}\\right)'=-\\frac{kv'}{v^2}$.",
+					"Avec $v(x)={{a}}x{{eval:b;+}}$ : $v'(x)={{a}}$.",
+					"$$f'(x)=-\\frac{ {{k}}\\times{{a}} }{({{a}}x{{eval:b;+}})^2}=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:k*a}} }{({{a}}x{{eval:b;+}})^2} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ {{k}} }{x^2+{{c}}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{eval:2*k}}x}{(x^2+{{c}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f=k\\times\\frac{1}{v}$ avec $k={{k}}$ : $\\left(\\frac{k}{v}\\right)'=-\\frac{kv'}{v^2}$.",
+					"Avec $v(x)=x^2+{{c}}$ : $v'(x)=2x$. On a bien $v(x)>0$ pour tout réel $x$.",
+					"$$f'(x)=-\\frac{ {{k}}\\times2x}{(x^2+{{c}})^2}=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:2*k}}x}{(x^2+{{c}})^2} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1/(3x−2) : −3/(3x−2)²",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-2" },
+			"answers": ["-\\frac{3}{(3x-2)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "signe au numérateur −3/… (non optimal)",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-2" },
+			"answers": ["\\frac{-3}{(3x-2)^2}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["signs"] }
+		},
+		{
+			"description": "v′ oublié : −1/(3x−2)²",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-2" },
+			"answers": ["-\\frac{1}{(3x-2)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "(1/v)′ = 1/v′ : 1/3",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-2" },
+			"answers": ["\\frac{1}{3}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "signe oublié : 3/(3x−2)²",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "-2" },
+			"answers": ["\\frac{3}{(3x-2)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "5/(2x+1) : −10/(2x+1)²",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "2", "b": "1" },
+			"answers": ["-\\frac{10}{(2x+1)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "dénominateur développé (non optimal)",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "2", "b": "1" },
+			"answers": ["-\\frac{10}{4x^2+4x+1}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "v′ oublié : −5/(2x+1)²",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "2", "b": "1" },
+			"answers": ["-\\frac{5}{(2x+1)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "k oublié : −2/(2x+1)²",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "2", "b": "1" },
+			"answers": ["-\\frac{2}{(2x+1)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "3/(x²+4) : −6x/(x²+4)²",
+			"variationIndex": 2,
+			"variables": { "k": "3", "c": "4" },
+			"answers": ["-\\frac{6x}{(x^2+4)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "dénominateur développé (non optimal)",
+			"variationIndex": 2,
+			"variables": { "k": "3", "c": "4" },
+			"answers": ["-\\frac{6x}{x^4+8x^2+16}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "v′ oublié : −3/(x²+4)²",
+			"variationIndex": 2,
+			"variables": { "k": "3", "c": "4" },
+			"answers": ["-\\frac{3}{(x^2+4)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "carré oublié : −6x/(x²+4)",
+			"variationIndex": 2,
+			"variables": { "k": "3", "c": "4" },
+			"answers": ["-\\frac{6x}{x^2+4}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "c = 1 : 2/(x²+1) → −4x/(x²+1)²",
+			"variationIndex": 2,
+			"variables": { "k": "2", "c": "1" },
+			"answers": ["-\\frac{4x}{(x^2+1)^2}"],
+			"expected": { "status": "correct" }
+		}
+	]
+}

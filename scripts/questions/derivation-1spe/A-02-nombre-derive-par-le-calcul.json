@@ -1,0 +1,184 @@
+{
+	"title": "Calculer un nombre dérivé",
+	"description": "Nombre dérivé f′(a) d'un polynôme de degré 2 ou 3 en un entier a, par la fonction dérivée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Nombre dérivé",
+	"level": 2,
+	"delay": 45,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^2+n*x+c}}$.\n\nCalcule $f'({{a}})$.\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				}
+			],
+			"conditions": ["2*m*a+n != 0", "2*m*a+n != m*a^2+n*a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*m*a+n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^2)'=2x$ et $(x)'=1$, la constante a pour dérivée $0$. Donc $f'(x)={{eval:2*m*x+n}}$.",
+					"$$f'({{a}})={{eval:2*m}}\\times{{a;()}}{{n;+}}={{eval:2*m*a+n}}$$",
+					"Conclusion : $f'({{a}})={{eval:2*m*a+n}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^3+n*x^2+p*x+c}}$.\n\nCalcule $f'({{a}})$.\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "m",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				}
+			],
+			"conditions": ["3*m*a^2+2*n*a+p != 0", "3*m*a^2+2*n*a+p != m*a^3+n*a^2+p*a+c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*m*a^2+2*n*a+p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(x^3)'=3x^2$, $(x^2)'=2x$ et $(x)'=1$, la constante a pour dérivée $0$. Donc $f'(x)={{eval:3*m*x^2+2*n*x+p}}$.",
+					"$$f'({{a}})={{eval:3*m}}\\times{{a;()}}^2{{eval:2*n;+}}\\times{{a;()}}{{p;+}}={{eval:3*m*a^2+2*n*a+p}}$$",
+					"Conclusion : $f'({{a}})={{eval:3*m*a^2+2*n*a+p}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : f(x)=2x²−3x+5, f′(2)=5",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "5", "a": "2" },
+			"answers": ["5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : f(2)=7 au lieu de f′(2)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "5", "a": "2" },
+			"answers": ["7"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : f′(x)=4x−3 donné au lieu de la valeur",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "5", "a": "2" },
+			"answers": ["4x-3"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : 2×2 oublié (2x² dérivé en 2x) : 1",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "5", "a": "2" },
+			"answers": ["1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a négatif, f(x)=−x²+4x−1, f′(−3)=10",
+			"variationIndex": 0,
+			"variables": { "m": "-1", "n": "4", "c": "-1", "a": "-3" },
+			"answers": ["10"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : a négatif, signe perdu : −2",
+			"variationIndex": 0,
+			"variables": { "m": "-1", "n": "4", "c": "-1", "a": "-3" },
+			"answers": ["-2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : calcul non terminé 4×2−3 (accepté avec avertissement)",
+			"variationIndex": 0,
+			"variables": { "m": "2", "n": "-3", "c": "5", "a": "2" },
+			"answers": ["4\\times2-3"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "variation 1 : f(x)=x³−2x²+3x+4, f′(2)=7",
+			"variationIndex": 1,
+			"variables": { "m": "1", "n": "-2", "p": "3", "c": "4", "a": "2" },
+			"answers": ["7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : f(2)=10 au lieu de f′(2)",
+			"variationIndex": 1,
+			"variables": { "m": "1", "n": "-2", "p": "3", "c": "4", "a": "2" },
+			"answers": ["10"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : (x³)′ pris pour 3x : 1",
+			"variationIndex": 1,
+			"variables": { "m": "1", "n": "-2", "p": "3", "c": "4", "a": "2" },
+			"answers": ["1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : a négatif, f(x)=2x³+x²−5x+1, f′(−1)=-1",
+			"variationIndex": 1,
+			"variables": { "m": "2", "n": "1", "p": "-5", "c": "1", "a": "-1" },
+			"answers": ["-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : a négatif, carré mal signé (3×2×(−1)²→−6) : −13",
+			"variationIndex": 1,
+			"variables": { "m": "2", "n": "1", "p": "-5", "c": "1", "a": "-1" },
+			"answers": ["-13"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

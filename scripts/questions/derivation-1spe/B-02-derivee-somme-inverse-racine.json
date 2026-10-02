@@ -1,0 +1,162 @@
+{
+	"title": "Dériver une somme avec 1/x et √x",
+	"description": "Dérivée de k·u et d'une somme de fonctions de référence : x², √x, 1/x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie et dérivable sur $]0\\,;+\\infty[$ par $f(x)={{c}}x^2+{{a}}\\sqrt{x}-\\frac{ {{b}} }{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..6;±"
+				},
+				{
+					"name": "a",
+					"expression": "3|5|7"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*c}}x+\\frac{ {{a}} }{2\\sqrt{x}}+\\frac{ {{b}} }{x^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme avec $(ku)'=ku'$ : $(x^2)'=2x$, $(\\sqrt{x})'=\\frac{1}{2\\sqrt{x}}$ et $\\left(\\frac{1}{x}\\right)'=-\\frac{1}{x^2}$.",
+					"$$f'(x)={{c}}\\times2x+{{a}}\\times\\frac{1}{2\\sqrt{x}}-{{b}}\\times\\left(-\\frac{1}{x^2}\\right)$$",
+					"$$f'(x)=\\textcolor{{{color:primary.0}}}{ {{eval:2*c}}x+\\frac{ {{a}} }{2\\sqrt{x}}+\\frac{ {{b}} }{x^2} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie et dérivable sur $]0\\,;+\\infty[$ par $f(x)=\\frac{ {{b}} }{x}-{{a}}\\sqrt{x}{{eval:c;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2|4|6|8"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{b}} }{x^2}-\\frac{ {{eval:a/2}} }{\\sqrt{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme avec $(ku)'=ku'$ : $\\left(\\frac{1}{x}\\right)'=-\\frac{1}{x^2}$, $(\\sqrt{x})'=\\frac{1}{2\\sqrt{x}}$ et la dérivée d'une constante est nulle.",
+					"$$f'(x)={{b}}\\times\\left(-\\frac{1}{x^2}\\right)-{{a}}\\times\\frac{1}{2\\sqrt{x}}$$",
+					"On simplifie $\\frac{ {{a}} }{2}={{eval:a/2}}$ : $f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{b}} }{x^2}-\\frac{ {{eval:a/2}} }{\\sqrt{x}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "2x²+3√x−2/x : 4x+3/(2√x)+2/x²",
+			"variationIndex": 0,
+			"variables": { "c": "2", "a": "3", "b": "2" },
+			"answers": ["4x+\\frac{3}{2\\sqrt{x}}+\\frac{2}{x^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "termes dans un autre ordre",
+			"variationIndex": 0,
+			"variables": { "c": "2", "a": "3", "b": "2" },
+			"answers": ["\\frac{2}{x^2}+4x+\\frac{3}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "puissance négative 2x⁻² (non optimal)",
+			"variationIndex": 0,
+			"variables": { "c": "2", "a": "3", "b": "2" },
+			"answers": ["4x+\\frac{3}{2\\sqrt{x}}+2x^{-2}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "signe de (1/x)′ oublié : −2/x²",
+			"variationIndex": 0,
+			"variables": { "c": "2", "a": "3", "b": "2" },
+			"answers": ["4x+\\frac{3}{2\\sqrt{x}}-\\frac{2}{x^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "(√x)′ = 1/√x : 3/√x",
+			"variationIndex": 0,
+			"variables": { "c": "2", "a": "3", "b": "2" },
+			"answers": ["4x+\\frac{3}{\\sqrt{x}}+\\frac{2}{x^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "c < 0 : −5x²+7√x−9/x",
+			"variationIndex": 0,
+			"variables": { "c": "-5", "a": "7", "b": "9" },
+			"answers": ["-10x+\\frac{7}{2\\sqrt{x}}+\\frac{9}{x^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "5/x−4√x−3 : −5/x²−2/√x",
+			"variationIndex": 1,
+			"variables": { "b": "5", "a": "4", "c": "-3" },
+			"answers": ["-\\frac{5}{x^2}-\\frac{2}{\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "fraction non simplifiée 4/(2√x) (non optimal)",
+			"variationIndex": 1,
+			"variables": { "b": "5", "a": "4", "c": "-3" },
+			"answers": ["-\\frac{5}{x^2}-\\frac{4}{2\\sqrt{x}}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+		},
+		{
+			"description": "puissance négative −5x⁻² (non optimal)",
+			"variationIndex": 1,
+			"variables": { "b": "5", "a": "4", "c": "-3" },
+			"answers": ["-5x^{-2}-\\frac{2}{\\sqrt{x}}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "constante gardée : … − 3",
+			"variationIndex": 1,
+			"variables": { "b": "5", "a": "4", "c": "-3" },
+			"answers": ["-\\frac{5}{x^2}-\\frac{2}{\\sqrt{x}}-3"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "signe de (1/x)′ oublié : 5/x²",
+			"variationIndex": 1,
+			"variables": { "b": "5", "a": "4", "c": "-3" },
+			"answers": ["\\frac{5}{x^2}-\\frac{2}{\\sqrt{x}}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a = 2 : 3/x−2√x+1 → −3/x²−1/√x",
+			"variationIndex": 1,
+			"variables": { "b": "3", "a": "2", "c": "1" },
+			"answers": ["-\\frac{3}{x^2}-\\frac{1}{\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		}
+	]
+}

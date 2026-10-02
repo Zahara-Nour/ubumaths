@@ -26,7 +26,7 @@
  * Usage :
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot>            (simulation, diff)
  *   pnpm tsx scripts/update-published-questions.ts --lot <lot> --publier  (écrit)
- *   lots : second-degre, suites
+ *   lots : second-degre, suites, derivation
  *   … --seulement <id8>[,<id8>]   restreint aux cibles dont l'id commence ainsi
  *   … --sans-diff                 simulation sans le diff (preuves rouges seulement)
  */
@@ -81,9 +81,15 @@ const SUITES: readonly string[] = [
 	'158ecaa4-7fa7-4313-a6be-bf60fc538ab6' // Apprivoiser › écriture des termes 1 — description
 ];
 
+/** Dérivation 1re SPE (branche feat/derivation-1spe) */
+const DERIVATION: readonly string[] = [
+	'74d77343-34b9-4259-94c2-c9e2c473b052' // Apprivoiser › calculer une dérivée 2 — attendu sans variable x, variations k√x, kxⁿ, kx + b
+];
+
 const LOTS: Record<string, Lot> = {
 	'second-degre': { dossier: 'scripts/questions/second-degre-existants', cibles: SECOND_DEGRE },
-	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES }
+	suites: { dossier: 'scripts/questions/suites-existants', cibles: SUITES },
+	derivation: { dossier: 'scripts/questions/derivation-existants', cibles: DERIVATION }
 };
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
