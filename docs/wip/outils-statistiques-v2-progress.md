@@ -119,3 +119,11 @@ PR prévues lot 3 : (a) bloc + mode `tirages` ; (b) modes `moyenne` et `échanti
   (`toFixed` donnait 0,037 pour 3/80) ; « option inconnue » ne liste que les options du bloc.
   Fiche FR/EN compilée avec `compile-prod.mjs`. Détail : `bloc-simulation-progress.md`.
 - Suivant : (b) modes `moyenne` et `échantillons` (Q95, Q97 : N × n ≤ 100 000).
+- **(b) livrée #674** (2026-10-02) : modes `moyenne` (scène `moyenne-selon-n`) et `échantillons`
+  (`échantillons:` + `taille:`, N × n ≤ 100 000 ; classes hors μ ± 2σ/√n grises aussi en Typst ;
+  phrase « k échantillons sur N… » ; graine sous la figure ; textes anglais). Vu sur la fiche
+  compilée : bornes de classes au millième (illisibles, atelier compris). Cas frère de #671 :
+  `.simuler` et les moyennes arrondissaient mal un demi. Détail : `simulation-modes-progress.md`.
+
+**Lot 3 (simulation dans les fiches) TERMINÉ** (#671, #674).
+Suivant (Q67) : série brute dans les blocs (`données:`) ; puis comparer deux séries.
