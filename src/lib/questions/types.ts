@@ -99,6 +99,25 @@ export function isCourseCard(q: { options?: unknown }): boolean {
 }
 
 /**
+ * Question de cours ? Marqueur d'intention `options.courseQuestion === true`
+ * (Q110 b) : la question vérifie une connaissance ou la compréhension du cours
+ * (définition, propriété, méthode). Une carte de cours est TOUJOURS une
+ * question de cours.
+ *
+ * Fonctionne sur un modèle comme sur une instance (qui recopie `options`).
+ */
+export function isCourseQuestion(q: { options?: unknown }): boolean {
+	if (isCourseCard(q)) return true;
+	const options = q.options;
+	return (
+		typeof options === 'object' &&
+		options !== null &&
+		'courseQuestion' in options &&
+		(options as { courseQuestion?: unknown }).courseQuestion === true
+	);
+}
+
+/**
  * Infer the question type: explicit course-card marker first, then the
  * presence of `choices`.
  *
@@ -522,6 +541,11 @@ export interface QuestionTemplate {
 		/** Carte de cours : recto = énoncé, verso = correction, ni case ni choix.
 		 *  Marqueur explicite, lu par `getQuestionType()` → `'course_card'`. */
 		courseCard?: boolean;
+
+		/** Question de cours (Q110 b) : vérifie une connaissance ou la compréhension
+		 *  du cours. Marqueur d'intention, indépendant du type ; lu par
+		 *  `isCourseQuestion()` (une carte de cours l'est toujours). */
+		courseQuestion?: boolean;
 
 		/** Hypothèses de l'énoncé (ADR 0012) sur les variables libres de la
 		 *  réponse : `{ x: 'positive', n: 'natural' }`. Transmises à

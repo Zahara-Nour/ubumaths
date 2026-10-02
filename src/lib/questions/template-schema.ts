@@ -335,6 +335,8 @@ export const optionsSchema = z.object({
 	shuffleChoices: z.boolean().optional(),
 	// Carte de cours (#617) : recto = énoncé, verso = correction
 	courseCard: z.boolean().optional(),
+	// Question de cours (Q110 b) : marqueur d'intention, cf. `isCourseQuestion`
+	courseQuestion: z.boolean().optional(),
 	// Hypothèses de l'énoncé (ADR 0012) : validées, jamais transmises sans contrôle
 	answerAssumptions: answerAssumptionsSchema.optional()
 });
@@ -562,6 +564,7 @@ const optionsStrictZ = z
 		constraints: constraintsStrictZ.optional(),
 		shuffleChoices: z.boolean().optional(),
 		courseCard: z.boolean().optional(),
+		courseQuestion: z.boolean().optional(),
 		answerAssumptions: answerAssumptionsSchema.optional()
 	})
 	.strict();

@@ -31,7 +31,7 @@
 	 */
 
 	import type { PageData } from './$types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { getQuestionType, isCourseQuestion } from '$lib/questions/types';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { Button } from '$lib/components/ui/button';
@@ -108,6 +108,8 @@
 	let maxLevel = $state<number | undefined>(
 		initialData.filters.maxLevel ? parseInt(initialData.filters.maxLevel) : undefined
 	); // Maximum difficulty level
+	// Questions de cours seulement (Q110 b) : marqueur ou carte de cours
+	let onlyCourseQuestions = $state(initialData.filters.courseQuestion);
 	let sortField = $state<string>(initialData.sort || 'created_at'); // Sort column
 	let sortOrder = $state<'asc' | 'desc'>(initialData.order === 'asc' ? 'asc' : 'desc'); // Sort direction
 	let viewMode = $state<'table' | 'card'>('table'); // Display mode (persisted in localStorage)
@@ -335,6 +337,10 @@
 			params.set('maxLevel', maxLevel.toString());
 		}
 
+		if (onlyCourseQuestions) {
+			params.set('courseQuestion', '1');
+		}
+
 		if (searchTerm) {
 			params.set('search', searchTerm);
 		}
@@ -363,6 +369,7 @@
 		selectedSubdomain = 'all';
 		minLevel = undefined;
 		maxLevel = undefined;
+		onlyCourseQuestions = false;
 		searchTerm = '';
 		sortField = 'created_at';
 		sortOrder = 'desc';
@@ -779,7 +786,11 @@
 								</div>
 							</div>
 
-							<div></div>
+							<!-- Questions de cours (Q110 b) -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Intention</Label>
+								<MyCheckbox bind:checked={onlyCourseQuestions} label="Questions de cours" />
+							</div>
 						</div>
 
 						<!-- Actions row -->
@@ -912,6 +923,9 @@
 														<Badge class={getTypeBadgeClass(getQuestionType(template))}>
 															{getTypeLabel(getQuestionType(template))}
 														</Badge>
+														{#if isCourseQuestion(template)}
+															<Badge variant="outline" title="Question de cours">Cours</Badge>
+														{/if}
 														<Badge class="bg-warning/10 text-warning">Brouillon</Badge>
 														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
 														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
@@ -1116,6 +1130,9 @@
 														<Badge class={getTypeBadgeClass(getQuestionType(template))}>
 															{getTypeLabel(getQuestionType(template))}
 														</Badge>
+														{#if isCourseQuestion(template)}
+															<Badge variant="outline" title="Question de cours">Cours</Badge>
+														{/if}
 														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
 														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
 													</div>

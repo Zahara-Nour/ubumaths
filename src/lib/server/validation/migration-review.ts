@@ -142,6 +142,8 @@ export const editedQuestionTemplateSchema = z
 				constraints: z.record(z.string(), z.union([z.string(), z.boolean()])).optional(),
 				shuffleChoices: z.boolean().optional(),
 				orderIndependent: z.boolean().optional(),
+				// Question de cours (Q110 b) : booléen, pas laissé au passthrough
+				courseQuestion: z.boolean().optional(),
 				// Hypothèses de l'énoncé (ADR 0012) : validées, pas laissées au passthrough
 				answerAssumptions: answerAssumptionsSchema.optional()
 			})

@@ -33,6 +33,7 @@ import { skillAttemptInputSchema } from '$lib/server/validation/skill-attempts';
 import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { attemptSourceForTemplate } from '$lib/server/course-card-attempts';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
@@ -165,9 +166,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// ----- Auto-ajout au deck Programme si template tagué -----
-	// Jamais pour une carte de cours (décision 2026-09-28), ni pour un brouillon :
-	// la révision relit la carte avec les droits de l'élève, qui ne la voit pas.
-	if (pointIds.length > 0 && !isCard && templateRow.status === 'published') {
+	// Règle partagée (Q113) : jamais une question de cours (carte comprise), ni un
+	// brouillon — la révision relit la carte avec les droits de l'élève.
+	if (pointIds.length > 0 && entersProgrammeDeck(templateRow)) {
 		try {
 			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
 		} catch (progErr) {

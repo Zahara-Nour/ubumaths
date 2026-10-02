@@ -72,3 +72,33 @@ describe("PUT depuis l'éditeur", () => {
 		expect(db.updates[0]).toMatchObject({ description: null, options: null, test_specs: null });
 	});
 });
+
+// Question de cours (Q110 b) : le marqueur passe la validation Zod de la route
+// et est enregistré tel quel dans `options`.
+describe("PUT depuis l'éditeur : question de cours", () => {
+	it('options.courseQuestion coché → enregistré en base', async () => {
+		const db = fakeDb();
+		const response = await callPut(
+			db,
+			JSON.parse(
+				JSON.stringify(
+					toTemplatePutBody({
+						title: FIXTURE.title as string,
+						shared: FIXTURE.shared as never,
+						variations: FIXTURE.variations as never,
+						grades: FIXTURE.grades as never,
+						theme: FIXTURE.theme as string,
+						domain: FIXTURE.domain as string,
+						subdomain: FIXTURE.subdomain as string,
+						level: FIXTURE.level as number,
+						status: 'draft',
+						options: { courseQuestion: true }
+					})
+				)
+			)
+		);
+
+		expect(response.status).toBe(200);
+		expect(db.question_templates[0].options).toEqual({ courseQuestion: true });
+	});
+});

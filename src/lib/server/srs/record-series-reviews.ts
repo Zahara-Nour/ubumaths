@@ -12,8 +12,9 @@
  *   MEILLEUR résultat du jour (ADR 0016), trace `student_self`. Réponse corrigée
  *   par l'application (Entraînement, Course, évaluation) : révision ordinaire,
  *   trace `auto`.
- * - Modèle tagué à un point de programme → ajouté au paquet Programme, sauf les
- *   modèles de `neverInDeck` (cartes de cours, décision 2026-09-28).
+ * - Modèle tagué à un point de programme → ajouté au paquet Programme, sauf
+ *   question de cours ou brouillon (`entersProgrammeDeck`, Q113) et les modèles
+ *   de `neverInDeck` (cartes de cours lues par le serveur, décision 2026-09-28).
  *
  * Non bloquant : la séance est déjà enregistrée ; les échecs se journalisent.
  */
@@ -24,6 +25,7 @@ import { FSRS } from '$lib/srs/fsrs';
 import { Grade } from '$lib/srs/types';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 
 // Types
 export interface SeriesReview {
@@ -43,18 +45,22 @@ export async function recordSeriesReviews(
 	const label = options.logLabel ?? '[series-reviews]';
 	const templateIds = [...new Set(reviews.map((review) => review.templateId))];
 
-	// Quels modèles sont tagués à un point de programme ? Une requête pour le lot
+	// Quels modèles tagués à un point de programme peuvent entrer dans le paquet ?
+	// Une requête pour le lot : le modèle (options, statut) vient avec le lien.
+	// Règle partagée (Q113) : ni question de cours, ni brouillon (caché par la RLS).
 	const taggedTemplates = new Set<string>();
 	if (templateIds.length > 0) {
 		const { data: links, error: linksError } = await supabase
 			.from('question_template_points')
-			.select('template_id')
+			.select('template_id, question_templates(options, status)')
 			.in('template_id', templateIds);
 
 		if (linksError) {
 			console.error(`${label} question_template_points illisible :`, linksError);
 		} else {
-			for (const link of links ?? []) taggedTemplates.add(link.template_id);
+			for (const link of links ?? []) {
+				if (entersProgrammeDeck(link.question_templates)) taggedTemplates.add(link.template_id);
+			}
 		}
 	}
 

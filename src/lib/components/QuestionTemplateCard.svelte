@@ -5,7 +5,7 @@
 	Card view display for question templates in the admin list.
 
 	Features:
-	- Compact card layout with type badge
+	- Compact card layout with type badge (+ « Cours » for a course question)
 	- Statement preview (first text content)
 	- Grade level badges
 	- Created date display
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 	import type { QuestionTemplate } from '$lib/questions/types';
-	import { getQuestionType, QUESTION_TYPE_LABELS } from '$lib/questions/types';
+	import { getQuestionType, isCourseQuestion, QUESTION_TYPE_LABELS } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -105,9 +105,15 @@
 	<Card.Header class="space-y-3">
 		<!-- Type badge -->
 		<div class="flex items-start justify-between gap-2">
-			<Badge class={getTypeBadgeClass(getQuestionType(template))}>
-				{getTypeLabel(getQuestionType(template))}
-			</Badge>
+			<div class="flex flex-wrap gap-1">
+				<Badge class={getTypeBadgeClass(getQuestionType(template))}>
+					{getTypeLabel(getQuestionType(template))}
+				</Badge>
+				<!-- Question de cours (Q110 b) : carte de cours comprise -->
+				{#if isCourseQuestion(template)}
+					<Badge variant="outline" title="Question de cours">Cours</Badge>
+				{/if}
+			</div>
 			<span class="text-xs text-muted-foreground">
 				{new Date(template.created_at || new Date()).toLocaleDateString('fr-FR')}
 			</span>
