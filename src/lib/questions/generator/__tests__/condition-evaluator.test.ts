@@ -7,7 +7,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluateConditions } from '../condition-evaluator';
+import { evaluateConditions, evaluateConditionStrict } from '../condition-evaluator';
+import { resolveVariableConditionals } from '../content-resolver';
 import type { ResolvedVariable } from '$lib/ubumark/types/parameterization';
 
 /** Helper to create resolved variables from a name/value map */
@@ -137,8 +138,12 @@ describe('evaluateConditions', () => {
 	// Edge cases
 	// =========================================================================
 
-	it('invalid condition expression — returns false', () => {
-		expect(evaluateConditions(['invalid!!!syntax'], makeVars({ a: 3 }))).toBe(false);
+	// Une condition illisible est une faute de l'auteur, pas un tirage à rejeter :
+	// la rendre « fausse » épuisait les 100 essais sans dire pourquoi.
+	it('invalid condition expression — throws an explicit error', () => {
+		expect(() => evaluateConditions(['invalid!!!syntax'], makeVars({ a: 3 }))).toThrow(
+			/could not be parsed/
+		);
 	});
 
 	it('condition with unresolved variable in != — returns true (structural comparison)', () => {
@@ -185,6 +190,72 @@ describe('evaluateConditions', () => {
 		it('décimal à virgule dans des parenthèses de groupement, même dans un appel', () => {
 			// mod((2,5)*4,3) = mod(10,3) = 1
 			expect(evaluateConditions(['mod((2,5)*4,3)=1'], [])).toBe(true);
+		});
+	});
+
+	// =========================================================================
+	// Opérateurs d'égalité et de différence écrits à la manière d'un langage
+	// =========================================================================
+
+	describe('opérateurs « == », « != », « <> », « ≠ », « === »', () => {
+		it('a == 2 avec a = 2 → vrai ; avec a = 3 → faux', () => {
+			expect(evaluateConditions(['a == 2'], makeVars({ a: 2 }))).toBe(true);
+			expect(evaluateConditions(['a == 2'], makeVars({ a: 3 }))).toBe(false);
+		});
+
+		it('gcd(c,d) == 1 vaut gcd(c,d) = 1', () => {
+			expect(evaluateConditions(['gcd(c,d) == 1'], makeVars({ c: 4, d: 9 }))).toBe(true);
+			expect(evaluateConditions(['gcd(c,d) == 1'], makeVars({ c: 4, d: 6 }))).toBe(false);
+		});
+
+		it('a === 2 vaut a = 2', () => {
+			expect(evaluateConditions(['a === 2'], makeVars({ a: 2 }))).toBe(true);
+			expect(evaluateConditions(['a === 2'], makeVars({ a: 5 }))).toBe(false);
+		});
+
+		it('a <> b, a ≠ b et a !== b valent a != b', () => {
+			for (const cond of ['a <> b', 'a ≠ b', 'a !== b']) {
+				expect(evaluateConditions([cond], makeVars({ a: 2, b: 3 }))).toBe(true);
+				expect(evaluateConditions([cond], makeVars({ a: 3, b: 3 }))).toBe(false);
+			}
+		});
+
+		it('!(a == b) est la négation de a == b', () => {
+			expect(evaluateConditions(['!(a == b)'], makeVars({ a: 2, b: 3 }))).toBe(true);
+			expect(evaluateConditions(['!(a == b)'], makeVars({ a: 3, b: 3 }))).toBe(false);
+		});
+
+		it('!(a = b) entre parenthèses est évaluée (et non « faux » en silence)', () => {
+			expect(evaluateConditions(['!(a = b)'], makeVars({ a: 2, b: 3 }))).toBe(true);
+			expect(evaluateConditions(['!(a = b)'], makeVars({ a: 3, b: 3 }))).toBe(false);
+		});
+
+		it('a == 2 && b == 3 combine les deux égalités', () => {
+			expect(evaluateConditions(['a == 2 && b == 3'], makeVars({ a: 2, b: 3 }))).toBe(true);
+			expect(evaluateConditions(['a == 2 && b == 3'], makeVars({ a: 2, b: 4 }))).toBe(false);
+		});
+
+		it('<=, >= et != restent inchangés', () => {
+			expect(evaluateConditions(['a <= 2', 'b >= 3', 'a != b'], makeVars({ a: 2, b: 3 }))).toBe(
+				true
+			);
+			expect(evaluateConditions(['a <= 1'], makeVars({ a: 2 }))).toBe(false);
+		});
+
+		it('evaluateConditionStrict lit aussi ==', () => {
+			expect(evaluateConditionStrict('a == 2', makeVars({ a: 2 }))).toBe(true);
+			expect(evaluateConditionStrict('a == 2', makeVars({ a: 3 }))).toBe(false);
+		});
+
+		it('{{if:a==2|X|Y}} choisit la bonne branche', () => {
+			expect(resolveVariableConditionals('{{if:a==2|X|Y}}', makeVars({ a: 2 }))).toBe('X');
+			expect(resolveVariableConditionals('{{if:a==2|X|Y}}', makeVars({ a: 3 }))).toBe('Y');
+		});
+
+		it('opérateur inconnu (a =< 2) → erreur explicite', () => {
+			expect(() => evaluateConditions(['a =< 2'], makeVars({ a: 2 }))).toThrow(
+				/could not be parsed/
+			);
 		});
 	});
 });
