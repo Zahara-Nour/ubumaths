@@ -32,6 +32,12 @@
 		return `n = ${stats.count} · moyenne ${fr(stats.mean)}`;
 	}
 
+	/** L'aperçu d'une liste qualitative (Q84) : entrées et modalités, pas de moyenne */
+	function qualitativeSummary(categories: readonly string[]): string {
+		const distinct = new Set(categories).size;
+		return `liste qualitative · ${categories.length} entrée${categories.length > 1 ? 's' : ''} · ${distinct} modalité${distinct > 1 ? 's' : ''}`;
+	}
+
 	function edit(name: string, definition: string) {
 		atelier.update(name, definition);
 	}
@@ -65,7 +71,7 @@
 						<p class="probleme" id={`liste-${list.name}-apercu`}>{list.message}</p>
 					{:else}
 						<p class="apercu" id={`liste-${list.name}-apercu`}>
-							{summaryOf(list.values)}
+							{list.categories ? qualitativeSummary(list.categories) : summaryOf(list.values)}
 							{#if list.skipped > 0}
 								<span class="ecarte">· {skippedNote(list.skipped)}</span>
 							{/if}
@@ -74,7 +80,7 @@
 					<!-- Diagramme vivant (outils statistiques, Q36) : recalculé à chaque
 					     saisie, parce qu'il relit la liste au lieu d'en garder une copie -->
 					{#if shown}
-						{@const chart = listChart(atelier, list.name, shown.partner)}
+						{@const chart = listChart(atelier, list.name, shown.partner, shown.kind)}
 						{#if chart.ok}
 							<div class="diagramme">
 								<StatChart node={chart.node} />

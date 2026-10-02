@@ -16,7 +16,7 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS } from './types';
+import { MAX_LISTS, isList } from './types';
 import type {
 	AtelierObject,
 	MissingReference,
@@ -28,6 +28,7 @@ import type {
 import { validateName, nextName, nameRejectionMessage } from './names';
 import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
+import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
 
 // =============================================================================
@@ -136,6 +137,13 @@ const pendingMessage = (missing: readonly MissingReference[]) => {
 // Atelier
 // =============================================================================
 
+/** Le diagramme affiché sous une liste : partenaire des effectifs, genre (Q88) */
+export interface ListChartState {
+	readonly partner: string | null;
+	/** Absent = bâtons (v1) */
+	readonly kind?: ListChartKind;
+}
+
 export class Atelier {
 	/** Les objets, dans leur ordre de création. */
 	private items = $state<AtelierObject[]>([]);
@@ -159,7 +167,7 @@ export class Atelier {
 	 * touche ni à la sauvegarde ni au lien de partage. Il ne passe pas non plus
 	 * par `revision`, qui déclencherait un enregistrement pour rien.
 	 */
-	private charts = new SvelteMap<string, { partner: string | null }>();
+	private charts = new SvelteMap<string, ListChartState>();
 
 	/**
 	 * Liste partenaire choisie sur la carte d'une liste (Q46) : liste → partenaire.
@@ -216,7 +224,7 @@ export class Atelier {
 		if (input.name === undefined) {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
-			const cited = referencesOf(definition, provenance, this.functionNames).map((r) => r.name);
+			const cited = this.#cited(input.kind, definition, provenance).map((r) => r.name);
 			name = nextName(input.kind, this.names, cited);
 		} else {
 			const rejection = validateName(input.name, this.names);
@@ -233,6 +241,26 @@ export class Atelier {
 	// Renommage
 	// ---------------------------------------------------------------------------
 
+	/**
+	 * Les objets que cite une définition. ⚠️ Une LISTE n'en cite aucun : c'est
+	 * du texte brut. Lue comme une expression, `fille ; garçon` citait `fille`
+	 * et `garçon`, et la liste restait « en attente » d'objets inexistants (Q84).
+	 */
+	#cited(kind: AtelierObject['kind'], definition: string, provenance?: Provenance) {
+		return kind === 'list' ? [] : referencesOf(definition, provenance, this.functionNames);
+	}
+
+	/**
+	 * La définition après renommage. ⚠️ Une liste n'est JAMAIS réécrite (Q87) :
+	 * renommer un objet `A` changeait `A ; B ; A ; O`, une liste de groupes
+	 * sanguins.
+	 */
+	#renamedIn(object: AtelierObject, from: string, to: string): string {
+		return object.kind === 'list'
+			? object.definition
+			: renameInDefinition(object.definition, from, to);
+	}
+
 	rename(from: string, to: string): Renamed | Refused {
 		const index = this.items.findIndex((o) => o.name === from);
 		if (index === -1) return { ok: false, message: `« ${from} » n'existe pas.` };
@@ -247,7 +275,7 @@ export class Atelier {
 		this.items[index] = {
 			...this.items[index],
 			name: to,
-			definition: renameInDefinition(this.items[index].definition, from, to)
+			definition: this.#renamedIn(this.items[index], from, to)
 		} as AtelierObject;
 
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
@@ -256,7 +284,7 @@ export class Atelier {
 		const updated: string[] = [];
 		this.items.forEach((o, i) => {
 			if (o.name === to) return;
-			const rewritten = renameInDefinition(o.definition, from, to);
+			const rewritten = this.#renamedIn(o, from, to);
 			if (rewritten !== o.definition) {
 				this.items[i] = { ...o, definition: rewritten } as AtelierObject;
 				updated.push(o.name);
@@ -267,7 +295,7 @@ export class Atelier {
 		for (const [list, chart] of [...this.charts]) {
 			const partner = chart.partner === from ? to : chart.partner;
 			this.charts.delete(list);
-			this.charts.set(list === from ? to : list, { partner });
+			this.charts.set(list === from ? to : list, { ...chart, partner });
 		}
 		for (const [list, partner] of [...this.partnerChoices]) {
 			this.partnerChoices.delete(list);
@@ -331,8 +359,14 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/** Le diagramme affiché sous cette liste, s'il y en a un. */
-	chartOf(name: string): { partner: string | null } | undefined {
-		return this.charts.get(name);
+	chartOf(name: string): ListChartState | undefined {
+		const chart = this.charts.get(name);
+		if (chart?.kind === undefined) return chart;
+		// Une liste redevenue numérique n'a que des bâtons : un « circulaire »
+		// resté collé faisait mentir le bouton (revue)
+		const list = this.get(name);
+		const qualitative = list !== undefined && isList(list) && list.categories !== undefined;
+		return qualitative ? chart : { partner: chart.partner };
 	}
 
 	/**
@@ -341,12 +375,14 @@ export class Atelier {
 	 *
 	 * @returns le diagramme est-il affiché après le geste ?
 	 */
-	toggleChart(name: string, partner: string | null): boolean {
-		if (this.charts.get(name)?.partner === partner) {
+	toggleChart(name: string, partner: string | null, kind: ListChartKind = 'barres'): boolean {
+		const shown = this.chartOf(name);
+		if (shown?.partner === partner && (shown.kind ?? 'barres') === kind) {
 			this.charts.delete(name);
 			return false;
 		}
-		this.charts.set(name, { partner });
+		// Le genre n'est noté que pour un circulaire : les bâtons gardent leur forme v1
+		this.charts.set(name, { partner, ...(kind !== 'barres' && { kind }) });
 		return true;
 	}
 
@@ -450,9 +486,7 @@ export class Atelier {
 			.filter(
 				(o) =>
 					o.name !== name &&
-					referencesOf(o.definition, o.provenance, this.functionNames).some(
-						(ref) => ref.name === name
-					)
+					this.#cited(o.kind, o.definition, o.provenance).some((ref) => ref.name === name)
 			)
 			.map((o) => o.name);
 	}
@@ -504,7 +538,8 @@ export class Atelier {
 					...base,
 					kind: 'list',
 					values: parsed.values ?? [],
-					skipped: parsed.skipped ?? 0
+					skipped: parsed.skipped ?? 0,
+					...(parsed.categories && { categories: parsed.categories })
 				} satisfies ListObject;
 			case 'value': {
 				// Décision D4 : une grandeur n'est pas pilotable par un curseur.
@@ -572,7 +607,7 @@ export class Atelier {
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
-			const refs = referencesOf(o.definition, o.provenance, this.functionNames).filter(
+			const refs = this.#cited(o.kind, o.definition, o.provenance).filter(
 				(r) => !(r.name === o.name && o.kind === 'sequence')
 			);
 			deps.set(

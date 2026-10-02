@@ -120,6 +120,14 @@ function listsAndLaw(
 	}
 	const values = listNamed(atelier, valuesName)!;
 	const probabilities = listNamed(atelier, probabilitiesName)!;
+	// Une liste qualitative (Q88) : la raison du bouton, pas « 0 valeur(s) » (revue)
+	const words = [values, probabilities].find((list) => list.categories !== undefined);
+	if (words !== undefined) {
+		return {
+			ok: false,
+			message: `${words.name} contient des mots : action pour une liste de nombres.`
+		};
+	}
 	const law = lawFractions(values, probabilities);
 	if (!law.ok) return law;
 	return { ok: true, values, probabilities, law: [law.values, law.probabilities] };

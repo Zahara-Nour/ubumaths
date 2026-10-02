@@ -19,14 +19,16 @@ import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
-import { formatLawIndicators, formatSummary } from '$lib/statistics/format';
+import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
+import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { expressionOf } from './engine';
 import { syncPlots } from './plot-sync';
-import { isList, type ListObject } from './types';
+import { isList, isQualitative, type ListObject } from './types';
+import { wordsReason } from './actions';
 import { astOf } from './parse';
 import { lawFractions } from './simulate';
 import { nextName } from './names';
@@ -77,6 +79,9 @@ export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
 function fr(value: number): string {
 	return Number(value.toFixed(3)).toString().replace('.', ',');
 }
+
+/** Les actions qui exigent des listes de NOMBRES (Q88) */
+const NUMERIC_ROOTS: ReadonlySet<string> = new Set(['stats', 'law', 'scatter', 'fit', 'simulate']);
 
 /** Les actions que la vue Calcul sait exécuter, et leur libellé dans l'historique. */
 const PANEL_ACTIONS: Readonly<Record<string, string>> = {
@@ -223,6 +228,26 @@ export class CalcDesk {
 			label,
 			text: formatLawIndicators(name, outcome.value, 'fr').join('\n'),
 			failed: false
+		});
+	}
+
+	/** Les effectifs et fréquences des modalités d'une liste qualitative (Q88) */
+	#counts(name: string): void {
+		const list = this.#listNamed(name);
+		const categories = list?.categories ?? [];
+		const total = categories.length;
+		this.#push({
+			label: `Effectifs de ${name}`,
+			text:
+				total === 0
+					? `« ${name} » n'a pas encore de valeurs.`
+					: categoryCounts(categories)
+							.map(
+								({ label, count }) =>
+									`${label} : ${count} (${formatStatNumber(Number(((100 * count) / total).toFixed(1)), 'fr')} %)`
+							)
+							.join('\n'),
+			failed: total === 0
 		});
 	}
 
@@ -405,6 +430,20 @@ export class CalcDesk {
 		// boutons morts — le bloquant de la revue #339.
 		const [root, partner] = actionId.split(':');
 
+		// Une liste qualitative (Q88) ne se prête à aucune action numérique : le
+		// panneau les désactive, mais elles restent atteignables autrement — la
+		// raison du bouton plutôt qu'un « 0 valeur(s) » faux (revue)
+		if (NUMERIC_ROOTS.has(root) || (root === 'chart' && partner !== undefined)) {
+			const qualitative = [name, partner].find((n) => {
+				const list = n === undefined ? null : this.#listNamed(n);
+				return list !== null && isQualitative(list);
+			});
+			if (qualitative !== undefined) {
+				this.#push({ label: name, text: wordsReason(qualitative), failed: true });
+				return 'ok';
+			}
+		}
+
 		if (root === 'keep-derivative') {
 			this.#keepDerivative(name);
 			return 'ok';
@@ -422,6 +461,15 @@ export class CalcDesk {
 		}
 		if (root === 'chart') {
 			this.atelier.toggleChart(name, partner ?? null);
+			return 'ok';
+		}
+		// Liste qualitative (Q88) : diagramme circulaire des modalités, effectifs
+		if (root === 'pie') {
+			this.atelier.toggleChart(name, null, 'circulaire');
+			return 'ok';
+		}
+		if (root === 'counts') {
+			this.#counts(name);
 			return 'ok';
 		}
 		if (root === 'scatter') {

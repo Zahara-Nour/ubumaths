@@ -14,6 +14,7 @@
 
 import { z } from 'zod';
 import type { ObjectKind } from './types';
+import { MAX_DEFINITION_LENGTH } from './types';
 
 // =============================================================================
 // Constantes
@@ -50,7 +51,7 @@ const MAX_SERIALIZED_LENGTH = 500_000;
 const storedObjectSchema = z.object({
 	name: z.string().min(1).max(8),
 	kind: z.enum(['value', 'function', 'sequence', 'list']),
-	definition: z.string().max(4000),
+	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
 	plotted: z.boolean().optional()
 });

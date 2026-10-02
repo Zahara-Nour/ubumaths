@@ -73,7 +73,8 @@ describe('la vue Données', () => {
 	// §4 E1 : ignorée ET signalée
 	it('signale une valeur qui n’est pas un nombre', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'list', name: 'L', definition: '12 ; abc ; 9' });
+		// Q84 : sans lettre ; un mot rendrait la liste qualitative
+		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 1/0 ; 9' });
 
 		const { container } = await openData(atelier);
 
@@ -145,6 +146,25 @@ describe('diagramme d’une liste', () => {
 		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
 		expect(columnOf(container, 'M')?.querySelector('svg')).toBeNull();
 		expect(columnOf(container, 'L')?.querySelector('.stat-indicateurs')).not.toBeNull();
+	});
+
+	// Revue Q88 (B1) : « Diagramme circulaire » menait à la vue Calcul, rien affiché
+	it('« Diagramme circulaire » au CLIC : bascule sur Données, secteurs, annonce', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: 'fille ; garçon ; fille' });
+		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
+		await settle();
+		const live = () => container.querySelector('[data-annonce]')?.textContent?.trim();
+
+		selectCard(container, 'L');
+		await settle();
+		clickAction(container, 'Diagramme circulaire');
+		await settle();
+		await new Promise((r) => setTimeout(r, 50));
+
+		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Données');
+		expect(columnOf(container, 'L')?.querySelectorAll('.stat-secteur').length).toBe(2);
+		expect(live()).toBe('Diagramme de L affiché dans l’onglet Données.');
 	});
 
 	// Audit a11y du lot 5 (WCAG 4.1.3) : la bascule de vue et l'apparition du
@@ -245,5 +265,20 @@ describe('nuage avec une partenaire', () => {
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
+	});
+});
+
+// Outils statistiques v2, Q84-Q88 : une liste qualitative dans la vue Données
+describe('liste qualitative', () => {
+	it('aperçu « liste qualitative », et diagramme circulaire VISIBLE', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: 'fille ; garçon ; fille' });
+		atelier.toggleChart('L', null, 'circulaire');
+		const screen = await openData(atelier);
+
+		expect(screen.container.textContent).toContain('liste qualitative · 3 entrées · 2 modalités');
+		expect(screen.container.textContent).not.toContain('ignorée');
+		const sectors = screen.container.querySelectorAll('.stat-secteur');
+		expect(sectors.length).toBe(2);
 	});
 });

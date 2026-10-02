@@ -112,8 +112,9 @@ describe('création', () => {
 	});
 
 	// §4 E1 — une entrée non numérique est écartée ET signalée
+	// Q84 : une entrée SANS lettre qui ne se lit pas ; un mot rendrait la liste qualitative
 	it('écarte les entrées non numériques d’une liste en les comptant', () => {
-		const r = a.create({ kind: 'list', definition: '12 ; 15 ; abc ; 9' });
+		const r = a.create({ kind: 'list', definition: '12 ; 15 ; 1/0 ; 9' });
 		expect(r.ok).toBe(true);
 		if (!r.ok || !isList(r.object)) return;
 		expect(r.object.values).toEqual([12, 15, 9]);

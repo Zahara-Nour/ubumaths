@@ -129,6 +129,12 @@ export interface ListObject extends AtelierObjectBase {
 	readonly values: readonly number[];
 	/** Nombre d'entrées écartées, pour pouvoir le signaler (§4 E1). */
 	readonly skipped: number;
+	/**
+	 * Liste QUALITATIVE (Q84) : une modalité par entrée, dans l'ordre, chacune
+	 * écrite comme sa première occurrence (Q85). Absent pour une liste de
+	 * nombres ; `values` est alors vide.
+	 */
+	readonly categories?: readonly string[];
 }
 
 export type AtelierObject = ValueObject | FunctionObject | SequenceObject | ListObject;
@@ -146,6 +152,16 @@ export type AtelierObject = ValueObject | FunctionObject | SequenceObject | List
  */
 export const MAX_LIST_VALUES = 200;
 export const MAX_LISTS = 8;
+/**
+ * Longueur d'une définition rangée (sauvegarde, URL) : au-delà, la relecture
+ * l'écarte. Une liste plus longue est refusée À LA SAISIE — 200 modalités de
+ * 40 caractères étaient acceptées, puis perdues au rechargement (revue).
+ */
+export const MAX_DEFINITION_LENGTH = 4000;
+
+/** Liste qualitative (Q91) : modalités distinctes, longueur d'une modalité */
+export const MAX_CATEGORIES = 20;
+export const MAX_CATEGORY_LENGTH = 40;
 
 // =============================================================================
 // Gardes de type
@@ -165,4 +181,11 @@ export function isSequence(o: AtelierObject): o is SequenceObject {
 
 export function isList(o: AtelierObject): o is ListObject {
 	return o.kind === 'list';
+}
+
+/** Une liste qualitative (Q84) : ses entrées sont des modalités, pas des nombres. */
+export function isQualitative(
+	list: ListObject
+): list is ListObject & { categories: readonly string[] } {
+	return list.categories !== undefined;
 }

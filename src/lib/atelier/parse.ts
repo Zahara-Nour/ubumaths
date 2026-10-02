@@ -15,7 +15,12 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
-import { MAX_LIST_VALUES } from './types';
+import {
+	MAX_CATEGORIES,
+	MAX_CATEGORY_LENGTH,
+	MAX_DEFINITION_LENGTH,
+	MAX_LIST_VALUES
+} from './types';
 import type { MissingReference, ObjectKind } from './types';
 import { hasObjectNameShape } from './names';
 
@@ -159,6 +164,8 @@ export interface ParsedDefinition {
 	readonly values?: readonly number[];
 	/** Nombre d'entrées écartées, pour pouvoir le signaler. */
 	readonly skipped?: number;
+	/** Modalités d'une liste qualitative (Q84), une par entrée */
+	readonly categories?: readonly string[];
 }
 
 /** Une valeur purement numérique, sans unité ni expression. */
@@ -206,6 +213,38 @@ export function readListValue(raw: string): number | null {
 	return readNumber(text);
 }
 
+/** Un MOT (Q84) : au moins une lettre. `1/0` n'en est pas un, il reste « ignoré » (Q45). */
+const WORD = /\p{L}/u;
+
+/** La clé d'une modalité (Q85) : sans la casse ni les espaces autour, accents comptés */
+function categoryKey(entry: string): string {
+	return entry.trim().toLocaleLowerCase('fr');
+}
+
+/**
+ * Les entrées d'une liste qualitative, chacune écrite comme sa PREMIÈRE
+ * occurrence (Q85) — `Fille ; fille` donne deux fois `Fille` — ou le refus
+ * (Q91 : modalités trop nombreuses ou trop longues).
+ */
+function readCategories(entries: readonly string[]): { categories: string[] } | { error: string } {
+	const first = new Map<string, string>();
+	for (const entry of entries) {
+		if (entry.length > MAX_CATEGORY_LENGTH) {
+			return {
+				error: `« ${entry} » est trop longue : une modalité a au plus ${MAX_CATEGORY_LENGTH} caractères.`
+			};
+		}
+		const key = categoryKey(entry);
+		if (!first.has(key)) first.set(key, entry);
+	}
+	if (first.size > MAX_CATEGORIES) {
+		return {
+			error: `Une liste qualitative a au plus ${MAX_CATEGORIES} modalités (celle-ci en a ${first.size}).`
+		};
+	}
+	return { categories: entries.map((entry) => first.get(categoryKey(entry))!) };
+}
+
 /**
  * L'élève a-t-il séparé ses valeurs par des virgules ? Si oui, le message.
  *
@@ -235,7 +274,9 @@ function commaUsedAsSeparator(definition: string): string | null {
 		const allFractions = pieces.every(
 			(piece) => piece.includes('/') && readListValue(piece) !== null
 		);
-		if (pieces.length < 2 || !(allNumbers || allFractions)) continue;
+		// Des mots (Q86) : `fille, garçon` — jamais une écriture décimale
+		const allWords = pieces.every((piece) => piece !== '' && WORD.test(piece));
+		if (pieces.length < 2 || !(allNumbers || allFractions || allWords)) continue;
 
 		// Montrer la correction sur SA saisie, pas sur un exemple générique :
 		// l'élève voit ce qu'il aurait dû taper.
@@ -259,12 +300,38 @@ export function parseDefinition(
 	if (definition.trim() === '') return {};
 
 	if (kind === 'list') {
+		if (definition.length > MAX_DEFINITION_LENGTH) {
+			return {
+				values: [],
+				skipped: 0,
+				error: `Une liste ne peut pas dépasser ${MAX_DEFINITION_LENGTH} caractères (celle-ci en a ${definition.length}) : elle ne pourrait pas être enregistrée.`
+			};
+		}
 		const misused = commaUsedAsSeparator(definition);
 		if (misused !== null) {
 			return { values: [], skipped: 0, error: misused };
 		}
 
 		const parts = definition.split(';');
+
+		// Q84 : un mot, et toute la liste est qualitative
+		const entries = parts.map((part) => part.trim()).filter((part) => part !== '');
+		if (entries.some((entry) => WORD.test(entry))) {
+			if (entries.length > MAX_LIST_VALUES) {
+				return {
+					values: [],
+					skipped: 0,
+					error: `Une liste ne peut pas dépasser ${MAX_LIST_VALUES} valeurs (celle-ci en a ${entries.length}).`
+				};
+			}
+			const read = readCategories(entries);
+			// Refusée, elle reste QUALITATIVE (revue) : ses actions sont celles d'une
+			// liste de mots, désactivées, pas le catalogue numérique
+			return 'error' in read
+				? { values: [], skipped: 0, categories: entries, error: read.error }
+				: { values: [], skipped: 0, categories: read.categories };
+		}
+
 		const values: number[] = [];
 		let skipped = 0;
 		for (const part of parts) {
