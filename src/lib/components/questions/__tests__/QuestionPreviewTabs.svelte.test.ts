@@ -145,14 +145,14 @@ describe('QuestionPreviewTabs — onglets', () => {
 
 		// Carte de correction de fin de série (CorrectionCard)
 		await vi.waitFor(() => {
-			expect(findButton(activePanel(container), 'Voir la correction détaillée')).toBeDefined();
+			expect(findButton(activePanel(container), 'Voir la correction')).toBeDefined();
 		});
 		expect(activePanel(container).querySelector('.choice-button')).toBeNull();
 
 		await clickButton(activePanel(container), 'Recommencer');
 		const again = activePanel(container);
 		expect(again.querySelectorAll('.choice-button').length).toBe(2);
-		expect(findButton(again, 'Voir la correction détaillée')).toBeUndefined();
+		expect(findButton(again, 'Voir la correction')).toBeUndefined();
 	});
 
 	it('Flash-card : carte non interactive, retournable', async () => {
@@ -222,10 +222,9 @@ describe('QuestionPreviewTabs — erreurs d’auteur (Q48)', () => {
 		flushSync();
 		await clickButton(panel, 'Valider');
 		await vi.waitFor(() => {
-			expect(findButton(activePanel(container), 'Voir la correction détaillée')).toBeDefined();
+			expect(findButton(activePanel(container), 'Voir la correction')).toBeDefined();
 		});
-		// L'énoncé est replié sur la carte de correction
-		await clickButton(activePanel(container), "Voir l'énoncé");
+		// QCM : l'énoncé est affiché au recto de la carte de correction (lot 2)
 		const text = activePanel(container).textContent ?? '';
 		expect(text).toContain('Ligne 3');
 		expect(text).not.toContain('Figure indisponible');

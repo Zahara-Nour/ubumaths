@@ -29,6 +29,7 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
 	AttemptAlreadySubmittedError,
+	readSubmittedCopy,
 	startEvaluationAttempt,
 	submitEvaluationAttempt,
 	type AttemptActors,
@@ -43,7 +44,11 @@ import { EvaluationError } from '$lib/server/evaluations';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
 import { getQuestionType, type QuestionInstance } from '$lib/questions/types';
-import { gradeQuestion, type SubmittedAnswer } from '$lib/questions/grading';
+import {
+	gradeQuestion,
+	statusFromBlankStatuses,
+	type SubmittedAnswer
+} from '$lib/questions/grading';
 import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
@@ -443,6 +448,12 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			]);
 			// Corrections complètes APRÈS l'envoi, jamais la graine
 			expect(result.questions[0].instance.blanks?.[0].expectedAnswer).toBeTruthy();
+			// Lot 2 : statut de chaque case servi avec la copie, = statut de la note
+			expect(result.questions.map((q) => q.detail?.status)).toEqual([
+				'correct',
+				'incorrect',
+				'correct'
+			]);
 			expect(allKeys(JSON.parse(JSON.stringify(result))).has('seed')).toBe(false);
 
 			const session = await sessionRow(first.attemptId);
@@ -536,6 +547,25 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 			expect(await answersOf(first.attemptId)).toHaveLength(3);
 			expect(Number((await sessionRow(first.attemptId)).grade)).toBe(13.5);
+		});
+
+		it('lot 2 (Q102 a) : statut de chaque case recalculé à l’affichage, = statut enregistré', async () => {
+			const copy = await readSubmittedCopy(actors(student), first.attemptId);
+			expect(copy).not.toBeNull();
+			const questions = copy!.questions;
+			// Statut servi = statut enregistré (celui de la note)
+			expect(questions.map((q) => q.detail?.status)).toEqual(['correct', 'incorrect', 'correct']);
+			// Les cases recalculées redonnent ce statut (non-régression)
+			for (const q of questions.filter((x) => (x.instance.blanks?.length ?? 0) > 0)) {
+				expect(statusFromBlankStatuses(q.detail!.blanks.map((b) => b.status))).toBe(q.status);
+			}
+			// QCM : les choix cochés (indices d'origine) avec leur issue
+			expect(questions[2].detail?.choices?.filter((c) => c.checked).length).toBeGreaterThan(0);
+			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
+		});
+
+		it('lot 2 : la copie (et ses statuts) reste invisible d’un autre élève', async () => {
+			expect(await readSubmittedCopy(actors(classmate), first.attemptId)).toBeNull();
 		});
 
 		it('C13 : deuxième tentative (tout juste) → la MEILLEURE note, côté prof et côté élève', async () => {

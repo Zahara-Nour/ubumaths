@@ -134,7 +134,9 @@ describe('QCM mélangé en évaluation', () => {
 				}
 			}
 		});
-		const chosen = container.querySelector('.user-answer-section li');
+		// Résultat attendu (lot 2) : choix dans l'ordre AFFICHÉ, le coché marqué
+		const chosen = container.querySelectorAll('[data-kind="choices"] li')[position];
+		expect(chosen?.getAttribute('data-status')).toBe('incorrect');
 		const text = chosen?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 		expect(text.startsWith(choiceLetter(position))).toBe(true);
 		expect(text).toContain(clicked.content.replace(/\$/g, ''));

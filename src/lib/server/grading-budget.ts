@@ -58,13 +58,15 @@ function budgetExceededVerdict(): QuestionVerdict {
 /**
  * Corrige les questions dans l'ordre, dans la limite du budget.
  *
- * @returns un verdict par question (même ordre) et le nombre de questions
- *   répondues laissées sans correction faute de budget
+ * @returns un verdict par question (même ordre), le nombre de questions
+ *   répondues laissées sans correction faute de budget, et le temps RESTANT du
+ *   budget (≥ 0) : le travail qui suit dans la même requête (verdicts détaillés
+ *   de la copie servie) s'y tient, au lieu d'ouvrir un nouveau budget
  */
 export function gradeWithinBudget(
 	items: readonly GradingItem[],
 	budget: GradingBudget = {}
-): { verdicts: QuestionVerdict[]; skipped: number } {
+): { verdicts: QuestionVerdict[]; skipped: number; remainingMs: number } {
 	const budgetMs = budget.budgetMs ?? SUBMISSION_GRADING_BUDGET_MS;
 	const clock = budget.clock ?? (() => performance.now());
 	const grade = budget.grade ?? gradeQuestion;
@@ -79,5 +81,6 @@ export function gradeWithinBudget(
 		}
 		return grade(instance, answer);
 	});
-	return { verdicts, skipped };
+	const remainingMs = Math.max(0, budgetMs - (clock() - startedAt));
+	return { verdicts, skipped, remainingMs };
 }

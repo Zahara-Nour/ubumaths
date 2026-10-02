@@ -3,7 +3,8 @@
 	===========================
 	Fin d'une évaluation notée (chantier 5, E19) : la note sur 20 et « x/n
 	questions », puis la correction de chaque question avec SES points. Tout vient
-	du SERVEUR (verdict, points, note, corrections) : rien n'est recalculé ici.
+	du SERVEUR (verdict, points, note, corrections, statut de chaque case — lot 2
+	du résultat attendu) : rien n'est recalculé ici.
 
 	Props:
 	- result: EvaluationSubmitResponse - réponse de l'envoi
@@ -103,7 +104,12 @@
 					>
 						{pointsLabel(result.questions[index].points)}
 					</Badge>
-					<CorrectionCard {answerResult} questionNumber={index + 1} size="md" />
+					<CorrectionCard
+						{answerResult}
+						verdict={result.questions[index].detail}
+						questionNumber={index + 1}
+						size="md"
+					/>
 				</div>
 			{/each}
 		</div>

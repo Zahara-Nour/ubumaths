@@ -12,7 +12,7 @@ import type { ResolvedMarkdown } from '$lib/ubumark';
 function instance(expected: string): QuestionInstance {
 	return {
 		templateId: 't',
-		statement: `Combien ? $?$` as ResolvedMarkdown,
+		statement: `Combien ? $\\placeholder[0]{}$` as ResolvedMarkdown,
 		blanks: [{ expectedAnswer: expected, type: 'math' }],
 		grades: ['6'],
 		theme: 'T',
@@ -105,5 +105,29 @@ describe('EvaluationResults', () => {
 		const { container } = await renderInMain(response());
 		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 		expect(container.textContent).not.toContain('Recommencer');
+	});
+
+	it('lot 2 : le verdict détaillé du SERVEUR colore les cases (aucun recalcul)', async () => {
+		// Réponse juste en valeur ; le serveur l'a jugée « forme à améliorer »
+		const result = response();
+		result.questions[0] = {
+			...result.questions[0],
+			status: 'unoptimal_form',
+			points: 0.5,
+			isCorrect: false,
+			detail: {
+				status: 'unoptimal_form',
+				blanks: [
+					{ index: 0, status: 'unoptimal_form', remarks: ['Écris-le autrement.'], answer: '7' }
+				]
+			}
+		};
+		const { container } = await renderInMain(result);
+		const first = container.querySelectorAll('.flip-front')[0];
+		expect(first.querySelector('[data-testid="global-verdict"]')?.getAttribute('data-kind')).toBe(
+			'half'
+		);
+		expect(first.textContent).toContain('Écris-le autrement.');
+		expect(first.querySelector('code')).toBeNull();
 	});
 });

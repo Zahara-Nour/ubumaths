@@ -16,6 +16,7 @@ import {
 	gradeWithinBudget,
 	type GradingItem
 } from '../grading-budget';
+import { detailsWithinBudget } from '../corrected-detail';
 import { gradeOutOf20, gradeQuestion, type QuestionVerdict } from '$lib/questions/grading';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
@@ -162,6 +163,52 @@ describe('Q59 : budget de temps total de la correction d’un envoi', () => {
 		});
 		expect(verdicts[1]).toEqual({ status: 'empty', points: 0, isCorrect: false, partial: false });
 		expect(skipped).toBe(1);
+	});
+});
+
+describe('(3) recalcul détaillé à l’envoi : le temps RESTANT, pas un nouveau budget (audit lot 2)', () => {
+	it('le temps restant est rendu par la correction', () => {
+		let now = 0;
+		const grade = vi.fn(() => {
+			now += 3_000;
+			return right;
+		});
+		const one: GradingItem[] = [
+			{ instance: blanksInstance([math('1')]), answer: { values: ['1'] } }
+		];
+		expect(gradeWithinBudget(one, { clock: () => now, grade }).remainingMs).toBe(2_000);
+		// Budget dépassé par la question en cours : rien ne reste (jamais négatif)
+		const two: GradingItem[] = [...one, ...one];
+		now = 0;
+		expect(gradeWithinBudget(two, { clock: () => now, grade }).remainingMs).toBe(0);
+	});
+
+	it('budget épuisé par la correction : aucun recalcul détaillé (repli sans validation)', () => {
+		let now = 0;
+		const items: GradingItem[] = Array.from({ length: 3 }, () => ({
+			instance: blanksInstance([math('1')]),
+			answer: { values: ['1'] }
+		}));
+		const { verdicts, remainingMs } = gradeWithinBudget(items, {
+			clock: () => now,
+			grade: () => {
+				now += 2_000;
+				return right;
+			}
+		});
+		const validate = vi.fn();
+		const details = detailsWithinBudget(
+			items.map(({ instance, answer }, index) => ({
+				instance,
+				answer: answer && { values: answer.values },
+				status: verdicts[index].status,
+				feedback: verdicts[index].feedback
+			})),
+			{ clock: () => now, budgetMs: remainingMs, validate }
+		);
+		expect(remainingMs).toBe(0);
+		expect(validate).not.toHaveBeenCalled();
+		expect(details.map((d) => d.status)).toEqual(verdicts.map((v) => v.status));
 	});
 });
 
