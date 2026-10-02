@@ -7,9 +7,19 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
-import { buildStatChartScene, type BarScene, type PieScene } from '../../utils/stat-chart-scene';
+import {
+	buildStatChartScene,
+	PIE_MARKER_CM,
+	PIE_MARKER_PX,
+	PIE_MARKER_RADIUS,
+	STAT_CHART_ASPECT_RATIO,
+	type BarScene,
+	type PieScene
+} from '../../utils/stat-chart-scene';
 import * as statistics from '$lib/statistics/describe';
 import type { StatChartKind } from '../../types/stat-chart';
+import { COURBE_PIXEL_WIDTH } from '../../utils/courbe-scene';
+import { WIDTH_CM } from '../../generators/courbe-typst';
 import type { ContentLocale } from '$lib/types/locale';
 
 vi.mock('$lib/statistics/describe', async (importOriginal) => {
@@ -304,5 +314,135 @@ describe('titre et description accessibles', () => {
 
 	it('la description de l’auteur l’emporte', () => {
 		expect(bars('description: Peu de danse.\nA = 1').description).toBe('Peu de danse.');
+	});
+});
+
+// =============================================================================
+// Repères extérieurs de petits secteurs voisins (Q54)
+// =============================================================================
+
+describe('repères extérieurs : jamais l’un sur l’autre', () => {
+	const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+		Math.hypot(a.x - b.x, a.y - b.y);
+	/** Angle d'un point depuis midi, sens horaire, en degrés */
+	const clockAngle = (p: { x: number; y: number }) =>
+		((Math.atan2(p.x, p.y) * 180) / Math.PI + 360) % 360;
+	const outside = (scene: PieScene) => scene.sectors.filter((s) => s.leader !== null);
+	const onCircle = (degrees: number, radius: number) => ({
+		x: radius * Math.sin((degrees * Math.PI) / 180),
+		y: radius * Math.cos((degrees * Math.PI) / 180)
+	});
+
+	it('deux secteurs voisins de 2 % : écartés d’au moins un diamètre de repère', () => {
+		const [a, b] = outside(pie('A = 2\nB = 2\nC = 96'));
+
+		expect(distance(a.markerPosition, b.markerPosition)).toBeGreaterThanOrEqual(
+			2 * PIE_MARKER_RADIUS
+		);
+	});
+
+	it('chaque trait part du milieu de SON secteur, et finit sur son repère', () => {
+		for (const sector of outside(pie('A = 2\nB = 2\nC = 96'))) {
+			const middle = (sector.startAngle + sector.endAngle) / 2;
+			const leader = sector.leader!;
+			expect(leader[0].x).toBeCloseTo(onCircle(middle, 1).x, 9);
+			expect(leader[0].y).toBeCloseTo(onCircle(middle, 1).y, 9);
+			expect(leader.at(-1)).toEqual(sector.markerPosition);
+		}
+	});
+
+	/** Distance du centre au segment [p, q] */
+	const segmentDistance = (p: { x: number; y: number }, q: { x: number; y: number }) => {
+		const [dx, dy] = [q.x - p.x, q.y - p.y];
+		const t = Math.max(0, Math.min(1, -(p.x * dx + p.y * dy) / (dx * dx + dy * dy)));
+		return Math.hypot(p.x + t * dx, p.y + t * dy);
+	};
+
+	// Revue : un trait droit vers un repère très écarté coupait le disque
+	it('sept petits secteurs consécutifs : aucun trait n’entre dans le disque', () => {
+		const scene = pie('A = 1\nB = 1\nC = 1\nD = 1\nE = 1\nF = 1\nG = 1\nH = 93');
+		for (const sector of outside(scene)) {
+			const leader = sector.leader!;
+			for (let k = 1; k < leader.length; k++) {
+				expect(segmentDistance(leader[k - 1], leader[k])).toBeGreaterThanOrEqual(1 - 1e-9);
+			}
+		}
+	});
+
+	it('deux petits secteurs éloignés : aucun ne bouge', () => {
+		const scene = pie('A = 2\nB = 48\nC = 2\nD = 48');
+		for (const sector of outside(scene)) {
+			const middle = (sector.startAngle + sector.endAngle) / 2;
+			expect(sector.markerPosition.x).toBeCloseTo(onCircle(middle, 1.2).x, 9);
+			expect(sector.markerPosition.y).toBeCloseTo(onCircle(middle, 1.2).y, 9);
+		}
+	});
+
+	const noOverlap = (scene: PieScene) => {
+		const markers = outside(scene).map((s) => s.markerPosition);
+		for (let i = 0; i < markers.length; i++) {
+			for (let j = i + 1; j < markers.length; j++) {
+				expect(distance(markers[i], markers[j]), `${i}-${j}`).toBeGreaterThanOrEqual(
+					2 * PIE_MARKER_RADIUS
+				);
+			}
+		}
+	};
+
+	it('deux groupes qui se rejoignent une fois étalés : fusionnés, sans chevauchement', () => {
+		noOverlap(pie('A = 1\nB = 1\nC = 1\nD = 3\nE = 1\nF = 1\nG = 1\nH = 91'));
+	});
+
+	// Revue : un fuzz à 17 repères et plus trouvait des chevauchements à la
+	// jonction de midi ; un disque a au plus 12 catégories. Ce fuzz-là porte
+	// donc sur de VRAIS blocs : 2 à 12 catégories, beaucoup de petites.
+	it('fuzz : 3000 disques réels, ni chevauchement, ni trait dans le disque', () => {
+		let seed = 12345;
+		const random = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+		for (let run = 0; run < 3000; run++) {
+			const count = 2 + Math.floor(random() * 11);
+			const values = Array.from({ length: count }, () =>
+				random() < 0.7 ? 1 + Math.floor(random() * 4) : 1 + Math.floor(random() * 100)
+			);
+			const scene = pie(values.map((v, i) => `S${i + 1} = ${v}`).join('\n'));
+			noOverlap(scene);
+			for (const sector of outside(scene)) {
+				const leader = sector.leader!;
+				for (let k = 1; k < leader.length; k++) {
+					expect(segmentDistance(leader[k - 1], leader[k])).toBeGreaterThanOrEqual(1 - 1e-9);
+				}
+			}
+		}
+	});
+
+	// La constante couvre les DEUX rendus, à chaque taille (revue)
+	it('PIE_MARKER_RADIUS majore le repère de l’écran et du PDF, à chaque taille', () => {
+		for (const size of ['petite', 'moyenne', 'grande'] as const) {
+			const screen = PIE_MARKER_PX / ((COURBE_PIXEL_WIDTH[size] * STAT_CHART_ASPECT_RATIO) / 2);
+			const pdf = PIE_MARKER_CM / (WIDTH_CM[size] * 0.3);
+			expect(Math.max(screen, pdf), size).toBeLessThanOrEqual(PIE_MARKER_RADIUS);
+		}
+	});
+
+	it('cinq petits secteurs consécutifs : aucun chevauchement, ordre gardé', () => {
+		const markers = outside(pie('A = 1\nB = 1\nC = 1\nD = 1\nE = 1\nF = 95')).map(
+			(s) => s.markerPosition
+		);
+
+		expect(markers).toHaveLength(5);
+		for (let i = 0; i < markers.length; i++) {
+			for (let j = i + 1; j < markers.length; j++) {
+				expect(distance(markers[i], markers[j])).toBeGreaterThanOrEqual(2 * PIE_MARKER_RADIUS);
+			}
+		}
+		// L'ordre des secteurs, dans le sens horaire autour du groupe
+		const angles = markers.map(clockAngle).map((a) => (a > 180 ? a - 360 : a));
+		expect([...angles].sort((x, y) => x - y)).toEqual(angles);
+	});
+
+	it('petits secteurs de part et d’autre de midi : écartés aussi', () => {
+		const markers = outside(pie('A = 1\nB = 98\nC = 1')).map((s) => s.markerPosition);
+
+		expect(distance(markers[0], markers[1])).toBeGreaterThanOrEqual(2 * PIE_MARKER_RADIUS);
 	});
 });
