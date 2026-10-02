@@ -5,7 +5,8 @@
  * Outils statistiques v2, PR (c) (Q80-Q82, 2026-10-02). Les graphiques de
  * `.fréquence` et `.échantillons` se dessinent sous la ligne de la commande,
  * avec le même composant SVG que les blocs (`StatChart.svelte`), à partir
- * d'une scène construite ici. Aucun bloc ubumark ne les produit.
+ * d'une scène construite ici. Le bloc ```simulation (modes `moyenne` et
+ * `échantillons`, lot 3) les reprend.
  *
  * @module ubumark/utils/simulation-scene
  */
@@ -73,8 +74,18 @@ function grouped(value: number, locale: ContentLocale = 'fr'): string {
 }
 
 /** Un réel arrondi au millième, écrit selon la langue */
-function rounded(value: number, locale: ContentLocale): string {
-	return formatTick(Number(value.toFixed(3)), locale);
+function rounded(value: number, locale: ContentLocale, decimals = 3): string {
+	// `Math.round`, pas `toFixed` : 3,5875 donnait 3,587 (revue)
+	const factor = 10 ** decimals;
+	return formatTick(Math.round(value * factor) / factor, locale);
+}
+
+/**
+ * Décimales des bornes : au moins trois, assez pour que deux bornes voisines
+ * restent distinctes quand l'amplitude est minuscule (σ = 0,005, revue).
+ */
+function boundDecimals(width: number): number {
+	return Math.min(10, Math.max(3, Math.ceil(-Math.log10(width)) + 1));
 }
 
 /** Une borne de classe sans bruit flottant (3,3299999 → 3,33) */
@@ -116,6 +127,7 @@ export function buildSampleMeansScene(
 		return margin > 0 && t > 1e-9 ? Math.ceil(t - 1e-9) - 1 : Math.floor(t + 1e-9);
 	};
 
+	const decimals = boundDecimals(width);
 	const first = Math.min(...means.map(indexOf));
 	const last = Math.max(...means.map(indexOf));
 	const counts = new Array<number>(last - first + 1).fill(0);
@@ -130,7 +142,7 @@ export function buildSampleMeansScene(
 		// Bornes au millième : μ ± k·σ/√n n'est presque jamais décimal, et
 		// « 2,53390821692 » rendait l'axe illisible (fiche compilée, lot 3 PR b)
 		return {
-			label: `${opening}${rounded(lower, locale)} ; ${rounded(upper, locale)}${closing}`,
+			label: `${opening}${rounded(lower, locale, decimals)} ; ${rounded(upper, locale, decimals)}${closing}`,
 			value: count,
 			interval: { lower, upper },
 			line: i + 1
@@ -168,7 +180,10 @@ export function buildSampleMeansScene(
 			: lower <= mu && mu < upper;
 	return {
 		...scene,
-		xTicks: scene.xTicks.map((tick) => ({ ...tick, label: rounded(tick.value, locale) })),
+		xTicks: scene.xTicks.map((tick) => ({
+			...tick,
+			label: rounded(tick.value, locale, decimals)
+		})),
 		rects: scene.rects.map((rect) => ({ ...rect, highlighted: inside(rect.lower, rect.upper) }))
 	};
 }

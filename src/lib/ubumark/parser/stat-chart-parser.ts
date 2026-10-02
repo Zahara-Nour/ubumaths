@@ -414,7 +414,9 @@ function parseIndicators(raw: string): StatChartIndicator[] {
 function applyOption(kind: StatChartKind, key: OptionKey, value: string, options: Options): void {
 	const allowed = OPTION_KINDS[key];
 	if (allowed !== undefined && !allowed.includes(kind)) {
-		const names = allowed.map((k) => KIND_NAME[k]).join(', ');
+		// `taille:` d'une simulation est celle d'un échantillon, pas d'une figure
+		const shown = key === 'taille' ? FIGURE_KINDS : allowed;
+		const names = shown.map((k) => KIND_NAME[k]).join(', ');
 		throw new LineError(
 			`l'option « ${key} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${names})`
 		);
@@ -439,6 +441,11 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 		}
 		case 'taille':
 			if (kind === 'simulation') {
+				if ((COURBE_SIZES as readonly string[]).includes(normalizeKey(value.trim()))) {
+					throw new LineError(
+						'taille : celle d’un échantillon (mode échantillons), pas de la figure'
+					);
+				}
 				options.sampleSize = parseWhole(
 					value,
 					1,

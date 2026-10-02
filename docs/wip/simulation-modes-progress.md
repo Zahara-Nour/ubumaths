@@ -11,4 +11,5 @@ Spec validée par David le 2026-10-02.
 - [x] Vu sur la fiche compilée : bornes de classes au millième (« 2,53390821692 » illisible, aussi
       dans l'atelier), milliers « 1,000 » et axe « Count » en anglais
 - [x] Cas frère de #671 : `.simuler` arrondissait aussi 3/80 en 0,037 (atelier) — corrigé, preuve rouge
-- [ ] Revue, PR, CI, merge
+- [x] Revue : arrondi `Math.round` aussi pour les moyennes et les bornes ; bornes distinctes si amplitude minuscule ; `taille: grande` expliqué ; message `taille` des autres blocs sans « simulations »
+- [ ] PR, CI, merge

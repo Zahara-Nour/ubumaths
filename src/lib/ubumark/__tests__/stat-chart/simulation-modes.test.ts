@@ -110,6 +110,25 @@ describe('modes — erreurs situées', () => {
 
 	it('taille reste la taille de la figure pour les autres blocs', () => {
 		expect(parseStatChartContent('barres', 'A = 1\ntaille: grande').spec?.size).toBe('grande');
+		// Le refus ne cite pas les simulations : elles n'ont pas de taille de figure
+		const refused = parseStatChartContent(
+			'tableau-croise',
+			'lignes: A\ncolonnes: B\ntaille: grande'
+		);
+		expect(refused.errors[0].message).not.toMatch(/simulations/);
+	});
+
+	it('`taille: grande` dans une simulation : pas une taille de figure', () => {
+		expect(errorOf(`${DIE}\ntaille: grande`)).toBe(
+			'Ligne 3 : taille : celle d’un échantillon (mode échantillons), pas de la figure'
+		);
+	});
+
+	it('échantillons avant le mode : lu, puis contrôlé', () => {
+		expect(specOf(`${DIE}\néchantillons: 30\nmode: échantillons`).simulation!.samples).toBe(30);
+		expect(errorOf(`${DIE}\néchantillons: 30\nmode: tirages`)).toBe(
+			'Ligne 3 : échantillons : seulement en mode échantillons'
+		);
 	});
 });
 
@@ -140,6 +159,30 @@ describe('mode moyenne — scène', () => {
 			/^moyenne des 600 tirages : \d,\d{1,3} ; espérance E\(X\) = 7\/2$/
 		);
 		expect(scene.indicators[1]).toBe('graine 42');
+	});
+
+	it('moyenne affichée au millième juste sur un demi (somme impaire sur 80 tirages)', () => {
+		// Somme s impaire : s/80 finit par 5 au dix-millième, toFixed arrondissait mal
+		const found = Array.from({ length: 200 }, (_, g) => g)
+			.map((g) => {
+				const outcome = simulateRunningMean(
+					DIE_LAW.values,
+					DIE_LAW.probabilities,
+					80,
+					createRandomSource(g)
+				);
+				if (!outcome.ok) throw new Error(outcome.message);
+				return { g, sum: Math.round(outcome.value.means[79] * 80) };
+			})
+			.find(
+				({ sum }) => sum % 2 === 1 && (sum / 80).toFixed(3) !== String((25 * sum + 1) / 2 / 1000)
+			);
+		expect(found, 'aucune graine ne donne le cas').toBeDefined();
+		const { g, sum } = found!;
+		const expected = String((25 * sum + 1) / 2 / 1000).replace('.', ',');
+		const scene = meanScene(`${DIE}\nmode: moyenne\ntirages: 80\ngraine: ${g}`);
+
+		expect(scene.indicators[0]).toContain(`moyenne des 80 tirages : ${expected} ;`);
 	});
 
 	it('titre de l’auteur ; textes anglais dans un document anglais', () => {
@@ -192,6 +235,13 @@ describe('mode échantillons — scène', () => {
 		);
 	});
 
+	it('amplitude minuscule : des bornes voisines restent distinctes', () => {
+		const scene = samplesScene('X = 0 ; 0,01\nP = 1/2 ; 1/2\nmode: échantillons\ntaille: 100');
+		const labels = scene.xTicks.map((t) => t.label);
+
+		expect(new Set(labels).size).toBe(labels.length);
+	});
+
 	it('bornes des classes au millième : l’axe reste lisible', () => {
 		const scene = samplesScene(SOURCE);
 
@@ -232,6 +282,7 @@ describe('modes — Typst', () => {
 		const fills = [...typst.matchAll(/rect\([^\n]*fill: ([^,]+),/g)].map((m) => m[1]);
 
 		expect(fills).toHaveLength(scene.rects.length);
+		expect(fills).toContain('luma(150)');
 		scene.rects.forEach((rect, i) => {
 			expect(fills[i] === 'luma(150)', `classe ${rect.label}`).toBe(rect.highlighted === false);
 		});

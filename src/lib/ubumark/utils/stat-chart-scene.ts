@@ -1106,7 +1106,8 @@ function groupedCount(value: number, locale: ContentLocale): string {
 
 /** Un réel au millième, écrit selon la langue (moyennes, σ, marge) */
 function thousandth(value: number, locale: ContentLocale): string {
-	return formatStatNumber(Number(value.toFixed(3)), locale);
+	// `Math.round`, pas `toFixed` : 287/80 = 3,5875 donnait 3,587 (revue)
+	return formatStatNumber(Math.round(value * 1000) / 1000, locale);
 }
 
 /** Ligne écrite sous la figure : la graine qui refait les mêmes tirages */
