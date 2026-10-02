@@ -73,7 +73,8 @@ export type ExpectedLine =
 	/** R3 : « Ta réponse : » — l'énoncé rempli par les cases de l'élève */
 	| { kind: 'your-answer'; markdown: string; fills: ExpectedFill[] }
 	/** R5 */
-	| { kind: 'choices'; choices: ExpectedChoice[] }
+	/** `multiple` : QCM à plusieurs réponses (case ☐ / ☑), sinon réponse unique (rond ○ / ●) */
+	| { kind: 'choices'; multiple: boolean; choices: ExpectedChoice[] }
 	/** R2 : remarque de forme, rattachée à sa case */
 	| { kind: 'remark'; index: number | null; text: string }
 	/** R8/R10 : réponse attendue seule (case graphique, ou introuvable dans l'énoncé) */
@@ -372,6 +373,7 @@ function choiceLines(
 	const lines: ExpectedLine[] = [
 		{
 			kind: 'choices',
+			multiple: instance.multipleAnswers === true,
 			choices: order.flatMap((originalIndex) => {
 				const choice = choices[originalIndex];
 				if (!choice) return [];

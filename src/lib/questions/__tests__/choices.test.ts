@@ -81,7 +81,9 @@ describe('validateAnswer — la lettre de la correction désigne la position AFF
 	});
 
 	it('QCM à réponses multiples : lettres affichées, dans l’ordre', () => {
-		const result = validateAnswer([0], {
+		// Un mauvais choix coché (1) : la correction nomme les bons. Un choix juste
+		// seul vaudrait ½ (« Il manque des réponses. », V3 du chantier 2)
+		const result = validateAnswer([1], {
 			...shuffledInstance,
 			correctChoiceIndex: ['0', '3'],
 			multipleAnswers: true

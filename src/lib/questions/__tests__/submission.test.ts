@@ -43,6 +43,12 @@ describe('toSubmission', () => {
 		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
 	});
 
+	it('QCM à plusieurs réponses (V5) : tous les choix cochés, sans doublon', () => {
+		const submission = toSubmission([0], [data([2, 0, 2, 3])]);
+		expect(submission.answers[0].choices).toEqual([2, 0, 3]);
+		expect(submitAttemptSchema.safeParse(submission).success).toBe(true);
+	});
+
 	it('plus de 500 questions : les 500 premières (le reste compte vide côté serveur)', () => {
 		const positions = Array.from({ length: 520 }, (_, i) => i);
 		const submission = toSubmission(

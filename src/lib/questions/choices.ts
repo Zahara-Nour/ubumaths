@@ -13,7 +13,7 @@
  * @module questions/choices
  */
 
-import type { QuestionInstance } from './types';
+import type { QuestionInstance, ValidationStatus } from './types';
 
 type ChoiceInstance = Pick<QuestionInstance, 'shuffledChoices' | 'correctChoiceIndex'>;
 
@@ -68,4 +68,25 @@ export function isDisplayedChoiceCorrect(
 	const [originalIndex] = toOriginalChoiceIndexes(instance, [displayedPosition]);
 	if (originalIndex === undefined) return false;
 	return correctOriginalChoiceIndexes(instance).includes(originalIndex);
+}
+
+/**
+ * Statut d'un QCM (A4, barème Q101), indices d'ORIGINE : rien coché → empty ;
+ * un mauvais coché → incorrect ; exactement les bons → correct ; des bons
+ * seulement, mais pas tous → unoptimal_form (½).
+ *
+ * Seule source de vérité : la note du serveur (`gradeQuestion`) et la validation
+ * du navigateur (`validateChoice`) passent toutes deux par ici (V4).
+ */
+export function statusFromChoices(
+	selected: readonly number[],
+	correct: readonly number[]
+): ValidationStatus {
+	const chosen = new Set(selected);
+	if (chosen.size === 0) return 'empty';
+	const good = new Set(correct);
+	for (const index of chosen) {
+		if (!good.has(index)) return 'incorrect';
+	}
+	return chosen.size === good.size ? 'correct' : 'unoptimal_form';
 }

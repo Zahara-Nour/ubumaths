@@ -207,6 +207,14 @@ describe('submitAttemptSchema (C10)', () => {
 		expect(result.success).toBe(true);
 	});
 
+	it('QCM à plusieurs réponses (V5) : plusieurs choix cochés, dans le désordre', () => {
+		const result = submitAttemptSchema.safeParse({
+			answers: [{ position: 0, choices: [3, 0, 2] }]
+		});
+		expect(result.success).toBe(true);
+		if (result.success) expect(result.data.answers[0].choices).toEqual([3, 0, 2]);
+	});
+
 	it('retire tout verdict envoyé par le navigateur', () => {
 		const result = submitAttemptSchema.safeParse({
 			answers: [
@@ -243,6 +251,11 @@ describe('submitAttemptSchema (C10)', () => {
 		['trop de cases', { answers: [{ position: 0, values: Array(51).fill('1') }] }],
 		['indice de QCM hors bornes', { answers: [{ position: 0, choices: [50] }] }],
 		['indice de QCM non entier', { answers: [{ position: 0, choices: [0.5] }] }],
+		['même choix coché deux fois (V5)', { answers: [{ position: 0, choices: [1, 1] }] }],
+		[
+			'trop de choix cochés',
+			{ answers: [{ position: 0, choices: Array.from({ length: 51 }, (_, i) => i) }] }
+		],
 		['temps négatif', { answers: [{ position: 0, timeSpent: -1 }] }],
 		['temps fabriqué', { answers: [{ position: 0, timeSpent: 86_401 }] }],
 		['trop de réponses', { answers: Array.from({ length: 501 }, (_, i) => ({ position: i })) }]

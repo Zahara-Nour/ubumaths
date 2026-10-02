@@ -50,6 +50,7 @@ import {
 	type SubmittedAnswer
 } from '$lib/questions/grading';
 import { isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import { submitAttemptSchema } from '$lib/server/validation/evaluations';
 import {
 	GRADING_BUDGET_EXCEEDED_FEEDBACK,
 	SUBMISSION_GRADING_BUDGET_MS
@@ -70,9 +71,12 @@ const SERVICE_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 const QCM_ID = '0a11f0e0-0000-4000-8000-00000000e601';
 const FILL_ID = '0a11f0e0-0000-4000-8000-00000000e602';
+/** QCM à plusieurs réponses (chantier 2, V5) : bonnes réponses 0 et 2 sur 4 */
+const MULTI_ID = '0a11f0e0-0000-4000-8000-00000000e603';
 const THEME = 'ZZ Éval serveur';
 const FILL_CATEGORY = { theme: THEME, domain: 'Moitié', subdomain: 'Entiers', level: 1 };
 const QCM_CATEGORY = { theme: THEME, domain: 'Comparer', subdomain: 'Relatifs', level: 1 };
+const MULTI_CATEGORY = { theme: THEME, domain: 'Plusieurs', subdomain: 'Pairs', level: 1 };
 const CATEGORIES = [
 	{ category: FILL_CATEGORY, quantity: 2, delay: 20 },
 	{ category: QCM_CATEGORY, quantity: 1, delay: 15 }
@@ -200,7 +204,7 @@ async function oracle(attemptId: string): Promise<QuestionInstance[]> {
 	const { data: templates } = await service
 		.from('question_templates')
 		.select('*')
-		.in('id', [QCM_ID, FILL_ID]);
+		.in('id', [QCM_ID, FILL_ID, MULTI_ID]);
 	const byId = new Map(
 		(templates as QuestionTemplateRow[]).map((t) => [t.id, toQuestionTemplate(t)])
 	);
@@ -312,7 +316,7 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 
 	afterAll(async () => {
 		await cleanupAllTestData();
-		await service.from('question_templates').delete().in('id', [QCM_ID, FILL_ID]);
+		await service.from('question_templates').delete().in('id', [QCM_ID, FILL_ID, MULTI_ID]);
 	});
 
 	describe('Entraînement : démarrer → reprendre → envoyer (×2)', () => {
@@ -883,5 +887,105 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 		expect(error?.code).toBe('23503');
 		await service.from('test_sessions').delete().eq('id', session!.id);
 		await service.from('question_templates').delete().eq('id', template!.id);
+	});
+
+	describe('QCM à plusieurs réponses (chantier 2, V5) : barème de bout en bout', () => {
+		let multiStudent: Person;
+		let assignmentId: string;
+
+		/** Positions AFFICHÉES de ces indices d'origine */
+		function positionsOf(instance: QuestionInstance, originals: number[]): number[] {
+			return originals.map((o) =>
+				(instance.shuffledChoices ?? []).findIndex((c) => c.originalIndex === o)
+			);
+		}
+
+		beforeAll(async () => {
+			multiStudent = await person('student');
+			const { error: memberError } = await service
+				.from('class_members')
+				.insert({ class_id: classId, student_id: multiStudent.id, status: 'active' });
+			expect(memberError, 'décor : inscription').toBeNull();
+
+			await service.from('question_templates').delete().eq('id', MULTI_ID);
+			const { error } = await service.from('question_templates').insert({
+				id: MULTI_ID,
+				type: 'multiple_choice',
+				title: 'Pairs ZZ éval serveur',
+				...MULTI_CATEGORY,
+				grades: ['6'],
+				status: 'published',
+				multiple_answers: true,
+				variations: [
+					{
+						statement: 'Quels nombres sont pairs ?',
+						choices: [
+							{ content: '$4$', isCorrect: true },
+							{ content: '$7$', isCorrect: false },
+							{ content: '$10$', isCorrect: true },
+							{ content: '$13$', isCorrect: false }
+						],
+						correctChoiceIndex: ['0', '2']
+					}
+				]
+			});
+			expect(error, 'décor : modèle à plusieurs réponses').toBeNull();
+
+			({ assignmentId } = await createEvaluation({
+				max_attempts: 3,
+				categories: [{ category: MULTI_CATEGORY, quantity: 1, delay: 20 }]
+			}));
+		}, 60_000);
+
+		async function submitChoices(originals: number[]) {
+			const attempt = await start(multiStudent, assignmentId);
+			expect(attempt.questions[0]).toMatchObject({
+				type: 'multiple_choice',
+				multipleAnswers: true
+			});
+			const [instance] = await oracle(attempt.attemptId);
+			// Corps de l'envoi passé par le schéma Zod de la route : plusieurs choix acceptés
+			const body = submitAttemptSchema.parse({
+				answers: [{ position: 0, choices: positionsOf(instance, originals) }]
+			});
+			const result = await submitEvaluationAttempt(actors(multiStudent), attempt.attemptId, body);
+			const [row] = await answersOf(attempt.attemptId);
+			return { result, row };
+		}
+
+		it('toutes les bonnes, aucune mauvaise → 1 point, 20/20', async () => {
+			const { result, row } = await submitChoices([0, 2]);
+			expect(result.questions[0]).toMatchObject({ status: 'correct', points: 1 });
+			expect(result.grade).toBe(20);
+			expect([Number(row.points), row.status, row.is_correct]).toEqual([1, 'correct', true]);
+		});
+
+		it('une partie des bonnes, sans mauvaise → ½ point, 10/20, « à revoir »', async () => {
+			const { result, row } = await submitChoices([2]);
+			expect(result.questions[0]).toMatchObject({ status: 'unoptimal_form', points: 0.5 });
+			expect(result.grade).toBe(10);
+			expect([Number(row.points), row.status, row.is_correct]).toEqual([
+				0.5,
+				'unoptimal_form',
+				false
+			]);
+		});
+
+		it('une mauvaise cochée, même avec toutes les bonnes → 0', async () => {
+			const { result, row } = await submitChoices([0, 1, 2]);
+			expect(result.questions[0]).toMatchObject({ status: 'incorrect', points: 0 });
+			expect(result.grade).toBe(0);
+			expect([Number(row.points), row.status, row.is_correct]).toEqual([0, 'incorrect', false]);
+		});
+
+		it('SRS : seul le QCM complet est « su » (le ½ partiel est à revoir, Q40)', async () => {
+			const { data: traces } = await service
+				.from('skill_attempts')
+				.select('success')
+				.eq('student_id', multiStudent.id)
+				.eq('template_id', MULTI_ID);
+			expect(traces).toHaveLength(3);
+			expect(traces!.filter((t) => t.success)).toHaveLength(1);
+		});
 	});
 });

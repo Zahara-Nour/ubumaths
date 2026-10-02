@@ -14,6 +14,8 @@
 	- blanks: TemplateBlank[] (bindable, for fill-in-blanks)
 	- choices: { content: TemplateMarkdown; isCorrect: boolean }[] (bindable, for QCM)
 	- multipleAnswers: boolean (bindable, for QCM)
+	- shuffleChoices: boolean (bindable, for QCM) — `false` après le préréglage
+	  « Vrai / Faux » (Q106 : jamais mélangé)
 -->
 
 <script lang="ts">
@@ -24,8 +26,9 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
+	import MyCheckbox from './MyCheckbox.svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { Plus, Trash2 } from '@lucide/svelte';
 
 	interface Props {
@@ -34,15 +37,44 @@
 		blanks?: TemplateBlank[];
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
+		shuffleChoices?: boolean;
 	}
+
+	// Constantes
+	/** Préréglage « Vrai / Faux » (V7) : un QCM ordinaire à deux choix */
+	const TRUE_FALSE_CONTENTS = ['Vrai', 'Faux'];
 
 	let {
 		questionType,
 		answer = $bindable(),
 		blanks = $bindable([]),
 		choices = $bindable([]),
-		multipleAnswers = $bindable()
+		multipleAnswers = $bindable(),
+		shuffleChoices = $bindable()
 	}: Props = $props();
+
+	// Plusieurs éditeurs sur la page (partagé + variations) : un groupe radio chacun
+	const uid = $props.id();
+
+	let trueFalseConfirmOpen = $state(false);
+
+	// Choix déjà écrits : le préréglage les effacerait
+	let writtenChoices = $derived(
+		(choices ?? []).map((c) => c.content.trim()).filter((content) => content.length > 0)
+	);
+
+	// Nombre de bonnes réponses (V1) : signalé au plus près des choix ; le refus
+	// d'enregistrer vit dans `choiceAnswerCountErrors` (formulaire et serveur)
+	let correctCount = $derived((choices ?? []).filter((c) => c.isCorrect).length);
+	let answerCountWarning = $derived(
+		correctCount === 0
+			? multipleAnswers
+				? 'Coche au moins une bonne réponse.'
+				: 'Coche la bonne réponse.'
+			: correctCount > 1 && !multipleAnswers
+				? 'Une seule bonne réponse sans « plusieurs réponses ».'
+				: ''
+	);
 
 	// Initialize fields based on question type
 	$effect(() => {
@@ -81,6 +113,37 @@
 			if (!hasCorrectChoice && choices.length > 0) {
 				choices[0].isCorrect = true;
 			}
+		}
+	}
+
+	// QCM : préréglage « Vrai / Faux » (V7) — aucune bonne réponse cochée : à
+	// l'auteur de cocher la bonne ; jamais mélangé (Q106)
+	function applyTrueFalse() {
+		choices = TRUE_FALSE_CONTENTS.map((content) => ({
+			content: templateMarkdown(content),
+			isCorrect: false
+		}));
+		multipleAnswers = false;
+		shuffleChoices = false;
+	}
+
+	function requestTrueFalse() {
+		if (writtenChoices.length > 0) {
+			trueFalseConfirmOpen = true;
+		} else {
+			applyTrueFalse();
+		}
+	}
+
+	// « Plusieurs réponses » décoché : on garde la première bonne réponse
+	function handleMultipleAnswersChange(checked: boolean) {
+		multipleAnswers = checked;
+		if (!checked) {
+			const firstCorrectIndex = choices.findIndex((c) => c.isCorrect);
+			choices = choices.map((c, i) => ({
+				...c,
+				isCorrect: firstCorrectIndex >= 0 && i === firstCorrectIndex
+			}));
 		}
 	}
 
@@ -193,24 +256,16 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				<!-- Multiple answers toggle -->
-				<div class="flex items-center gap-2">
-					<Checkbox
-						id="multiple-answers"
-						checked={multipleAnswers}
-						onCheckedChange={(checked) => {
-							multipleAnswers = checked as boolean;
-							// When switching to single answer mode, keep only first correct choice
-							if (!multipleAnswers) {
-								const firstCorrectIndex = choices.findIndex((c) => c.isCorrect);
-								choices = choices.map((c, i) => ({
-									...c,
-									isCorrect: i === (firstCorrectIndex >= 0 ? firstCorrectIndex : 0)
-								}));
-							}
-						}}
+				<!-- Plusieurs réponses + préréglage Vrai / Faux -->
+				<div class="flex flex-wrap items-center justify-between gap-2">
+					<MyCheckbox
+						checked={multipleAnswers ?? false}
+						onchange={handleMultipleAnswersChange}
+						label="Autoriser plusieurs réponses correctes"
 					/>
-					<Label for="multiple-answers">Autoriser plusieurs réponses correctes</Label>
+					<Button variant="outline" size="sm" type="button" onclick={requestTrueFalse}>
+						Vrai / Faux
+					</Button>
 				</div>
 
 				<!-- Choices -->
@@ -221,17 +276,19 @@
 								<!-- Correct answer checkbox/radio -->
 								<div class="flex items-center pt-8">
 									{#if multipleAnswers}
-										<Checkbox
-											checked={choice.isCorrect}
-											onCheckedChange={() => toggleChoiceCorrect(index)}
+										<MyCheckbox
+											checked={choice.isCorrect ?? false}
+											onchange={() => toggleChoiceCorrect(index)}
+											aria-label="Choix {String.fromCharCode(65 + index)} : bonne réponse"
 										/>
 									{:else}
 										<input
 											type="radio"
-											name="correct-answer"
+											name="correct-answer-{uid}"
 											value={index}
-											checked={choice.isCorrect}
+											checked={choice.isCorrect ?? false}
 											onchange={() => toggleChoiceCorrect(index)}
+											aria-label="Choix {String.fromCharCode(65 + index)} : bonne réponse"
 											class="h-4 w-4"
 										/>
 									{/if}
@@ -317,10 +374,28 @@
 					Ajouter un choix
 				</Button>
 
+				{#if answerCountWarning}
+					<p role="alert" class="text-sm text-destructive">{answerCountWarning}</p>
+				{/if}
+
 				<p class="text-xs text-muted-foreground">
-					Les choix seront mélangés aléatoirement lors de la génération d'instances
+					{shuffleChoices === false
+						? 'Les choix seront affichés dans cet ordre (pas de mélange).'
+						: "Les choix seront mélangés aléatoirement lors de la génération d'instances"}
 				</p>
 			</Card.Content>
 		</Card.Root>
 	{/if}
 </div>
+
+<ConfirmDialog
+	bind:open={trueFalseConfirmOpen}
+	title="Remplacer les choix par Vrai / Faux ?"
+	description="Les choix actuels ({writtenChoices.join(
+		' ; '
+	)}) seront remplacés par « Vrai » et « Faux »."
+	confirmLabel="Remplacer"
+	cancelLabel="Annuler"
+	variant="default"
+	onConfirm={applyTrueFalse}
+/>

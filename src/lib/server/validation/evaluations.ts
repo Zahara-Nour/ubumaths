@@ -223,6 +223,8 @@ const submittedAnswerSchema = z.object({
 				.max(MAX_ANSWER_PARTS - 1)
 		)
 		.max(MAX_ANSWER_PARTS)
+		// QCM à plusieurs réponses (V5) : chaque choix coché une seule fois
+		.refine((choices) => new Set(choices).size === choices.length, 'Un choix est coché deux fois')
 		.optional(),
 	timeSpent: z.number().int().min(0).max(MAX_SECONDS).optional()
 });

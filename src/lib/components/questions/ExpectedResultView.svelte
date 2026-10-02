@@ -20,7 +20,16 @@
 	Couleurs : variables `--expected-*` posées ici, à partir des tokens.
 -->
 <script lang="ts">
-	import { Check, X, TriangleAlert, Info } from '@lucide/svelte';
+	import {
+		Check,
+		X,
+		TriangleAlert,
+		Info,
+		Circle,
+		CircleDot,
+		Square,
+		SquareCheck
+	} from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { choiceLetter } from '$lib/questions/choices';
@@ -138,7 +147,26 @@
 				{#each line.choices as choice, position (choice.originalIndex)}
 					<li class="choice {toneClass(choice.status)}" data-status={choice.status}>
 						<span class="font-semibold">{choiceLetter(position)}</span>
-						<span class="choice-box" aria-hidden="true">{choice.checked ? '☑' : '☐'}</span>
+						<!-- Même indicateur que la saisie (Q109 a) : case si plusieurs réponses, rond sinon -->
+						{#if line.multiple}
+							{#if choice.checked}
+								<SquareCheck
+									class="choice-box h-4 w-4"
+									aria-hidden="true"
+									data-indicator="square-check"
+								/>
+							{:else}
+								<Square class="choice-box h-4 w-4" aria-hidden="true" data-indicator="square" />
+							{/if}
+						{:else if choice.checked}
+							<CircleDot
+								class="choice-box h-4 w-4"
+								aria-hidden="true"
+								data-indicator="circle-dot"
+							/>
+						{:else}
+							<Circle class="choice-box h-4 w-4" aria-hidden="true" data-indicator="circle" />
+						{/if}
 						<span class="min-w-0 flex-1"><InlineMarkdown content={choice.content} /></span>
 						{#if choiceLabel(choice)}
 							<span class="status-tag {toneClass(choice.status)}">{choiceLabel(choice)}</span>
@@ -270,7 +298,8 @@
 		border-style: dashed;
 	}
 
-	.choice-box {
+	:global(.choice-box) {
+		flex-shrink: 0;
 		color: var(--color-muted-foreground);
 	}
 
