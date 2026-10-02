@@ -169,9 +169,11 @@ Toujours vrai :
   texte brut (`-cos(x)+2sin(x)`) et les bonnes réponses sont refusées ; `{{eval:cos(p*pi/d)}}`
   n'est pas calculé. Écrire l'expression avec des coefficients tirés, ou une variation par valeur.
 - **Pas d'opérateur ternaire** dans `eval` (`a>0?1:3` → « Unexpected token ») : `2-a/abs(a)`.
-- **Bloc ```trig** : `equation:` ne lit pas `cos(pi/5)` ; les solutions sont étiquetées dans
-  [0 ; 2π[ (−π/6 devient « 11π/6 ») → pour un intervalle d'étude ]−π ; π], marquer les angles avec
-  `preset: custom` + `angles:` dans la bonne convention.
+- **Bloc ```trig** : les étiquettes sont écrites dans [0 ; 2π[ par défaut (−π/6 devient
+  « 11π/6 ») ; pour un intervalle d'étude ]−π ; π], ajouter `mesures: principales` (preset,
+  `angles:`, solutions et bornes étiquetées ; les points ne bougent pas). `equation:` lit une valeur
+  non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`. Une borne
+  d'arc n'est étiquetée que si elle figure dans le preset ou `angles:`.
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
   comme un tirage) : une variation par cas.
