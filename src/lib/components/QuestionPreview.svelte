@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 
 	interface Props {
@@ -57,7 +58,8 @@
 		if (instance.correction.feedback?.correct) {
 			parts.push(instance.correction.feedback.correct);
 		}
-		return parts.join('\n\n');
+		// Version détaillée sans interrupteur (ADR 0017, lot 2 à venir) : jamais de marqueur brut
+		return detailedCorrection(parts.join('\n\n'));
 	});
 
 	// FlashCard configuration

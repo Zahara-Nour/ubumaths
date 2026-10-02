@@ -13,6 +13,8 @@
  * @module ubumark/types/ast
  */
 
+import type { CalloutKind, DetailKind } from '../utils/detail-kinds';
+
 // ============================================================================
 // BASE NODE
 // ============================================================================
@@ -39,6 +41,8 @@ export interface TextNode extends BaseNode {
 	code?: boolean;
 	strikethrough?: boolean;
 	highlight?: boolean;
+	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
+	detail?: DetailKind;
 }
 
 /**
@@ -52,6 +56,8 @@ export interface MathInlineNode extends BaseNode {
 	syntax: 'latex' | 'custom';
 	/** If this node represents a named expression (convention: variable starting with "expression") */
 	expressionName?: string;
+	/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
+	detail?: DetailKind;
 }
 
 /**
@@ -494,6 +500,8 @@ export interface HorizontalRuleNode extends BaseNode {
 export interface BlockquoteNode extends BaseNode {
 	type: 'blockquote';
 	children: BlockNode[]; // Can contain paragraphs, lists, nested blockquotes
+	/** Encadré typé `> [!méthode]` (ADR 0017) ; absent pour une citation ordinaire */
+	callout?: CalloutKind;
 }
 
 /**

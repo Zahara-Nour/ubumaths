@@ -21,6 +21,7 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import MathInline from './nodes/MathInline.svelte';
 	import TextNode from './nodes/TextNode.svelte';
+	import { inlineDetailClass } from './detail-styles';
 	import { sanitizeUrl } from '$lib/utils/sanitize';
 
 	interface Props {
@@ -76,7 +77,15 @@
 				bold={child.bold}
 				italic={child.italic}
 				code={child.code}
+				detail={child.detail}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
+		{:else if child.type === 'math-inline' && child.detail}
+			<!-- Formule d'un détail en ligne `[…]{.rappel}` (ADR 0017) -->
+			<span class={inlineDetailClass(child.detail)}>
+				{#key child.expression}
+					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+				{/key}
+			</span>
 		{:else if child.type === 'math-inline'}
 			{#key child.expression}
 				<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />

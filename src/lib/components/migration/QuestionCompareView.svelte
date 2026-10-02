@@ -16,6 +16,7 @@
 	 */
 
 	import * as Card from '$lib/components/ui/card';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -987,7 +988,7 @@
 								{#if inst.correction.steps && inst.correction.steps.length > 0}
 									<ol class="list-inside list-decimal space-y-1 text-sm">
 										{#each inst.correction.steps as step, si (si)}
-											<li>{step}</li>
+											<li>{detailedCorrection(step)}</li>
 										{/each}
 									</ol>
 								{/if}

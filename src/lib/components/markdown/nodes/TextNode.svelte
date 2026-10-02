@@ -14,12 +14,16 @@
 -->
 <script lang="ts">
 	import { escapeHtml } from '../utils';
+	import type { DetailKind } from '$lib/ubumark';
+	import { inlineDetailClass } from '../detail-styles';
 
 	interface Props {
 		content: string;
 		bold?: boolean;
 		italic?: boolean;
 		code?: boolean;
+		/** Détail de correction en ligne `[texte]{.rappel}` (ADR 0017) */
+		detail?: DetailKind;
 		class?: string;
 	}
 
@@ -28,8 +32,11 @@
 		bold = false,
 		italic = false,
 		code = false,
-		class: className = ''
+		detail,
+		class: rawClassName = ''
 	}: Props = $props();
+
+	let className = $derived(`${rawClassName} ${inlineDetailClass(detail)}`.trim());
 
 	// Escape content for safe rendering
 	let escapedContent = $derived(escapeHtml(content));
