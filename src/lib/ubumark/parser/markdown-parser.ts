@@ -1548,6 +1548,37 @@ function textWithUnclosedBlocks(
 	];
 }
 
+/**
+ * Le motif des blocs de code a-t-il pris pour fermé un bloc ```courbe /
+ * ```figure / statistique que la règle du premier niveau (Q47) dirait NON
+ * fermé ? Le motif saute un ```python intermédiaire jusqu'au ``` suivant :
+ * le bloc avalait alors le code (Q52).
+ *
+ * Les lignes ne sont PAS rognées : une ligne en retrait continue une
+ * instruction pour `bodyOpensParagraph`. Un écart avec `textWithUnclosedBlocks`
+ * (qui rogne) penche donc toujours vers « fermé », l'ancien comportement.
+ */
+function swallowsForeignBlock(
+	opener: string,
+	code: string,
+	placeholders: MathPlaceholder[]
+): boolean {
+	const lines = [
+		opener,
+		...code.split('\n').map((line) => restoreMathPlaceholders(line, placeholders)),
+		'```'
+	];
+	const ranges = isCourbeBlockStart(opener)
+		? findCourbeBlocks(lines)
+		: isFigureBlockStart(opener)
+			? findFigureBlocks(lines)
+			: isStatChartBlockStart(opener) !== null
+				? findStatChartBlocks(lines)
+				: null;
+	if (ranges === null) return false;
+	return !(ranges[0]?.closed && ranges[0].endIndex === lines.length - 1);
+}
+
 function parseContentWithCodeBlocks(
 	content: string,
 	placeholders: MathPlaceholder[],
@@ -1567,6 +1598,14 @@ function parseContentWithCodeBlocks(
 	codeBlockRegex.lastIndex = 0;
 
 	while ((match = codeBlockRegex.exec(content)) !== null) {
+		// Bloc non fermé (Q52) : la ligne d'ouverture reste dans le texte, où
+		// `textWithUnclosedBlocks` la lit, et la recherche reprend juste après
+		const opener = match[1] + match[2];
+		if (swallowsForeignBlock(opener, match[3], placeholders)) {
+			codeBlockRegex.lastIndex = match.index + opener.length;
+			continue;
+		}
+
 		// Add paragraph for content before this code block
 		if (match.index > lastIndex) {
 			blocks.push(
