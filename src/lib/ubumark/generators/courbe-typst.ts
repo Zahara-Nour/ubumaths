@@ -172,6 +172,19 @@ export function generateCourbeTypst(node: CourbeNode, options: CourbeTypstOption
 		}
 	}
 
+	// Tangentes : droite en pointillés (couleur de la courbe) et point de contact
+	for (const t of scene.tangents) {
+		const color = TYPST_COLORS[t.color];
+		for (const poly of t.line) {
+			lines.push(`  // tangente ${t.functionName}`);
+			lines.push(
+				`  line(${path(poly)}, stroke: (paint: ${color}, thickness: 0.8pt, dash: "dashed"))`
+			);
+		}
+		lines.push(`  // contact ${t.functionName}`);
+		lines.push(`  circle(${P(t.point)}, radius: 0.05, fill: ${color}, stroke: none)`);
+	}
+
 	// Bornes du domaine
 	for (const e of scene.endpoints) {
 		const color = TYPST_COLORS[e.color];

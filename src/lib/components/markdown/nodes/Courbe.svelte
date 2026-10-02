@@ -255,6 +255,24 @@
 				{/if}
 			{/each}
 
+			<!-- Tangentes : droite en pointillés, point de contact -->
+			{#each scene.tangents as t, k (k)}
+				{#each t.line as poly, i (i)}
+					<polyline
+						class="courbe-tangente"
+						points={pointsAttr(poly)}
+						style:stroke={COLOR_VAR[t.color]}
+					/>
+				{/each}
+				<circle
+					class="courbe-contact"
+					cx={sx(t.point.x)}
+					cy={sy(t.point.y)}
+					r="3"
+					style:fill={COLOR_VAR[t.color]}
+				/>
+			{/each}
+
 			<!-- Bornes du domaine : disque plein (incluse) ou vide (exclue) -->
 			{#each scene.endpoints as e, i (i)}
 				<circle
@@ -409,6 +427,12 @@
 	.courbe-rang {
 		font-size: 11px;
 		font-style: italic;
+	}
+
+	.courbe-tangente {
+		fill: none;
+		stroke-width: 1.4;
+		stroke-dasharray: 6 4;
 	}
 
 	.courbe-borne {
