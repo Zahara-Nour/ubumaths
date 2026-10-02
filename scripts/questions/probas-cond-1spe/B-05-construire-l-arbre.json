@@ -1,0 +1,243 @@
+{
+	"title": "Construire un arbre pondéré à partir d'un énoncé",
+	"description": "Traduire un énoncé en pourcentages par un arbre pondéré, puis calculer une probabilité totale",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 5,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une usine fabrique des pièces sur deux machines, A et B. {{eval:10*k}} % des pièces viennent de la machine A, les autres de la machine B. {{da}} % des pièces fabriquées par A sont défectueuses, contre {{db}} % de celles fabriquées par B.\n\nOn prend une pièce au hasard. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que la pièce soit défectueuse, en fraction irréductible.\n\n$P(D)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				},
+				{
+					"name": "da",
+					"expression": "1..9"
+				},
+				{
+					"name": "db",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["k != 5", "da != db"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k*da+(10-k)*db)/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé : $P(A)=0.{{k}}$, $P(B)=0.{{eval:10-k}}$, $P_A(D)=0.0{{da}}$ et $P_B(D)=0.0{{db}}$. D'où l'arbre :\n\n```probtree\nA:0.{{k}}\n  D:0.0{{da}}\n  \\overline{D}:0.9{{eval:10-da}}\nB:0.{{eval:10-k}}\n  D:0.0{{db}}\n  \\overline{D}:0.9{{eval:10-db}}\n```",
+					"$A$ et $B$ forment une partition de l'univers : $P(D)=P(A\\cap D)+P(B\\cap D)$.",
+					"$P(D)=0.{{k}}\\times0.0{{da}}+0.{{eval:10-k}}\\times0.0{{db}}={{eval:k*da/1000}}+{{eval:(10-k)*db/1000}}={{eval:(k*da+(10-k)*db)/1000}}$"
+				]
+			}
+		},
+		{
+			"statement": "Avant un contrôle, {{eval:10*k}} % des élèves d'un lycée ont révisé. Parmi ceux qui ont révisé, {{eval:10*m}} % obtiennent la moyenne ; parmi les autres, seulement {{eval:10*n}} %.\n\nOn choisit un élève au hasard. On note $R$ l'événement « l'élève a révisé » et $M$ l'événement « l'élève obtient la moyenne ».\n\nConstruis un arbre pondéré qui décrit la situation, puis calcule la probabilité que l'élève obtienne la moyenne, en fraction irréductible.\n\n$P(M)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..8"
+				},
+				{
+					"name": "m",
+					"expression": "5..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["k != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(k*m+(10-k)*n)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé : $P(R)=0.{{k}}$, $P(\\overline{R})=0.{{eval:10-k}}$, $P_R(M)=0.{{m}}$ et $P_{\\overline{R}}(M)=0.{{n}}$. D'où l'arbre :\n\n```probtree\nR:0.{{k}}\n  M:0.{{m}}\n  \\overline{M}:0.{{eval:10-m}}\n\\overline{R}:0.{{eval:10-k}}\n  M:0.{{n}}\n  \\overline{M}:0.{{eval:10-n}}\n```",
+					"$R$ et $\\overline{R}$ forment une partition de l'univers : $P(M)=P(R\\cap M)+P(\\overline{R}\\cap M)$.",
+					"$P(M)=0.{{k}}\\times0.{{m}}+0.{{eval:10-k}}\\times0.{{n}}={{eval:k*m/100}}+{{eval:(10-k)*n/100}}={{eval:(k*m+(10-k)*n)/100}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 0,3 × 0,05 + 0,7 × 0,02 = 29/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["\\frac{29}{1\\,000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : 29/1000 sans l'espace des milliers (règle des espaces coupée sur ce modèle, décision de David du 2026-10-02)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["\\frac{29}{1000}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimal exact 0,029 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["0.029"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentage 2,9 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["2.9\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : une seule machine, P(A∩D) = 0,015",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["0.015"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : taux additionnés (0,07)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["\\frac{7}{100}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : moyenne des taux sans pondérer (0,035)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"da": "5",
+				"db": "2"
+			},
+			"answers": ["0.035"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : 0,7 × 0,8 + 0,3 × 0,3 = 13/20",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "8",
+				"n": "3"
+			},
+			"answers": ["\\frac{13}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : décimal exact 0,65 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "8",
+				"n": "3"
+			},
+			"answers": ["0.65"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage 65 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "8",
+				"n": "3"
+			},
+			"answers": ["65\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : une seule branche, P(R∩M) = 0,56",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "8",
+				"n": "3"
+			},
+			"answers": ["0.56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_R(M) prise pour P(M) (0,8)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"m": "8",
+				"n": "3"
+			},
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

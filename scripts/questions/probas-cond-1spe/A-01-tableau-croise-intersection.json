@@ -1,0 +1,256 @@
+{
+	"title": "Tableau croisé : intersection et probabilité d'un événement",
+	"description": "Lire dans un tableau d'effectifs à double entrée la probabilité d'une intersection et d'un événement (total de ligne ou de colonne)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Tableaux croisés",
+	"level": 1,
+	"status": "draft",
+	"delay": 40,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=?$\n\n$P(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..60"
+				},
+				{
+					"name": "b",
+					"expression": "4..60"
+				},
+				{
+					"name": "c",
+					"expression": "4..60"
+				},
+				{
+					"name": "d",
+					"expression": "4..60"
+				}
+			],
+			"conditions": ["gcd(a,a+b+c+d) > 1", "gcd(a+b,a+b+c+d) > 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/(a+b+c+d)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(a+b)/(a+b+c+d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque élève a la même probabilité d'être choisi : on divise un effectif par l'effectif total ${{eval:a+b+c+d}}$.",
+					"$A\\cap B$ : l'élève pratique un sport **et** joue d'un instrument (ligne $A$, colonne $B$). $P(A\\cap B)=\\dfrac{ {{a}} }{ {{eval:a+b+c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:a/(a+b+c+d)}} }$.",
+					"$A$ : total de la ligne $A$. $P(A)=\\dfrac{ {{eval:a+b}} }{ {{eval:a+b+c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:(a+b)/(a+b+c+d)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=?$\n\n$P(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..60"
+				},
+				{
+					"name": "b",
+					"expression": "4..60"
+				},
+				{
+					"name": "c",
+					"expression": "4..60"
+				},
+				{
+					"name": "d",
+					"expression": "4..60"
+				}
+			],
+			"conditions": ["gcd(c,a+b+c+d) > 1", "gcd(a+c,a+b+c+d) > 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/(a+b+c+d)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(a+c)/(a+b+c+d)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque salarié a la même probabilité d'être choisi : on divise un effectif par l'effectif total ${{eval:a+b+c+d}}$.",
+					"$\\overline{A}\\cap B$ : le salarié ne vient pas en transports en commun **et** habite en ville (ligne $\\overline{A}$, colonne $B$). $P(\\overline{A}\\cap B)=\\dfrac{ {{c}} }{ {{eval:a+b+c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:c/(a+b+c+d)}} }$.",
+					"$B$ : total de la colonne $B$. $P(B)=\\dfrac{ {{eval:a+c}} }{ {{eval:a+b+c+d}} }=\\textcolor{{{color:primary.0}}}{{{eval:(a+c)/(a+b+c+d)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 12/100 et 40/100 → 3/25 et 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{2}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimaux exacts 0,12 et 0,4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["0,12", "0,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : P(A∩B) pris pour P_A(B) = 12/40",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P(A) = 40, effectif au lieu de probabilité",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}", "40"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : P(A) en pourcentage 40 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}", "40\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : 12/100 non simplifiée (accepté avec avertissement)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{12}{100}", "\\frac{2}{5}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : 18/100 et 30/100 → 9/50 et 3/10",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{9}{50}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimaux 0,18 et 0,3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["0,18", "0,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : mauvais dénominateur, total de ligne 18/60",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{10}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P(A∩B) au lieu de P(Ā∩B)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["\\frac{3}{25}", "\\frac{3}{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 18 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "28",
+				"c": "18",
+				"d": "42"
+			},
+			"answers": ["18\\%", "\\frac{3}{10}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

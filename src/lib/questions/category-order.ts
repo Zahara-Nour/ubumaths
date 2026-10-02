@@ -183,7 +183,13 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 	},
 	{
 		theme: 'Probabilités',
-		domains: [{ domain: 'Apprivoiser', subdomains: ['Probabilité simple', 'Fréquences'] }]
+		domains: [
+			{ domain: 'Apprivoiser', subdomains: ['Probabilité simple', 'Fréquences'] },
+			{
+				domain: 'Probabilités conditionnelles',
+				subdomains: ['Tableaux croisés', 'Arbres pondérés', 'Indépendance', 'Problèmes en contexte']
+			}
+		]
 	},
 	{
 		theme: 'Proportionnalité',

@@ -1,0 +1,424 @@
+{
+	"title": "Test de dépistage",
+	"description": "Prévalence, sensibilité et spécificité données en pourcentages : probabilité d'un test positif (probabilités totales, valeur exacte) puis probabilité d'être malade (ou sain) sachant le test positif, arrondie au centième",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"status": "draft",
+	"subdomain": "Problèmes en contexte",
+	"level": 1,
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans une population, ${{p}}\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez ${{s}}\\,\\%$ des personnes malades et négatif chez ${{t}}\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P(T)=?$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|3|4|5|8|10|12|15|20"
+				},
+				{
+					"name": "s",
+					"expression": "80..99"
+				},
+				{
+					"name": "t",
+					"expression": "85..99"
+				}
+			],
+			"conditions": [
+				"abs(100*p*s/(p*s+(100-p)*(100-t))-round(100*p*s/(p*s+(100-p)*(100-t)))) < 0.49",
+				"mod(round(100*p*s/(p*s+(100-p)*(100-t))), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p*s+(100-p)*(100-t))/10000}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*p*s/(p*s+(100-p)*(100-t)))/100;d}}",
+					"acceptDecimal": false,
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré (un test négatif chez une personne saine a la probabilité ${{eval:t/100;d}}$, donc un test positif chez une personne saine a la probabilité ${{eval:1-t/100;d}}$) :\n\n```probtree\nM:{{eval:p/100;d}}\n  T:{{eval:s/100;d}}\n  \\overline{T}:{{eval:1-s/100;d}}\n\\overline{M}:{{eval:1-p/100;d}}\n  T:{{eval:1-t/100;d}}\n  \\overline{T}:{{eval:t/100;d}}\n```",
+					"$M$ et $\\overline{M}$ forment une partition de l'univers. D'après la formule des probabilités totales :\n\n$$\\begin{align*} P(T) &= P(M\\cap T)+P(\\overline{M}\\cap T) \\\\ &= {{eval:p/100;d}}\\times{{eval:s/100;d}}+{{eval:1-p/100;d}}\\times{{eval:1-t/100;d}} \\\\ &= {{eval:p*s/10000;d}}+{{eval:(100-p)*(100-t)/10000;d}} \\\\ &= {{eval:(p*s+(100-p)*(100-t))/10000;d}}={{eval:(p*s+(100-p)*(100-t))/10000}} \\end{align*}$$",
+					"$$P_T(M)=\\dfrac{P(M\\cap T)}{P(T)}=\\dfrac{ {{eval:p*s/10000;d}} }{ {{eval:(p*s+(100-p)*(100-t))/10000;d}} }\\approx{{eval:round(100*p*s/(p*s+(100-p)*(100-t)))/100;d}}$$",
+					"Conclusion : $P(T)={{eval:(p*s+(100-p)*(100-t))/10000}}$ et, arrondie au centième, $P_T(M)\\approx\\mathbf{ {{eval:round(100*p*s/(p*s+(100-p)*(100-t)))/100;d}} }$. Attention à ne pas confondre $P_T(M)$ avec $P_M(T)={{eval:s/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une population, ${{p}}\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez ${{s}}\\,\\%$ des personnes malades et négatif chez ${{t}}\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P(T)=?$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1|2|3|4|5|8|10|12|15|20"
+				},
+				{
+					"name": "s",
+					"expression": "80..99"
+				},
+				{
+					"name": "t",
+					"expression": "85..99"
+				}
+			],
+			"conditions": [
+				"abs(100*(1-p*s/(p*s+(100-p)*(100-t)))-round(100*(1-p*s/(p*s+(100-p)*(100-t))))) < 0.49",
+				"mod(round(100*(1-p*s/(p*s+(100-p)*(100-t)))), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(p*s+(100-p)*(100-t))/10000}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*(1-p*s/(p*s+(100-p)*(100-t))))/100;d}}",
+					"acceptDecimal": false,
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré (un test négatif chez une personne saine a la probabilité ${{eval:t/100;d}}$, donc un test positif chez une personne saine a la probabilité ${{eval:1-t/100;d}}$) :\n\n```probtree\nM:{{eval:p/100;d}}\n  T:{{eval:s/100;d}}\n  \\overline{T}:{{eval:1-s/100;d}}\n\\overline{M}:{{eval:1-p/100;d}}\n  T:{{eval:1-t/100;d}}\n  \\overline{T}:{{eval:t/100;d}}\n```",
+					"$M$ et $\\overline{M}$ forment une partition de l'univers. D'après la formule des probabilités totales :\n\n$$\\begin{align*} P(T) &= P(M\\cap T)+P(\\overline{M}\\cap T) \\\\ &= {{eval:p/100;d}}\\times{{eval:s/100;d}}+{{eval:1-p/100;d}}\\times{{eval:1-t/100;d}} \\\\ &= {{eval:p*s/10000;d}}+{{eval:(100-p)*(100-t)/10000;d}} \\\\ &= {{eval:(p*s+(100-p)*(100-t))/10000;d}}={{eval:(p*s+(100-p)*(100-t))/10000}} \\end{align*}$$",
+					"$$P_T(\\overline{M})=\\dfrac{P(\\overline{M}\\cap T)}{P(T)}=\\dfrac{ {{eval:(100-p)*(100-t)/10000;d}} }{ {{eval:(p*s+(100-p)*(100-t))/10000;d}} }\\approx{{eval:round(100*(1-p*s/(p*s+(100-p)*(100-t))))/100;d}}$$",
+					"Conclusion : $P(T)={{eval:(p*s+(100-p)*(100-t))/10000}}$ et, arrondie au centième, $P_T(\\overline{M})\\approx\\mathbf{ {{eval:round(100*(1-p*s/(p*s+(100-p)*(100-t))))/100;d}} }$. Attention à ne pas confondre $P_T(\\overline{M})$ avec $P_{\\overline{M}}(T)={{eval:1-t/100;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : p=5, s=90, t=95 : 37/400 et 0,49",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : P(T) en décimal exact 0,092 5",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["0{,}092\\,5", "0{,}49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : P(T) décimal sans espace 0,0925 (règle des espaces coupée sur ce modèle, décision de David du 2026-10-02)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["0{,}0925", "0{,}49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : P(T) non réduite 74/800",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{74}{800}", "0{,}49"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 0 : P(T) en pourcentage 9,25 %",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["9{,}25\\%", "0{,}49"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : P(T) oublie les faux positifs (0,045)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{9}{200}", "0{,}49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) valeur exacte 18/37 non arrondie",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "\\frac{18}{37}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) tronqué 0,48",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) trop de décimales 0,486",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}486"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) au dixième 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) confondu avec P_M(T) = 0,9",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) en pourcentage 49 %",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "49\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : P_T(M) avec un point 0.49",
+			"variationIndex": 0,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0.49"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : p=1, s=99, t=98 : 297/10 000 et 0,33",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"s": "99",
+				"t": "98"
+			},
+			"answers": ["\\frac{297}{10\\,000}", "0{,}33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : p=1 : 297/10000 saisi sans espace des milliers (règle spaces, à trancher) (règle des espaces coupée sur ce modèle, décision de David du 2026-10-02)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"s": "99",
+				"t": "98"
+			},
+			"answers": ["\\frac{297}{10000}", "0{,}33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : p=1 : P_T(M) confondu avec P_M(T) = 0,99",
+			"variationIndex": 0,
+			"variables": {
+				"p": "1",
+				"s": "99",
+				"t": "98"
+			},
+			"answers": ["\\frac{297}{10\\,000}", "0{,}99"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : p=5, s=90, t=95 : 37/400 et 0,51",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : P_T(M̄) valeur exacte 19/37 non arrondie",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "\\frac{19}{37}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_T(M̄) tronqué 0,51 → juste ; 0,513 trop de décimales",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}513"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_T(M) donné à la place (0,49)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_T(M̄) confondu avec P_M̄(T) = 0,05",
+			"variationIndex": 1,
+			"variables": {
+				"p": "5",
+				"s": "90",
+				"t": "95"
+			},
+			"answers": ["\\frac{37}{400}", "0{,}05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : p=10, s=80, t=90 : 17/100 et 0,53",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"s": "80",
+				"t": "90"
+			},
+			"answers": ["\\frac{17}{100}", "0{,}53"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : p=10 : P(T) en décimal 0,17",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"s": "80",
+				"t": "90"
+			},
+			"answers": ["0{,}17", "0{,}53"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : p=10 : P_T(M̄) tronqué 0,52",
+			"variationIndex": 1,
+			"variables": {
+				"p": "10",
+				"s": "80",
+				"t": "90"
+			},
+			"answers": ["\\frac{17}{100}", "0{,}52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

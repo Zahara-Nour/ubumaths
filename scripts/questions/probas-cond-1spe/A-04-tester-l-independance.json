@@ -1,0 +1,226 @@
+{
+	"title": "Tester l'indépendance de deux événements",
+	"description": "Comparer P(A∩B) et P(A)×P(B) pour décider si deux événements sont indépendants",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Indépendance",
+	"level": 1,
+	"status": "draft",
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:a*b/100;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["mod(a*b,10) != 0"],
+			"choices": [
+				{
+					"content": "Oui, $A$ et $B$ sont indépendants."
+				},
+				{
+					"content": "Non, $A$ et $B$ ne sont pas indépendants."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
+					"$P(A)\\times P(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}={{eval:a*b/100;d}}$.",
+					"C'est bien $P(A\\cap B)$ : $A$ et $B$ **sont indépendants**."
+				]
+			}
+		},
+		{
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:m/10;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "m",
+					"expression": "1..7"
+				}
+			],
+			"conditions": ["m < a", "m < b", "m > a+b-10", "10*m != a*b"],
+			"choices": [
+				{
+					"content": "Oui, $A$ et $B$ sont indépendants."
+				},
+				{
+					"content": "Non, $A$ et $B$ ne sont pas indépendants."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
+					"$P(A)\\times P(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}={{eval:a*b/100;d}}$.",
+					"Or $P(A\\cap B)={{eval:m/10;d}}\\neq{{eval:a*b/100;d}}$ : $A$ et $B$ **ne sont pas indépendants**."
+				]
+			}
+		},
+		{
+			"statement": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["a+b < 10"],
+			"choices": [
+				{
+					"content": "Oui, $A$ et $B$ sont indépendants."
+				},
+				{
+					"content": "Non, $A$ et $B$ ne sont pas indépendants."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$A$ et $B$ sont indépendants lorsque $P(A\\cap B)=P(A)\\times P(B)$.",
+					"$P(A)\\times P(B)={{eval:a/10;d}}\\times{{eval:b/10;d}}={{eval:a*b/100;d}}$.",
+					"Or $P(A\\cap B)=0\\neq{{eval:a*b/100;d}}$ : $A$ et $B$ **ne sont pas indépendants**.",
+					"Ici $A$ et $B$ sont incompatibles (ils ne peuvent pas se réaliser ensemble) : incompatibles ne veut pas dire indépendants."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 0,3 × 0,4 = 0,12 → oui",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : « non » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : les deux cochés refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0, 1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 0,2 ≠ 0,12 → non",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"m": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : « oui » refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"m": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : les deux cochés refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"m": "2"
+			},
+			"selectedChoices": [0, 1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : incompatibles, 0 ≠ 0,12 → non",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : incompatibles pris pour indépendants",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : les deux cochés refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0, 1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

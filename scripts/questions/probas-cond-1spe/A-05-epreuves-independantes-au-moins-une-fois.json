@@ -1,0 +1,209 @@
+{
+	"title": "Deux épreuves indépendantes : « au moins une fois »",
+	"description": "Répéter deux fois une épreuve de façon indépendante : probabilité d'une issue, puis d'un événement « au moins une fois » par l'événement contraire",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Indépendance",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $?$\n\nProbabilité d'obtenir au moins une boule rouge : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..8"
+				},
+				{
+					"name": "n",
+					"expression": "2..8"
+				}
+			],
+			"conditions": ["gcd(r,n) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r^2/(r+n)^2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-n^2/(r+n)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le tirage se fait avec remise : les deux tirages sont indépendants, et à chaque tirage $P(R)=\\dfrac{ {{r}} }{ {{eval:r+n}} }$ et $P(N)=\\dfrac{ {{n}} }{ {{eval:r+n}} }$.",
+					"Deux rouges : $P(R_1\\cap R_2)=\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{r}} }{ {{eval:r+n}} }=\\textcolor{{{color:primary.0}}}{{{eval:r^2/(r+n)^2}} }$.",
+					"« Au moins une rouge » a pour contraire « deux noires », de probabilité $\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n}} }={{eval:n^2/(r+n)^2}}$.",
+					"Donc la probabilité d'obtenir au moins une rouge vaut $1-{{eval:n^2/(r+n)^2}}=\\textcolor{{{color:primary.0}}}{{{eval:1-n^2/(r+n)^2}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité ${{eval:p/10;d}}$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $?$\n\nProbabilité d'atteindre le centre au moins une fois : $?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p^2/100}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-(10-p)^2/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $C_1$ et $C_2$ les événements « le centre est atteint » au 1ᵉʳ et au 2ᵉ lancer. Les lancers sont indépendants, donc on multiplie les probabilités.",
+					"Deux fois : $P(C_1\\cap C_2)={{eval:p/10;d}}\\times{{eval:p/10;d}}={{eval:p^2/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:p^2/100}} }$.",
+					"« Au moins une fois » a pour contraire « jamais », de probabilité ${{eval:(10-p)/10;d}}\\times{{eval:(10-p)/10;d}}={{eval:(10-p)^2/100;d}}$.",
+					"Donc la probabilité d'atteindre le centre au moins une fois vaut $1-{{eval:(10-p)^2/100;d}}={{eval:1-(10-p)^2/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:1-(10-p)^2/100}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3 rouges, 2 noires → 9/25 et 21/25",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{21}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimaux 0,36 et 0,84",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["0,36", "0,84"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : un seul tirage compté, 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{3}{5}", "\\frac{21}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : « au moins une » pris pour « exactement une » = 12/25",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{12}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 1 − 2/5 (contraire d'un seul tirage) = 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["\\frac{9}{25}", "\\frac{3}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 36 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"n": "2"
+			},
+			"answers": ["36\\%", "\\frac{21}{25}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : p = 0,3 → 9/100 et 51/100",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["\\frac{9}{100}", "\\frac{51}{100}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimaux 0,09 et 0,51",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["0,09", "0,51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 2 × 0,3 = 0,6 pour « au moins une fois »",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["0,09", "0,6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2 × 0,3 pour « deux fois »",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["0,6", "0,51"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 51 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["0,09", "51\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,665 @@
+{
+	"title": "Contrôle qualité : d'où vient la pièce défectueuse ?",
+	"description": "Deux machines (ou deux fournisseurs), parts et taux de défaut en pourcentages : probabilité qu'une pièce soit défectueuse (valeur exacte), puis provenance sachant l'état de la pièce, arrondie au centième ou au millième",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"status": "draft",
+	"subdomain": "Problèmes en contexte",
+	"level": 2,
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une usine fabrique des pièces sur deux machines. La machine A produit ${{a}}\\,\\%$ des pièces, la machine B produit les autres. ${{u}}\\,\\%$ des pièces de la machine A sont défectueuses, contre ${{w}}\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|35|40|45|55|60|65|70|75|80"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [
+				"u != w",
+				"abs(100*a*u/(a*u+(100-a)*w)-round(100*a*u/(a*u+(100-a)*w))) < 0.49",
+				"mod(round(100*a*u/(a*u+(100-a)*w)), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*u+(100-a)*w)/10000}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*a*u/(a*u+(100-a)*w))/100;d}}",
+					"acceptDecimal": false,
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré :\n\n```probtree\nA:{{eval:a/100;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\nB:{{eval:1-a/100;d}}\n  D:{{eval:w/100;d}}\n  \\overline{D}:{{eval:1-w/100;d}}\n```",
+					"$A$ et $B$ forment une partition de l'univers. D'après la formule des probabilités totales :\n\n$$\\begin{align*} P(D) &= P(A\\cap D)+P(B\\cap D) \\\\ &= {{eval:a/100;d}}\\times{{eval:u/100;d}}+{{eval:1-a/100;d}}\\times{{eval:w/100;d}} \\\\ &= {{eval:a*u/10000;d}}+{{eval:(100-a)*w/10000;d}} \\\\ &= {{eval:(a*u+(100-a)*w)/10000;d}}={{eval:(a*u+(100-a)*w)/10000}} \\end{align*}$$",
+					"$$P_D(A)=\\dfrac{P(A\\cap D)}{P(D)}=\\dfrac{ {{eval:a*u/10000;d}} }{ {{eval:(a*u+(100-a)*w)/10000;d}} }\\approx{{eval:round(100*a*u/(a*u+(100-a)*w))/100;d}}$$",
+					"Conclusion : $P(D)={{eval:(a*u+(100-a)*w)/10000}}$ et, arrondie au centième, $P_D(A)\\approx\\mathbf{ {{eval:round(100*a*u/(a*u+(100-a)*w))/100;d}} }$. Ne pas confondre avec $P_A(D)={{eval:u/100;d}}$, la probabilité qu'une pièce de la machine A soit défectueuse."
+				]
+			}
+		},
+		{
+			"statement": "Un magasin achète ses ampoules à deux fournisseurs : ${{a}}\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. ${{u}}\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre ${{w}}\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|35|40|45|55|60|65|70|75|80"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [
+				"u != w",
+				"abs(100*(100-a)*w/(a*u+(100-a)*w)-round(100*(100-a)*w/(a*u+(100-a)*w))) < 0.49",
+				"mod(round(100*(100-a)*w/(a*u+(100-a)*w)), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*u+(100-a)*w)/10000}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(100*(100-a)*w/(a*u+(100-a)*w))/100;d}}",
+					"acceptDecimal": false,
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré :\n\n```probtree\nA:{{eval:a/100;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\nB:{{eval:1-a/100;d}}\n  D:{{eval:w/100;d}}\n  \\overline{D}:{{eval:1-w/100;d}}\n```",
+					"$A$ et $B$ forment une partition de l'univers. D'après la formule des probabilités totales :\n\n$$\\begin{align*} P(D) &= P(A\\cap D)+P(B\\cap D) \\\\ &= {{eval:a/100;d}}\\times{{eval:u/100;d}}+{{eval:1-a/100;d}}\\times{{eval:w/100;d}} \\\\ &= {{eval:a*u/10000;d}}+{{eval:(100-a)*w/10000;d}} \\\\ &= {{eval:(a*u+(100-a)*w)/10000;d}}={{eval:(a*u+(100-a)*w)/10000}} \\end{align*}$$",
+					"$$P_D(B)=\\dfrac{P(B\\cap D)}{P(D)}=\\dfrac{ {{eval:(100-a)*w/10000;d}} }{ {{eval:(a*u+(100-a)*w)/10000;d}} }\\approx{{eval:round(100*(100-a)*w/(a*u+(100-a)*w))/100;d}}$$",
+					"Conclusion : $P(D)={{eval:(a*u+(100-a)*w)/10000}}$ et, arrondie au centième, $P_D(B)\\approx\\mathbf{ {{eval:round(100*(100-a)*w/(a*u+(100-a)*w))/100;d}} }$. Ne pas confondre avec $P_B(D)={{eval:w/100;d}}$, la probabilité qu'une ampoule du fournisseur B soit défectueuse."
+				]
+			}
+		},
+		{
+			"statement": "Une usine fabrique des pièces sur deux machines. La machine A produit ${{a}}\\,\\%$ des pièces, la machine B produit les autres. ${{u}}\\,\\%$ des pièces de la machine A sont défectueuses, contre ${{w}}\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "30|35|40|45|55|60|65|70|75|80"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				}
+			],
+			"conditions": [
+				"u != w",
+				"abs(1000*a*(100-u)/(10000-(a*u+(100-a)*w))-round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))) < 0.49",
+				"mod(round(1000*a*(100-u)/(10000-(a*u+(100-a)*w))), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*u+(100-a)*w)/10000}}"
+				},
+				{
+					"expectedAnswer": "{{eval:round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))/1000;d}}",
+					"acceptDecimal": false,
+					"precision": {
+						"type": "decimal",
+						"digits": 3
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On traduit l'énoncé par un arbre pondéré :\n\n```probtree\nA:{{eval:a/100;d}}\n  D:{{eval:u/100;d}}\n  \\overline{D}:{{eval:1-u/100;d}}\nB:{{eval:1-a/100;d}}\n  D:{{eval:w/100;d}}\n  \\overline{D}:{{eval:1-w/100;d}}\n```",
+					"$A$ et $B$ forment une partition de l'univers. D'après la formule des probabilités totales :\n\n$$\\begin{align*} P(D) &= P(A\\cap D)+P(B\\cap D) \\\\ &= {{eval:a/100;d}}\\times{{eval:u/100;d}}+{{eval:1-a/100;d}}\\times{{eval:w/100;d}} \\\\ &= {{eval:a*u/10000;d}}+{{eval:(100-a)*w/10000;d}} \\\\ &= {{eval:(a*u+(100-a)*w)/10000;d}}={{eval:(a*u+(100-a)*w)/10000}} \\end{align*}$$",
+					"$P(\\overline{D})=1-P(D)={{eval:1-(a*u+(100-a)*w)/10000;d}}$ et $P(A\\cap\\overline{D})={{eval:a/100;d}}\\times{{eval:1-u/100;d}}={{eval:a*(100-u)/10000;d}}$, donc $$P_{\\overline{D}}(A)=\\dfrac{P(A\\cap\\overline{D})}{P(\\overline{D})}=\\dfrac{ {{eval:a*(100-u)/10000;d}} }{ {{eval:1-(a*u+(100-a)*w)/10000;d}} }\\approx{{eval:round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))/1000;d}}$$",
+					"Conclusion : $P(D)={{eval:(a*u+(100-a)*w)/10000}}$ et, arrondie au millième, $P_{\\overline{D}}(A)\\approx\\mathbf{ {{eval:round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))/1000;d}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=60, u=3, w=5 : 19/500 et 0,47",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : P(D) en décimal 0,038",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["0{,}038", "0{,}47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : P(D) non réduite 38/1 000",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{38}{1\\,000}", "0{,}47"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 0 : P(D) en pourcentage 3,8 %",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["3{,}8\\%", "0{,}47"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : P(D) moyenne des taux (4 %)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{1}{25}", "0{,}47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) exacte 9/19 non arrondie",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "\\frac{9}{19}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) trop de décimales 0,474",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}474"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) arrondi faux 0,48",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) confondu avec P_A(D) = 0,03",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}03"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) confondu avec P(A) = 0,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_D(A) confondu avec P(A∩D) = 0,018",
+			"variationIndex": 0,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}018"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=40, u=2, w=7 : 1/20 et 0,16 (décimal exact)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"u": "2",
+				"w": "7"
+			},
+			"answers": ["\\frac{1}{20}", "0{,}16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=40 : P_D(A) en fraction 4/25 (un arrondi s'écrit en décimal)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "40",
+				"u": "2",
+				"w": "7"
+			},
+			"answers": ["\\frac{1}{20}", "\\frac{4}{25}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : a=35, u=4, w=5 (tirage exclu par la condition) : arrondi 0,30 écrit 0,3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "35",
+				"u": "4",
+				"w": "5"
+			},
+			"answers": ["\\frac{93}{2\\,000}", "0{,}3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=35 : arrondi écrit 0,30 (zéro final jugé inutile par le moteur)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "35",
+				"u": "4",
+				"w": "5"
+			},
+			"answers": ["\\frac{93}{2\\,000}", "0{,}30"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		},
+		{
+			"description": "variation 0 : a=70, u=4, w=9 : 11/200 et 0,51",
+			"variationIndex": 0,
+			"variables": {
+				"a": "70",
+				"u": "4",
+				"w": "9"
+			},
+			"answers": ["\\frac{11}{200}", "0{,}51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=70 : P_D(A) tronqué 0,50",
+			"variationIndex": 0,
+			"variables": {
+				"a": "70",
+				"u": "4",
+				"w": "9"
+			},
+			"answers": ["\\frac{11}{200}", "0{,}50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=70 : P_D(A) tronqué 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "70",
+				"u": "4",
+				"w": "9"
+			},
+			"answers": ["\\frac{11}{200}", "0{,}5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : a=55, u=4, w=6 : 49/1 000 et 0,55",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1\\,000}", "0{,}55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : 49/1000 saisi sans espace des milliers (règle spaces, à trancher) (règle des espaces coupée sur ce modèle, décision de David du 2026-10-02)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1000}", "0{,}55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : P(D) décimal 0,049",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["0{,}049", "0{,}55"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : P_D(B) exacte 27/49 non arrondie",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1\\,000}", "\\frac{27}{49}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_D(A) donné à la place (0,45)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1\\,000}", "0{,}45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_D(B) confondu avec P_B(D) = 0,06",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1\\,000}", "0{,}06"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P_D(B) trop de décimales 0,551",
+			"variationIndex": 1,
+			"variables": {
+				"a": "55",
+				"u": "4",
+				"w": "6"
+			},
+			"answers": ["\\frac{49}{1\\,000}", "0{,}551"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : a=75, u=2, w=9 : 3/80 et 0,6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "75",
+				"u": "2",
+				"w": "9"
+			},
+			"answers": ["\\frac{3}{80}", "0{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : a=75 : P(D) décimal 0,037 5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "75",
+				"u": "2",
+				"w": "9"
+			},
+			"answers": ["0{,}037\\,5", "0{,}6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : a=35, u=8, w=3 : 19/400 et 0,41",
+			"variationIndex": 1,
+			"variables": {
+				"a": "35",
+				"u": "8",
+				"w": "3"
+			},
+			"answers": ["\\frac{19}{400}", "0{,}41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : a=35 : P_D(B) arrondi par excès 0,42",
+			"variationIndex": 1,
+			"variables": {
+				"a": "35",
+				"u": "8",
+				"w": "3"
+			},
+			"answers": ["\\frac{19}{400}", "0{,}42"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : a=60, u=3, w=5 : 19/500 et 0,605",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}605"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) tronqué 0,604",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}604"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) exacte 291/481 non arrondie",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "\\frac{291}{481}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) au centième 0,60 (pas assez précis)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) trop de décimales 0,605 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}605\\,0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) confondu avec P(A) = 0,6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_D̄(A) confondu avec P_A(D̄) = 0,97",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{19}{500}", "0{,}97"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P(D̄) donné à la place de P(D)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "60",
+				"u": "3",
+				"w": "5"
+			},
+			"answers": ["\\frac{481}{500}", "0{,}605"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : a=45, u=9, w=1 : 23/500 et 0,429",
+			"variationIndex": 2,
+			"variables": {
+				"a": "45",
+				"u": "9",
+				"w": "1"
+			},
+			"answers": ["\\frac{23}{500}", "0{,}429"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : a=45 : arrondi par excès 0,430",
+			"variationIndex": 2,
+			"variables": {
+				"a": "45",
+				"u": "9",
+				"w": "1"
+			},
+			"answers": ["\\frac{23}{500}", "0{,}430"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

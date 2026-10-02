@@ -1,0 +1,375 @@
+{
+	"title": "Probabilité « inverse » à partir d'un arbre",
+	"description": "P_B(A) = P(A∩B) / P(B), avec P(B) par la formule des probabilités totales",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 4,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P_B(A)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b/(a*b+(10-a)*c)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_B(A)=\\dfrac{P(A\\cap B)}{P(B)}$. L'arbre donne $P_A(B)$, pas $P_B(A)$.",
+					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100}}$, donc $P(B)={{eval:(a*b+(10-a)*c)/100}}$.",
+					"$P_B(A)={{eval:a*b/100}}\\div{{eval:(a*b+(10-a)*c)/100}}={{eval:a*b/(a*b+(10-a)*c)}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P_{\\overline{B}}(\\overline{A})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10-a)*(10-c)/(a*(10-b)+(10-a)*(10-c))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_{\\overline{B}}(\\overline{A})=\\dfrac{P(\\overline{A}\\cap \\overline{B})}{P(\\overline{B})}$. L'arbre donne $P_{\\overline{A}}(\\overline{B})$, pas $P_{\\overline{B}}(\\overline{A})$.",
+					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-b}}={{eval:a*(10-b)/100}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:10-c}}={{eval:(10-a)*(10-c)/100}}$, donc $P(\\overline{B})={{eval:(a*(10-b)+(10-a)*(10-c))/100}}$.",
+					"$P_{\\overline{B}}(\\overline{A})={{eval:(10-a)*(10-c)/100}}\\div{{eval:(a*(10-b)+(10-a)*(10-c))/100}}={{eval:(10-a)*(10-c)/(a*(10-b)+(10-a)*(10-c))}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:{{n}}/{{d}}\n  B:{{r}}/{{s}}\n  \\overline{B}:{{eval:s-r}}/{{s}}\n\\overline{A}:{{eval:d-n}}/{{d}}\n  B:{{m}}/{{q}}\n  \\overline{B}:{{eval:q-m}}/{{q}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P_B(A)=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "3..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "m",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "eval:s"
+				}
+			],
+			"conditions": [
+				"n < d",
+				"gcd(n, d) = 1",
+				"r < s",
+				"gcd(r, s) = 1",
+				"m < s",
+				"gcd(m, s) = 1",
+				"r != m"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(n*r/(d*s))/(n*r/(d*s)+(d-n)*m/(d*q))}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $P_B(A)=\\dfrac{P(A\\cap B)}{P(B)}$. L'arbre donne $P_A(B)$, pas $P_B(A)$.",
+					"$P(A\\cap B)=\\dfrac{ {{n}} }{ {{d}} }\\times\\dfrac{ {{r}} }{ {{s}} }={{eval:n*r/(d*s)}}$ et $P(\\overline{A}\\cap B)=\\dfrac{ {{eval:d-n}} }{ {{d}} }\\times\\dfrac{ {{m}} }{ {{q}} }={{eval:(d-n)*m/(d*q)}}$, donc $P(B)={{eval:n*r/(d*s)+(d-n)*m/(d*q)}}$.",
+					"$P_B(A)={{eval:n*r/(d*s)}}\\div{{eval:n*r/(d*s)+(d-n)*m/(d*q)}}={{eval:(n*r/(d*s))/(n*r/(d*s)+(d-n)*m/(d*q))}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 0,18 / 0,32 = 9/16",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{9}{16}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimal exact 0,562 5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.562\\,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : 0,5625 sans l'espace des milliers (règle des espaces coupée sur ce modèle, décision de David du 2026-10-02)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.5625"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentage 56,25 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["56.25\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : P_A(B) prise pour P_B(A) (0,6)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P(A∩B) sans diviser (0,18)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{9}{50}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : arrondi 0,56 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : 0,56 / 0,68 = 14/17",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{14}{17}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : fraction non réduite 56/68",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{56}{68}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "variation 1 : arrondi 0,82 refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.82"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{1\\,400}{17}\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : P_Ā(B̄) prise pour P_B̄(Ā) (0,8)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : (6/35) / (3/5) = 2/7",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{2}{7}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : arrondi 0,29 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["0.29"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_A(B) prise pour P_B(A) (3/7)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{3}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P(A∩B) sans diviser (6/35)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{6}{35}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : pourcentage refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{200}{7}\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,374 @@
+{
+	"title": "Formule des probabilités totales",
+	"description": "P(B) = P(A∩B) + P(Ā∩B) : somme des chemins qui mènent à B",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Probabilités conditionnelles",
+	"subdomain": "Arbres pondérés",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(B)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["b != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a*b+(10-a)*c)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une partition de l'univers : d'après la formule des probabilités totales, $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"$P(A\\cap B)=0.{{a}}\\times0.{{b}}={{eval:a*b/100}}$ et $P(\\overline{A}\\cap B)=0.{{eval:10-a}}\\times0.{{c}}={{eval:(10-a)*c/100}}$.",
+					"$P(B)={{eval:a*b/100}}+{{eval:(10-a)*c/100}}={{eval:(a*b+(10-a)*c)/100}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:0.{{eval:9-t}}{{eval:10-u}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{B})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..8"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["u != 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une partition de l'univers : d'après la formule des probabilités totales, $P(\\overline{B})=P(A\\cap \\overline{B})+P(\\overline{A}\\cap \\overline{B})$.",
+					"$P(A\\cap \\overline{B})=0.{{a}}\\times0.{{eval:10-c}}={{eval:a*(10-c)/100}}$ et $P(\\overline{A}\\cap \\overline{B})=0.{{eval:10-a}}\\times0.{{eval:9-t}}{{eval:10-u}}={{eval:(10-a)*(100-10*t-u)/1000}}$.",
+					"$P(\\overline{B})={{eval:a*(10-c)/100}}+{{eval:(10-a)*(100-10*t-u)/1000}}={{eval:(10*a*(10-c)+(10-a)*(100-10*t-u))/1000}}$"
+				]
+			}
+		},
+		{
+			"statement": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:{{n}}/{{d}}\n  B:{{r}}/{{s}}\n  \\overline{B}:{{eval:s-r}}/{{s}}\n\\overline{A}:{{eval:d-n}}/{{d}}\n  B:{{m}}/{{q}}\n  \\overline{B}:{{eval:q-m}}/{{q}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(B)=?$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "3..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..8"
+				},
+				{
+					"name": "s",
+					"expression": "3..9"
+				},
+				{
+					"name": "r",
+					"expression": "1..8"
+				},
+				{
+					"name": "m",
+					"expression": "1..8"
+				},
+				{
+					"name": "q",
+					"expression": "eval:s"
+				}
+			],
+			"conditions": [
+				"n < d",
+				"gcd(n, d) = 1",
+				"r < s",
+				"gcd(r, s) = 1",
+				"m < s",
+				"gcd(m, s) = 1",
+				"r != m"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*r/(d*s)+(d-n)*m/(d*q)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$A$ et $\\overline{A}$ forment une partition de l'univers : d'après la formule des probabilités totales, $P(B)=P(A\\cap B)+P(\\overline{A}\\cap B)$.",
+					"$P(A\\cap B)=\\dfrac{ {{n}} }{ {{d}} }\\times\\dfrac{ {{r}} }{ {{s}} }={{eval:n*r/(d*s)}}$ et $P(\\overline{A}\\cap B)=\\dfrac{ {{eval:d-n}} }{ {{d}} }\\times\\dfrac{ {{m}} }{ {{q}} }={{eval:(d-n)*m/(d*q)}}$.",
+					"$P(B)={{eval:n*r/(d*s)}}+{{eval:(d-n)*m/(d*q)}}={{eval:n*r/(d*s)+(d-n)*m/(d*q)}}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 0,18 + 0,14 = 8/25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{8}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : décimal exact 0,32 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : pourcentage 32 % refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["32\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : une seule branche, P(A∩B) = 0,18",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["0.18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : P_A(B) + P_Ā(B) = 0,8",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "6",
+				"c": "2"
+			},
+			"answers": ["\\frac{4}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : 0,12 + 0,408 = 66/125",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["\\frac{66}{125}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : décimal exact 0,528 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.528"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : pourcentage 52,8 % refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["52.8\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : une seule branche, P(Ā∩B̄) = 0,408",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.408"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : P(B) au lieu de P(B̄) (0,472)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"c": "7",
+				"t": "3",
+				"u": "2"
+			},
+			"answers": ["0.472"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 6/35 + 15/35 = 3/5",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : décimal exact 0,6 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["0.6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : pourcentage 60 % refusé",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["60\\%"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : une seule branche, P(A∩B) = 6/35",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{6}{35}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : P_A(B) + P_Ā(B) (8/7)",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{8}{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : fraction non réduite 21/35",
+			"variationIndex": 2,
+			"variables": {
+				"d": "5",
+				"n": "2",
+				"s": "7",
+				"r": "3",
+				"q": "7",
+				"m": "5"
+			},
+			"answers": ["\\frac{21}{35}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
