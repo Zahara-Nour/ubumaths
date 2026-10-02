@@ -30,7 +30,7 @@
 			"correction": {
 				"steps": [
 					"Pour tout réel $x$, $-1\\leqslant \\cos x\\leqslant 1$ : aucun point du cercle n'a pour abscisse ${{k}}$.",
-					"```trig\nequation: cos(x) = {{k}}\nmode: points\n```",
+					"```trig\nequation: cos(x) = {{k}}\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
 				]
 			}
@@ -73,7 +73,7 @@
 				"steps": [
 					"$\\cos x=\\cos a$ lorsque $x$ et $a$, ou $x$ et $-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des abscisses).",
 					"Dans $\\left]-\\pi\\,;\\pi\\right]$, les solutions sont $\\frac{\\pi}{ {{n}} }$ et $-\\frac{\\pi}{ {{n}} }$.",
-					"```trig\npreset: custom\nangles: pi/{{n}}, -pi/{{n}}\n```",
+					"```trig\npreset: custom\nangles: pi/{{n}}, -pi/{{n}}\nequation: cos(x) = cos(pi/{{n}})\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{ {{n}} }\\,;\\frac{\\pi}{ {{n}} }\\right\\} }$."
 				]
 			}
@@ -83,14 +83,14 @@
 			"variables": [
 				{
 					"name": "n",
-					"expression": "5|7"
+					"expression": "5|7|8|9"
 				},
 				{
 					"name": "k",
-					"expression": "2..6"
+					"expression": "2..8"
 				}
 			],
-			"conditions": ["k < n"],
+			"conditions": ["k < n", "gcd(k,n) = 1"],
 			"blanks": [
 				{
 					"expectedAnswer": "\\{-\\frac{ {{k}}\\pi}{ {{n}} };\\frac{ {{k}}\\pi}{ {{n}} }\\}"
@@ -100,7 +100,7 @@
 				"steps": [
 					"$\\cos x=\\cos a$ lorsque $x$ et $a$, ou $x$ et $-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des abscisses).",
 					"Dans $\\left]-\\pi\\,;\\pi\\right]$, les solutions sont $\\frac{ {{k}}\\pi}{ {{n}} }$ et $-\\frac{ {{k}}\\pi}{ {{n}} }$.",
-					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, -{{k}}pi/{{n}}\n```",
+					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, -{{k}}pi/{{n}}\nequation: cos(x) = cos({{k}}*pi/{{n}})\nmode: points\nmesures: principales\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{ {{k}}\\pi}{ {{n}} }\\,;\\frac{ {{k}}\\pi}{ {{n}} }\\right\\} }$."
 				]
 			}
@@ -110,14 +110,14 @@
 			"variables": [
 				{
 					"name": "n",
-					"expression": "5|7"
+					"expression": "5|7|8|9"
 				},
 				{
 					"name": "k",
-					"expression": "2..5"
+					"expression": "2..7"
 				}
 			],
-			"conditions": ["k < n - 1"],
+			"conditions": ["k < n - 1", "gcd(k,n) = 1"],
 			"blanks": [
 				{
 					"expectedAnswer": "\\{\\frac{ {{k}}\\pi}{ {{n}} };\\frac{ {{eval:n-k}}\\pi}{ {{n}} }\\}"
@@ -127,7 +127,7 @@
 				"steps": [
 					"$\\sin x=\\sin a$ lorsque $x$ et $a$, ou $x$ et $\\pi-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des ordonnées).",
 					"Dans $\\left[0\\,;2\\pi\\right[$, les solutions sont $\\frac{ {{k}}\\pi}{ {{n}} }$ et $\\pi-\\frac{ {{k}}\\pi}{ {{n}} }=\\frac{ {{eval:n-k}}\\pi}{ {{n}} }$.",
-					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, {{eval:n-k}}pi/{{n}}\n```",
+					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, {{eval:n-k}}pi/{{n}}\nequation: sin(x) = sin({{k}}*pi/{{n}})\nmode: points\n```",
 					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{ {{k}}\\pi}{ {{n}} }\\,;\\frac{ {{eval:n-k}}\\pi}{ {{n}} }\\right\\} }$."
 				]
 			}

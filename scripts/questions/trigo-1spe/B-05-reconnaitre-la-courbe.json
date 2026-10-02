@@ -94,56 +94,66 @@
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)+1   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
-			"variables": [],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(k)+2}} ; {{eval:abs(k)+2}}\ngrille: pi/2 ; 1\nf(x) = cos(x){{k;+}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				}
+			],
 			"choices": [
 				{
-					"content": "$f(x)=\\cos x+1$"
+					"content": "$f(x)=\\cos x{{k;+}}$"
 				},
 				{
 					"content": "$f(x)=\\cos x$"
 				},
 				{
-					"content": "$f(x)=\\cos x-1$"
+					"content": "$f(x)=\\cos x{{eval:-k;+}}$"
 				},
 				{
-					"content": "$f(x)=\\sin x+1$"
+					"content": "$f(x)=\\sin x{{k;+}}$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"Sur la figure : la courbe passe par $A(0\\,;2)$ et $B(\\pi\\,;0)$, elle oscille entre $0$ et $2$.",
-					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)+1   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
-					"On écarte les autres : $\\cos x$ oscille entre $-1$ et $1$, $\\cos x-1$ entre $-2$ et $0$, et $\\sin 0+1=1$.",
-					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x+1 }$."
+					"Sur la figure : la courbe passe par $A(0\\,;{{eval:k+1}})$ et $B(\\pi\\,;{{eval:k-1}})$, elle oscille entre ${{eval:k-1}}$ et ${{eval:k+1}}$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(k)+2}} ; {{eval:abs(k)+2}}\ngrille: pi/2 ; 1\nf(x) = cos(x){{k;+}}   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\cos x$ oscille entre $-1$ et $1$, $\\cos x{{eval:-k;+}}$ entre ${{eval:-k-1}}$ et ${{eval:1-k}}$, et $\\sin 0{{k;+}}={{k}}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x{{k;+}} }$."
 				]
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = 2*sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
-			"variables": [],
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(a)+1}} ; {{eval:abs(a)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3;±"
+				}
+			],
 			"choices": [
 				{
-					"content": "$f(x)=2\\sin x$"
+					"content": "$f(x)={{a}}\\sin x$"
 				},
 				{
 					"content": "$f(x)=\\sin x$"
 				},
 				{
-					"content": "$f(x)=2\\cos x$"
+					"content": "$f(x)={{a}}\\cos x$"
 				},
 				{
-					"content": "$f(x)=-2\\sin x$"
+					"content": "$f(x)={{eval:-a}}\\sin x$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;2\\right)$, elle oscille entre $-2$ et $2$.",
-					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = 2*sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
-					"On écarte les autres : $\\sin x$ oscille entre $-1$ et $1$, $2\\cos 0=2$, et $-2\\sin\\left(\\dfrac{\\pi}{2}\\right)=-2$.",
-					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=2\\sin x }$."
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;{{a}}\\right)$, elle oscille entre $-{{eval:abs(a)}}$ et ${{eval:abs(a)}}$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -{{eval:abs(a)+1}} ; {{eval:abs(a)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin x$ oscille entre $-1$ et $1$, ${{a}}\\cos 0={{a}}$, et ${{eval:-a}}\\sin\\left(\\dfrac{\\pi}{2}\\right)={{eval:-a}}$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)={{a}}\\sin x }$."
 				]
 			}
 		},
@@ -287,7 +297,9 @@
 		{
 			"description": "variation 3 : « \\cos x+1 » accepté",
 			"variationIndex": 3,
-			"variables": {},
+			"variables": {
+				"k": "1"
+			},
 			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
@@ -296,7 +308,9 @@
 		{
 			"description": "variation 3 : « \\cos x » refusé",
 			"variationIndex": 3,
-			"variables": {},
+			"variables": {
+				"k": "1"
+			},
 			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
@@ -305,7 +319,9 @@
 		{
 			"description": "variation 3 : « \\cos x-1 » refusé",
 			"variationIndex": 3,
-			"variables": {},
+			"variables": {
+				"k": "1"
+			},
 			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
@@ -314,7 +330,9 @@
 		{
 			"description": "variation 3 : « \\sin x+1 » refusé",
 			"variationIndex": 3,
-			"variables": {},
+			"variables": {
+				"k": "1"
+			},
 			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
@@ -323,7 +341,9 @@
 		{
 			"description": "variation 4 : « 2\\sin x » accepté",
 			"variationIndex": 4,
-			"variables": {},
+			"variables": {
+				"a": "2"
+			},
 			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
@@ -332,7 +352,9 @@
 		{
 			"description": "variation 4 : « \\sin x » refusé",
 			"variationIndex": 4,
-			"variables": {},
+			"variables": {
+				"a": "2"
+			},
 			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
@@ -341,7 +363,9 @@
 		{
 			"description": "variation 4 : « 2\\cos x » refusé",
 			"variationIndex": 4,
-			"variables": {},
+			"variables": {
+				"a": "2"
+			},
 			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
@@ -350,7 +374,9 @@
 		{
 			"description": "variation 4 : « -2\\sin x » refusé",
 			"variationIndex": 4,
-			"variables": {},
+			"variables": {
+				"a": "2"
+			},
 			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"

@@ -51,7 +51,13 @@ en π visibles).
   symbole jugé faux (A-01, le ° est affiché après la case).
 - C-03 contient une variation sin x = sin α, ajoutée par l'agent hors commande.
 - B-04 : fenêtre verticale −6 ; 6 pour une amplitude 1-2 (courbe un peu écrasée).
-- Peu de tirages distincts : A-03, A-04, A-06, B-01, B-03, B-05, C-01 à C-05 (une valeur par variation).
+- Tirages (2026-10-02, après #650 et #651) : les variations « une par valeur » sont fusionnées en
+  variations à angle tiré (A-04 9→3, C-01 9→4, C-02 9→5, C-04 14→4, C-05 7→3), réponses en
+  `{{eval:cos(n*pi/12)}}` ; B-01 (x ± 2kπ), B-05 (cos x + k, a sin x), C-03 (n = 5, 7, 8, 9) et
+  A-06 (axes : 0, π, ±π/2) tirent davantage. Restent figés : A-03 (5 valeurs, une par variation)
+  et B-03 (parité : une fonction par variation). Les cercles des corrigés sur ]−π ; π] passent en
+  `mesures: principales` (C-01, C-03, C-04, A-06) ; ailleurs, angles écrits réduits (l'étiquette
+  reprend l'écriture : `14*pi/12` s'affichait « 14π/12 »).
 
 Retouches du 2026-10-02 (« oui » de David) : B-02 v3 tire des coefficients premiers entre eux
 (`abs(m) != abs(n)`), la forme factorisée ne se présente plus ; B-04 fenêtre verticale ajustée au
@@ -62,4 +68,4 @@ tirage (±(|a|+|b|+1)) ; A-01 `150^\circ` → correctif moteur (PR `fix/suffixe-
 - Le bloc ```trig étiquette les solutions d'une équation dans [0 ; 2π[ (−π/6 → « 11π/6 ») et ne lit
 pas `cos(pi/5)` ; étiquettes 0, π, π/2 qui chevauchent les graduations ±1 dans le PDF.
 - Corrigé de série : un ensemble fini s'affiche « {−π/2} ∪ {π/2} » au lieu de « {−π/2 ; π/2} ».
-- `{{eval:…}}` ne calcule pas cos/sin (`eval:cos(p*pi/d)`) ni d'expression en x.
+- `{{eval:…}}` ne calcule pas d'expression en x (cos/sin d'un angle remarquable : oui depuis #651).
