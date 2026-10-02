@@ -53,6 +53,7 @@ import {
 } from '$lib/questions/intervals/interval-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
+import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -1116,19 +1117,60 @@ function validateSingleBlank(
 	};
 }
 
+/** Une case où un « x = » recopié devant la valeur est ignoré (cf. answer-variable-prefix) */
+function acceptsVariablePrefix(blank: InstanceBlank): boolean {
+	return (
+		blank.type !== 'text' &&
+		blank.answerKind !== 'intervalles' &&
+		expectsValue(blank.expectedAnswer)
+	);
+}
+
+/**
+ * Réponses (et leur LaTeX) sans « variable = » en tête. Case par case en mode
+ * positionnel ; en `orderIndependent`, seulement si TOUTES les cases l'admettent
+ * (la case d'une réponse n'est pas encore connue).
+ */
+function withoutVariablePrefixes(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex: string[] | undefined
+): { answers: string[]; latex: string[] | undefined } {
+	const blanks = instance.blanks ?? [];
+	// Ordre libre : la case d'une réponse n'est pas connue → toutes doivent l'admettre
+	const orderFree = instance.options?.orderIndependent === true;
+	const allAccept = blanks.every(acceptsVariablePrefix);
+	const strip = (answer: string, i: number): string => {
+		const blank = blanks[i];
+		const accepts = orderFree ? allAccept : blank !== undefined && acceptsVariablePrefix(blank);
+		return accepts && blank ? withoutVariablePrefix(answer, blank.expectedAnswer) : answer;
+	};
+	return {
+		answers: userAnswers.map(strip),
+		latex: userAnswersLatex?.map(strip)
+	};
+}
+
 /**
  * Validate fill-in-blanks answers using per-blank pipeline
  */
 export function validateBlanks(
-	userAnswers: string[],
+	rawUserAnswers: string[],
 	instance: QuestionInstance,
-	userAnswersLatex?: string[]
+	rawUserAnswersLatex?: string[]
 ): ValidationResult {
 	const blanks = instance.blanks!;
 
-	if (userAnswers.length !== blanks.length) {
+	if (rawUserAnswers.length !== blanks.length) {
 		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
 	}
+
+	// « x = » recopié devant la valeur : ignoré (décision du 2026-10-02)
+	const { answers: userAnswers, latex: userAnswersLatex } = withoutVariablePrefixes(
+		rawUserAnswers,
+		instance,
+		rawUserAnswersLatex
+	);
 
 	if (instance.options?.orderIndependent) {
 		return validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex);
@@ -1494,20 +1536,27 @@ export function blankStatuses(
  * `orderIndependent` : l'appariement est refait pour les statuts (cas rare).
  */
 export function validateBlanksDetailed(
-	userAnswers: string[],
+	rawUserAnswers: string[],
 	instance: QuestionInstance,
-	userAnswersLatex?: string[]
+	rawUserAnswersLatex?: string[]
 ): { result: ValidationResult; statuses: ValidationStatus[] } {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length === 0) {
-		return { result: { isCorrect: userAnswers.length === 0 }, statuses: [] };
+		return { result: { isCorrect: rawUserAnswers.length === 0 }, statuses: [] };
 	}
-	if (userAnswers.length !== blanks.length) {
+	if (rawUserAnswers.length !== blanks.length) {
 		return {
 			result: { isCorrect: false, message: 'Nombre de réponses incorrect' },
 			statuses: blanks.map(() => 'incorrect')
 		};
 	}
+
+	// « x = » recopié devant la valeur : ignoré, comme dans validateBlanks
+	const { answers: userAnswers, latex: userAnswersLatex } = withoutVariablePrefixes(
+		rawUserAnswers,
+		instance,
+		rawUserAnswersLatex
+	);
 
 	if (!instance.options?.orderIndependent) {
 		const results = blanks.map((blank, i) =>

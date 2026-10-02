@@ -120,7 +120,7 @@
 	],
 	"testSpecs": [
 		{
-			"description": "« x=-5 » ressaisi alors que « x = » est imprimé : refusé (limite connue)",
+			"description": "« x=-5 » ressaisi alors que « x = » est imprimé : accepté (préfixe d'une variable seule toléré depuis le 2026-10-02)",
 			"variationIndex": 0,
 			"variables": {
 				"a": "3",
@@ -129,7 +129,7 @@
 			},
 			"answers": ["x=-5"],
 			"expected": {
-				"status": "incorrect"
+				"status": "correct"
 			}
 		},
 		{

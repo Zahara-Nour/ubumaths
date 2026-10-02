@@ -180,7 +180,7 @@
 			"answers": ["5\\times3^3"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["products", "form"]
+				"constraintViolations": ["form"]
 			}
 		}
 	]

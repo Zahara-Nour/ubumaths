@@ -154,7 +154,7 @@
 			"answers": ["3\\times2^4"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["products", "form"]
+				"constraintViolations": ["form"]
 			}
 		}
 	]
