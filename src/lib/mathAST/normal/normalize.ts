@@ -5294,6 +5294,47 @@ function combineExpInPolynomial(terms: NormalTerm[]): NormalTerm[] {
 }
 
 /**
+ * `P / (c·exp(u)·R)` → `(P·exp(-u)) / (c·R)` quand `P` a plusieurs termes.
+ *
+ * ⚠️ Seulement si le dénominateur porte une VRAIE exponentielle (nœud `exp`) :
+ * comme dans `combineExpInMonomial`, la constante d'Euler isolée n'est pas
+ * promue — `(x+1)/e` garde sa forme. Chaque terme est ensuite recombiné par
+ * `combineExpInMonomial`, puis les termes devenus semblables regroupés.
+ */
+function moveDenominatorExpIntoPolynomial(
+	numerator: readonly NormalTerm[],
+	denTerm: NormalTerm
+): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	if (!hasRealExpFactor(denTerm.monomial)) {
+		return { numerator: [...numerator], denominator: [denTerm] };
+	}
+
+	const movedFactors: import('./types').SymbolicFactor[] = [];
+	const denOtherFactors: import('./types').SymbolicFactor[] = [];
+	for (const factor of denTerm.monomial) {
+		if (isExpLikeBase(factor.base)) {
+			movedFactors.push(symbolicFactor(factor.base, negRational(factor.exponent)));
+		} else {
+			denOtherFactors.push(factor);
+		}
+	}
+
+	const newNumerator: NormalTerm[] = numerator.map((term) => ({
+		coefficient: term.coefficient,
+		// `combineExpInMonomial` rend le monôme tel quel s'il n'a qu'une
+		// exponentielle d'exposant 1 : le trier, il vient d'être concaténé.
+		monomial: sortSymbolicFactors(combineExpInMonomial([...term.monomial, ...movedFactors]))
+	}));
+
+	return {
+		numerator: collectLikeTerms(newNumerator),
+		denominator: [
+			{ coefficient: denTerm.coefficient, monomial: sortSymbolicFactors(denOtherFactors) }
+		]
+	};
+}
+
+/**
  * Combines exp factors across numerator and denominator.
  * exp(a)/exp(b) → exp(a-b)/1
  *
@@ -5304,6 +5345,16 @@ function combineExpAcrossFraction(
 	numerator: readonly NormalTerm[],
 	denominator: readonly NormalTerm[]
 ): { numerator: NormalTerm[]; denominator: NormalTerm[] } {
+	// Numérateur à plusieurs termes, dénominateur monôme : `(x+1)/exp(x)`.
+	// Les exponentielles du dénominateur descendent dans CHAQUE terme du
+	// numérateur, `(x+1)/exp(x) → x·exp(-x)+exp(-x)`. Sans ce cas, la forme
+	// gardait la fraction là où `(x+1)e^{-x}` donne le polynôme : une réponse
+	// juste était comptée fausse dès que le facteur devant l'exponentielle
+	// était une somme.
+	if (numerator.length > 1 && denominator.length === 1) {
+		return moveDenominatorExpIntoPolynomial(numerator, denominator[0]);
+	}
+
 	// Only handle single-term cases for simplicity
 	if (numerator.length !== 1 || denominator.length !== 1) {
 		return { numerator: [...numerator], denominator: [...denominator] };
