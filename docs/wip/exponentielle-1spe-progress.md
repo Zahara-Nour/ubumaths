@@ -58,6 +58,7 @@ titres sans `e^(…)` brut ; specs `\exp`, `\exponentialE`, `\mathrm{e}` ajouté
 
 ## À trancher par David
 
-- Décimal exact accepté (A-06 à A-08) : cohérent avec les intervalles, où la borne décimale est
-  acceptée ; ailleurs la forme stricte (ADR 0013) le refuse.
+- ~~Décimal exact accepté (A-06 à A-08)~~ → **tranché par David le 2026-10-02 : on garde
+  `acceptDecimal`** (3,5 juste pour 7/2 ; valeur arrondie refusée). Pas d'équivalent dans TinyMath :
+  son `result-type: decimal` DEMANDAIT le décimal, il ne le tolérait pas.
 - Peu de tirages distincts : A-01, B-06, C-01, C-02 (variations figées).
