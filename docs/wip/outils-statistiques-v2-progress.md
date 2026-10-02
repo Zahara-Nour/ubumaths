@@ -110,3 +110,12 @@ Manche 6 (2026-10-02), lot 3 « simulation dans les fiches » — recommandation
     N × n ≤ 100 000 ; au-delà, message d'auteur.
 98. Variables `{{p}}` résolues avant, comme les autres blocs ; même graine pour toutes les instances.
 99. Pas de masquage dans ce lot.
+
+PR prévues lot 3 : (a) bloc + mode `tirages` ; (b) modes `moyenne` et `échantillons`.
+
+- **(a) livrée #671** (2026-10-02) : `simulation` dans `STAT_CHART_KINDS`, `SimulationData`,
+  `SimulationScene` (effectifs par `simulateCounts` + `createRandomSource(graine)`), Typst, tableau
+  accessible. Défauts : 100 tirages, graine 1. Revue : arrondi au millième en millièmes ENTIERS
+  (`toFixed` donnait 0,037 pour 3/80) ; « option inconnue » ne liste que les options du bloc.
+  Fiche FR/EN compilée avec `compile-prod.mjs`. Détail : `bloc-simulation-progress.md`.
+- Suivant : (b) modes `moyenne` et `échantillons` (Q95, Q97 : N × n ≤ 100 000).
