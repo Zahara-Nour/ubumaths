@@ -73,13 +73,14 @@ export function balanceBraces(latex: string): string {
 /**
  * LaTeX coloré selon le statut ; `boxed` : encadré de la même couleur (solution,
  * juste). `\boxed` garderait un cadre noir : `\bbox` prend la couleur du statut ;
- * épaisseur en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
+ * épaisseur et arrondi en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
+ * Coins arrondis : demande de David (2026-10-02).
  */
 export function colorLatex(latex: string, status: ExpectedStatus, boxed = false): string {
 	const body = balanceBraces(latex);
 	const color = STATUS_COLOR[status];
 	const framed = boxed
-		? String.raw`\bbox[border:1px solid ${color ?? 'currentColor'}]{${body}}`
+		? String.raw`\bbox[border:1px solid ${color ?? 'currentColor'}; border-radius:4px]{${body}}`
 		: body;
 	return color ? String.raw`\textcolor{${color}}{${framed}}` : framed;
 }
@@ -138,6 +139,43 @@ export function comparisonMarkdown(lhs: string, relation: '=' | '≠', answer: E
 		return inlineMath(colorLatex(`${left} = ${plain}`, 'correct', true));
 	}
 	return inlineMath(`${left} = ${fillLatex(answer)}`);
+}
+
+/**
+ * Valeur de l'élève placée dans un environnement aligné : ses `&` deviendraient
+ * des colonnes et ses `\\` des lignes — ils sont rendus inertes (`\&`, espace).
+ */
+function inertForAlignment(latex: string): string {
+	// `$` déjà retiré en amont (neutralisation) ; retiré encore ici, par défense
+	return latex
+		.replace(/\$/g, '')
+		.replace(/\\\\/g, ' ')
+		.replace(/(?<!\\)&/g, String.raw`\&`);
+}
+
+/**
+ * R1 avec solution (faux, forme non optimale) : UN bloc aligné sur la relation,
+ * façon TinyMath — `lhs ≠ réponse` (ou `= réponse` ambre), puis `= solution`
+ * encadrée, le `=` sous le `≠`. Réponse neutralisée en amont, rééquilibrée ici.
+ */
+export function alignedComparisonMarkdown(
+	lhs: string,
+	relation: '=' | '≠',
+	answer: ExpectedFill,
+	solutionLatex: string
+): string {
+	const left = balanceBraces(lhs);
+	const value = answer.value === null ? null : inertForAlignment(answer.value);
+	const first =
+		relation === '≠'
+			? `${left} &\\mathrel{${colorLatex(String.raw`\neq`, 'incorrect')}} ` +
+				fillLatex({ ...answer, value, status: 'incorrect' })
+			: `${left} &= ${fillLatex({ ...answer, value })}`;
+	// La solution peut être la réponse de l'élève (rulesSuffice + forme) : inerte aussi
+	const second = `&= ${colorLatex(inertForAlignment(solutionLatex), 'solution', true)}`;
+	return inlineMath(
+		String.raw`\begin{aligned}` + `${first} \\\\ ${second}` + String.raw`\end{aligned}`
+	);
 }
 
 /**

@@ -289,8 +289,11 @@ describe('ClassroomSeries — fin de série', () => {
 		const corrections = container.querySelector<HTMLElement>(
 			'[data-testid="classroom-corrections-grid"]'
 		);
-		const answer = corrections?.querySelector<HTMLElement>('.flip-card-back [data-single-answer]');
-		expect(answer?.textContent).toContain('160');
+		// Verso = résultat attendu (lot 3, R14)
+		const answer = corrections?.querySelector<HTMLElement>(
+			'.flip-card-back [data-testid="expected-result"]'
+		);
+		expect(answer?.querySelector('math-span')?.textContent).toContain('160');
 		expect(corrections?.textContent).not.toContain('undefined');
 		// Le verso est la face montrée (non inerte)
 		expect(corrections?.querySelector<HTMLElement>('.flip-card-back')?.inert).toBe(false);

@@ -55,7 +55,7 @@ describe('R1 — comparaison', () => {
 		expect(line?.getAttribute('data-status')).toBe('correct');
 		expect(text(line)).toContain('juste');
 		expect(formulas(container)).toContain(
-			'\\bbox[border:1px solid var(--expected-correct)]{3+5 = 8}'
+			'\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{3+5 = 8}'
 		);
 		expect(formulas(container)).toContain('var(--expected-correct)');
 		expect(container.querySelector('[data-kind="solution"]')).toBeNull();
@@ -68,17 +68,41 @@ describe('R1 — comparaison', () => {
 		expect(text(line)).toContain('faux');
 		expect(formulas(container)).toContain('\\neq');
 		expect(formulas(container)).toContain('var(--expected-incorrect)');
-		const solution = container.querySelector('[data-kind="solution"]');
-		expect(solution).not.toBeNull();
-		expect(formulas(solution as HTMLElement)).toContain(
-			'\\bbox[border:1px solid var(--expected-correct)]{8}'
+		// Un seul bloc aligné (façon TinyMath) : le `=` de la solution sous le `≠`
+		const latex = formulas(line as HTMLElement);
+		expect(latex.match(/\\begin\{aligned\}/g)).toHaveLength(1);
+		expect(latex).toMatch(
+			/\\begin\{aligned\}3\+5 &\\mathrel\{\\textcolor\{var\(--expected-incorrect\)\}\{\\neq\}\} .*9.*\\\\ &= \\textcolor\{var\(--expected-correct\)\}\{\\bbox\[border:1px solid var\(--expected-correct\); border-radius:4px\]\{8\}\}\\end\{aligned\}/
 		);
+		// Plus de ligne de solution séparée
+		expect(container.querySelector('[data-kind="solution"]')).toBeNull();
 	});
 
 	it('vide : la solution puis « Tu n’as rien répondu. »', async () => {
 		const { container } = await show(buildExpectedResult(equals, answer([''])));
 		expect(container.querySelector('[data-kind="solution"]')).not.toBeNull();
 		expect(text(container.querySelector('[data-kind="empty"]'))).toBe("Tu n'as rien répondu.");
+	});
+});
+
+describe('R1 aligné — formule longue (téléphone, tuile)', () => {
+	it('le bloc aligné défile dans sa zone, la vue ne déborde pas', async () => {
+		const long = instance(
+			'Calcule : $1+2+3+4+5+6+7+8+9+10+11+12+13+14+15+16+17+18+19+20=\\placeholder[0]{}$',
+			[{ expectedAnswer: '210', expectedAnswerLatex: '210', type: 'math' }]
+		);
+		const main = document.body.appendChild(document.createElement('main'));
+		main.style.width = '200px';
+		const { container } = await render(ExpectedResultView, {
+			target: main,
+			props: { result: buildExpectedResult(long, answer(['209'])) }
+		});
+		const block = container.querySelector<HTMLElement>('[data-aligned]')!;
+		await expect.poll(() => block.scrollWidth).toBeGreaterThan(block.clientWidth);
+		expect(getComputedStyle(block).overflowX).toBe('auto');
+		const view = container.querySelector<HTMLElement>('[data-testid="expected-result"]')!;
+		expect(view.scrollWidth).toBeLessThanOrEqual(view.clientWidth + 1);
+		main.remove();
 	});
 });
 
@@ -90,7 +114,13 @@ describe('R2 — forme non optimale', () => {
 		expect(text(line)).toContain('forme à améliorer');
 		expect(formulas(container)).toContain('var(--expected-unoptimal)');
 		expect(text(container.querySelector('[data-kind="remark"]')).length).toBeGreaterThan(0);
-		expect(container.querySelector('[data-kind="solution"]')).not.toBeNull();
+		// `3+5 = 08` (ambre) puis `= 8` encadré, alignés sur le `=`
+		const latex = formulas(line as HTMLElement);
+		expect(latex.match(/\\begin\{aligned\}/g)).toHaveLength(1);
+		expect(latex).toMatch(/3\+5 &= \\textcolor\{var\(--expected-unoptimal\)\}\{08\} \\\\ &= /);
+		// La remarque reste hors de la formule, sous le bloc
+		const remark = container.querySelector('[data-kind="remark"]') as HTMLElement;
+		expect(line!.compareDocumentPosition(remark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 	});
 });
 
@@ -171,6 +201,7 @@ describe('attendu seul (R8, R10)', () => {
 					index: 0,
 					context: 'math',
 					value: '\\frac{1}{2}',
+					possible: false,
 					studentAnswer: '0,7',
 					studentStatus: 'incorrect'
 				}
@@ -197,6 +228,16 @@ describe('sécurité — une valeur math est rendue comme formule', () => {
 		expect(container.innerHTML).not.toContain('href');
 		expect(container.innerHTML).not.toMatch(/style="position/);
 		expect(formulas(container)).toContain('evil.example');
+	});
+
+	it('R1 : `&` et `\\\\` de l’élève ne cassent pas l’alignement (deux `&` seulement)', async () => {
+		const { container } = await show(buildExpectedResult(equals, answer(['9 & 1 \\\\ 2'])));
+		const latex = formulas(container.querySelector('[data-kind="comparison"]') as HTMLElement);
+		expect(latex.match(/\\begin\{aligned\}/g)).toHaveLength(1);
+		// `&` non échappés : ceux du décor seulement ; un seul saut de ligne
+		expect(latex.match(/(?<!\\)&/g)).toHaveLength(2);
+		expect(latex.match(/\\\\(?![a-zA-Z&])/g)).toHaveLength(1);
+		expect(container.querySelector('a')).toBeNull();
 	});
 
 	it('case texte hostile : aucun lien non plus', async () => {

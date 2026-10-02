@@ -32,6 +32,7 @@
 	} from '$lib/questions/expected-result';
 	import {
 		EXPECTED_STATUS_LABEL,
+		alignedComparisonMarkdown,
 		comparisonMarkdown,
 		expectedOnlyMarkdown,
 		filledMarkdown,
@@ -47,6 +48,13 @@
 	let { result, class: className = '' }: Props = $props();
 
 	const hasComparison = $derived(result.lines.some((l) => l.kind === 'comparison'));
+	// R1 faux / forme : la solution rejoint la comparaison dans UN bloc aligné
+	// sur la relation (façon TinyMath) ; elle n'a plus de ligne à elle
+	const mergedSolution = $derived.by(() => {
+		if (!hasComparison) return undefined;
+		const found = result.lines.find((l) => l.kind === 'solution');
+		return found?.kind === 'solution' ? found : undefined;
+	});
 
 	/** Libellé d'un choix de QCM, selon son statut et s'il est coché */
 	function choiceLabel(choice: ExpectedChoice): string {
@@ -86,9 +94,29 @@
 	{#each result.lines as line, i (i)}
 		{#if line.kind === 'comparison'}
 			<div class="line-row" data-kind="comparison" data-status={line.answer.status}>
-				<InlineMarkdown content={comparisonMarkdown(line.lhs, line.relation, line.answer)} />
+				{#if mergedSolution}
+					<!-- Bloc aligné : défile seul s'il est trop long (téléphone, tuile) -->
+					<span class="aligned-block" data-aligned>
+						<InlineMarkdown
+							content={alignedComparisonMarkdown(
+								line.lhs,
+								line.relation,
+								line.answer,
+								mergedSolution.latex
+							)}
+						/>
+					</span>
+				{:else}
+					<InlineMarkdown content={comparisonMarkdown(line.lhs, line.relation, line.answer)} />
+				{/if}
+				<!-- Statut en toutes lettres, hors formule (accessibilité) -->
 				{@render statusTag(line.relation === '≠' ? 'incorrect' : line.answer.status)}
 			</div>
+			{#if mergedSolution?.possible}
+				<p class="line-label">La réponse attendue n'est qu'une réponse possible.</p>
+			{/if}
+		{:else if line.kind === 'solution' && mergedSolution}
+			<!-- Déjà rendue dans le bloc aligné de la comparaison -->
 		{:else if line.kind === 'solution'}
 			<div class="line-row" data-kind="solution" data-status="solution">
 				{#if line.possible}<span class="line-label">Une réponse possible :</span>{/if}
@@ -131,7 +159,9 @@
 		{:else if line.kind === 'expected-only'}
 			<div class="space-y-1" data-kind="expected-only" data-status="solution">
 				<div class="line-row">
-					<span class="line-label">Réponse attendue :</span>
+					<span class="line-label">
+						{line.possible ? 'Une réponse possible :' : 'Réponse attendue :'}
+					</span>
 					<InlineMarkdown content={expectedOnlyMarkdown(line.value, line.context)} />
 				</div>
 				{#if line.studentAnswer !== undefined && line.studentStatus}
@@ -171,6 +201,12 @@
 		flex-wrap: wrap;
 		align-items: baseline;
 		gap: 0.25rem 0.5rem;
+	}
+
+	.aligned-block {
+		min-width: 0;
+		max-width: 100%;
+		overflow-x: auto;
 	}
 
 	.line-label {

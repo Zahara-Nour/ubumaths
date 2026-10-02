@@ -8,6 +8,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
+	alignedComparisonMarkdown,
 	balanceBraces,
 	comparisonMarkdown,
 	decorateFill,
@@ -146,7 +147,7 @@ describe('décor des lignes', () => {
 
 	it('juste : toute l’égalité encadrée en vert', () => {
 		expect(comparisonMarkdown('3+5', '=', answer('correct', '8'))).toBe(
-			'$\\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{3+5 = 8}}$'
+			'$\\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{3+5 = 8}}$'
 		);
 	});
 
@@ -158,10 +159,10 @@ describe('décor des lignes', () => {
 
 	it('solution : `= 8` encadré vert (avec le membre gauche si elle est seule)', () => {
 		expect(solutionMarkdown('3+5', '8', false)).toBe(
-			'$= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{8}}$'
+			'$= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}$'
 		);
 		expect(solutionMarkdown('3+5', '8', true)).toBe(
-			'$3+5 = \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{8}}$'
+			'$3+5 = \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}$'
 		);
 	});
 
@@ -173,5 +174,48 @@ describe('décor des lignes', () => {
 		expect(md).toBe(
 			'Un [_] et $1+\\textcolor{var(--expected-empty)}{\\text{……}}$ $\\textcolor{var(--expected-correct)}{\\text{chat}}$'
 		);
+	});
+});
+
+describe('R1 aligné (façon TinyMath)', () => {
+	const fill = (value: string, status: ExpectedFill['status']): ExpectedFill => ({
+		index: 0,
+		context: 'math',
+		value,
+		status
+	});
+
+	it('faux : `lhs &≠ réponse \\\\ &= solution`, un seul environnement', () => {
+		expect(alignedComparisonMarkdown('3+5', '≠', fill('9', 'incorrect'), '8')).toBe(
+			'$\\begin{aligned}3+5 &\\mathrel{\\textcolor{var(--expected-incorrect)}{\\neq}} ' +
+				'\\textcolor{var(--expected-incorrect)}{9} \\\\ ' +
+				'&= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}' +
+				'\\end{aligned}$'
+		);
+	});
+
+	it('forme non optimale : `= 08` ambre puis `= 8`', () => {
+		const md = alignedComparisonMarkdown('3+5', '=', fill('08', 'unoptimal'), '8');
+		expect(md).toContain('3+5 &= \\textcolor{var(--expected-unoptimal)}{08} \\\\ &= ');
+	});
+
+	it('charge hostile : `&`, `\\\\`, `$`, accolades — inertes, une seule formule', () => {
+		const md = alignedComparisonMarkdown('3+5', '≠', fill('9 & 1 \\\\ }}$x', 'incorrect'), '8');
+		expect(md.match(/(?<!\\)&/g)).toHaveLength(2);
+		expect(md.match(/\\begin\{aligned\}/g)).toHaveLength(1);
+		expect(md.match(/\$/g)?.length).toBe(2);
+		expect(balanceBraces(md)).toBe(md);
+	});
+
+	it("bloc aligné : la ligne solution rend aussi inerte un `&` (réponse d'élève montrée comme solution)", () => {
+		const md = alignedComparisonMarkdown(
+			'3+5',
+			'=',
+			{ index: 0, context: 'math', value: '08', status: 'unoptimal' },
+			'0&8'
+		);
+		const second = md.split('\\\\')[1] ?? '';
+		expect(second.startsWith(' &=')).toBe(true);
+		expect(second.slice(3)).not.toMatch(/(?<!\\)&/);
 	});
 });

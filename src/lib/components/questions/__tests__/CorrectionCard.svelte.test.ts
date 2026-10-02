@@ -56,7 +56,9 @@ describe('CorrectionCard — recto : résultat attendu et statut global', () => 
 		const recto = front(container);
 		expect(recto.querySelector('[data-testid="expected-result"]')).not.toBeNull();
 		expect(formulas(recto)).toContain('\\neq');
-		expect(formulas(recto)).toContain('\\bbox[border:1px solid var(--expected-correct)]{160}');
+		expect(formulas(recto)).toContain(
+			'\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{160}'
+		);
 		expect(recto.querySelector('[data-testid="global-verdict"]')?.textContent).toContain('Faux');
 		expect(recto.querySelector('code')).toBeNull();
 		expect(recto.textContent).not.toContain('Votre réponse');
