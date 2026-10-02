@@ -110,7 +110,7 @@
 					"expression": "eval:d+n"
 				}
 			],
-			"conditions": ["a >= 2", "b >= 2"],
+			"conditions": ["a >= 2", "b >= 2", "abs(m) != abs(n)"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{m}}\\cos x{{n;+}}\\sin x"
@@ -297,104 +297,6 @@
 			}
 		},
 		{
-			"description": "variation 3 : = 2cos x − 2sin x",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["2\\cos x-2\\sin x"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "variation 3 : ordre des termes inversé",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["-2\\sin x+2\\cos x"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "variation 3 : factorisé : 2(cos x − sin x), forme développée attendue",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["2(\\cos x-\\sin x)"],
-			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
-			}
-		},
-		{
-			"description": "variation 3 : sin(−x) pris pour sin x : 2cos x + 6sin x",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["2\\cos x+6\\sin x"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "variation 3 : cos(π+x) pris pour cos x : 8cos x − 2sin x",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["8\\cos x-2\\sin x"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "variation 3 : somme non réduite",
-			"variationIndex": 3,
-			"variables": {
-				"c": "3",
-				"d": "4",
-				"m": "2",
-				"n": "-2",
-				"a": "5",
-				"b": "2"
-			},
-			"answers": ["5\\cos x+2\\sin x-3\\cos x-4\\sin x"],
-			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
-			}
-		},
-		{
 			"description": "variation 4 : = 2cos x",
 			"variationIndex": 4,
 			"variables": {},
@@ -439,6 +341,77 @@
 				"status": "bad_form",
 				"constraintViolations": ["form"]
 			}
+		},
+		{
+			"answers": ["2\\cos x-3\\sin x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "3",
+				"d": "5",
+				"m": "2",
+				"n": "-3"
+			},
+			"description": "A = 2cos x − 3sin x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-3\\sin x+2\\cos x"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"c": "3",
+				"d": "5",
+				"m": "2",
+				"n": "-3"
+			},
+			"description": "ordre des termes libre",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["2\\cos x+3\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "3",
+				"d": "5",
+				"m": "2",
+				"n": "-3"
+			},
+			"description": "signe de sin(π−x) ou sin(−x) faux",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["8\\cos x-3\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"c": "3",
+				"d": "5",
+				"m": "2",
+				"n": "-3"
+			},
+			"description": "cos(π+x) pris pour cos x",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5\\cos x+2\\sin x-3\\cos x-5\\sin x"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"c": "3",
+				"d": "5",
+				"m": "2",
+				"n": "-3"
+			},
+			"description": "termes non regroupés",
+			"variationIndex": 3
 		}
 	]
 }

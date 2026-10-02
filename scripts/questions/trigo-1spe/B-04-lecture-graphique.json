@@ -10,7 +10,7 @@
 	"delay": 45,
 	"variations": [
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f\\left(\\dfrac{\\pi}{2}\\right)$.\n\n$f\\left(\\dfrac{\\pi}{2}\\right)=?$",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f\\left(\\dfrac{\\pi}{2}\\right)$.\n\n$f\\left(\\dfrac{\\pi}{2}\\right)=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -29,13 +29,13 @@
 			"correction": {
 				"steps": [
 					"On se place en $x=\\dfrac{\\pi}{2}$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
-					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
 					"$\\textcolor{{{color:primary.0}}}{f\\left(\\dfrac{\\pi}{2}\\right)={{eval:a+b}} }$."
 				]
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f(\\pi)$.\n\n$f(\\pi)=?$",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f(\\pi)$.\n\n$f(\\pi)=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -54,13 +54,13 @@
 			"correction": {
 				"steps": [
 					"On se place en $x=\\pi$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
-					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: A(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: A(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
 					"$\\textcolor{{{color:primary.0}}}{f(\\pi)={{eval:b-a}} }$."
 				]
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le maximum de $f$ sur $\\mathbb{R}$.\n\n$?$",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le maximum de $f$ sur $\\mathbb{R}$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -79,13 +79,13 @@
 			"correction": {
 				"steps": [
 					"Le maximum est l'ordonnée des points les plus hauts de la courbe, par exemple le point $M$. La fonction est périodique : la courbe atteint ce maximum une fois par période.",
-					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:2-a/abs(a)}}*pi/2 ; f({{eval:2-a/abs(a)}}*pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:2-a/abs(a)}}*pi/2 ; f({{eval:2-a/abs(a)}}*pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
 					"Le maximum de $f$ est $\\textcolor{{{color:primary.0}}}{{{eval:abs(a)+b}} }$."
 				]
 			}
 		},
 		{
-			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le minimum de $f$ sur $\\mathbb{R}$.\n\n$?$",
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le minimum de $f$ sur $\\mathbb{R}$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
@@ -104,7 +104,7 @@
 			"correction": {
 				"steps": [
 					"Le minimum est l'ordonnée des points les plus bas de la courbe, par exemple le point $M$. La fonction est périodique : la courbe atteint ce minimum une fois par période.",
-					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:(1+a/abs(a))/2}}*pi ; f({{eval:(1+a/abs(a))/2}}*pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"```courbe\nx: -pi ; 2*pi\ny: {{eval:-abs(a)-abs(b)-1}} ; {{eval:abs(a)+abs(b)+1}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:(1+a/abs(a))/2}}*pi ; f({{eval:(1+a/abs(a))/2}}*pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
 					"Le minimum de $f$ est $\\textcolor{{{color:primary.0}}}{{{eval:b-abs(a)}} }$."
 				]
 			}
