@@ -41,6 +41,11 @@ export interface AtelierCommand {
 	 * ne sait pas faire ; un élève qui lit la raison sait à quoi s'en tenir.
 	 */
 	readonly unavailable?: string;
+	/**
+	 * Les listes que cite l'exemple (`.simuler L M 100`) : il se joue dans un
+	 * atelier qui les contient, sur le chemin réel de l'élève (Q79).
+	 */
+	readonly exampleSetup?: Readonly<Record<string, string>>;
 }
 
 // =============================================================================
@@ -54,6 +59,7 @@ interface Translation {
 	readonly example?: string;
 	readonly advanced?: boolean;
 	readonly unavailable?: string;
+	readonly exampleSetup?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -81,6 +87,16 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	['diff', { french: 'dériver', description: 'Dériver une expression', example: '.dériver x^2' }],
+	[
+		'simulate',
+		{
+			french: 'simuler',
+			description: 'Simuler n tirages d’une loi : valeurs, probabilités, n',
+			example: '.simuler L M 100',
+			// L'exemple cite deux listes : il se joue dans cet atelier (Q79)
+			exampleSetup: { L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6' }
+		}
+	],
 	[
 		'solve',
 		{ french: 'résoudre', description: 'Résoudre une équation', example: '.résoudre x^2-3x+1=0' }
@@ -238,7 +254,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
  * l'intention `factoriser` de `pedagogical-simplify` n'était donc atteignable
  * depuis aucune interface.
  */
-export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set(['factor']);
+export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set(['factor', 'simulate']);
 
 /**
  * Les commandes branchées en dur dans le moteur, absentes du registre.
@@ -334,7 +350,8 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			description: t.description,
 			...(t.example && { example: t.example }),
 			...(t.advanced && { advanced: true }),
-			...(t.unavailable && { unavailable: t.unavailable })
+			...(t.unavailable && { unavailable: t.unavailable }),
+			...(t.exampleSetup && { exampleSetup: t.exampleSetup })
 		});
 	};
 

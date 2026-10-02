@@ -19,8 +19,7 @@ import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
-import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
-import { Fraction } from '$lib/statistics/fraction';
+import { formatLawIndicators, formatSummary } from '$lib/statistics/format';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
@@ -28,7 +27,8 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { expressionOf } from './engine';
 import { syncPlots } from './plot-sync';
 import { isList, type ListObject } from './types';
-import { astOf, readListValue } from './parse';
+import { astOf } from './parse';
+import { lawFractions } from './simulate';
 import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
@@ -69,21 +69,6 @@ export interface Entry {
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
-
-/**
- * Une valeur de liste telle que l'élève l'a tapée (`1/10007`), sinon son
- * décimal : le message doit se retrouver dans la liste (revue Q51).
- */
-function typedAs(lists: readonly ListObject[], value: number): string {
-	for (const list of lists) {
-		const typed = list.definition
-			.split(';')
-			.map((piece) => piece.trim())
-			.find((piece) => readListValue(piece) === value);
-		if (typed !== undefined) return typed;
-	}
-	return formatStatNumber(value, 'fr');
-}
 
 /** Un nombre écrit comme l'élève l'écrit : virgule décimale, trois décimales au plus. */
 function fr(value: number): string {
@@ -203,9 +188,7 @@ export class CalcDesk {
 	 * Espérance, variance et écart type d'une variable aléatoire : valeurs dans
 	 * une liste, probabilités dans une autre (lot 6, Q44).
 	 *
-	 * ⚠️ Une liste contient des décimaux de la machine (1/6 y vaut 0,1666…) : ils
-	 * repassent en fractions (dénominateur ≤ 10 000) pour que la somme fasse
-	 * EXACTEMENT 1 et que E(X) s'écrive 7/2.
+	 * La conversion en fractions est partagée avec `.simuler` (`lawFractions`).
 	 */
 	#law(name: string, partner: string): void {
 		const label = `Loi de ${name} avec probabilités ${partner}`;
@@ -219,20 +202,13 @@ export class CalcDesk {
 			});
 			return;
 		}
-		const numbers = [...values.values, ...probabilities.values];
-		const fractions = numbers.map((n) => Fraction.fromNumber(n));
-		// Nommer la valeur fautive (Q51) : l'élève la retrouve dans sa liste
-		const faulty = fractions.indexOf(null);
-		if (faulty !== -1) {
-			this.#push({
-				label,
-				text: `${typedAs([values, probabilities], numbers[faulty])} ne s’écrit pas comme une fraction simple : la loi ne peut pas être calculée exactement.`,
-				failed: true
-			});
+		const law = lawFractions(values, probabilities);
+		if (!law.ok) {
+			this.#push({ label, text: law.message, failed: true });
 			return;
 		}
-		const xs = fractions.slice(0, values.values.length) as Fraction[];
-		const ps = fractions.slice(values.values.length) as Fraction[];
+		const xs = law.values;
+		const ps = law.probabilities;
 		const outcome = randomVariable(xs, ps);
 		if (outcome === null || !outcome.ok) {
 			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
@@ -411,6 +387,12 @@ export class CalcDesk {
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		if (actionId === 'image') {
 			this.draft = `${name}(`;
+			return 'needs-argument';
+		}
+		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut
+		// (Q77), l'élève valide ou change le nombre
+		if (actionId.startsWith('simulate:')) {
+			this.draft = `.simuler ${name} ${actionId.slice('simulate:'.length)} 100`;
 			return 'needs-argument';
 		}
 

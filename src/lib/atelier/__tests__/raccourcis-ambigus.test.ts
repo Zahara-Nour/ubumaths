@@ -63,7 +63,12 @@ describe('le catalogue tranche, y compris à l’exécution', () => {
 		for (const command of testables) {
 			const argument = command.example!.slice(command.example!.indexOf(' ') + 1);
 			for (const alias of command.aliases) {
-				const result = runInput(session(), `.${alias} ${argument}`);
+				const s = session();
+				// Q79 : les listes que cite l'exemple (`.simuler L M 100`)
+				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
+					s.atelier.create({ kind: 'list', name, definition });
+				}
+				const result = runInput(s, `.${alias} ${argument}`);
 				expect(result.kind, `.${alias}`).toBe('commande');
 				const vide =
 					result.kind === 'commande' && result.output.trim() === '' && result.latex === undefined;
