@@ -147,7 +147,7 @@ describe('décor des lignes', () => {
 
 	it('juste : toute l’égalité encadrée en vert', () => {
 		expect(comparisonMarkdown('3+5', '=', answer('correct', '8'))).toBe(
-			'$\\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{3+5 = 8}}$'
+			'$\\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{3+5 = 8}}$'
 		);
 	});
 
@@ -159,10 +159,10 @@ describe('décor des lignes', () => {
 
 	it('solution : `= 8` encadré vert (avec le membre gauche si elle est seule)', () => {
 		expect(solutionMarkdown('3+5', '8', false)).toBe(
-			'$= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{8}}$'
+			'$= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}$'
 		);
 		expect(solutionMarkdown('3+5', '8', true)).toBe(
-			'$3+5 = \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{8}}$'
+			'$3+5 = \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}$'
 		);
 	});
 
@@ -189,7 +189,7 @@ describe('R1 aligné (façon TinyMath)', () => {
 		expect(alignedComparisonMarkdown('3+5', '≠', fill('9', 'incorrect'), '8')).toBe(
 			'$\\begin{aligned}3+5 &\\mathrel{\\textcolor{var(--expected-incorrect)}{\\neq}} ' +
 				'\\textcolor{var(--expected-incorrect)}{9} \\\\ ' +
-				'&= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct)]{8}}' +
+				'&= \\textcolor{var(--expected-correct)}{\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}}' +
 				'\\end{aligned}$'
 		);
 	});

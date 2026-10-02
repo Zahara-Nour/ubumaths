@@ -73,13 +73,14 @@ export function balanceBraces(latex: string): string {
 /**
  * LaTeX coloré selon le statut ; `boxed` : encadré de la même couleur (solution,
  * juste). `\boxed` garderait un cadre noir : `\bbox` prend la couleur du statut ;
- * épaisseur en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
+ * épaisseur et arrondi en `px` : un décimal (`0.06em`) deviendrait `0{,}06` (locale fr).
+ * Coins arrondis : demande de David (2026-10-02).
  */
 export function colorLatex(latex: string, status: ExpectedStatus, boxed = false): string {
 	const body = balanceBraces(latex);
 	const color = STATUS_COLOR[status];
 	const framed = boxed
-		? String.raw`\bbox[border:1px solid ${color ?? 'currentColor'}]{${body}}`
+		? String.raw`\bbox[border:1px solid ${color ?? 'currentColor'}; border-radius:4px]{${body}}`
 		: body;
 	return color ? String.raw`\textcolor{${color}}{${framed}}` : framed;
 }

@@ -55,7 +55,7 @@ describe('R1 — comparaison', () => {
 		expect(line?.getAttribute('data-status')).toBe('correct');
 		expect(text(line)).toContain('juste');
 		expect(formulas(container)).toContain(
-			'\\bbox[border:1px solid var(--expected-correct)]{3+5 = 8}'
+			'\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{3+5 = 8}'
 		);
 		expect(formulas(container)).toContain('var(--expected-correct)');
 		expect(container.querySelector('[data-kind="solution"]')).toBeNull();
@@ -72,7 +72,7 @@ describe('R1 — comparaison', () => {
 		const latex = formulas(line as HTMLElement);
 		expect(latex.match(/\\begin\{aligned\}/g)).toHaveLength(1);
 		expect(latex).toMatch(
-			/\\begin\{aligned\}3\+5 &\\mathrel\{\\textcolor\{var\(--expected-incorrect\)\}\{\\neq\}\} .*9.*\\\\ &= \\textcolor\{var\(--expected-correct\)\}\{\\bbox\[border:1px solid var\(--expected-correct\)\]\{8\}\}\\end\{aligned\}/
+			/\\begin\{aligned\}3\+5 &\\mathrel\{\\textcolor\{var\(--expected-incorrect\)\}\{\\neq\}\} .*9.*\\\\ &= \\textcolor\{var\(--expected-correct\)\}\{\\bbox\[border:1px solid var\(--expected-correct\); border-radius:4px\]\{8\}\}\\end\{aligned\}/
 		);
 		// Plus de ligne de solution séparée
 		expect(container.querySelector('[data-kind="solution"]')).toBeNull();

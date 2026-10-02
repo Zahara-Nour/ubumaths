@@ -102,7 +102,7 @@ const front = (c: HTMLElement) => c.querySelector('.flip-card-front') as HTMLEle
 /** Source LaTeX des formules rendues */
 const formulas = (root: HTMLElement) =>
 	[...root.querySelectorAll('math-span')].map((m) => m.textContent ?? '').join('\n');
-const SOLUTION_8 = '\\bbox[border:1px solid var(--expected-correct)]{8}';
+const SOLUTION_8 = '\\bbox[border:1px solid var(--expected-correct); border-radius:4px]{8}';
 
 async function submit(container: HTMLElement) {
 	const button = [...front(container).querySelectorAll('button')].find(
