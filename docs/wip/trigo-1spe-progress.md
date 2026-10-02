@@ -53,6 +53,10 @@ en π visibles).
 - B-04 : fenêtre verticale −6 ; 6 pour une amplitude 1-2 (courbe un peu écrasée).
 - Peu de tirages distincts : A-03, A-04, A-06, B-01, B-03, B-05, C-01 à C-05 (une valeur par variation).
 
+Retouches du 2026-10-02 (« oui » de David) : B-02 v3 tire des coefficients premiers entre eux
+(`abs(m) != abs(n)`), la forme factorisée ne se présente plus ; B-04 fenêtre verticale ajustée au
+tirage (±(|a|+|b|+1)) ; A-01 `150^\circ` → correctif moteur (PR `fix/suffixe-degre`).
+
 ## Limites connues (non corrigées)
 
 - Le bloc ```trig étiquette les solutions d'une équation dans [0 ; 2π[ (−π/6 → « 11π/6 ») et ne lit
