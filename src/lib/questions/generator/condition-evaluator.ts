@@ -23,6 +23,7 @@ import { substitute } from '$lib/mathAST/eval/substitute';
 import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isEvalValue } from '$lib/mathAST/eval/types';
 import { isRelation, isLogical, isLogicalNot, isBoolean } from '$lib/mathAST/guards';
+import { braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 
 /**
  * Build EvalBindings from resolved variables.
@@ -43,6 +44,23 @@ function buildBindings(resolvedVariables: ResolvedVariable[]): EvalBindings {
 		}
 	}
 	return bindings;
+}
+
+/**
+ * Remplace les noms de variables de plusieurs caractères (`u1`, `q2`, `ab`) par leur valeur
+ * avant l'analyse, comme le fait `{{eval:…}}` : parseCustom lirait `u1` comme `u` suivi
+ * d'un `1` isolé (erreur), et `ab` comme `a×b`. Un seul passage, noms longs d'abord : une
+ * valeur substituée n'est jamais relue. Les lettres seules restent liées par `substitute`.
+ */
+function substituteLongNames(condition: string, resolvedVariables: ResolvedVariable[]): string {
+	const longNames = resolvedVariables
+		.map((v) => v.name)
+		.filter((name) => name.length > 1)
+		.sort((a, b) => b.length - a.length);
+	if (longNames.length === 0) return condition;
+	const values = new Map(resolvedVariables.map((v) => [v.name, v.value]));
+	const regex = new RegExp(`\\b(?:${longNames.join('|')})\\b`, 'g');
+	return condition.replace(regex, (name) => braceWrap(values.get(name) ?? name));
 }
 
 /** Tolerance for floating-point comparisons */
@@ -177,7 +195,10 @@ export function evaluateConditionStrict(
 	condition: string,
 	resolvedVariables: ResolvedVariable[]
 ): boolean {
-	return evaluateSingleCondition(condition, buildBindings(resolvedVariables));
+	return evaluateSingleCondition(
+		substituteLongNames(condition, resolvedVariables),
+		buildBindings(resolvedVariables)
+	);
 }
 
 /**
@@ -199,7 +220,7 @@ export function evaluateConditions(
 
 	for (const condition of conditions) {
 		try {
-			if (!evaluateSingleCondition(condition, bindings)) {
+			if (!evaluateSingleCondition(substituteLongNames(condition, resolvedVariables), bindings)) {
 				return false;
 			}
 		} catch {

@@ -200,7 +200,7 @@ function lettersOf(value: string): Set<string> {
  * `+`/`-` from a discrete list and be used as the operator itself, e.g.
  * `{{eval:5{{op}}3}}` — wrapping it (`5{+}3`) would break parsing.
  */
-function braceWrap(value: string): string {
+export function braceWrap(value: string): string {
 	if (/^\s*[+\-*/^]\s*$/.test(value)) return value;
 	// Un résultat exact (`\dfrac{9}{7}`) repasse en syntaxe maison : sinon tout le calcul
 	// part dans parseLatex, qui ne lit ni `2{…}` ni `sqrt(…)`
