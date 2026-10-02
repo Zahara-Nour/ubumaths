@@ -64,15 +64,16 @@ export function trainingStatus(
 		return gradeQuestion(instance, { values: answer.values ?? [] }).status;
 	}
 	const shuffled =
-		instance.shuffledChoices && instance.shuffledChoices.length > 0
+		// Même condition que buildExpectedResult : badge et statuts par choix lisent le même ordre
+		instance.shuffledChoices && instance.shuffledChoices.length === (instance.choices ?? []).length
 			? instance.shuffledChoices
 			: (instance.choices ?? []).map((choice, originalIndex) => ({
 					content: choice.content,
 					originalIndex
 				}));
-	const choices = (answer.choiceIndexes ?? []).map((index) =>
-		shuffled.findIndex((c) => c.originalIndex === index)
-	);
+	const choices = (answer.choiceIndexes ?? [])
+		.map((index) => shuffled.findIndex((c) => c.originalIndex === index))
+		.filter((position) => position >= 0);
 	return gradeQuestion({ ...instance, shuffledChoices: shuffled }, { choices }).status;
 }
 

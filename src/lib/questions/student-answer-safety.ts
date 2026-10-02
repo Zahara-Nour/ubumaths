@@ -107,9 +107,11 @@ const TEXT_LOOKALIKES: Record<string, string> = {
 	'~': '∼',
 	'#': '＃',
 	'@': '＠',
-	'|': '｜'
+	'|': '｜',
+	// `%` ouvre un commentaire LaTeX dans `\\text{…}` : la suite de la formule disparaîtrait
+	'%': '٪'
 };
-const TEXT_SYNTAX = /[\\[\]()*_`$<>{}~#@|]/g;
+const TEXT_SYNTAX = /[\\[\]()*_`$<>{}~#@|%]/g;
 
 // Functions
 /**
@@ -206,7 +208,10 @@ function keepAllowedCommands(latex: string): string {
 export function neutralizeStudentLatex(latex: string): string {
 	let safe = String(latex)
 		.replace(/[\r\n]+/g, ' ')
-		.replace(/\$/g, '');
+		.replace(/\$/g, '')
+		// `%` nu ouvre un commentaire LaTeX : la suite de la formule disparaîtrait.
+		// Échappé en `\%`, il s'affiche pareil (« 33% » reste « 33 % »).
+		.replace(/(?<!\\)%/g, '\\%');
 	// Jusqu'au point fixe : un retrait peut accoler `\text` et `color`
 	for (let previous = ''; previous !== safe; ) {
 		previous = safe;

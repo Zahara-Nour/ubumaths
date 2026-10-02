@@ -144,7 +144,11 @@ function mathliveCommands(source: string, from: string, to: string): string[] {
 describe('liste blanche : aucune écriture légitime abîmée', () => {
 	it('chaque réponse attendue réelle passe inchangée', () => {
 		const answers = [...loadTemplates().flatMap(expectedAnswers), ...ENGINE_LATEX];
-		const changed = [...new Set(answers)].filter((a) => neutralizeStudentLatex(a) !== a);
+		// Seule transformation admise : un `%` nu devient `\%` (même affichage, plus de commentaire)
+		const withEscapedPercent = (a: string) => a.replace(/(?<!\\)%/g, '\\%');
+		const changed = [...new Set(answers)].filter(
+			(a) => neutralizeStudentLatex(a) !== withEscapedPercent(a)
+		);
 		const commands = new Set(
 			answers.flatMap((a) => [...a.matchAll(/\\([a-zA-Z]+)/g)].map((m) => m[1]))
 		);
@@ -173,5 +177,20 @@ describe('liste blanche : aucune écriture légitime abîmée', () => {
 		expect(neutralizeStudentLatex(String.raw`\sqrt[3]{8}`)).toBe(String.raw`\sqrt[3]{8}`);
 		expect(neutralizeStudentLatex(String.raw`\text\foo[x]color{red}{x}`)).toBe('{red}{x}');
 		expect(neutralizeStudentLatex(String.raw`2\@x\\`)).toBe('2@x');
+	});
+
+	it("un `%` de l'élève ne coupe pas la suite de la formule (texte et math)", async () => {
+		const { escapeStudentText } = await import('../student-answer-safety');
+		const texte = convertLatexToMarkup(
+			String.raw`x = \text{${escapeStudentText('50 % des élèves')}} \neq 3`,
+			{ defaultMode: 'math' }
+		);
+		expect(texte).toContain('3');
+		expect(texte).toContain('élèves');
+		const math = convertLatexToMarkup(String.raw`${neutralizeStudentLatex('5%2')} = 7`, {
+			defaultMode: 'math'
+		});
+		expect(math).toContain('7');
+		expect(neutralizeStudentLatex(String.raw`50\%`)).toBe(String.raw`50\%`);
 	});
 });
