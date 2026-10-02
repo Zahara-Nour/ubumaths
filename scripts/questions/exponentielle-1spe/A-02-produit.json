@@ -292,6 +292,42 @@
 				"status": "bad_form",
 				"constraintViolations": ["form"]
 			}
+		},
+		{
+			"answers": ["\\exp(-3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exp acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\exponentialE^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exponentialE acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\mathrm{e}^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\mathrm{e} acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
 		}
 	]
 }

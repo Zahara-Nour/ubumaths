@@ -320,6 +320,30 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"answers": ["3\\exp(3x-2)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "notation 3\\exp acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["3\\exponentialE^{3x-2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "notation 3\\exponentialE acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
 		}
 	]
 }
