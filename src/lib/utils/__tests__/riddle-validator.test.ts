@@ -506,7 +506,7 @@ describe('getAnswerPlaceholder', () => {
 	it('should return appropriate placeholders for each type', () => {
 		expect(getAnswerPlaceholder('numerical')).toBe('Entrez un nombre...');
 		expect(getAnswerPlaceholder('text')).toBe('Entrez votre réponse...');
-		expect(getAnswerPlaceholder('qcm')).toBe('Sélectionnez une ou plusieurs réponses');
+		expect(getAnswerPlaceholder('qcm')).toBe('Choisis une ou plusieurs réponses.');
 		expect(getAnswerPlaceholder('math')).toBe('Entrez une expression mathématique...');
 		expect(getAnswerPlaceholder('unknown')).toBe('Votre réponse...');
 	});
