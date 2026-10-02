@@ -152,6 +152,20 @@ export interface CourbeGrid {
 	y: number;
 }
 
+/**
+ * Tangente à la courbe d'une fonction (`tangente: f ; 1`) : pente calculée à
+ * l'analyse (dérivée exacte de mathAST, sinon différence centrée).
+ */
+export interface CourbeTangent {
+	functionName: string;
+	/** Point de contact */
+	x: number;
+	y: number;
+	/** f′(x) */
+	slope: number;
+	line: number;
+}
+
 /** Figure complète, valide : tout ce qu'il faut pour construire la scène. */
 export interface CourbeSpec {
 	window: CourbeWindow;
@@ -162,6 +176,8 @@ export interface CourbeSpec {
 	points: CourbePoint[];
 	asymptotes: CourbeAsymptote[];
 	areas: CourbeArea[];
+	/** Absent dans une spécification antérieure aux tangentes */
+	tangents?: CourbeTangent[];
 	size: CourbeSize;
 	description: string | null;
 }
@@ -221,6 +237,7 @@ export const COURBE_LIMITS = {
 	points: 50,
 	asymptotes: 20,
 	areas: 10,
+	tangents: 10,
 	sequences: 10,
 	/** Termes CALCULÉS par suite (premier terme de la récurrence compris) */
 	sequenceTerms: 200,

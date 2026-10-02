@@ -267,3 +267,19 @@ u(0) = 0.5 ; u(n+1) = 0.5*u(n)+3 pour n de 0 à 4   rouge   escalier termes   no
 		expect(svg!.getAttribute('aria-label')).toBe('Escalier de la suite u, x de 0 à 7');
 	});
 });
+
+describe('Courbe — tangente (chantier dérivation)', () => {
+	it('tangente VISIBLE : droite en pointillés colorée et point de contact', async () => {
+		const node = parseCourbeContent('x: -3 ; 3\ny: -2 ; 8\nf(x) = x^2   rouge\ntangente: f ; 1');
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const line = screen.container.querySelector('.courbe-tangente') as SVGPolylineElement;
+		expect(line).not.toBeNull();
+		const style = getComputedStyle(line);
+		expect(style.fill).toBe('none');
+		expect(style.strokeDasharray).not.toBe('none');
+		expect(line.getBoundingClientRect().width).toBeGreaterThan(0);
+		expect(screen.container.querySelectorAll('.courbe-contact').length).toBe(1);
+		const svg = screen.container.querySelector('svg[role="img"]');
+		expect(svg!.getAttribute('aria-label')).toMatch(/tangente/);
+	});
+});

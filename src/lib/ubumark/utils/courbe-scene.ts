@@ -81,6 +81,15 @@ export interface SceneSequence {
 	staircase: SceneStaircase | null;
 }
 
+/** Tangente : droite en pointillés découpée à la fenêtre et point de contact */
+export interface SceneTangent {
+	functionName: string;
+	color: CourbeColor;
+	point: ScenePoint;
+	slope: number;
+	line: ScenePoint[][];
+}
+
 export interface SceneTick {
 	value: number;
 	label: string;
@@ -102,6 +111,7 @@ export interface CourbeScene {
 	points: { name: string; x: number; y: number }[];
 	asymptotes: { from: ScenePoint; to: ScenePoint }[];
 	areas: { color: CourbeColor; polygon: ScenePoint[] }[];
+	tangents: SceneTangent[];
 	curveLabels: { label: CourbeLabel; x: number; y: number; color: CourbeColor }[];
 	ariaLabel: string;
 	warnings: CourbeIssue[];
@@ -503,6 +513,12 @@ function defaultAriaLabel(spec: CourbeSpec): string {
 			`${staircaseNames.length === 1 ? 'escalier de la suite' : 'escaliers des suites'} ${joinNames(staircaseNames)}`
 		);
 	}
+	const tangentNames = [...new Set((spec.tangents ?? []).map((t) => t.functionName))];
+	if (tangentNames.length > 0) {
+		parts.push(
+			`${(spec.tangents ?? []).length === 1 ? 'tangente à la courbe de' : 'tangentes aux courbes de'} ${joinNames(tangentNames)}`
+		);
+	}
 	if (parts.length === 0) return `Repère, ${range}`;
 	const text = parts.join(' et ');
 	return `${text[0].toUpperCase()}${text.slice(1)}, ${range}`;
@@ -527,6 +543,7 @@ function emptyScene(spec: CourbeSpec, width: number, height: number, message: st
 		points: [],
 		asymptotes: [],
 		areas: [],
+		tangents: [],
 		curveLabels: [],
 		ariaLabel: spec.description ?? 'Figure indisponible',
 		warnings: [{ message }]
@@ -740,6 +757,28 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		areas.push({ color: fn.color, polygon });
 	}
 
+	// Tangentes : point de contact dans la fenêtre, droite découpée aux bords
+	const tangents: SceneTangent[] = [];
+	for (const t of (input.tangents ?? []).slice(0, COURBE_LIMITS.tangents)) {
+		const fn = spec.functions.find((f) => f.name === t.functionName);
+		if (!fn || !Number.isFinite(t.slope)) continue;
+		if (!inside(t.x, t.y)) {
+			warnings.push({
+				message: `Ligne ${t.line} : le point de contact de la tangente à ${t.functionName} est hors de la fenêtre, elle n'est pas dessinée`,
+				line: t.line
+			});
+			continue;
+		}
+		const at = (x: number) => ({ x, y: clean(t.slope * (x - t.x) + t.y) });
+		tangents.push({
+			functionName: t.functionName,
+			color: fn.color,
+			point: { x: clean(t.x), y: clean(t.y) },
+			slope: t.slope,
+			line: clipPolyline([at(w.xMin), at(w.xMax)], w)
+		});
+	}
+
 	return {
 		window: { ...w },
 		pixelSize: { width, height },
@@ -753,6 +792,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		points,
 		asymptotes,
 		areas,
+		tangents,
 		curveLabels,
 		ariaLabel: spec.description ?? defaultAriaLabel(spec),
 		warnings

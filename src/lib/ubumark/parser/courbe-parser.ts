@@ -46,6 +46,7 @@ import type {
 	CourbePoint,
 	CourbeSize,
 	CourbeSpec,
+	CourbeTangent,
 	CourbeWindow
 } from '../types/courbe';
 import { COURBE_COLORS, COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
@@ -54,6 +55,7 @@ import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
 import { transformAST } from '$lib/mathAST/visitor';
 import { variable } from '$lib/mathAST/factory';
+import { differentiate } from '$lib/mathAST/differentiation';
 import { computeSequenceTerms, PREV_TERM_VARIABLE } from '$lib/grapheur/sequence';
 
 // ============================================================================
@@ -96,6 +98,7 @@ const KNOWN_KEYS = [
 	'points',
 	'asymptotes',
 	'aire',
+	'tangente',
 	'taille',
 	'description'
 ] as const;
@@ -506,6 +509,55 @@ function parseArea(value: string, functionNames: Set<string>, line: number): Cou
 	return { functionName, from, to, line };
 }
 
+/**
+ * `tangente: f ; 1` : point de contact et pente. Dérivée exacte (mathAST), sinon
+ * différence centrée ; une valeur non finie (f non définie, non dérivable) est une
+ * erreur située, pas une droite fausse.
+ */
+function parseTangent(
+	value: string,
+	functions: CourbeFunction[],
+	table: FunctionTable,
+	line: number
+): CourbeTangent {
+	const parts = splitTopLevel(value, ';');
+	if (parts.length !== 2 || parts.some((p) => p === '')) {
+		throw new LineError('tangente attend « fonction ; abscisse » (ex. f ; 1)');
+	}
+	const [functionName, abscissa] = parts;
+	const fn = functions.find((f) => f.name === functionName);
+	const entry = table.get(functionName);
+	if (!fn || !entry) throw new LineError(`tangente : fonction « ${functionName} » inconnue`);
+	const x = evaluateConstant(abscissa, table);
+	if (!inDomain(x, entry.domain)) {
+		throw new LineError(
+			`tangente : ${formatPlain(x)} n'est pas dans le domaine ${formatDomain(entry.domain!)} de ${functionName}`
+		);
+	}
+	const y = entry.evaluate(x);
+	if (!Number.isFinite(y)) {
+		throw new LineError(`tangente : ${functionName}(${formatPlain(x)}) n'est pas défini`);
+	}
+	let slope = Number.NaN;
+	try {
+		slope = compile(differentiate(fn.ast))({ x });
+	} catch {
+		// Dérivée symbolique indisponible : différence centrée ci-dessous
+	}
+	if (!Number.isFinite(slope)) {
+		const h = 1e-6 * Math.max(1, Math.abs(x));
+		const left = entry.evaluate(x - h);
+		const right = entry.evaluate(x + h);
+		slope = (right - left) / (2 * h);
+		const oneSided = [(right - y) / h, (y - left) / h];
+		const agree = oneSided.every((s) => Math.abs(s - slope) <= 1e-3 * Math.max(1, Math.abs(slope)));
+		if (!Number.isFinite(slope) || !agree) {
+			throw new LineError(`tangente : ${functionName} n'est pas dérivable en ${formatPlain(x)}`);
+		}
+	}
+	return { functionName, x, y, slope, line };
+}
+
 // ============================================================================
 // SUITES
 // ============================================================================
@@ -768,7 +820,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 	const sequences: CourbeSequence[] = [];
 	let sequenceTermsLeft: number = COURBE_LIMITS.totalSequenceTerms;
 	const deferred: {
-		key: 'points' | 'aire' | 'asymptotes';
+		key: 'points' | 'aire' | 'asymptotes' | 'tangente';
 		value: string;
 		line: number;
 		content: string;
@@ -828,7 +880,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 					`clé inconnue « ${kv[1]} » (clés possibles : ${KNOWN_KEYS.join(', ')}, ou f(x) = …)`
 				);
 			}
-			if (key !== 'aire' && seenKeys.has(key)) throw new LineError(`clé « ${key} » répétée`);
+			if (key !== 'aire' && key !== 'tangente' && seenKeys.has(key)) {
+				throw new LineError(`clé « ${key} » répétée`);
+			}
 			seenKeys.add(key);
 
 			switch (key) {
@@ -881,6 +935,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 				case 'points':
 				case 'asymptotes':
 				case 'aire':
+				case 'tangente':
 					// Après toutes les fonctions : `M(2 ; f(2))` peut précéder la ligne de f.
 					deferred.push({ key, value, line, content });
 					break;
@@ -903,13 +958,16 @@ export function parseCourbeContent(source: string): CourbeNode {
 	const points: CourbePoint[] = [];
 	const asymptotes: CourbeAsymptote[] = [];
 	const areas: CourbeArea[] = [];
+	const tangents: CourbeTangent[] = [];
 	const names = new Set(functions.map((f) => f.name));
 	for (const item of deferred) {
 		try {
 			if (item.key === 'points') points.push(...parsePoints(item.value, functionTable, item.line));
 			else if (item.key === 'asymptotes')
 				asymptotes.push(...parseAsymptotes(item.value, item.line));
-			else areas.push(parseArea(item.value, names, item.line));
+			else if (item.key === 'tangente') {
+				tangents.push(parseTangent(item.value, functions, functionTable, item.line));
+			} else areas.push(parseArea(item.value, names, item.line));
 			const over =
 				points.length > COURBE_LIMITS.points
 					? `au plus ${COURBE_LIMITS.points} points par figure`
@@ -917,7 +975,9 @@ export function parseCourbeContent(source: string): CourbeNode {
 						? `au plus ${COURBE_LIMITS.asymptotes} asymptotes par figure`
 						: areas.length > COURBE_LIMITS.areas
 							? `au plus ${COURBE_LIMITS.areas} aires par figure`
-							: null;
+							: tangents.length > COURBE_LIMITS.tangents
+								? `au plus ${COURBE_LIMITS.tangents} tangentes par figure`
+								: null;
 			if (over) throw new LineError(over);
 		} catch (error) {
 			fail(item.line, item.content, error);
@@ -957,6 +1017,7 @@ export function parseCourbeContent(source: string): CourbeNode {
 					points,
 					asymptotes,
 					areas,
+					tangents,
 					size,
 					description
 				}
