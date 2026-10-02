@@ -151,7 +151,10 @@ describe('rien n’est avalé (revue)', () => {
 	it('C — un ```variation à la marge n’est pas avalé', () => {
 		const md = '  ```ts\n  x\n\n```variation\nx | -inf | +inf\n```\n\nfin';
 
-		expect(types(md)).not.toContain('code-block');
+		// Aucun bloc ts (la fence n'est pas fermée) ; le ```variation, invalide,
+		// montre sa source depuis Q64 au lieu de disparaître
+		const blocks = children(md).filter((n) => n.type === 'code-block');
+		expect(blocks.map((n) => codeOf(n).language)).toEqual(['variation']);
 		expect(JSON.stringify(children(md).at(-1))).toContain('fin');
 	});
 
@@ -203,7 +206,10 @@ describe('formule bloc sur plusieurs lignes (2e revue)', () => {
 		const all = JSON.stringify(children(md));
 
 		expect(all).toContain('milieu');
-		expect(children(md).find((n) => n.type === 'code-block')).toMatchObject({ language: 'py' });
+		// Depuis Q65, le `$$` du bloc py (fermé) ne compte plus : la fence
+		// indentée devient un bloc, et chaque bloc garde SON code
+		const blocks = children(md).filter((n) => n.type === 'code-block');
+		expect(blocks.map((n) => codeOf(n).code)).toEqual(['x', 'y $$']);
 	});
 
 	it('formule sur plusieurs lignes dans une liste : la liste n’est pas scindée', () => {

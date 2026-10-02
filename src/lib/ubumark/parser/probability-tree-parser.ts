@@ -35,6 +35,7 @@ import type {
 	ProbTreeParseResult,
 	ProbTreeBlockRange
 } from '../types/probability-tree';
+import { unclosedBlockEnd } from './unclosed-block';
 
 // ============================================================================
 // CONSTANTS
@@ -127,8 +128,10 @@ export function findProbTreeBlocks(lines: string[]): ProbTreeBlockRange[] {
 				i++;
 			}
 
-			const endIndex = i < lines.length ? i : lines.length - 1;
+			// Non fermé : jusqu'à la première ligne vide (Q63)
+			const endIndex = i < lines.length ? i : unclosedBlockEnd(lines, startIndex);
 			blocks.push({ startIndex, endIndex });
+			i = endIndex;
 		}
 		i++;
 	}

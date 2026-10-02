@@ -78,6 +78,11 @@ export interface MathPlaceholder {
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)
 	/** Syntax used: 'latex' for $/$$ or 'custom' for ~/~~ */
 	syntax: 'latex' | 'custom';
+	/**
+	 * Le texte exact remplacé, délimiteurs et espaces compris (Q62) — il peut
+	 * contenir d'autres placeholders (`~~ … $$a$$ … ~~`), cf. `restoreRawMath`
+	 */
+	raw?: string;
 	/** Position dans le morceau de texte extrait (hors blocs, Q60), pas dans tout le document */
 	startIndex: number;
 	endIndex: number;

@@ -49,6 +49,7 @@ import {
 	getPresetAngles,
 	REMARKABLE_ANGLES
 } from '../types/trig-circle';
+import { unclosedBlockEnd } from './unclosed-block';
 
 // ============================================================================
 // CONSTANTS
@@ -143,8 +144,10 @@ export function findTrigCircleBlocks(lines: string[]): TrigCircleBlockRange[] {
 				i++;
 			}
 
-			const endIndex = i < lines.length ? i : lines.length - 1;
+			// Non fermé : jusqu'à la première ligne vide (Q63)
+			const endIndex = i < lines.length ? i : unclosedBlockEnd(lines, startIndex);
 			blocks.push({ startIndex, endIndex });
+			i = endIndex;
 		}
 		i++;
 	}

@@ -43,7 +43,8 @@ import {
 	isMathPlaceholder,
 	findPlaceholder,
 	splitTextWithPlaceholders,
-	restoreMathPlaceholders
+	restoreMathPlaceholders,
+	restoreRawMath
 } from './math-extractor';
 import { parseList, findListBlocks, isListItem, parseColumnsMarker } from './list-parser';
 import {
@@ -60,6 +61,7 @@ import {
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { dedentIndentedFences } from './indented-fences';
+import { blockLineRanges, isSpecialBlockEnd } from './block-ranges';
 import {
 	INLINE_CODE_REGEX,
 	INLINE_DETAIL_REGEX,
@@ -401,44 +403,6 @@ export function parseMarkdown(markdown: string, options: ParseOptions = {}): Doc
 	};
 }
 
-/**
- * Les lignes que le parseur lit comme BLOCS FERMÉS (Q60) : code, ```courbe,
- * ```figure, statistiques, ```variation, ```probtree, ```trig, ```line —
- * chacun selon son propre repérage, comme `parseBlocks`. Triées, fusionnées.
- *
- * ⚠️ Un bloc non fermé n'est PAS protégé (Q60) : un ``` resté seul dans une
- * formule `$$` sur plusieurs lignes aurait sinon changé toute la suite du
- * document en code (revue).
- */
-function blockLineRanges(lines: string[]): [number, number][] {
-	const special = [
-		...findVariationBlocks(lines),
-		...findProbTreeBlocks(lines),
-		...findTrigCircleBlocks(lines),
-		...findNumberLineBlocks(lines),
-		...findCourbeBlocks(lines),
-		...findFigureBlocks(lines),
-		...findStatChartBlocks(lines)
-	].map((r): [number, number] => [r.startIndex, r.endIndex]);
-	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
-	const masked = lines.map((line, index) =>
-		special.some(([start, end]) => index >= start && index <= end) ? '' : line
-	);
-	const code = findCodeBlocks(masked).map((r): [number, number] => [r.startIndex, r.endIndex]);
-
-	// Fermé : la plage finit sur une fence nue, après l'ouvrante
-	const closed = ([start, end]: [number, number]) =>
-		end > start && /^(`{3,}|~{3,})\s*$/.test(lines[end].trim());
-	const sorted = [...special, ...code].filter(closed).sort((a, b) => a[0] - b[0]);
-	const merged: [number, number][] = [];
-	for (const [start, end] of sorted) {
-		const last = merged.at(-1);
-		if (last && start <= last[1] + 1) last[1] = Math.max(last[1], end);
-		else merged.push([start, end]);
-	}
-	return merged;
-}
-
 // ============================================================================
 // BLOCK PARSING
 // ============================================================================
@@ -481,6 +445,28 @@ function parseBlocks(
 	const probTreeBlocks = findProbTreeBlocks(lines);
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
+	type SpecialParse = (
+		source: string[],
+		start: number,
+		end: number
+	) => { node: BlockNode | null | undefined };
+	const SPECIALS: {
+		ranges: { startIndex: number; endIndex: number }[];
+		parse: SpecialParse;
+		language: string;
+	}[] = [
+		{ ranges: variationBlocks, parse: parseVariationTable, language: 'variation' },
+		{ ranges: probTreeBlocks, parse: parseProbabilityTree, language: 'probtree' },
+		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
+		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' }
+	];
+	const specialBlockAt = (index: number) => {
+		for (const { ranges, parse, language } of SPECIALS) {
+			const range = ranges.find((r) => index >= r.startIndex && index <= r.endIndex);
+			if (range) return { range, parse, language };
+		}
+		return null;
+	};
 	// Bloc ```courbe : repéré dans `lines` (indices de la boucle) ET dans
 	// `originalLines` (contenu intact), apparié par rang — comme les blocs de
 	// code, pour survivre à une formule $$ sur plusieurs lignes placée avant.
@@ -526,11 +512,25 @@ function parseBlocks(
 		source.map((line, index) =>
 			ranges.some((r) => index >= r.startIndex && index <= r.endIndex) ? '' : line
 		);
+	// Tous les blocs spéciaux sont masqués (Q63) : un ```variation non fermé
+	// ouvrait sinon un bloc de code qui avalait la suite du document
 	const codeBlocks = findCodeBlocks(
-		maskCourbe(lines, [...courbeBlocks, ...figureBlocks, ...statChartBlocks])
+		maskCourbe(lines, [
+			...variationBlocks,
+			...probTreeBlocks,
+			...trigCircleBlocks,
+			...numberLineBlocks,
+			...courbeBlocks,
+			...figureBlocks,
+			...statChartBlocks
+		])
 	);
 	const originalCodeBlocks = findCodeBlocks(
 		maskCourbe(originalLines, [
+			...findVariationBlocks(originalLines),
+			...findProbTreeBlocks(originalLines),
+			...findTrigCircleBlocks(originalLines),
+			...findNumberLineBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -561,64 +561,30 @@ function parseBlocks(
 			continue;
 		}
 
-		// PRIORITY 1a: Check if this line is part of a variation table block (highest priority)
-		// Variation tables use ```variation syntax and must be checked before regular code blocks
-		const variationBlock = variationBlocks.find(
-			(range) => i >= range.startIndex && i <= range.endIndex
-		);
-		if (variationBlock) {
-			const result = parseVariationTable(lines, variationBlock.startIndex, variationBlock.endIndex);
+		// PRIORITY 1a-1d: ```variation, ```probtree, ```trig, ```line
+		// (contenu verbatim, priorité sur les blocs de code)
+		const special = specialBlockAt(i);
+		if (special) {
+			const { range, parse, language } = special;
+			// Les parseurs lisent jusqu'à `end` EXCLU (la fence de fin) : un bloc
+			// non fermé (Q63) perdait sinon sa dernière ligne
+			const closed = isSpecialBlockEnd(lines[range.endIndex]) && range.endIndex > range.startIndex;
+			const result = parse(lines, range.startIndex, closed ? range.endIndex : range.endIndex + 1);
 			if (result.node) {
+				// ```trig porte ses erreurs dans le nœud (message au prof,
+				// « Figure indisponible » à l'élève), comme ```courbe
 				blocks.push(result.node);
+			} else {
+				// Invalide : sa source en bloc de code, plus un trou sans un mot (Q64)
+				blocks.push({
+					type: 'code-block',
+					language,
+					code: lines
+						.slice(range.startIndex + 1, closed ? range.endIndex : range.endIndex + 1)
+						.join('\n')
+				});
 			}
-			// Note: Errors are silently ignored for now; could be logged if needed
-			i = variationBlock.endIndex + 1;
-			continue;
-		}
-
-		// PRIORITY 1b: Check if this line is part of a probability tree block
-		// Probability trees use ```probtree syntax and must be checked before regular code blocks
-		const probTreeBlock = probTreeBlocks.find(
-			(range) => i >= range.startIndex && i <= range.endIndex
-		);
-		if (probTreeBlock) {
-			const result = parseProbabilityTree(lines, probTreeBlock.startIndex, probTreeBlock.endIndex);
-			if (result.node) {
-				blocks.push(result.node);
-			}
-			// Note: Errors are silently ignored for now; could be logged if needed
-			i = probTreeBlock.endIndex + 1;
-			continue;
-		}
-
-		// PRIORITY 1c: Check if this line is part of a trig circle block
-		// Trig circles use ```trig syntax and must be checked before regular code blocks
-		const trigCircleBlock = trigCircleBlocks.find(
-			(range) => i >= range.startIndex && i <= range.endIndex
-		);
-		if (trigCircleBlock) {
-			const result = parseTrigCircle(lines, trigCircleBlock.startIndex, trigCircleBlock.endIndex);
-			// Toujours un nœud, même en erreur : il porte ses erreurs (message au
-			// prof, « Figure indisponible » à l'élève), comme ```courbe
-			if (result.node) {
-				blocks.push(result.node);
-			}
-			i = trigCircleBlock.endIndex + 1;
-			continue;
-		}
-
-		// PRIORITY 1d: Check if this line is part of a number line block
-		// Number lines use ```line syntax and must be checked before regular code blocks
-		const numberLineBlock = numberLineBlocks.find(
-			(range) => i >= range.startIndex && i <= range.endIndex
-		);
-		if (numberLineBlock) {
-			const result = parseNumberLine(lines, numberLineBlock.startIndex, numberLineBlock.endIndex);
-			if (result.node) {
-				blocks.push(result.node);
-			}
-			// Note: Errors are silently ignored for now; could be logged if needed
-			i = numberLineBlock.endIndex + 1;
+			i = range.endIndex + 1;
 			continue;
 		}
 
@@ -1703,9 +1669,10 @@ function parseContentWithCodeBlocks(
 			// Parse as variation table
 			const lines = ['```variation', ...code.split('\n'), '```'];
 			const result = parseVariationTable(lines, 0, lines.length - 1);
-			if (result.node) {
-				blocks.push(result.node);
-			}
+			// Invalide : sa source, plus un trou sans un mot (Q64)
+			blocks.push(
+				result.node ?? { type: 'code-block', language, code: restoreRawMath(code, placeholders) }
+			);
 		} else if (language === 'probtree') {
 			// Parse as probability tree
 			// IMPORTANT: Restore math placeholders to original expressions (e.g., §M:0§ -> $R_1$)
@@ -1713,9 +1680,10 @@ function parseContentWithCodeBlocks(
 			const restoredCode = restoreMathPlaceholders(code, placeholders);
 			const lines = ['```probtree', ...restoredCode.split('\n'), '```'];
 			const result = parseProbabilityTree(lines, 0, lines.length - 1);
-			if (result.node) {
-				blocks.push(result.node);
-			}
+			// Invalide : sa source, plus un trou sans un mot (Q64)
+			blocks.push(
+				result.node ?? { type: 'code-block', language, code: restoreRawMath(code, placeholders) }
+			);
 		} else if (language === 'trig') {
 			// Cercle trigonométrique dans un item de liste (sinon : code brut à l'écran et dans le PDF)
 			const restoredCode = restoreMathPlaceholders(code, placeholders);
@@ -1734,11 +1702,12 @@ function parseContentWithCodeBlocks(
 			// Diagramme statistique dans un item de liste : toujours un nœud (Q48)
 			blocks.push(parseStatChartContent(language, restoreMathPlaceholders(code, placeholders)));
 		} else {
-			// Regular code block
+			// Regular code block — formules rendues EXACTEMENT écrites (Q62) :
+			// le contenu d'un item de liste a déjà été extrait
 			blocks.push({
 				type: 'code-block',
 				language,
-				code
+				code: restoreRawMath(code, placeholders)
 			});
 		}
 

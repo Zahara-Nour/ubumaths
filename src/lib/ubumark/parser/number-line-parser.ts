@@ -38,6 +38,7 @@ import type {
 } from '../types/number-line';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { unclosedBlockEnd } from './unclosed-block';
 
 // ============================================================================
 // CONSTANTS
@@ -74,8 +75,10 @@ export function findNumberLineBlocks(lines: string[]): NumberLineBlockRange[] {
 				i++;
 			}
 
-			const endIndex = i < lines.length ? i : lines.length - 1;
+			// Non fermé : jusqu'à la première ligne vide (Q63)
+			const endIndex = i < lines.length ? i : unclosedBlockEnd(lines, startIndex);
 			blocks.push({ startIndex, endIndex });
+			i = endIndex;
 		}
 		i++;
 	}

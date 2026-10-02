@@ -31,6 +31,7 @@
  */
 
 import { findCodeBlocks } from './code-block-parser';
+import { blockLineRanges } from './block-ranges';
 import { findListBlocks } from './list-parser';
 import {
 	extractMath,
@@ -105,7 +106,11 @@ export function dedentIndentedFences(markdown: string): string {
 		...findCodeBlocks(lines).map((b): [number, number] => [b.startIndex, b.endIndex])
 	];
 	for (const [start, end] of ranges) untouchable.fill(true, start, end + 1);
-	const mathLine = firstMultilineMathLine(markdown);
+	// Les lignes des blocs fermés ne sont plus extraites (Q60) : un `$$` de
+	// SQL n'y est plus une formule, il ne bloque plus rien (Q65)
+	const outsideBlocks = lines.map((line) => line);
+	for (const [start, end] of blockLineRanges(lines)) outsideBlocks.fill('', start, end + 1);
+	const mathLine = firstMultilineMathLine(outsideBlocks.join('\n'));
 
 	// Première ligne d'abandon à partir de chaque ligne (marge non vide, liste,
 	// bloc à la marge), et les fermantes possibles : la recherche de la
