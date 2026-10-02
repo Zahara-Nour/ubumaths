@@ -21,11 +21,11 @@
  * - jamais fermée (Q57) : texte, comme avant ;
  * - lignes d'une liste ou du code d'un bloc à la marge : jamais touchées ;
  * - ⚠️ seuls les blocs placés AVANT la première formule bloc sur plusieurs
- *   lignes (`$$…$$`, `~~…~~`) sont ramenés : l'extraction des formules, qui
- *   ignore les blocs de code, replie ses lignes et décale l'appariement par
- *   rang des blocs (et les listes repérées) — défaut préexistant à la marge.
- *   Au-delà, la lecture d'avant est gardée (revue : code d'un autre bloc
- *   affiché, texte avalé, liste scindée).
+ *   lignes (`$$…$$`, `~~…~~`) sont ramenés : une formule repliée décalait
+ *   l'appariement par rang des blocs (et les listes repérées). Depuis Q60, les
+ *   formules ne sont plus extraites des blocs fermés, mais ce repérage-ci
+ *   compte encore un `$$` situé dans du code : garde prudente, gardée telle
+ *   quelle (revue : code d'un autre bloc affiché, texte avalé, liste scindée).
  *
  * @module ubumark/parser/indented-fences
  */

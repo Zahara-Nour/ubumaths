@@ -78,8 +78,9 @@ export interface MathPlaceholder {
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)
 	/** Syntax used: 'latex' for $/$$ or 'custom' for ~/~~ */
 	syntax: 'latex' | 'custom';
-	startIndex: number; // Original position in source text
-	endIndex: number; // Original end position in source text
+	/** Position dans le morceau de texte extrait (hors blocs, Q60), pas dans tout le document */
+	startIndex: number;
+	endIndex: number;
 }
 
 // ============================================================================

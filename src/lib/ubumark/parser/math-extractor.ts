@@ -155,8 +155,45 @@ export function extractMath(markdown: string): {
 	placeholders: MathPlaceholder[];
 } {
 	const placeholders: MathPlaceholder[] = [];
+	return { text: extractInto(markdown, placeholders), placeholders };
+}
+
+/**
+ * Extraire les formules HORS des lignes protégées (Q60, 2026-10-02) : les
+ * blocs (code, ```courbe, ```variation…) lisent leur contenu tel quel, et un
+ * `$$` ou un `~` de code pris pour une formule repliait des lignes, ce qui
+ * décalait l'appariement des blocs (code d'un autre bloc affiché, texte
+ * avalé). Chaque morceau hors bloc est traité seul : une formule ne peut plus
+ * enjamber un bloc (Q61), ses délimiteurs restent du texte.
+ *
+ * @param protectedRanges plages de lignes [début, fin] incluses, triées
+ */
+export function extractMathOutside(
+	markdown: string,
+	protectedRanges: readonly [number, number][]
+): { text: string; placeholders: MathPlaceholder[] } {
+	if (protectedRanges.length === 0) return extractMath(markdown);
+	const lines = markdown.split('\n');
+	const placeholders: MathPlaceholder[] = [];
+	const parts: string[] = [];
+	let next = 0;
+	for (const [start, end] of protectedRanges) {
+		if (end < next) continue;
+		const from = Math.max(start, next);
+		if (from > next) parts.push(extractInto(lines.slice(next, from).join('\n'), placeholders));
+		parts.push(lines.slice(from, end + 1).join('\n'));
+		next = end + 1;
+	}
+	if (next < lines.length) {
+		parts.push(extractInto(lines.slice(next).join('\n'), placeholders));
+	}
+	return { text: parts.join('\n'), placeholders };
+}
+
+/** Les étapes de l'extraction, numérotation à la suite de `placeholders`. */
+function extractInto(markdown: string, placeholders: MathPlaceholder[]): string {
 	let text = markdown;
-	let placeholderIndex = 0;
+	let placeholderIndex = placeholders.length;
 
 	// Step 1: Temporarily replace escaped characters with placeholders
 	// This prevents them from being matched as math delimiters
@@ -236,10 +273,7 @@ export function extractMath(markdown: string): {
 	text = text.replace(new RegExp(ESCAPED_DOLLAR_PLACEHOLDER, 'g'), '$');
 	text = text.replace(new RegExp(ESCAPED_TILDE_PLACEHOLDER, 'g'), '~');
 
-	return {
-		text,
-		placeholders
-	};
+	return text;
 }
 
 // ============================================================================

@@ -39,7 +39,7 @@ import type {
 	InternalLinkReferenceType
 } from '../types';
 import {
-	extractMath,
+	extractMathOutside,
 	isMathPlaceholder,
 	findPlaceholder,
 	splitTextWithPlaceholders,
@@ -379,8 +379,8 @@ export function parseMarkdown(markdown: string, options: ParseOptions = {}): Doc
 	// Keep original lines for code blocks (before math extraction)
 	const originalLines = normalized.split('\n');
 
-	// Step 1: Extract math expressions
-	const { text, placeholders } = extractMath(normalized);
+	// Step 1: Extract math expressions — hors des blocs (Q60)
+	const { text, placeholders } = extractMathOutside(normalized, blockLineRanges(originalLines));
 
 	// Step 2: Split into lines
 	const lines = text.split('\n');
@@ -392,6 +392,44 @@ export function parseMarkdown(markdown: string, options: ParseOptions = {}): Doc
 		type: 'document',
 		children: blocks
 	};
+}
+
+/**
+ * Les lignes que le parseur lit comme BLOCS FERMÉS (Q60) : code, ```courbe,
+ * ```figure, statistiques, ```variation, ```probtree, ```trig, ```line —
+ * chacun selon son propre repérage, comme `parseBlocks`. Triées, fusionnées.
+ *
+ * ⚠️ Un bloc non fermé n'est PAS protégé (Q60) : un ``` resté seul dans une
+ * formule `$$` sur plusieurs lignes aurait sinon changé toute la suite du
+ * document en code (revue).
+ */
+function blockLineRanges(lines: string[]): [number, number][] {
+	const special = [
+		...findVariationBlocks(lines),
+		...findProbTreeBlocks(lines),
+		...findTrigCircleBlocks(lines),
+		...findNumberLineBlocks(lines),
+		...findCourbeBlocks(lines),
+		...findFigureBlocks(lines),
+		...findStatChartBlocks(lines)
+	].map((r): [number, number] => [r.startIndex, r.endIndex]);
+	// Les blocs de code, une fois les blocs spéciaux masqués (comme parseBlocks)
+	const masked = lines.map((line, index) =>
+		special.some(([start, end]) => index >= start && index <= end) ? '' : line
+	);
+	const code = findCodeBlocks(masked).map((r): [number, number] => [r.startIndex, r.endIndex]);
+
+	// Fermé : la plage finit sur une fence nue, après l'ouvrante
+	const closed = ([start, end]: [number, number]) =>
+		end > start && /^(`{3,}|~{3,})\s*$/.test(lines[end].trim());
+	const sorted = [...special, ...code].filter(closed).sort((a, b) => a[0] - b[0]);
+	const merged: [number, number][] = [];
+	for (const [start, end] of sorted) {
+		const last = merged.at(-1);
+		if (last && start <= last[1] + 1) last[1] = Math.max(last[1], end);
+		else merged.push([start, end]);
+	}
+	return merged;
 }
 
 // ============================================================================
@@ -428,10 +466,14 @@ function parseBlocks(
 	// Find all structured blocks (code, variation tables, probability trees, trig circles, blockquotes, lists, tables)
 	// Code blocks, variation tables, probability trees, and trig circles have highest priority as their content is verbatim
 	// Use original lines for code blocks to preserve math expressions
-	const variationBlocks = findVariationBlocks(originalLines);
-	const probTreeBlocks = findProbTreeBlocks(originalLines);
-	const trigCircleBlocks = findTrigCircleBlocks(originalLines);
-	const numberLineBlocks = findNumberLineBlocks(originalLines);
+	// Repérés sur `lines`, les indices de la boucle : leurs lignes y sont
+	// intactes depuis que les formules ne sont plus extraites des blocs (Q60).
+	// Repérés sur `originalLines`, une formule sur plusieurs lignes placée
+	// avant les décalait (le tableau s'affichait en bloc de code).
+	const variationBlocks = findVariationBlocks(lines);
+	const probTreeBlocks = findProbTreeBlocks(lines);
+	const trigCircleBlocks = findTrigCircleBlocks(lines);
+	const numberLineBlocks = findNumberLineBlocks(lines);
 	// Bloc ```courbe : repéré dans `lines` (indices de la boucle) ET dans
 	// `originalLines` (contenu intact), apparié par rang — comme les blocs de
 	// code, pour survivre à une formule $$ sur plusieurs lignes placée avant.
@@ -518,11 +560,7 @@ function parseBlocks(
 			(range) => i >= range.startIndex && i <= range.endIndex
 		);
 		if (variationBlock) {
-			const result = parseVariationTable(
-				originalLines,
-				variationBlock.startIndex,
-				variationBlock.endIndex
-			);
+			const result = parseVariationTable(lines, variationBlock.startIndex, variationBlock.endIndex);
 			if (result.node) {
 				blocks.push(result.node);
 			}
@@ -537,11 +575,7 @@ function parseBlocks(
 			(range) => i >= range.startIndex && i <= range.endIndex
 		);
 		if (probTreeBlock) {
-			const result = parseProbabilityTree(
-				originalLines,
-				probTreeBlock.startIndex,
-				probTreeBlock.endIndex
-			);
+			const result = parseProbabilityTree(lines, probTreeBlock.startIndex, probTreeBlock.endIndex);
 			if (result.node) {
 				blocks.push(result.node);
 			}
@@ -556,11 +590,7 @@ function parseBlocks(
 			(range) => i >= range.startIndex && i <= range.endIndex
 		);
 		if (trigCircleBlock) {
-			const result = parseTrigCircle(
-				originalLines,
-				trigCircleBlock.startIndex,
-				trigCircleBlock.endIndex
-			);
+			const result = parseTrigCircle(lines, trigCircleBlock.startIndex, trigCircleBlock.endIndex);
 			// Toujours un nœud, même en erreur : il porte ses erreurs (message au
 			// prof, « Figure indisponible » à l'élève), comme ```courbe
 			if (result.node) {
@@ -576,11 +606,7 @@ function parseBlocks(
 			(range) => i >= range.startIndex && i <= range.endIndex
 		);
 		if (numberLineBlock) {
-			const result = parseNumberLine(
-				originalLines,
-				numberLineBlock.startIndex,
-				numberLineBlock.endIndex
-			);
+			const result = parseNumberLine(lines, numberLineBlock.startIndex, numberLineBlock.endIndex);
 			if (result.node) {
 				blocks.push(result.node);
 			}
