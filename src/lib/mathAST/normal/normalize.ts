@@ -89,6 +89,7 @@ import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } fro
 import { expandEulerPowers } from './rules/euler-power';
 import { expandPositiveBasePowers } from './rules/general-power';
 import { expandFractionalPowers } from './rules/fractional-power';
+import { expandNthRootPowers } from './rules/nth-root-power';
 import { expandLogBases } from './rules/log-base';
 import type { AssumptionOracle } from '../assumptions';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
@@ -2136,7 +2137,15 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 	const withRoots = expandFractionalPowers(withPositiveBases, {
 		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
 	});
-	const withDefinitions = expandTrigDefinitions(withRoots);
+	// `∛(x²)`, `∛(8x³)`, `⁴√(x³)` se distribuent en `(∛x)²`, `∛8·x`, `(⁴√x)³` :
+	// sans ça, un radical d'indice ≥ 3 sur autre chose qu'une variable restait
+	// opaque et ne rencontrait jamais `x^{\frac23}`. Après `expandFractionalPowers`,
+	// qui fabrique ces radicaux (`(x²)^{\frac13}`). Détail dans
+	// `rules/nth-root-power.ts`.
+	const withDistributedRoots = expandNthRootPowers(withRoots, {
+		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
+	});
+	const withDefinitions = expandTrigDefinitions(withDistributedRoots);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
 		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
 		// passe que l'interruption, jamais l'enregistreur d'étapes.

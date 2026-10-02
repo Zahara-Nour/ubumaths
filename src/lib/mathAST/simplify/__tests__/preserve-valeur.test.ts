@@ -56,7 +56,16 @@ const EXPRESSIONS = [
 	'\\frac{x}{(x^2+1)^{\\frac32}}',
 	'(x+2)^{0.25}',
 	'\\sqrt{x+1}^{3}',
-	'\\sqrt{2}\\cdot\\sqrt{8}'
+	'\\sqrt{2}\\cdot\\sqrt{8}',
+	// Racines d'indice ≥ 3 d'une puissance (comparaison seule, l'affichage ne bouge pas)
+	'\\sqrt[3]{x^2}',
+	'\\sqrt[3]{x}^2',
+	'\\sqrt[4]{x^3}',
+	'\\sqrt[3]{8x^3}',
+	'\\sqrt[3]{(x+1)^2}',
+	'\\frac{1}{\\sqrt[3]{x^2}}',
+	'\\sqrt[4]{x^4}',
+	'\\sqrt[3]{16x^4}'
 ];
 
 function valuesAt(latex: string): number[] {
