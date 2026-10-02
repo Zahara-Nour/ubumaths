@@ -90,3 +90,14 @@ validée par David le 2026-10-02.
   voir l'ordre changer au rechargement ; évaluations notées non concernées (instances figées).
 - **Q109 a** : boutons de choix conservés, avec un indicateur rond ○/● (une réponse) ou case ☐/☑
   (plusieurs réponses) ; accessibilité radio / checkbox.
+
+## Livré : PR #657 (2026-10-02) — remarques de revue à garder en tête
+
+- Pour les 49 modèles `shuffleChoices: false`, le mélange ne consomme plus le générateur aléatoire : à graine
+  égale, l'ordre affiché change (Q108) **et aussi les tirages suivants** (`resolveCorrectionContent`,
+  `resolveRequiredForm`). La note ne change pas (indices d'origine conservés).
+- Mineurs non traités : test de route POST pour V1 sur brouillon ; cas Zod « trop de choix » qui ne prouve pas
+  la borne de longueur ; `radiogroup` sans tabindex itinérant, `aria-label="Choix"` générique ; décocher
+  « plusieurs réponses » / Vrai-Faux ne normalise que l'éditeur courant (V1 rattrape) ; sauvegarde silencieuse
+  d'un modèle incohérent sans message.
+- En attente de David : harmoniser « Sélectionnez une réponse » (vouvoiement) en « Choisis une réponse. ».
