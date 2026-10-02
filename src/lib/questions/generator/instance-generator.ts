@@ -235,29 +235,43 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// 5. Resolve variables in declaration order (with condition retry loop)
+		// 5. Resolve variables in declaration order (with condition retry loop).
+		// Un tirage est rejeté et recommencé quand une condition est fausse, mais aussi quand
+		// une variable ne se calcule pas pour CE tirage (division par zéro, arccos(3/2)) :
+		// c'est une condition implicite. L'échec n'est rendu qu'après épuisement des essais.
 		const MAX_CONDITION_RETRIES = 100;
-		let resolvedVariables = resolveVariables(resolvedVariation.variables || [], random);
-		let conditionRetryCount = 0;
-
-		if (resolvedVariation.conditions?.length) {
-			while (
-				!evaluateConditions(resolvedVariation.conditions, resolvedVariables) &&
-				conditionRetryCount < MAX_CONDITION_RETRIES
-			) {
-				conditionRetryCount++;
-				// Nouvel essai : la source continue, les tirages sont donc neufs
-				resolvedVariables = resolveVariables(resolvedVariation.variables || [], random);
+		const conditions = resolvedVariation.conditions ?? [];
+		let resolvedVariables: ResolvedVariable[] | undefined;
+		let lastVariableError: string | undefined;
+		let conditionFailures = 0;
+		for (let attempt = 0; attempt <= MAX_CONDITION_RETRIES; attempt++) {
+			// Nouvel essai : la source continue, les tirages sont donc neufs
+			let candidate: ResolvedVariable[];
+			try {
+				candidate = resolveVariables(resolvedVariation.variables || [], random);
+			} catch (error) {
+				lastVariableError = error instanceof Error ? error.message : String(error);
+				continue;
 			}
-
-			if (conditionRetryCount >= MAX_CONDITION_RETRIES) {
-				return {
-					success: false,
-					errors: [
-						`Failed to generate variables satisfying conditions after ${MAX_CONDITION_RETRIES} retries. Conditions: ${resolvedVariation.conditions.join(', ')}`
-					]
-				};
+			conditionFailures++;
+			if (evaluateConditions(conditions, candidate)) {
+				resolvedVariables = candidate;
+				break;
 			}
+		}
+
+		if (resolvedVariables === undefined) {
+			return {
+				success: false,
+				errors: [
+					conditionFailures === 0
+						? `Failed to resolve variables after ${MAX_CONDITION_RETRIES} retries: ${lastVariableError}`
+						: `Failed to generate variables satisfying conditions after ${MAX_CONDITION_RETRIES} retries. Conditions: ${conditions.join(', ')}` +
+							(lastVariableError !== undefined
+								? ` (some draws could not be computed: ${lastVariableError})`
+								: '')
+				]
+			};
 		}
 
 		// 5b. Detect expression variable names (convention: name starts with "expression")

@@ -119,7 +119,9 @@ function hasDecimalLiteral(node: MathNode): boolean {
 export function evalResultToCustom(value: string): string {
 	if (!value.includes('\\')) return value;
 	try {
-		const custom = toCustom(parseLatex(value));
+		// `toCustom` écrit e `\euler`, que la syntaxe maison ne relit pas : en syntaxe maison,
+		// e s'écrit `e` (groupé, pour que `2{e}` ne se colle à rien)
+		const custom = toCustom(parseLatex(value)).replace(/\\euler(?![A-Za-z])/g, '{e}');
 		// Aller-retour vérifié : sinon la valeur reste en LaTeX, comme avant
 		parseCustom(custom);
 		return custom;
