@@ -96,4 +96,6 @@ PR prévues : (a) listes qualitatives (Q84-Q88, Q91) ; (b) `.croiser` ; (c) `.fi
 
 **Lot 2 (listes qualitatives) TERMINÉ** : (a) listes qualitatives #661 ; Q92 #662 ; (b) `.croiser` #666 ; (c) `.filtrer` #667.
 Suivant (Q67) : bloc de simulation pour les fiches (Q69, graine) ; série brute dans les blocs (`données:`) ; comparer deux séries.
-Ouvert : Q93 (largeur du tableau croisé dans l'atelier : 20, reco, ou 8 comme les blocs).
+
+93. (2026-10-02) Tableau croisé de l'atelier : jusqu'à **20** modalités par côté (défilant à
+    l'écran) ; les blocs imprimés gardent 8 (Q34). `0x10` reste lu 16, comme en v1.
