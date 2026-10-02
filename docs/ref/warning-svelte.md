@@ -117,6 +117,13 @@ Trois niveaux de remédiation, du moins au plus ambitieux :
 - Un utilisateur réel demande l'accès clavier
 - Le projet vise une certification (RGAA / WCAG AA en France)
 
+### Dette voisine, sans warning : le nom accessible des `MySelect`
+
+Sans `triggerAriaLabel` (prop ajoutée par #615), le bouton d'un `MySelect` prend son texte
+d'invite (`placeholder`) comme nom accessible : le lecteur d'écran annonce « Choisir… » au lieu
+de ce que le menu règle. Imparfait, pas muet. Au 2026-10-02 : 81 fichiers sur 117 sans nom.
+Décision Q53 : pas de balayage ; on ajoute `triggerAriaLabel` quand un écran est retouché.
+
 ---
 
 ## 3. `perf_avoid_nested_class` — INÉVITABLE ⚠️
