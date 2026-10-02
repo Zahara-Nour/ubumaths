@@ -2125,8 +2125,49 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx)),
 		abortChecker: ctx?.abortChecker
 	});
-	const form = mergeNegativeBasePowers(normalize(withArcs, ctx), ctx);
+	const form = promoteEulerPowers(mergeNegativeBasePowers(normalize(withArcs, ctx), ctx));
 	return reducePythagorasInNormalForm(form, ctx);
+}
+
+// =============================================================================
+// Puissances de la constante d'Euler (chemin de l'équivalence seul)
+// =============================================================================
+
+/**
+ * `euler^k` (k ≠ 1) devient `exp(k)` dans chaque monôme.
+ *
+ * `e\times e` arrive ici comme `exp(1)·exp(1)`, que la normalisation range en
+ * `euler²` (`exp(1)` s'écrit `e`, cf. `expNodeFor`) ; `e^{2}` arrive comme
+ * `exp(2)`. Sans vraie exponentielle dans le monôme, `combineExpInMonomial` ne
+ * promeut pas la constante, et les deux formes ne se rencontraient jamais :
+ * `e\times e ≢ e^{2}` rendait faux.
+ *
+ * ⚠️ Ici seulement : sur la forme NORMALE, promouvoir `e²` cassait le solveur
+ * (cf. `hasRealExpFactor`). `euler¹` reste la constante, forme canonique de
+ * `exp(1)`.
+ */
+function promoteEulerPowers(form: NormalForm): NormalForm {
+	const numerator = promoteEulerPowersInPolynomial(form.numerator);
+	const denominator = promoteEulerPowersInPolynomial(form.denominator);
+	if (numerator === null && denominator === null) return form;
+	return normalFormFromFraction(numerator ?? form.numerator, denominator ?? form.denominator);
+}
+
+/** Le polynôme réécrit, ou `null` si aucun monôme n'a bougé. */
+function promoteEulerPowersInPolynomial(polynomial: readonly NormalTerm[]): NormalTerm[] | null {
+	let changed = false;
+	const terms = polynomial.map((term) => {
+		const monomial = term.monomial.map((factor) => {
+			if (!isEulerConstant(factor.base) || isOne(factor.exponent)) return factor;
+			changed = true;
+			const argument = denormalize(
+				normalizeNode(scaleNodeByRational(number('1'), factor.exponent))
+			);
+			return symbolicFactor(expNodeFor(argument), ONE);
+		});
+		return { coefficient: term.coefficient, monomial: sortSymbolicFactors(monomial) };
+	});
+	return changed ? collectLikeTerms(terms) : null;
 }
 
 // =============================================================================
