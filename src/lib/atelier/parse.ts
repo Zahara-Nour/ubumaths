@@ -166,6 +166,8 @@ export interface ParsedDefinition {
 	readonly skipped?: number;
 	/** Modalités d'une liste qualitative (Q84), une par entrée */
 	readonly categories?: readonly string[];
+	/** La 1re entrée-mot d'une liste qui mélange nombres et mots (Q92) */
+	readonly qualitativeBecause?: string;
 }
 
 /** Une valeur purement numérique, sans unité ni expression. */
@@ -316,20 +318,28 @@ export function parseDefinition(
 
 		// Q84 : un mot, et toute la liste est qualitative
 		const entries = parts.map((part) => part.trim()).filter((part) => part !== '');
-		if (entries.some((entry) => WORD.test(entry))) {
+		// Q92 : une entrée qui se lit comme un nombre (`1e3`) n'est jamais un mot
+		const isWord = (entry: string) => WORD.test(entry) && readListValue(entry) === null;
+		if (entries.some(isWord)) {
 			if (entries.length > MAX_LIST_VALUES) {
+				// Refusée, elle reste qualitative (actions d'une liste de mots)
 				return {
 					values: [],
 					skipped: 0,
+					categories: entries,
 					error: `Une liste ne peut pas dépasser ${MAX_LIST_VALUES} valeurs (celle-ci en a ${entries.length}).`
 				};
 			}
 			const read = readCategories(entries);
 			// Refusée, elle reste QUALITATIVE (revue) : ses actions sont celles d'une
 			// liste de mots, désactivées, pas le catalogue numérique
+			// Q92 : une liste MÉLANGÉE dit quelle entrée la rend qualitative (un
+			// `2x` tapé par erreur dans des notes la basculait en silence)
+			const mixed = entries.some((entry) => !isWord(entry));
+			const because = mixed ? { qualitativeBecause: entries.find(isWord)! } : {};
 			return 'error' in read
-				? { values: [], skipped: 0, categories: entries, error: read.error }
-				: { values: [], skipped: 0, categories: read.categories };
+				? { values: [], skipped: 0, categories: entries, error: read.error, ...because }
+				: { values: [], skipped: 0, categories: read.categories, ...because };
 		}
 
 		const values: number[] = [];

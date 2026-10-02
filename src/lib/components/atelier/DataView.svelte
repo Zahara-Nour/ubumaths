@@ -33,9 +33,11 @@
 	}
 
 	/** L'aperçu d'une liste qualitative (Q84) : entrées et modalités, pas de moyenne */
-	function qualitativeSummary(categories: readonly string[]): string {
+	function qualitativeSummary(categories: readonly string[], because?: string): string {
 		const distinct = new Set(categories).size;
-		return `liste qualitative · ${categories.length} entrée${categories.length > 1 ? 's' : ''} · ${distinct} modalité${distinct > 1 ? 's' : ''}`;
+		// Q92 : la cause d'une liste mélangée, pour un `2x` tapé par erreur
+		const why = because === undefined ? '' : `, à cause de « ${because} »`;
+		return `liste qualitative${why} · ${categories.length} entrée${categories.length > 1 ? 's' : ''} · ${distinct} modalité${distinct > 1 ? 's' : ''}`;
 	}
 
 	function edit(name: string, definition: string) {
@@ -71,7 +73,9 @@
 						<p class="probleme" id={`liste-${list.name}-apercu`}>{list.message}</p>
 					{:else}
 						<p class="apercu" id={`liste-${list.name}-apercu`}>
-							{list.categories ? qualitativeSummary(list.categories) : summaryOf(list.values)}
+							{list.categories
+								? qualitativeSummary(list.categories, list.qualitativeBecause)
+								: summaryOf(list.values)}
 							{#if list.skipped > 0}
 								<span class="ecarte">· {skippedNote(list.skipped)}</span>
 							{/if}

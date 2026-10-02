@@ -539,7 +539,10 @@ export class Atelier {
 					kind: 'list',
 					values: parsed.values ?? [],
 					skipped: parsed.skipped ?? 0,
-					...(parsed.categories && { categories: parsed.categories })
+					...(parsed.categories && { categories: parsed.categories }),
+					...(parsed.qualitativeBecause !== undefined && {
+						qualitativeBecause: parsed.qualitativeBecause
+					})
 				} satisfies ListObject;
 			case 'value': {
 				// Décision D4 : une grandeur n'est pas pilotable par un curseur.
