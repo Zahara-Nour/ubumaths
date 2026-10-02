@@ -22,7 +22,7 @@ import { parseCustom } from '$lib/mathAST/parser/custom';
 import { substitute } from '$lib/mathAST/eval/substitute';
 import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isEvalValue } from '$lib/mathAST/eval/types';
-import { isRelation, isLogical, isLogicalNot, isBoolean } from '$lib/mathAST/guards';
+import { isRelation, isLogical, isLogicalNot, isBoolean, isDelimiter } from '$lib/mathAST/guards';
 import { braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 
 /**
@@ -61,6 +61,26 @@ function substituteLongNames(condition: string, resolvedVariables: ResolvedVaria
 	const values = new Map(resolvedVariables.map((v) => [v.name, v.value]));
 	const regex = new RegExp(`\\b(?:${longNames.join('|')})\\b`, 'g');
 	return condition.replace(regex, (name) => braceWrap(values.get(name) ?? name));
+}
+
+/**
+ * Erreur d'une condition ILLISIBLE (faute de l'auteur) : elle remonte au lieu d'être
+ * lue comme « faux », sinon le tirage épuise ses 100 essais sans dire pourquoi.
+ */
+class ConditionSyntaxError extends Error {}
+
+/**
+ * Ramène les opérateurs qu'un auteur écrit naturellement (à la manière d'un langage de
+ * programmation) à la notation du parseur : `==`, `===` → `=` ; `!==`, `<>`, `≠` → `!=`.
+ * `<=`, `>=` et `!=` ne sont pas touchés. Sans cela, `gcd(c,d) == 1` était une erreur de
+ * syntaxe, avalée en « faux » : la condition n'était jamais satisfaite.
+ */
+function normalizeConditionOperators(condition: string): string {
+	return condition
+		.replace(/!==(?!=)/g, '!=')
+		.replace(/(?<![<>!=])={2,3}(?!=)/g, '=')
+		.replace(/<>/g, '!=')
+		.replace(/≠/g, '!=');
 }
 
 /** Tolerance for floating-point comparisons */
@@ -111,6 +131,11 @@ function evaluateBooleanNode(node: MathNode): boolean | undefined {
 		return node.value;
 	}
 
+	// `!(a = b)` : la parenthèse enveloppe la relation, qui doit être lue telle quelle
+	if (isDelimiter(node) && node.delimiters === 'parentheses') {
+		return evaluateBooleanNode(node.content);
+	}
+
 	if (isRelation(node)) {
 		return evaluateRelationNumeric(node);
 	}
@@ -151,9 +176,9 @@ function evaluateSingleCondition(condition: string, bindings: EvalBindings): boo
 	// 1. Parse the condition string into a MathAST node
 	let ast: MathNode;
 	try {
-		ast = parseCustom(condition);
+		ast = parseCustom(normalizeConditionOperators(condition));
 	} catch (e) {
-		throw new Error(
+		throw new ConditionSyntaxError(
 			`Condition '${condition}' could not be parsed: ${e instanceof Error ? e.message : String(e)}`
 		);
 	}
@@ -209,6 +234,9 @@ export function evaluateConditionStrict(
  * @param conditions - Array of condition strings
  * @param resolvedVariables - Resolved variable values to substitute
  * @returns true if ALL conditions are satisfied, false if any fails
+ * @throws ConditionSyntaxError si une condition est illisible (faute de l'auteur) ;
+ *   une condition lisible mais non évaluable pour ce tirage (division par zéro…)
+ *   reste « fausse » : le tirage est rejeté et recommencé.
  */
 export function evaluateConditions(
 	conditions: string[],
@@ -223,8 +251,9 @@ export function evaluateConditions(
 			if (!evaluateSingleCondition(substituteLongNames(condition, resolvedVariables), bindings)) {
 				return false;
 			}
-		} catch {
-			// If evaluation fails, treat as unsatisfied
+		} catch (e) {
+			if (e instanceof ConditionSyntaxError) throw e;
+			// Non évaluable pour CE tirage : rejeté, un nouveau tirage est tenté
 			return false;
 		}
 	}
