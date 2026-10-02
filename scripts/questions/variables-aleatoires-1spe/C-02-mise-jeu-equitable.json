@@ -1,0 +1,256 @@
+{
+	"title": "Mise rendant un jeu équitable",
+	"description": "Exprimer l'espérance du gain algébrique en fonction de la mise m, puis trouver m pour que le jeu soit équitable",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Jeux et gains",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un jeu consiste à lancer un dé cubique équilibré. Si on obtient $6$, on reçoit ${{a}}$ € ; si on obtient $4$ ou $5$, on reçoit ${{b}}$ € ; sinon, on ne reçoit rien. Pour jouer, il faut d'abord payer une mise de $m$ euros.\n\nQuelle mise $m$ (en euros) rend le jeu équitable ? Réponds par un nombre décimal exact.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "6..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["mod(a+2*b,3) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+2*b)/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $G$ le gain algébrique du joueur (somme reçue moins la mise). Le jeu est équitable lorsque $E(G)=0$.",
+					"$G$ prend les valeurs ${{a}}-m$, ${{b}}-m$ et $-m$, avec les probabilités $\\dfrac{1}{6}$, $\\dfrac{2}{6}=\\dfrac{1}{3}$ et $\\dfrac{3}{6}=\\dfrac{1}{2}$.",
+					"$E(G)=\\dfrac{1}{6}({{a}}-m)+\\dfrac{1}{3}({{b}}-m)+\\dfrac{1}{2}\\times(-m)={{eval:a/6}}+{{eval:b/3}}-m$, car $\\dfrac{1}{6}+\\dfrac{1}{3}+\\dfrac{1}{2}=1$.",
+					"$E(G)=0$ équivaut à $m={{eval:a/6}}+{{eval:b/3}}={{eval:(a+2*b)/6}}$, soit $m=\\textcolor{{{color:primary.0}}}{ {{eval:(a+2*b)/6;d}} }$ €.",
+					"La mise équitable est égale à la somme reçue en moyenne : sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient $20$ boules indiscernables au toucher : ${{r}}$ rouges, ${{v}}$ vertes et ${{eval:20-r-v}}$ noires. On tire une boule au hasard : une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. Pour jouer, il faut d'abord payer une mise de $m$ euros.\n\nQuelle mise $m$ (en euros) rend le jeu équitable ? Réponds par un nombre décimal exact.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..4"
+				},
+				{
+					"name": "v",
+					"expression": "2..8"
+				},
+				{
+					"name": "a",
+					"expression": "5..30"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r*a+v*b)/20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $G$ le gain algébrique du joueur (somme reçue moins la mise). Le jeu est équitable lorsque $E(G)=0$.",
+					"$G$ prend les valeurs ${{a}}-m$, ${{b}}-m$ et $-m$, avec les probabilités ${{eval:r/20;d}}$, ${{eval:v/20;d}}$ et ${{eval:(20-r-v)/20;d}}$.",
+					"$E(G)={{eval:r/20;d}}\\times({{a}}-m)+{{eval:v/20;d}}\\times({{b}}-m)+{{eval:(20-r-v)/20;d}}\\times(-m)={{eval:(r*a+v*b)/20;d}}-m$, car la somme des probabilités vaut $1$.",
+					"$E(G)=0$ équivaut à $m=\\textcolor{{{color:primary.0}}}{ {{eval:(r*a+v*b)/20;d}} }$ €.",
+					"La mise équitable est égale à la somme reçue en moyenne : sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne."
+				]
+			}
+		},
+		{
+			"statement": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as fait recevoir ${{a}}$ €, une figure ${{b}}$ €, les autres cartes rien. Pour jouer, il faut d'abord payer une mise de $m$ euros.\n\nQuelle mise $m$ (en euros) rend le jeu équitable ? Réponds par un nombre décimal exact.\n\n$m=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "4..20"
+				},
+				{
+					"name": "b",
+					"expression": "1..5"
+				}
+			],
+			"conditions": ["mod(a+3*b,2) == 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+3*b)/8}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $G$ le gain algébrique du joueur (somme reçue moins la mise). Le jeu est équitable lorsque $E(G)=0$.",
+					"$G$ prend les valeurs ${{a}}-m$, ${{b}}-m$ et $-m$, avec les probabilités $\\dfrac{4}{32}=\\dfrac{1}{8}$, $\\dfrac{12}{32}=\\dfrac{3}{8}$ et $\\dfrac{16}{32}=\\dfrac{1}{2}$.",
+					"$E(G)=\\dfrac{1}{8}({{a}}-m)+\\dfrac{3}{8}({{b}}-m)+\\dfrac{1}{2}\\times(-m)=\\dfrac{ {{a}}+{{eval:3*b}} }{8}-m$, car $\\dfrac{1}{8}+\\dfrac{3}{8}+\\dfrac{1}{2}=1$.",
+					"$E(G)=0$ équivaut à $m=\\dfrac{ {{eval:a+3*b}} }{8}$, soit $m=\\textcolor{{{color:primary.0}}}{ {{eval:(a+3*b)/8;d}} }$ €.",
+					"La mise équitable est égale à la somme reçue en moyenne : sur un grand nombre de parties, le joueur ne gagne ni ne perd en moyenne."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : m = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "8",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : m = 2,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : m = 5/2 en fraction",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 4 et 5 comptés comme une seule face : (7+4)/6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["\\frac{11}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 15/6 non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "7",
+				"b": "4"
+			},
+			"answers": ["\\frac{15}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : m = 1,95",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "5",
+				"a": "12",
+				"b": "3"
+			},
+			"answers": ["1,95"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : moyenne des sommes (12+3+0)/3 = 5",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "5",
+				"a": "12",
+				"b": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 39/20 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "5",
+				"a": "12",
+				"b": "3"
+			},
+			"answers": ["\\frac{39}{20}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : m = 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : m = 2,25",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "3"
+			},
+			"answers": ["2,25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : effectifs non divisés par 32 (72)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "3"
+			},
+			"answers": ["72"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,289 @@
+{
+	"title": "Gain algébrique moyen",
+	"description": "Déterminer la loi du gain algébrique d'un jeu (mise déduite) puis calculer son espérance",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Jeux et gains",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Un jeu consiste à lancer un dé cubique équilibré. Pour jouer, on paie ${{m}}$ €. Si on obtient $6$, on reçoit ${{a}}$ € ; si on obtient $5$, on reçoit ${{b}}$ € ; sinon, on ne reçoit rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nCalcule l'espérance de $G$. Réponds par un nombre décimal exact.\n\n$E(G)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "6..20"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["mod(a+b,3) == 0", "b != m", "a+b != 6*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/6-m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La mise est payée à chaque partie, même quand on ne reçoit rien. $G$ prend les valeurs ${{eval:a-m}}$, ${{eval:b-m}}$ et ${{eval:-m}}$ (faces $6$, $5$, puis $1$ à $4$).",
+					"$P(G={{eval:a-m}})=\\dfrac{1}{6}$, $P(G={{eval:b-m}})=\\dfrac{1}{6}$ et $P(G={{eval:-m}})=\\dfrac{4}{6}=\\dfrac{2}{3}$.",
+					"$E(G)=\\dfrac{1}{6}\\times {{eval:a-m;()}}+\\dfrac{1}{6}\\times {{eval:b-m;()}}+\\dfrac{2}{3}\\times {{eval:-m;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+b)/6-m;d}} }$",
+					"Le jeu est favorable au joueur si $E(G)>0$, défavorable si $E(G)<0$ et équitable si $E(G)=0$ : sur un grand nombre de parties, $E(G)$ est le gain moyen par partie (une perte moyenne s'il est négatif)."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient $10$ boules indiscernables au toucher : ${{r}}$ rouges, ${{v}}$ vertes et ${{eval:10-r-v}}$ noires. Pour jouer, on paie ${{m}}$ € puis on tire une boule au hasard. Une boule rouge fait recevoir ${{a}}$ €, une boule verte ${{b}}$ €, une boule noire rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nCalcule l'espérance de $G$. Réponds par un nombre décimal exact.\n\n$E(G)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "1..3"
+				},
+				{
+					"name": "v",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..6"
+				},
+				{
+					"name": "a",
+					"expression": "5..15"
+				},
+				{
+					"name": "b",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["b != m", "r*a+v*b != 10*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r*a+v*b)/10-m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La mise est payée à chaque partie, même quand on ne reçoit rien. $G$ prend les valeurs ${{eval:a-m}}$, ${{eval:b-m}}$ et ${{eval:-m}}$ (boule rouge, verte, noire).",
+					"$P(G={{eval:a-m}})={{eval:r/10;d}}$, $P(G={{eval:b-m}})={{eval:v/10;d}}$ et $P(G={{eval:-m}})={{eval:(10-r-v)/10;d}}$.",
+					"$E(G)={{eval:r/10;d}}\\times {{eval:a-m;()}}+{{eval:v/10;d}}\\times {{eval:b-m;()}}+{{eval:(10-r-v)/10;d}}\\times {{eval:-m;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:(r*a+v*b)/10-m;d}} }$",
+					"Le jeu est favorable au joueur si $E(G)>0$, défavorable si $E(G)<0$ et équitable si $E(G)=0$ : sur un grand nombre de parties, $E(G)$ est le gain moyen par partie (une perte moyenne s'il est négatif)."
+				]
+			}
+		},
+		{
+			"statement": "Une roue de loterie est partagée en $10$ secteurs de même taille. Pour jouer, on paie ${{m}}$ € puis on fait tourner la roue. Un secteur fait recevoir ${{a}}$ €, trois secteurs font recevoir ${{b}}$ € chacun et les six autres ne rapportent rien. On note $G$ le gain algébrique du joueur en euros, c'est-à-dire la somme reçue moins la mise.\n\nCalcule l'espérance de $G$. Réponds par un nombre décimal exact.\n\n$E(G)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..5"
+				},
+				{
+					"name": "a",
+					"expression": "10..30"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["b != m", "a+3*b != 10*m"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+3*b)/10-m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La mise est payée à chaque partie, même quand on ne reçoit rien. $G$ prend les valeurs ${{eval:a-m}}$, ${{eval:b-m}}$ et ${{eval:-m}}$ (secteur à ${{a}}$ €, secteurs à ${{b}}$ €, autres secteurs).",
+					"$P(G={{eval:a-m}})={{eval:1/10;d}}$, $P(G={{eval:b-m}})={{eval:3/10;d}}$ et $P(G={{eval:-m}})={{eval:6/10;d}}$.",
+					"$E(G)={{eval:1/10;d}}\\times {{eval:a-m;()}}+{{eval:3/10;d}}\\times {{eval:b-m;()}}+{{eval:6/10;d}}\\times {{eval:-m;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+3*b)/10-m;d}} }$",
+					"Le jeu est favorable au joueur si $E(G)>0$, défavorable si $E(G)<0$ et équitable si $E(G)=0$ : sur un grand nombre de parties, $E(G)$ est le gain moyen par partie (une perte moyenne s'il est négatif)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 15/6 − 2 = 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"a": "10",
+				"b": "5"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 1/2 en fraction",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"a": "10",
+				"b": "5"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : mise oubliée (2,5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"a": "10",
+				"b": "5"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : mise retirée seulement sur les faces gagnantes (11/6)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"a": "10",
+				"b": "5"
+			},
+			"answers": ["\\frac{11}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : perte moyenne −1",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe oublié (1)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"a": "7",
+				"b": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 3,2 − 3 = 0,2",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"m": "3",
+				"a": "10",
+				"b": "4"
+			},
+			"answers": ["0,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : mise oubliée (3,2)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"m": "3",
+				"a": "10",
+				"b": "4"
+			},
+			"answers": ["3,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2/10 non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"v": "3",
+				"m": "3",
+				"a": "10",
+				"b": "4"
+			},
+			"answers": ["\\frac{2}{10}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : 3,5 − 4 = −0,5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "20",
+				"b": "5"
+			},
+			"answers": ["-0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : mise oubliée (3,5)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "20",
+				"b": "5"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : signe oublié (0,5)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "20",
+				"b": "5"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

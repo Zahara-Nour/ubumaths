@@ -177,6 +177,19 @@ Toujours vrai :
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
   comme un tirage) : une variation par cas.
+- **Condition** : ni `%` ni `or` (« Unexpected token », ou échec après 100 essais) ; écrire
+  `mod(a,10) != 0` et `||` (relevé sur les variables aléatoires, 2026-10-02).
+- **Modificateurs combinés** : `{{eval:E;();d}}` fait échouer toute la génération (« Empty
+  parentheses not allowed ») ; écrire `\left({{eval:E;d}}\right)`.
+- **Variable calculée** utilisée sans `{{eval:…}}` : substituée telle quelle, sans parenthèses
+  (`T/g` → « 11\*11-3/2 ») ; toujours passer par `{{eval:…}}`.
+- **`{{eval:sqrt(21/25)}}`** se rend `\dfrac{1}{5}\sqrt{21}` ; écrire `\dfrac{\sqrt{N}}{B}` à la main.
+- **Indice `i`** : `x_i`, `p_i` sont rendus `x_\imaginaryI` (le `i` devient l'unité imaginaire) ;
+  écrire `x_k`, `p_k`.
+- **Trou dans une cellule de tableau** : affiché mais NON saisissable (le tableau est un bloc
+  statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
+- **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
+  forme dans l'énoncé ; une valeur arrondie demande `precision`.
 
 Règles d'écriture qui évitent un défaut :
 

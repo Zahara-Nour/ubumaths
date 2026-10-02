@@ -142,6 +142,38 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Variables aléatoires : loi, compléter, espérance, variance, jeux', () => {
+		const subdomains = [
+			'Jeux et gains',
+			'Variance et écart-type',
+			"Loi d'une variable aléatoire",
+			'Espérance',
+			'Compléter une loi'
+		].map((subdomain) => ({
+			theme: 'Probabilités',
+			domain: 'Variables aléatoires',
+			subdomain
+		}));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			"Loi d'une variable aléatoire",
+			'Compléter une loi',
+			'Espérance',
+			'Variance et écart-type',
+			'Jeux et gains'
+		]);
+	});
+
+	it('Variables aléatoires après Probabilités conditionnelles', () => {
+		const domains = ['Variables aléatoires', 'Probabilités conditionnelles', 'Apprivoiser'].map(
+			(domain) => ({ theme: 'Probabilités', domain, subdomain: '' })
+		);
+		expect(sortItems(domains).map((item) => item.domain)).toEqual([
+			'Apprivoiser',
+			'Probabilités conditionnelles',
+			'Variables aléatoires'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',

@@ -1,0 +1,332 @@
+{
+	"title": "Probabilité d'un événement du type X ≥ a, X < a ou a ≤ X ≤ b",
+	"description": "À partir du tableau de la loi, additionner les probabilités des valeurs qui réalisent l'événement (inégalité large ou stricte)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Loi d'une variable aléatoire",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ | ${{eval:u+s+t+w+z}}$ |\n|---|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ | ${{eval:g/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X\\geqslant {{eval:u+s+t}})=?$",
+			"variables": [
+				{ "name": "u", "expression": "-3..1" },
+				{ "name": "s", "expression": "1..3" },
+				{ "name": "t", "expression": "1..3" },
+				{ "name": "w", "expression": "1..3" },
+				{ "name": "z", "expression": "1..3" },
+				{ "name": "a", "expression": "1..6" },
+				{ "name": "b", "expression": "1..6" },
+				{ "name": "c", "expression": "1..6" },
+				{ "name": "d", "expression": "1..6" },
+				{ "name": "g", "expression": "eval:20-a-b-c-d" }
+			],
+			"conditions": ["g >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c+d+g)/20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X\\geqslant {{eval:u+s+t}}\\}$ est réalisé quand $X$ prend l'une des valeurs ${{eval:u+s+t}}$, ${{eval:u+s+t+w}}$ ou ${{eval:u+s+t+w+z}}$ : la valeur ${{eval:u+s+t}}$ est comprise (inégalité large).",
+					"$P(X\\geqslant {{eval:u+s+t}})=P(X={{eval:u+s+t}})+P(X={{eval:u+s+t+w}})+P(X={{eval:u+s+t+w+z}})={{eval:c/20;d}}+{{eval:d/20;d}}+{{eval:g/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(c+d+g)/20;d}} }$"
+				]
+			}
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ | ${{eval:u+s+t+w+z}}$ |\n|---|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ | ${{eval:g/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X<{{eval:u+s+t}})=?$",
+			"variables": [
+				{ "name": "u", "expression": "-3..1" },
+				{ "name": "s", "expression": "1..3" },
+				{ "name": "t", "expression": "1..3" },
+				{ "name": "w", "expression": "1..3" },
+				{ "name": "z", "expression": "1..3" },
+				{ "name": "a", "expression": "1..6" },
+				{ "name": "b", "expression": "1..6" },
+				{ "name": "c", "expression": "1..6" },
+				{ "name": "d", "expression": "1..6" },
+				{ "name": "g", "expression": "eval:20-a-b-c-d" }
+			],
+			"conditions": ["g >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b)/20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{X<{{eval:u+s+t}}\\}$ est réalisé quand $X$ prend l'une des valeurs ${{u}}$ ou ${{eval:u+s}}$ : la valeur ${{eval:u+s+t}}$ est exclue (inégalité stricte).",
+					"$P(X<{{eval:u+s+t}})=P(X={{u}})+P(X={{eval:u+s}})={{eval:a/20;d}}+{{eval:b/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+b)/20;d}} }$"
+				]
+			}
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ | ${{eval:u+s+t+w+z}}$ |\n|---|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ | ${{eval:g/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P({{eval:u+s}}\\leqslant X\\leqslant {{eval:u+s+t+w}})=?$",
+			"variables": [
+				{ "name": "u", "expression": "-3..1" },
+				{ "name": "s", "expression": "1..3" },
+				{ "name": "t", "expression": "1..3" },
+				{ "name": "w", "expression": "1..3" },
+				{ "name": "z", "expression": "1..3" },
+				{ "name": "a", "expression": "1..6" },
+				{ "name": "b", "expression": "1..6" },
+				{ "name": "c", "expression": "1..6" },
+				{ "name": "d", "expression": "1..6" },
+				{ "name": "g", "expression": "eval:20-a-b-c-d" }
+			],
+			"conditions": ["g >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(b+c+d)/20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'événement $\\{{{eval:u+s}}\\leqslant X\\leqslant {{eval:u+s+t+w}}\\}$ est réalisé quand $X$ prend l'une des valeurs ${{eval:u+s}}$, ${{eval:u+s+t}}$ ou ${{eval:u+s+t+w}}$ : les deux bornes sont comprises.",
+					"$P({{eval:u+s}}\\leqslant X\\leqslant {{eval:u+s+t+w}})={{eval:b/20;d}}+{{eval:c/20;d}}+{{eval:d/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(b+c+d)/20;d}} }$"
+				]
+			}
+		},
+		{
+			"statement": "On note $X$ le nombre de pannes d'une imprimante au cours d'un mois. La loi de $X$ est donnée dans le tableau ci-dessous.\n\n| $x_k$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n|---|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/20;d}}$ | ${{eval:b/20;d}}$ | ${{eval:c/20;d}}$ | ${{eval:d/20;d}}$ | ${{eval:g/20;d}}$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité que l'imprimante tombe en panne au plus deux fois : $P(X\\leqslant 2)=?$\n\nProbabilité que l'imprimante tombe en panne au moins une fois : $P(X\\geqslant 1)=?$",
+			"variables": [
+				{ "name": "a", "expression": "3..8" },
+				{ "name": "b", "expression": "1..6" },
+				{ "name": "c", "expression": "1..5" },
+				{ "name": "d", "expression": "1..3" },
+				{ "name": "g", "expression": "eval:20-a-b-c-d" }
+			],
+			"conditions": ["g >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+b+c)/20}}"
+				},
+				{
+					"expectedAnswer": "{{eval:1-a/20}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« Au plus deux pannes » : $X$ vaut $0$, $1$ ou $2$. $P(X\\leqslant 2)={{eval:a/20;d}}+{{eval:b/20;d}}+{{eval:c/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+b+c)/20;d}} }$.",
+					"« Au moins une panne » est l'événement contraire de « aucune panne » $\\{X=0\\}$ : $P(X\\geqslant 1)=1-P(X=0)=1-{{eval:a/20;d}}=\\textcolor{{{color:primary.0}}}{ {{eval:1-a/20;d}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : P(X≥x3) = 0,2 + 0,25 + 0,15 = 3/5",
+			"variationIndex": 0,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{3}{5}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : décimal 0,6 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,6"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : valeur 2 exclue à tort (0,4)",
+			"variationIndex": 0,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,4"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : 12/20 non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{12}{20}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+		},
+		{
+			"description": "v1 : P(X<x3) = 0,15 + 0,25 = 2/5",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : décimal 0,4 accepté",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : valeur 2 incluse à tort (0,6)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,6"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v2 : P(1≤X≤5) = 0,25 + 0,2 + 0,25 = 7/10",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["\\frac{7}{10}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : décimal 0,7 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : bornes exclues (0,2)",
+			"variationIndex": 2,
+			"variables": {
+				"u": "-1",
+				"s": "2",
+				"t": "1",
+				"w": "3",
+				"z": "1",
+				"a": "3",
+				"b": "5",
+				"c": "4",
+				"d": "5",
+				"g": "3"
+			},
+			"answers": ["0,2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v3 : 0,8 et 0,7",
+			"variationIndex": 3,
+			"variables": { "a": "6", "b": "6", "c": "4", "d": "3", "g": "1" },
+			"answers": ["\\frac{4}{5}", "\\frac{7}{10}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v3 : décimaux 0,8 et 0,7",
+			"variationIndex": 3,
+			"variables": { "a": "6", "b": "6", "c": "4", "d": "3", "g": "1" },
+			"answers": ["0,8", "0,7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v3 : « au plus deux » pris strict (0,6) et « au moins une » = P(X=1) (0,3)",
+			"variationIndex": 3,
+			"variables": { "a": "6", "b": "6", "c": "4", "d": "3", "g": "1" },
+			"answers": ["0,6", "0,3"],
+			"expected": { "status": "incorrect" }
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
