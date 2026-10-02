@@ -1,0 +1,159 @@
+{
+	"title": "Tangente à la courbe de exp en 0",
+	"description": "Coefficient directeur et équation réduite y = x + 1 de la tangente au point d'abscisse 0",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Représentation graphique",
+	"level": 2,
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "On note $\\mathcal{C}$ la courbe de la fonction exponentielle et $T$ sa tangente au point d'abscisse $0$.\n\nQuel est le coefficient directeur de $T$ ?\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est sa propre dérivée : $\\exp'(x)=e^{x}$. Le coefficient directeur de $T$ est donc $\\exp'(0)=e^{0}=1$.",
+					"```courbe\nx: -4 ; 3\ny: -3 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C\ng(x) = x+1   rouge   nom=T\npoints: A(0 ; 1)\ntaille: moyenne\ndescription: Courbe de la fonction exponentielle et sa tangente T au point A d'abscisse 0.\n```",
+					"Conclusion : le coefficient directeur de $T$ est $1$."
+				]
+			}
+		},
+		{
+			"statement": "On note $\\mathcal{C}$ la courbe de la fonction exponentielle et $T$ sa tangente au point d'abscisse $0$.\n\nDonne l'équation réduite de $T$.\n\n$y=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "x+1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$.",
+					"La fonction exponentielle est sa propre dérivée : $\\exp'(x)=e^{x}$. Le coefficient directeur de $T$ est donc $\\exp'(0)=e^{0}=1$. De plus $\\exp(0)=e^{0}=1$.",
+					"$$y=1\\times(x-0)+1=x+1$$",
+					"```courbe\nx: -4 ; 3\ny: -3 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C\ng(x) = x+1   rouge   nom=T\npoints: A(0 ; 1)\ntaille: moyenne\ndescription: Courbe de la fonction exponentielle et sa tangente T au point A d'abscisse 0.\n```",
+					"Conclusion : $T$ a pour équation $y=x+1$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : 1",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : e (confusion avec e^1)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : e^0 : calcul non terminé",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["e^{0}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : x+1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : 1+x (ordre inversé)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1+x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : x (ordonnée à l'origine oubliée)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : x−1 (signe)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : ex+1 (pente e au lieu de 1)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["ex+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : e^0x+e^0 : calcul non terminé",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{0}x+e^{0}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : 1(x−0)+1 : forme non réduite",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1(x-0)+1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["nullTerms", "brackets", "factorOne"]
+			}
+		},
+		{
+			"description": "variation 1 : 1x+1 : facteur 1 inutile",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1x+1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			}
+		}
+	]
+}

@@ -1,0 +1,325 @@
+{
+	"title": "Tangente à la courbe de exp en un point",
+	"description": "Coefficient directeur e^a et équation réduite y = e^a x + (1 − a)e^a de la tangente au point d'abscisse a",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Représentation graphique",
+	"level": 3,
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On note $\\mathcal{C}$ la courbe de la fonction exponentielle et $T$ sa tangente au point d'abscisse ${{a}}$.\n\nQuel est le coefficient directeur de $T$ ?\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est sa propre dérivée : $\\exp'(x)=e^{x}$. Le coefficient directeur de $T$ est donc $\\exp'({{a}})=e^{ {{a}} }$.",
+					"Conclusion : le coefficient directeur de $T$ est $e^{ {{a}} }$ (valeur exacte, environ ${{eval:round(10*exp(a))/10;d}}$)."
+				]
+			}
+		},
+		{
+			"statement": "On note $\\mathcal{C}$ la courbe de la fonction exponentielle et $T$ sa tangente au point d'abscisse $2$.\n\nDonne l'équation réduite de $T$, avec des valeurs exactes.\n\n$y=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "e^{2}x-e^{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$.",
+					"La fonction exponentielle est sa propre dérivée : $\\exp'(2)=e^{2}$, et $\\exp(2)=e^{2}$.",
+					"$$y=e^{2}(x-2)+e^{2}=e^{2}x-2e^{2}+e^{2}=e^{2}x-e^{2}$$",
+					"```courbe\nx: -3 ; 3\ny: -3 ; 9\nf(x) = exp(x)   bleu   nom=C\ng(x) = exp(2)*(x-1)   rouge   nom=T\npoints: A(2 ; f(2))\ntaille: moyenne\ndescription: Courbe de la fonction exponentielle et sa tangente T au point A d'abscisse 2.\n```",
+					"Conclusion : $T$ a pour équation $y=e^{2}x-e^{2}$."
+				]
+			}
+		},
+		{
+			"statement": "On note $\\mathcal{C}$ la courbe de la fonction exponentielle et $T$ sa tangente au point d'abscisse ${{a}}$.\n\nDonne l'équation réduite de $T$, avec des valeurs exactes.\n\n$y=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }x-{{eval:a-1}}e^{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$.",
+					"La fonction exponentielle est sa propre dérivée : $\\exp'({{a}})=e^{ {{a}} }$, et $\\exp({{a}})=e^{ {{a}} }$.",
+					"$$y=e^{ {{a}} }(x-{{a}})+e^{ {{a}} }=e^{ {{a}} }x-{{a}}e^{ {{a}} }+e^{ {{a}} }=e^{ {{a}} }x-{{eval:a-1}}e^{ {{a}} }$$",
+					"Conclusion : $T$ a pour équation $y=e^{ {{a}} }x-{{eval:a-1}}e^{ {{a}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=2 : e^2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=3 : e^3 sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : 2 (confusion avec la dérivée de x²)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : e",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : valeur approchée 7,39 (valeur exacte demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["7{,}39"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : e^{1+1} calcul non terminé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^{1+1}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : e^2x − e^2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{2}x-e^{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : xe^2 − e^2 (facteur après x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["xe^2-e^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : −e^2 + e^2x (ordre des termes)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-e^2+e^2x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : e^2(x−1) : forme factorisée, pas réduite",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^2(x-1)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : e^2(x−2)+e^2 : pas développée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{2}(x-2)+e^{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : e^2×x − e^2 : signe × inutile",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^2\\times x-e^2"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			}
+		},
+		{
+			"description": "variation 1 : e^2x + e^2 (signe)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{2}x+e^{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : e^2x − 2e^2 (f(a) oublié)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{2}x-2e^{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : e^2x (ordonnée à l'origine oubliée)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e^{2}x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : x + 1 (tangente en 0)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : e^3x − 2e^3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^{3}x-2e^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : xe^3 − 2e^3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["xe^3-2e^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : a=4 : e^4x − 3e^4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["e^{4}x-3e^{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : e^3(x−2) forme factorisée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3(x-2)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : e^3(x−3)+e^3 pas développée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3(x-3)+e^3"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : e^3x − 3e^3 (f(a) oublié)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3x-3e^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : a=3 : e^3x + 2e^3 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3x+2e^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : a=4 : e^4x − 4e^4 + e^4 calcul non terminé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["e^{4}x-4e^{4}+e^{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

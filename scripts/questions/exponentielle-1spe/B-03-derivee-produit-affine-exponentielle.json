@@ -1,0 +1,308 @@
+{
+	"title": "Dériver un produit de fonction affine et d'exponentielle",
+	"description": "Dérivée d'un produit affine × exponentielle, réponse factorisée par eˣ",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Dérivation",
+	"level": 3,
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{eval:b;+}})e^{x}$.\n\nCalcule $f'(x)$ et donne le résultat sous la forme $(mx+p)e^{x}$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a+b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{a}}x{{eval:a+b;+}})e^{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
+					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=e^x$ : $u'(x)={{a}}$ et $v'(x)=e^x$.",
+					"$$f'(x)={{a}}e^x+({{a}}x{{eval:b;+}})e^x=(\\textcolor{{{color:primary.0}}}{ {{a}}x{{eval:a+b;+}} })e^{x}$$",
+					"On factorise par $e^x$ : c'est la forme qui permet ensuite d'étudier le signe de $f'(x)$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{eval:b;+}})e^{x}$.\n\nCalcule $f'(x)$ et donne le résultat sous la forme $(mx+p)e^{x}$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "(x{{eval:b+1;+}})e^{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
+					"Avec $u(x)=x{{eval:b;+}}$ et $v(x)=e^x$ : $u'(x)=1$ et $v'(x)=e^x$.",
+					"$$f'(x)=1\\times e^x+(x{{eval:b;+}})e^x=(\\textcolor{{{color:primary.0}}}{ x{{eval:b+1;+}} })e^{x}$$",
+					"On factorise par $e^x$ : c'est la forme qui permet ensuite d'étudier le signe de $f'(x)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x+3)eˣ : (2x+5)eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["(2x+5)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "facteurs dans l'autre ordre : eˣ(2x+5)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["e^{x}(2x+5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "parenthèse écrite (5+2x)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["(5+2x)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme développée 2xeˣ+5eˣ (forme)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["2xe^{x}+5e^{x}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "u′v + uv′ non réduit (forme)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["2e^{x}+(2x+3)e^{x}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "dérivée du produit faite comme u′v′ : 2eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["2e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "terme u′v oublié : (2x+3)eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["(2x+3)e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "u′v − uv′ (formule du quotient) : (−2x−1)eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3"
+			},
+			"answers": ["(-2x-1)e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "a < 0 : (−3x+4)eˣ → (−3x+1)eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["(-3x+1)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "a < 0 : signe sorti, −(3x−1)eˣ (forme (mx+p)eˣ demandée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["-(3x-1)e^{x}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "a < 0 : u′v′ = −3eˣ",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["-3e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x+4)eˣ : (x+5)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4"
+			},
+			"answers": ["(x+5)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "eˣ en tête : eˣ(x+5)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4"
+			},
+			"answers": ["e^{x}(x+5)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "u′v′ : 1×eˣ = eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4"
+			},
+			"answers": ["e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "terme u′v oublié : (x+4)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4"
+			},
+			"answers": ["(x+4)e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "forme développée xeˣ+5eˣ (forme)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "4"
+			},
+			"answers": ["xe^{x}+5e^{x}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(x−3)eˣ : (x−2)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["(x-2)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x−3)eˣ : eˣ(x−2)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["e^{x}(x-2)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x−3)eˣ : développée xeˣ−2eˣ (forme)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["xe^{x}-2e^{x}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(x−3)eˣ : signe, (x−4)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"b": "-3"
+			},
+			"answers": ["(x-4)e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

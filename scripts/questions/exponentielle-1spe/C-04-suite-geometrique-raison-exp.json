@@ -1,0 +1,224 @@
+{
+	"title": "Suite géométrique de raison exponentielle",
+	"description": "La suite (e^{na}) est géométrique de raison e^a ; terme général v_0 e^{na}",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Suites et modélisation",
+	"level": 1,
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n=e^{ {{a}}n}$.\n\nLa suite $(u_n)$ est géométrique. Quelle est sa raison ?\n\n$q=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{a}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout $n$ : $u_{n+1}=e^{ {{a}}(n+1)}=e^{ {{a}}n+{{a}}}=e^{ {{a}}n}\\times e^{ {{a}} }=u_n\\times e^{ {{a}} }$.",
+					"On passe d'un terme au suivant en multipliant toujours par le même nombre $e^{ {{a}} }$.",
+					"Conclusion : $(u_n)$ est géométrique de raison $q=e^{ {{a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(v_n)$ est géométrique, de premier terme $v_0={{k}}$ et de raison $q=e^{ {{a}} }$.\n\nComplète l'expression de $v_n$ en fonction de $n$.\n\n$v_n={{k}}\\,e^{?}$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}n"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une suite géométrique, $v_n=v_0\\times q^n$, donc $v_n={{k}}\\times\\left(e^{ {{a}} }\\right)^n$.",
+					"Avec la règle $\\left(e^{a}\\right)^n=e^{na}$ : $\\left(e^{ {{a}} }\\right)^n=e^{ {{a}}n}$.",
+					"Conclusion : $v_n={{k}}\\,e^{ {{a}}n}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=2 : e^2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=3 : e^3 sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : e^{2n} (le terme général, pas la raison)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^{2n}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : 2 (l'exposant seul)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : e",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : a=2 : e^2×1 facteur 1 inutile",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^{2}\\times1"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			}
+		},
+		{
+			"description": "variation 0 : a=5 : e^5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["e^{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : 2n",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["2n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : k=7, a=5 : 5n",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"a": "5"
+			},
+			"answers": ["5n"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : n×2 (ordre et signe ×)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["n\\times2"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : 2+n (somme au lieu de produit)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["2+n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : n (raison e prise)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : 2^n",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["2^n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : k=3, a=2 : 6n (premier terme mis dans l'exposant)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "2"
+			},
+			"answers": ["6n"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

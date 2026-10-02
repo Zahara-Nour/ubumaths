@@ -1,0 +1,371 @@
+{
+	"title": "Dériver une somme d'exponentielle et de polynôme",
+	"description": "Dérivée d'une somme : (k·eˣ)′ = k·eˣ, polynôme du second degré dérivé terme à terme",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Dérivation",
+	"level": 2,
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}e^{x}{{eval:p*x^2+q*x+r;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}e^{x}{{eval:2*p*x+q;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(e^x)'=e^x$, donc $(k\\,e^x)'=k\\,e^x$ ; $(x^2)'=2x$, $(x)'=1$ et la dérivée d'une constante est nulle.",
+					"$({{k}}e^x)'=\\textcolor{{{color:primary.0}}}{ {{k}}e^x }$ et $({{eval:p*x^2+q*x+r}})'=\\textcolor{{{color:primary.0}}}{ {{eval:2*p*x+q}} }$ (la constante ${{r}}$ disparaît).",
+					"Donc $f'(x)={{k}}e^{x}{{eval:2*p*x+q;+}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:p*x^2+q*x+r}}{{eval:k;+}}e^{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*p*x+q}}{{eval:k;+}}e^{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(e^x)'=e^x$, donc $(k\\,e^x)'=k\\,e^x$ ; $(x^2)'=2x$, $(x)'=1$ et la dérivée d'une constante est nulle.",
+					"$({{eval:p*x^2+q*x+r}})'=\\textcolor{{{color:primary.0}}}{ {{eval:2*p*x+q}} }$ (la constante ${{r}}$ disparaît) et $({{k}}e^x)'=\\textcolor{{{color:primary.0}}}{ {{k}}e^x }$.",
+					"Donc $f'(x)={{eval:2*p*x+q}}{{eval:k;+}}e^{x}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{x}{{eval:p*x^2+q*x+r;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{x}{{eval:2*p*x+q;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On dérive terme à terme : $(e^x)'=e^x$, donc $(k\\,e^x)'=k\\,e^x$ ; $(x^2)'=2x$, $(x)'=1$ et la dérivée d'une constante est nulle.",
+					"$(e^x)'=\\textcolor{{{color:primary.0}}}{e^x}$ et $({{eval:p*x^2+q*x+r}})'=\\textcolor{{{color:primary.0}}}{ {{eval:2*p*x+q}} }$ (la constante ${{r}}$ disparaît).",
+					"Donc $f'(x)=e^{x}{{eval:2*p*x+q;+}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3e^x+2x²−5x+4 : 3e^x+4x−5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3e^{x}+4x-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre des termes changé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["4x-5+3e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "e^x écrit sans accolades",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3e^x+4x-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "constante gardée : +4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3e^{x}+4x-5+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(eˣ)′ pris comme x·e^{x−1}",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3xe^{x-1}+4x-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "k·eˣ dérivé en 0 (pris pour une constante)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["4x-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x²)′ = x : 2 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3e^{x}+2x-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué 2×2x (forme)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"p": "2",
+				"q": "-5",
+				"r": "4"
+			},
+			"answers": ["3e^{x}+2\\times2x-5"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "k < 0 : −2e^x−x²+3x−7 → −2e^x−2x+3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"p": "-1",
+				"q": "3",
+				"r": "-7"
+			},
+			"answers": ["-2e^{x}-2x+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "k < 0 : signe de k perdu",
+			"variationIndex": 0,
+			"variables": {
+				"k": "-2",
+				"p": "-1",
+				"q": "3",
+				"r": "-7"
+			},
+			"answers": ["2e^{x}-2x+3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²+6x+1−4eˣ : 2x+6−4eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"p": "1",
+				"q": "6",
+				"r": "1"
+			},
+			"answers": ["2x+6-4e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "eˣ en tête",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"p": "1",
+				"q": "6",
+				"r": "1"
+			},
+			"answers": ["-4e^{x}+2x+6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "eˣ dérivé en 0",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"p": "1",
+				"q": "6",
+				"r": "1"
+			},
+			"answers": ["2x+6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "constante gardée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "-4",
+				"p": "1",
+				"q": "6",
+				"r": "1"
+			},
+			"answers": ["2x+6-4e^{x}+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "eˣ+3x²−x+2 : eˣ+6x−1",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "-1",
+				"r": "2"
+			},
+			"answers": ["e^{x}+6x-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre changé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "-1",
+				"r": "2"
+			},
+			"answers": ["6x-1+e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(eˣ)′ = 0",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "-1",
+				"r": "2"
+			},
+			"answers": ["6x-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(eˣ)′ = x·e^{x−1}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"q": "-1",
+				"r": "2"
+			},
+			"answers": ["xe^{x-1}+6x-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

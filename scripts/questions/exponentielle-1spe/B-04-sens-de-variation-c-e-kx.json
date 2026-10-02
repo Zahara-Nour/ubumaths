@@ -1,0 +1,327 @@
+{
+	"title": "Sens de variation d'une fonction exponentielle de paramètre k",
+	"description": "Le signe de C × k donne le sens de variation ; C·eᵏ sans x est constante",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Variations",
+	"level": 1,
+	"delay": 30,
+	"shared": {
+		"choices": [
+			{
+				"content": "croissante"
+			},
+			{
+				"content": "décroissante"
+			},
+			{
+				"content": "constante"
+			}
+		]
+	},
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "-5..-1"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "c",
+					"expression": "-9..-2"
+				},
+				{
+					"name": "k",
+					"expression": "-5..-1"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"L'exposant ${{k}}$ ne contient pas $x$ : ${{c}}e^{ {{k}} }$ est un **nombre**, le même pour tout $x$.",
+					"$f$ est $\\textcolor{{{color:primary.0}}}{\\text{constante}}$ (et $f'(x)=0$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "c>0, k>0 : croissante",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c>0, k>0 : décroissante refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c>0, k>0 : constante refusé",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c>0, k<0 : décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "-1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c>0, k<0 : croissante (signe de k ignoré) refusé",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "-1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c>0, k<0 : constante refusé",
+			"variationIndex": 1,
+			"variables": {
+				"c": "4",
+				"k": "-1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c<0, k>0 : décroissante",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-5",
+				"k": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c<0, k>0 : croissante (signe de c ignoré) refusé",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-5",
+				"k": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c<0, k>0 : constante refusé",
+			"variationIndex": 2,
+			"variables": {
+				"c": "-5",
+				"k": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c<0, k<0 : croissante",
+			"variationIndex": 3,
+			"variables": {
+				"c": "-2",
+				"k": "-4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c<0, k<0 : décroissante (un seul signe vu) refusé",
+			"variationIndex": 3,
+			"variables": {
+				"c": "-2",
+				"k": "-4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c<0, k<0 : constante refusé",
+			"variationIndex": 3,
+			"variables": {
+				"c": "-2",
+				"k": "-4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c·eᵏ sans x : constante",
+			"variationIndex": 4,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "c·eᵏ sans x : croissante refusé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "3",
+				"k": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "c·eᵏ sans x : décroissante refusé",
+			"variationIndex": 4,
+			"variables": {
+				"c": "-3",
+				"k": "-2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

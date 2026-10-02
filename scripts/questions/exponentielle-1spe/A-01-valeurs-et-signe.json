@@ -1,0 +1,257 @@
+{
+	"title": "Valeurs et signe de l'exponentielle",
+	"description": "QCM : e⁰ = 1, eˣ > 0 pour tout x, valeur approchée de e",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 1,
+	"status": "draft",
+	"delay": 20,
+	"options": {
+		"shuffleChoices": false
+	},
+	"variations": [
+		{
+			"statement": "Que vaut $e^0$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$0$"
+				},
+				{
+					"content": "$1$"
+				},
+				{
+					"content": "$e$"
+				},
+				{
+					"content": "Ce nombre n'existe pas."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Par définition, la fonction exponentielle vaut $1$ en $0$ : $\\textcolor{{{color:primary.0}}}{e^0=1 }$."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x>0$.",
+			"variables": [],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est **strictement positive** sur $\\mathbb{R}$ : pour tout réel $x$, $\\textcolor{{{color:primary.0}}}{e^x>0 }$. C'est **vrai**."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux ? Le nombre $e^{ {{a}} }$ est négatif.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..-1"
+				}
+			],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"L'exposant ${{a}}$ est négatif, mais une exponentielle est **toujours strictement positive** : $\\textcolor{{{color:primary.0}}}{e^{ {{a}} }>0 }$.",
+					"C'est **faux** : $e^{ {{a}} }=\\dfrac{1}{e^{ {{eval:-a}} }}$ est un nombre compris entre $0$ et $1$."
+				]
+			}
+		},
+		{
+			"statement": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.",
+			"variables": [],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"$e^x\\geqslant1$ seulement pour $x\\geqslant0$. Par exemple $e^{-1}=\\dfrac{1}{e}\\approx0{,}37<1$.",
+					"C'est **faux** : on sait seulement que $\\textcolor{{{color:primary.0}}}{e^x>0 }$ pour tout réel $x$."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la valeur approchée de $e=e^1$ au millième près ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$2{,}718$"
+				},
+				{
+					"content": "$3{,}142$"
+				},
+				{
+					"content": "$2{,}178$"
+				},
+				{
+					"content": "$1{,}414$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"$\\textcolor{{{color:primary.0}}}{e\\approx2{,}718 }$. Attention : $3{,}142$ est une valeur approchée de $\\pi$, et $1{,}414$ de $\\sqrt2$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : choix 0 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : choix 1 accepté",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : choix 2 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : choix 3 refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : choix 0 accepté",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : choix 1 refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : choix 0 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : choix 1 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : choix 0 refusé",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : choix 1 accepté",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : choix 0 accepté",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : choix 1 refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : choix 2 refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : choix 3 refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
