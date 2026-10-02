@@ -8,6 +8,7 @@ import type { CartItem } from '$lib/stores/questionCart.svelte';
 import type { PublicQuestion } from '$lib/questions/public-question';
 import type { QuestionPoints } from '$lib/questions/grading';
 import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
+import type { DetailedVerdict } from '$lib/utils/answer-validator';
 
 export interface EvaluationStartSummary {
 	id: string;
@@ -53,6 +54,12 @@ export interface CorrectedQuestion {
 	/** ½ point partiel (cases vides, QCM incomplet), pas une forme non optimale */
 	partial: boolean;
 	feedback?: string;
+	/**
+	 * Statut de chaque case (QCM : de chaque choix), RECALCULÉ par le serveur à
+	 * l'affichage (Q102 a, jamais stocké) ; statut global = `status`. Absent :
+	 * l'affichage n'en recalcule pas (repli sur le statut global).
+	 */
+	detail?: DetailedVerdict;
 }
 
 /** Réponse de `POST /api/evaluations/attempts/[id]/submit` */

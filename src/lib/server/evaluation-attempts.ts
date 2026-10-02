@@ -47,6 +47,7 @@ import {
 	type SubmittedAnswer
 } from '$lib/questions/grading';
 import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
+import { detailsWithinBudget } from '$lib/server/corrected-detail';
 import type { ValidationStatus } from '$lib/questions/types';
 import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
@@ -532,6 +533,24 @@ function storedUserAnswer(
 const POSITION_KEY = 'attemptPosition';
 
 /**
+ * Copie servie : chaque question avec le statut de ses cases, recalculé (Q102 a,
+ * lot 2 du résultat attendu). Budget de temps (Q59) : à l'envoi, ce que la
+ * correction a LAISSÉ (`remainingMs`), pas un nouveau budget de 5 s ; à la
+ * relecture d'une copie notée (aucune correction dans la requête), le budget entier.
+ */
+function withDetails(
+	questions: readonly CorrectedQuestion[],
+	budget: GradingBudget | undefined,
+	remainingMs?: number
+): CorrectedQuestion[] {
+	const details = detailsWithinBudget(questions, {
+		budgetMs: remainingMs ?? budget?.budgetMs,
+		clock: budget?.clock
+	});
+	return questions.map((question, index) => ({ ...question, detail: details[index] }));
+}
+
+/**
  * Envoyer une tentative : corriger, noter, enregistrer.
  *
  * @throws EvaluationError 404 (séance inconnue, d'un autre, pas une évaluation),
@@ -584,7 +603,7 @@ export async function submitEvaluationAttempt(
 	});
 	// Q59 : budget de temps TOTAL ; au-delà, les questions restantes valent 0 et
 	// la copie est quand même close et notée
-	const { verdicts, skipped } = gradeWithinBudget(toGrade, actors.gradingBudget);
+	const { verdicts, skipped, remainingMs } = gradeWithinBudget(toGrade, actors.gradingBudget);
 	if (skipped > 0) {
 		// Aucune donnée d'élève : seulement des comptes
 		console.warn(
@@ -704,7 +723,9 @@ export async function submitEvaluationAttempt(
 		pointsEarned,
 		totalQuestions,
 		correctCount,
-		questions: corrected
+		// Le temps écoulé depuis la correction (écritures, SRS) n'est pas décompté :
+		// seul le calcul compte dans le budget (Q59)
+		questions: withDetails(corrected, actors.gradingBudget, remainingMs)
 	};
 }
 
@@ -786,7 +807,7 @@ export async function readSubmittedCopy(
 			pointsEarned: Number(session.points_earned ?? 0),
 			totalQuestions: questions.length,
 			correctCount: corrected.filter((q) => q.isCorrect).length,
-			questions: corrected
+			questions: withDetails(corrected, actors.gradingBudget)
 		};
 	} catch (e) {
 		console.error('[evaluation-attempts] Copie notée non reconstruite :', e);

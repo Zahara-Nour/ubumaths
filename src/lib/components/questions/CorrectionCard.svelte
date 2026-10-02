@@ -2,20 +2,22 @@
 	CorrectionCard Component
 	========================
 
-	Displays test answer corrections with flip mechanism for detailed explanations.
-	Used in test results and review contexts.
+	Carte de correction des résultats (Entraînement, Course aux nombres,
+	Évaluation), retournable. Lot 2 du résultat attendu (R13, ADR 0017) :
 
-	Features:
-	- FlipCard-style 3D flip animation
-	- Front: User answer vs Correct answer comparison
-	- Back: Detailed correction/explanation
-	- Collapsible statement section
-	- Type-specific answer rendering
-	- Visual feedback (colors, icons, badges)
-	- Equal height management for front/back
+	- Recto : statut global (juste / ½ point / faux, barème de l'évaluation même
+	  en entraînement, Q105), énoncé (s'il n'est pas déjà rempli dans le résultat
+	  attendu ; comparaison R1 : sa consigne seule, Q104), puis le résultat attendu
+	  (`ExpectedResultView`) — remplace « Votre réponse » / « Réponse correcte ».
+	- Verso : la correction, concise ↔ détaillée (`CorrectionView`) ; étapes
+	  générées (mode B) inchangées.
+
+	Verdict : celui du SERVEUR s'il est fourni (évaluation notée, `verdict`),
+	sinon recalculé ici depuis l'instance et la réponse (entraînement).
 
 	Props:
 	- answerResult: TestAnswerResult - Complete answer data
+	- verdict?: DetailedVerdict - verdict détaillé du serveur (évaluation)
 	- questionNumber: number (optional) - Question number for display
 	- size: 'sm' | 'md' | 'lg' - Card size variant
 -->
@@ -23,26 +25,34 @@
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
 	import { getQuestionType } from '$lib/questions/types';
-	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
-	import { choiceLetter, toDisplayedChoicePosition } from '$lib/questions/choices';
-	import type { ResolvedMarkdown } from '$lib/ubumark';
+	import { buildExpectedResult } from '$lib/questions/expected-result';
+	import { filledMarkdown, expectedOnlyMarkdown } from '$lib/questions/expected-result-markdown';
+	import {
+		globalVerdictOf,
+		instructionOf,
+		studentAnswerFromAnswerData,
+		trainingStatus
+	} from '$lib/questions/correction-card-verdict';
+	import { validateAnswerDetailed, type DetailedVerdict } from '$lib/utils/answer-validator';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { RotateCw, Check, X, ChevronDown, ChevronUp } from '@lucide/svelte';
+	import { RotateCw, Check, X, TriangleAlert } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
+	import ExpectedResultView from './ExpectedResultView.svelte';
+	import CorrectionView from './CorrectionView.svelte';
 
 	// Props
 	interface Props {
 		answerResult: TestAnswerResult;
+		/** Verdict détaillé du serveur (évaluation notée) : jamais recalculé ici */
+		verdict?: DetailedVerdict;
 		questionNumber?: number;
 		size?: 'sm' | 'md' | 'lg';
 	}
 
-	let { answerResult, questionNumber, size = 'md' }: Props = $props();
+	let { answerResult, verdict, questionNumber, size = 'md' }: Props = $props();
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -50,9 +60,6 @@
 
 	// Flip state
 	let isFlipped = $state(false);
-
-	// Statement visibility state
-	let showStatement = $state(false);
 
 	// Height management (FlipCard-style)
 	let frontHeight = $state(0);
@@ -73,65 +80,67 @@
 
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
-	const isCorrect = $derived(answerResult.isCorrect);
+	const instance = $derived(answerResult.instance);
+	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
 
-	// Markdown content - instance.statement and instance.correction are now ResolvedMarkdown (strings)
-	const statementMarkdown = $derived(answerResult.instance.statement);
+	// Réponse de l'élève, telle que le validateur la lit (absente : réponse vide)
+	const studentAnswer = $derived(studentAnswerFromAnswerData(instance, answerResult.userAnswer));
+	// Verdict du serveur, sinon recalculé (entraînement : statut global du barème
+	// de l'évaluation, Q105) ; carte de cours : auto-évaluation
+	const detailedVerdict = $derived.by((): DetailedVerdict | undefined => {
+		if (verdict) return verdict;
+		if (isCourseCard) return undefined;
+		return {
+			...validateAnswerDetailed(instance, studentAnswer),
+			status: trainingStatus(instance, studentAnswer)
+		};
+	});
+	const expected = $derived(
+		isCourseCard ? null : buildExpectedResult(instance, studentAnswer, detailedVerdict)
+	);
+	const globalVerdict = $derived(detailedVerdict ? globalVerdictOf(detailedVerdict.status) : null);
+
+	// Comparaison R1 (Q104) : la consigne seule, sans la formule à case vide
+	const isComparison = $derived(
+		expected?.lines.some((l) => l.kind === 'comparison' || l.kind === 'solution') ?? false
+	);
+	const instruction = $derived(isComparison ? instructionOf(instance.statement) : '');
+	// L'énoncé rempli tient lieu d'énoncé ; sinon (QCM, attendu seul) on le montre
+	const showStatement = $derived(
+		!isComparison &&
+			!expected?.lines.some((l) => l.kind === 'filled-statement' || l.kind === 'your-answer')
+	);
 
 	// Mode A — explicit author-written steps win over Mode B (generated) when both
 	// are present, per the design decision : explicit > implicit.
-	const hasModeASteps = $derived((answerResult.instance.correction?.steps?.length ?? 0) > 0);
+	const hasModeASteps = $derived((instance.correction?.steps?.length ?? 0) > 0);
 
-	/**
-	 * Réponse(s) attendue(s), en Markdown. Trous : la réponse de chaque case
-	 * (formule pour une case mathématique) ; QCM : le CONTENU des bons choix.
-	 * (Avant : `correctChoiceIndex` seul → « undefined » pour une question à trous.)
-	 */
-	const expectedAnswers = $derived.by((): string[] => {
-		const instance = answerResult.instance;
-		if (instance.blanks && instance.blanks.length > 0) {
-			return instance.blanks.map((blank) =>
-				blank.type === 'math'
-					? `$$${blank.expectedAnswerLatex ?? blank.expectedAnswer}$$`
-					: blank.expectedAnswer
-			);
-		}
-		if (instance.choices && instance.choices.length > 0) {
-			return instance.choices.filter((choice) => choice.isCorrect).map((choice) => choice.content);
-		}
-		return [];
-	});
-	/**
-	 * Choix coché, enregistré en indice d'ORIGINE : lettre de sa position AFFICHÉE
-	 * (les choix sont mélangés) et son contenu.
-	 */
-	function describeChosen(originalIndex: number): { letter: string; content?: ResolvedMarkdown } {
-		const instance = answerResult.instance;
-		return {
-			letter: choiceLetter(toDisplayedChoicePosition(instance, originalIndex)),
-			content: instance.choices?.[originalIndex]?.content
-		};
-	}
-
-	const renderedSteps = $derived(answerResult.instance.correction?._renderedSteps);
+	const renderedSteps = $derived(instance.correction?._renderedSteps);
 	const useGeneratedSteps = $derived(
 		!hasModeASteps && renderedSteps !== undefined && renderedSteps.length > 0
 	);
-	const correctFeedback = $derived(answerResult.instance.correction?.feedback?.correct);
+	const correctFeedback = $derived(instance.correction?.feedback?.correct);
 
-	// Build correction markdown for Mode A (legacy path).
+	// Correction écrite (mode A) : concise ↔ détaillée par CorrectionView (ADR 0017)
 	const correctionMarkdown = $derived.by(() => {
-		const correction = answerResult.instance.correction;
+		const correction = instance.correction;
 		if (!correction) return '';
-		const parts: string[] = [];
-		if (correction.steps && correction.steps.length > 0) {
-			parts.push(...correction.steps);
-		}
-		if (correction.feedback?.correct) {
-			parts.push(correction.feedback.correct);
-		}
-		// Version détaillée sans interrupteur (ADR 0017, lot 2 à venir) : jamais de marqueur brut
-		return detailedCorrection(parts.join('\n\n'));
+		return [
+			...(correction.steps ?? []),
+			...(correction.feedback?.correct ? [correction.feedback.correct] : [])
+		].join('\n\n');
+	});
+
+	// Réponse attendue seule (R9) : ce que montre la vue concise si tout est détail (D6)
+	const expectedAnswerMarkdown = $derived.by(() => {
+		if (isCourseCard) return '';
+		return buildExpectedResult(instance)
+			.lines.flatMap((line) => {
+				if (line.kind === 'filled-statement') return [filledMarkdown(line.markdown, line.fills)];
+				if (line.kind === 'expected-only') return [expectedOnlyMarkdown(line.value, line.context)];
+				return [];
+			})
+			.join('\n\n');
 	});
 
 	// ============================================================================
@@ -178,13 +187,6 @@
 		isFlipped = !isFlipped;
 	}
 
-	/**
-	 * Toggle statement visibility
-	 */
-	function toggleStatement() {
-		showStatement = !showStatement;
-	}
-
 	// ============================================================================
 	// SIZE CLASSES
 	// ============================================================================
@@ -213,11 +215,12 @@
 			<div
 				bind:this={frontElement}
 				class={cn('flip-face flip-front', isScrollable && 'scrollable')}
+				inert={isFlipped}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
 				<Card.Root class="h-full">
 					<Card.Header>
-						<div class="flex items-center justify-between">
+						<div class="flex items-center justify-between gap-2">
 							<Card.Title>
 								{#if questionNumber !== undefined}
 									Question {questionNumber}
@@ -226,126 +229,60 @@
 								{/if}
 							</Card.Title>
 
-							{#if answerResult.userAnswer !== undefined}
-								<Badge variant={isCorrect ? 'default' : 'destructive'}>
-									{#if isCorrect}
-										<Check class="mr-1 h-3 w-3" />
-										Correct
-									{:else}
-										<X class="mr-1 h-3 w-3" />
-										Incorrect
-									{/if}
+							{#if isCourseCard}
+								<Badge variant={answerResult.isCorrect ? 'default' : 'secondary'}>
+									{answerResult.isCorrect ? 'Je savais' : 'À revoir'}
 								</Badge>
+							{:else if globalVerdict}
+								<span
+									class="verdict-badge verdict-{globalVerdict.kind}"
+									data-testid="global-verdict"
+									data-kind={globalVerdict.kind}
+								>
+									{#if globalVerdict.kind === 'correct'}
+										<Check class="h-3.5 w-3.5" aria-hidden="true" />
+									{:else if globalVerdict.kind === 'half'}
+										<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
+									{:else}
+										<X class="h-3.5 w-3.5" aria-hidden="true" />
+									{/if}
+									{globalVerdict.label}
+								</span>
 							{/if}
 						</div>
 					</Card.Header>
 
-					<Card.Content class="space-y-6">
-						<!-- Statement (collapsible) -->
-						<div class="statement-toggle">
-							<Button
-								variant="ghost"
-								size="sm"
-								onclick={toggleStatement}
-								class="mb-2 w-full justify-between"
+					<Card.Content class="space-y-4 pb-16">
+						{#if showStatement}
+							<div
+								class="statement-content rounded-lg border bg-muted/30 p-4"
+								data-testid="statement"
 							>
-								<span>{showStatement ? 'Masquer' : 'Voir'} l'énoncé</span>
-								{#if showStatement}
-									<ChevronUp class="h-4 w-4" />
-								{:else}
-									<ChevronDown class="h-4 w-4" />
-								{/if}
-							</Button>
-
-							{#if showStatement}
-								<div class="statement-content rounded-lg border bg-muted/30 p-4">
-									<MarkdownRenderer content={statementMarkdown} />
-								</div>
-							{/if}
-						</div>
-
-						<!-- User Answer (only shown if user answered) -->
-						{#if answerResult.userAnswer !== undefined}
-							<div class="user-answer-section">
-								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
-								<div
-									class={cn(
-										'rounded-lg border-2 p-4',
-										isCorrect
-											? 'border-green-600 bg-green-100 dark:bg-green-950'
-											: 'border-red-600 bg-red-100 dark:bg-red-950'
-									)}
-								>
-									<!-- Type-specific rendering -->
-									{#if getQuestionType(answerResult.instance) === 'fill_in_blanks' && Array.isArray(answerResult.userAnswer.value)}
-										<ul class="space-y-1">
-											{#each answerResult.userAnswer.value as value, i (i)}
-												<li class="flex items-center gap-2">
-													<code class="text-sm">{value}</code>
-												</li>
-											{/each}
-										</ul>
-									{:else if getQuestionType(answerResult.instance) === 'course_card'}
-										<!-- Carte de cours : la « réponse » est une auto-évaluation -->
-										<p class="font-medium">
-											Auto-évaluation : {answerResult.isCorrect ? 'je savais' : 'je ne savais pas'}
-										</p>
-									{:else if getQuestionType(answerResult.instance) === 'multiple_choice'}
-										<ul class="space-y-1">
-											{#each [answerResult.userAnswer.value].flat() as index (index)}
-												{@const choice = describeChosen(Number(index))}
-												<li class="flex items-center gap-2 font-medium">
-													<span>{choice.letter}</span>
-													{#if choice.content}
-														<MarkdownRenderer content={choice.content} />
-													{/if}
-												</li>
-											{/each}
-										</ul>
-									{:else if Array.isArray(answerResult.userAnswer.value)}
-										<ul class="space-y-1">
-											{#each answerResult.userAnswer.value as val, i (i)}
-												<li><MarkdownRenderer content={`$$${String(val)}$$`} /></li>
-											{/each}
-										</ul>
-									{:else}
-										<MarkdownRenderer content={`$$${String(answerResult.userAnswer.value)}$$`} />
-									{/if}
-								</div>
+								<MarkdownRenderer content={instance.statement} inputsDisabled />
+							</div>
+						{:else if instruction}
+							<div data-testid="instruction">
+								<MarkdownRenderer content={instruction} />
 							</div>
 						{/if}
 
-						<!-- Correct Answer -->
-						<div class="correct-answer-section">
-							<!-- Plusieurs bonnes réponses : celle affichée n'en est qu'un exemple -->
-							<h3 class="mb-3 text-lg font-semibold">
-								{hasRulesSufficeBlank(answerResult.instance)
-									? 'Une réponse possible'
-									: 'Réponse correcte'}
-							</h3>
-							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if expectedAnswers.length === 1}
-									<MarkdownRenderer content={expectedAnswers[0]} />
-								{:else if expectedAnswers.length > 1}
-									<ul class="space-y-1">
-										{#each expectedAnswers as answer, i (i)}
-											<li><MarkdownRenderer content={answer} /></li>
-										{/each}
-									</ul>
-								{:else}
-									<p class="text-sm text-muted-foreground">Aucune réponse enregistrée.</p>
-								{/if}
-							</div>
-						</div>
+						{#if isCourseCard}
+							<!-- Carte de cours : la « réponse » est une auto-évaluation -->
+							<p class="font-medium">
+								Auto-évaluation : {answerResult.isCorrect ? 'je savais' : 'je ne savais pas'}
+							</p>
+						{:else if expected}
+							<ExpectedResultView result={expected} />
+						{/if}
 
 						<!-- Stats -->
 						{#if answerResult.timeSpent !== undefined || answerResult.attempts !== undefined}
 							<div class="flex flex-wrap gap-4 text-sm text-muted-foreground">
 								{#if answerResult.timeSpent !== undefined}
-									<span>⏱️ Temps : {answerResult.timeSpent}s</span>
+									<span>Temps : {answerResult.timeSpent} s</span>
 								{/if}
 								{#if answerResult.attempts !== undefined}
-									<span>🔄 Tentatives : {answerResult.attempts}</span>
+									<span>Tentatives : {answerResult.attempts}</span>
 								{/if}
 							</div>
 						{/if}
@@ -356,8 +293,8 @@
 				<button
 					class="flip-button"
 					onclick={handleFlip}
-					aria-label={isFlipped ? 'Retour aux réponses' : 'Voir la correction détaillée'}
-					title={isFlipped ? 'Retour aux réponses' : 'Voir la correction détaillée'}
+					aria-label="Voir la correction"
+					title="Voir la correction"
 				>
 					<RotateCw class="h-5 w-5" />
 				</button>
@@ -367,14 +304,15 @@
 			<div
 				bind:this={backElement}
 				class={cn('flip-face flip-back', isScrollable && 'scrollable')}
+				inert={!isFlipped}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
 				<Card.Root class="h-full">
 					<Card.Header>
-						<Card.Title>Correction détaillée</Card.Title>
+						<Card.Title>Correction</Card.Title>
 					</Card.Header>
 
-					<Card.Content>
+					<Card.Content class="pb-16">
 						{#if useGeneratedSteps && renderedSteps}
 							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
 								<GeneratedStepsCorrection steps={renderedSteps} />
@@ -385,14 +323,17 @@
 								{/if}
 							</div>
 						{:else if correctionMarkdown}
-							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-								<MarkdownRenderer content={correctionMarkdown} />
+							<div class="rounded-lg border bg-muted/50 p-4">
+								<CorrectionView
+									markdown={correctionMarkdown}
+									expectedAnswer={expectedAnswerMarkdown}
+								/>
 							</div>
 						{:else}
 							<div
 								class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
 							>
-								<p class="text-muted-foreground">Aucune correction détaillée disponible.</p>
+								<p class="text-muted-foreground">Aucune correction disponible.</p>
 							</div>
 						{/if}
 					</Card.Content>
@@ -402,8 +343,8 @@
 				<button
 					class="flip-button"
 					onclick={handleFlip}
-					aria-label="Retour aux réponses"
-					title="Retour aux réponses"
+					aria-label="Retour au résultat"
+					title="Retour au résultat"
 				>
 					<RotateCw class="h-5 w-5" />
 				</button>
@@ -525,10 +466,33 @@
 	 * CONTENT SECTIONS
 	 * ============================================================================ */
 
-	.statement-toggle,
-	.user-answer-section,
-	.correct-answer-section {
+	.statement-content {
 		animation: fadeIn 0.3s ease-in-out;
+	}
+
+	/* Statut global : icône + texte (jamais la couleur seule) ; ambre pour ½ */
+	.verdict-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		border: 1px solid currentColor;
+		border-radius: 9999px;
+		padding: 0.125rem 0.625rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.verdict-correct {
+		color: light-dark(var(--color-green-700, #15803d), var(--color-green-400, #4ade80));
+	}
+
+	.verdict-half {
+		color: light-dark(var(--color-amber-700, #b45309), var(--color-amber-400, #fbbf24));
+	}
+
+	.verdict-incorrect {
+		color: light-dark(var(--color-red-700, #b91c1c), var(--color-red-400, #f87171));
 	}
 
 	@keyframes fadeIn {

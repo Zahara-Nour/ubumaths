@@ -141,15 +141,24 @@ const isAccepted = (status: ValidationStatus) =>
 export function fillMarkdown(
 	markdown: string,
 	fills: readonly ExpectedFill[],
-	decorate: (fill: ExpectedFill) => string
+	decorate: (fill: ExpectedFill, inFormula: boolean) => string
 ): string {
 	const byIndex = new Map(fills.map((f) => [f.index, f]));
+	// Formules du markdown : un marqueur n'est « dans une formule » que s'il est
+	// entre `$…$` / `$$…$$` (un `\placeholder` peut traîner dans le texte)
+	const zones = [...markdown.matchAll(MATH_ZONE)].map((m) => {
+		const start = m.index ?? 0;
+		return { start, end: start + m[0].length };
+	});
+	const inFormula = (offset: number) => zones.some((z) => offset > z.start && offset < z.end);
 	return markdown.replace(
 		ANY_BLANK,
-		(_m, mathIndex: string | undefined, textIndex: string | undefined) => {
+		(_m: string, mathIndex: string | undefined, textIndex: string | undefined, offset: number) => {
 			const fill = byIndex.get(Number(mathIndex ?? textIndex));
-			if (fill) return decorate(fill);
-			return mathIndex !== undefined ? `\\text{${BLANK_TEXT}}` : BLANK_TEXT;
+			const formula = inFormula(offset);
+			if (fill) return decorate(fill, formula);
+			if (mathIndex === undefined) return BLANK_TEXT;
+			return formula ? `\\text{${BLANK_TEXT}}` : `$\\text{${BLANK_TEXT}}$`;
 		}
 	);
 }
