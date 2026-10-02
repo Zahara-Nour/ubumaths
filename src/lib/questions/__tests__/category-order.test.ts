@@ -67,6 +67,30 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Fonction exponentielle : après la dérivation, sous-domaines par notion', () => {
+		const domains = ['Etude de fonction', 'Fonction exponentielle', 'Dérivation'].map((domain) => ({
+			theme: 'Fonctions',
+			domain
+		}));
+		expect(sortItems(domains).map((item) => item.domain)).toEqual([
+			'Dérivation',
+			'Fonction exponentielle',
+			'Etude de fonction'
+		]);
+		const subdomains = [
+			'Suites et modélisation',
+			'Dérivation',
+			'Propriétés algébriques',
+			'Équations et inéquations'
+		].map((subdomain) => ({ theme: 'Fonctions', domain: 'Fonction exponentielle', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Propriétés algébriques',
+			'Équations et inéquations',
+			'Dérivation',
+			'Suites et modélisation'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',
