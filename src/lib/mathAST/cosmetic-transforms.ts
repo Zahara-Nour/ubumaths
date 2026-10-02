@@ -26,7 +26,15 @@ import {
 	variable,
 	superscript
 } from './factory';
-import { isEulerConstant, isPercentage } from './guards';
+import {
+	isDivision,
+	isEulerConstant,
+	isMultiplication,
+	isNumber,
+	isOpposite,
+	isPercentage,
+	isPiConstant
+} from './guards';
 import { areEquivalent } from './equivalence';
 import { extractRational } from './common/numeric';
 import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
@@ -892,9 +900,74 @@ function unifyEulerNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/**
+ * Une seule écriture d'un angle en π pour comparer les formes : `\frac{a}{b}\pi`,
+ * `a\frac{\pi}{b}`, `\pi/b` et `\frac{-\pi}{b}` deviennent `\frac{a\pi}{b}` (ou
+ * son opposé). Ce sont des notations, pas des calculs inachevés : aucune pénalité
+ * (décision de David du 2026-10-02). Limité à π et aux produits IMPLICITES de
+ * nombres : `\frac{1}{3}x` et `\frac{\pi}{6}\times2` gardent leur jugement.
+ */
+function unifyPiAngleNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (isMultiplication(node) && node.displayStyle === 'implicit' && isPiConstant(node.right)) {
+			// \frac{a}{b}\pi → \frac{a\pi}{b}, et -\frac{a}{b}\pi → -\frac{a\pi}{b}
+			const left = node.left;
+			const negated = isOpposite(left);
+			const coef = isOpposite(left) ? left.operand : left;
+			if (
+				isDivision(coef) &&
+				coef.displayStyle === 'fraction' &&
+				isNumber(coef.numerator) &&
+				isNumber(coef.denominator)
+			) {
+				const numerator =
+					coef.numerator.value === '1'
+						? node.right
+						: multiply(coef.numerator, node.right, 'implicit');
+				const fraction = divide(numerator, coef.denominator, 'fraction');
+				return negated ? opposite(fraction) : fraction;
+			}
+		}
+		if (
+			isMultiplication(node) &&
+			node.displayStyle === 'implicit' &&
+			isNumber(node.left) &&
+			isDivision(node.right) &&
+			isPiConstant(node.right.numerator) &&
+			isNumber(node.right.denominator)
+		) {
+			// a\frac{\pi}{b} → \frac{a\pi}{b}
+			return divide(
+				multiply(node.left, node.right.numerator, 'implicit'),
+				node.right.denominator,
+				'fraction'
+			);
+		}
+		if (isDivision(node) && isNumber(node.denominator)) {
+			const num = node.numerator;
+			const isPiTerm = (n: MathNode): boolean =>
+				isPiConstant(n) ||
+				(isMultiplication(n) &&
+					n.displayStyle === 'implicit' &&
+					isNumber(n.left) &&
+					isPiConstant(n.right));
+			// \frac{-\pi}{b} → -\frac{\pi}{b}
+			if (isOpposite(num) && isPiTerm(num.operand)) {
+				return opposite(divide(num.operand, node.denominator, 'fraction'));
+			}
+			// \pi/b → \frac{\pi}{b}
+			if (node.displayStyle !== 'fraction' && isPiTerm(num)) {
+				return divide(num, node.denominator, 'fraction');
+			}
+		}
+		return node;
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
