@@ -276,6 +276,17 @@
 	// RENDER DATA
 	// =========================================================================
 
+	/**
+	 * Angle exploré à la souris, en degrés. Avec `mesures: principales`, écrit
+	 * dans ]−180° ; 180°] comme les autres étiquettes ; le point ne bouge pas.
+	 */
+	function interactiveAngleOf(radians: number): TrigAngle {
+		const shown =
+			node.config.measures === 'principales' && radians > Math.PI ? radians - 2 * Math.PI : radians;
+		const degrees = ((shown * 180) / Math.PI).toFixed(1);
+		return { expression: `${degrees}°`, radians, latex: `${degrees}^\\circ` };
+	}
+
 	// Angles to display (including solution angles and interactive angle)
 	let displayAngles = $derived.by(() => {
 		const angles = [...node.angles];
@@ -294,11 +305,7 @@
 		if (node.config.mode === 'interactive' && interactiveAngle !== null) {
 			const exists = angles.some((a) => Math.abs(a.radians - interactiveAngle!) < 0.01);
 			if (!exists) {
-				angles.push({
-					expression: `${((interactiveAngle * 180) / Math.PI).toFixed(1)}°`,
-					radians: interactiveAngle,
-					latex: `${((interactiveAngle * 180) / Math.PI).toFixed(1)}^\\circ`
-				});
+				angles.push(interactiveAngleOf(interactiveAngle));
 			}
 		}
 
@@ -327,13 +334,7 @@
 	// Table angles (for the value table)
 	let tableAngles = $derived.by(() => {
 		if (node.config.mode === 'interactive' && interactiveAngle !== null) {
-			return [
-				{
-					expression: `${((interactiveAngle * 180) / Math.PI).toFixed(1)}°`,
-					radians: interactiveAngle,
-					latex: `${((interactiveAngle * 180) / Math.PI).toFixed(1)}^\\circ`
-				}
-			];
+			return [interactiveAngleOf(interactiveAngle)];
 		}
 		return displayAngles;
 	});

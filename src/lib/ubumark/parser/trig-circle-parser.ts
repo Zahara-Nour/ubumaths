@@ -20,6 +20,7 @@
  * color: blue
  * grid: false
  * axes: true
+ * mesures: principales
  * ```
  *
  * @module ubumark/parser/trig-circle-parser
@@ -35,6 +36,7 @@ import type {
 	TrigPreset,
 	TrigDisplayMode,
 	TrigDisplayType,
+	TrigMeasures,
 	TrigFunction,
 	TrigOperator,
 	TrigCircleParseError,
@@ -65,7 +67,8 @@ const BLOCK_KEYS = [
 	'axisvalues',
 	'grid',
 	'projections',
-	'values'
+	'values',
+	'mesures'
 ];
 
 // ============================================================================
@@ -97,6 +100,12 @@ const VALID_MODES: TrigDisplayMode[] = ['points', 'arc', 'interactive'];
  */
 const VALID_DISPLAY_TYPES: TrigDisplayType[] = ['circle', 'table', 'circle+table'];
 
+/** Valeurs de `mesures:` */
+const VALID_MEASURES: TrigMeasures[] = ['0-2pi', 'principales'];
+
+/** Plus grand dénominateur reconnu pour écrire un angle sous la forme kπ/d */
+const MAX_PI_DENOMINATOR = 60;
+
 /**
  * Valid trig functions
  */
@@ -120,7 +129,8 @@ const KNOWN_KEYS = [
 	'grid',
 	'axes',
 	'labels',
-	'values'
+	'values',
+	'mesures'
 ];
 
 /** Nom de point : une lettre, des chiffres (indice), des primes (`'` ou `′`) */
@@ -339,6 +349,21 @@ const KNOWN_VALUES: Record<string, number> = {
  */
 function parseValueExpression(expr: string): { value: string; numeric: number } | null {
 	const trimmed = expr.trim();
+
+	// Valeur non remarquable écrite avec une fonction : cos(pi/5), sin(2*pi/7)
+	const funcMatch = trimmed.match(/^(cos|sin|tan)\s*\((.+)\)$/i);
+	if (funcMatch) {
+		const angle = parseAngleExpression(funcMatch[2]);
+		if (!angle) return null;
+		const fn = funcMatch[1].toLowerCase();
+		const numeric =
+			fn === 'cos'
+				? Math.cos(angle.radians)
+				: fn === 'sin'
+					? Math.sin(angle.radians)
+					: Math.tan(angle.radians);
+		return { value: trimmed, numeric };
+	}
 
 	// Check known values first
 	const knownKey = Object.keys(KNOWN_VALUES).find(
@@ -604,6 +629,10 @@ function createAngleFromRadians(radians: number): TrigAngle {
 		}
 	}
 
+	// Multiple rationnel de π non remarquable (solution de cos(x) = cos(pi/5)) : 9π/5
+	const fraction = piFractionLatex(normalized);
+	if (fraction) return { ...fraction, radians: normalized };
+
 	// No match found, return numeric representation
 	const degrees = (normalized * 180) / Math.PI;
 	return {
@@ -611,6 +640,56 @@ function createAngleFromRadians(radians: number): TrigAngle {
 		radians: normalized,
 		latex: `${degrees.toFixed(2)}^\\circ`
 	};
+}
+
+/**
+ * Écrit `radians` sous la forme kπ/d (d ≤ MAX_PI_DENOMINATOR), signe devant la
+ * fraction comme `parseAngleExpression` : −5π/6. `null` si ce n'est pas un
+ * multiple rationnel de π.
+ */
+function piFractionLatex(radians: number): { expression: string; latex: string } | null {
+	const ratio = radians / Math.PI;
+	for (let d = 1; d <= MAX_PI_DENOMINATOR; d++) {
+		const k = Math.round(ratio * d);
+		if (Math.abs(ratio * d - k) > 1e-9) continue;
+		if (k === 0) return { expression: '0', latex: '0' };
+		const sign = k < 0 ? '-' : '';
+		const abs = Math.abs(k);
+		const num = abs === 1 ? '\\pi' : `${abs}\\pi`;
+		const numText = abs === 1 ? 'π' : `${abs}π`;
+		return d === 1
+			? { expression: `${sign}${numText}`, latex: `${sign}${num}` }
+			: { expression: `${sign}${numText}/${d}`, latex: `${sign}\\frac{${num}}{${d}}` };
+	}
+	return null;
+}
+
+/** Mesure principale, dans ]−π ; π], d'un angle de [0 ; 2π[ */
+function principalRadians(radians: number): number {
+	const normalized = normalizeAngle(radians);
+	return normalized > Math.PI + 1e-10 ? normalized - 2 * Math.PI : normalized;
+}
+
+/** Arrondi à 2 décimales, sans zéros inutiles */
+function formatDecimal(n: number): string {
+	return String(Number(n.toFixed(2)));
+}
+
+/**
+ * Récrit l'étiquette d'un angle avec sa mesure principale. Les radians (la
+ * place du point sur le cercle) ne changent pas. Un angle en degrés reste en
+ * degrés ; un réel qui n'est pas un multiple rationnel de π s'écrit en décimal.
+ */
+export function toPrincipalLabel(angle: TrigAngle): TrigAngle {
+	const principal = principalRadians(angle.radians);
+	if ((angle.latex ?? '').includes('^\\circ')) {
+		const degrees = formatDecimal((principal * 180) / Math.PI);
+		return { ...angle, expression: `${degrees}°`, latex: `${degrees}^\\circ` };
+	}
+	const fraction = piFractionLatex(principal);
+	if (fraction) return { ...angle, ...fraction };
+	const decimal = formatDecimal(principal);
+	return { ...angle, expression: decimal, latex: decimal };
 }
 
 // ============================================================================
@@ -717,6 +796,18 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				}
 				break;
 
+			case 'mesures':
+				if (VALID_MEASURES.includes(value.toLowerCase() as TrigMeasures)) {
+					config.measures = value.toLowerCase() as TrigMeasures;
+				} else {
+					fail(
+						lineNum,
+						`mesures inconnues « ${value} » (possibles : ${VALID_MEASURES.join(', ')})`,
+						line
+					);
+				}
+				break;
+
 			case 'projections':
 				config.showProjections = value.toLowerCase() === 'true';
 				break;
@@ -807,6 +898,13 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 	let solution: TrigSolution | undefined;
 	if (equation) {
 		solution = solveEquation(equation);
+	}
+
+	// Mesures principales : seules les étiquettes changent, pas les radians
+	if (config.measures === 'principales') {
+		config.customAngles = config.customAngles.map(toPrincipalLabel);
+		uniqueAngles.splice(0, uniqueAngles.length, ...uniqueAngles.map(toPrincipalLabel));
+		if (solution) solution = { ...solution, angles: solution.angles.map(toPrincipalLabel) };
 	}
 
 	const node: TrigCircleNode = {
