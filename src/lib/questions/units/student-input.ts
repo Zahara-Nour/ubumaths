@@ -149,6 +149,11 @@ interface StudentQuantityParts {
 	writing: string;
 }
 
+/** Écritures LaTeX du degré (`^{\circ}`, `^\circ`, `\degree`, `\circ`) ramenées à `°` */
+export function degreeSymbolLatex(latex: string): string {
+	return latex.replace(DEGREE_PATTERN, '°');
+}
+
 /**
  * Retire de la saisie MathLive ses habillages et notations sans ambiguïté :
  * `\operatorname{…}`, `{,}`, `\min` → `min`, espacements LaTeX → une espace…
