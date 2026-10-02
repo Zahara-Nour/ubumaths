@@ -141,6 +141,59 @@ export function evalResultToNumber(value: string): number {
 	}
 }
 
+const TRIGONOMETRIC_FUNCTIONS: ReadonlySet<string> = new Set(['cos', 'sin', 'tan']);
+
+/** Le calcul contient un cosinus, un sinus ou une tangente */
+function hasTrigonometricFunction(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'function' && TRIGONOMETRIC_FUNCTIONS.has(n.name)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/** La forme exacte vaut la valeur décimale (garde-fou : jamais de valeur fausse) */
+function matchesValue(exact: MathNode, numValue: number): boolean {
+	const exactValue = evaluateNodeToApproximatedNumber(exact);
+	const tolerance = 1e-9 * Math.max(1, Math.abs(numValue));
+	return Math.abs(exactValue - numValue) <= tolerance;
+}
+
+/**
+ * Une tangente prise en π/2 + kπ : le calcul flottant rend 16331239353195370 au lieu
+ * d'échouer (cos(π/2) vaut 6e-17, pas 0). Erreur visible plutôt qu'une fausse valeur.
+ */
+function assertTangentsDefined(node: MathNode): void {
+	mapNode(node, (n) => {
+		if (n.type !== 'function' || n.name !== 'tan' || n.args.length !== 1) return n;
+		const angle = evaluate(n.args[0], { mode: 'decimal' });
+		if (angle.status !== 'value' || typeof angle.value !== 'number') return n;
+		const halfTurns = angle.value / Math.PI - 0.5;
+		if (Math.abs(halfTurns - Math.round(halfTurns)) < 1e-9) {
+			throw new Error(`tan non définie en π/2 + kπ : ${toCustom(n)}`);
+		}
+		return n;
+	});
+}
+
+/**
+ * Valeur remarquable d'un calcul trigonométrique (`cos(5pi/6)`) : la forme exacte sort en
+ * `-\dfrac{1}{2} \sqrt{3}` ; mise au propre par `tidy`, elle s'écrit `-\dfrac{\sqrt{3}}{2}`,
+ * comme au tableau. Seulement quand plus aucune fonction trigonométrique ne reste : un
+ * angle non remarquable (`\cos\left( \dfrac{1}{5} \pi \right)`) garde son écriture.
+ * Les calculs sans trigonométrie (`sqrt(3)/2`) gardent aussi la leur.
+ */
+function remarkableTrigonometricWriting(source: MathNode, exact: MathNode): MathNode {
+	if (!hasTrigonometricFunction(source) || hasTrigonometricFunction(exact)) return exact;
+	try {
+		const reduced = tidy(exact);
+		return matchesValue(reduced, evaluateNodeToApproximatedNumber(exact)) ? reduced : exact;
+	} catch {
+		return exact;
+	}
+}
+
 /**
  * Résultat exact : `\dfrac{9}{7}`, `-\dfrac{3}{4}`, `2 \sqrt{2}`, entier s'il tombe juste.
  *
@@ -152,10 +205,8 @@ function formatExact(ast: MathNode, numValue: number): string {
 	try {
 		const exact = evaluate(ast, { mode: 'exact' });
 		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
-		const exactValue = evaluateNodeToApproximatedNumber(exact.value);
-		const tolerance = 1e-9 * Math.max(1, Math.abs(numValue));
-		if (!(Math.abs(exactValue - numValue) <= tolerance)) return formatNumber(numValue);
-		return toLatex(exact.value);
+		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue);
+		return toLatex(remarkableTrigonometricWriting(ast, exact.value));
 	} catch {
 		return formatNumber(numValue);
 	}
@@ -452,6 +503,7 @@ export function evaluateAstWithModifiers(
 	if (result.status === 'indeterminate') {
 		throw new Error(`Indeterminate form: ${result.form}`);
 	}
+	assertTangentsDefined(ast);
 
 	// Get the numeric value
 	let numValue: number;

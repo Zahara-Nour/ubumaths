@@ -33,6 +33,7 @@ import {
 	getVariables
 } from '$lib/mathAST/eval';
 import type { BindingValue } from '$lib/mathAST/eval';
+import type { MathNode } from '$lib/mathAST/types';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
@@ -202,6 +203,22 @@ function lettersOf(value: string): Set<string> {
 	} catch {
 		return new Set();
 	}
+}
+
+/**
+ * `pi` écrit en syntaxe maison (`cos(p*pi/d)`, `5pi`) : la constante π. Jamais au sein
+ * d'un mot (`pin`, `api`) ni après une barre oblique inverse (`\pi` est déjà la constante).
+ */
+const BARE_PI = /(?<![A-Za-z\\])pi(?![A-Za-z])/g;
+
+/**
+ * AST d'un calcul `{{eval:…}}` : parseLatex dès qu'une commande LaTeX est écrite, sinon la
+ * syntaxe maison, qui lit l'implicite (`2k` → 2 × k). En syntaxe maison, `pi` est π : sans
+ * cela il se lisait p × i (« free variables: p », ou un nombre complexe quand p est tirée).
+ */
+function parseEvalAst(expression: string): MathNode {
+	if (expression.includes('\\')) return parseLatex(expression);
+	return parseCustom(expression.replace(BARE_PI, '\\pi'));
 }
 
 /**
@@ -529,10 +546,7 @@ export function resolveExpression(
 				exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 			}
 
-			// Parse expression: use LaTeX parser for backslash commands, custom parser otherwise
-			// Custom parser handles implicit multiplication (2k → 2*k)
-			const hasLatex = exprToParse.includes('\\');
-			const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
+			const ast = parseEvalAst(exprToParse);
 
 			// Build bindings from single-letter variables for AST substitution
 			const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
@@ -855,8 +869,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	}
 
 	// Parse and evaluate
-	const hasLatex = exprToParse.includes('\\');
-	const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
+	const ast = parseEvalAst(exprToParse);
 
 	const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
 
