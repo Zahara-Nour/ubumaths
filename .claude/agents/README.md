@@ -69,7 +69,7 @@ Tous les agents respectent :
 2. **CLAUDE.md règle #1** : Zod sur tout `request.json()` / query param
 3. **CLAUDE.md règle #2** : `MySelect`/`MyCheckbox` (jamais Shadcn Select/Checkbox ni `<select>` natif)
 4. **CLAUDE.md règle #3** : Svelte 5 runes uniquement, `$effect` réservé aux side-effects
-5. **CLAUDE.md règle #5** : `mcp__svelte__svelte-autofixer` obligatoire après chaque `.svelte`
+5. **CLAUDE.md règle #5** : `pnpm svelte:autofix <fichier>` (ou `mcp__svelte__svelte-autofixer` si le MCP est configuré) obligatoire après chaque `.svelte`
 6. **CLAUDE.md règle #6** : types custom dans `database-helpers.ts`, jamais dans `database.ts` auto-généré
 7. **Commandes interdites** : `pnpm check`, `pnpm check:fast`, `svelte-check` sans `--incremental`, `pnpm build` pour vérifier, `pnpm test:triggers`, runs multiples de `pnpm check:incremental`
 8. **Pas de Co-Authored-By Claude** dans les commits ; pas d'auto-push, pas d'auto-release

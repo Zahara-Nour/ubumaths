@@ -38,6 +38,8 @@ After creating or modifying any `.svelte` file, call:
 mcp__svelte__svelte-autofixer(code: <file content>, desired_svelte_version: 5, filename: "Component.svelte")
 ```
 
+(or, without the Svelte MCP server — not configured in `.mcp.json` — run `pnpm svelte:autofix <path/to/Component.svelte>`: same tool, same output)
+
 This is CLAUDE.md règle #5. Re-run after corrections until clean. Use `mcp__svelte__get-documentation` for official Svelte docs rather than guessing.
 
 ### Critical Constraints

@@ -150,7 +150,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 **4. Jamais `any`** — types propres, `unknown` + type guards, ou types de `$lib/types/database`.
 
-**5. Après création/modif d'un `.svelte` → `svelte-autofixer` (MCP)** systématiquement.
+**5. Après création/modif d'un `.svelte` → `pnpm svelte:autofix <fichier>`** systématiquement (ou l'outil MCP `svelte-autofixer` s'il est configuré — il ne l'est pas dans `.mcp.json`).
 
 **6. Types dérivés dans `database-helpers.ts`** — `database.ts` est auto-généré (`pnpm db:types`), **ne JAMAIS y ajouter de type**. `Database`/`Tables`/`Json` → `$lib/types/database` ; alias, unions, composites → `$lib/types/database-helpers`.
 
@@ -203,7 +203,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 **Definition of Done** (avant d'ouvrir/merger la PR) :
 
 - [ ] Code fonctionnel + tests passent (intégration locale si DB/RLS)
-- [ ] `svelte-autofixer` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
+- [ ] `pnpm svelte:autofix` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
 - [ ] `code-reviewer` (+ `security-auditor` si applicable)
 - [ ] Zod sur les entrées · pas de `any` · MySelect/MyCheckbox · runes only
 
