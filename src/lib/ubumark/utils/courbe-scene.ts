@@ -632,9 +632,12 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 		}
 	}
 
+	// Positions à éviter : points nommés ET noms déjà placés (sinon deux courbes proches
+	// reçoivent leur nom au même endroit : « C_f » + « T » → « CT » dans le PDF)
+	const placed = () => [...points, ...curveLabels.map((l) => ({ x: l.x, y: l.y }))];
 	spec.functions.forEach((fn, index) => {
 		if (!fn.label) return;
-		const anchor = labelAnchor(curves[index].polylines, points, w);
+		const anchor = labelAnchor(curves[index].polylines, placed(), w);
 		if (anchor) curveLabels.push({ label: fn.label, x: anchor.x, y: anchor.y, color: fn.color });
 	});
 
@@ -673,7 +676,7 @@ export function buildCourbeScene(input: CourbeSpec, options: CourbeSceneOptions 
 			}
 			sequences.push({ name: seq.name, color: seq.color, terms: [], staircase });
 			// Nom : sur la courbe de la relation, de sa couleur
-			const anchor = seq.label ? labelAnchor(staircase.curve, points, w) : null;
+			const anchor = seq.label ? labelAnchor(staircase.curve, placed(), w) : null;
 			if (seq.label && anchor)
 				curveLabels.push({
 					label: seq.label,
