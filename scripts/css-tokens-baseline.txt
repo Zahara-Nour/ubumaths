@@ -11,7 +11,6 @@ src/lib/components/markdown/nodes/ParagraphNode.svelte 1
 src/lib/components/python/PythonSplitter.svelte 1
 src/lib/components/question-inputs/FillBlanksInput.svelte 1
 src/lib/components/question-inputs/MathInput.svelte 4
-src/lib/components/question-inputs/MultipleChoiceInput.svelte 6
 src/lib/components/question-inputs/NumberLineInput.svelte 1
 src/lib/components/question-inputs/OrderingInput.svelte 6
 src/lib/components/questions/CorrectionCard.svelte 3
