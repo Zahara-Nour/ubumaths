@@ -59,11 +59,6 @@ interface FilterableQuery {
 // CONSTANTS
 // ============================================================================
 
-/**
- * Question de cours : marqueur `options.courseQuestion` OU carte de cours (une
- * carte de cours est toujours une question de cours, cf. `isCourseQuestion`).
- */
-
 /** Plafond de lignes par requête côté PostgREST */
 const ID_PAGE_SIZE = 1000;
 

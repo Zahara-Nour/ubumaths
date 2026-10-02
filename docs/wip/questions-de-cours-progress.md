@@ -49,3 +49,11 @@ decks` + `chapter_sections` ; aucun lien vers `question_templates`.
 - **Glossaire** : `class_chapters`, `options.courseQuestion`.
 - À faire par la session principale : test d'intégration de la jointure
   `question_template_points → question_templates` sous RLS élève (non lancé : `db:*` interdit ici).
+
+### Revue de la PR #663 (2026-10-02)
+
+- Jointure réelle `question_template_points → question_templates(options, status)` testée en élève
+  (`question-de-cours-filtre.test.ts`) : publié lisible, brouillon invisible.
+- Nettoyage des paquets inutile : `srs_cards` = 0 ligne en prod (aucune question de cours dans un paquet).
+- Deux sources pour « carte de cours » : la colonne `type` (filtre du catalogue) et `options.courseCard`
+  (`isCourseQuestion`) — cohérentes car `type` est dérivé à l'enregistrement.

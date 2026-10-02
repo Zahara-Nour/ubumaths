@@ -30,8 +30,10 @@ const THEME = 'ZZ-questions-de-cours';
 const IDS = {
 	carte: crypto.randomUUID(),
 	marque: crypto.randomUUID(),
-	ordinaire: crypto.randomUUID()
+	ordinaire: crypto.randomUUID(),
+	brouillon: crypto.randomUUID()
 };
+let pointId = '';
 
 const service = createServiceRoleClient();
 
@@ -45,7 +47,7 @@ function template(id: string, type: string, options: Record<string, unknown>, le
 		subdomain: null,
 		level,
 		grades: ['1_SPE'],
-		status: 'published',
+		status: level === 4 ? 'draft' : 'published',
 		options,
 		variations:
 			type === 'course_card'
@@ -65,9 +67,40 @@ describe('questions de cours : filtre et lecture élève', () => {
 			.insert([
 				template(IDS.carte, 'course_card', { courseCard: true }, 1),
 				template(IDS.marque, 'fill_in_blanks', { courseQuestion: true }, 2),
-				template(IDS.ordinaire, 'fill_in_blanks', {}, 3)
+				template(IDS.ordinaire, 'fill_in_blanks', {}, 3),
+				template(IDS.brouillon, 'fill_in_blanks', {}, 4)
 			] as never);
 		expect(error, 'décor non posé').toBeNull();
+
+		// Un point du programme, auquel on rattache un modèle publié et un brouillon
+		const { data: theme, error: errTheme } = await service
+			.from('curriculum_themes' as never)
+			.insert({ grade: '1_SPE', name: `T ${THEME}` } as never)
+			.select('id')
+			.single();
+		expect(errTheme).toBeNull();
+		const { data: objective, error: errObj } = await service
+			.from('curriculum_objectives' as never)
+			.insert({ theme_id: (theme as { id: string }).id, name: `O ${THEME}` } as never)
+			.select('id')
+			.single();
+		expect(errObj).toBeNull();
+		const { data: point, error: errPoint } = await service
+			.from('curriculum_points' as never)
+			.insert({
+				objective_id: (objective as { id: string }).id,
+				name: `P ${THEME}`,
+				kind: 'connaissance'
+			} as never)
+			.select('id')
+			.single();
+		expect(errPoint).toBeNull();
+		pointId = (point as { id: string }).id;
+		const { error: errTag } = await service.from('question_template_points' as never).insert([
+			{ template_id: IDS.ordinaire, point_id: pointId },
+			{ template_id: IDS.brouillon, point_id: pointId }
+		] as never);
+		expect(errTag).toBeNull();
 
 		const profil = await TestData.profile().withRole('student').create();
 		eleve = createClient<Database>(SUPABASE_URL, ANON_KEY, {
@@ -81,7 +114,15 @@ describe('questions de cours : filtre et lecture élève', () => {
 	});
 
 	afterAll(async () => {
+		await service
+			.from('question_template_points' as never)
+			.delete()
+			.eq('point_id', pointId);
 		await service.from('question_templates').delete().eq('theme', THEME);
+		await service
+			.from('curriculum_themes' as never)
+			.delete()
+			.eq('name', `T ${THEME}`);
 		await cleanupAllTestData();
 	});
 
@@ -104,5 +145,23 @@ describe('questions de cours : filtre et lecture élève', () => {
 		expect(error).toBeNull();
 		expect(data?.status).toBe('published');
 		expect((data?.options as { courseQuestion?: boolean } | null)?.courseQuestion).toBe(true);
+	});
+
+	it('la jointure réelle du paquet Programme rend options et statut du modèle publié, rien pour un brouillon', async () => {
+		// Même forme que record-series-reviews.ts : question_template_points → question_templates(options, status)
+		const { data, error } = await eleve
+			.from('question_template_points' as never)
+			.select('template_id, question_templates(options, status)')
+			.eq('point_id', pointId);
+		expect(error).toBeNull();
+		const rows = (data ?? []) as Array<{
+			template_id: string;
+			question_templates: { options: unknown; status: string } | null;
+		}>;
+		const publie = rows.find((r) => r.template_id === IDS.ordinaire);
+		expect(publie?.question_templates?.status).toBe('published');
+		const brouillon = rows.find((r) => r.template_id === IDS.brouillon);
+		// Brouillon invisible pour l'élève : la règle entersProgrammeDeck ne l'ajoute pas
+		expect(brouillon?.question_templates ?? null).toBeNull();
 	});
 });
