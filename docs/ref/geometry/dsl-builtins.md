@@ -5,6 +5,55 @@ All function names use French identifiers (pedagogical language of the applicati
 
 ---
 
+## Nom d'un point — `etiquette=` (2026-10-02)
+
+Côté où s'écrit le nom d'un point. Accepté par tout appel qui crée un point nommé (`point`,
+`milieu`, `intersection`, `projection`, `symetrie`…), et par `style(A, …)` / `montre(A, …)`.
+
+```dsl
+A = point(0, 0, etiquette="bas-gauche")
+I = milieu(A, B, etiquette="bas")
+style(C, etiquette="haut")
+O = point(3, 3, etiquette="aucune")      # point dessiné, nom masqué
+```
+
+| Valeur                                                   | Effet                                     |
+| -------------------------------------------------------- | ----------------------------------------- |
+| `haut`, `bas`, `gauche`, `droite`                        | nom centré au-dessus, en dessous, à côté  |
+| `haut-gauche`, `haut-droite`, `bas-gauche`, `bas-droite` | nom dans le coin indiqué                  |
+| `aucune`                                                 | nom masqué (`labelHidden`), point visible |
+
+- Défaut : `haut-droite` (inchangé). Champ `labelPosition` (`top`, `bottom-left`…) sur l'élément.
+- Valeur inconnue → erreur qui liste les valeurs ; sur un objet qui n'est pas un point → erreur.
+- Rendu : bloc ```figure (écran `figure-svg.ts`) et export Typst, par la même table
+(`rendering/label-placement.ts`). L'éditeur `GeometryCanvas` et les exports SVG/TikZ ne le
+  lisent pas encore (toujours en haut à droite).
+
+## `texte(…, ancre=)` (2026-10-02)
+
+Point de la boîte du texte posé sur la position (comme l'`anchor` de cetz / TikZ) : `centre`
+(défaut), `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite`, `bas-gauche`,
+`bas-droite`.
+
+```dsl
+texte(2, 3, "5 cm")                       # centré sur (2, 3)
+texte(2, 3, "5 cm", ancre="bas-gauche")   # coin bas-gauche sur (2, 3) : s'écrit vers le haut-droite
+texte(A, "x", dx=0, dy=0, ancre="haut")   # ancré à un point
+```
+
+Boîte = de la ligne de base à la hauteur des capitales (boîte Typst par défaut). Bloc ```figure :
+centré à l'écran comme au PDF. `GeometryCanvas` garde son ancrage historique (début du texte,
+ligne de base).
+
+## Arguments communs (rappels)
+
+- `visible=faux` à la création : objet masqué (comme `masque(A)`), utilisable dans les
+  constructions. (Avant le 2026-10-02 l'argument était ignoré en silence.)
+- `trait="continu" | "tirets" | "pointilles"` (`"pointille"` accepté) ; alias `style=` avec les
+  mêmes valeurs — un `style=` inconnu est une erreur qui cite `trait=`.
+
+---
+
 ## angle()
 
 Creates a `GeoAngle` object — a first-class, **visible** geometric angle. The 3-points form is the primary constructor; V2 adds three overloads for vectors, segments and lines (all returning the same `GeoAngle` type and reusing the same rendering / accessors / surcharges).

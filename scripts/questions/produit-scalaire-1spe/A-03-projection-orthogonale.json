@@ -15,7 +15,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{p}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC ; H, pied de la hauteur issue de C, est situé entre A et B.\n---\nA = point(0, 0)\nB = point({{c}}, 0)\nC = point({{p}}, {{h}})\nH = point({{p}}, 0)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(H)\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\npoint({{p}}, 0)\nangle(C, H, B, marque=\"carre\")\ntexte(A, \"A\", dx=-0.55, dy=-0.5)\ntexte(B, \"B\", dx=0.15, dy=-0.5)\ntexte(C, \"C\", dx=-0.15, dy=0.25)\ntexte(H, \"H\", dx=-0.15, dy=-0.55)\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{p}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC ; H, pied de la hauteur issue de C, est situé entre A et B.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{c}}, 0, etiquette=\"bas-droite\")\nC = point({{p}}, {{h}}, etiquette=\"haut\")\nH = point({{p}}, 0, etiquette=\"bas\")\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\nangle(C, H, B, marque=\"carre\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
 			"variables": [
 				{
 					"name": "c",
@@ -46,7 +46,7 @@
 			}
 		},
 		{
-			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{q}}$ et $CH={{h}}$.\n\n```figure\nfenetre: {{eval:-q-2}} ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC dont l'angle en A est obtus ; H, pied de la hauteur issue de C, est sur le prolongement du côté AB, du côté de A.\n---\nA = point(0, 0)\nB = point({{c}}, 0)\nC = point({{eval:-q}}, {{h}})\nH = point({{eval:-q}}, 0)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(H)\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\npoint({{eval:-q}}, 0)\nsegment(H, A, trait=\"tirets\")\nangle(C, H, A, marque=\"carre\")\ntexte(A, \"A\", dx=-0.15, dy=-0.55)\ntexte(B, \"B\", dx=0.15, dy=-0.5)\ntexte(C, \"C\", dx=-0.15, dy=0.25)\ntexte(H, \"H\", dx=-0.45, dy=-0.5)\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{q}}$ et $CH={{h}}$.\n\n```figure\nfenetre: {{eval:-q-2}} ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC dont l'angle en A est obtus ; H, pied de la hauteur issue de C, est sur le prolongement du côté AB, du côté de A.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point({{c}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:-q}}, {{h}}, etiquette=\"haut\")\nH = point({{eval:-q}}, 0, etiquette=\"bas-gauche\")\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\nsegment(H, A, trait=\"tirets\")\nangle(C, H, A, marque=\"carre\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
 			"variables": [
 				{
 					"name": "c",
@@ -77,7 +77,7 @@
 			}
 		},
 		{
-			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{p}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC ; H, pied de la hauteur issue de C, est situé entre A et B.\n---\nA = point(0, 0)\nB = point({{c}}, 0)\nC = point({{p}}, {{h}})\nH = point({{p}}, 0)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(H)\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\npoint({{p}}, 0)\nangle(C, H, B, marque=\"carre\")\ntexte(A, \"A\", dx=-0.55, dy=-0.5)\ntexte(B, \"B\", dx=0.15, dy=-0.5)\ntexte(C, \"C\", dx=-0.15, dy=0.25)\ntexte(H, \"H\", dx=-0.15, dy=-0.55)\n```\n\nCalcule le produit scalaire $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=?$",
+			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $AH={{p}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC ; H, pied de la hauteur issue de C, est situé entre A et B.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{c}}, 0, etiquette=\"bas-droite\")\nC = point({{p}}, {{h}}, etiquette=\"haut\")\nH = point({{p}}, 0, etiquette=\"bas\")\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\nangle(C, H, B, marque=\"carre\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=?$",
 			"variables": [
 				{
 					"name": "c",
@@ -108,7 +108,7 @@
 			}
 		},
 		{
-			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $BH={{q}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+q+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC dont l'angle en B est obtus ; H, pied de la hauteur issue de C, est sur le prolongement du côté AB, au-delà de B.\n---\nA = point(0, 0)\nB = point({{c}}, 0)\nC = point({{eval:c+q}}, {{h}})\nH = point({{eval:c+q}}, 0)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(H)\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\npoint({{eval:c+q}}, 0)\nsegment(B, H, trait=\"tirets\")\nangle(C, H, B, marque=\"carre\")\ntexte(A, \"A\", dx=-0.55, dy=-0.5)\ntexte(B, \"B\", dx=-0.15, dy=-0.55)\ntexte(C, \"C\", dx=-0.15, dy=0.25)\ntexte(H, \"H\", dx=0.15, dy=-0.5)\n```\n\nCalcule le produit scalaire $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=?$",
+			"statement": "Dans le triangle $ABC$ ci-dessous, $H$ est le pied de la hauteur issue de $C$. On donne $AB={{c}}$, $BH={{q}}$ et $CH={{h}}$.\n\n```figure\nfenetre: -1.5 ; {{eval:c+q+2}} ; -1.3 ; {{eval:h+1}}\ntaille: moyenne\ndescription: Triangle ABC dont l'angle en B est obtus ; H, pied de la hauteur issue de C, est sur le prolongement du côté AB, au-delà de B.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{c}}, 0, etiquette=\"bas\")\nC = point({{eval:c+q}}, {{h}}, etiquette=\"haut\")\nH = point({{eval:c+q}}, 0, etiquette=\"bas-droite\")\npolygone(A, B, C)\nsegment(C, H, trait=\"tirets\")\nsegment(B, H, trait=\"tirets\")\nangle(C, H, B, marque=\"carre\")\n```\n\nCalcule le produit scalaire $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=?$",
 			"variables": [
 				{
 					"name": "c",

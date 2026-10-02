@@ -202,3 +202,46 @@ B = point(2, 1)`;
 		expect(screen.container.querySelector('[style*="mask"]')).toBeNull();
 	});
 });
+
+describe('FigureBlock — noms de points et textes placés (2026-10-02)', () => {
+	const PLACEMENT = `fenetre: -1 ; 8 ; -1 ; 6
+taille: grande
+---
+A = point(2, 2, etiquette="gauche")
+B = point(5, 2, etiquette="bas")
+C = point(5, 4, etiquette="aucune")
+texte(2, 4, "centre")`;
+
+	it('taille réelle = FIGURE_LABEL_FONT_PX, côtés et centrage respectés (boîtes mesurées)', async () => {
+		const { FIGURE_LABEL_FONT_PX } = await import('$lib/ubumark/utils/figure-svg');
+		const node = parseFigureContent(PLACEMENT);
+		const screen = await render(FigureBlock, { target: mainElement(), props: { node } });
+		const svg = await svgOf(screen.container);
+		const texts = [...svg.querySelectorAll('text')];
+		const byText = (t: string) => texts.find((e) => e.textContent === t) as SVGTextElement;
+		const dotOf = (label: SVGTextElement) =>
+			svg.querySelector(
+				`circle[data-element="${label.getAttribute('data-element')}"]`
+			) as SVGCircleElement;
+
+		expect(parseFloat(getComputedStyle(byText('A')).fontSize)).toBe(FIGURE_LABEL_FONT_PX);
+		expect(getComputedStyle(byText('A')).fontStyle).toBe('italic');
+
+		// A à gauche : la boîte du nom finit avant le point, centrée verticalement sur lui
+		const a = byText('A').getBBox();
+		const dotA = dotOf(byText('A'));
+		expect(a.x + a.width).toBeLessThan(dotA.cx.baseVal.value);
+		// B en bas : la boîte commence sous le point
+		const b = byText('B').getBBox();
+		expect(b.y).toBeGreaterThan(dotOf(byText('B')).cy.baseVal.value);
+		// C : pas de nom, point dessiné
+		expect(texts.some((e) => e.textContent === 'C')).toBe(false);
+		expect(svg.querySelectorAll('circle').length).toBe(3);
+
+		// Texte centré : milieu horizontal de la boîte = abscisse de (2, 4) = abscisse de A
+		const t = byText('centre');
+		expect(t.getAttribute('dominant-baseline')).toBeNull();
+		const tb = t.getBBox();
+		expect(Math.abs(tb.x + tb.width / 2 - dotA.cx.baseVal.value)).toBeLessThan(1);
+	});
+});
