@@ -141,6 +141,42 @@ export function comparisonMarkdown(lhs: string, relation: '=' | '≠', answer: E
 }
 
 /**
+ * Valeur de l'élève placée dans un environnement aligné : ses `&` deviendraient
+ * des colonnes et ses `\\` des lignes — ils sont rendus inertes (`\&`, espace).
+ */
+function inertForAlignment(latex: string): string {
+	// `$` déjà retiré en amont (neutralisation) ; retiré encore ici, par défense
+	return latex
+		.replace(/\$/g, '')
+		.replace(/\\\\/g, ' ')
+		.replace(/(?<!\\)&/g, String.raw`\&`);
+}
+
+/**
+ * R1 avec solution (faux, forme non optimale) : UN bloc aligné sur la relation,
+ * façon TinyMath — `lhs ≠ réponse` (ou `= réponse` ambre), puis `= solution`
+ * encadrée, le `=` sous le `≠`. Réponse neutralisée en amont, rééquilibrée ici.
+ */
+export function alignedComparisonMarkdown(
+	lhs: string,
+	relation: '=' | '≠',
+	answer: ExpectedFill,
+	solutionLatex: string
+): string {
+	const left = balanceBraces(lhs);
+	const value = answer.value === null ? null : inertForAlignment(answer.value);
+	const first =
+		relation === '≠'
+			? `${left} &\\mathrel{${colorLatex(String.raw`\neq`, 'incorrect')}} ` +
+				fillLatex({ ...answer, value, status: 'incorrect' })
+			: `${left} &= ${fillLatex({ ...answer, value })}`;
+	const second = `&= ${colorLatex(solutionLatex, 'solution', true)}`;
+	return inlineMath(
+		String.raw`\begin{aligned}` + `${first} \\\\ ${second}` + String.raw`\end{aligned}`
+	);
+}
+
+/**
  * R1 : la solution, encadrée en vert. Après une comparaison : `= 8` ; seule
  * (case vide) : `3 + 5 = 8`, pour que la ligne se lise sans l'énoncé.
  */

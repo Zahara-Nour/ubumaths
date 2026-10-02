@@ -246,9 +246,11 @@ describe('FlashCard interactive — verso avec la réponse de l’élève (R1-R7
 		expect(comparison?.getAttribute('data-status')).toBe('incorrect');
 		expect(formulas(comparison!)).toContain('\\neq');
 		expect(formulas(comparison!)).toContain('9');
-		expect(formulas(verso.querySelector<HTMLElement>('[data-kind="solution"]')!)).toContain(
-			SOLUTION_8
+		// Comparaison et solution dans UN bloc aligné : `= 8` sous le `≠`
+		expect(formulas(comparison!)).toMatch(
+			/\\begin\{aligned\}.*&\\mathrel.*\\\\ &= .*\\end\{aligned\}/
 		);
+		expect(formulas(comparison!)).toContain(SOLUTION_8);
 		expect(verso.querySelector('[data-testid="global-verdict"]')?.textContent).toContain('Faux');
 	});
 

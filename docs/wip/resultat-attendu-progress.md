@@ -236,3 +236,17 @@ onlyBlanks` et la liste des bons choix. Repli « pas de réponse structurée » 
 - QCM sans réponse : cases ☐ affichées devant chaque choix (rendu de `ExpectedResultView`).
 - Case graphique : aucun composant ne dessine la droite graduée (`GraphicalInput` n'est importé
   nulle part) ; le verso montre « Réponse attendue : 2,5 » (R8), comme avant en substance.
+
+### Alignement sur la relation (demande de David, 2026-10-02)
+
+- R1 faux / forme non optimale : comparaison + solution en UN bloc
+  `\begin{aligned} lhs &\mathrel{\neq} réponse \\ &= solution \end{aligned}` (façon TinyMath),
+  `alignedComparisonMarkdown` (`expected-result-markdown.ts`). Le `=` tombe sous le `≠`.
+- Sécurité : réponse déjà neutralisée en amont ; dans le bloc, `&` → `\&`, `\\` → espace, `$`
+  retiré (défense), accolades rééquilibrées. Toujours dans une formule.
+- `ExpectedResultView` : la ligne `solution` d'une comparaison n'est plus rendue à part ; statut
+  en toutes lettres à côté du bloc, remarque R2 dessous ; R7 → « La réponse encadrée n'est
+  qu'une réponse possible. » sous le bloc. Bloc `overflow-x: auto` (formule longue défilable).
+  R1 juste et R1 sans réponse : une ligne, inchangés.
+- Tests : `expected-result-markdown` (+3), `ExpectedResultView` (faux et R2 réécrits sur la
+  structure alignée, + `&`/`\\` hostiles, + formule longue), `FlashCard-resultat-attendu` adapté.
