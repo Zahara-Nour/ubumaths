@@ -12,6 +12,39 @@
  * @module ubumark/parser/unclosed-block
  */
 
+import { bodyOpensParagraph } from './block-closure';
+
+/**
+ * La fin d'un bloc spécial ouvert en `startIndex`, selon `isEnd` (``` seul) :
+ * le ``` trouvé plus loin, s'il ne fait pas lire du texte comme contenu du
+ * bloc (Q66, règle Q47 de ```courbe / ```figure) ; sinon le bloc est non
+ * fermé et s'arrête à sa première ligne vide (Q63).
+ *
+ * Les lignes valides de ces blocs contiennent toutes `:` (`sign: f(x)`,
+ * `Rouge:3/5`, `preset: quarters`) : jamais prises pour du texte (relevé sur
+ * les contenus réels, 2026-10-02 : 94 lignes après une ligne vide, toutes avec
+ * `:`). ⚠️ Une ligne FAUTIVE du bloc (`preset quarters`, `: ` oublié) doit le
+ * laisser fermé, sinon la suite du document était avalée en code (revue) :
+ * clé connue en tête, chiffre ou `$` → ligne du bloc. Dans le doute, fermé.
+ *
+ * @param keys les clés du bloc (`preset`, `sign`, `root`…)
+ */
+export function specialBlockEnd(
+	lines: readonly string[],
+	startIndex: number,
+	isEnd: (line: string) => boolean,
+	keys: readonly string[]
+): { endIndex: number; closed: boolean } {
+	const keyStart = new RegExp(`^\\s*(${keys.join('|')})\\b`, 'i');
+	const isBlockLine = (line: string) => keyStart.test(line) || /[\d$]/.test(line);
+	let end = startIndex + 1;
+	while (end < lines.length && !isEnd(lines[end])) end++;
+	if (end < lines.length && !bodyOpensParagraph(lines.slice(startIndex + 1, end), isBlockLine)) {
+		return { endIndex: end, closed: true };
+	}
+	return { endIndex: unclosedBlockEnd(lines, startIndex), closed: false };
+}
+
 /**
  * La dernière ligne d'un bloc non fermé ouvert en `startIndex` : celle qui
  * précède la première ligne vide, ou la dernière du document.

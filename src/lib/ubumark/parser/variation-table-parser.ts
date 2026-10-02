@@ -41,7 +41,21 @@ import type {
 	LimitValue,
 	LimitSide
 } from '../types/variation-table';
-import { unclosedBlockEnd } from './unclosed-block';
+import { specialBlockEnd } from './unclosed-block';
+
+/** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
+const BLOCK_KEYS = [
+	'variable',
+	'domain',
+	'sign',
+	'variation',
+	'top',
+	'bottom',
+	'limit-top',
+	'limit-bottom',
+	'asymptote',
+	'forbidden'
+];
 
 // ============================================================================
 // CONSTANTS
@@ -762,23 +776,11 @@ export function findVariationBlocks(lines: string[]): VariationBlockRange[] {
 	while (i < lines.length) {
 		if (isVariationBlockStart(lines[i])) {
 			const startIndex = i;
-			// Find closing ```
-			let endIndex = i + 1;
-			while (endIndex < lines.length && !isBlockEnd(lines[endIndex])) {
-				endIndex++;
-			}
-
-			// If we found a closing delimiter
-			if (endIndex < lines.length) {
-				blocks.push({ startIndex, endIndex });
-				i = endIndex + 1;
-			} else {
-				// Non fermé : jusqu'à la première ligne vide (Q63) — avant, toute
-				// la suite du document, qui disparaissait avec le bloc
-				const endIndex = unclosedBlockEnd(lines, startIndex);
-				blocks.push({ startIndex, endIndex });
-				i = endIndex + 1;
-			}
+			// Fermé par un ``` qui ne fait pas lire du texte comme contenu (Q66),
+			// sinon jusqu'à la première ligne vide (Q63)
+			const { endIndex } = specialBlockEnd(lines, startIndex, isBlockEnd, BLOCK_KEYS);
+			blocks.push({ startIndex, endIndex });
+			i = endIndex + 1;
 		} else {
 			i++;
 		}
