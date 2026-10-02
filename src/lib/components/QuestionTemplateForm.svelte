@@ -65,7 +65,8 @@
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
-	import CategorySelector from './CategorySelector.svelte';
+	import QuestionCategoryFields from './QuestionCategoryFields.svelte';
+	import type { CategoryEntry } from '$lib/questions/category-options';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { tick, onMount } from 'svelte';
@@ -168,10 +169,8 @@
 	// Publish confirmation dialog
 	let showPublishDialog = $state(false);
 
-	// Category options (extracted from existing questions)
-	let themeOptions = $state<string[]>([]);
-	let domainOptions = $state<string[]>([]);
-	let subdomainOptions = $state<string[]>([]);
+	// Catégories existantes (triplets thème / domaine / sous-domaine) pour filtrer les listes
+	let categoryEntries = $state<CategoryEntry[]>([]);
 
 	// Lazy loading functions for heavy components
 	async function loadRichTextEditor() {
@@ -213,20 +212,9 @@
 		try {
 			const response = await fetch('/api/questions/categories');
 			if (response.ok) {
-				const data = await response.json();
-				themeOptions = data.themes || [];
-				domainOptions = data.domains || [];
-				subdomainOptions = data.subdomains || [];
-				// Ensure template's current values are in options (e.g. migration categories)
-				if (theme && !themeOptions.includes(theme)) {
-					themeOptions = [...themeOptions, theme];
-				}
-				if (domain && !domainOptions.includes(domain)) {
-					domainOptions = [...domainOptions, domain];
-				}
-				if (subdomain && !subdomainOptions.includes(subdomain)) {
-					subdomainOptions = [...subdomainOptions, subdomain];
-				}
+				const data: { entries?: CategoryEntry[] } = await response.json();
+				// Valeurs courantes du modèle toujours proposées : géré par QuestionCategoryFields
+				categoryEntries = data.entries ?? [];
 			}
 		} catch (error) {
 			console.error('Error fetching categories:', error);
@@ -527,25 +515,6 @@
 			grades = grades.filter((g) => g !== grade);
 		} else {
 			grades = [...grades, grade];
-		}
-	}
-
-	// Handle category changes
-	function handleAddTheme(newTheme: string) {
-		if (!themeOptions.includes(newTheme)) {
-			themeOptions = [...themeOptions, newTheme];
-		}
-	}
-
-	function handleAddDomain(newDomain: string) {
-		if (!domainOptions.includes(newDomain)) {
-			domainOptions = [...domainOptions, newDomain];
-		}
-	}
-
-	function handleAddSubdomain(newSubdomain: string) {
-		if (!subdomainOptions.includes(newSubdomain)) {
-			subdomainOptions = [...subdomainOptions, newSubdomain];
 		}
 	}
 
@@ -1414,7 +1383,7 @@
 		- Level: Difficulty as positive integer (1=easy, higher=harder) [required]
 
 		These fields are independent from grade levels (grades field).
-		Admins can add new categories on-the-fly via CategorySelector modals.
+		Admins can add new categories on-the-fly via « Ajouter… » (QuestionCategoryFields).
 	-->
 		<Card.Root>
 			<Card.Header>
@@ -1444,49 +1413,17 @@
 					</Collapsible.Trigger>
 					<Collapsible.Content>
 						<Card.Content class="space-y-4">
-							<div class="grid gap-4 md:grid-cols-2">
-								<!-- Theme (Required) -->
-								<div>
-									<CategorySelector
-										label="Thème"
-										bind:value={theme}
-										options={themeOptions}
-										required={true}
-										onValueChange={(val) => (theme = val)}
-										onAddNew={handleAddTheme}
-									/>
-									{#if themeError}
-										<p class="mt-1 text-xs text-destructive">{themeError}</p>
-									{/if}
-								</div>
-
-								<!-- Domain (Required) -->
-								<div>
-									<CategorySelector
-										label="Domaine"
-										bind:value={domain}
-										options={domainOptions}
-										required={true}
-										onValueChange={(val) => (domain = val)}
-										onAddNew={handleAddDomain}
-									/>
-									{#if domainError}
-										<p class="mt-1 text-xs text-destructive">{domainError}</p>
-									{/if}
-								</div>
-							</div>
+							<!-- Thème / Domaine / Sous-domaine, listes filtrées les unes par les autres -->
+							<QuestionCategoryFields
+								entries={categoryEntries}
+								bind:theme
+								bind:domain
+								bind:subdomain={() => subdomain ?? '', (v) => (subdomain = v || undefined)}
+								{themeError}
+								{domainError}
+							/>
 
 							<div class="grid gap-4 md:grid-cols-2">
-								<!-- Subdomain (Optional) -->
-								<CategorySelector
-									label="Sous-domaine"
-									value={subdomain || ''}
-									options={subdomainOptions}
-									required={false}
-									onValueChange={(val) => (subdomain = val || undefined)}
-									onAddNew={handleAddSubdomain}
-								/>
-
 								<!-- Difficulty Level (Required, positive integer, no max) -->
 								<div class="space-y-2">
 									<Label for="level">
