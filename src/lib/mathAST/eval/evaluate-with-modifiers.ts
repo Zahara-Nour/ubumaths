@@ -179,21 +179,55 @@ function assertTangentsDefined(node: MathNode): void {
 	});
 }
 
-/**
- * Valeur remarquable d'un calcul trigonométrique (`cos(5pi/6)`) : la forme exacte sort en
- * `-\dfrac{1}{2} \sqrt{3}` ; mise au propre par `tidy`, elle s'écrit `-\dfrac{\sqrt{3}}{2}`,
- * comme au tableau. Seulement quand plus aucune fonction trigonométrique ne reste : un
- * angle non remarquable (`\cos\left( \dfrac{1}{5} \pi \right)`) garde son écriture.
- * Les calculs sans trigonométrie (`sqrt(3)/2`) gardent aussi la leur.
- */
-function remarkableTrigonometricWriting(source: MathNode, exact: MathNode): MathNode {
-	if (!hasTrigonometricFunction(source) || hasTrigonometricFunction(exact)) return exact;
+const RADICAL_FUNCTIONS: ReadonlySet<string> = new Set(['sqrt', 'cbrt', 'root']);
+
+/** La forme exacte contient une racine (`\dfrac{1}{5} \sqrt{21}`) */
+function hasRadical(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'function' && RADICAL_FUNCTIONS.has(n.name)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/** Le nœud contient une fraction */
+function hasDivision(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'division') found = true;
+		return n;
+	});
+	return found;
+}
+
+/** `tidy` gardé par la valeur : la forme réduite doit valoir la forme exacte */
+function tidyKeepingValue(exact: MathNode): MathNode {
 	try {
 		const reduced = tidy(exact);
 		return matchesValue(reduced, evaluateNodeToApproximatedNumber(exact)) ? reduced : exact;
 	} catch {
 		return exact;
 	}
+}
+
+/**
+ * Forme exacte écrite comme au tableau, mise au propre par `tidy` :
+ * - valeur remarquable d'un calcul trigonométrique (`cos(5pi/6)`) : `-\dfrac{1}{2} \sqrt{3}`
+ *   devient `-\dfrac{\sqrt{3}}{2}`, seulement quand plus aucune fonction trigonométrique ne
+ *   reste (un angle non remarquable, `\cos\left( \dfrac{1}{5} \pi \right)`, garde son écriture) ;
+ * - racine à coefficient fractionnaire (`sqrt(21/25)`, `-sqrt(2)/2`) : `\dfrac{1}{5} \sqrt{21}`
+ *   devient `\dfrac{\sqrt{21}}{5}`. Sinon la bonne réponse de l'élève, `\frac{\sqrt{21}}{5}`,
+ *   était jugée « mauvaise forme » face à cette réponse attendue. Seul le produit est réécrit :
+ *   l'ordre d'une somme (`1 + \sqrt{2}`) ne bouge pas.
+ * Les autres résultats (`2 \sqrt{2}`, `\dfrac{1}{3} \ln(2)`, `12 \pi`) gardent leur écriture.
+ */
+function schoolExactWriting(source: MathNode, exact: MathNode): MathNode {
+	if (hasTrigonometricFunction(exact)) return exact;
+	if (hasTrigonometricFunction(source)) return tidyKeepingValue(exact);
+	return mapNode(exact, (n) =>
+		n.type === 'multiplication' && hasRadical(n) && hasDivision(n) ? tidyKeepingValue(n) : n
+	);
 }
 
 /**
@@ -208,7 +242,7 @@ function formatExact(ast: MathNode, numValue: number): string {
 		const exact = evaluate(ast, { mode: 'exact' });
 		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
 		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue);
-		return toLatex(remarkableTrigonometricWriting(ast, exact.value));
+		return toLatex(schoolExactWriting(ast, exact.value));
 	} catch {
 		return formatNumber(numValue);
 	}

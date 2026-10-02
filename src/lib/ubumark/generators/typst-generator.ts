@@ -2153,6 +2153,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\[/g, '[');
 	result = result.replace(/\\right\s*\]/g, ']');
 
+	// `\lVert … \rVert` (norme) et `\lvert … \rvert` (valeur absolue) d'amsmath : ramenés à
+	// `\|` et `|`, traités ci-dessous. Sinon ils sortaient en texte brut (« lVert »).
+	result = result.replace(/\\[lr]Vert(?![a-zA-Z])/g, '\\|');
+	result = result.replace(/\\[lr]vert(?![a-zA-Z])\s*/g, '|');
+
 	// Convert \left\| ... \right\| to norm: lr(||...||) for proper sizing
 	// MUST be before \left| to avoid \left\| matching \left\ then |
 	result = result.replace(/\\left\s*\\\|/g, 'lr(||');
@@ -2455,6 +2460,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
 	// \varnothing (∅ rond de LaTeX) : Typst n'a qu'un ensemble vide, `emptyset`
 	result = replaceLatexCmd(result, 'varnothing', 'emptyset');
+
+	// Géométrie : écrits en Unicode, entourés d'espaces. Un nom Typst (`perp`) collé à la
+	// commande suivante (`\perp\vec v` → `perparrow(v)`) formait un mot inconnu, et ces
+	// commandes sortaient en texte brut (« perp », « parallel »).
+	result = result.replace(/\s*\\perp(?![a-zA-Z])\s*/g, ' ⟂ ');
+	result = result.replace(/\s*\\parallel(?![a-zA-Z])\s*/g, ' ∥ ');
+	result = result.replace(/\\angle(?![a-zA-Z])\s*/g, '∠ ');
+	result = result.replace(/\\triangle(?![a-zA-Z])\s*/g, '△ ');
 
 	// Convert common symbols
 	result = replaceLatexCmd(result, 'forall', 'forall');

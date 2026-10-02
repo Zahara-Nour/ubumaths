@@ -46,7 +46,9 @@ describe('cas nominal', () => {
 		const s = session(SURVEY);
 		const { result, scene } = table(s, '.croiser L M');
 
-		expect(result.output).toBe('Tableau croisé de L (lignes) et M (colonnes), 4 individus');
+		expect(result.output.split('\n')[0]).toBe(
+			'Tableau croisé de L (lignes) et M (colonnes), 4 individus'
+		);
 		expect(scene.kind).toBe('tableau-croise');
 		expect(scene.corner).toBe('L \\ M');
 		expect(scene.columnHeaders).toEqual(['oui', 'non', 'Total']);

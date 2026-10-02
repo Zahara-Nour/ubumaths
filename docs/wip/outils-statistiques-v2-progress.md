@@ -94,5 +94,19 @@ PR prévues : (a) listes qualitatives (Q84-Q88, Q91) ; (b) `.croiser` ; (c) `.fi
 92. (2026-10-02) Une entrée qui se lit comme un nombre n'est jamais un mot (`1e3` = 1000, comme en
     v1) ; une liste MÉLANGÉE nomme sa cause dans l'aperçu (« liste qualitative, à cause de « 2x » »).
 
-Lot 2 — livré : (a) listes qualitatives #661 ; Q92 #662 ; (b) `.croiser` #666. Reste : (c) `.filtrer`.
-Ouvert : Q93 (largeur du tableau croisé dans l'atelier : 20, reco, ou 8 comme les blocs).
+**Lot 2 (listes qualitatives) TERMINÉ** : (a) listes qualitatives #661 ; Q92 #662 ; (b) `.croiser` #666 ; (c) `.filtrer` #667.
+Suivant (Q67) : bloc de simulation pour les fiches (Q69, graine) ; série brute dans les blocs (`données:`) ; comparer deux séries.
+
+93. (2026-10-02) Tableau croisé de l'atelier : jusqu'à **20** modalités par côté (défilant à
+    l'écran) ; les blocs imprimés gardent 8 (Q34). `0x10` reste lu 16, comme en v1.
+
+Manche 6 (2026-10-02), lot 3 « simulation dans les fiches » — recommandations suivies :
+
+94. Bloc ```simulation : les deux lignes du bloc `loi` (`X = …`, `P = …`, mêmes messages) + options.
+95. `mode:` `tirages` (défaut : tableau valeur / effectif / fréquence observée / probabilité),
+    `moyenne` (courbe selon n + droite E(X)), `échantillons` (histogramme, μ ± 2σ/√n, phrase).
+96. `graine:` facultative, valeur fixe par défaut ; écrite sous la figure (« graine 42 »).
+97. `tirages:` ; `échantillons:` + `taille:` ; plafonds d'une fiche : 10 000 tirages,
+    N × n ≤ 100 000 ; au-delà, message d'auteur.
+98. Variables `{{p}}` résolues avant, comme les autres blocs ; même graine pour toutes les instances.
+99. Pas de masquage dans ce lot.
