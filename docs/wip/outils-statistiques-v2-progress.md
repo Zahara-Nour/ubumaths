@@ -57,4 +57,18 @@ Manche 3 (2026-10-02), en cours de PR (b) — recommandations suivies :
 ## Livré
 
 - (a) moteur `src/lib/statistics/simulation.ts` — #652.
-- (b) `.simuler` dans l'atelier — #655 (en CI).
+- (b) `.simuler` dans l'atelier — #655.
+- (c) `.fréquence`, `.échantillons`, graphiques sous la ligne de l'historique — #656.
+
+**Lot 1 (simulation) TERMINÉ.** Suivant (Q67) : lot 2, listes qualitatives dans l'atelier (filtres,
+tableau croisé depuis les individus) ; puis bloc de simulation pour les fiches (Q69, graine).
+
+Manche 4 (2026-10-02), PR (c) — recommandations suivies :
+
+80. Graphiques de `.fréquence` / `.échantillons` **sous la ligne de l'historique** (vue Calcul),
+    pas dans la vue Données (organisée par liste) — écart à Q74.
+81. Courbe de la moyenne selon n : scène commune `moyenne-selon-n`, droite y = E(X) en pointillés,
+    ≤ 500 points dessinés.
+82. Histogramme des moyennes : classes de largeur (2σ/√n)/2 alignées sur μ, intervalle μ ± 2σ/√n
+    en couleur, le reste en gris.
+83. `.simuler` se termine par « Pour aller plus loin : .fréquence … · .échantillons … ».
