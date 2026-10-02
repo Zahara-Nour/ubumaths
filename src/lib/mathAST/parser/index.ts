@@ -142,6 +142,7 @@ export interface LatexParserOptions {
  * ```
  */
 export function parseLatex(input: string, options?: LatexParserOptions): MathNode {
+	input = uprightLettersAsLetters(input);
 	const mode = options?.mode ?? 'strict';
 	const parser = options?.parser ?? 'pratt';
 
@@ -168,6 +169,18 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
 }
 
 /**
+ * Lettre droite `\mathrm{e}` / `\mathrm e` → la lettre `e` : une notation
+ * typographique (le e d'Euler s'écrit droit), pas un autre objet. Sans cela le
+ * parseur rejetait `\mathrm` (commande inconnue) et la réponse était comptée
+ * fausse. Lettre SEULE uniquement : `\mathrm{km}` n'est pas concerné.
+ */
+function uprightLettersAsLetters(input: string): string {
+	return input
+		.replace(/\\mathrm\s*\{\s*([A-Za-z])\s*\}/g, '$1')
+		.replace(/\\mathrm\s+([A-Za-z])(?![A-Za-z])/g, '$1');
+}
+
+/**
  * Parse a LaTeX string into a MathAST node with error collection.
  *
  * This function never throws - it returns a ParseResult with the AST
@@ -191,6 +204,7 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
  * ```
  */
 export function parseLatexSafe(input: string, options?: LatexParserOptions): ParseResult {
+	input = uprightLettersAsLetters(input);
 	const mode = options?.mode ?? 'tolerant';
 	const parser = options?.parser ?? 'pratt';
 
