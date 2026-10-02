@@ -1578,14 +1578,37 @@ export function validateBlanksDetailed(
 	instance: QuestionInstance,
 	rawUserAnswersLatex?: string[]
 ): { result: ValidationResult; statuses: ValidationStatus[] } {
+	const { result, statuses } = detailBlanks(rawUserAnswers, instance, rawUserAnswersLatex);
+	return { result, statuses };
+}
+
+/** Remarques d'une case : messages de forme puis message propre, sans doublon */
+function remarksOf(
+	feedback: string | undefined,
+	violations: NonNullable<ValidationResult['constraintViolations']> | undefined
+): string[] {
+	const messages = [...(violations ?? []).map((v) => v.feedback), ...(feedback ? [feedback] : [])];
+	return [...new Set(messages)];
+}
+
+/**
+ * Verdict global + statut ET remarques de chaque case, en une validation par
+ * case (cœur de `validateBlanksDetailed` et de `validateAnswerDetailed`).
+ */
+function detailBlanks(
+	rawUserAnswers: string[],
+	instance: QuestionInstance,
+	rawUserAnswersLatex?: string[]
+): { result: ValidationResult; statuses: ValidationStatus[]; remarks: string[][] } {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length === 0) {
-		return { result: { isCorrect: rawUserAnswers.length === 0 }, statuses: [] };
+		return { result: { isCorrect: rawUserAnswers.length === 0 }, statuses: [], remarks: [] };
 	}
 	if (rawUserAnswers.length !== blanks.length) {
 		return {
 			result: { isCorrect: false, message: 'Nombre de réponses incorrect' },
-			statuses: blanks.map(() => 'incorrect')
+			statuses: blanks.map(() => 'incorrect'),
+			remarks: blanks.map(() => [])
 		};
 	}
 
@@ -1600,20 +1623,27 @@ export function validateBlanksDetailed(
 		const results = blanks.map((blank, i) =>
 			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
 		);
-		return { result: aggregateOrderedBlanks(results), statuses: results.map(singleBlankStatus) };
+		return {
+			result: aggregateOrderedBlanks(results),
+			statuses: results.map(singleBlankStatus),
+			remarks: results.map((r) => remarksOf(r.feedback, r.constraintViolations))
+		};
 	}
 
+	const perAnswer = orderIndependentDetails(userAnswers, instance, userAnswersLatex);
 	return {
 		result: validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex),
-		statuses: orderIndependentStatuses(userAnswers, instance, userAnswersLatex)
+		statuses: perAnswer.map((d) => d.status),
+		remarks: perAnswer.map((d) => d.remarks)
 	};
 }
 
-function orderIndependentStatuses(
+/** Statut et remarques de chaque RÉPONSE (rang de saisie), case trouvée par appariement */
+function orderIndependentDetails(
 	userAnswers: string[],
 	instance: QuestionInstance,
 	userAnswersLatex?: string[]
-): ValidationStatus[] {
+): { status: ValidationStatus; remarks: string[] }[] {
 	const blanks = instance.blanks ?? [];
 
 	const accepts = userAnswers.map((answer) =>
@@ -1621,10 +1651,126 @@ function orderIndependentStatuses(
 	);
 	const matching = maximumMatching(accepts, blanks.length);
 	return userAnswers.map((answer, a) => {
-		if (!answer.trim()) return 'empty';
-		if (matching[a] === -1) return 'incorrect';
-		return matchedAnswerForm(answer, userAnswersLatex?.[a], blanks[matching[a]], instance).status;
+		if (!answer.trim()) return { status: 'empty', remarks: [] };
+		if (matching[a] === -1) return { status: 'incorrect', remarks: [] };
+		const form = matchedAnswerForm(answer, userAnswersLatex?.[a], blanks[matching[a]], instance);
+		return { status: form.status, remarks: remarksOf(undefined, form.violations) };
 	});
+}
+
+// ============================================================================
+// VERDICT DÉTAILLÉ (résultat attendu, R11)
+// ============================================================================
+
+/** Réponse d'un élève, telle que la correction la relit */
+export interface StudentAnswer {
+	/** Une valeur par case (chaîne vide = case vide) ; absent → valeurs préremplies */
+	values?: string[];
+	/** LaTeX tapé (MathLive), une entrée par case ; sert à juger la forme */
+	latex?: string[];
+	/** QCM : choix cochés, en indices d'ORIGINE (`choices[]`) */
+	choiceIndexes?: number[];
+}
+
+export interface BlankVerdict {
+	index: number;
+	status: ValidationStatus;
+	/** Remarques propres à CETTE case (forme, unité…), en français */
+	remarks: string[];
+}
+
+/** Issue d'un choix de QCM : bon coché, faux coché, bon oublié, faux laissé */
+export type ChoiceOutcome = 'checked-correct' | 'checked-wrong' | 'missed' | 'unchecked';
+
+export interface ChoiceVerdict {
+	/** Indice d'origine (`choices[]`) */
+	originalIndex: number;
+	isCorrect: boolean;
+	checked: boolean;
+	outcome: ChoiceOutcome;
+}
+
+export interface DetailedVerdict {
+	/** Statut global : celui de `validateAnswer` (`status`, sinon juste / faux) */
+	status: ValidationStatus;
+	/** Une entrée par case (`orderIndependent` : par rang de saisie) ; `[]` pour un QCM */
+	blanks: BlankVerdict[];
+	/** QCM seulement : une entrée par choix, dans l'ordre d'origine */
+	choices?: ChoiceVerdict[];
+	/** Message global de `validateAnswer`, s'il y en a un */
+	feedback?: string;
+}
+
+/** Statut global d'un `ValidationResult` (même lecture que le lanceur de specs) */
+function statusOfResult(result: ValidationResult): ValidationStatus {
+	return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
+}
+
+/** Indices d'origine des bons choix */
+function correctChoices(instance: QuestionInstance): Set<number> {
+	if (instance.choices && instance.choices.length > 0) {
+		return new Set(instance.choices.flatMap((c, i) => (c.isCorrect ? [i] : [])));
+	}
+	const raw = instance.correctChoiceIndex;
+	const list = Array.isArray(raw) ? raw : raw !== undefined ? [raw] : [];
+	return new Set(list.map(Number).filter((n) => Number.isInteger(n)));
+}
+
+function detailChoices(instance: QuestionInstance, answer: StudentAnswer): DetailedVerdict {
+	const checked = answer.choiceIndexes ?? [];
+	const result = validateAnswer(instance.multipleAnswers ? checked : (checked[0] ?? []), instance);
+	const good = correctChoices(instance);
+	const chosen = new Set(checked);
+	const count = Math.max(instance.choices?.length ?? 0, ...[...good].map((i) => i + 1));
+	const choices = Array.from({ length: count }, (_, i): ChoiceVerdict => {
+		const isCorrect = good.has(i);
+		const isChecked = chosen.has(i);
+		const outcome: ChoiceOutcome = isChecked
+			? isCorrect
+				? 'checked-correct'
+				: 'checked-wrong'
+			: isCorrect
+				? 'missed'
+				: 'unchecked';
+		return { originalIndex: i, isCorrect, checked: isChecked, outcome };
+	});
+	return {
+		status: statusOfResult(result),
+		blanks: [],
+		choices,
+		...(result.feedback && { feedback: result.feedback })
+	};
+}
+
+/**
+ * Verdict d'une réponse avec le statut et les remarques de CHAQUE case (R11) :
+ * même chaîne que `validateAnswer` (statut global identique), sans rien changer
+ * à la notation. QCM : issue de chaque choix. Ne lève jamais.
+ */
+export function validateAnswerDetailed(
+	instance: QuestionInstance,
+	answer: StudentAnswer
+): DetailedVerdict {
+	try {
+		const type = getQuestionType(instance);
+		if (type === 'course_card') return { status: 'incorrect', blanks: [] };
+		if (type === 'multiple_choice') return detailChoices(instance, answer);
+
+		const blanks = instance.blanks ?? [];
+		const values = answer.values ?? blanks.map((b) => b.prefilled ?? '');
+		const { result, statuses, remarks } = detailBlanks(values, instance, answer.latex);
+		return {
+			status: statusOfResult(result),
+			blanks: statuses.map((status, index) => ({ index, status, remarks: remarks[index] ?? [] })),
+			...(result.feedback && { feedback: result.feedback })
+		};
+	} catch {
+		const blanks = instance?.blanks ?? [];
+		return {
+			status: 'incorrect',
+			blanks: blanks.map((_, index) => ({ index, status: 'incorrect', remarks: [] }))
+		};
+	}
 }
 
 // ============================================================================

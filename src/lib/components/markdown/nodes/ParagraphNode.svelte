@@ -244,6 +244,7 @@
 					value={state?.value ?? ''}
 					disabled={inputsDisabled}
 					isCorrect={state?.isCorrect ?? null}
+					unoptimal={state?.unoptimal ?? false}
 					onValueChange={(value) => onInputChange?.(child.index, value)}
 					onSubmit={() => onInputSubmit?.(child.index)}
 				/>

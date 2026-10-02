@@ -55,4 +55,41 @@ glossaire `CONTEXT.md` (Résultat attendu, Correction concise / détaillée).
   `FillBlanksInput showCorrectAnswers`, `serie-automatismes.ts figer` (échoue sur `<<expr>>`).
 - Messages de forme : `src/lib/questions/feedback.ts` (`CONSTRAINT_FEEDBACK`).
 
-## Lot 1 — en cours
+## Lot 1 — fait (2026-10-02, non commité)
+
+### Fait
+
+- **R11** `validateAnswerDetailed(instance, { values?, latex?, choiceIndexes? })`
+  (`src/lib/utils/answer-validator.ts`) → `{ status, blanks: [{ index, status, remarks }], choices?, feedback? }`.
+  Cœur commun `detailBlanks` (aussi derrière `validateBlanksDetailed`, API inchangée) : aucune
+  notation dupliquée. Statut global = `validateAnswer` (`status ?? juste/faux`), vérifié sur les
+  fixtures réelles. QCM : issue par choix `checked-correct | checked-wrong | missed | unchecked`.
+- **R1-R10** `buildExpectedResult(instance, answer?, verdict?)` + `fillMarkdown(markdown, fills, decorate)`
+  (`src/lib/questions/expected-result.ts`). Lignes : `comparison`, `solution`, `filled-statement`,
+  `your-answer`, `choices`, `remark`, `expected-only`, `empty`. Statuts sémantiques
+  `correct | unoptimal | incorrect | empty | solution | neutral`. Les cases restent sous leurs
+  marqueurs (`\placeholder[N]{}`, `{{blank:N}}`) ; `fillMarkdown` les remplace avec le décor de l'appelant.
+- **R12** `InputState.unoptimal?` ; `BlankInput` (`unoptimal`, `data-state`, `border-warning`) ;
+  `MathPrompt` (`data-unoptimal-prompts`, classe `math-prompt-unoptimal` → `--correct-color: var(--color-warning)`) ;
+  `ParagraphNode` transmet `unoptimal`.
+- Tests : `answer-validator-detailed.test.ts` (31), `expected-result.test.ts` (34),
+  `etat-ambre.svelte.test.ts` (5, 4 rouges sans le changement).
+
+### Reste (lots 2-3)
+
+- Brancher `buildExpectedResult` dans `CorrectionCard` (lot 2) et `FlashCard` (lot 3) ; écrire le
+  décor (`fillMarkdown` → `\textcolor`/`\boxed` à l'écran, Typst au PDF).
+- Personne ne pose encore `InputState.unoptimal` : à faire au lot 2.
+
+### Doutes (à trancher par David)
+
+- **MathPrompt ambre** : MathLive ne connaît que `correct` / `incorrect` par case ; l'ambre passe par
+  `--correct-color` de TOUTE la formule. Formule mêlant une case juste et une non optimale : reste
+  verte (la case est signalée par `data-unoptimal-prompts`, sans couleur propre).
+- **« Ta réponse »** = l'énoncé entier rempli par les cases de l'élève (les `fills` portent aussi
+  l'indice, une liste reste possible). Long énoncé → répétition : à juger à l'écran.
+- **Tout juste en R3** : une seule ligne, l'énoncé rempli par SES réponses (pas de « Ta réponse »).
+- **Remarques** : messages de forme + message propre d'une case fausse (unité, % oublié…).
+- **R9 + rulesSuffice** : `possible: true` (la solution montrée n'est qu'un exemple).
+- **QCM rien coché** : statut global = `validateAnswer` (`incorrect`), mais ligne « Tu n'as rien répondu. ».
+- `figer` (`serie-automatismes.ts`) laissé intact : pas factorisé (marqueur `<<expr>>` toujours refusé).
