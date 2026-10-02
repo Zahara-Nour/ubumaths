@@ -131,7 +131,9 @@
 		{:else if line.kind === 'expected-only'}
 			<div class="space-y-1" data-kind="expected-only" data-status="solution">
 				<div class="line-row">
-					<span class="line-label">Réponse attendue :</span>
+					<span class="line-label">
+						{line.possible ? 'Une réponse possible :' : 'Réponse attendue :'}
+					</span>
 					<InlineMarkdown content={expectedOnlyMarkdown(line.value, line.context)} />
 				</div>
 				{#if line.studentAnswer !== undefined && line.studentStatus}

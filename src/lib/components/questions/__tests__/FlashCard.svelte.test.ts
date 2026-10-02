@@ -262,11 +262,13 @@ describe('FlashCard — verso allégé', () => {
 		return face!;
 	}
 
-	it('titre « Correction » centré, en vert', async () => {
+	// Ajustement du lot 3 : l'en-tête intitule le résultat attendu (« Réponse ») ;
+	// « Correction » intitule la correction, plus bas
+	it('titre « Réponse » centré, en vert', async () => {
 		const { container } = await render(FlashCard, { instance: instance() });
 		const title = back(container).querySelector<HTMLElement>('[data-verso-title]');
 
-		expect(title?.textContent?.trim()).toBe('Correction');
+		expect(title?.textContent?.trim()).toBe('Réponse');
 		expect(title?.className).toContain('text-center');
 		expect(title?.className).toMatch(/text-green/);
 	});
@@ -290,18 +292,20 @@ describe('FlashCard — verso allégé', () => {
 		expect(content!.querySelector('.border, .border-2')).toBeNull();
 	});
 
-	it('un seul trou : uniquement la bonne réponse, en plus gros', async () => {
+	// Lot 3 du résultat attendu (R14) : la réponse seule en 3xl est remplacée par
+	// le résultat attendu, agrandi sur les cartes moyennes et grandes
+	it('un seul trou : la bonne réponse (résultat attendu), en plus gros, sans l’énoncé', async () => {
 		const { container } = await render(FlashCard, { instance: instance() });
-		const answer = back(container).querySelector<HTMLElement>('[data-single-answer]');
+		const answer = back(container).querySelector<HTMLElement>('[data-testid="expected-result"]');
 
 		expect(answer).not.toBeNull();
-		expect(answer?.className).toMatch(/text-(2xl|3xl)/);
-		expect(answer?.textContent).toContain('160');
+		expect(answer?.className).toMatch(/text-(lg|xl|2xl|3xl)/);
+		expect(answer?.querySelector('math-span')?.textContent).toContain('160');
 		// L'énoncé n'est pas répété autour de la réponse
 		expect(answer?.textContent).not.toContain('Calcule');
 	});
 
-	it('plusieurs trous : pas de réponse unique en gros', async () => {
+	it('plusieurs trous : l’énoncé rempli par les deux réponses', async () => {
 		const { container } = await render(FlashCard, {
 			instance: instance({
 				statement: resolvedMarkdown('$${{blank:0}} + {{blank:1}} = 5$$'),
@@ -312,7 +316,15 @@ describe('FlashCard — verso allégé', () => {
 			} as Partial<QuestionInstance>)
 		});
 
-		expect(back(container).querySelector('[data-single-answer]')).toBeNull();
+		const filled = back(container).querySelector<HTMLElement>('[data-kind="filled-statement"]');
+		expect(filled).not.toBeNull();
+		// Formule en bloc : `math-div`
+		const latex = [...filled!.querySelectorAll('math-span, math-div')]
+			.map((m) => m.textContent)
+			.join('\n');
+		expect(latex).toContain(
+			'\\textcolor{var(--expected-correct)}{2} + \\textcolor{var(--expected-correct)}{3} = 5'
+		);
 	});
 });
 

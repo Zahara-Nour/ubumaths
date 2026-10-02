@@ -171,6 +171,7 @@ describe('attendu seul (R8, R10)', () => {
 					index: 0,
 					context: 'math',
 					value: '\\frac{1}{2}',
+					possible: false,
 					studentAnswer: '0,7',
 					studentStatus: 'incorrect'
 				}

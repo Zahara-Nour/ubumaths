@@ -26,7 +26,11 @@
 	import type { TestAnswerResult } from '$lib/types/test';
 	import { getQuestionType } from '$lib/questions/types';
 	import { buildExpectedResult } from '$lib/questions/expected-result';
-	import { filledMarkdown, expectedOnlyMarkdown } from '$lib/questions/expected-result-markdown';
+	import {
+		filledMarkdown,
+		expectedOnlyMarkdown,
+		solutionMarkdown
+	} from '$lib/questions/expected-result-markdown';
 	import {
 		globalVerdictOf,
 		instructionOf,
@@ -137,6 +141,8 @@
 		return buildExpectedResult(instance)
 			.lines.flatMap((line) => {
 				if (line.kind === 'filled-statement') return [filledMarkdown(line.markdown, line.fills)];
+				// Calcul R1 : `3 + 5 = 8` encadré
+				if (line.kind === 'solution') return [solutionMarkdown(line.lhs, line.latex, true)];
 				if (line.kind === 'expected-only') return [expectedOnlyMarkdown(line.value, line.context)];
 				return [];
 			})

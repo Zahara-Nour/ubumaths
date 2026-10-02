@@ -195,3 +195,44 @@ min operatorname pi right setminus sin sqrt text times unit varnothing` + `\{ \}
   RESTE (plus un nouveau budget de 5 s). Relecture d'une copie notée : budget entier.
 - Doutes : environnements (`\begin…\end`, matrices) et `\N \Z \Q \R \C` absents du corpus → hors
   liste (rendus en texte inerte) ; intégration `evaluation-notee-serveur` non rejouée (Supabase).
+
+## Lot 3 — fait (2026-10-02, non commité, branche `feat/resultat-attendu-cartes`)
+
+### Fait
+
+- **`FlashCard` verso (R14, Q91)** : statut global (après « Valider » seulement), consigne (Q104,
+  `instructionOf`, si comparaison / solution R1), `ExpectedResultView`, puis `CorrectionView`
+  (concise ↔ détaillée). Remplace la grande réponse seule, `FillBlanksInput showCorrectAnswers
+onlyBlanks` et la liste des bons choix. Repli « pas de réponse structurée » conservé (aucune
+  ligne). Taille du résultat : `text-base` (sm), `text-lg` (md), `text-xl` (lg) ; zone
+  `overflow-x: auto` (une longue formule défile, la tuile ne s'élargit pas). Carte de cours inchangée.
+- **Avec réponse** (`interactive`) : réponse figée à « Valider » (`$state.raw`, rattachée à SON
+  instance — un proxy profond ne serait jamais égal à l'instance reçue), verdict
+  `validateAnswerDetailed` + statut `trainingStatus` (Q105), badge Juste / ½ point / Faux.
+- **R9 d'un calcul R1** (`buildExpectedResult` sans réponse) : ligne `solution` `3 + 5 = 8`
+  encadrée au lieu de l'énoncé rempli (cohérent avec R1 vide) ; `CorrectionCard`
+  (`expectedAnswerMarkdown`) la rend aussi. Trou au milieu, plusieurs cases : énoncé rempli inchangé.
+- **R7 sur l'attendu seul** : `expected-only.possible` → « Une réponse possible : » (le verso
+  disait « Une réponse possible » pour toute case `rulesSuffice`, y compris introuvable dans l'énoncé).
+- Tests : `FlashCard-resultat-attendu` (11 ; 10 rouges avant, la carte de cours passait déjà),
+  `expected-result` R9 réécrits (+1 trou au milieu), `FlashCard` (2 tests « grande réponse
+  seule » adaptés), `ClassroomSeries` (sélecteur `expected-result`).
+- Pas de « quiz de chapitre » : supprimé le 2026-09-15 (CONTEXT.md). FlashCard `interactive` ne
+  sert plus qu'à `QuestionPreview` (aperçu), la page debug et la démo.
+
+### Ajustements (coordinateur, 2026-10-02)
+
+- Verso : en-tête « Réponse » (résultat attendu), puis filet (`hr`, bord haut seul) et intitulé
+  « Correction » au-dessus de `CorrectionView` ; sans correction, ni filet ni intitulé. Carte de
+  cours : « Verso » inchangé. `CorrectionCard` non modifiée (son verso ne porte que la correction).
+- Recto `interactive` : le bandeau affiche le statut global du barème (`globalVerdict`, Juste /
+  ½ point / Faux), le même que le badge du verso ; le message `validateAnswer` (« Correct ! » /
+  « Incorrect ») n'est plus affiché, son `feedback` reste dessous. `isCorrect` transmis à
+  `onAnswerSubmit` inchangé.
+- Tests : +4 (`FlashCard-resultat-attendu`, rouges avant), titre adapté dans `FlashCard.svelte.test`.
+
+### Doutes
+
+- QCM sans réponse : cases ☐ affichées devant chaque choix (rendu de `ExpectedResultView`).
+- Case graphique : aucun composant ne dessine la droite graduée (`GraphicalInput` n'est importé
+  nulle part) ; le verso montre « Réponse attendue : 2,5 » (R8), comme avant en substance.

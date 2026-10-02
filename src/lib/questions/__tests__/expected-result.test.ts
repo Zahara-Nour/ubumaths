@@ -415,20 +415,31 @@ describe('R8 — case graphique', () => {
 });
 
 describe('R9 — sans réponse d’élève', () => {
-	it('convention expression : énoncé rempli `lhs = solution`', () => {
+	// Lot 3 (flash-cards) : un calcul R1 montre sa solution encadrée, comme la
+	// ligne de solution d'une réponse vide — plus l'énoncé à case remplie
+	it('convention expression : solution `lhs = solution`, seule', () => {
 		const r = buildExpectedResult(expressionInstance);
 		expect(r.status).toBeNull();
-		expect(kinds(r)).toEqual(['filled-statement']);
-		const filled = line(r, 'filled-statement');
-		expect(witness(filled.markdown, filled.fills)).toBe(
-			`$$${exprLhs} = [${exprSolution}|solution]$$`
-		);
+		expect(kinds(r)).toEqual(['solution']);
+		expect(line(r, 'solution')).toEqual({
+			kind: 'solution',
+			lhs: exprLhs,
+			latex: expressionInstance.blanks![0].expectedAnswerLatex,
+			possible: false
+		});
 	});
 
-	it('`$3+5=?$` : énoncé rempli', () => {
+	it('`$3+5=?$` : solution `3 + 5 = 8`', () => {
 		const r = buildExpectedResult(equalsInstance);
+		expect(kinds(r)).toEqual(['solution']);
+		expect(line(r, 'solution')).toMatchObject({ lhs: '3 + 5', latex: '8' });
+	});
+
+	it('trou au milieu (pas R1) : énoncé rempli', () => {
+		const inst = generate(template('$?+5=10$', [{ expectedAnswer: '5' }]));
+		const r = buildExpectedResult(inst);
 		const filled = line(r, 'filled-statement');
-		expect(witness(filled.markdown, filled.fills)).toBe('$3 + 5 = [8|solution]$');
+		expect(witness(filled.markdown, filled.fills)).toBe('$[5|solution] + 5 = 10$');
 	});
 
 	it('QCM : bons choix « solution », les autres neutres', () => {
@@ -589,7 +600,8 @@ describe('Revue PR #643 — mineurs', () => {
 		const r = buildExpectedResult(inst, answer(['9']));
 		expect(line(r, 'comparison').lhs).toBe('1{}000 + 1');
 		const r9 = buildExpectedResult(inst);
-		expect(line(r9, 'filled-statement').markdown).toBe('$$1{}000 + 1 = \\placeholder[0]{}$$');
+		// R9 d'un calcul R1 : la solution, avec le même membre gauche affiché
+		expect(line(r9, 'solution').lhs).toBe('1{}000 + 1');
 	});
 
 	it('QCM à règles : l’issue des choix suit les règles (statut et choix cohérents)', () => {

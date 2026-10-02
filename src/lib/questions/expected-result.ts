@@ -63,7 +63,10 @@ export interface ExpectedChoice {
 export type ExpectedLine =
 	/** R1 : `lhs = réponse` (juste, forme) ou `lhs ≠ réponse` (valeur fausse) */
 	| { kind: 'comparison'; lhs: string; relation: '=' | '≠'; answer: ExpectedFill }
-	/** R1 : `= solution`, encadrée ; `possible` → « Une réponse possible : » (R7) */
+	/**
+	 * R1 : `= solution`, encadrée ; `possible` → « Une réponse possible : » (R7).
+	 * Aussi R9 d'un calcul R1 (sans réponse) : `lhs = solution`, seule.
+	 */
 	| { kind: 'solution'; lhs: string; latex: string; possible: boolean }
 	/** R3/R9 : énoncé rempli par les solutions ; `possible` → « Une réponse possible : » */
 	| { kind: 'filled-statement'; markdown: string; fills: ExpectedFill[]; possible: boolean }
@@ -79,6 +82,8 @@ export type ExpectedLine =
 			index: number;
 			context: 'math' | 'text';
 			value: string;
+			/** R7 : « Une réponse possible : » plutôt que « Réponse attendue : » */
+			possible: boolean;
 			studentAnswer?: string;
 			studentStatus?: ExpectedStatus;
 	  }
@@ -345,6 +350,8 @@ function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 		index: view.index,
 		context: view.context,
 		value: view.expected,
+		// R7 : la réponse montrée n'est qu'un exemple (case `rulesSuffice` non réussie)
+		possible: isOnlyPossible(view),
 		...(withAnswer && {
 			studentAnswer: view.student ?? '',
 			studentStatus: toExpectedStatus(view.status ?? 'empty')
@@ -419,8 +426,21 @@ function build(
 
 	if (inStatement.length === 0) return { status, lines: apart };
 
-	// R9 : sans réponse, l'énoncé rempli seul
+	const lhs = wholeRightHandSide(markdown, instance);
+
+	// R9 : sans réponse, l'énoncé rempli seul ; calcul R1 : la solution
+	// `3 + 5 = 8` encadrée, comme la ligne de solution d'une réponse vide (lot 3)
 	if (!verdict || status === null) {
+		if (lhs !== null && inStatement.length === 1) {
+			const [view] = inStatement;
+			const solution: ExpectedLine = {
+				kind: 'solution',
+				lhs,
+				latex: view.expected,
+				possible: view.rulesDecide
+			};
+			return { status, lines: [solution, ...apart] };
+		}
 		const filled: ExpectedLine = {
 			kind: 'filled-statement',
 			markdown,
@@ -430,7 +450,6 @@ function build(
 		return { status, lines: [filled, ...apart] };
 	}
 
-	const lhs = wholeRightHandSide(markdown, instance);
 	const main =
 		lhs !== null && inStatement.length === 1
 			? comparisonLines(lhs, inStatement[0])
@@ -442,7 +461,8 @@ function build(
  * Résultat attendu d'une instance (R1-R10).
  *
  * @param instance - Instance générée
- * @param answer - Réponse de l'élève ; absente → énoncé rempli seul (R9)
+ * @param answer - Réponse de l'élève ; absente → énoncé rempli seul, ou solution
+ *   `3 + 5 = 8` d'un calcul R1 (R9)
  * @param verdict - Verdict déjà calculé (`validateAnswerDetailed`), pour ne pas
  *   valider deux fois ; recalculé depuis `answer` sinon
  */

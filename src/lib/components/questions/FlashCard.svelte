@@ -6,6 +6,14 @@
 	Uses FlipCard for the flip mechanics and height measurement.
 	Handles answer validation, statistics, and type-specific inputs.
 
+	Verso (chantier « résultat attendu », lot 3, R14 / Q91) : en haut le résultat
+	attendu (`ExpectedResultView`), en bas la correction concise ↔ détaillée
+	(`CorrectionView`). Sans réponse d'élève (flash-cards, révision, En classe,
+	aperçus) : R9 — énoncé rempli en vert, ou solution `3 + 5 = 8` encadrée
+	précédée de la consigne (Q104). Après « Valider » (`interactive`) : R1-R7
+	avec la réponse de l'élève, statut global du barème de l'entraînement (Q105).
+	Carte de cours : verso inchangé (`CourseCardBack`).
+
 	Props:
 	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
@@ -14,18 +22,27 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
+	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
-	import { validateAnswer } from '$lib/utils/answer-validator';
+	import {
+		validateAnswer,
+		validateAnswerDetailed,
+		type DetailedVerdict,
+		type StudentAnswer
+	} from '$lib/utils/answer-validator';
 	import { isDisplayedChoiceCorrect, toOriginalChoiceIndexes } from '$lib/questions/choices';
-	import { hasRulesSufficeBlank } from '$lib/questions/rules-suffice';
+	import { buildExpectedResult } from '$lib/questions/expected-result';
+	import {
+		globalVerdictOf,
+		instructionOf,
+		trainingStatus
+	} from '$lib/questions/correction-card-verdict';
 	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { MathInline } from '$lib/components/markdown/nodes';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { RotateCw, Check, X, AlertCircle } from '@lucide/svelte';
+	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import FlipCard from '$lib/components/FlipCard.svelte';
 	import { createLogger } from '$lib/utils/logger';
@@ -36,6 +53,7 @@
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 	import CourseCardBack from './CourseCardBack.svelte';
 	import CorrectionView from './CorrectionView.svelte';
+	import ExpectedResultView from './ExpectedResultView.svelte';
 
 	const logger = createLogger('FlashCard');
 
@@ -90,8 +108,6 @@
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 	let isCorrect = $state(false);
-	let validationStatus = $state<ValidationStatus | undefined>();
-	let validationMessage = $state('');
 	let validationFeedback = $state('');
 
 	// Statistics tracking
@@ -110,6 +126,10 @@
 	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
 	let blankFeedback = $state<(string | undefined)[]>([]);
+	// Réponse validée, rattachée à SON instance : une autre instance (aperçu
+	// régénéré) retrouve un verso sans réponse (R9). `raw` : comparée par identité
+	// à l'instance reçue (un proxy profond ne lui serait jamais égal)
+	let submitted = $state.raw<{ instance: QuestionInstance; answer: StudentAnswer } | null>(null);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -134,11 +154,29 @@
 
 	// Carte de cours (#617) : recto = énoncé, verso = correction, pas de réponse
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
-	// Un seul trou (hors tracé) : le verso n'affiche que sa bonne réponse, en grand
-	const singleBlank = $derived(
-		instance.blanks?.length === 1 && instance.blanks[0].type !== 'graphical'
-			? instance.blanks[0]
-			: undefined
+
+	// Résultat attendu du verso (R14) : avec la réponse validée s'il y en a une
+	const studentAnswer = $derived(
+		submitted && submitted.instance === instance ? submitted.answer : undefined
+	);
+	const detailedVerdict = $derived.by((): DetailedVerdict | undefined => {
+		if (!studentAnswer || isCourseCard) return undefined;
+		return {
+			...validateAnswerDetailed(instance, studentAnswer),
+			// Statut global : barème de l'entraînement et de l'évaluation (Q105)
+			status: trainingStatus(instance, studentAnswer)
+		};
+	});
+	const expected = $derived(
+		isCourseCard ? null : buildExpectedResult(instance, studentAnswer, detailedVerdict)
+	);
+	const globalVerdict = $derived(detailedVerdict ? globalVerdictOf(detailedVerdict.status) : null);
+	// Calcul R1 : la consigne seule au-dessus (Q104) — le verso se lit sans le
+	// recto (grille des corrections « En classe »)
+	const instruction = $derived(
+		expected?.lines.some((l) => l.kind === 'comparison' || l.kind === 'solution')
+			? instructionOf(typeof instance.statement === 'string' ? instance.statement : '')
+			: ''
 	);
 
 	const correctionMarkdown = $derived.by(() => {
@@ -258,9 +296,15 @@
 			getQuestionType(instance) === 'fill_in_blanks' ? fillBlankValuesLatex : undefined;
 
 		const validationResult = validateAnswer(answer, instance, answerLatex);
+		// Réponse telle que le validateur l'a lue, pour le résultat attendu du verso
+		submitted = {
+			instance,
+			answer:
+				getQuestionType(instance) === 'multiple_choice'
+					? { choiceIndexes: toOriginalChoiceIndexes(instance, selectedChoices) }
+					: { values: [...fillBlankValues], latex: [...fillBlankValuesLatex] }
+		};
 		isCorrect = validationResult.isCorrect;
-		validationStatus = validationResult.status;
-		validationMessage = validationResult.message || '';
 		validationFeedback = validationResult.feedback || '';
 		blankFeedback = validationResult.blankFeedback ?? [];
 
@@ -327,6 +371,13 @@
 		sm: 'max-w-md',
 		md: 'max-w-2xl',
 		lg: 'max-w-4xl'
+	};
+
+	// Résultat attendu : plus grand sur les grandes cartes (l'ancienne réponse seule était en 3xl)
+	const expectedSizeClasses = {
+		sm: 'text-base',
+		md: 'text-lg',
+		lg: 'text-xl'
 	};
 </script>
 
@@ -396,26 +447,29 @@
 									</div>
 								{/if}
 
-								{#if isSubmitted && showValidationFeedback}
+								{#if isSubmitted && showValidationFeedback && globalVerdict}
+									<!-- Même statut que le badge du verso : barème de l'évaluation (Q105) -->
 									<div
 										class={cn(
 											'mt-4 flex items-center gap-3 rounded-lg border-2 p-4',
-											validationStatus === 'unoptimal_form'
+											globalVerdict.kind === 'half'
 												? 'border-yellow-600 bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-200'
-												: isCorrect
+												: globalVerdict.kind === 'correct'
 													? 'border-green-600 bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200'
 													: 'border-red-600 bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-200'
 										)}
+										data-testid="front-verdict"
+										data-kind={globalVerdict.kind}
 									>
-										{#if validationStatus === 'unoptimal_form'}
+										{#if globalVerdict.kind === 'half'}
 											<AlertCircle class="h-6 w-6 flex-shrink-0" />
-										{:else if isCorrect}
+										{:else if globalVerdict.kind === 'correct'}
 											<Check class="h-6 w-6 flex-shrink-0" />
 										{:else}
 											<X class="h-6 w-6 flex-shrink-0" />
 										{/if}
 										<div class="flex-1">
-											<p class="font-semibold">{validationMessage}</p>
+											<p class="font-semibold">{globalVerdict.label}</p>
 											{#if validationFeedback}
 												<p class="mt-1 text-sm opacity-90">{validationFeedback}</p>
 											{/if}
@@ -451,75 +505,76 @@
 
 		{#snippet back()}
 			<div class="face relative h-full">
-				<!-- Verso allégé : titre vert centré ; ni badge, ni intitulés, ni encadrés -->
+				<!-- Verso allégé : titre vert centré ; ni badge du type, ni intitulés, ni encadrés -->
 				<Card.Root class={cn('face-card h-full', height && 'scrollable')}>
 					<Card.Content class="space-y-6">
 						<p
 							class="text-center text-lg font-semibold text-green-600 dark:text-green-500"
 							data-verso-title
 						>
-							{isCourseCard ? 'Verso' : 'Correction'}
+							<!-- En-tête du résultat attendu ; « Correction » intitule la correction plus bas -->
+							{isCourseCard ? 'Verso' : 'Réponse'}
 						</p>
 
 						{#if isCourseCard}
 							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
 							<CourseCardBack correction={instance.correction} />
 						{:else}
-							<div class="correct-answer">
-								<!-- Plusieurs bonnes réponses : celle affichée n'en est qu'un exemple -->
-								{#if hasRulesSufficeBlank(instance)}
-									<p class="mb-2 text-center text-sm text-muted-foreground">Une réponse possible</p>
-								{/if}
-								{#if singleBlank}
-									<!-- Un seul trou : uniquement sa bonne réponse, en plus gros -->
-									<div class="text-center text-3xl font-semibold" data-single-answer>
-										{#if singleBlank.type === 'math'}
-											<MathInline
-												expression={singleBlank.expectedAnswerLatex ?? singleBlank.expectedAnswer}
-												syntax={singleBlank.expectedAnswerLatex ? 'latex' : 'custom'}
-											/>
-										{:else}
-											{singleBlank.expectedAnswer}
-										{/if}
-									</div>
-								{:else if getQuestionType(instance) === 'fill_in_blanks' && instance.blanks}
-									<FillBlanksInput
-										statement={instance.statement}
-										blanks={instance.blanks}
-										expressions={instance.expressions}
-										showCorrectAnswers={true}
-										onlyBlanks={true}
-									/>
-								{:else if getQuestionType(instance) === 'multiple_choice' && instance.choices}
-									<ul class="space-y-2">
-										{#each instance.choices as choice, i (i)}
-											{#if choice.isCorrect}
-												<li class="flex items-center gap-2">
-													<Check class="h-5 w-5 flex-shrink-0 text-green-600" />
-													<MarkdownRenderer content={choice.content} />
-												</li>
+							<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
+							<div class="space-y-3">
+								{#if globalVerdict}
+									<p class="flex justify-center">
+										<span
+											class="verdict-badge verdict-{globalVerdict.kind}"
+											data-testid="global-verdict"
+											data-kind={globalVerdict.kind}
+										>
+											{#if globalVerdict.kind === 'correct'}
+												<Check class="h-3.5 w-3.5" aria-hidden="true" />
+											{:else if globalVerdict.kind === 'half'}
+												<TriangleAlert class="h-3.5 w-3.5" aria-hidden="true" />
+											{:else}
+												<X class="h-3.5 w-3.5" aria-hidden="true" />
 											{/if}
-										{/each}
-									</ul>
-								{:else}
-									<!--
-									getQuestionType() ne connaît que deux types : sans `choices`, une
-									question est classée `fill_in_blanks`. Si elle n'a pas non plus de
-									`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
-									repli, la zone de réponse se rendait vide et muette.
-								-->
-									<p class="text-sm text-muted-foreground">
-										{correctionMarkdown
-											? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
-											: 'Aucune réponse enregistrée pour cette question.'}
+											{globalVerdict.label}
+										</span>
 									</p>
 								{/if}
+								{#if instruction}
+									<!-- Consigne seule (Q104) : la formule à case est remplacée par la solution -->
+									<div class="text-muted-foreground" data-testid="instruction">
+										<MarkdownRenderer content={instruction} />
+									</div>
+								{/if}
+								<div class="correct-answer">
+									{#if expected && expected.lines.length > 0}
+										<!-- Résultat attendu (R9, ou R1-R7 après « Valider ») -->
+										<ExpectedResultView result={expected} class={expectedSizeClasses[size]} />
+									{:else}
+										<!--
+										getQuestionType() ne connaît que deux types : sans `choices`, une
+										question est classée `fill_in_blanks`. Si elle n'a pas non plus de
+										`blanks`, il n'y a aucune réponse structurée à afficher — sans ce
+										repli, la zone de réponse se rendait vide et muette.
+									-->
+										<p class="text-sm text-muted-foreground">
+											{correctionMarkdown
+												? "Cette question n'a pas de réponse structurée : voir l'explication ci-dessous."
+												: 'Aucune réponse enregistrée pour cette question.'}
+										</p>
+									{/if}
+								</div>
 							</div>
 
 							{#if correctionMarkdown}
-								<div class="correction-steps">
-									<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
-									<CorrectionView markdown={correctionMarkdown} />
+								<!-- Filet et intitulé : la correction ne s'enchaîne pas au résultat attendu -->
+								<div>
+									<hr class="correction-separator" data-testid="correction-separator" />
+									<p class="correction-heading" data-testid="correction-heading">Correction</p>
+									<div class="correction-steps">
+										<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
+										<CorrectionView markdown={correctionMarkdown} />
+									</div>
 								</div>
 							{/if}
 						{/if}
@@ -606,6 +661,51 @@
 	/* ============================================================================
 	 * CONTENT SECTIONS
 	 * ============================================================================ */
+
+	/* Séparation résultat attendu / correction : un filet discret, pas un encadré */
+	.correction-separator {
+		border: none;
+		border-top: 1px solid var(--color-border);
+		margin: 0 0 0.75rem;
+	}
+
+	.correction-heading {
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-muted-foreground);
+	}
+
+	/* Une longue formule défile dans sa zone au lieu d'élargir la carte (tuiles) */
+	.correct-answer {
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	/* Statut global (même barème et mêmes couleurs que CorrectionCard) */
+	.verdict-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		border: 1px solid currentColor;
+		border-radius: 9999px;
+		padding: 0.125rem 0.625rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.verdict-correct {
+		color: light-dark(var(--color-green-700, #15803d), var(--color-green-400, #4ade80));
+	}
+
+	.verdict-half {
+		color: light-dark(var(--color-amber-700, #b45309), var(--color-amber-400, #fbbf24));
+	}
+
+	.verdict-incorrect {
+		color: light-dark(var(--color-red-700, #b91c1c), var(--color-red-400, #f87171));
+	}
 
 	.statement-section,
 	.answer-section,
