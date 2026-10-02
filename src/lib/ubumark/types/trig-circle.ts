@@ -189,6 +189,16 @@ export type TrigDisplayMode = 'points' | 'arc' | 'interactive';
 export type TrigDisplayType = 'circle' | 'table' | 'circle+table';
 
 /**
+ * Intervalle dans lequel les étiquettes d'angle sont écrites
+ *
+ * - '0-2pi' : [0 ; 2π[ (défaut) — un angle écrit dans `angles:` garde son écriture
+ * - 'principales' : mesures principales, dans ]−π ; π] — toute étiquette est récrite
+ *
+ * Les points ne bougent pas : seule l'étiquette change.
+ */
+export type TrigMeasures = '0-2pi' | 'principales';
+
+/**
  * Configuration options for the trigonometric circle display
  */
 export interface TrigCircleConfig {
@@ -214,6 +224,8 @@ export interface TrigCircleConfig {
 	showLabels: boolean;
 	/** Whether to show cos/sin values on axes */
 	showAxisValues: boolean;
+	/** Intervalle des étiquettes d'angle (`mesures:`) */
+	measures: TrigMeasures;
 }
 
 // ============================================================================
@@ -346,7 +358,8 @@ export const DEFAULT_TRIG_CIRCLE_CONFIG: TrigCircleConfig = {
 	showGrid: false,
 	showAxes: true,
 	showLabels: true,
-	showAxisValues: true
+	showAxisValues: true,
+	measures: '0-2pi'
 };
 
 /**
