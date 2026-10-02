@@ -174,6 +174,21 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Produit scalaire : calculer, propriétés, angles et longueurs, lieux', () => {
+		const subdomains = [
+			'Lieux de points',
+			'Angles et longueurs',
+			'Calculer un produit scalaire',
+			'Propriétés'
+		].map((subdomain) => ({ theme: 'Géométrie', domain: 'Produit scalaire', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Calculer un produit scalaire',
+			'Propriétés',
+			'Angles et longueurs',
+			'Lieux de points'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',

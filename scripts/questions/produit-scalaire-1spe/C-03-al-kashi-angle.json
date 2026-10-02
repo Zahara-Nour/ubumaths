@@ -1,0 +1,554 @@
+{
+	"title": "Al-Kashi : calculer un angle",
+	"description": "Calculer le cosinus puis la mesure d'un angle d'un triangle dont on connaît les trois côtés, avec la formule d'Al-Kashi",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Angles et longueurs",
+	"level": 3,
+	"status": "draft",
+	"delay": 180,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0)\nB = point({{eval:round(100*(c))/100;d}}, 0)\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}})\nmasque(A)\nmasque(B)\nmasque(C)\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"A\")\ntexte({{eval:round(100*((c)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"B\")\ntexte({{eval:round(100*((Xc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((Yc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"C\")\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*pi/360))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*pi/360))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "a0",
+					"expression": "{{eval:m^2+-m*n+n^2}}"
+				},
+				{
+					"name": "b0",
+					"expression": "{{eval:m^2-n^2}}"
+				},
+				{
+					"name": "c0",
+					"expression": "{{eval:2*m*n-n^2}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(a0,b0),c0)}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:k*a0/g}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:k*b0/g}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:k*c0/g}}"
+				},
+				{
+					"name": "al",
+					"expression": "60"
+				},
+				{
+					"name": "Xc",
+					"expression": "{{eval:round(1000*b*(1/2))/1000}}"
+				},
+				{
+					"name": "Yc",
+					"expression": "{{eval:round(1000*b*sqrt(1-(1/2)^2))/1000}}"
+				},
+				{
+					"name": "Hb",
+					"expression": "{{eval:round(2*b*c*cos(al*pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+				}
+			],
+			"conditions": ["n < m", "m != 2*n", "b <= 2.2*c", "c <= 2.2*b", "a <= 24", "Hb >= 70"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}"
+				},
+				{
+					"expectedAnswer": "60"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'après la formule d'Al-Kashi : $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$, donc $\\cos\\widehat{BAC}=\\dfrac{AB^2+AC^2-BC^2}{2\\times AB\\times AC}$.",
+					"$\\cos\\widehat{BAC}=\\dfrac{ {{c}}^2+{{b}}^2-{{a}}^2}{2\\times {{c}}\\times {{b}} }=\\dfrac{ {{eval:b^2+c^2-a^2}} }{ {{eval:2*b*c}} }=\\textcolor{{{color:primary.0}}}{ \\dfrac{1}{2} }$",
+					"$\\cos 60^\\circ=\\dfrac{1}{2}$ et un angle d'un triangle est compris entre $0^\\circ$ et $180^\\circ$, donc $\\widehat{BAC}=\\textcolor{{{color:primary.0}}}{ 60^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0)\nB = point({{eval:round(100*(c))/100;d}}, 0)\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}})\nmasque(A)\nmasque(B)\nmasque(C)\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"A\")\ntexte({{eval:round(100*((c)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"B\")\ntexte({{eval:round(100*((Xc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((Yc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"C\")\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*pi/360))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*pi/360))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "a0",
+					"expression": "{{eval:m^2+m*n+n^2}}"
+				},
+				{
+					"name": "b0",
+					"expression": "{{eval:m^2-n^2}}"
+				},
+				{
+					"name": "c0",
+					"expression": "{{eval:2*m*n+n^2}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:gcd(gcd(a0,b0),c0)}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:k*a0/g}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:k*b0/g}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:k*c0/g}}"
+				},
+				{
+					"name": "al",
+					"expression": "120"
+				},
+				{
+					"name": "Xc",
+					"expression": "{{eval:round(1000*b*(-1/2))/1000}}"
+				},
+				{
+					"name": "Yc",
+					"expression": "{{eval:round(1000*b*sqrt(1-(-1/2)^2))/1000}}"
+				},
+				{
+					"name": "Hb",
+					"expression": "{{eval:round(2*b*c*cos(al*pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+				}
+			],
+			"conditions": ["n < m", "m != 2*n", "b <= 2.2*c", "c <= 2.2*b", "a <= 24", "Hb >= 70"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{2}"
+				},
+				{
+					"expectedAnswer": "120"
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'après la formule d'Al-Kashi : $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$, donc $\\cos\\widehat{BAC}=\\dfrac{AB^2+AC^2-BC^2}{2\\times AB\\times AC}$.",
+					"$\\cos\\widehat{BAC}=\\dfrac{ {{c}}^2+{{b}}^2-{{a}}^2}{2\\times {{c}}\\times {{b}} }=\\dfrac{ {{eval:b^2+c^2-a^2}} }{ {{eval:2*b*c}} }=\\textcolor{{{color:primary.0}}}{ -\\dfrac{1}{2} }$",
+					"$\\cos 120^\\circ=-\\dfrac{1}{2}$ et un angle d'un triangle est compris entre $0^\\circ$ et $180^\\circ$, donc $\\widehat{BAC}=\\textcolor{{{color:primary.0}}}{ 120^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0)\nB = point({{eval:round(100*(c))/100;d}}, 0)\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}})\nmasque(A)\nmasque(B)\nmasque(C)\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((-((c)+(Xc))/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt((((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"A\")\ntexte({{eval:round(100*((c)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((((c)-((c)+(Xc))/3)/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/3/sqrt(((c)-((c)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"B\")\ntexte({{eval:round(100*((Xc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((Yc)+(11+5.0*abs((((Xc)-((c)+(Xc))/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((Yc)-(Yc)/3)/sqrt(((Xc)-((c)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"C\")\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))-8.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*pi/360))-1.75*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*pi/360))-4*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:max(3,abs(a-b)+1)}}..{{eval:min(9,a+b-1)}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:(b^2+c^2-a^2)/(2*b*c)}}"
+				},
+				{
+					"name": "T",
+					"expression": "{{eval:arccos(q)*180/pi}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:round(T)}}"
+				},
+				{
+					"name": "al",
+					"expression": "{{eval:round(100*T)/100}}"
+				},
+				{
+					"name": "Xc",
+					"expression": "{{eval:round(1000*b*(q))/1000}}"
+				},
+				{
+					"name": "Yc",
+					"expression": "{{eval:round(1000*b*sqrt(1-(q)^2))/1000}}"
+				},
+				{
+					"name": "Hb",
+					"expression": "{{eval:round(2*b*c*cos(al*pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+				}
+			],
+			"conditions": [
+				"a < b+c",
+				"b < a+c",
+				"c < a+b",
+				"b^2+c^2-a^2 != 0",
+				"abs(2*(b^2+c^2-a^2)) != b*c",
+				"abs(abs(T-round(T))-0.5) > 0.1",
+				"T >= 30",
+				"b <= 2*c",
+				"c <= 2*b",
+				"Hb >= 70"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{R}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'après la formule d'Al-Kashi : $BC^2=AB^2+AC^2-2\\times AB\\times AC\\times\\cos\\widehat{BAC}$, donc $\\cos\\widehat{BAC}=\\dfrac{AB^2+AC^2-BC^2}{2\\times AB\\times AC}$.",
+					"$\\cos\\widehat{BAC}=\\dfrac{ {{c}}^2+{{b}}^2-{{a}}^2}{2\\times {{c}}\\times {{b}} }=\\dfrac{ {{eval:b^2+c^2-a^2}} }{ {{eval:2*b*c}} }=\\textcolor{{{color:primary.0}}}{ {{q}} }$",
+					"À la calculatrice (touche $\\cos^{-1}$, en mode degrés) : $\\widehat{BAC}\\approx \\textcolor{{{color:primary.0}}}{ {{R}}^\\circ }$ (arrondi au degré)."
+				]
+			}
+		},
+		{
+			"statement": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(c,a)))/100;d}} ; {{eval:round(100*(max(a,Xc)+0.3*max(c,a)))/100;d}} ; {{eval:round(100*(-0.25*max(c,a)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(c,a)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0)\nB = point({{eval:round(100*(a))/100;d}}, 0)\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}})\nmasque(A)\nmasque(B)\nmasque(C)\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*((0)+(11+5.0*abs((-((a)+(Xc))/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-((a)+(Xc))/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((-((a)+(Xc))/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-(Yc)/3/sqrt((((a)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"B\")\ntexte({{eval:round(100*((a)+(11+5.0*abs((((a)-((a)+(Xc))/3)/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((((a)-((a)+(Xc))/3)/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2)))-1.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*((0)+(11+5.0*abs((((a)-((a)+(Xc))/3)/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2)))+7.0*abs((-(Yc)/3/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-(Yc)/3/sqrt(((a)-((a)+(Xc))/3)^2+((Yc)/3)^2)))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"C\")\ntexte({{eval:round(100*((Xc)+(11+5.0*abs((((Xc)-((a)+(Xc))/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((((Xc)-((a)+(Xc))/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-1.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*((Yc)+(11+5.0*abs((((Xc)-((a)+(Xc))/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))+7.0*abs((((Yc)-(Yc)/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((((Yc)-(Yc)/3)/sqrt(((Xc)-((a)+(Xc))/3)^2+((Yc)-(Yc)/3)^2)))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"A\")\ntexte({{eval:round(100*(((a)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(0)-8.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-1))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(c)))+7.0*abs(((Xc)/(c))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-(Yc)/(c)))-8.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(c)))+7.0*abs(((Xc)/(c))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(((Xc)/(c)))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*((((a)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))+7.0*abs((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))-8.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))+7.0*abs((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2)))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(cos(al*pi/360))-1.75*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*pi/360))+7.0*abs(sin(al*pi/360)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(sin(al*pi/360))-4*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=?$\n\n$\\widehat{ABC}\\approx ?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "3..9"
+				},
+				{
+					"name": "b",
+					"expression": "3..9"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:max(3,abs(a-b)+1)}}..{{eval:min(9,a+b-1)}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:(a^2+c^2-b^2)/(2*a*c)}}"
+				},
+				{
+					"name": "T",
+					"expression": "{{eval:arccos(q)*180/pi}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:round(T)}}"
+				},
+				{
+					"name": "al",
+					"expression": "{{eval:round(100*T)/100}}"
+				},
+				{
+					"name": "Xc",
+					"expression": "{{eval:round(1000*c*(q))/1000}}"
+				},
+				{
+					"name": "Yc",
+					"expression": "{{eval:round(1000*c*sqrt(1-(q)^2))/1000}}"
+				},
+				{
+					"name": "Hb",
+					"expression": "{{eval:round(2*c*a*cos(al*pi/360)/(c+a)*400/(max(a,Xc)-min(0,Xc)+0.6*max(c,a)))}}"
+				}
+			],
+			"conditions": [
+				"a < b+c",
+				"b < a+c",
+				"c < a+b",
+				"a^2+c^2-b^2 != 0",
+				"abs(2*(a^2+c^2-b^2)) != a*c",
+				"abs(abs(T-round(T))-0.5) > 0.1",
+				"T >= 30",
+				"a <= 2*c",
+				"c <= 2*a",
+				"Hb >= 70"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				},
+				{
+					"expectedAnswer": "{{R}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'angle $\\widehat{ABC}$ est compris entre les côtés $[BA]$ et $[BC]$ ; le côté opposé est $[AC]$. D'après la formule d'Al-Kashi : $AC^2=BA^2+BC^2-2\\times BA\\times BC\\times\\cos\\widehat{ABC}$.",
+					"$\\cos\\widehat{ABC}=\\dfrac{BA^2+BC^2-AC^2}{2\\times BA\\times BC}=\\dfrac{ {{c}}^2+{{a}}^2-{{b}}^2}{2\\times {{c}}\\times {{a}} }=\\dfrac{ {{eval:a^2+c^2-b^2}} }{ {{eval:2*a*c}} }=\\textcolor{{{color:primary.0}}}{ {{q}} }$",
+					"À la calculatrice (touche $\\cos^{-1}$, en mode degrés) : $\\widehat{ABC}\\approx \\textcolor{{{color:primary.0}}}{ {{R}}^\\circ }$ (arrondi au degré)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 1/2 et 60",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{1}{2}", "60"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 0,5 et 60°",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["0,5", "60^\\circ"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 20/40 non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{20}{40}", "60"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v0 : signe de la formule inversé (−1/2 et 120)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["-\\frac{1}{2}", "120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : angle en radians refusé",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{1}{2}", "\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 30 (confusion cos/sin)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "3",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{1}{2}", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −1/2 et 120",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["-\\frac{1}{2}", "120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −0,5 et 120",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["-0,5", "120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 60 au lieu de 120",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"n": "1",
+				"k": "1"
+			},
+			"answers": ["-\\frac{1}{2}", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 1/8 et 83",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{1}{8}", "83"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 0,125 et 83",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["0,125", "83"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 5/40 non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{5}{40}", "83"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : angle tronqué 82 refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{1}{8}", "82"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : mauvais côté opposé (cos = 9/16)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{9}{16}", "56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 9/16 et 56",
+			"variationIndex": 3,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{9}{16}", "56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 0,5625 et 56",
+			"variationIndex": 3,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["0,5625", "56"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : angle en A au lieu de B (1/8 et 83)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "6",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{1}{8}", "83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

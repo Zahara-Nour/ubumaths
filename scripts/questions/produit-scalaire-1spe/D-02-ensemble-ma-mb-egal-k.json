@@ -1,0 +1,383 @@
+{
+	"title": "Ensemble des points M tels que MA·MB = k",
+	"description": "Utiliser le milieu I de [AB] pour transformer MA·MB = k en MI² = k + AB²/4 et reconnaître un cercle",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Lieux de points",
+	"level": 3,
+	"status": "draft",
+	"delay": 180,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ya",
+					"expression": "-5..5"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "q",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "xb",
+					"expression": "{{eval:xa+2*p}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{eval:ya+2*q}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:p^2+q^2}}"
+				},
+				{
+					"name": "k",
+					"expression": "1..20"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:k+S}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:sqrt(Q)}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(xa+xb)/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(ya+yb)/2}}"
+				},
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soit $I$ le milieu de $[AB]$ : $\\overrightarrow{IB}=-\\overrightarrow{IA}$ et $IA=\\dfrac{AB}{2}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)=MI^2-IA^2=MI^2-\\dfrac{AB^2}{4}$",
+					"Ici $AB^2={{eval:2*p;()}}^2+{{eval:2*q;()}}^2={{eval:4*S}}$, donc $\\dfrac{AB^2}{4}={{S}}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}\\iff MI^2-{{S}}={{k}}\\iff MI^2={{Q}}\\iff MI=\\sqrt{ {{Q}} }$ (car ${{Q}}>0$ et $MI\\geqslant 0$).",
+					"L'ensemble cherché est le cercle de centre $I$ et de rayon $r=\\textcolor{{{color:primary.0}}}{ {{R}} }$.",
+					"$x_I=\\dfrac{ {{xa}}+{{xb;()}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:(xa+xb)/2}} }$ et $y_I=\\dfrac{ {{ya}}+{{yb;()}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:(ya+yb)/2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ya",
+					"expression": "-5..5"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "q",
+					"expression": "-3..3!0"
+				},
+				{
+					"name": "xb",
+					"expression": "{{eval:xa+2*p}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{eval:ya+2*q}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:p^2+q^2}}"
+				},
+				{
+					"name": "k",
+					"expression": "{{eval:1-S}}..-1"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:k+S}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:sqrt(Q)}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(xa+xb)/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(ya+yb)/2}}"
+				},
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soit $I$ le milieu de $[AB]$ : $\\overrightarrow{IB}=-\\overrightarrow{IA}$ et $IA=\\dfrac{AB}{2}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)=MI^2-IA^2=MI^2-\\dfrac{AB^2}{4}$",
+					"Ici $AB^2={{eval:2*p;()}}^2+{{eval:2*q;()}}^2={{eval:4*S}}$, donc $\\dfrac{AB^2}{4}={{S}}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}\\iff MI^2-{{S}}={{k}}\\iff MI^2={{Q}}\\iff MI=\\sqrt{ {{Q}} }$ (car ${{Q}}>0$ et $MI\\geqslant 0$).",
+					"L'ensemble cherché est le cercle de centre $I$ et de rayon $r=\\textcolor{{{color:primary.0}}}{ {{R}} }$.",
+					"$x_I=\\dfrac{ {{xa}}+{{xb;()}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:(xa+xb)/2}} }$ et $y_I=\\dfrac{ {{ya}}+{{yb;()}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:(ya+yb)/2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $[AB]$ un segment de longueur $AB={{L}}$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r=?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "2..6"
+				},
+				{
+					"name": "L",
+					"expression": "{{eval:2*h}}"
+				},
+				{
+					"name": "k",
+					"expression": "{{eval:1-h^2}}..15!0"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:k+h^2}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:sqrt(Q)}}"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soit $I$ le milieu de $[AB]$ : $\\overrightarrow{IB}=-\\overrightarrow{IA}$ et $IA=\\dfrac{AB}{2}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=\\left(\\overrightarrow{MI}+\\overrightarrow{IA}\\right)\\cdot\\left(\\overrightarrow{MI}-\\overrightarrow{IA}\\right)=MI^2-IA^2=MI^2-\\dfrac{AB^2}{4}$",
+					"Ici $\\dfrac{AB^2}{4}=\\dfrac{ {{eval:L^2}} }{4}={{eval:h^2}}$.",
+					"$\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}\\iff MI^2-{{eval:h^2}}={{k}}\\iff MI^2={{Q}}\\iff MI=\\sqrt{ {{Q}} }$ (car ${{Q}}>0$ et $MI\\geqslant 0$).",
+					"L'ensemble cherché est le cercle de centre $I$ et de rayon $r=\\textcolor{{{color:primary.0}}}{ {{R}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : I(3;0), r = 2√3",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "2\\sqrt{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : √12 non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "\\sqrt{12}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : AB²/4 oublié (r = √7)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "\\sqrt{7}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AB² au lieu de AB²/4 (r = √27 = 3√3)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "3\\sqrt{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signe faux (r = √(5−7) impossible, √2 donné)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "\\sqrt{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : r² donné (12)",
+			"variationIndex": 0,
+			"variables": {
+				"xa": "1",
+				"ya": "-1",
+				"p": "2",
+				"q": "1",
+				"k": "7"
+			},
+			"answers": ["3", "0", "12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : I(3;1), r = 2√2",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "0",
+				"ya": "2",
+				"p": "3",
+				"q": "-1",
+				"k": "-2"
+			},
+			"answers": ["3", "1", "2\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe de k ignoré (r = √12 = 2√3)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "0",
+				"ya": "2",
+				"p": "3",
+				"q": "-1",
+				"k": "-2"
+			},
+			"answers": ["3", "1", "2\\sqrt{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : valeur approchée 2,83 refusée",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "0",
+				"ya": "2",
+				"p": "3",
+				"q": "-1",
+				"k": "-2"
+			},
+			"answers": ["3", "1", "2,83"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : r = 4",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"k": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AB²/4 remplacé par AB/2 (r = √10)",
+			"variationIndex": 2,
+			"variables": {
+				"h": "3",
+				"k": "7"
+			},
+			"answers": ["\\sqrt{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : r = √5",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"k": "1"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : r² donné (5)",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"k": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -307,6 +307,20 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 			{ domain: 'Modélisation', subdomains: ['Pourcentages', 'Placements'] },
 			{ domain: 'Limites', subdomains: ['Déterminer une limite'] }
 		]
+	},
+	{
+		theme: 'Géométrie',
+		domains: [
+			{
+				domain: 'Produit scalaire',
+				subdomains: [
+					'Calculer un produit scalaire',
+					'Propriétés',
+					'Angles et longueurs',
+					'Lieux de points'
+				]
+			}
+		]
 	}
 ];
 

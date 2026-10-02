@@ -1,0 +1,289 @@
+{
+	"title": "Choisir la méthode dans une figure usuelle",
+	"description": "Calculer des produits scalaires dans un carré, un triangle équilatéral ou un rectangle en choisissant la méthode adaptée (projection, angle, orthogonalité, décomposition)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Calculer un produit scalaire",
+	"level": 3,
+	"status": "draft",
+	"delay": 180,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$ABCD$ est un carré de côté ${{a}}$.\n\n```figure\nfenetre: -1.2 ; 5.2 ; -1.2 ; 5\ntaille: petite\ndescription: Carré ABCD et sa diagonale AC.\n---\nA = point(0, 0)\nB = point(4, 0)\nC = point(4, 4)\nD = point(0, 4)\nM = milieu(A, B)\npolygone(A, B, C, D)\nangle(A, B, C, marque=\"carre\")\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(D, A)\nsegment(A, C)\nmarque_segment(B, C)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(D)\nmasque(M)\ntexte(A, \"A\", dx=-0.5, dy=-0.45)\ntexte(B, \"B\", dx=0.15, dy=-0.45)\ntexte(C, \"C\", dx=0.15, dy=0.15)\ntexte(D, \"D\", dx=-0.5, dy=0.15)\ntexte(M, \"{{a}}\", dx=-0.15, dy=-0.6)\n```\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a}}"
+				},
+				{
+					"expectedAnswer": "0"
+				},
+				{
+					"expectedAnswer": "{{eval:-a*a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal de $C$ sur $(AB)$ est $B$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\overrightarrow{AB}\\cdot\\overrightarrow{AB}=AB^2={{a}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:a*a}} }$.",
+					"Les droites $(AB)$ et $(AD)$ sont perpendiculaires, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=\\textcolor{{{color:primary.0}}}{ 0 }$.",
+					"$\\overrightarrow{CD}=-\\overrightarrow{AB}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=-AB^2=\\textcolor{{{color:primary.0}}}{ {{eval:-a*a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "$ABC$ est un triangle équilatéral de côté ${{a}}$ et $I$ est le milieu de $[BC]$.\n\n```figure\nfenetre: -1.2 ; 5.2 ; -1 ; 4.4\ntaille: petite\ndescription: Triangle équilatéral ABC ; I est le milieu du côté BC.\n---\nA = point(0, 0)\nB = point(4, 0)\nC = point(2, 2*sqrt(3))\nI = milieu(B, C)\nM = milieu(A, B)\npolygone(A, B, C)\nsegment(A, I)\nmarque_segment(A, B)\nmarque_segment(C, A)\nmarque_segment(B, I, traits=2)\nmarque_segment(I, C, traits=2)\npoint(3, sqrt(3))\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(I)\nmasque(M)\ntexte(A, \"A\", dx=-0.5, dy=-0.45)\ntexte(B, \"B\", dx=0.15, dy=-0.45)\ntexte(C, \"C\", dx=-0.15, dy=0.25)\ntexte(I, \"I\", dx=0.2, dy=0.05)\ntexte(M, \"{{a}}\", dx=-0.15, dy=-0.6)\n```\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=?$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:a*a}} }{2}"
+				},
+				{
+					"expectedAnswer": "\\frac{ {{eval:-a*a}} }{2}"
+				},
+				{
+					"expectedAnswer": "0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les angles d'un triangle équilatéral mesurent $60^\\circ$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB\\times AC\\times\\cos(60^\\circ)={{a}}\\times {{a}}\\times\\dfrac{1}{2}=\\textcolor{{{color:primary.0}}}{ {{eval:a*a/2}} }$.",
+					"L'angle $(\\overrightarrow{AB},\\overrightarrow{BC})$ mesure $180^\\circ-60^\\circ=120^\\circ$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}={{a}}\\times {{a}}\\times\\cos(120^\\circ)={{a}}\\times {{a}}\\times\\left(-\\dfrac{1}{2}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:-a*a/2}} }$.",
+					"Autre méthode : $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=-\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$ et $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}=\\dfrac{ {{eval:a*a}} }{2}$.",
+					"Dans un triangle équilatéral, la médiane $(AI)$ est aussi la hauteur issue de $A$ : $(AI)\\perp(BC)$, donc $\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=\\textcolor{{{color:primary.0}}}{ 0 }$."
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un rectangle tel que $AB={{L}}$ et $AD={{l}}$.\n\n```figure\nfenetre: -1.3 ; {{eval:L+1}} ; -1.2 ; {{eval:l+1}}\ntaille: petite\ndescription: Rectangle ABCD et ses diagonales AC et BD.\n---\nA = point(0, 0)\nB = point({{L}}, 0)\nC = point({{L}}, {{l}})\nD = point(0, {{l}})\nM = milieu(A, B)\nN = milieu(A, D)\npolygone(A, B, C, D)\nsegment(A, C)\nsegment(B, D)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(D)\nmasque(M)\nmasque(N)\ntexte(A, \"A\", dx=-0.45, dy=-0.45)\ntexte(B, \"B\", dx=0.12, dy=-0.45)\ntexte(C, \"C\", dx=0.12, dy=0.12)\ntexte(D, \"D\", dx=-0.45, dy=0.12)\ntexte(M, \"{{L}}\", dx=-0.12, dy=-0.55)\ntexte(N, \"{{l}}\", dx=-0.55, dy=-0.1)\n```\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "3..8"
+				},
+				{
+					"name": "l",
+					"expression": "2..{{eval:L-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:L*L}}"
+				},
+				{
+					"expectedAnswer": "{{eval:l*l}}"
+				},
+				{
+					"expectedAnswer": "{{eval:l*l-L*L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal de $C$ sur $(AB)$ est $B$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=AB^2={{L}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:L*L}} }$.",
+					"Le projeté orthogonal de $C$ sur $(AD)$ est $D$ : $\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=AD^2={{l}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:l*l}} }$.",
+					"On décompose : $\\overrightarrow{AC}=\\overrightarrow{AB}+\\overrightarrow{AD}$ et $\\overrightarrow{BD}=\\overrightarrow{AD}-\\overrightarrow{AB}$.",
+					"$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=\\left(\\overrightarrow{AB}+\\overrightarrow{AD}\\right)\\cdot\\left(\\overrightarrow{AD}-\\overrightarrow{AB}\\right)=AD^2-AB^2$ car $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=0$.",
+					"$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}={{eval:l*l}}-{{eval:L*L}}=\\textcolor{{{color:primary.0}}}{ {{eval:l*l-L*L}} }$"
+				]
+			}
+		},
+		{
+			"statement": "$ABCD$ est un carré de côté ${{a}}$ et $I$ est le milieu de $[BC]$.\n\n```figure\nfenetre: -1.2 ; 5.4 ; -1.2 ; 5\ntaille: petite\ndescription: Carré ABCD ; I est le milieu du côté BC.\n---\nA = point(0, 0)\nB = point(4, 0)\nC = point(4, 4)\nD = point(0, 4)\nM = milieu(A, B)\npolygone(A, B, C, D)\nangle(A, B, C, marque=\"carre\")\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(D, A)\nI = milieu(B, C)\nsegment(A, I)\nsegment(D, I)\npoint(4, 2)\nmarque_segment(B, I, traits=2)\nmarque_segment(I, C, traits=2)\nmasque(A)\nmasque(B)\nmasque(C)\nmasque(D)\nmasque(M)\nmasque(I)\ntexte(A, \"A\", dx=-0.5, dy=-0.45)\ntexte(B, \"B\", dx=0.15, dy=-0.45)\ntexte(C, \"C\", dx=0.15, dy=0.15)\ntexte(D, \"D\", dx=-0.5, dy=0.15)\ntexte(M, \"{{a}}\", dx=-0.15, dy=-0.6)\ntexte(I, \"I\", dx=0.2, dy=-0.1)\n```\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*a}}"
+				},
+				{
+					"expectedAnswer": "\\frac{ {{eval:a*a}} }{2}"
+				},
+				{
+					"expectedAnswer": "\\frac{ {{eval:3*a*a}} }{4}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le projeté orthogonal de $I$ sur $(AB)$ est $B$ : $\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=AB^2={{a}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:a*a}} }$.",
+					"Le projeté orthogonal de $I$ sur $(AD)$ est le milieu $K$ de $[AD]$ : $\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=AD\\times AK={{a}}\\times {{eval:a/2}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*a/2}} }$.",
+					"On décompose avec la relation de Chasles : $\\overrightarrow{IA}=\\overrightarrow{IB}+\\overrightarrow{BA}$ et $\\overrightarrow{ID}=\\overrightarrow{IC}+\\overrightarrow{CD}$.",
+					"$\\overrightarrow{IB}\\cdot\\overrightarrow{IC}=-IB^2$ (sens contraires), $\\overrightarrow{BA}\\cdot\\overrightarrow{CD}=BA^2$ (même sens), et les deux autres produits sont nuls (côtés perpendiculaires).",
+					"$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=-{{if:mod(a,2)==0|{{eval:a/2}}^2|\\left({{eval:a/2}}\\right)^2}}+{{a}}^2=\\textcolor{{{color:primary.0}}}{ {{eval:3*a*a/4}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : carré de côté 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["25", "0", "-25"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe de AB·CD oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["25", "0", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : AB×AC avec AC=5√2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["25\\sqrt{2}", "0", "-25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : côté 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{9}{2}", "-\\frac{9}{2}", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimaux acceptés",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["4{,}5", "-4{,}5", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : angle de 60° au lieu de 120°",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{9}{2}", "\\frac{9}{2}", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : fraction non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["\\frac{16}{2}", "-8", "0"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : rectangle 5 × 3",
+			"variationIndex": 2,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["25", "9", "-16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : diagonales orthogonales (faux)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["25", "9", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : AB² − AD² (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "5",
+				"l": "3"
+			},
+			"answers": ["25", "9", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : carré de côté 4",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["16", "8", "12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : côté 3, fractions",
+			"variationIndex": 3,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["9", "\\frac{9}{2}", "\\frac{27}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : IA·ID pris nul",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["16", "8", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
