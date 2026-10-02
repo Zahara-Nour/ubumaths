@@ -1,0 +1,265 @@
+{
+	"title": "Maximum local d'une fonction polynôme de degré 3",
+	"description": "Dérivée, signe d'un trinôme à racines entières, tableau de variations : abscisse et valeur du maximum local",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Variations",
+	"level": 3,
+	"delay": 120,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3-3*a^2*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a^3+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:3*x^2-3*a^2}}=3(x-{{a}})(x+{{a}})$.",
+					"$f'(x)$ s'annule en ${{eval:-a}}$ et en ${{a}}$, et a le signe de son coefficient de $x^2$ à l'extérieur des racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-a}}, {{a}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:-a}}: +\n  {{eval:-a}}: z\n  {{eval:-a}},{{a}}: -\n  {{a}}: z\n  {{a}},+inf: +\n\nvariation: f(x)\n  {{eval:-a}}: {{eval:2*a^3+c}}, top\n  {{a}}: {{eval:-2*a^3+c}}, bottom\n```",
+					"$f$ est croissante puis décroissante autour de ${{eval:-a}}$ : le maximum local est atteint en $x_0=\\textcolor{{{color:primary.0}}}{ {{eval:-a}} }$ et vaut $f({{eval:-a}})=({{eval:-a}})^3-{{eval:3*a^2}}\\times({{eval:-a}}){{c;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a^3+c}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:-x^3+3*a^2*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{eval:2*a^3+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:-3*x^2+3*a^2}}=-3(x+{{a}})(x-{{a}})$.",
+					"$f'(x)$ s'annule en ${{eval:-a}}$ et en ${{a}}$, et a le signe de son coefficient de $x^2$ à l'extérieur des racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-a}}, {{a}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:-a}}: -\n  {{eval:-a}}: z\n  {{eval:-a}},{{a}}: +\n  {{a}}: z\n  {{a}},+inf: -\n\nvariation: f(x)\n  {{eval:-a}}: {{eval:-2*a^3+c}}, bottom\n  {{a}}: {{eval:2*a^3+c}}, top\n```",
+					"$f$ est croissante puis décroissante autour de ${{a}}$ : le maximum local est atteint en $x_0=\\textcolor{{{color:primary.0}}}{ {{a}} }$ et vaut $f({{a}})=-{{a}}^3+{{eval:3*a^2}}\\times{{a}}{{c;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:2*a^3+c}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:2*x^3-3*(p+q)*x^2+6*p*q*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "-3..2"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "eval:p+d"
+				},
+				{
+					"name": "c",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["q <= 3", "p*q != 0", "p+q != 0", "c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				},
+				{
+					"expectedAnswer": "{{eval:-p^3+3*p^2*q+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:6*x^2-6*(p+q)*x+6*p*q}}=6(x{{eval:-p;+}})(x{{eval:-q;+}})$.",
+					"$f'(x)$ s'annule en ${{p}}$ et en ${{q}}$, et a le signe de son coefficient de $x^2$ à l'extérieur des racines.",
+					"```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n\nvariation: f(x)\n  {{p}}: {{eval:-p^3+3*p^2*q+c}}, top\n  {{q}}: {{eval:-q^3+3*p*q^2+c}}, bottom\n```",
+					"$f$ est croissante puis décroissante autour de ${{p}}$ : le maximum local est atteint en $x_0=\\textcolor{{{color:primary.0}}}{ {{p}} }$ et vaut $f({{p}})=2\\times({{p}})^3{{eval:-3*(p+q);+}}\\times({{p}})^2{{eval:6*p*q;+}}\\times({{p}}){{c;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:-p^3+3*p^2*q+c}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x³−12x+1 : max en −2, 17",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["-2", "17"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "minimum donné : 2 et −15",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["2", "-15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bonne abscisse, valeur f′(x₀) = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bonne abscisse, valeur fausse (signe de x³) −15",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"c": "1"
+			},
+			"answers": ["-2", "-15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−x³+3x−4 : max en 1, −2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"c": "-4"
+			},
+			"answers": ["1", "-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−x³+3x−4 : minimum (−1 ; −6)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"c": "-4"
+			},
+			"answers": ["-1", "-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−x³+3x−4 : abscisse −1, valeur du max",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"c": "-4"
+			},
+			"answers": ["-1", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "2x³−3x²−12x+2 (p=−1, q=2) : max en −1, 9",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-1",
+				"d": "3",
+				"q": "2",
+				"c": "2"
+			},
+			"answers": ["-1", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "p=−1, q=2 : minimum (2 ; −18)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-1",
+				"d": "3",
+				"q": "2",
+				"c": "2"
+			},
+			"answers": ["2", "-18"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p=−1, q=2 : racines de signes opposés (1 ; …)",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-1",
+				"d": "3",
+				"q": "2",
+				"c": "2"
+			},
+			"answers": ["1", "-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "p=−1, q=2 : abscisse seule juste",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-1",
+				"d": "3",
+				"q": "2",
+				"c": "2"
+			},
+			"answers": ["-1", "2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

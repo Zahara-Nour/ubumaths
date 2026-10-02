@@ -1,0 +1,223 @@
+{
+	"title": "Dériver un quotient",
+	"description": "Dérivée d'un quotient u/v : affine sur affine, polynôme du second degré sur affine",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 4,
+	"status": "draft",
+	"delay": 90,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)=\\frac{ {{a}}x{{eval:b;+}} }{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*d-b*c > 0", "gcd(c,d) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:a*d-b*c}} }{({{c}}x{{eval:d;+}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un quotient $\\frac{u}{v}$ : $\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$.",
+					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)={{c}}x{{eval:d;+}}$ : $u'(x)={{a}}$ et $v'(x)={{c}}$.",
+					"$$f'(x)=\\frac{ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})\\times{{c}} }{({{c}}x{{eval:d;+}})^2}=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:a*d-b*c}} }{({{c}}x{{eval:d;+}})^2} }$$",
+					"Les termes en $x$ s'annulent : le numérateur est une constante."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)=\\frac{ {{a}}x{{eval:b;+}} }{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "d",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["a*d-b*c < 0", "gcd(c,d) = 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{eval:b*c-a*d}} }{({{c}}x{{eval:d;+}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un quotient $\\frac{u}{v}$ : $\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$.",
+					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)={{c}}x{{eval:d;+}}$ : $u'(x)={{a}}$ et $v'(x)={{c}}$.",
+					"$$f'(x)=\\frac{ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})\\times{{c}} }{({{c}}x{{eval:d;+}})^2}=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:b*c-a*d}} }{({{c}}x{{eval:d;+}})^2} }$$",
+					"Les termes en $x$ s'annulent : le numérateur est une constante."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b}}$ par $f(x)=\\frac{x^2{{eval:a;+}} }{x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a+b*b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{x^2{{eval:2*b;+}}x{{eval:-a;+}} }{(x{{eval:b;+}})^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un quotient $\\frac{u}{v}$ : $\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$.",
+					"Avec $u(x)=x^2{{eval:a;+}}$ et $v(x)=x{{eval:b;+}}$ : $u'(x)=2x$ et $v'(x)=1$.",
+					"$$f'(x)=\\frac{2x(x{{eval:b;+}})-(x^2{{eval:a;+}})}{(x{{eval:b;+}})^2}=\\frac{2x^2{{eval:2*b;+}}x-x^2{{eval:-a;+}} }{(x{{eval:b;+}})^2}$$",
+					"$$f'(x)=\\textcolor{{{color:primary.0}}}{\\frac{x^2{{eval:2*b;+}}x{{eval:-a;+}} }{(x{{eval:b;+}})^2} }$$",
+					"On garde le dénominateur sous forme de carré : il est positif, le signe de $f'(x)$ est celui du numérateur."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(3x+1)/(2x+5) : 13/(2x+5)²",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2", "d": "5" },
+			"answers": ["\\frac{13}{(2x+5)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "dénominateur développé (non optimal)",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2", "d": "5" },
+			"answers": ["\\frac{13}{4x^2+20x+25}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "carré oublié : 13/(2x+5)",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2", "d": "5" },
+			"answers": ["\\frac{13}{2x+5}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "u′/v′ = 3/2",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2", "d": "5" },
+			"answers": ["\\frac{3}{2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "uv′ − u′v (ordre inversé) : −13/(2x+5)²",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2", "d": "5" },
+			"answers": ["-\\frac{13}{(2x+5)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "(2x+5)/(3x+1) : −13/(3x+1)²",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "5", "c": "3", "d": "1" },
+			"answers": ["-\\frac{13}{(3x+1)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "signe au numérateur −13/… (non optimal)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "5", "c": "3", "d": "1" },
+			"answers": ["\\frac{-13}{(3x+1)^2}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["signs"] }
+		},
+		{
+			"description": "u′v + uv′ : 2(3x+1)+3(2x+5) au numérateur",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "5", "c": "3", "d": "1" },
+			"answers": ["\\frac{12x+17}{(3x+1)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "uv′ − u′v (ordre inversé) : 13/(3x+1)²",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "5", "c": "3", "d": "1" },
+			"answers": ["\\frac{13}{(3x+1)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "(x²+3)/(x+2) : (x²+4x−3)/(x+2)²",
+			"variationIndex": 2,
+			"variables": { "a": "3", "b": "2" },
+			"answers": ["\\frac{x^2+4x-3}{(x+2)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "numérateur non réduit (non optimal)",
+			"variationIndex": 2,
+			"variables": { "a": "3", "b": "2" },
+			"answers": ["\\frac{2x(x+2)-(x^2+3)}{(x+2)^2}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "u′/v′ = 2x",
+			"variationIndex": 2,
+			"variables": { "a": "3", "b": "2" },
+			"answers": ["2x"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "u′v + uv′ au numérateur : (3x²+4x+3)/(x+2)²",
+			"variationIndex": 2,
+			"variables": { "a": "3", "b": "2" },
+			"answers": ["\\frac{3x^2+4x+3}{(x+2)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "carré oublié : (x²+4x−3)/(x+2)",
+			"variationIndex": 2,
+			"variables": { "a": "3", "b": "2" },
+			"answers": ["\\frac{x^2+4x-3}{x+2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a < 0, b < 0 : (x²−5)/(x−1) → (x²−2x+5)/(x−1)²",
+			"variationIndex": 2,
+			"variables": { "a": "-5", "b": "-1" },
+			"answers": ["\\frac{x^2-2x+5}{(x-1)^2}"],
+			"expected": { "status": "correct" }
+		}
+	]
+}

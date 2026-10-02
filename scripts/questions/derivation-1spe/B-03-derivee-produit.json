@@ -1,0 +1,224 @@
+{
+	"title": "Dériver un produit",
+	"description": "Dérivée d'un produit u·v : polynôme × polynôme, x√x, (ax + b)√x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Fonctions dérivées",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{eval:b;+}})(x^2{{eval:c;+}})$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:a*c;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
+					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=x^2{{eval:c;+}}$ : $u'(x)={{a}}$ et $v'(x)=2x$.",
+					"$$f'(x)={{a}}(x^2{{eval:c;+}})+({{a}}x{{eval:b;+}})\\times2x$$",
+					"$$f'(x)={{a}}x^2{{eval:a*c;+}}{{eval:2*a;+}}x^2{{eval:2*b;+}}x=\\textcolor{{{color:primary.0}}}{ {{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:a*c;+}} }$$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}x\\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:3*a/2}}\\sqrt{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
+					"Avec $u(x)={{a}}x$ et $v(x)=\\sqrt{x}$ : $u'(x)={{a}}$ et $v'(x)=\\frac{1}{2\\sqrt{x}}$.",
+					"$$f'(x)={{a}}\\sqrt{x}{{eval:a;+}}x\\times\\frac{1}{2\\sqrt{x}}={{a}}\\sqrt{x}{{eval:a/2;+}}\\sqrt{x}$$",
+					"car $\\frac{x}{\\sqrt{x}}=\\sqrt{x}$. Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{eval:3*a/2}}\\sqrt{x} }$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)=({{a}}x{{eval:b;+}})\\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1|3|5|7|-1|-3|-5|-7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:3*a}}x{{eval:b;+}} }{2\\sqrt{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
+					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=\\sqrt{x}$ : $u'(x)={{a}}$ et $v'(x)=\\frac{1}{2\\sqrt{x}}$.",
+					"$$f'(x)={{a}}\\sqrt{x}+\\frac{ {{a}}x{{eval:b;+}} }{2\\sqrt{x}}$$",
+					"Au même dénominateur, avec $\\sqrt{x}\\times2\\sqrt{x}=2x$ : $$f'(x)=\\frac{ {{eval:2*a}}x{{eval:a;+}}x{{eval:b;+}} }{2\\sqrt{x}}=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:3*a}}x{{eval:b;+}} }{2\\sqrt{x}} }$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(2x+3)(x²−1) : 6x²+6x−2",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "c": "-1" },
+			"answers": ["6x^2+6x-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "u′v+uv′ non développé (non optimal)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "c": "-1" },
+			"answers": ["2(x^2-1)+(2x+3)\\times2x"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["products", "form"] }
+		},
+		{
+			"description": "(uv)′ = u′v′ : 2×2x = 4x",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "c": "-1" },
+			"answers": ["4x"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "terme uv′ oublié : 2x²−2",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "c": "-1" },
+			"answers": ["2x^2-2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "u′v − uv′ : −2x²−6x−2",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "c": "-1" },
+			"answers": ["-2x^2-6x-2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a < 0 : (−3x+4)(x²+2) → −9x²+8x−6",
+			"variationIndex": 0,
+			"variables": { "a": "-3", "b": "4", "c": "2" },
+			"answers": ["-9x^2+8x-6"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "2x√x : 3√x",
+			"variationIndex": 1,
+			"variables": { "a": "2" },
+			"answers": ["3\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "somme non réduite 2√x+√x (non optimal)",
+			"variationIndex": 1,
+			"variables": { "a": "2" },
+			"answers": ["2\\sqrt{x}+\\sqrt{x}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "(uv)′ = u′v′ : 2/(2√x) = 1/√x",
+			"variationIndex": 1,
+			"variables": { "a": "2" },
+			"answers": ["\\frac{1}{\\sqrt{x}}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "terme uv′ oublié : 2√x",
+			"variationIndex": 1,
+			"variables": { "a": "2" },
+			"answers": ["2\\sqrt{x}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a impair : 3x√x → (9/2)√x",
+			"variationIndex": 1,
+			"variables": { "a": "3" },
+			"answers": ["\\frac{9}{2}\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "a < 0 : −5x√x → −(15/2)√x",
+			"variationIndex": 1,
+			"variables": { "a": "-5" },
+			"answers": ["-\\frac{15}{2}\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "(2x+3)√x : (6x+3)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "3" },
+			"answers": ["\\frac{6x+3}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "pas au même dénominateur (non optimal)",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "3" },
+			"answers": ["2\\sqrt{x}+\\frac{2x+3}{2\\sqrt{x}}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["form"] }
+		},
+		{
+			"description": "(uv)′ = u′v′ : 1/√x",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "3" },
+			"answers": ["\\frac{1}{\\sqrt{x}}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "terme u′v oublié : (2x+3)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "3" },
+			"answers": ["\\frac{2x+3}{2\\sqrt{x}}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a < 0 : (−2x+5)√x → (−6x+5)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "-2", "b": "5" },
+			"answers": ["\\frac{-6x+5}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "a < 0 : écrit (5−6x)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "-2", "b": "5" },
+			"answers": ["\\frac{5-6x}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		}
+	]
+}

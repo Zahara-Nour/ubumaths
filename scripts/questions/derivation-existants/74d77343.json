@@ -1,0 +1,403 @@
+{
+	"id": "74d77343-34b9-4259-94c2-c9e2c473b052",
+	"title": "Calculer une dérivée",
+	"description": "Fonctions usuelles avec coefficient",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"subdomain": "Apprivoiser",
+	"level": 2,
+	"delay": 20,
+	"status": "published",
+	"options": {
+		"constraints": {
+			"form": "warn",
+			"brackets": "off"
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{b}} }{x^2}"
+				}
+			],
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{b}}/x$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto \\dfrac{1}{x}$ est $x \\mapsto -\\dfrac{1}{x^2}$, et $f(x) = {{b}} \\times \\dfrac{1}{x}$.",
+					"Donc $f'(x) = {{eval:b;()}} \\times \\left( -\\dfrac{1}{x^2} \\right) = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{k}}\\sqrt{x}$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3|5|7|9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{k}} }{2\\sqrt{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto \\sqrt{x}$ est $x \\mapsto \\dfrac{1}{2\\sqrt{x}}$ (pour $x>0$), et $f(x) = {{k}} \\times \\sqrt{x}$.",
+					"Donc $f'(x) = {{k}} \\times \\dfrac{1}{2\\sqrt{x}} = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{k}}x^{ {{n}} }$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "n",
+					"expression": "3..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*n}}x^{ {{eval:n-1}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto x^{ {{n}} }$ est $x \\mapsto {{n}}x^{ {{eval:n-1}} }$, et $f(x) = {{k}} \\times x^{ {{n}} }$.",
+					"Donc $f'(x) = {{k;()}} \\times {{n}}x^{ {{eval:n-1}} } = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{k}}x{{b;+}}$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto x$ est $x \\mapsto 1$, et celle d'une constante est nulle.",
+					"Donc $f'(x) = {{k}} \\times 1 + 0 = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:-b}} }{x^2}"
+				}
+			],
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)={{b}}/x$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "-9..-2"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto \\dfrac{1}{x}$ est $x \\mapsto -\\dfrac{1}{x^2}$, et $f(x) = {{b}} \\times \\dfrac{1}{x}$.",
+					"Donc $f'(x) = {{b;()}} \\times \\left( -\\dfrac{1}{x^2} \\right) = {{solution:0}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la dérivée de cette fonction.\n\n$$f(x)=-{{k}}\\sqrt{x}$$\n\n$f'(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3|5|7|9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{ {{k}} }{2\\sqrt{x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x \\mapsto \\sqrt{x}$ est $x \\mapsto \\dfrac{1}{2\\sqrt{x}}$ (pour $x>0$), et $f(x) = -{{k}} \\times \\sqrt{x}$.",
+					"Donc $f'(x) = (-{{k}}) \\times \\dfrac{1}{2\\sqrt{x}} = {{solution:0}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["-\\frac{9}{x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "b>0 juste",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{7}{x^2}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"b": "-7"
+			},
+			"description": "b<0 juste",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\frac{9}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{1}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "9"
+			},
+			"description": "coefficient oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\frac{7}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "-7"
+			},
+			"description": "b<0 : 7/x² écrit avec le moins devant la fraction refusé (signe)",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\frac{1}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"b": "-7"
+			},
+			"description": "b<0 : coefficient oublié",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["\\frac{3}{2\\sqrt{x}}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "3√x juste",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-\\frac{5}{2\\sqrt{x}}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "−5√x juste, moins devant",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["\\frac{-5}{2\\sqrt{x}}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "−5√x : moins au numérateur (forme)",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["\\frac{3}{\\sqrt{x}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "3√x : facteur 2 oublié",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{3\\sqrt{x}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "3√x : 2√x au numérateur",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "3"
+			},
+			"description": "3√x : dérivée de √x oubliée (3)",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["20x^4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "4",
+				"n": "5"
+			},
+			"description": "4x⁵ juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-12x^3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "-3",
+				"n": "4"
+			},
+			"description": "−3x⁴ juste",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["20x^5"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "5"
+			},
+			"description": "4x⁵ : exposant non diminué",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4x^4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "4",
+				"n": "5"
+			},
+			"description": "4x⁵ : coefficient n oublié",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["4\\times5x^4"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"k": "4",
+				"n": "5"
+			},
+			"description": "4x⁵ : produit non effectué 4×5x⁴",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "5",
+				"b": "-3"
+			},
+			"description": "5x − 3 juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"k": "-4",
+				"b": "7"
+			},
+			"description": "−4x + 7 juste",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5-3"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"b": "-3"
+			},
+			"description": "5x − 3 : constante gardée",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["5x"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5",
+				"b": "-3"
+			},
+			"description": "5x − 3 : x gardé",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["\\frac{5}{2\\sqrt{x}}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"k": "5"
+			},
+			"description": "−5√x : signe oublié",
+			"variationIndex": 5
+		}
+	]
+}

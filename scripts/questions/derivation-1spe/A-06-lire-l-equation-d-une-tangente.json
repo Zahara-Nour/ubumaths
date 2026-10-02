@@ -1,0 +1,189 @@
+{
+	"title": "Lire l'équation d'une tangente sur un graphique",
+	"description": "Lecture du coefficient directeur m (entier ou demi-entier) et de l'ordonnée à l'origine p d'une tangente tracée",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Tangente",
+	"level": 3,
+	"delay": 60,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{s}})*x+({{p}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLa tangente $T$ a pour équation $y=mx+p$. Lis son coefficient directeur $m$ et son ordonnée à l'origine $p$.\n\n$m=?$ et $p=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b-s*a"
+				}
+			],
+			"conditions": ["abs(p) <= 4", "p != 0", "p != b", "p != s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $p$ est l'ordonnée du point $P$ où $T$ coupe l'axe des ordonnées.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{s}})*x+({{p}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), P(0 ; {{p}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, passant par le point A et par le point P de l'axe des ordonnées.\n```",
+					"On lit $P(0\\,;{{p}})$, donc $p={{p}}$. $T$ passe aussi par $A({{a}}\\,;{{b}})$ : $$m=\\dfrac{y_A-y_P}{x_A-x_P}=\\dfrac{ {{b}}-{{p;()}} }{ {{a}}-0 }={{s}}$$",
+					"Conclusion : $m={{s}}$ et $p={{p}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{t}})/2*x+({{p}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLa tangente $T$ a pour équation $y=mx+p$. Lis son coefficient directeur $m$ et son ordonnée à l'origine $p$.\n\n$m=?$ et $p=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2|4|-2|-4"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "1|3|-1|-3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "p",
+					"expression": "eval:b-t*a/2"
+				}
+			],
+			"conditions": ["abs(p) <= 4", "p != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/2}}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $p$ est l'ordonnée du point $P$ où $T$ coupe l'axe des ordonnées.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{t}})/2*x+({{p}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), P(0 ; {{p}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, passant par le point A et par le point P de l'axe des ordonnées.\n```",
+					"On lit $P(0\\,;{{p}})$, donc $p={{p}}$. $T$ passe aussi par $A({{a}}\\,;{{b}})$ : $$m=\\dfrac{y_A-y_P}{x_A-x_P}=\\dfrac{ {{b}}-{{p;()}} }{ {{a}}-0 }={{eval:t/2}}$$",
+					"Conclusion : $m={{eval:t/2}}$ (soit ${{eval:t/2;d}}$) et $p={{p}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : a=2, A(2;3), m=2, p=−1",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "s": "2", "k": "1", "p": "-1" },
+			"answers": ["2", "-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : m et p échangés",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "s": "2", "k": "1", "p": "-1" },
+			"answers": ["-1", "2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : f(a)=3 pris pour p",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "s": "2", "k": "1", "p": "-1" },
+			"answers": ["2", "3"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : signe de m (−2)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "s": "2", "k": "1", "p": "-1" },
+			"answers": ["-2", "-1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : inverse de m (1/2)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "3", "s": "2", "k": "1", "p": "-1" },
+			"answers": ["\\frac{1}{2}", "-1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : a=−1, A(−1;2), m=−3, p=−1",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "2", "s": "-3", "k": "-2", "p": "-1" },
+			"answers": ["-3", "-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : a=2, A(2;1), m=3/2, p=−2",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "3", "k": "1", "p": "-2" },
+			"answers": ["\\frac{3}{2}", "-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : m=1,5 (décimal exact)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "3", "k": "1", "p": "-2" },
+			"answers": ["1{,}5", "-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : rapport inversé (2/3)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "3", "k": "1", "p": "-2" },
+			"answers": ["\\frac{2}{3}", "-2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : f(a)=1 pris pour p",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "3", "k": "1", "p": "-2" },
+			"answers": ["\\frac{3}{2}", "1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : a=−4, A(−4;0), m=−1/2, p=−2",
+			"variationIndex": 1,
+			"variables": { "a": "-4", "b": "0", "t": "-1", "k": "-1", "p": "-2" },
+			"answers": ["-\\frac{1}{2}", "-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : a=−4 : signe de m oublié (1/2)",
+			"variationIndex": 1,
+			"variables": { "a": "-4", "b": "0", "t": "-1", "k": "-1", "p": "-2" },
+			"answers": ["\\frac{1}{2}", "-2"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

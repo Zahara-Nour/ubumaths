@@ -1,0 +1,182 @@
+{
+	"title": "Lire un nombre dérivé sur un graphique",
+	"description": "Lecture de f′(a), coefficient directeur de la tangente tracée au point d'abscisse a (entier ou demi-entier)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Dérivation",
+	"status": "draft",
+	"subdomain": "Nombre dérivé",
+	"level": 3,
+	"delay": 45,
+	"options": {
+		"constraints": {
+			"form": "warn"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{s}})*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLis $f'({{a}})$.\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..2"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				}
+			],
+			"conditions": ["s != b", "s != a", "abs(b+s) <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé $f'({{a}})$ est le coefficient directeur de la tangente $T$ au point $A$ d'abscisse ${{a}}$.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{s}})*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), B({{eval:a+1}} ; {{eval:b+s}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, passant par les points A et B de la grille.\n```",
+					"$T$ passe par les points de la grille $A({{a}}\\,;{{b}})$ et $B({{eval:a+1}}\\,;{{eval:b+s}})$ : quand on avance de $1$, l'ordonnée varie de ${{s}}$.",
+					"Conclusion : $f'({{a}})=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{ {{eval:b+s}}-{{b;()}} }{1}={{s}}$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{t}})/2*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLis $f'({{a}})$.\n\n$f'({{a}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..2"
+				},
+				{
+					"name": "b",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "1|3|-1|-3"
+				},
+				{
+					"name": "k",
+					"expression": "1..2;±"
+				}
+			],
+			"conditions": ["abs(b+t) <= 4", "abs(b-t) <= 4"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t/2}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre dérivé $f'({{a}})$ est le coefficient directeur de la tangente $T$ au point $A$ d'abscisse ${{a}}$.",
+					"```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{t}})/2*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; {{b}}), B({{eval:a+2}} ; {{eval:b+t}})\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, passant par les points A et B de la grille.\n```",
+					"$T$ passe par les points de la grille $A({{a}}\\,;{{b}})$ et $B({{eval:a+2}}\\,;{{eval:b+t}})$ : quand on avance de $2$, l'ordonnée varie de ${{t}}$.",
+					"Conclusion : $f'({{a}})=\\dfrac{y_B-y_A}{x_B-x_A}=\\dfrac{ {{eval:b+t}}-{{b;()}} }{2}={{eval:t/2}}$, soit ${{eval:t/2;d}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : pente 2",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-1", "s": "2", "k": "1" },
+			"answers": ["2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : f(1)=−1 lu au lieu de f′(1)",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-1", "s": "2", "k": "1" },
+			"answers": ["-1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : inverse du coefficient (1/2)",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-1", "s": "2", "k": "1" },
+			"answers": ["\\frac{1}{2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 0 : pente négative −3",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "2", "s": "-3", "k": "-1" },
+			"answers": ["-3"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 : signe oublié (3 pour −3)",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "2", "s": "-3", "k": "-1" },
+			"answers": ["3"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : pente 3/2",
+			"variationIndex": 1,
+			"variables": { "a": "0", "b": "-1", "t": "3", "k": "-2" },
+			"answers": ["\\frac{3}{2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : 1,5 (décimal exact)",
+			"variationIndex": 1,
+			"variables": { "a": "0", "b": "-1", "t": "3", "k": "-2" },
+			"answers": ["1{,}5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : 2/3 (rapport inversé)",
+			"variationIndex": 1,
+			"variables": { "a": "0", "b": "-1", "t": "3", "k": "-2" },
+			"answers": ["\\frac{2}{3}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : 3 (déplacement horizontal oublié)",
+			"variationIndex": 1,
+			"variables": { "a": "0", "b": "-1", "t": "3", "k": "-2" },
+			"answers": ["3"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : 6/4 non simplifiée (acceptée avec avertissement)",
+			"variationIndex": 1,
+			"variables": { "a": "0", "b": "-1", "t": "3", "k": "-2" },
+			"answers": ["\\frac{6}{4}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+		},
+		{
+			"description": "variation 1 : pente −1/2",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "-1", "k": "1" },
+			"answers": ["-\\frac{1}{2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : −0,5 (décimal exact)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "-1", "k": "1" },
+			"answers": ["-0{,}5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : signe oublié (1/2)",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "1", "t": "-1", "k": "1" },
+			"answers": ["\\frac{1}{2}"],
+			"expected": { "status": "incorrect" }
+		}
+	]
+}

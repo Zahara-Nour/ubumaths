@@ -106,6 +106,23 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Dérivation : Apprivoiser, puis nombre dérivé, tangente, fonctions dérivées, variations', () => {
+		const subdomains = [
+			'Variations',
+			'Tangente',
+			'Apprivoiser',
+			'Fonctions dérivées',
+			'Nombre dérivé'
+		].map((subdomain) => ({ theme: 'Fonctions', domain: 'Dérivation', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Apprivoiser',
+			'Nombre dérivé',
+			'Tangente',
+			'Fonctions dérivées',
+			'Variations'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',
