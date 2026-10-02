@@ -27,14 +27,17 @@
 	 * effectifs M ») comme la bascule « Retirer le diagramme » n'atteignaient
 	 * jamais l'écran (constaté au lot 5 des outils statistiques).
 	 */
-	/** La liste partenaire choisie sur CETTE carte (Q46) ; null = celle par défaut */
-	let chosenPartner = $state<string | null>(null);
 	const partners = $derived(partnersOf(object, atelier));
-	const partner = $derived(
-		chosenPartner !== null && partners.includes(chosenPartner)
-			? chosenPartner
-			: defaultPartner(object, atelier)
-	);
+	/**
+	 * La partenaire choisie sur cette carte (Q46), gardée par l'atelier pour
+	 * suivre un renommage (Q48) ; sinon celle par défaut.
+	 */
+	const partner = $derived.by(() => {
+		const chosen = atelier.partnerChoiceOf(object.name);
+		return chosen !== undefined && partners.includes(chosen)
+			? chosen
+			: defaultPartner(object, atelier);
+	});
 
 	const actions = $derived(actionsFor(object, atelier, partner ?? undefined));
 	/** Les actions de l'objet lui-même, puis celles faites avec la partenaire */
@@ -123,7 +126,7 @@
 								type="single"
 								triggerAriaLabel={`Avec la liste ${partner}`}
 								value={partner}
-								onValueChange={(name) => (chosenPartner = name)}
+								onValueChange={(name) => atelier.choosePartner(object.name, name)}
 								items={partners.map((name) => ({ value: name, label: name }))}
 								placeholder="Liste partenaire"
 								fitContent

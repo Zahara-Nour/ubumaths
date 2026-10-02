@@ -25,8 +25,8 @@ describe('Loi avec probabilités M', () => {
 		);
 	});
 
-	// ⚠️ Une liste de l'atelier n'accepte que des nombres écrits en clair : `1/6`
-	// y est IGNORÉ (constaté au lot 6). D'où des probabilités décimales exactes.
+	// Probabilités décimales exactes ; les fractions (`1/6`) sont lues depuis Q45
+	// (`list-fractions.test.ts`)
 	it('probabilités décimales : E et V exacts, en fractions', () => {
 		const desk = new CalcDesk(atelierWith({ L: '-2 ; 0 ; 5', M: '0,5 ; 0,3 ; 0,2' }));
 

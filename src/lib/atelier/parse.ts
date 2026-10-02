@@ -181,8 +181,8 @@ export function readNumber(raw: string): number | null {
 	return Number.isFinite(n) ? n : null;
 }
 
-/** `1/6`, `-3/4`, `12/5` : une fraction d'entiers */
-const INTEGER_FRACTION = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
+/** `1/6`, `-3/4`, `+12/5` : une fraction d'entiers */
+const INTEGER_FRACTION = /^\s*([-+]?\d+)\s*\/\s*(\d+)\s*$/;
 
 /**
  * Lire une valeur de liste : un nombre écrit à la française, ou une fraction
@@ -190,16 +190,20 @@ const INTEGER_FRACTION = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
  * sixièmes). La valeur gardée est le décimal ; le texte de l'élève reste tel
  * quel dans le champ.
  *
+ * Le vrai signe moins (−, copié d'un document ou tapé sur une tablette) vaut
+ * `-` (Q50) — ici seulement : `readNumber` sert aussi ailleurs.
+ *
  * ⚠️ Fractions d'ENTIERS seulement : `1,5/2` ou `1/2/3` restent écartés, et
  * aucune expression générale (`2^3`, `sqrt(2)`) n'est lue ici.
  */
 export function readListValue(raw: string): number | null {
-	const fraction = INTEGER_FRACTION.exec(raw);
+	const text = raw.replaceAll('−', '-');
+	const fraction = INTEGER_FRACTION.exec(text);
 	if (fraction) {
 		const denominator = Number(fraction[2]);
 		return denominator === 0 ? null : Number(fraction[1]) / denominator;
 	}
-	return readNumber(raw);
+	return readNumber(text);
 }
 
 /**
@@ -218,10 +222,20 @@ export function readListValue(raw: string): number | null {
 function commaUsedAsSeparator(definition: string): string | null {
 	for (const segment of definition.split(';')) {
 		if (!segment.includes(',')) continue;
-		if (readNumber(segment) !== null) continue;
+		// `readListValue` et non `readNumber` : le vrai signe moins compte ici
+		// aussi, sinon `−3,14` serait découpé en « −3 ; 14 » (revue Q50)
+		if (readListValue(segment) !== null) continue;
 
 		const pieces = segment.split(',').map((piece) => piece.trim());
-		if (pieces.length < 2 || pieces.some((piece) => readNumber(piece) === null)) continue;
+		// Que des nombres (`12,15,9`) ou que des fractions (`1/2,3/4`, Q49) : un
+		// mélange comme `1,5/2` se corrigerait en « 1 ; 5/2 », faux
+		const allNumbers = pieces.every(
+			(piece) => !piece.includes('/') && readListValue(piece) !== null
+		);
+		const allFractions = pieces.every(
+			(piece) => piece.includes('/') && readListValue(piece) !== null
+		);
+		if (pieces.length < 2 || !(allNumbers || allFractions)) continue;
 
 		// Montrer la correction sur SA saisie, pas sur un exemple générique :
 		// l'élève voit ce qu'il aurait dû taper.

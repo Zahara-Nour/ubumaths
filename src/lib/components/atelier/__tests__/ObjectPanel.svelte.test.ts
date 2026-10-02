@@ -189,4 +189,24 @@ describe('actions avec une autre liste', () => {
 		await settle();
 		expect(atelier.get('L')?.plottedWith).toBe('N');
 	});
+
+	// Q48 : retenue par son nom dans la carte, la partenaire choisie revenait en
+	// silence à celle par défaut après un renommage
+	it('la partenaire choisie suit son renommage', async () => {
+		const { carte, atelier } = await cardOf(['L', 'M', 'N']);
+		const trigger = carte.querySelector('[aria-haspopup="listbox"]') as HTMLButtonElement;
+		await userEvent.click(trigger);
+		await settle();
+		const option = [...document.querySelectorAll('[role="option"]')].find((o) =>
+			o.textContent?.trim().startsWith('N')
+		) as HTMLElement;
+		await userEvent.click(option);
+		await settle();
+
+		atelier.rename('N', 'Z');
+		await settle();
+
+		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste Z');
+		expect(labels(carte)).toContain('Nuage avec Z');
+	});
 });

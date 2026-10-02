@@ -19,16 +19,16 @@ import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
-import { formatLawIndicators, formatSummary } from '$lib/statistics/format';
+import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { astOf } from './parse';
 import { expressionOf } from './engine';
 import { syncPlots } from './plot-sync';
 import { isList, type ListObject } from './types';
+import { astOf, readListValue } from './parse';
 import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
@@ -69,6 +69,21 @@ export interface Entry {
 
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
+
+/**
+ * Une valeur de liste telle que l'élève l'a tapée (`1/10007`), sinon son
+ * décimal : le message doit se retrouver dans la liste (revue Q51).
+ */
+function typedAs(lists: readonly ListObject[], value: number): string {
+	for (const list of lists) {
+		const typed = list.definition
+			.split(';')
+			.map((piece) => piece.trim())
+			.find((piece) => readListValue(piece) === value);
+		if (typed !== undefined) return typed;
+	}
+	return formatStatNumber(value, 'fr');
+}
 
 /** Un nombre écrit comme l'élève l'écrit : virgule décimale, trois décimales au plus. */
 function fr(value: number): string {
@@ -204,18 +219,21 @@ export class CalcDesk {
 			});
 			return;
 		}
-		const asFractions = (numbers: readonly number[]) => numbers.map((n) => Fraction.fromNumber(n));
-		const xs = asFractions(values.values);
-		const ps = asFractions(probabilities.values);
-		if ([...xs, ...ps].some((f) => f === null)) {
+		const numbers = [...values.values, ...probabilities.values];
+		const fractions = numbers.map((n) => Fraction.fromNumber(n));
+		// Nommer la valeur fautive (Q51) : l'élève la retrouve dans sa liste
+		const faulty = fractions.indexOf(null);
+		if (faulty !== -1) {
 			this.#push({
 				label,
-				text: 'Une valeur ne s’écrit pas comme une fraction simple : la loi ne peut pas être calculée exactement.',
+				text: `${typedAs([values, probabilities], numbers[faulty])} ne s’écrit pas comme une fraction simple : la loi ne peut pas être calculée exactement.`,
 				failed: true
 			});
 			return;
 		}
-		const outcome = randomVariable(xs as Fraction[], ps as Fraction[]);
+		const xs = fractions.slice(0, values.values.length) as Fraction[];
+		const ps = fractions.slice(values.values.length) as Fraction[];
+		const outcome = randomVariable(xs, ps);
 		if (outcome === null || !outcome.ok) {
 			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
 			this.#push({ label, text, failed: true });

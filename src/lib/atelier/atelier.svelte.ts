@@ -161,6 +161,15 @@ export class Atelier {
 	 */
 	private charts = new SvelteMap<string, { partner: string | null }>();
 
+	/**
+	 * Liste partenaire choisie sur la carte d'une liste (Q46) : liste → partenaire.
+	 *
+	 * ⚠️ Ici plutôt que dans la carte (Q48) : retenue par son NOM dans la carte,
+	 * elle revenait en silence à celle par défaut après un renommage. Même
+	 * statut que `charts` : affichage seulement, hors de `serialize()`.
+	 */
+	private partnerChoices = new SvelteMap<string, string>();
+
 	get objects(): readonly AtelierObject[] {
 		return this.items;
 	}
@@ -260,6 +269,10 @@ export class Atelier {
 			this.charts.delete(list);
 			this.charts.set(list === from ? to : list, { partner });
 		}
+		for (const [list, partner] of [...this.partnerChoices]) {
+			this.partnerChoices.delete(list);
+			this.partnerChoices.set(list === from ? to : list, partner === from ? to : partner);
+		}
 
 		this.recomputeAll();
 		return { ok: true, updated };
@@ -304,6 +317,10 @@ export class Atelier {
 		for (const [list, chart] of [...this.charts]) {
 			if (chart.partner === name) this.charts.delete(list);
 		}
+		this.partnerChoices.delete(name);
+		for (const [list, partner] of [...this.partnerChoices]) {
+			if (partner === name) this.partnerChoices.delete(list);
+		}
 		this.recomputeAll();
 
 		return { ok: true, broken };
@@ -331,6 +348,15 @@ export class Atelier {
 		}
 		this.charts.set(name, { partner });
 		return true;
+	}
+
+	/** La partenaire choisie sur la carte de cette liste, s'il y en a une. */
+	partnerChoiceOf(name: string): string | undefined {
+		return this.partnerChoices.get(name);
+	}
+
+	choosePartner(name: string, partner: string): void {
+		this.partnerChoices.set(name, partner);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -381,6 +407,7 @@ export class Atelier {
 	restore(state: AtelierState): RestoreReport {
 		this.items = [];
 		this.charts.clear();
+		this.partnerChoices.clear();
 		const skipped: SkippedObject[] = [];
 
 		for (const stored of state.objects) {
