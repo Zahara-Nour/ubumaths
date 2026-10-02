@@ -113,13 +113,20 @@ describe('le catalogue des commandes', () => {
 			// 3x+6 » rend bien une ligne, mais cette ligne dit « je ne sais pas
 			// factoriser ». Un exemple doit MONTRER ce que la commande fait.
 			if (ATELIER_ONLY_COMMANDS.has(command.name)) {
-				const result = runInput(
-					{ atelier: new Atelier(), engine: new WebReplEngine() },
-					command.example
-				);
+				// Q79 : un exemple qui cite des listes se joue dans un atelier
+				// qui les contient ; il doit alors CRÉER quelque chose (`.simuler`
+				// range ses effectifs dans une liste) ou afficher une formule
+				const atelier = new Atelier();
+				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
+					atelier.create({ kind: 'list', name, definition });
+				}
+				const before = atelier.objects.length;
+				const result = runInput({ atelier, engine: new WebReplEngine() }, command.example);
 				const latex = result.kind === 'commande' ? result.latex : undefined;
+				// « Crée un objet » ne vaut que pour un exemple à décor déclaré
+				const created = command.exampleSetup !== undefined && atelier.objects.length > before;
 				expect(
-					{ commande: command.french, kind: result.kind, repond: latex !== undefined },
+					{ commande: command.french, kind: result.kind, repond: latex !== undefined || created },
 					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
 				).toMatchObject({ kind: 'commande', repond: true });
 				continue;

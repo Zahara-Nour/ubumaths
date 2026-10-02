@@ -22,6 +22,7 @@ import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
+import { simulateCommand } from './simulate';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
 import { simplifySteps } from './simplify-steps';
@@ -40,6 +41,11 @@ import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 export interface CalcSession {
 	readonly atelier: Atelier;
 	readonly engine: WebReplEngine;
+	/**
+	 * La graine d'une simulation (Q76) : une nouvelle à chaque fois, affichée.
+	 * Injectée par les tests pour vérifier une simulation au chiffre près.
+	 */
+	readonly seed?: () => number;
 }
 
 /** Ce qu'une saisie a produit. */
@@ -231,6 +237,11 @@ function runAtelierCommand(name: string, input: string, argument: string): CalcR
 	}
 }
 
+/** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
+function randomSeed(): number {
+	return 1000 + Math.floor(Math.random() * 9000);
+}
+
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
@@ -274,6 +285,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 * commande : sans ça, `.simp` ne dépliait rien là où `.simplifier` dépliait.
 	 */
 	const name = known.name.toLowerCase();
+
+	// `.simuler L M n` lit des NOMS de listes : il passe avant la substitution
+	// des noms par leurs expressions, qui en ferait des listes de nombres
+	if (known.name === 'simulate') {
+		const seed = (session.seed ?? randomSeed)();
+		const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
+		const outcome = simulateCommand(session.atelier, typedArgument, seed);
+		return outcome.ok
+			? { kind: 'commande', input, output: outcome.text }
+			: { kind: 'refus', message: outcome.message };
+	}
 
 	// L'argument reçoit les EXPRESSIONS, pas les noms — règle du §6 bis, ici
 	// appliquée à la commande tapée à la main.
