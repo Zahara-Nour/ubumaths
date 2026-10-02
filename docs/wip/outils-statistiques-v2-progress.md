@@ -90,3 +90,8 @@ Manche 5 (2026-10-02), lot 2 « listes qualitatives » — recommandations suivi
 91. Au plus 20 modalités distinctes, 40 caractères par modalité ; plafonds D8 inchangés.
 
 PR prévues : (a) listes qualitatives (Q84-Q88, Q91) ; (b) `.croiser` ; (c) `.filtrer`.
+
+92. (2026-10-02) Une entrée qui se lit comme un nombre n'est jamais un mot (`1e3` = 1000, comme en
+    v1) ; une liste MÉLANGÉE nomme sa cause dans l'aperçu (« liste qualitative, à cause de « 2x » »).
+
+Lot 2 — livré : (a) listes qualitatives #661 ; Q92 #662. Reste : (b) `.croiser`, (c) `.filtrer`.
