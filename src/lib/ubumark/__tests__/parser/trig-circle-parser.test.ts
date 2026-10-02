@@ -259,13 +259,14 @@ color: red`);
 		expect(result.node!.config.showProjections).toBe(false);
 	});
 
-	it('should report warnings for unknown keys', () => {
+	// 2026-10-02 : une clé inconnue n'est plus un simple avertissement ignoré,
+	// mais une erreur située (cf. trig-circle-points.test.ts)
+	it('should report a located error for unknown keys', () => {
 		const result = parseTrigCircleContent(`preset: quarters
 unknownKey: value`);
 
-		expect(result.node).not.toBeNull();
-		expect(result.warnings).toHaveLength(1);
-		expect(result.warnings[0].message).toContain('unknownKey');
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0].message).toMatch(/^Ligne 2 : clé inconnue « unknownKey »/);
 	});
 });
 

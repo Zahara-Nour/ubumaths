@@ -11,21 +11,32 @@
 	- Arcs for equation solutions
 	- Optional interactive mode (drag angle)
 	- Optional cos/sin value table
+	- Points nommés (`points: M = 2*pi/3`) : le nom, jamais la valeur
+	- Erreur : message situé pour le prof (`showErrors`, ou contexte posé par
+	  `MarkdownRenderer`), cadre neutre « Figure indisponible » pour l'élève
 	- Dark mode support via CSS variables
 
 	@module components/markdown/nodes/TrigCircle
 -->
 <script lang="ts">
 	import 'mathlive';
-	import type { TrigCircleNode, TrigAngle, TrigArc } from '$lib/ubumark/types/trig-circle';
-	import { REMARKABLE_ANGLES } from '$lib/ubumark/types/trig-circle';
+	import type {
+		TrigCircleNode,
+		TrigAngle,
+		TrigArc,
+		TrigNamedPoint
+	} from '$lib/ubumark/types/trig-circle';
+	import { REMARKABLE_ANGLES, isNamedPointAngle } from '$lib/ubumark/types/trig-circle';
+	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
 		node: TrigCircleNode;
+		/** Montrer le détail des erreurs (prof) ; par défaut, le contexte décide */
+		showErrors?: boolean;
 		class?: string;
 	}
 
-	let { node, class: className = '' }: Props = $props();
+	let { node, showErrors, class: className = '' }: Props = $props();
 
 	// =========================================================================
 	// LAYOUT CONSTANTS
@@ -39,10 +50,14 @@
 	const AXIS_EXTENSION = 20;
 	const TICK_SIZE = 5;
 	const TABLE_WIDTH = 200;
+	const NAME_OFFSET = 7;
+	const NAME_NUDGE = 3;
 
 	// =========================================================================
 	// STATE
 	// =========================================================================
+
+	const authoring = readAuthoringErrors();
 
 	let hoveredAngle = $state<TrigAngle | null>(null);
 	let interactiveAngle = $state<number | null>(null);
@@ -51,6 +66,11 @@
 	// =========================================================================
 	// COMPUTED VALUES
 	// =========================================================================
+
+	let errors = $derived(node.errors ?? []);
+	let errorsVisible = $derived(showErrors ?? authoring());
+	let namedPoints = $derived(node.points ?? []);
+	let ariaLabel = $derived(describeCircle(namedPoints));
 
 	let showTable = $derived(
 		node.config.display === 'table' || node.config.display === 'circle+table'
@@ -82,6 +102,40 @@
 			yellow: '#eab308'
 		};
 		return colorMap[color.toLowerCase()] || color;
+	}
+
+	// =========================================================================
+	// NAMED POINTS
+	// =========================================================================
+
+	/** « Cercle trigonométrique, points M et N » : les noms, jamais les valeurs */
+	function describeCircle(points: TrigNamedPoint[]): string {
+		const base = 'Cercle trigonométrique';
+		if (points.length === 0) return base;
+		const names = points.map((p) => p.name);
+		if (names.length === 1) return `${base}, point ${names[0]}`;
+		return `${base}, points ${names.slice(0, -1).join(', ')} et ${names[names.length - 1]}`;
+	}
+
+	/**
+	 * Nom en diagonale du point, accroché par le coin tourné vers lui : jamais
+	 * centré sur un axe (même placement que le PDF, `trig-circle-typst.ts`)
+	 */
+	function getNamePosition(radians: number): {
+		x: number;
+		y: number;
+		anchor: 'start' | 'end';
+		baseline: 'text-after-edge' | 'hanging';
+	} {
+		const point = angleToPoint(radians);
+		const cos = Math.cos(radians);
+		const sin = Math.sin(radians);
+		return {
+			x: point.x + NAME_OFFSET * cos + (Math.abs(cos) <= 0.3 ? NAME_NUDGE : 0),
+			y: point.y - NAME_OFFSET * sin - (Math.abs(sin) <= 0.3 ? NAME_NUDGE : 0),
+			anchor: cos < -0.3 ? 'end' : 'start',
+			baseline: sin < -0.3 ? 'hanging' : 'text-after-edge'
+		};
 	}
 
 	// =========================================================================
@@ -254,6 +308,11 @@
 		return angles;
 	});
 
+	// Valeurs écrites : pas celle d'un angle qui porte un point nommé (l'élève la cherche)
+	let labelledAngles = $derived(
+		displayAngles.filter((a) => !isNamedPointAngle(namedPoints, a.radians))
+	);
+
 	// Arcs to display (from solution)
 	let displayArcs = $derived(node.solution?.arcs || []);
 
@@ -280,358 +339,412 @@
 	});
 </script>
 
-<div class="trig-circle-container {className}" style="--primary-color: {primaryColor}">
-	{#if showCircle}
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<svg
-			width={SVG_SIZE}
-			height={SVG_SIZE}
-			viewBox="0 0 {SVG_SIZE} {SVG_SIZE}"
-			class="trig-circle-svg"
-			role="img"
-			aria-label="Cercle trigonométrique"
-			onmousemove={handleMouseMove}
-			onmousedown={handleMouseDown}
-			onmouseup={handleMouseUp}
-			onmouseleave={handleMouseUp}
+{#if errors.length > 0}
+	{#if errorsVisible}
+		<div
+			class="trig-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
 		>
-			<!-- Grid (optional) -->
-			{#if node.config.showGrid}
-				<g class="trig-grid">
-					{#each [-0.5, 0.5] as val (val)}
-						<line
-							x1={CENTER + val * RADIUS}
-							y1={CENTER - RADIUS - AXIS_EXTENSION}
-							x2={CENTER + val * RADIUS}
-							y2={CENTER + RADIUS + AXIS_EXTENSION}
-							class="trig-grid-line"
-						/>
-						<line
-							x1={CENTER - RADIUS - AXIS_EXTENSION}
-							y1={CENTER - val * RADIUS}
-							x2={CENTER + RADIUS + AXIS_EXTENSION}
-							y2={CENTER - val * RADIUS}
-							class="trig-grid-line"
-						/>
-					{/each}
-				</g>
-			{/if}
-
-			<!-- Axes -->
-			{#if node.config.showAxes}
-				<g class="trig-axes">
-					<!-- X axis -->
-					<line
-						x1={CENTER - RADIUS - AXIS_EXTENSION}
-						y1={CENTER}
-						x2={CENTER + RADIUS + AXIS_EXTENSION}
-						y2={CENTER}
-						class="trig-axis"
-					/>
-					<!-- X axis arrow -->
-					<polygon
-						points="{CENTER + RADIUS + AXIS_EXTENSION},{CENTER} {CENTER +
-							RADIUS +
-							AXIS_EXTENSION -
-							8},{CENTER - 4} {CENTER + RADIUS + AXIS_EXTENSION - 8},{CENTER + 4}"
-						class="trig-axis-arrow"
-					/>
-
-					<!-- Y axis -->
-					<line
-						x1={CENTER}
-						y1={CENTER + RADIUS + AXIS_EXTENSION}
-						x2={CENTER}
-						y2={CENTER - RADIUS - AXIS_EXTENSION}
-						class="trig-axis"
-					/>
-					<!-- Y axis arrow -->
-					<polygon
-						points="{CENTER},{CENTER - RADIUS - AXIS_EXTENSION} {CENTER - 4},{CENTER -
-							RADIUS -
-							AXIS_EXTENSION +
-							8} {CENTER + 4},{CENTER - RADIUS - AXIS_EXTENSION + 8}"
-						class="trig-axis-arrow"
-					/>
-
-					<!-- Axis ticks -->
-					{#if node.config.showAxisValues}
-						{#each [-1, 1] as val (val)}
-							<!-- X axis ticks -->
+			<p class="font-medium text-destructive">Bloc trig : figure non dessinée</p>
+			<ul class="mt-1 list-disc pl-5">
+				{#each errors as e, i (i)}
+					<li>{e.message}</li>
+				{/each}
+			</ul>
+		</div>
+	{:else}
+		<div
+			class="trig-indisponible rounded-md border border-dashed border-border p-3 text-center text-sm text-muted-foreground {className}"
+		>
+			Figure indisponible
+		</div>
+	{/if}
+{:else}
+	<div class="trig-circle-container {className}" style="--primary-color: {primaryColor}">
+		{#if showCircle}
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<svg
+				width={SVG_SIZE}
+				height={SVG_SIZE}
+				viewBox="0 0 {SVG_SIZE} {SVG_SIZE}"
+				class="trig-circle-svg"
+				role="img"
+				aria-label={ariaLabel}
+				onmousemove={handleMouseMove}
+				onmousedown={handleMouseDown}
+				onmouseup={handleMouseUp}
+				onmouseleave={handleMouseUp}
+			>
+				<!-- Grid (optional) -->
+				{#if node.config.showGrid}
+					<g class="trig-grid">
+						{#each [-0.5, 0.5] as val (val)}
 							<line
 								x1={CENTER + val * RADIUS}
-								y1={CENTER - TICK_SIZE}
+								y1={CENTER - RADIUS - AXIS_EXTENSION}
 								x2={CENTER + val * RADIUS}
-								y2={CENTER + TICK_SIZE}
-								class="trig-axis-tick"
+								y2={CENTER + RADIUS + AXIS_EXTENSION}
+								class="trig-grid-line"
 							/>
-							<text x={CENTER + val * RADIUS} y={CENTER + TICK_SIZE + 14} class="trig-axis-label">
-								{val}
-							</text>
-
-							<!-- Y axis ticks -->
 							<line
-								x1={CENTER - TICK_SIZE}
+								x1={CENTER - RADIUS - AXIS_EXTENSION}
 								y1={CENTER - val * RADIUS}
-								x2={CENTER + TICK_SIZE}
+								x2={CENTER + RADIUS + AXIS_EXTENSION}
 								y2={CENTER - val * RADIUS}
-								class="trig-axis-tick"
+								class="trig-grid-line"
 							/>
-							<text
-								x={CENTER - TICK_SIZE - 8}
-								y={CENTER - val * RADIUS + 4}
-								class="trig-axis-label"
-							>
-								{val}
-							</text>
 						{/each}
-					{/if}
-				</g>
-			{/if}
+					</g>
+				{/if}
 
-			<!-- Unit circle -->
-			<circle cx={CENTER} cy={CENTER} r={RADIUS} class="trig-unit-circle" />
+				<!-- Axes -->
+				{#if node.config.showAxes}
+					<g class="trig-axes">
+						<!-- X axis -->
+						<line
+							x1={CENTER - RADIUS - AXIS_EXTENSION}
+							y1={CENTER}
+							x2={CENTER + RADIUS + AXIS_EXTENSION}
+							y2={CENTER}
+							class="trig-axis"
+						/>
+						<!-- X axis arrow -->
+						<polygon
+							points="{CENTER + RADIUS + AXIS_EXTENSION},{CENTER} {CENTER +
+								RADIUS +
+								AXIS_EXTENSION -
+								8},{CENTER - 4} {CENTER + RADIUS + AXIS_EXTENSION - 8},{CENTER + 4}"
+							class="trig-axis-arrow"
+						/>
 
-			<!-- Solution arcs (for inequations) -->
-			{#if node.config.mode === 'arc' && displayArcs.length > 0}
-				<g class="trig-arcs">
-					{#each displayArcs as arc, i (i)}
-						<path d={createArcPath(arc)} class="trig-solution-arc" />
-					{/each}
-				</g>
-			{/if}
+						<!-- Y axis -->
+						<line
+							x1={CENTER}
+							y1={CENTER + RADIUS + AXIS_EXTENSION}
+							x2={CENTER}
+							y2={CENTER - RADIUS - AXIS_EXTENSION}
+							class="trig-axis"
+						/>
+						<!-- Y axis arrow -->
+						<polygon
+							points="{CENTER},{CENTER - RADIUS - AXIS_EXTENSION} {CENTER - 4},{CENTER -
+								RADIUS -
+								AXIS_EXTENSION +
+								8} {CENTER + 4},{CENTER - RADIUS - AXIS_EXTENSION + 8}"
+							class="trig-axis-arrow"
+						/>
 
-			<!-- Projection lines (optional) -->
-			{#if node.config.showProjections}
-				<g class="trig-projections">
+						<!-- Axis ticks -->
+						{#if node.config.showAxisValues}
+							{#each [-1, 1] as val (val)}
+								<!-- X axis ticks -->
+								<line
+									x1={CENTER + val * RADIUS}
+									y1={CENTER - TICK_SIZE}
+									x2={CENTER + val * RADIUS}
+									y2={CENTER + TICK_SIZE}
+									class="trig-axis-tick"
+								/>
+								<text x={CENTER + val * RADIUS} y={CENTER + TICK_SIZE + 14} class="trig-axis-label">
+									{val}
+								</text>
+
+								<!-- Y axis ticks -->
+								<line
+									x1={CENTER - TICK_SIZE}
+									y1={CENTER - val * RADIUS}
+									x2={CENTER + TICK_SIZE}
+									y2={CENTER - val * RADIUS}
+									class="trig-axis-tick"
+								/>
+								<text
+									x={CENTER - TICK_SIZE - 8}
+									y={CENTER - val * RADIUS + 4}
+									class="trig-axis-label"
+								>
+									{val}
+								</text>
+							{/each}
+						{/if}
+					</g>
+				{/if}
+
+				<!-- Unit circle -->
+				<circle cx={CENTER} cy={CENTER} r={RADIUS} class="trig-unit-circle" />
+
+				<!-- Solution arcs (for inequations) -->
+				{#if node.config.mode === 'arc' && displayArcs.length > 0}
+					<g class="trig-arcs">
+						{#each displayArcs as arc, i (i)}
+							<path d={createArcPath(arc)} class="trig-solution-arc" />
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Projection lines (optional) -->
+				{#if node.config.showProjections}
+					<g class="trig-projections">
+						{#each displayAngles as angle (angle.radians)}
+							{@const point = angleToPoint(angle.radians)}
+							{@const isHovered =
+								hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+							{@const isSolution = isSolutionAngle(angle.radians)}
+							{@const isHighlighted = isHovered || isSolution}
+							{@const cosVal = Math.cos(angle.radians)}
+							{@const sinVal = Math.sin(angle.radians)}
+							{@const eqFunc = node.config.equation?.func}
+							{@const showCos = !eqFunc || eqFunc === 'cos' || eqFunc === 'tan'}
+							{@const showSin = !eqFunc || eqFunc === 'sin' || eqFunc === 'tan'}
+
+							<!-- Vertical projection to x-axis (cos value) -->
+							{#if showCos}
+								<line
+									x1={point.x}
+									y1={point.y}
+									x2={point.x}
+									y2={CENTER}
+									class="trig-projection-line"
+									class:trig-projection-highlighted={isHighlighted}
+								/>
+								<!-- Tick mark on x-axis -->
+								<line
+									x1={point.x}
+									y1={CENTER - 4}
+									x2={point.x}
+									y2={CENTER + 4}
+									class="trig-projection-tick"
+									class:trig-projection-highlighted={isHighlighted}
+								/>
+								<!-- Cos value label -->
+								{#if Math.abs(cosVal) > 0.01}
+									<foreignObject
+										x={point.x - 25}
+										y={CENTER + 8}
+										width="50"
+										height="24"
+										class="trig-projection-label-container"
+									>
+										<div
+											class="trig-projection-value"
+											class:trig-projection-value-highlighted={isHighlighted}
+										>
+											<math-span>{getCosValue(angle.radians)}</math-span>
+										</div>
+									</foreignObject>
+								{/if}
+							{/if}
+
+							<!-- Horizontal projection to y-axis (sin value) -->
+							{#if showSin}
+								<line
+									x1={point.x}
+									y1={point.y}
+									x2={CENTER}
+									y2={point.y}
+									class="trig-projection-line"
+									class:trig-projection-highlighted={isHighlighted}
+								/>
+								<!-- Tick mark on y-axis -->
+								<line
+									x1={CENTER - 4}
+									y1={point.y}
+									x2={CENTER + 4}
+									y2={point.y}
+									class="trig-projection-tick"
+									class:trig-projection-highlighted={isHighlighted}
+								/>
+								<!-- Sin value label -->
+								{#if Math.abs(sinVal) > 0.01}
+									<foreignObject
+										x={CENTER - 42}
+										y={point.y - 12}
+										width="38"
+										height="24"
+										class="trig-projection-label-container"
+									>
+										<div
+											class="trig-projection-value"
+											class:trig-projection-value-highlighted={isHighlighted}
+										>
+											<math-span>{getSinValue(angle.radians)}</math-span>
+										</div>
+									</foreignObject>
+								{/if}
+							{/if}
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Angle points -->
+				<g class="trig-points">
 					{#each displayAngles as angle (angle.radians)}
 						{@const point = angleToPoint(angle.radians)}
 						{@const isHovered =
 							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+						{@const isInteractive =
+							node.config.mode === 'interactive' &&
+							interactiveAngle !== null &&
+							Math.abs(angle.radians - interactiveAngle) < 0.01}
 						{@const isSolution = isSolutionAngle(angle.radians)}
-						{@const isHighlighted = isHovered || isSolution}
-						{@const cosVal = Math.cos(angle.radians)}
-						{@const sinVal = Math.sin(angle.radians)}
-						{@const eqFunc = node.config.equation?.func}
-						{@const showCos = !eqFunc || eqFunc === 'cos' || eqFunc === 'tan'}
-						{@const showSin = !eqFunc || eqFunc === 'sin' || eqFunc === 'tan'}
 
-						<!-- Vertical projection to x-axis (cos value) -->
-						{#if showCos}
-							<line
-								x1={point.x}
-								y1={point.y}
-								x2={point.x}
-								y2={CENTER}
-								class="trig-projection-line"
-								class:trig-projection-highlighted={isHighlighted}
-							/>
-							<!-- Tick mark on x-axis -->
-							<line
-								x1={point.x}
-								y1={CENTER - 4}
-								x2={point.x}
-								y2={CENTER + 4}
-								class="trig-projection-tick"
-								class:trig-projection-highlighted={isHighlighted}
-							/>
-							<!-- Cos value label -->
-							{#if Math.abs(cosVal) > 0.01}
-								<foreignObject
-									x={point.x - 25}
-									y={CENTER + 8}
-									width="50"
-									height="24"
-									class="trig-projection-label-container"
-								>
-									<div
-										class="trig-projection-value"
-										class:trig-projection-value-highlighted={isHighlighted}
-									>
-										<math-span>{getCosValue(angle.radians)}</math-span>
-									</div>
-								</foreignObject>
-							{/if}
-						{/if}
-
-						<!-- Horizontal projection to y-axis (sin value) -->
-						{#if showSin}
-							<line
-								x1={point.x}
-								y1={point.y}
-								x2={CENTER}
-								y2={point.y}
-								class="trig-projection-line"
-								class:trig-projection-highlighted={isHighlighted}
-							/>
-							<!-- Tick mark on y-axis -->
-							<line
-								x1={CENTER - 4}
-								y1={point.y}
-								x2={CENTER + 4}
-								y2={point.y}
-								class="trig-projection-tick"
-								class:trig-projection-highlighted={isHighlighted}
-							/>
-							<!-- Sin value label -->
-							{#if Math.abs(sinVal) > 0.01}
-								<foreignObject
-									x={CENTER - 42}
-									y={point.y - 12}
-									width="38"
-									height="24"
-									class="trig-projection-label-container"
-								>
-									<div
-										class="trig-projection-value"
-										class:trig-projection-value-highlighted={isHighlighted}
-									>
-										<math-span>{getSinValue(angle.radians)}</math-span>
-									</div>
-								</foreignObject>
-							{/if}
-						{/if}
-					{/each}
-				</g>
-			{/if}
-
-			<!-- Angle points -->
-			<g class="trig-points">
-				{#each displayAngles as angle (angle.radians)}
-					{@const point = angleToPoint(angle.radians)}
-					{@const isHovered =
-						hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
-					{@const isInteractive =
-						node.config.mode === 'interactive' &&
-						interactiveAngle !== null &&
-						Math.abs(angle.radians - interactiveAngle) < 0.01}
-					{@const isSolution = isSolutionAngle(angle.radians)}
-
-					<!-- Radius line (from center to point) -->
-					<line
-						x1={CENTER}
-						y1={CENTER}
-						x2={point.x}
-						y2={point.y}
-						class="trig-radius-line"
-						class:trig-radius-highlighted={isHovered || isInteractive || isSolution}
-					/>
-
-					<!-- Invisible hit area for easier hover -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<circle
-						cx={point.x}
-						cy={point.y}
-						r={12}
-						class="trig-hit-area"
-						onmouseenter={() => handleAngleHover(angle)}
-						onmouseleave={handleAngleLeave}
-					/>
-
-					<!-- Visible point on circle -->
-					<circle
-						cx={point.x}
-						cy={point.y}
-						r={isSolution ? POINT_RADIUS + 2 : POINT_RADIUS}
-						class="trig-angle-point"
-						class:trig-point-highlighted={isHovered || isInteractive || isSolution}
-					/>
-				{/each}
-			</g>
-
-			<!-- Bornes des arcs, APRÈS les points : un point nommé à une borne exclue
-			     (sin x > √2/2) recouvrait le rond vide qui la marque -->
-			{#if node.config.mode === 'arc' && displayArcs.length > 0}
-				<g class="trig-arc-endpoints">
-					{#each displayArcs as arc, i (i)}
-						{@const startPoint = angleToPoint(arc.startAngle)}
-						{@const endPoint = angleToPoint(arc.endAngle)}
-						<circle
-							cx={startPoint.x}
-							cy={startPoint.y}
-							r={POINT_RADIUS}
-							class="trig-arc-endpoint"
-							class:trig-endpoint-open={!arc.includeStart}
-							class:trig-endpoint-closed={arc.includeStart}
+						<!-- Radius line (from center to point) -->
+						<line
+							x1={CENTER}
+							y1={CENTER}
+							x2={point.x}
+							y2={point.y}
+							class="trig-radius-line"
+							class:trig-radius-highlighted={isHovered || isInteractive || isSolution}
 						/>
+
+						<!-- Invisible hit area for easier hover -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<circle
-							cx={endPoint.x}
-							cy={endPoint.y}
-							r={POINT_RADIUS}
-							class="trig-arc-endpoint"
-							class:trig-endpoint-open={!arc.includeEnd}
-							class:trig-endpoint-closed={arc.includeEnd}
-						/>
-					{/each}
-				</g>
-			{/if}
-
-			<!-- Angle labels -->
-			{#if node.config.showLabels}
-				<g class="trig-labels">
-					{#each displayAngles as angle (angle.radians)}
-						{@const pos = getLabelPosition(angle.radians)}
-						{@const isHovered =
-							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
-						{@const isSolution = isSolutionAngle(angle.radians)}
-						<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
-							<div
-								class="trig-label"
-								class:trig-label-highlighted={isHovered || isSolution}
-								style="text-align: {pos.anchor === 'start'
-									? 'left'
-									: pos.anchor === 'end'
-										? 'right'
-										: 'center'}"
-							>
-								<math-span>{angle.latex || angle.expression}</math-span>
-							</div>
-						</foreignObject>
-					{/each}
-				</g>
-			{/if}
-
-			<!-- Interactive hint -->
-			{#if node.config.mode === 'interactive'}
-				<text x={CENTER} y={SVG_SIZE - 10} class="trig-interactive-hint">
-					Cliquez et glissez sur le cercle
-				</text>
-			{/if}
-		</svg>
-	{/if}
-
-	<!-- Value table -->
-	{#if showTable}
-		<div class="trig-table-container">
-			<table class="trig-table">
-				<thead>
-					<tr>
-						<th><math-span>\theta</math-span></th>
-						<th><math-span>\cos\theta</math-span></th>
-						<th><math-span>\sin\theta</math-span></th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each tableAngles as angle (angle.radians)}
-						{@const isHovered =
-							hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
-						<tr
-							class:trig-row-highlighted={isHovered}
+							cx={point.x}
+							cy={point.y}
+							r={12}
+							class="trig-hit-area"
 							onmouseenter={() => handleAngleHover(angle)}
 							onmouseleave={handleAngleLeave}
-						>
-							<td><math-span>{angle.latex || angle.expression}</math-span></td>
-							<td><math-span>{getCosValue(angle.radians)}</math-span></td>
-							<td><math-span>{getSinValue(angle.radians)}</math-span></td>
-						</tr>
+						/>
+
+						<!-- Visible point on circle -->
+						<circle
+							cx={point.x}
+							cy={point.y}
+							r={isSolution ? POINT_RADIUS + 2 : POINT_RADIUS}
+							class="trig-angle-point"
+							class:trig-point-highlighted={isHovered || isInteractive || isSolution}
+						/>
 					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
-</div>
+				</g>
+
+				<!-- Bornes des arcs, APRÈS les points : un point nommé à une borne exclue
+			     (sin x > √2/2) recouvrait le rond vide qui la marque -->
+				{#if node.config.mode === 'arc' && displayArcs.length > 0}
+					<g class="trig-arc-endpoints">
+						{#each displayArcs as arc, i (i)}
+							{@const startPoint = angleToPoint(arc.startAngle)}
+							{@const endPoint = angleToPoint(arc.endAngle)}
+							<circle
+								cx={startPoint.x}
+								cy={startPoint.y}
+								r={POINT_RADIUS}
+								class="trig-arc-endpoint"
+								class:trig-endpoint-open={!arc.includeStart}
+								class:trig-endpoint-closed={arc.includeStart}
+							/>
+							<circle
+								cx={endPoint.x}
+								cy={endPoint.y}
+								r={POINT_RADIUS}
+								class="trig-arc-endpoint"
+								class:trig-endpoint-open={!arc.includeEnd}
+								class:trig-endpoint-closed={arc.includeEnd}
+							/>
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Angle labels -->
+				{#if node.config.showLabels}
+					<g class="trig-labels">
+						{#each labelledAngles as angle (angle.radians)}
+							{@const pos = getLabelPosition(angle.radians)}
+							{@const isHovered =
+								hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+							{@const isSolution = isSolutionAngle(angle.radians)}
+							<foreignObject x={pos.x - 40} y={pos.y - 16} width="80" height="32">
+								<div
+									class="trig-label"
+									class:trig-label-highlighted={isHovered || isSolution}
+									style="text-align: {pos.anchor === 'start'
+										? 'left'
+										: pos.anchor === 'end'
+											? 'right'
+											: 'center'}"
+								>
+									<math-span>{angle.latex || angle.expression}</math-span>
+								</div>
+							</foreignObject>
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Points nommés : affichés même avec `labels: false`, sans leur valeur -->
+				{#if namedPoints.length > 0}
+					<g class="trig-named-points">
+						{#each namedPoints as p (p.name)}
+							{@const point = angleToPoint(p.angle.radians)}
+							{@const pos = getNamePosition(p.angle.radians)}
+							<circle cx={point.x} cy={point.y} r={POINT_RADIUS + 1} class="trig-named-point" />
+							<text
+								x={pos.x}
+								y={pos.y}
+								text-anchor={pos.anchor}
+								dominant-baseline={pos.baseline}
+								class="trig-point-name"
+								>{p.base}{#if p.sub}<tspan baseline-shift="sub" font-size="0.7em">{p.sub}</tspan
+									>{/if}{'′'.repeat(p.primes)}</text
+							>
+						{/each}
+					</g>
+				{/if}
+
+				<!-- Interactive hint -->
+				{#if node.config.mode === 'interactive'}
+					<text x={CENTER} y={SVG_SIZE - 10} class="trig-interactive-hint">
+						Cliquez et glissez sur le cercle
+					</text>
+				{/if}
+			</svg>
+		{/if}
+
+		<!-- Value table -->
+		{#if showTable}
+			<div class="trig-table-container">
+				<table class="trig-table">
+					<thead>
+						<tr>
+							<th><math-span>\theta</math-span></th>
+							<th><math-span>\cos\theta</math-span></th>
+							<th><math-span>\sin\theta</math-span></th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each tableAngles as angle (angle.radians)}
+							{@const isHovered =
+								hoveredAngle !== null && Math.abs(hoveredAngle.radians - angle.radians) < 1e-6}
+							<tr
+								class:trig-row-highlighted={isHovered}
+								onmouseenter={() => handleAngleHover(angle)}
+								onmouseleave={handleAngleLeave}
+							>
+								<td><math-span>{angle.latex || angle.expression}</math-span></td>
+								<td><math-span>{getCosValue(angle.radians)}</math-span></td>
+								<td><math-span>{getSinValue(angle.radians)}</math-span></td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+{/if}
 
 <style>
+	/* Points nommés : le nom en italique, comme une lettre de géométrie */
+	.trig-named-point {
+		fill: var(--primary-color);
+		stroke: var(--background, white);
+		stroke-width: 1;
+	}
+
+	.trig-point-name {
+		font-style: italic;
+		font-size: 15px;
+		fill: var(--foreground, currentColor);
+	}
+
 	/* Container */
 	.trig-circle-container {
 		display: flex;

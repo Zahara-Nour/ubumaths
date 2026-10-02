@@ -560,10 +560,11 @@ function parseBlocks(
 				trigCircleBlock.startIndex,
 				trigCircleBlock.endIndex
 			);
+			// Toujours un nœud, même en erreur : il porte ses erreurs (message au
+			// prof, « Figure indisponible » à l'élève), comme ```courbe
 			if (result.node) {
 				blocks.push(result.node);
 			}
-			// Note: Errors are silently ignored for now; could be logged if needed
 			i = trigCircleBlock.endIndex + 1;
 			continue;
 		}

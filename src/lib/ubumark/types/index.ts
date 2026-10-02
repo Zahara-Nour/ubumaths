@@ -124,6 +124,7 @@ export type {
 	// Solution types
 	TrigArc,
 	TrigSolution,
+	TrigNamedPoint,
 	// Display types
 	TrigDisplayMode,
 	TrigDisplayType,

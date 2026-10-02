@@ -16,8 +16,8 @@
  * @module ubumark/generators/trig-circle-typst
  */
 
-import type { TrigCircleNode, TrigAngle, TrigArc } from '../types/trig-circle';
-import { REMARKABLE_ANGLES } from '../types/trig-circle';
+import type { TrigCircleNode, TrigAngle, TrigArc, TrigNamedPoint } from '../types/trig-circle';
+import { REMARKABLE_ANGLES, isNamedPointAngle } from '../types/trig-circle';
 import { convertLatexToTypstMath } from './typst-generator';
 
 // ============================================================================
@@ -34,6 +34,13 @@ interface TrigCircleTypstOptions {
 	/** Label offset from point (default: 0.4) */
 	labelOffset?: number;
 }
+
+/** Bloc en erreur : même cadre neutre que ```courbe et ```figure */
+const UNAVAILABLE =
+	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';
+
+/** Décalage (cm) d'un nom de point posé sur un axe, pour l'écarter du trait */
+const NAME_NUDGE = 0.08;
 
 const DEFAULT_OPTIONS: Required<TrigCircleTypstOptions> = {
 	radius: 2.5,
@@ -64,6 +71,8 @@ export function generateTrigCircleTypst(
 	options: TrigCircleTypstOptions = {}
 ): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
+	if (node.errors && node.errors.length > 0) return UNAVAILABLE;
+	const namedPoints = node.points ?? [];
 
 	try {
 		const importStatement = '#import "@preview/cetz:0.3.0"\n\n';
@@ -110,9 +119,16 @@ export function generateTrigCircleTypst(
 			parts.push(generateArcEndpoints(node.solution.arcs, node.config.color, opts));
 		}
 
-		// Draw labels if enabled
+		// Points nommés : le point, puis son nom (même avec `labels: false`)
+		if (namedPoints.length > 0) {
+			parts.push(generateNamedPoints(namedPoints, node.config.color, opts));
+		}
+
+		// Valeurs des angles, sauf celle d'un angle qui porte un point nommé :
+		// l'élève doit la trouver
 		if (node.config.showLabels) {
-			parts.push(generateLabels(angles, opts));
+			const valued = angles.filter((a) => !isNamedPointAngle(namedPoints, a.radians));
+			if (valued.length > 0) parts.push(generateLabels(valued, opts));
 		}
 
 		// Draw axis values if enabled
@@ -355,6 +371,45 @@ function generatePoints(
 
 	lines.push('');
 
+	return lines.join('\n');
+}
+
+/**
+ * Points nommés : un disque sur le cercle et le nom à l'extérieur, en TEXTE
+ * italique. Jamais en mode math : un nom de plusieurs lettres y serait une
+ * variable inconnue, et toute la fiche échouerait. Chiffres en indice, primes
+ * en ′ (U+2032) — une apostrophe deviendrait un guillemet typographique.
+ */
+function generateNamedPoints(
+	points: TrigNamedPoint[],
+	color: string,
+	opts: Required<TrigCircleTypstOptions>
+): string {
+	const typstColor = getTypstColor(color);
+	const lines: string[] = ['  // Named points'];
+	for (const p of points) {
+		const { radians } = p.angle;
+		const point = angleToCoords(radians, opts.radius);
+		const cos = Math.cos(radians);
+		const sin = Math.sin(radians);
+		lines.push(
+			`  circle((${formatNumber(point.x)}, ${formatNumber(point.y)}), radius: ${formatNumber(opts.pointRadius * 1.3)}, fill: ${typstColor})`
+		);
+		// Le nom se place en diagonale, accroché par le coin tourné vers le point :
+		// jamais centré sur un axe (un point en π/2 cachait son nom sous l'axe)
+		const vertical = sin < -0.3 ? 'north' : 'south';
+		const horizontal = cos < -0.3 ? 'east' : 'west';
+		const anchor = `${vertical}-${horizontal}`;
+		const offset = opts.labelOffset * 0.4;
+		const nameX = point.x + offset * cos + (Math.abs(cos) <= 0.3 ? NAME_NUDGE : 0);
+		const nameY = point.y + offset * sin + (Math.abs(sin) <= 0.3 ? NAME_NUDGE : 0);
+		const sub = p.sub ? `#sub[${p.sub}]` : '';
+		const name = `text(style: "italic")[${p.base}${sub}${'′'.repeat(p.primes)}]`;
+		lines.push(
+			`  content((${formatNumber(nameX)}, ${formatNumber(nameY)}), ${name}, anchor: "${anchor}")`
+		);
+	}
+	lines.push('');
 	return lines.join('\n');
 }
 
