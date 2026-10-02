@@ -94,4 +94,5 @@ PR prévues : (a) listes qualitatives (Q84-Q88, Q91) ; (b) `.croiser` ; (c) `.fi
 92. (2026-10-02) Une entrée qui se lit comme un nombre n'est jamais un mot (`1e3` = 1000, comme en
     v1) ; une liste MÉLANGÉE nomme sa cause dans l'aperçu (« liste qualitative, à cause de « 2x » »).
 
-Lot 2 — livré : (a) listes qualitatives #661 ; Q92 #662. Reste : (b) `.croiser`, (c) `.filtrer`.
+Lot 2 — livré : (a) listes qualitatives #661 ; Q92 #662 ; (b) `.croiser` #666. Reste : (c) `.filtrer`.
+Ouvert : Q93 (largeur du tableau croisé dans l'atelier : 20, reco, ou 8 comme les blocs).
