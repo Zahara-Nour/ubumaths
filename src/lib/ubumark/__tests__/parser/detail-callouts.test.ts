@@ -99,3 +99,21 @@ describe('détail en ligne [texte]{.type}', () => {
 		expect(children.some((c) => c.type === 'link')).toBe(true);
 	});
 });
+
+describe('détail en ligne — revue #636', () => {
+	it('code en ligne : `[x]{.rappel}` reste du code littéral', () => {
+		const children = paragraphChildren('Écrire `[x]{.rappel}` ici.');
+		const code = children.find((c) => c.type === 'text' && c.code);
+		expect(code && code.type === 'text' ? code.content : undefined).toBe('[x]{.rappel}');
+		expect(children.some((c) => 'detail' in c && c.detail)).toBe(false);
+	});
+
+	it('intervalle dans un détail en ligne : formule marquée, crochets intacts', () => {
+		const children = paragraphChildren('Sur [l’intervalle $]0;1[$]{.rappel}, f croît.');
+		const math = children.find((c) => c.type === 'math-inline');
+		expect(math && math.type === 'math-inline' ? math.expression : undefined).toBe(']0;1[');
+		expect(math && 'detail' in math ? math.detail : undefined).toBe('reminder');
+		const all = children.map((c) => (c.type === 'text' ? c.content : '')).join('');
+		expect(all).not.toContain('{.rappel}');
+	});
+});

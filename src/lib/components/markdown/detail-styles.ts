@@ -3,8 +3,8 @@
  * =====================================================
  *
  * - méthode : encadré, placé avant le calcul par l'auteur ;
- * - rappel : en marge sur grand écran (≥ md, cf. `MarkdownRenderer`), encadré
- *   juste dessous sur téléphone ;
+ * - rappel : en marge si la correction est large (container query, cf.
+ *   `MarkdownRenderer`), encadré juste dessous sinon ;
  * - attention : encadré aux couleurs d'alerte ;
  * - en ligne : mise en valeur discrète (calcul), ou teinte du type.
  *

@@ -344,9 +344,14 @@
 	/*
 	 * Rappels en marge (ADR 0017, D8). Placement automatique de la grille : un
 	 * rappel (colonne 2) reste sur la ligne du bloc qui le précède (colonne 1),
-	 * le bloc suivant repart à la ligne. Téléphone : flux normal, rappel dessous.
+	 * le bloc suivant repart à la ligne.
+	 *
+	 * Seuil sur la largeur de la CORRECTION (container query : le conteneur pose
+	 * `container-type: inline-size`, cf. CorrectionView), pas de l'écran : une
+	 * flash-card reste étroite sur un grand écran. 40rem = rappel (14rem + 1rem)
+	 * + au moins 25rem de texte. Sans conteneur, ou plus étroit : rappel dessous.
 	 */
-	@media (min-width: 768px) {
+	@container (min-width: 40rem) {
 		.markdown-content.has-margin-notes {
 			display: grid;
 			grid-template-columns: minmax(0, 1fr) auto;

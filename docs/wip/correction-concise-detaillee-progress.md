@@ -49,16 +49,42 @@ Erreur (D5) →`concise = detailed`, `hasDetails = false`.
 - **ubumark** : `BlockquoteNode.callout`, `TextNode.detail` / `MathInlineNode.detail` ; parseur de
   citations (premier niveau et dans les listes) et parseur en ligne.
 - **Rendu** : `Blockquote.svelte` (encadré `role="note"` + libellé), `TextNode` / `ParagraphNode` /
-  `InlineRenderer` (détail en ligne), `MarkdownRenderer` (rappel en marge ≥ 768 px par grille, seulement
-  si le document a un rappel), styles dans `components/markdown/detail-styles.ts`.
+  `InlineRenderer` (détail en ligne), `MarkdownRenderer` (rappel en marge par grille, seulement
+  si le document a un rappel ; seuil revu, cf. revue #636), styles dans `components/markdown/detail-styles.ts`.
 - **Composant** `src/lib/components/questions/CorrectionView.svelte` (+ `correction-view-preference.ts`,
   clé `chiphre:correction-detail`), branché dans `FlashCard` (verso) et `CourseCardBack`.
 - Tests : `questions/__tests__/correction-detail.test.ts` (29), `ubumark/__tests__/parser/detail-callouts.test.ts`
   (10), `components/questions/__tests__/CorrectionView.svelte.test.ts` (10), +1 FlashCard, +1 CourseCard.
 
+### Revue de la PR #636 — corrigé, NON commité
+
+- **Intervalles** : formules `$…$` / `$$…$$` et code en ligne masqués (même longueur) avant de chercher
+  `[texte]{.type}` ; `$]0;1[$` dans ou hors d'un détail ne casse plus rien. Le parseur masque aussi le
+  code en ligne avant l'étape 0 (`maskSpans`, `INLINE_CODE_REGEX` dans `detail-kinds.ts`).
+- **Affichages pas encore branchés** : version détaillée (`detailedCorrection`) dans `CorrectionCard`,
+  `QuestionPreview`, `QuestionPreviewBaseCard`, `QuestionCompareView` (texte brut) et
+  `worksheets/serie-automatismes.ts` (PDF). `student-worksheet-typst.ts` lit `exercise.correction`
+  (exercices, pas les modèles de questions) : non touché.
+- **Rappel en marge** : container query `@container (min-width: 40rem)` sur la zone de correction
+  de `CorrectionView` (classe Tailwind `@container`) ; ailleurs (sans conteneur), rappel dessous.
+- **Ménage concis** : formule devenue vide retirée (`conciseEmpty` juste) ; ménage segment par segment,
+  hors blocs de code ; code en ligne jamais transformé ; `( )` vidées retirées ; `A \detail{B} C` → `A C`.
+- **Coût linéaire** : accolades appariées en une passe, espaces de tête cherchées à rebours (bornées),
+  formule ouverte suivie au fil des ajouts. Écart à la demande : on ne s'arrête pas au premier
+  `\detail{` non fermé (le test D5 exige que les suivants, bien fermés, soient quand même déballés) ;
+  l'appariement en une passe tient le budget (50 000 espaces / 20 000 `\detail{` < 200 ms). Messages
+  d'erreur dédoublonnés.
+
+### Écart à faire valider par David (D6)
+
+Tout est détail ET aucune réponse attendue (carte de cours) : la vue « concise » montre la version
+**détaillée**, sans interrupteur (jamais de correction vide). FlashCard ne passe pas de réponse
+attendue (déjà affichée au-dessus). Comportement conservé tel quel en attendant sa décision.
+
 Reste :
 
-- Revue `code-reviewer`, commit, PR (session principale).
-- Aucune vérification visuelle réelle (marge ≥ md, couleurs clair/sombre) : à regarder dans le navigateur.
-- Hors lot 1 : CorrectionCard et autres affichages + aperçu prof (lot 2), Typst/PDF (lot 3 — le
-  générateur Typst ignore pour l'instant `callout` / `detail`), mode B (lot 4).
+- Commit, PR (session principale).
+- Aucune vérification visuelle réelle (marge, couleurs clair/sombre) : à regarder dans le navigateur.
+- Hors lot 1 : interrupteur dans CorrectionCard et autres affichages + aperçu prof (lot 2), réglage
+  concise / détaillée du PDF (lot 3 — le générateur Typst ignore pour l'instant `callout` / `detail`),
+  mode B (lot 4).

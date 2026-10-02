@@ -26,7 +26,9 @@
 
 import {
 	CALLOUT_MARKER_REGEX,
+	INLINE_CODE_REGEX,
 	INLINE_DETAIL_REGEX,
+	maskSpans,
 	parseCalloutKind,
 	parseDetailKind
 } from '$lib/ubumark/utils/detail-kinds';
@@ -151,23 +153,28 @@ function isDetailCommandAt(text: string, index: number): boolean {
 	return backslashes % 2 === 0;
 }
 
-/** Accolade fermante associée à celle en `open`, ou -1. `\x` est sauté. */
-function findClosingBrace(text: string, open: number): number {
-	let depth = 0;
-	for (let j = open; j < text.length; j++) {
+/**
+ * Accolade fermante de chaque accolade ouvrante (-1 si non fermée), en UNE
+ * passe : `\x` est sauté (`\{`, `\}`, `\\`). Même résultat qu'un comptage
+ * depuis chaque ouvrante, sans coût quadratique.
+ */
+function matchBraces(text: string): Map<number, number> {
+	const closing = new Map<number, number>();
+	const stack: number[] = [];
+	for (let j = 0; j < text.length; j++) {
 		const c = text[j];
 		if (c === '\\') {
 			j++;
-			continue;
-		}
-		if (c === '{') depth++;
-		else if (c === '}') {
-			depth--;
-			if (depth === 0) return j;
+		} else if (c === '{') {
+			stack.push(j);
+		} else if (c === '}' && stack.length > 0) {
+			closing.set(stack.pop() as number, j);
 		}
 	}
-	return -1;
+	return closing;
 }
+
+const isBlank = (c: string | undefined) => c === ' ' || c === '\t';
 
 /** Délimiteurs maths (`$` ou `$$`) de `text`, `\$` exclus. */
 function mathDelimiters(text: string): { token: string; index: number }[] {
@@ -187,46 +194,89 @@ function mathDelimiters(text: string): { token: string; index: number }[] {
 }
 
 /**
+ * Formule ouverte en fin de texte produit, suivie au fil des ajouts (chaque
+ * caractère n'est lu qu'une fois).
+ */
+class OpenFormulaTracker {
+	private scanned = 0;
+	open: { token: string; index: number } | null = null;
+
+	update(out: string): void {
+		for (let k = this.scanned; k < out.length; k++) {
+			if (out[k] === '\\') {
+				k++;
+				continue;
+			}
+			if (out[k] !== '$') continue;
+			const token = out[k + 1] === '$' ? '$$' : '$';
+			this.open = this.open ? null : { token, index: k };
+			k += token.length - 1;
+		}
+		this.scanned = Math.max(this.scanned, out.length);
+	}
+
+	/** Le texte produit a été coupé juste avant l'ouvrante : plus rien d'ouvert. */
+	truncatedTo(length: number): void {
+		this.open = null;
+		this.scanned = length;
+	}
+}
+
+/**
  * Formule entièrement en détail (`$\detail{x}$`) : en concis, ses délimiteurs
  * disparaissent avec elle — sinon `$$` resterait, pris pour une formule centrée.
- * Rend le texte avant (sans l'ouvrant) et le nombre de caractères à sauter après.
+ * Rend la longueur à garder du texte produit et le nombre de caractères à sauter.
  */
-function dropEmptyFormula(before: string, after: string): { before: string; skip: number } | null {
-	const tokens = mathDelimiters(before);
-	if (tokens.length % 2 === 0) return null;
-	const opener = tokens[tokens.length - 1];
-	if (before.slice(opener.index + opener.token.length).trim() !== '') return null;
-	const lead = after.match(/^\s*/)?.[0].length ?? 0;
-	if (!after.startsWith(opener.token, lead)) return null;
-	if (opener.token === '$' && after[lead + 1] === '$') return null;
-	return { before: before.slice(0, opener.index), skip: lead + opener.token.length };
+function dropEmptyFormula(
+	out: string,
+	tracker: OpenFormulaTracker,
+	text: string,
+	from: number
+): { keep: number; skip: number } | null {
+	tracker.update(out);
+	const opener = tracker.open;
+	if (!opener) return null;
+	for (let k = opener.index + opener.token.length; k < out.length; k++) {
+		if (!/\s/.test(out[k])) return null;
+	}
+	let lead = from;
+	while (lead < text.length && /\s/.test(text[lead])) lead++;
+	if (!text.startsWith(opener.token, lead)) return null;
+	if (opener.token === '$' && text[lead + 1] === '$') return null;
+	return { keep: opener.index, skip: lead - from + opener.token.length };
 }
 
 function transformDetailCommands(text: string, mode: Mode, ctx: Context): string {
+	// Le code en ligne n'est jamais transformé : recherche dans un texte où il est masqué
+	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
+	if (!masked.includes(DETAIL_COMMAND)) return text;
+	const closing = matchBraces(masked);
+	const tracker = new OpenFormulaTracker();
 	let out = '';
 	let i = 0;
 
 	while (i < text.length) {
-		const at = text.indexOf(DETAIL_COMMAND, i);
+		const at = masked.indexOf(DETAIL_COMMAND, i);
 		if (at === -1) {
 			out += text.slice(i);
 			break;
 		}
-		if (!isDetailCommandAt(text, at)) {
+		if (!isDetailCommandAt(masked, at)) {
 			out += text.slice(i, at + DETAIL_COMMAND.length);
 			i = at + DETAIL_COMMAND.length;
 			continue;
 		}
 		out += text.slice(i, at);
 		const afterCommand = at + DETAIL_COMMAND.length;
-		const open = afterCommand + (text.slice(afterCommand).match(/^\s*/)?.[0].length ?? 0);
+		let open = afterCommand;
+		while (open < masked.length && /\s/.test(masked[open])) open++;
 
-		if (text[open] !== '{') {
+		if (masked[open] !== '{') {
 			ctx.errors.push('`\\detail` doit être suivi d’accolades : `\\detail{…}`.');
 			i = afterCommand;
 			continue;
 		}
-		const close = findClosingBrace(text, open);
+		const close = closing.get(open) ?? -1;
 		if (close === -1) {
 			// L'élève voit le reste sans l'enveloppe ouvrante
 			ctx.errors.push('`\\detail{` non fermé : il manque une accolade fermante `}`.');
@@ -244,10 +294,15 @@ function transformDetailCommands(text: string, mode: Mode, ctx: Context): string
 			out += transformDetailCommands(inner, mode, ctx);
 			continue;
 		}
-		const dropped = dropEmptyFormula(out, text.slice(i));
+		const dropped = dropEmptyFormula(out, tracker, text, i);
 		if (dropped) {
-			out = dropped.before;
+			out = out.slice(0, dropped.keep);
+			tracker.truncatedTo(out.length);
 			i += dropped.skip;
+		}
+		// `A \detail{B} C` → `A C` : une seule espace entre les deux
+		if (isBlank(out[out.length - 1])) {
+			while (i < text.length && isBlank(text[i])) i++;
 		}
 	}
 	return out;
@@ -257,30 +312,93 @@ function transformDetailCommands(text: string, mode: Mode, ctx: Context): string
 // DÉTAILS EN LIGNE [texte]{.type}
 // ============================================================================
 
-/** Détail en ligne précédé de ses espaces (pour ne pas laisser « 81 . » en concis). */
-const INLINE_DETAIL_WITH_SPACE_REGEX = new RegExp(
-	`([ \\t]*)${INLINE_DETAIL_REGEX.source}`,
-	INLINE_DETAIL_REGEX.flags
-);
+/**
+ * Formules `$…$` / `$$…$$` : masquées avant de chercher un détail en ligne,
+ * pour qu'un intervalle `$]0;1[$` n'ouvre pas de crochet (le parseur ubumark
+ * fait de même avec ses `§M:n§`).
+ */
+const MATH_SPAN_REGEX = /(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$|(?<!\\)\$(?:\\.|[^$\\\n])+\$/g;
+
+/** Trace d'un détail en ligne retiré en concis (pour le ménage des parenthèses). */
+const REMOVED = '';
 
 function transformInlineDetails(text: string, mode: Mode, ctx: Context): string {
-	return text.replace(
-		INLINE_DETAIL_WITH_SPACE_REGEX,
-		(match: string, space: string, _inner: string, word: string, offset: number, whole: string) => {
-			if (!parseDetailKind(word)) {
-				ctx.errors.push(
-					`Détail en ligne « {.${word}} » : type inconnu. Types possibles : calcul, rappel, méthode, attention.`
-				);
-				return match;
-			}
-			ctx.found = true;
-			if (mode === 'detailed') return match;
-			// Concis : l'espace qui précédait le détail disparaît avec lui devant une
-			// ponctuation basse, une fin de ligne ou une autre espace (« 81 . » → « 81. »).
-			const next = whole.charAt(offset + match.length);
-			return next === '' || /[.,)\s]/.test(next) ? '' : space;
+	const masked = maskSpans(text, [INLINE_CODE_REGEX, MATH_SPAN_REGEX]);
+	const regex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
+	let out = '';
+	let last = 0;
+	let match: RegExpExecArray | null;
+
+	while ((match = regex.exec(masked)) !== null) {
+		const start = match.index;
+		const end = start + match[0].length;
+		if (!parseDetailKind(match[2])) {
+			ctx.errors.push(
+				`Détail en ligne « {.${match[2]}} » : type inconnu. Types possibles : calcul, rappel, méthode, attention.`
+			);
+			continue;
 		}
-	);
+		ctx.found = true;
+		if (mode === 'detailed') continue;
+		// Concis : l'espace qui précédait le détail disparaît avec lui devant une
+		// ponctuation basse, une fin de ligne ou une autre espace (« 81 . » → « 81. »).
+		let spaceStart = start;
+		while (spaceStart > last && isBlank(text[spaceStart - 1])) spaceStart--;
+		const next = text.charAt(end);
+		const keepSpace = next !== '' && !/[.,)\s]/.test(next);
+		out +=
+			text.slice(last, spaceStart) + (keepSpace ? text.slice(spaceStart, start) : '') + REMOVED;
+		last = end;
+	}
+	return mode === 'detailed' ? text : out + text.slice(last);
+}
+
+// ============================================================================
+// MÉNAGE DE LA VERSION CONCISE (hors blocs de code)
+// ============================================================================
+
+/** `a \\ \end{align}` → `a \end{align}` : pas de rangée vide en fin d'`align`. */
+function dropTrailingRowBreaks(text: string): string {
+	const regex = /\\\\(\s*)\\end\{/g;
+	let out = '';
+	let last = 0;
+	let match: RegExpExecArray | null;
+	while ((match = regex.exec(text)) !== null) {
+		let k = match.index;
+		while (k > last && /\s/.test(text[k - 1])) k--;
+		out += text.slice(last, k) + ' \\end{';
+		last = match.index + match[0].length;
+	}
+	return out + text.slice(last);
+}
+
+/** Formule devenue vide (seuls restent `\begin{…}`, `\end{…}`, `\\`) : retirée. */
+function dropEmptyFormulas(text: string): string {
+	const tokens = mathDelimiters(text);
+	let out = '';
+	let last = 0;
+	for (let t = 0; t + 1 < tokens.length; ) {
+		const [a, b] = [tokens[t], tokens[t + 1]];
+		if (a.token !== b.token) {
+			t++;
+			continue;
+		}
+		const content = text.slice(a.index + a.token.length, b.index);
+		const rest = content.replace(/\\(?:begin|end)\{[^}]*\}/g, '').replace(/\\\\/g, '');
+		if (rest.trim() === '') {
+			out += text.slice(last, a.index);
+			last = b.index + b.token.length;
+		}
+		t += 2;
+	}
+	return out + text.slice(last);
+}
+
+function tidyConciseSegment(text: string): string {
+	return dropEmptyFormulas(dropTrailingRowBreaks(text))
+		.replace(/[ \t]?\([ \t]*[ \t]*\)/g, '')
+		.replaceAll(REMOVED, '')
+		.replace(/\n{3,}/g, '\n\n');
 }
 
 // ============================================================================
@@ -293,17 +411,10 @@ function transform(markdown: string, mode: Mode, ctx: Context): string {
 			if (segment.code) return segment.text;
 			const withoutCallouts = transformCallouts(segment.text, mode, ctx);
 			const withoutCommands = transformDetailCommands(withoutCallouts, mode, ctx);
-			return transformInlineDetails(withoutCommands, mode, ctx);
+			const result = transformInlineDetails(withoutCommands, mode, ctx);
+			return mode === 'concise' ? tidyConciseSegment(result) : result;
 		})
 		.join('\n');
-}
-
-/** Ménage de la version concise après retraits : rangée vide d'`align`, lignes vides. */
-function tidyConcise(text: string): string {
-	return text
-		.replace(/\s*\\\\\s*(\\end\{)/g, ' $1')
-		.replace(/\n{3,}/g, '\n\n')
-		.trim();
 }
 
 /**
@@ -320,11 +431,13 @@ export function splitCorrectionDetail(markdown: string): CorrectionVersions {
 			detailed,
 			hasDetails: false,
 			conciseEmpty: false,
-			errors: ctx.errors
+			// Un même marqueur cassé répété ne donne qu'un message
+			errors: [...new Set(ctx.errors)]
 		};
 	}
 
-	const concise = tidyConcise(transform(markdown, 'concise', { found: false, errors: [] }));
+	// Le ménage est fait segment par segment (hors code) : ici, les bords seulement
+	const concise = transform(markdown, 'concise', { found: false, errors: [] }).trim();
 	return {
 		concise,
 		detailed,
@@ -332,4 +445,12 @@ export function splitCorrectionDetail(markdown: string): CorrectionVersions {
 		conciseEmpty: concise === '',
 		errors: []
 	};
+}
+
+/**
+ * Version détaillée seule, pour les affichages sans interrupteur (aperçus,
+ * PDF) : jamais de marqueur brut, que MathLive ou Typst refuseraient.
+ */
+export function detailedCorrection(markdown: string): string {
+	return splitCorrectionDetail(markdown).detailed;
 }

@@ -59,3 +59,24 @@ export const CALLOUT_MARKER_REGEX = /^\s*\[!([^\]\s]*)\]\s?(.*)$/;
  * crochets (`$[0;1]$`) ; le mot est capturé tel quel (validé ensuite).
  */
 export const INLINE_DETAIL_REGEX = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\{\.(\p{L}+)\}/gu;
+
+/** Caractère de masquage : ni crochet, ni accolade, ni lettre. */
+const MASK_CHAR = '';
+
+/** Code en ligne `` `…` `` : jamais un détail (même motif que le parseur). */
+export const INLINE_CODE_REGEX = /`[^`\n]+`/g;
+
+/**
+ * Remplace chaque correspondance des motifs par autant de caractères neutres :
+ * les positions sont conservées, on cherche les marqueurs dans le texte masqué
+ * et on découpe le texte d'origine aux mêmes indices.
+ */
+export function maskSpans(text: string, patterns: RegExp[]): string {
+	let masked = text;
+	for (const pattern of patterns) {
+		masked = masked.replace(new RegExp(pattern.source, pattern.flags), (match) =>
+			MASK_CHAR.repeat(match.length)
+		);
+	}
+	return masked;
+}

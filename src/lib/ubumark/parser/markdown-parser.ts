@@ -60,7 +60,12 @@ import {
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { dedentIndentedFences } from './indented-fences';
-import { INLINE_DETAIL_REGEX, parseDetailKind } from '../utils/detail-kinds';
+import {
+	INLINE_CODE_REGEX,
+	INLINE_DETAIL_REGEX,
+	maskSpans,
+	parseDetailKind
+} from '../utils/detail-kinds';
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
@@ -1418,18 +1423,21 @@ function parseTextFormatting(text: string): InlineNode[] {
 
 	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
 	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
-	// Type inconnu : laissé littéral.
+	// Type inconnu : laissé littéral. Le code en ligne passe avant : on cherche
+	// dans un texte où il est masqué, on découpe l'original aux mêmes indices.
 	const nodes: InlineNode[] = [];
+	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
 	const detailRegex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
 	let position = 0;
 	let match: RegExpExecArray | null;
-	while ((match = detailRegex.exec(text)) !== null) {
+	while ((match = detailRegex.exec(masked)) !== null) {
 		const kind = parseDetailKind(match[2]);
 		if (!kind) continue;
 		if (match.index > position) {
 			nodes.push(...parseTextFormattingPipeline(text.slice(position, match.index)));
 		}
-		for (const node of parseTextFormattingPipeline(match[1])) {
+		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
+		for (const node of parseTextFormattingPipeline(inner)) {
 			nodes.push(node.type === 'text' ? { ...node, detail: kind } : node);
 		}
 		position = match.index + match[0].length;

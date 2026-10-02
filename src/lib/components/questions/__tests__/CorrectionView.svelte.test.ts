@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { page } from 'vitest/browser';
 import CorrectionView from '../CorrectionView.svelte';
 import { CORRECTION_DETAIL_STORAGE_KEY } from '../correction-view-preference';
 
@@ -155,5 +156,32 @@ describe('CorrectionView', () => {
 		});
 		const errors = container.querySelector('[data-authoring-errors]');
 		expect(errors?.textContent).toContain('truc');
+	});
+
+	describe('rappel en marge : selon la largeur de la correction, pas de l’écran', () => {
+		const REMINDER = 'Premier paragraphe.\n\n> [!rappel] Une règle utile.\n\nSuite.';
+
+		// Grand écran dans les deux cas : seule la largeur de la correction change
+		beforeEach(async () => {
+			await page.viewport(1280, 900);
+		});
+
+		async function layout(width: string): Promise<string> {
+			const { container } = await render(CorrectionView, { markdown: REMINDER });
+			container.style.width = width;
+			toggle(container)?.click();
+			await tick();
+			const content = container.querySelector<HTMLElement>('.markdown-content');
+			expect(content?.textContent).toContain('Une règle utile.');
+			return getComputedStyle(content as HTMLElement).display;
+		}
+
+		it('correction large : grille, rappel en marge', async () => {
+			expect(await layout('900px')).toBe('grid');
+		});
+
+		it('correction étroite (flash-card) : rappel dessous, même sur grand écran', async () => {
+			expect(await layout('360px')).not.toBe('grid');
+		});
 	});
 });

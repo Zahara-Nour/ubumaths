@@ -14,6 +14,7 @@
  */
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
+import { detailedCorrection } from '$lib/questions/correction-detail';
 
 export type SerieItem = { templateId: string; seed: number };
 export type Serie = { statement: string; solution: string };
@@ -39,7 +40,9 @@ function reponse(instance: QuestionInstance, index: number, dansFormule: boolean
 
 /** Énoncé et corrigé d'une instance, en markdown libre (avant mise en liste) */
 function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
-	const etapes = instance.correction?.steps ?? [];
+	// Version détaillée (ADR 0017) : un marqueur `\detail{` brut ferait échouer
+	// Typst pour toute la fiche. Le réglage concise / détaillée viendra au lot 3.
+	const etapes = (instance.correction?.steps ?? []).map((step) => detailedCorrection(step));
 	// Correction générée (mode B) : ses étapes ne sont rendues qu'à l'écran ; la
 	// figer demanderait generateCorrection — refuser plutôt que d'en perdre le texte
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {

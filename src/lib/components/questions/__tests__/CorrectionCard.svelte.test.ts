@@ -107,3 +107,23 @@ describe('CorrectionCard — votre réponse à un QCM mélangé', () => {
 		expect(answer).toContain('Lyon');
 	});
 });
+
+/**
+ * Correction concise / détaillée (ADR 0017) : avant le lot 2, CorrectionCard
+ * montre la version détaillée — jamais le marqueur brut.
+ */
+describe('CorrectionCard — détails de correction', () => {
+	it('\\detail{…} n’arrive pas brut : son contenu est affiché', async () => {
+		const { container } = await render(CorrectionCard, {
+			answerResult: result({
+				blanks: [{ expectedAnswer: '160', expectedAnswerLatex: '160', type: 'math' }],
+				correction: {
+					steps: [resolvedMarkdown('On multiplie \\detail{deux par huit dizaines} vite.')]
+				}
+			} as Partial<QuestionInstance>)
+		});
+		const text = container.textContent ?? '';
+		expect(text).toContain('deux par huit dizaines');
+		expect(text).not.toContain('\\detail');
+	});
+});

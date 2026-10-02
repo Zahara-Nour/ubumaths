@@ -44,6 +44,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import {
 		ChevronDown,
 		ChevronRight,
@@ -153,7 +154,8 @@
 		if (correction.feedback?.correct) {
 			parts.push(correction.feedback.correct);
 		}
-		return parts.join('\n\n');
+		// Version détaillée sans interrupteur (ADR 0017, lot 2 à venir) : jamais de marqueur brut
+		return detailedCorrection(parts.join('\n\n'));
 	});
 	const hasCorrection = $derived(correctionMarkdown.length > 0 && showCorrection);
 

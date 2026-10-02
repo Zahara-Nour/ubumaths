@@ -32,7 +32,7 @@ describe('splitCorrectionDetail — D4 sans marqueur', () => {
 describe('splitCorrectionDetail — \\detail{…} (D1, D2)', () => {
 	it('dans $…$ : retiré en concis, enveloppe retirée en détaillé', () => {
 		const r = splitCorrectionDetail('$x = 2 + 3 \\detail{= 4 + 1} = 5$');
-		expect(r.concise).toBe('$x = 2 + 3  = 5$');
+		expect(r.concise).toBe('$x = 2 + 3 = 5$');
 		expect(r.detailed).toBe('$x = 2 + 3 = 4 + 1 = 5$');
 		expect(r.hasDetails).toBe(true);
 		expect(r.errors).toEqual([]);
@@ -41,7 +41,7 @@ describe('splitCorrectionDetail — \\detail{…} (D1, D2)', () => {
 	it('accolades imbriquées respectées', () => {
 		const r = splitCorrectionDetail('$$a \\detail{= \\dfrac{1}{2} \\times {2}} = 1$$');
 		expect(r.detailed).toBe('$$a = \\dfrac{1}{2} \\times {2} = 1$$');
-		expect(r.concise).toBe('$$a  = 1$$');
+		expect(r.concise).toBe('$$a = 1$$');
 	});
 
 	it('cas réel : rangée entière d’un align sur une seule ligne', () => {
@@ -52,7 +52,7 @@ describe('splitCorrectionDetail — \\detail{…} (D1, D2)', () => {
 			'$$\\begin{align} 9 \\times a &= 10 \\times a - a \\\\ &= 90 - 9 \\\\ &= 81 \\end{align}$$'
 		);
 		expect(r.concise).toBe(
-			'$$\\begin{align} 9 \\times a &= 10 \\times a - a \\\\  &= 81 \\end{align}$$'
+			'$$\\begin{align} 9 \\times a &= 10 \\times a - a \\\\ &= 81 \\end{align}$$'
 		);
 		expect(r.errors).toEqual([]);
 	});
@@ -75,7 +75,7 @@ describe('splitCorrectionDetail — \\detail{…} (D1, D2)', () => {
 	it('\\{ et \\} échappés ne comptent pas', () => {
 		const r = splitCorrectionDetail('$S = \\detail{\\{1 ; 2\\} \\cup} \\{3\\}$');
 		expect(r.detailed).toBe('$S = \\{1 ; 2\\} \\cup \\{3\\}$');
-		expect(r.concise).toBe('$S =  \\{3\\}$');
+		expect(r.concise).toBe('$S = \\{3\\}$');
 		expect(r.errors).toEqual([]);
 	});
 
@@ -94,7 +94,7 @@ describe('splitCorrectionDetail — \\detail{…} (D1, D2)', () => {
 	it('marqueurs multiples', () => {
 		const r = splitCorrectionDetail('$a \\detail{= b} = c$ puis $d \\detail{= e} = f$');
 		expect(r.detailed).toBe('$a = b = c$ puis $d = e = f$');
-		expect(r.concise).toBe('$a  = c$ puis $d  = f$');
+		expect(r.concise).toBe('$a = c$ puis $d = f$');
 	});
 
 	it('\\details ou \\detailed ne sont pas des marqueurs', () => {
@@ -109,7 +109,7 @@ describe('splitCorrectionDetail — D3 variables {{…}} intactes', () => {
 	it('avant résolution : {{a}} dans et hors du détail', () => {
 		const r = splitCorrectionDetail('$x = {{a}} \\detail{= {{b}} + {{c}}} = {{d}}$');
 		expect(r.detailed).toBe('$x = {{a}} = {{b}} + {{c}} = {{d}}$');
-		expect(r.concise).toBe('$x = {{a}}  = {{d}}$');
+		expect(r.concise).toBe('$x = {{a}} = {{d}}$');
 		expect(r.errors).toEqual([]);
 	});
 
@@ -122,7 +122,7 @@ describe('splitCorrectionDetail — D3 variables {{…}} intactes', () => {
 	it('après résolution : même résultat avec les valeurs', () => {
 		const r = splitCorrectionDetail('$x = 4 \\detail{= 1 + 3} = 4$');
 		expect(r.detailed).toBe('$x = 4 = 1 + 3 = 4$');
-		expect(r.concise).toBe('$x = 4  = 4$');
+		expect(r.concise).toBe('$x = 4 = 4$');
 	});
 });
 
@@ -246,5 +246,75 @@ describe('splitCorrectionDetail — blocs de code', () => {
 		expect(r.concise).toBe('Donc $x = 3$.');
 		expect(splitCorrectionDetail('a [b]{.rappel} c').concise).toBe('a c');
 		expect(splitCorrectionDetail('a [b]{.rappel}').concise).toBe('a');
+	});
+});
+
+describe('splitCorrectionDetail — revue #636', () => {
+	describe('intervalles dans une formule (crochets de $…$ masqués)', () => {
+		const cases = ['$]0;1[$', '$[0;1]$', '$[0;1[$', '$]0;1]$', '$$]-\\infty;2]$$'];
+		for (const interval of cases) {
+			it(`dans un détail en ligne : ${interval}`, () => {
+				const md = `Sur [l’intervalle ${interval}]{.rappel}, f croît.`;
+				const r = splitCorrectionDetail(md);
+				expect(r.errors).toEqual([]);
+				expect(r.detailed).toBe(md);
+				expect(r.concise).toBe('Sur, f croît.');
+			});
+			it(`hors détail : ${interval}`, () => {
+				const md = `Sur ${interval}, f croît [car f' > 0]{.rappel}.`;
+				const r = splitCorrectionDetail(md);
+				expect(r.concise).toBe(`Sur ${interval}, f croît.`);
+			});
+		}
+	});
+
+	it('align entièrement en détail dans un $$ multi-lignes : formule retirée, concis vide', () => {
+		const md = ['$$', '\\begin{align}', '\\detail{a &= b \\\\ &= c}', '\\end{align}', '$$'].join(
+			'\n'
+		);
+		const r = splitCorrectionDetail(md);
+		expect(r.concise).toBe('');
+		expect(r.conciseEmpty).toBe(true);
+	});
+
+	it('formule devenue vide retirée, le reste gardé', () => {
+		const md = 'Texte.\n\n$$\n\\begin{align}\n\\detail{a &= b}\n\\end{align}\n$$\n\nFin.';
+		const r = splitCorrectionDetail(md);
+		expect(r.concise).toBe('Texte.\n\nFin.');
+	});
+
+	it('bloc de code : le ménage du concis ne le touche pas', () => {
+		const md = 'A [x]{.rappel}\n\n```\na \\\\ \\end{x}\n\n\n\nb\n```';
+		const r = splitCorrectionDetail(md);
+		expect(r.concise).toContain('```\na \\\\ \\end{x}\n\n\n\nb\n```');
+	});
+
+	it('code en ligne : ni détail en ligne ni \\detail transformés', () => {
+		const md = 'Écrire `[x]{.rappel}` et `\\detail{y}` ; puis [z]{.calcul} fin.';
+		const r = splitCorrectionDetail(md);
+		expect(r.concise).toBe('Écrire `[x]{.rappel}` et `\\detail{y}` ; puis fin.');
+		expect(r.detailed).toBe(md);
+	});
+
+	it('parenthèses vidées retirées', () => {
+		expect(splitCorrectionDetail('voir ([ici]{.rappel}) ok').concise).toBe('voir ok');
+	});
+
+	it('\\detail entre deux espaces : une seule espace reste', () => {
+		expect(splitCorrectionDetail('$A \\detail{B} C$').concise).toBe('$A C$');
+	});
+
+	it('coût linéaire : 50 000 espaces, 20 000 \\detail{ non fermés', () => {
+		const spaces = ' '.repeat(50000);
+		let start = performance.now();
+		splitCorrectionDetail(`a${spaces}b [x]{.rappel}`);
+		splitCorrectionDetail(`$a \\\\${spaces}b$ [x]{.rappel}`);
+		splitCorrectionDetail(`a${spaces}\\detail{b} c`);
+		expect(performance.now() - start).toBeLessThan(200);
+
+		start = performance.now();
+		const r = splitCorrectionDetail('\\detail{'.repeat(20000));
+		expect(performance.now() - start).toBeLessThan(200);
+		expect(r.errors.length).toBeGreaterThan(0);
 	});
 });

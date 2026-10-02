@@ -98,7 +98,8 @@
 		</div>
 	{/if}
 
-	<div id={regionId}>
+	<!-- Conteneur de requête : le rappel en marge suit la largeur de la correction -->
+	<div id={regionId} class="@container">
 		{#if displayed}
 			<MarkdownRenderer content={displayed} {showAuthoringErrors} />
 		{/if}
