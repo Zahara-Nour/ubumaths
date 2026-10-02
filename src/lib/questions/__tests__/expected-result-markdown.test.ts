@@ -206,4 +206,16 @@ describe('R1 aligné (façon TinyMath)', () => {
 		expect(md.match(/\$/g)?.length).toBe(2);
 		expect(balanceBraces(md)).toBe(md);
 	});
+
+	it("bloc aligné : la ligne solution rend aussi inerte un `&` (réponse d'élève montrée comme solution)", () => {
+		const md = alignedComparisonMarkdown(
+			'3+5',
+			'=',
+			{ index: 0, context: 'math', value: '08', status: 'unoptimal' },
+			'0&8'
+		);
+		const second = md.split('\\\\')[1] ?? '';
+		expect(second.startsWith(' &=')).toBe(true);
+		expect(second.slice(3)).not.toMatch(/(?<!\\)&/);
+	});
 });

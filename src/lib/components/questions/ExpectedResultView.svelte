@@ -113,7 +113,7 @@
 				{@render statusTag(line.relation === '≠' ? 'incorrect' : line.answer.status)}
 			</div>
 			{#if mergedSolution?.possible}
-				<p class="line-label">La réponse encadrée n'est qu'une réponse possible.</p>
+				<p class="line-label">La réponse attendue n'est qu'une réponse possible.</p>
 			{/if}
 		{:else if line.kind === 'solution' && mergedSolution}
 			<!-- Déjà rendue dans le bloc aligné de la comparaison -->

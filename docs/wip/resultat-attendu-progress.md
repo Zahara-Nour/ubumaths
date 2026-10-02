@@ -250,3 +250,14 @@ onlyBlanks` et la liste des bons choix. Repli « pas de réponse structurée » 
   R1 juste et R1 sans réponse : une ligne, inchangés.
 - Tests : `expected-result-markdown` (+3), `ExpectedResultView` (faux et R2 réécrits sur la
   structure alignée, + `&`/`\\` hostiles, + formule longue), `FlashCard-resultat-attendu` adapté.
+
+## Revue de la PR #653 (2026-10-02) — à reprendre plus tard
+
+- **Statut affiché ≠ `isCorrect`** (FlashCard interactive) : le bandeau suit le barème (`trainingStatus`), mais le
+  retournement automatique, `completeQuestion` et les statistiques suivent `validateAnswer().isCorrect`. Ex. QCM
+  incomplet : « ½ point » affiché, compté faux. Impact faible aujourd'hui (FlashCard interactive ne sert plus qu'à
+  l'aperçu et à la démo depuis la suppression du quiz de chapitre) — décision à prendre si elle redevient élève.
+- **PDF futur** : en R9, un calcul R1 donne une ligne `solution` (avec membre gauche) au lieu de `filled-statement` ;
+  gérer aussi `expected-only.possible`.
+- Tests du bloc aligné : vérifient la source LaTeX, pas le rendu (`=` sous `≠` vérifié sur captures seulement).
+- `hasRulesSufficeBlank` (`rules-suffice.ts`) n'est plus importé que par un test.

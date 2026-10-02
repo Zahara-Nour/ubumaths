@@ -171,7 +171,8 @@ export function alignedComparisonMarkdown(
 			? `${left} &\\mathrel{${colorLatex(String.raw`\neq`, 'incorrect')}} ` +
 				fillLatex({ ...answer, value, status: 'incorrect' })
 			: `${left} &= ${fillLatex({ ...answer, value })}`;
-	const second = `&= ${colorLatex(solutionLatex, 'solution', true)}`;
+	// La solution peut être la réponse de l'élève (rulesSuffice + forme) : inerte aussi
+	const second = `&= ${colorLatex(inertForAlignment(solutionLatex), 'solution', true)}`;
 	return inlineMath(
 		String.raw`\begin{aligned}` + `${first} \\\\ ${second}` + String.raw`\end{aligned}`
 	);
