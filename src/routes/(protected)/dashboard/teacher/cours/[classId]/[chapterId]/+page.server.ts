@@ -27,6 +27,20 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { placeInSection } from '$lib/server/chapter-sections';
 import {
+	findOngoingEvaluation,
+	linkSeries,
+	listAvailableSeries,
+	listChapterSeries,
+	setSeriesForm,
+	unlinkSeries,
+	type ChapterSeriesError
+} from '$lib/server/chapter-series';
+import {
+	linkSeriesSchema,
+	setSeriesFormSchema,
+	unlinkSeriesSchema
+} from '$lib/server/validation/chapter-series';
+import {
 	targetSectionFieldSchema,
 	type SectionContentKind
 } from '$lib/server/validation/chapter-sections';
@@ -285,6 +299,19 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les données');
 	}
 
+	// Les séries du chapitre (toutes : préparées, programmées, publiées) et les
+	// séries enregistrées du professeur, pour le sélecteur de rattachement.
+	const [chapterSeriesResult, availableSeriesResult] = await Promise.all([
+		listChapterSeries(chapterId, locals.supabase),
+		listAvailableSeries(user.id, locals.supabase)
+	]);
+
+	// Une panne ne doit pas se lire « aucune série » : le professeur en
+	// rattacherait une seconde fois.
+	if (chapterSeriesResult.error || availableSeriesResult.error) {
+		throw error(500, 'Impossible de charger les séries');
+	}
+
 	// Get available exercises for linking
 	const { data: availableExercises, error: availableExercisesError } = await locals.supabase
 		.from('exercises')
@@ -380,11 +407,34 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		worksheets,
 		distributedWorksheetIds,
 		availableWorksheets: availableWorksheets || [],
+		chapterSeries: chapterSeriesResult.data ?? [],
+		availableSeries: availableSeriesResult.data ?? [],
 		checklistProgress: checklistProgress || [],
 		students: studentList,
 		templateInstantiation
 	};
 };
+
+/** Q129 (b) : le texte exact de l'avertissement, décidé par David. */
+const ONGOING_EVALUATION_WARNING =
+	'Cette série est aussi celle d’une évaluation en cours : tes élèves pourront s’entraîner dessus avant.';
+
+/**
+ * Le code HTTP d'un échec du module des séries de chapitre : introuvable ou
+ * refusé (zéro ligne) → 404, doublon et série supprimée → 409, sinon 500.
+ */
+function seriesFailure(err: ChapterSeriesError, action: string, fallback: string) {
+	switch (err.kind) {
+		case 'not_found':
+			return fail(404, { error: 'Série introuvable', action });
+		case 'duplicate':
+			return fail(409, { error: 'Cette série est déjà dans le chapitre', action });
+		case 'series_gone':
+			return fail(409, { error: 'Cette série n’existe plus.', action });
+		default:
+			return fail(500, { error: fallback, action });
+	}
+}
 
 /**
  * Range la ressource qui vient d'être créée dans la section demandée.
@@ -746,6 +796,112 @@ export const actions: Actions = {
 			locals.supabase,
 			'linkWorksheet'
 		);
+	},
+
+	// ============ SÉRIES DU CHAPITRE ============
+
+	/**
+	 * Rattacher une série enregistrée (S1), dans la forme choisie (Q124 a).
+	 * Le rattachement naît préparé : rien n'est visible avant la publication.
+	 */
+	linkSeries: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const chapterIdCheck = uuidSchema.safeParse(params.chapterId);
+		if (!chapterIdCheck.success) {
+			return fail(400, { error: 'Chapitre invalide', action: 'linkSeries' });
+		}
+		const chapterId = chapterIdCheck.data;
+
+		const formData = await request.formData();
+		const validation = linkSeriesSchema.safeParse({
+			seriesId: formData.get('seriesId'),
+			form: formData.get('form') || undefined
+		});
+		if (!validation.success) {
+			return fail(400, { error: 'Série ou forme invalide', action: 'linkSeries' });
+		}
+
+		const { data: created, error: linkError } = await linkSeries(
+			chapterId,
+			validation.data.seriesId,
+			validation.data.form,
+			user.id,
+			locals.supabase
+		);
+
+		if (linkError) {
+			return seriesFailure(linkError, 'linkSeries', 'Erreur lors du rattachement');
+		}
+		if (!created) {
+			return fail(500, { error: 'Erreur lors du rattachement', action: 'linkSeries' });
+		}
+
+		const rangement = await rangerSiDemande(
+			chapterId,
+			formData,
+			'series',
+			created.id,
+			locals.supabase,
+			'linkSeries'
+		);
+
+		// Q129 (b) : le rattachement est fait ; on prévient seulement. Une panne
+		// de lecture n'invente pas d'avertissement (elle est journalisée).
+		const { data: ongoing } = await findOngoingEvaluation(
+			validation.data.seriesId,
+			locals.supabase
+		);
+		return ongoing ? { ...rangement, warning: ONGOING_EVALUATION_WARNING } : rangement;
+	},
+
+	/** Changer la forme de lancement : flash-cards ou entraînement. */
+	setSeriesForm: async ({ request, locals, params }) => {
+		await requireRole(locals, 'teacher');
+		const chapterIdCheck = uuidSchema.safeParse(params.chapterId);
+		const formData = await request.formData();
+		const validation = setSeriesFormSchema.safeParse({
+			chapterSeriesId: formData.get('chapterSeriesId'),
+			form: formData.get('form')
+		});
+		if (!chapterIdCheck.success || !validation.success) {
+			return fail(400, { error: 'Série ou forme invalide', action: 'setSeriesForm' });
+		}
+
+		const { error: formError } = await setSeriesForm(
+			chapterIdCheck.data,
+			validation.data.chapterSeriesId,
+			validation.data.form,
+			locals.supabase
+		);
+		if (formError) {
+			return seriesFailure(formError, 'setSeriesForm', 'Impossible de changer la forme');
+		}
+
+		return { success: true, action: 'setSeriesForm' };
+	},
+
+	/** Retirer la série du chapitre (S4) : la série elle-même reste. */
+	unlinkSeries: async ({ request, locals, params }) => {
+		await requireRole(locals, 'teacher');
+		const chapterIdCheck = uuidSchema.safeParse(params.chapterId);
+		const formData = await request.formData();
+		const validation = unlinkSeriesSchema.safeParse({
+			chapterSeriesId: formData.get('chapterSeriesId')
+		});
+		if (!chapterIdCheck.success || !validation.success) {
+			return fail(400, { error: 'Série invalide', action: 'unlinkSeries' });
+		}
+
+		const { error: unlinkError } = await unlinkSeries(
+			chapterIdCheck.data,
+			validation.data.chapterSeriesId,
+			locals.supabase
+		);
+		if (unlinkError) {
+			return seriesFailure(unlinkError, 'unlinkSeries', 'Erreur lors du retrait');
+		}
+
+		return { success: true, action: 'unlinkSeries' };
 	},
 
 	/**

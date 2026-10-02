@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, `Validation échouée : ${message}`);
 	}
 
-	const { error: assignError } = await assignToSection(
+	const { error: assignError, notFound } = await assignToSection(
 		chapterId,
 		validation.data.sectionId,
 		validation.data.items,
@@ -49,6 +49,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// La clé composite refuse une section d'un AUTRE chapitre (23503). C'est une
 	// demande incohérente du client, pas une panne du serveur.
 	if (assignError) {
+		// Zéro ligne rangée : la ressource n'est pas (ou plus) dans ce chapitre,
+		// ou la RLS la refuse. Pas une panne du serveur.
+		if (notFound) {
+			throw error(404, 'Ressource introuvable dans ce chapitre');
+		}
 		if (assignError.message.includes('23503') || /foreign key/i.test(assignError.message)) {
 			throw error(400, 'Cette section n’appartient pas à ce chapitre');
 		}

@@ -201,3 +201,53 @@ describe('buildChapterPlan', () => {
 		expect(buildChapterPlan(entree({ sections: [section('a', 'Préparation', 1)] }))).toEqual([]);
 	});
 });
+
+describe('buildChapterPlan — séries de chapitre', () => {
+	function serie(id: string, sectionId: string | null, sectionOrder: number) {
+		return {
+			id,
+			chapterId: 'chap',
+			seriesId: `serie-${id}`,
+			form: 'flash' as const,
+			displayOrder: 0,
+			sectionId,
+			sectionOrder,
+			createdAt: '2026-10-02T00:00:00Z',
+			publishedAt: '2026-10-02T00:00:00Z',
+			title: `Série ${id}`,
+			questionCount: 3,
+			launchHref: '/automaths/test?mode=flash'
+		};
+	}
+
+	it('range la série dans sa section, à son rang parmi les autres types', () => {
+		const plan = buildChapterPlan(
+			entree({
+				sections: [section('s1', 'Méthodes', 1)],
+				documents: [document('d1', 's1', 0), document('d2', 's1', 2)],
+				series: [serie('c1', 's1', 1)]
+			})
+		);
+
+		expect(plan).toHaveLength(1);
+		expect(plan[0].items.map((i) => i.kind)).toEqual(['document', 'series', 'document']);
+		const item = plan[0].items[1];
+		expect(item.kind === 'series' && item.series.id).toBe('c1');
+	});
+
+	it('une série non rangée tombe en « Non classé »', () => {
+		const plan = buildChapterPlan(entree({ series: [serie('c1', null, 0)] }));
+		expect(plan).toEqual([
+			{
+				id: UNASSIGNED_SECTION_ID,
+				title: null,
+				items: [{ kind: 'series', series: serie('c1', null, 0) }]
+			}
+		]);
+	});
+
+	it('sans série (champ absent), le plan est inchangé', () => {
+		const plan = buildChapterPlan(entree({ sections: [section('s1', 'Méthodes', 1)] }));
+		expect(plan).toEqual([]);
+	});
+});

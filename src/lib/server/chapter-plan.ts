@@ -23,7 +23,8 @@ import type {
 	ChapterSection,
 	ChapterDocument,
 	ChapterExercise,
-	ChapterChecklistItem
+	ChapterChecklistItem,
+	ChapterSeries
 } from '$lib/types/chapters';
 
 export type ChecklistItemWithProgress = ChapterChecklistItem & {
@@ -47,7 +48,8 @@ export type PlanItem =
 	| { kind: 'document'; document: ChapterDocument }
 	| { kind: 'exercise'; exerciseId: string; title: string }
 	| { kind: 'worksheet'; worksheet: StudentWorksheet }
-	| { kind: 'checklist'; items: ChecklistItemWithProgress[] };
+	| { kind: 'checklist'; items: ChecklistItemWithProgress[] }
+	| { kind: 'series'; series: ChapterSeries };
 
 export type PlanSection = {
 	id: string;
@@ -82,6 +84,8 @@ export type BuildPlanInput = {
 	exerciseTitles: Record<string, { title: string }>;
 	/** Rangement des fiches, par `worksheet_id`. */
 	worksheetPlacements: Record<string, WorksheetPlacement>;
+	/** Séries du chapitre, déjà filtrées par la RLS (publiées, chapitre visible). */
+	series?: ChapterSeries[];
 };
 
 /**
@@ -94,6 +98,7 @@ export type BuildPlanInput = {
 export function buildChapterPlan(input: BuildPlanInput): PlanSection[] {
 	const places: Place<PlanItem>[] = [
 		...place(input.documents, (d) => ({ kind: 'document', document: d })),
+		...place(input.series ?? [], (cs) => ({ kind: 'series', series: cs })),
 		...place(input.exercises, (e) => ({
 			kind: 'exercise',
 			exerciseId: e.exerciseId,

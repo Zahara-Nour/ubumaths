@@ -18,7 +18,12 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ChapterProgressIndicator, DocumentCard, ChecklistSection } from '$lib/components/cours';
+	import {
+		ChapterProgressIndicator,
+		ChapterSeriesCard,
+		DocumentCard,
+		ChecklistSection
+	} from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
 	import { ArrowLeft, BookMarked } from '@lucide/svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
@@ -129,6 +134,8 @@
 							<WorksheetCard worksheet={item.worksheet} />
 						{:else if item.kind === 'checklist'}
 							<ChecklistSection items={item.items} progress={data.chapter.progress} />
+						{:else if item.kind === 'series'}
+							<ChapterSeriesCard series={item.series} />
 						{/if}
 					{/each}
 				</section>

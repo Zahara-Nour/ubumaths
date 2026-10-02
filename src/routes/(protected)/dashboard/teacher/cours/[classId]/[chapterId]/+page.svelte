@@ -23,6 +23,7 @@
 
 	import { applyAction, enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -54,6 +55,7 @@
 	// Dialog states
 	let showLinkExerciseDialog = $state(false);
 	let showLinkWorksheetDialog = $state(false);
+	let showLinkSeriesDialog = $state(false);
 	let showCreateTemplateDialog = $state(false);
 	let showChecklistDialog = $state(false);
 	let showDocumentDialog = $state(false);
@@ -76,6 +78,9 @@
 	// Form states
 	let selectedExerciseId = $state('');
 	let selectedWorksheetId = $state('');
+	let selectedSeriesId = $state('');
+	/** Q124 (a) : flash-cards par défaut. */
+	let selectedSeriesForm = $state('flash');
 	let isSubmitting = $state(false);
 
 	/** Titre du futur modèle, pré-rempli avec celui du chapitre. */
@@ -102,7 +107,11 @@
 		} else if (kind === 'worksheet') {
 			selectedWorksheetId = '';
 			showLinkWorksheetDialog = true;
-		} else {
+		} else if (kind === 'series') {
+			selectedSeriesId = '';
+			selectedSeriesForm = 'flash';
+			showLinkSeriesDialog = true;
+		} else if (kind === 'document') {
 			showDocumentDialog = true;
 		}
 	}
@@ -131,6 +140,10 @@
 	/**
 	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
 	 * publier un modèle vide, autant ne pas le laisser créer.
+	 *
+	 * ⚠️ Les séries n'y comptent PAS (Q128) : un modèle ne les emporte pas, donc
+	 * un chapitre qui n'a que des séries donnerait un modèle vide — même règle
+	 * que `hasContent(snapshot)` de `chapter-templates.ts`.
 	 */
 	let hasContent = $derived(documentCount + checklistCount + exerciseCount + worksheetCount > 0);
 
@@ -157,6 +170,21 @@
 			}))
 	]);
 
+	let seriesItems = $derived([
+		{ value: '', label: 'Choisir une série...' },
+		...data.availableSeries
+			.filter((s) => !data.chapterSeries.some((cs) => cs.seriesId === s.id))
+			.map((s) => ({
+				value: s.id,
+				label: `${s.title} — ${s.questionCount} question${s.questionCount > 1 ? 's' : ''}`
+			}))
+	]);
+
+	const seriesFormItems = [
+		{ value: 'flash', label: 'Flash-cards' },
+		{ value: 'interactive', label: 'Entraînement' }
+	];
+
 	// Handle form results
 	$effect(() => {
 		if (form?.success) {
@@ -168,6 +196,9 @@
 				unlinkExercise: `${lore.learning.exercise} retirée`,
 				linkWorksheet: 'Fiche rattachée au chapitre',
 				unlinkWorksheet: 'Fiche retirée du chapitre',
+				linkSeries: 'Série ajoutée au chapitre',
+				unlinkSeries: 'Série retirée du chapitre',
+				setSeriesForm: 'Forme de la série modifiée',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
 				deleteDocument: 'Document supprime',
 				migrateToVersion: 'Chapitre mis a jour depuis le template',
@@ -189,6 +220,11 @@
 				toaster.success(message);
 			}
 
+			// Q129 (b) : rattachée quand même, mais le professeur doit le savoir.
+			if ('warning' in form && typeof form.warning === 'string') {
+				toaster.warning(form.warning);
+			}
+
 			// Close dialogs
 			if (form.action === 'linkExercise') {
 				showLinkExerciseDialog = false;
@@ -197,6 +233,10 @@
 			if (form.action === 'linkWorksheet') {
 				showLinkWorksheetDialog = false;
 				selectedWorksheetId = '';
+			}
+			if (form.action === 'linkSeries') {
+				showLinkSeriesDialog = false;
+				selectedSeriesId = '';
 			}
 			if (form.action === 'addGoogleDriveDocument') {
 				showDocumentDialog = false;
@@ -328,6 +368,7 @@
 			exercises={data.exercises}
 			checklistItems={data.checklistItems}
 			worksheets={data.worksheets}
+			chapterSeries={data.chapterSeries}
 			exerciseDetails={data.exerciseDetails}
 			distributedWorksheetIds={data.distributedWorksheetIds}
 			onAdd={ouvrirAjout}
@@ -458,6 +499,67 @@
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !selectedWorksheetId}>
 					{isSubmitting ? 'Rattachement...' : 'Rattacher'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!--
+	Série : une série ENREGISTRÉE du professeur (S1), lancée par l'élève dans la
+	forme choisie ici (Q124 a), sans note. Le lien suit la série (Q125).
+-->
+<Dialog.Root bind:open={showLinkSeriesDialog}>
+	<Dialog.Content class="max-w-lg">
+		<Dialog.Header>
+			<Dialog.Title>Ajouter une série</Dialog.Title>
+			<Dialog.Description>
+				Les élèves la lanceront depuis le chapitre, sans note. Elle reste préparée tant que tu ne
+				l’as pas publiée, et une modification de la série se verra dans le chapitre.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/linkSeries"
+			use:enhance={() => {
+				isSubmitting = true;
+				return async ({ update }) => {
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
+			<div class="space-y-2">
+				<Label>Série</Label>
+				<MySelect type="single" bind:value={selectedSeriesId} items={seriesItems} />
+				<input type="hidden" name="seriesId" value={selectedSeriesId} />
+				{#if data.availableSeries.length === 0}
+					<p class="text-sm text-muted-foreground">Aucune série enregistrée pour l’instant.</p>
+				{/if}
+				<a
+					href={resolve('/automaths/panier')}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-sm text-primary underline-offset-4 hover:underline"
+				>
+					Composer une nouvelle série au panier
+				</a>
+			</div>
+
+			<div class="space-y-2">
+				<Label>Forme</Label>
+				<MySelect type="single" bind:value={selectedSeriesForm} items={seriesFormItems} />
+				<input type="hidden" name="form" value={selectedSeriesForm} />
+			</div>
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showLinkSeriesDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isSubmitting || !selectedSeriesId}>
+					{isSubmitting ? 'Ajout...' : 'Ajouter'}
 				</Button>
 			</Dialog.Footer>
 		</form>

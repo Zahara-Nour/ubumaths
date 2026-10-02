@@ -39,6 +39,7 @@
 		ChapterDocument,
 		ChapterExercise,
 		ChapterChecklistItem,
+		ChapterSeries,
 		ChapterWorksheet
 	} from '$lib/types/chapters';
 	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
@@ -63,7 +64,8 @@
 		FileText,
 		ListChecks,
 		BookOpen,
-		ClipboardList
+		ClipboardList,
+		Layers
 	} from '@lucide/svelte';
 	import {
 		empreinteAffichage,
@@ -83,6 +85,8 @@
 		exercises: ChapterExercise[];
 		checklistItems: ChapterChecklistItem[];
 		worksheets: WorksheetRow[];
+		/** Séries rattachées au chapitre (`chapter_series`). */
+		chapterSeries?: ChapterSeries[];
 		/** Titres des exercices, par identifiant d'exercice. */
 		exerciseDetails?: Record<string, { title: string | null }>;
 		/**
@@ -119,6 +123,7 @@
 		exercises,
 		checklistItems,
 		worksheets,
+		chapterSeries = [],
 		exerciseDetails = {},
 		distributedWorksheetIds = [],
 		onAdd,
@@ -146,6 +151,8 @@
 		distributed?: boolean;
 		/** Objectif seulement : sa précision, pour la reprise du texte. */
 		description?: string | null;
+		/** Série seulement : la forme de lancement choisie (Q124 a). */
+		seriesForm?: ChapterSeries['form'];
 	};
 
 	type SectionLocale = {
@@ -168,7 +175,9 @@
 		checklistItem: { action: '?/deleteChecklistItem', champ: 'itemId' },
 		exercise: { action: '?/unlinkExercise', champ: 'chapterExerciseId' },
 		worksheet: { action: '?/unlinkWorksheet', champ: 'chapterWorksheetId' },
-		document: { action: '?/deleteDocument', champ: 'documentId' }
+		document: { action: '?/deleteDocument', champ: 'documentId' },
+		// Retirer = détacher : la série elle-même reste (S4).
+		series: { action: '?/unlinkSeries', champ: 'chapterSeriesId' }
 	};
 
 	/** Ce que `PublicationToggle` attend : « checklistItem » s'y dit « checklist ». */
@@ -176,7 +185,17 @@
 		checklistItem: 'checklist',
 		exercise: 'exercise',
 		worksheet: 'worksheet',
-		document: 'document'
+		document: 'document',
+		series: 'series'
+	};
+
+	/** Libellé de la forme d'une série, et la forme vers laquelle le bouton bascule. */
+	const FORMES_SERIE: Record<
+		ChapterSeries['form'],
+		{ label: string; autre: ChapterSeries['form'] }
+	> = {
+		flash: { label: 'Flash-cards', autre: 'interactive' },
+		interactive: { label: 'Entraînement', autre: 'flash' }
 	};
 
 	/** Le menu « Ajouter », dans l'ordre où le professeur les cherche. */
@@ -184,7 +203,8 @@
 		{ kind: 'checklistItem' as const, label: 'Objectif', icon: ListChecks },
 		{ kind: 'exercise' as const, label: capitaliser(lore.learning.exercise), icon: BookOpen },
 		{ kind: 'worksheet' as const, label: 'Fiche', icon: ClipboardList },
-		{ kind: 'document' as const, label: 'Document', icon: FileText }
+		{ kind: 'document' as const, label: 'Document', icon: FileText },
+		{ kind: 'series' as const, label: 'Série', icon: Layers }
 	];
 
 	function capitaliser(mot: string): string {
@@ -275,6 +295,20 @@
 						openUrl: null,
 						distributed: distributedWorksheetIds.includes(w.worksheetId)
 					}
+				})),
+				...chapterSeries.map((cs) => ({
+					sectionId: cs.sectionId,
+					ordre: cs.sectionOrder,
+					ressource: {
+						id: `series:${cs.id}`,
+						kind: 'series' as const,
+						contentId: cs.id,
+						label: cs.title ?? 'Série sans titre',
+						typeLabel: 'Série',
+						publishedAt: cs.publishedAt,
+						openUrl: null,
+						seriesForm: cs.form
+					}
 				}))
 			]
 				// Tri secondaire sur le libellé : `section_order` vaut 0 par défaut,
@@ -337,7 +371,8 @@
 			exercises,
 			checklistItems,
 			worksheets,
-			distributedWorksheetIds
+			distributedWorksheetIds,
+			series: chapterSeries
 		})
 	);
 
@@ -708,6 +743,30 @@
 						>
 							<Pencil class="h-4 w-4" />
 						</Button>
+					{/if}
+
+					{#if ressource.kind === 'series' && ressource.seriesForm}
+						{@const forme = FORMES_SERIE[ressource.seriesForm]}
+						<!--
+							La forme se change d'un clic : il n'y en a que deux. Le bouton
+							affiche la forme ACTUELLE, son titre dit vers laquelle il bascule.
+						-->
+						<form method="POST" action="?/setSeriesForm" use:enhance class="shrink-0">
+							<input type="hidden" name="chapterSeriesId" value={ressource.contentId} />
+							<input type="hidden" name="form" value={forme.autre} />
+							<Button
+								type="submit"
+								variant="outline"
+								size="sm"
+								disabled={busy}
+								title="Passer en {FORMES_SERIE[forme.autre].label.toLowerCase()}"
+								aria-label="Forme de {ressource.label} : {forme.label}. Passer en {FORMES_SERIE[
+									forme.autre
+								].label.toLowerCase()}"
+							>
+								{forme.label}
+							</Button>
+						</form>
 					{/if}
 
 					{#if ressource.openUrl}

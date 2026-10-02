@@ -989,6 +989,64 @@ export type Database = {
           },
         ]
       }
+      chapter_series: {
+        Row: {
+          chapter_id: string
+          created_at: string
+          display_order: number
+          form: string
+          id: string
+          published_at: string | null
+          section_id: string | null
+          section_order: number
+          series_id: string
+        }
+        Insert: {
+          chapter_id: string
+          created_at?: string
+          display_order?: number
+          form?: string
+          id?: string
+          published_at?: string | null
+          section_id?: string | null
+          section_order?: number
+          series_id: string
+        }
+        Update: {
+          chapter_id?: string
+          created_at?: string
+          display_order?: number
+          form?: string
+          id?: string
+          published_at?: string | null
+          section_id?: string | null
+          section_order?: number
+          series_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapter_series_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "class_chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chapter_series_section_fkey"
+            columns: ["section_id", "chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_sections"
+            referencedColumns: ["id", "chapter_id"]
+          },
+          {
+            foreignKeyName: "chapter_series_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chapter_template_instantiations: {
         Row: {
           chapter_id: string

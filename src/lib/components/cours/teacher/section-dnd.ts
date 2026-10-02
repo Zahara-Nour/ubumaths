@@ -141,6 +141,8 @@ export type EmpreinteSource = {
 	}[];
 	worksheets: { id: string; title: string | null; publishedAt: string | null }[];
 	distributedWorksheetIds: string[];
+	/** Séries de chapitre : la FORME s'affiche aussi, et se change depuis le plan. */
+	series?: { id: string; title: string | null; publishedAt: string | null; form: string }[];
 };
 
 export function empreinteAffichage(source: EmpreinteSource): string {
@@ -152,6 +154,7 @@ export function empreinteAffichage(source: EmpreinteSource): string {
 			.map((x) => `${x.id}~${x.publishedAt}~${x.content}~${x.description}`)
 			.join(','),
 		source.worksheets.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
-		source.distributedWorksheetIds.join(',')
+		source.distributedWorksheetIds.join(','),
+		(source.series ?? []).map((x) => `${x.id}~${x.publishedAt}~${x.form}~${x.title}`).join(',')
 	].join('|');
 }
