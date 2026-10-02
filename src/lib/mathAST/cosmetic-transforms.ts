@@ -15,8 +15,18 @@
 
 import type { MathNode } from './types';
 import type { Rational } from './normal/types';
-import { number, opposite, multiply, divide, add, subtract, percentage } from './factory';
-import { isPercentage } from './guards';
+import {
+	number,
+	opposite,
+	multiply,
+	divide,
+	add,
+	subtract,
+	percentage,
+	variable,
+	superscript
+} from './factory';
+import { isEulerConstant, isPercentage } from './guards';
 import { areEquivalent } from './equivalence';
 import { extractRational } from './common/numeric';
 import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
@@ -808,8 +818,25 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
+/**
+ * Une seule écriture du nombre e pour comparer les formes : `\exponentialE`
+ * (MathLive) devient la lettre `e`, `\exp(u)` (notation du programme) devient
+ * `e^{u}`. Ce sont des notations, pas des formes : aucune pénalité (décision de
+ * David du 2026-10-02).
+ */
+function unifyEulerNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (isEulerConstant(node)) return variable('e');
+		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
+			return superscript(variable('e'), node.args[0]);
+		}
+		return node;
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
+		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
