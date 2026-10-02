@@ -450,14 +450,11 @@ describe('Number tokenization', () => {
 			expect(tokens[2].value).toBe('2');
 		});
 
-		it('should handle French notation in function arguments', () => {
-			// In function args, comma is separator, not decimal
-			const tokens = tokenize('sin(1,5e2, 2,3e-1)');
-			// sin ( 1.5e2 , 2.3e-1 ) - but the second comma after 1,5e2 is COMMA
-			expect(tokens[0].type).toBe('FUNC');
-			expect(tokens[2].value).toBe('1.5e2');
-			expect(tokens[3].type).toBe('COMMA');
-			expect(tokens[4].value).toBe('2.3e-1');
+		it('French comma decimal with exponent inside grouping parentheses', () => {
+			// Hors appel de fonction, la virgule entre deux chiffres reste décimale
+			const tokens = tokenize('(1,5e2+2,3e-1)');
+			expect(tokens[1].value).toBe('1.5e2');
+			expect(tokens[3].value).toBe('2.3e-1');
 		});
 
 		it('should handle zero French comma decimal with exponent', () => {
@@ -1496,5 +1493,73 @@ describe('Whitespace handling', () => {
 		const separated = tokenize('1, 2');
 		expect(getTypes(separated.slice(0, -1))).toEqual(['NUMBER', 'COMMA', 'NUMBER']);
 		expect(getValues(separated.slice(0, -1))).toEqual(['1', ',', '2']);
+	});
+});
+
+// =============================================================================
+// Virgule dans un appel de fonction : séparateur d'arguments, jamais décimale
+// =============================================================================
+
+describe('CustomTokenizer — virgule dans un appel de fonction', () => {
+	const values = (input: string) =>
+		tokenize(input)
+			.filter((t) => t.type !== 'EOF')
+			.map((t) => t.value);
+
+	it('mod(16,4) → deux arguments', () => {
+		expect(values('mod(16,4)')).toEqual(['mod', '(', '16', ',', '4', ')']);
+	});
+
+	it('gcd(12,8) → deux arguments', () => {
+		expect(values('gcd(12,8)')).toEqual(['gcd', '(', '12', ',', '8', ')']);
+	});
+
+	it('après une puissance : mod(a^2,4)', () => {
+		expect(values('mod(a^2,4)')).toEqual(['mod', '(', 'a', '^', '2', ',', '4', ')']);
+	});
+
+	it('ambiguïté max(2,5) : le séparateur l’emporte', () => {
+		expect(values('max(2,5)')).toEqual(['max', '(', '2', ',', '5', ')']);
+	});
+
+	it('appel imbriqué : la virgule après la parenthèse interne reste un séparateur', () => {
+		expect(values('mod(abs(x)+2,5)')).toEqual([
+			'mod',
+			'(',
+			'abs',
+			'(',
+			'x',
+			')',
+			'+',
+			'2',
+			',',
+			'5',
+			')'
+		]);
+	});
+
+	it('parenthèses de groupement dans un appel : décimal', () => {
+		expect(values('mod((2,5)*4,3)')).toEqual([
+			'mod',
+			'(',
+			'(',
+			'2.5',
+			')',
+			'*',
+			'4',
+			',',
+			'3',
+			')'
+		]);
+	});
+
+	it('accolades (valeur substituée) dans un appel : décimal', () => {
+		expect(values('mod({2,5},4)')).toEqual(['mod', '(', '{', '2.5', '}', ',', '4', ')']);
+	});
+
+	it('hors appel : décimal inchangé', () => {
+		expect(values('a>2,5')).toEqual(['a', '>', '2.5']);
+		expect(values('(2,5)')).toEqual(['(', '2.5', ')']);
+		expect(values('mod(17,4)+2,5')).toEqual(['mod', '(', '17', ',', '4', ')', '+', '2.5']);
 	});
 });

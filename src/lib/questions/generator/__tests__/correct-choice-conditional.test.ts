@@ -17,6 +17,7 @@ import { templateMarkdown } from '$lib/ubumark';
 import { transformQuestion } from '$lib/migration/question-transformer';
 import type { QuestionWithMigration } from '$lib/migration/old-question-types';
 import { validateAnswer } from '$lib/utils/answer-validator';
+import { resolveConditionalChoice } from '../content-resolver';
 
 function signQcm(correctChoiceIndex: string): QuestionTemplate {
 	return {
@@ -90,5 +91,20 @@ describe('#336 « Quel est le signe de ce produit ? » (TinyMath), de bout en bo
 			expect(validateAnswer([right], generated.instance).isCorrect).toBe(true);
 			expect(validateAnswer([1 - right], generated.instance).isCorrect).toBe(false);
 		}
+	});
+});
+
+describe("{{if:…}} : virgule dans un appel de fonction = séparateur d'arguments", () => {
+	it('mod(16,4)=0 désigne A, mod(17,4)=0 désigne B', () => {
+		expect(resolveConditionalChoice('{{if:mod(16,4)=0|A|B}}', [])).toBe('A');
+		expect(resolveConditionalChoice('{{if:mod(17,4)=0|A|B}}', [])).toBe('B');
+	});
+
+	it('mod(b^2-a^2,4)=0 avec a=3, b=5 désigne A', () => {
+		const vars = [
+			{ name: 'a', value: '3' },
+			{ name: 'b', value: '5' }
+		];
+		expect(resolveConditionalChoice('{{if:mod(b^2-a^2,4)=0|A|B}}', vars)).toBe('A');
 	});
 });

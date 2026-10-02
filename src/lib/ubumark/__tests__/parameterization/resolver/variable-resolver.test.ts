@@ -1487,3 +1487,25 @@ describe('resolveVariables — pourcentage dans un calcul', () => {
 		expect(() => resolveVariables([{ name: 'r', expression: '{{eval:2*y}}' }])).toThrow();
 	});
 });
+
+describe("{{eval:…}} : virgule dans un appel de fonction = séparateur d'arguments", () => {
+	it('{{eval:mod(17,4)}} → 1', () => {
+		expect(resolveExpression('{{eval:mod(17,4)}}', [])).toBe('1');
+	});
+
+	it('{{eval:gcd(12,8)}} → 4', () => {
+		expect(resolveExpression('{{eval:gcd(12,8)}}', [])).toBe('4');
+	});
+
+	it('{{eval:mod(b^2-a^2,4)}} avec a=3, b=5 → 0', () => {
+		const resolved = [
+			{ name: 'a', value: '3' },
+			{ name: 'b', value: '5' }
+		];
+		expect(resolveExpression('{{eval:mod(b^2-a^2,4)}}', resolved)).toBe('0');
+	});
+
+	it('décimal à virgule hors appel inchangé : {{eval:2,5*2}} → 5', () => {
+		expect(resolveExpression('{{eval:2,5*2}}', [])).toBe('5');
+	});
+});
