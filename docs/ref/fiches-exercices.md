@@ -179,8 +179,12 @@ Toujours vrai :
   comme un tirage) : une variation par cas.
 - **Condition** : ni `%` ni `or` (« Unexpected token », ou échec après 100 essais) ; écrire
   `mod(a,10) != 0` et `||` (relevé sur les variables aléatoires, 2026-10-02).
-- **Modificateurs combinés** : `{{eval:E;();d}}` fait échouer toute la génération (« Empty
-  parentheses not allowed ») ; écrire `\left({{eval:E;d}}\right)`.
+- **Modificateurs combinés** : `{{eval:E;();d}}` comme `{{eval:E;d;()}}` font échouer toute la
+  génération (« Empty parentheses not allowed ») ; écrire `\left({{eval:E;d}}\right)`.
+- **Pas de `sign()`** dans `eval` (« Unknown function ») : pour N entier, le signe vaut
+  `(abs(N+1)-abs(N-1))/2` (pilote un `correctChoiceIndex` de QCM).
+- **Virgule décimale en dur** dans une formule (`0,1\times`) : laissée telle quelle à côté des
+  décimaux calculés ; écrire `{{eval:1/10;d}}`.
 - **Variable calculée** utilisée sans `{{eval:…}}` : substituée telle quelle, sans parenthèses
   (`T/g` → « 11\*11-3/2 ») ; toujours passer par `{{eval:…}}`.
 - **`{{eval:sqrt(21/25)}}`** se rend `\dfrac{1}{5}\sqrt{21}` ; écrire `\dfrac{\sqrt{N}}{B}` à la main.

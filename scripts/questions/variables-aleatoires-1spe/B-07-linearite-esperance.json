@@ -1,0 +1,332 @@
+{
+	"title": "Linéarité de l'espérance",
+	"description": "Utiliser E(aX+b) = aE(X) + b pour calculer une espérance, ou pour retrouver E(X) à partir de E(aX+b)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Espérance",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une variable aléatoire $X$ a pour espérance $E(X)={{eval:m/10;d}}$. On considère la variable aléatoire $Y={{a}}X{{b;+}}$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E(Y)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-45..45"
+				},
+				{
+					"name": "a",
+					"expression": "-5..6"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["m != 0", "abs(a) >= 2", "b != 0", "a*m+10*b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*m/10+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance : pour tous réels $a$ et $b$, $E(aX+b)=aE(X)+b$.",
+					"Ici $Y={{a}}X{{b;+}}$, donc $E(Y)={{a}}E(X){{b;+}}$.",
+					"$E(Y)={{a}}\\times {{if:m<0|\\left(}}{{eval:m/10;d}}{{if:m<0|\\right)}}{{b;+}}={{eval:a*m/10;d}}{{b;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*m/10+b;d}} }$",
+					"Attention : seul $E(X)$ est multiplié par ${{a}}$ ; la constante ${{b}}$ est ajoutée telle quelle."
+				]
+			}
+		},
+		{
+			"statement": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E(X)={{eval:m/10;d}}$. Chaque glace est vendue ${{p}}$ € et les frais fixes s'élèvent à ${{c}}$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B={{p}}X-{{c}}$.\n\nCalcule le bénéfice moyen par jour, $E(B)$. Réponds par un nombre entier ou décimal exact.\n\n$E(B)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "405..1195"
+				},
+				{
+					"name": "p",
+					"expression": "2..4"
+				},
+				{
+					"name": "q",
+					"expression": "8..20"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:10*q}}"
+				}
+			],
+			"conditions": ["mod(m,10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*m/10-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance : pour tous réels $a$ et $b$, $E(aX+b)=aE(X)+b$.",
+					"Ici $B={{p}}X-{{c}}$, donc $E(B)={{p}}E(X)-{{c}}$.",
+					"$E(B)={{p}}\\times {{eval:m/10;d}}-{{c}}={{eval:p*m/10;d}}-{{c}}=\\textcolor{{{color:primary.0}}}{ {{eval:p*m/10-c;d}} }$",
+					"Sur un grand nombre de journées d'été, le marchand gagne en moyenne ${{eval:p*m/10-c;d}}$ € par jour. Les frais fixes sont payés chaque jour : on les retire une seule fois, sans les multiplier par ${{p}}$."
+				]
+			}
+		},
+		{
+			"statement": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie ${{s}}$ € pour jouer et reçoit ${{a}}$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G={{a}}X-{{s}}$.\n\nOn sait que $E(G)={{eval:a*m/10-s;d}}$. Calcule $E(X)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "5..45"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "3..10"
+				}
+			],
+			"conditions": ["a*m != 10*s"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance : pour tous réels $a$ et $b$, $E(aX+b)=aE(X)+b$.",
+					"Ici $G={{a}}X-{{s}}$, donc $E(G)={{a}}E(X)-{{s}}$.",
+					"On en déduit ${{a}}E(X)-{{s}}={{eval:a*m/10-s;d}}$, soit ${{a}}E(X)={{eval:a*m/10-s;d}}+{{s}}={{eval:a*m/10;d}}$.",
+					"$E(X)=\\dfrac{ {{eval:a*m/10;d}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{ {{eval:m/10;d}} }$",
+					"Sur un grand nombre de parties, le joueur atteint en moyenne ${{eval:m/10;d}}$ cibles par partie."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3 × 1,5 − 2 = 2,5",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["2,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 5/2 en fraction",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : constante multipliée par a (3 × 1,5 − 6 = −1,5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["-1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : constante oubliée (4,5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15",
+				"a": "3",
+				"b": "-2"
+			},
+			"answers": ["4,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −5 × (−0,4) + 7 = 9",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-4",
+				"a": "-5",
+				"b": "7"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : erreur de signe (5)",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-4",
+				"a": "-5",
+				"b": "7"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 18/2 non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-4",
+				"a": "-5",
+				"b": "7"
+			},
+			"answers": ["\\frac{18}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : 3 × 84,7 − 120 = 134,1",
+			"variationIndex": 1,
+			"variables": {
+				"m": "847",
+				"p": "3",
+				"q": "12"
+			},
+			"answers": ["134,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : frais fixes oubliés (254,1)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "847",
+				"p": "3",
+				"q": "12"
+			},
+			"answers": ["254,1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : frais fixes multipliés par 3 (−105,9)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "847",
+				"p": "3",
+				"q": "12"
+			},
+			"answers": ["-105,9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1341/10 en fraction",
+			"variationIndex": 1,
+			"variables": {
+				"m": "847",
+				"p": "3",
+				"q": "12"
+			},
+			"answers": ["\\frac{1341}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : (4,2 + 5) / 4 = 2,3",
+			"variationIndex": 2,
+			"variables": {
+				"m": "23",
+				"a": "4",
+				"s": "5"
+			},
+			"answers": ["2,3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 23/10 en fraction",
+			"variationIndex": 2,
+			"variables": {
+				"m": "23",
+				"a": "4",
+				"s": "5"
+			},
+			"answers": ["\\frac{23}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : mise retranchée au lieu d'ajoutée ((4,2 − 5)/4 = −0,2)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "23",
+				"a": "4",
+				"s": "5"
+			},
+			"answers": ["-0,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : linéarité appliquée à l'envers (4 × 4,2 − 5 = 11,8)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "23",
+				"a": "4",
+				"s": "5"
+			},
+			"answers": ["11,8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : division oubliée (9,2)",
+			"variationIndex": 2,
+			"variables": {
+				"m": "23",
+				"a": "4",
+				"s": "5"
+			},
+			"answers": ["9,2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
