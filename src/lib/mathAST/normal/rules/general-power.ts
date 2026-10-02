@@ -32,10 +32,21 @@
  * condition est donc exactement celle de l'identité, « strictement » compris :
  * `x ≥ 0` ne suffit pas (`0^a` vaut `0`, `1` ou n'existe pas selon `a`).
  *
+ * ## Bases négatives : le signe à part
+ *
+ * `(-2)^{n}` n'a pas d'écriture exponentielle réelle. Mais pour `a > 0`,
+ * `(-a)^{u} = (-1)^{u}·a^{u}` : vrai en valeur principale complexe
+ * (`Log(-a) = ln a + iπ`) comme en lecture réelle (exposant rationnel à
+ * dénominateur impair, où `(-1)^{p/q} = (-1)^{p}`), et les deux membres
+ * existent aux mêmes points. Le facteur `a^{u}` devient une exponentielle,
+ * `(-1)^{u}` reste opaque et rejoint les autres puissances de `-1`
+ * (`mergeNegativeBasePowers`). Sans ça, deux bases négatives différentes ne
+ * se rencontraient jamais : `5×(-1)^{n+1}×3^{n} ≢ -5(-3)^{n}` rendait faux
+ * (mesuré sur `main` à `112827ef4`). `(-2)^{n} ≢ 2^{n}` et
+ * `(-2)^{2n} ≢ 4^{n}` restent faux : le facteur `(-1)^{u}` les sépare.
+ *
  * ## Ce que ce module ne fait PAS, décidé
  *
- * - Les bases **négatives** : `(-2)^{n}` n'a pas d'écriture exponentielle
- *   réelle.
  * - Les exposants **rationnels** (`2^{3}`, `4^{1/2}`) : la forme normale les
  *   traite déjà exactement (`8`, `2`), les passer par `exp(3·ln 2)` ne ferait
  *   que les rendre opaques.
@@ -46,7 +57,16 @@
  * seul (ADR 0006) : `simplify(2^{x})` continue de rendre `2^x`.
  */
 
-import { add, func, multiply } from '../../factory';
+import {
+	add,
+	divide,
+	func,
+	multiply,
+	number,
+	opposite,
+	parentheses,
+	superscript
+} from '../../factory';
 import { flattenProductShallow } from '../../flatten';
 import { isDelimiter, isSuperscript } from '../../guards';
 import { mapNode } from '../../transforms';
@@ -82,6 +102,7 @@ function expandPositiveBasePowerAt(node: MathNode, ctx: GeneralPowerContext): Ma
 	// Strictement positif : `n > 0` suffit, le dénominateur d'un `Rational`
 	// normalisé est toujours positif.
 	const positiveRational = base !== null && base.n > 0n;
+	if (base !== null && base.n < 0n) return splitNegativeBasePowerAt(node, base, ctx);
 	if (!positiveRational && !(base === null && ctx.isPositiveBase?.(node.base))) return null;
 
 	// Exposant rationnel : la forme normale sait déjà faire, exactement.
@@ -91,6 +112,28 @@ function expandPositiveBasePowerAt(node: MathNode, ctx: GeneralPowerContext): Ma
 		? func('ln', [node.base])
 		: positiveProductLogarithm(node.base, ctx);
 	return func('exp', [multiply(node.superscript, logarithm, 'cross')]);
+}
+
+/**
+ * `(-a)^{u}` → `(-1)^{u}·exp(u·ln a)` pour `a > 0` rationnel différent de 1 et
+ * `u` non rationnel (cf. en-tête). `null` sinon : `(-1)^{u}` est déjà le
+ * facteur de signe seul.
+ */
+function splitNegativeBasePowerAt(
+	node: MathNode & { type: 'superscript' },
+	base: Rational,
+	ctx: GeneralPowerContext
+): MathNode | null {
+	if (base.n === -1n && base.d === 1n) return null;
+	if (ctx.rationalValue(node.superscript) !== null) return null;
+	const magnitudeNumerator = number((-base.n).toString());
+	const magnitude =
+		base.d === 1n
+			? magnitudeNumerator
+			: divide(magnitudeNumerator, number(base.d.toString()), 'fraction');
+	const sign = superscript(parentheses(opposite(number('1'))), node.superscript);
+	const exponential = func('exp', [multiply(node.superscript, func('ln', [magnitude]), 'cross')]);
+	return multiply(sign, exponential, 'cross');
 }
 
 /**

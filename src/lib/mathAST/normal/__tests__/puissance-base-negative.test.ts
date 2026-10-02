@@ -51,7 +51,13 @@ describe('une base négative : décalage entier et produit de même base', () =>
 		['(-2)^{n}\\times(-2)^{n}', '(-2)^{2n}'],
 		['\\left((-2)^{n}\\right)^{2}', '(-2)^{2n}'],
 		['(-2)^{n}\\times(-2)^{n+1}', '-2\\times(-2)^{2n}'],
-		['((-2)^{n}+1)((-2)^{n}-1)', '(-2)^{2n}-1']
+		['((-2)^{n}+1)((-2)^{n}-1)', '(-2)^{2n}-1'],
+		// Bases négatives DIFFÉRENTES : (-a)^{u} = (-1)^{u}·a^{u} (a > 0)
+		['5\\times(-1)^{n+1}\\times3^n', '-5(-3)^n'],
+		['(-3)^{n}', '(-1)^{n}\\times3^{n}'],
+		['(-2)^{n}\\times3^{n}', '(-6)^{n}'],
+		['(-2)^{n}\\times(-3)^{n}', '(-1)^{2n}\\times6^{n}'],
+		['\\left(-\\frac{1}{2}\\right)^{n}', '(-1)^{n}\\times2^{-n}']
 	])('%s ≡ %s', (a, b) => {
 		expect(eq(a, b)).toBe(true);
 	});
@@ -71,7 +77,10 @@ describe('ce qui n’est pas égal ne le devient pas', () => {
 		['(-2)^{n}\\times(-3)^{n}', '6^{n}'],
 		['(-2)^{n}\\times(-3)^{n}', '(-6)^{n}'],
 		['\\sqrt{(-2)^{2n}}', '(-2)^{n}'],
-		['\\sqrt{(-2)^{2n}}', '2^{n}']
+		['\\sqrt{(-2)^{2n}}', '2^{n}'],
+		['(-3)^{n}', '3^{n}'],
+		['5\\times(-1)^{n+1}\\times3^n', '5(-3)^n'],
+		['(-1)^{n}\\times3^{n}', '(-1)^{n+1}\\times3^{n}']
 	])('%s ≢ %s', (a, b) => {
 		expect(eq(a, b)).toBe(false);
 	});

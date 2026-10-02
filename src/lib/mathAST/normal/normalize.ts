@@ -2125,7 +2125,10 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 		normalizeArgument: (argument) => normalize(argument, arcDecompositionContext(ctx)),
 		abortChecker: ctx?.abortChecker
 	});
-	const form = promoteEulerPowers(mergeNegativeBasePowers(normalize(withArcs, ctx), ctx));
+	const form = canonicalizeDenominatorExponentials(
+		promoteEulerPowers(mergeNegativeBasePowers(normalize(withArcs, ctx), ctx)),
+		ctx
+	);
 	return reducePythagorasInNormalForm(form, ctx);
 }
 
@@ -2168,6 +2171,105 @@ function promoteEulerPowersInPolynomial(polynomial: readonly NormalTerm[]): Norm
 		return { coefficient: term.coefficient, monomial: sortSymbolicFactors(monomial) };
 	});
 	return changed ? collectLikeTerms(terms) : null;
+}
+
+// =============================================================================
+// Exponentielles d'un dénominateur somme (chemin de l'équivalence seul)
+// =============================================================================
+
+/**
+ * Au-delà, on ne cherche pas de représentant : le choix coûte une
+ * normalisation par paire de termes.
+ */
+const DENOMINATOR_EXP_SHIFT_MAX_TERMS = 8;
+
+/**
+ * Ramène une fraction dont le dénominateur est une SOMME portant des
+ * exponentielles à un représentant canonique, en multipliant haut et bas par
+ * une même exponentielle `exp(-s)`.
+ *
+ * `combineExpAcrossFraction` ne traite qu'un dénominateur monôme. Or
+ * `(x+1)e^{x}` est développé en `x·exp(x)+exp(x)`, et
+ * `\frac{1}{(x+1)e^{x}} ≢ \frac{e^{-x}}{x+1}` rendait faux (mesuré sur `main`
+ * à `112827ef4`) ; de même `\frac{1}{e^{x}+1} ≢ \frac{e^{-x}}{1+e^{-x}}`.
+ *
+ * Le geste est sûr : une exponentielle ne s'annule jamais, multiplier haut et
+ * bas par elle ne change ni la valeur ni le domaine.
+ *
+ * Le choix de `s` est canonique : chaque terme du dénominateur porte un
+ * argument exponentiel `aᵢ` (`0` sans exponentielle) ; parmi les candidats
+ * `s ∈ {aᵢ}`, on garde celui qui rend la liste triée des empreintes de
+ * `aᵢ − s` la plus petite. Deux dénominateurs qui ne diffèrent que d'un
+ * facteur `exp(t)` ont des arguments translatés de `t` : ils tombent sur le
+ * même représentant.
+ *
+ * Ici seulement (ADR 0006) : la forme affichée garde l'écriture de l'élève.
+ */
+function canonicalizeDenominatorExponentials(
+	form: NormalForm,
+	ctx: NormalizeContext | undefined
+): NormalForm {
+	const denominator = form.denominator;
+	if (denominator.length < 2 || denominator.length > DENOMINATOR_EXP_SHIFT_MAX_TERMS) return form;
+	if (!denominator.some((term) => hasRealExpFactor(term.monomial))) return form;
+
+	const zero: MathNode = number('0');
+	const exponents = denominator.map((term) => termExpArgument(term) ?? zero);
+	const argumentContext = arcDecompositionContext(ctx);
+
+	try {
+		let best: { shift: MathNode; key: string } | null = null;
+		const seen = new Set<string>();
+		for (const shift of exponents) {
+			const shiftHash = hashNormalForm(normalize(shift, argumentContext));
+			if (seen.has(shiftHash)) continue;
+			seen.add(shiftHash);
+			const key = exponents
+				.map((exponent) =>
+					hashNormalForm(
+						normalize(
+							{ type: 'addition', left: exponent, right: { type: 'opposite', operand: shift } },
+							argumentContext
+						)
+					)
+				)
+				.sort()
+				.join('|');
+			if (best === null || key < best.key) best = { shift, key };
+		}
+		if (best === null) return form;
+
+		const negatedShift = normalize({ type: 'opposite', operand: best.shift }, argumentContext);
+		if (isZeroNormalForm(negatedShift)) return form;
+		const factor = symbolicFactor(expNodeFor(denormalize(negatedShift)), ONE);
+		const multiplyByFactor = (polynomial: readonly NormalTerm[]): NormalTerm[] =>
+			collectLikeTerms(
+				polynomial.map((term) => ({
+					coefficient: term.coefficient,
+					monomial: sortSymbolicFactors(combineExpInMonomial([...term.monomial, factor]))
+				}))
+			);
+		return normalFormFromFraction(multiplyByFactor(form.numerator), multiplyByFactor(denominator));
+	} catch (error) {
+		if (error instanceof AbortError) throw error;
+		return form;
+	}
+}
+
+/**
+ * L'argument exponentiel total d'un terme (`exp(a)²·e` → `2a+1`), ou `null`
+ * s'il n'en porte pas. La constante d'Euler ne compte que s'il y a une vraie
+ * exponentielle dans le terme, comme dans `combineExpInMonomial`.
+ */
+function termExpArgument(term: NormalTerm): MathNode | null {
+	if (!hasRealExpFactor(term.monomial)) return null;
+	let sum: MathNode | null = null;
+	for (const factor of term.monomial) {
+		if (!isExpLikeBase(factor.base)) continue;
+		const scaled = scaleNodeByRational(getExpLikeArg(factor.base), factor.exponent);
+		sum = sum === null ? scaled : { type: 'addition', left: sum, right: scaled };
+	}
+	return sum;
 }
 
 // =============================================================================
