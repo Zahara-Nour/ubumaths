@@ -116,29 +116,24 @@ export function parseEvalExpressionWithModifiers(token: string): ParsedEvalExpre
 		return { expression: '', modifiers: {} };
 	}
 
-	// Split by ; to separate expression from modifiers
-	const lastSemicolonIndex = inner.lastIndexOf(';');
-
-	if (lastSemicolonIndex === -1) {
-		// No semicolon - no modifiers
-		return { expression: inner, modifiers: {} };
+	// Les modificateurs suivent le dernier `;`. Un auteur les enchaîne aussi en plusieurs `;`
+	// (`;();d`, `;d;()`) : on détache les segments de modificateurs un à un, depuis la fin,
+	// sinon `E;()` partait au calcul (« Empty parentheses not allowed »).
+	let expression = inner;
+	let modifiers: EvalModifiers = {};
+	for (;;) {
+		const lastSemicolonIndex = expression.lastIndexOf(';');
+		if (lastSemicolonIndex === -1) break;
+		const potentialModifiers = expression.slice(lastSemicolonIndex + 1);
+		if (potentialModifiers.length === 0 || !isValidModifierString(potentialModifiers)) break;
+		const segment = parseModifiers(potentialModifiers);
+		// Seulement si quelque chose a été lu : sinon c'est la fin de l'expression
+		if (Object.keys(segment).length === 0) break;
+		modifiers = { ...segment, ...modifiers };
+		expression = expression.slice(0, lastSemicolonIndex);
 	}
 
-	const potentialModifiers = inner.slice(lastSemicolonIndex + 1);
-
-	// Check if it looks like valid modifiers
-	if (potentialModifiers.length > 0 && isValidModifierString(potentialModifiers)) {
-		const expression = inner.slice(0, lastSemicolonIndex);
-		const modifiers = parseModifiers(potentialModifiers);
-
-		// Only treat as modifiers if we actually parsed something
-		if (Object.keys(modifiers).length > 0) {
-			return { expression, modifiers };
-		}
-	}
-
-	// Not valid modifiers - treat whole thing as expression
-	return { expression: inner, modifiers: {} };
+	return { expression, modifiers };
 }
 
 /**

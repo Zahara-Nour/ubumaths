@@ -367,6 +367,12 @@ function evaluateFunctionToRational(
 			const absArg = rationalArgs[0];
 			return absArg.n < 0n ? { n: -absArg.n, d: absArg.d } : absArg;
 		}
+		case 'sign': {
+			// Signe exact (−1, 0 ou 1), lu sur le rationnel : jamais d'écart flottant autour de 0
+			if (numArgs.length !== 1) throw new Error('sign requires exactly 1 argument');
+			const signArg = rationalArgs[0];
+			return fromInteger(signArg.n > 0n ? 1n : signArg.n < 0n ? -1n : 0n);
+		}
 		case 'floor':
 			if (numArgs.length !== 1) throw new Error('floor requires exactly 1 argument');
 			result = Math.floor(numArgs[0]);
@@ -688,6 +694,7 @@ const KNOWN_FUNCTIONS = new Set([
 	'sqrt',
 	'cbrt',
 	'abs',
+	'sign',
 	'floor',
 	'ceil',
 	'round',
@@ -812,7 +819,7 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 // =============================================================================
 
 /**
- * Réduit `min`, `max`, `gcd` et `mod` quand leurs arguments se calculent.
+ * Réduit `min`, `max`, `gcd`, `mod` et `sign` quand leurs arguments se calculent.
  *
  * Sans cela, le mode exact rendait `\min(12, 18)` au lieu de 12. `min`/`max`
  * gardent l'argument choisi sous sa forme exacte (`\dfrac{2}{9}`, `\sqrt{3}`) ;
@@ -824,7 +831,7 @@ function reduceMultiArgFunctions(node: MathNode): MathNode {
 		if (!isFunction(n)) return n;
 		const funcName = n.name.toLowerCase();
 
-		if (funcName === 'gcd' || funcName === 'mod') {
+		if (funcName === 'gcd' || funcName === 'mod' || funcName === 'sign') {
 			try {
 				const result = evaluateToRational(n);
 				if (result.d !== 1n) return n;

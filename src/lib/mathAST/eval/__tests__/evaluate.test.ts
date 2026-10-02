@@ -3286,6 +3286,23 @@ describe('gcd and mod functions', () => {
 	});
 });
 
+describe('sign', () => {
+	it.each([
+		['sign(-3)', -1],
+		['sign(0)', 0],
+		['sign(7/2)', 1],
+		['sign(sqrt(2)-2)', -1]
+	])('%s = %d (mode décimal)', (input, expected) => {
+		const result = evaluate(parseCustom(input), { mode: 'decimal' });
+		expect(isEvalValue(result) && result.value).toBe(expected);
+	});
+
+	it('sign(-5) se réduit en mode exact', () => {
+		const result = evaluate(parseCustom('sign(-5)'), { mode: 'exact' });
+		expect(isEvalValue(result) && isMathNode(result.value) && toLatex(result.value)).toBe('-1');
+	});
+});
+
 // =============================================================================
 // Mode exact : min, max, gcd, mod réduits (sinon `\min(12, 18)` au lieu de 12)
 // =============================================================================

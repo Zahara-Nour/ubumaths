@@ -23,7 +23,7 @@ import { substitute } from '$lib/mathAST/eval/substitute';
 import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isEvalValue } from '$lib/mathAST/eval/types';
 import { isRelation, isLogical, isLogicalNot, isBoolean, isDelimiter } from '$lib/mathAST/guards';
-import { braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { BARE_PI, braceWrap } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 
 /**
  * Build EvalBindings from resolved variables.
@@ -83,6 +83,137 @@ function normalizeConditionOperators(condition: string): string {
 		.replace(/≠/g, '!=');
 }
 
+/** Mots logiques écrits à la manière de Python (`and`, `or`, `not`), en minuscules ou en majuscules */
+const AND_WORD = /\b(?:and|AND)\b/g;
+const OR_WORD = /\b(?:or|OR)\b/g;
+const NOT_WORD = /\b(?:not|NOT)\b/g;
+
+/**
+ * Fin de l'opérande qui commence en `start` : on avance jusqu'au premier `&&`, `||`, `,`
+ * ou fermant non apparié, hors parenthèses et accolades.
+ */
+function operandEnd(text: string, start: number): number {
+	let depth = 0;
+	for (let k = start; k < text.length; k++) {
+		const c = text[k];
+		if (c === '(' || c === '{') depth++;
+		else if (c === ')' || c === '}') {
+			if (depth === 0) return k;
+			depth--;
+		} else if (depth === 0) {
+			const pair = text.slice(k, k + 2);
+			if (pair === '&&' || pair === '||' || c === ',') return k;
+		}
+	}
+	return text.length;
+}
+
+/**
+ * `and` → `&&`, `or` → `||`, `not X` → `!(X)`. Le `not` porte sur toute la comparaison qui
+ * suit (`not a = 1` = `!(a = 1)`, comme en Python) : le `!` du parseur, lui, se colle au
+ * seul opérande (`!a = 1` se lirait `(!a) = 1`). Sans cette lecture, `or` était lu comme le
+ * produit o×r : la condition valait faux sans erreur, et le tirage échouait après 100 essais.
+ */
+function normalizeLogicalWords(condition: string): string {
+	let result = condition.replace(AND_WORD, '&&').replace(OR_WORD, '||');
+	// Le dernier `not` d'abord : un `not` englobant enveloppe alors un `!(…)` déjà écrit
+	const nots = [...result.matchAll(NOT_WORD)].map((m) => m.index);
+	for (let n = nots.length - 1; n >= 0; n--) {
+		const at = nots[n];
+		const end = operandEnd(result, at + 3);
+		const operand = result.slice(at + 3, end).trim();
+		if (operand === '') {
+			throw new ConditionSyntaxError(`Condition '${condition}' : « not » sans opérande`);
+		}
+		result = `${result.slice(0, at)}!(${operand})${result.slice(end)}`;
+	}
+	return result;
+}
+
+/** Caractères qui arrêtent l'opérande gauche d'un `%` : opérateur additif, comparaison, logique */
+const MODULO_LEFT_STOP = new Set(['+', '-', '=', '<', '>', '!', '&', '|', ',']);
+
+/** Début de l'opérande gauche d'un `%` situé en `at` : le produit qui le précède (`2*a % 4`) */
+function moduloLeftStart(text: string, at: number): number {
+	let depth = 0;
+	for (let k = at - 1; k >= 0; k--) {
+		const c = text[k];
+		if (c === ')' || c === '}') depth++;
+		else if (c === '(' || c === '{') {
+			if (depth === 0) return k + 1;
+			depth--;
+		} else if (depth === 0 && MODULO_LEFT_STOP.has(c)) return k + 1;
+	}
+	return 0;
+}
+
+/** Fin d'un groupe ouvert en `open` (parenthèse ou accolade), fermant compris */
+function groupEnd(text: string, open: number): number {
+	let depth = 0;
+	for (let k = open; k < text.length; k++) {
+		if (text[k] === '(' || text[k] === '{') depth++;
+		else if (text[k] === ')' || text[k] === '}') {
+			depth--;
+			if (depth === 0) return k + 1;
+		}
+	}
+	return text.length;
+}
+
+/**
+ * Fin de l'opérande droit d'un `%` qui commence en `start` : un seul facteur (nombre, nom,
+ * appel de fonction, groupe), éventuellement élevé à une puissance. `a % b * c` se lit
+ * `mod(a, b) * c`, comme dans un langage de programmation.
+ */
+function moduloRightEnd(text: string, start: number): number {
+	let k = start;
+	while (text[k] === ' ') k++;
+	if (text[k] === '-') k++;
+	if (text[k] === '(' || text[k] === '{') {
+		k = groupEnd(text, k);
+	} else {
+		while (k < text.length && /[\w.\\]/.test(text[k])) k++;
+		if (text[k] === '(') k = groupEnd(text, k);
+	}
+	if (text[k] === '^') return moduloRightEnd(text, k + 1);
+	return k;
+}
+
+/**
+ * `a % 10` → `mod(a, 10)` : le reste, comme dans un langage de programmation. Le parseur lit
+ * `%` comme un pourcentage (`a %` = a/100), d'où « Unexpected token » sur `a % 10 != 0`.
+ * L'opérande gauche est le produit qui précède (`2*a % 4` = `mod(2*a, 4)`).
+ */
+function normalizeModulo(condition: string): string {
+	let result = condition;
+	let at = result.indexOf('%');
+	while (at !== -1) {
+		const leftStart = moduloLeftStart(result, at);
+		const rightEnd = moduloRightEnd(result, at + 1);
+		const left = result.slice(leftStart, at).trim();
+		const right = result.slice(at + 1, rightEnd).trim();
+		if (left === '' || right === '') {
+			throw new ConditionSyntaxError(
+				`Condition '${condition}' : « % » attend deux opérandes (a % 10, soit mod(a, 10))`
+			);
+		}
+		result = `${result.slice(0, leftStart)}mod(${left}, ${right})${result.slice(rightEnd)}`;
+		at = result.indexOf('%');
+	}
+	return result;
+}
+
+/**
+ * Écriture d'auteur → notation du parseur : opérateurs (`==`, `<>`), mots logiques, `%`,
+ * et `pi` = π comme dans `{{eval:…}}` (sinon `pi` se lisait p×i et `cos(pi/6) >= 0.1`
+ * valait faux sans erreur).
+ */
+function normalizeCondition(condition: string): string {
+	return normalizeModulo(
+		normalizeLogicalWords(normalizeConditionOperators(condition)).replace(BARE_PI, '\\pi')
+	);
+}
+
 /** Tolerance for floating-point comparisons */
 const EPSILON = 1e-10;
 
@@ -137,6 +268,12 @@ function evaluateBooleanNode(node: MathNode): boolean | undefined {
 	}
 
 	if (isRelation(node)) {
+		// `!a = 1` se lit `(!a) = 1` : jamais l'intention de l'auteur, et toujours « faux »
+		if (isLogicalNot(node.left) || isLogicalNot(node.right)) {
+			throw new ConditionSyntaxError(
+				'Négation collée à un opérande : écrire !(a = 1), ou not a = 1, au lieu de !a = 1'
+			);
+		}
 		return evaluateRelationNumeric(node);
 	}
 
@@ -176,7 +313,7 @@ function evaluateSingleCondition(condition: string, bindings: EvalBindings): boo
 	// 1. Parse the condition string into a MathAST node
 	let ast: MathNode;
 	try {
-		ast = parseCustom(normalizeConditionOperators(condition));
+		ast = parseCustom(normalizeCondition(condition));
 	} catch (e) {
 		throw new ConditionSyntaxError(
 			`Condition '${condition}' could not be parsed: ${e instanceof Error ? e.message : String(e)}`
