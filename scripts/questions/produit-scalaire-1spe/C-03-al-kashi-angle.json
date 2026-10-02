@@ -19,15 +19,15 @@
 			"variables": [
 				{
 					"name": "m",
-					"expression": "2..5"
+					"expression": "2..7"
 				},
 				{
 					"name": "n",
-					"expression": "1..4"
+					"expression": "1..6"
 				},
 				{
 					"name": "k",
-					"expression": "1..2"
+					"expression": "1..4"
 				},
 				{
 					"name": "a0",
@@ -74,7 +74,16 @@
 					"expression": "{{eval:round(2*b*c*cos(al*pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
 				}
 			],
-			"conditions": ["n < m", "m != 2*n", "b <= 2.2*c", "c <= 2.2*b", "a <= 24", "Hb >= 70"],
+			"conditions": [
+				"n < m",
+				"m != 2*n",
+				"b <= 2.2*c",
+				"c <= 2.2*b",
+				"a <= 32",
+				"b <= 32",
+				"c <= 32",
+				"Hb >= 70"
+			],
 			"blanks": [
 				{
 					"expectedAnswer": "\\frac{1}{2}"
@@ -96,15 +105,15 @@
 			"variables": [
 				{
 					"name": "m",
-					"expression": "2..5"
+					"expression": "2..6"
 				},
 				{
 					"name": "n",
-					"expression": "1..4"
+					"expression": "1..5"
 				},
 				{
 					"name": "k",
-					"expression": "1..2"
+					"expression": "1..5"
 				},
 				{
 					"name": "a0",
@@ -151,7 +160,7 @@
 					"expression": "{{eval:round(2*b*c*cos(al*pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
 				}
 			],
-			"conditions": ["n < m", "m != 2*n", "b <= 2.2*c", "c <= 2.2*b", "a <= 24", "Hb >= 70"],
+			"conditions": ["n < m", "b <= 2.2*c", "c <= 2.2*b", "a <= 35", "Hb >= 70"],
 			"blanks": [
 				{
 					"expectedAnswer": "-\\frac{1}{2}"

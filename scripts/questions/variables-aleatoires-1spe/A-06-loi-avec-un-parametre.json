@@ -17,13 +17,34 @@
 		{
 			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous, où $p$ est un nombre réel.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | $p$ | ${{b}}p$ | ${{c}}p$ | ${{d}}p$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$p=?$\n\n$P(X={{eval:u+s+t+w}})=?$",
 			"variables": [
-				{ "name": "u", "expression": "-4..1" },
-				{ "name": "s", "expression": "1..3" },
-				{ "name": "t", "expression": "1..3" },
-				{ "name": "w", "expression": "1..3" },
-				{ "name": "b", "expression": "2..6" },
-				{ "name": "c", "expression": "2..6" },
-				{ "name": "d", "expression": "2..6" }
+				{
+					"name": "u",
+					"expression": "-4..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..6"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				}
 			],
 			"conditions": ["b != c", "c != d", "b != d"],
 			"blanks": [
@@ -45,13 +66,34 @@
 		{
 			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée dans le tableau ci-dessous, où $p$ est un nombre réel.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:c/10;d}}$ | $p$ | ${{b}}p$ | ${{d}}p$ |\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$p=?$",
 			"variables": [
-				{ "name": "u", "expression": "-4..1" },
-				{ "name": "s", "expression": "1..3" },
-				{ "name": "t", "expression": "1..3" },
-				{ "name": "w", "expression": "1..3" },
-				{ "name": "c", "expression": "1..7" },
-				{ "name": "b", "expression": "2..5" },
-				{ "name": "d", "expression": "2..5" }
+				{
+					"name": "u",
+					"expression": "-4..1"
+				},
+				{
+					"name": "s",
+					"expression": "1..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..3"
+				},
+				{
+					"name": "w",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				}
 			],
 			"conditions": ["b != d"],
 			"blanks": [
@@ -67,22 +109,47 @@
 			}
 		},
 		{
-			"statement": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué : la probabilité d'obtenir une face est proportionnelle à son numéro. Autrement dit, si $X$ désigne le numéro obtenu, $P(X=k)=k\\,p$ pour tout entier $k$ de $1$ à ${{n}}$, où $p$ est un nombre réel.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$p=?$\n\n$P(X={{n}})=?$",
-			"variables": [{ "name": "n", "expression": "4|6|8|10|12" }],
-			"conditions": [],
+			"statement": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué : la probabilité d'obtenir une face est proportionnelle à son numéro. Autrement dit, si $X$ désigne le numéro obtenu, $P(X=k)=k\\,p$ pour tout entier $k$ de $1$ à ${{n}}$, où $p$ est un nombre réel.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$p=?$\n\n$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}})=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4|6|8|10|12|20"
+				},
+				{
+					"name": "t",
+					"expression": "1..4"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:n}}"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "lo",
+					"expression": "eval:1+(k-1)*min(1,abs(t-2))"
+				},
+				{
+					"name": "hi",
+					"expression": "eval:k+(n-k)*max(0,1-abs(t-3))+d*max(0,1-abs(t-4))"
+				}
+			],
+			"conditions": ["t == 1 or (k >= 2 and k <= n-1)", "t != 4 or hi <= n-1"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:2/(n*(n+1))}}"
 				},
 				{
-					"expectedAnswer": "{{eval:2/(n+1)}}"
+					"expectedAnswer": "{{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"La somme des probabilités vaut $1$ : $p+2p+\\dots+{{n}}p=1$, soit $(1+2+\\dots+{{n}})\\,p={{eval:n*(n+1)/2}}\\,p=1$.",
 					"Donc $p=\\textcolor{{{color:primary.0}}}{ {{eval:2/(n*(n+1))}} }$.",
-					"$P(X={{n}})={{n}}\\,p={{n}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:2/(n+1)}} }$."
+					"{{if:hi == lo|$P(X={{lo}})={{lo}}\\,p={{lo}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.|$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}})=P(X={{lo}})+{{if:hi == lo+1||{{if:hi == lo+2|P(X={{eval:lo+1}})+|\\dots+}}}}P(X={{hi}})=({{lo}}+{{if:hi == lo+1||{{if:hi == lo+2|{{eval:lo+1}}+|\\dots+}}}}{{hi}})\\,p={{eval:(hi*(hi+1)-(lo-1)*lo)/2}}\\times{{eval:2/(n*(n+1))}}=\\textcolor{{{color:primary.0}}}{ {{eval:(hi*(hi+1)-(lo-1)*lo)/(n*(n+1))}} }$.}}"
 				]
 			}
 		}
@@ -91,79 +158,253 @@
 		{
 			"description": "v0 : p + 3p + 2p + 4p = 10p = 1 → p = 1/10, P = 2/5",
 			"variationIndex": 0,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "b": "3", "c": "2", "d": "4" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"b": "3",
+				"c": "2",
+				"d": "4"
+			},
 			"answers": ["\\frac{1}{10}", "\\frac{2}{5}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v0 : décimaux 0,1 et 0,4",
 			"variationIndex": 0,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "b": "3", "c": "2", "d": "4" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"b": "3",
+				"c": "2",
+				"d": "4"
+			},
 			"answers": ["0,1", "0,4"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v0 : coefficient 1 de p oublié (9p = 1)",
 			"variationIndex": 0,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "b": "3", "c": "2", "d": "4" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"b": "3",
+				"c": "2",
+				"d": "4"
+			},
 			"answers": ["\\frac{1}{9}", "\\frac{4}{9}"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v0 : P(X=4) = 4/10 non simplifiée",
 			"variationIndex": 0,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "b": "3", "c": "2", "d": "4" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"b": "3",
+				"c": "2",
+				"d": "4"
+			},
 			"answers": ["\\frac{1}{10}", "\\frac{4}{10}"],
-			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
 		},
 		{
 			"description": "v1 : 0,4 + p + 2p + 3p = 1 → p = 0,1",
 			"variationIndex": 1,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "c": "4", "b": "2", "d": "3" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"c": "4",
+				"b": "2",
+				"d": "3"
+			},
 			"answers": ["0,1"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v1 : fraction 1/10",
 			"variationIndex": 1,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "c": "4", "b": "2", "d": "3" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"c": "4",
+				"b": "2",
+				"d": "3"
+			},
 			"answers": ["\\frac{1}{10}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v1 : 0,4 oublié (6p = 1)",
 			"variationIndex": 1,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "c": "4", "b": "2", "d": "3" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"c": "4",
+				"b": "2",
+				"d": "3"
+			},
 			"answers": ["\\frac{1}{6}"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v1 : 0,6/6 laissé tel quel (forme non simplifiée)",
 			"variationIndex": 1,
-			"variables": { "u": "0", "s": "1", "t": "1", "w": "2", "c": "4", "b": "2", "d": "3" },
+			"variables": {
+				"u": "0",
+				"s": "1",
+				"t": "1",
+				"w": "2",
+				"c": "4",
+				"b": "2",
+				"d": "3"
+			},
 			"answers": ["\\frac{6}{60}"],
-			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
 		},
 		{
 			"description": "v2 : dé à 6 faces → p = 1/21, P(X=6) = 2/7",
 			"variationIndex": 2,
-			"variables": { "n": "6" },
+			"variables": {
+				"n": "6",
+				"t": "1",
+				"k": "6",
+				"d": "1",
+				"lo": "6",
+				"hi": "6"
+			},
 			"answers": ["\\frac{1}{21}", "\\frac{2}{7}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v2 : dé supposé équilibré (1/6 et 1/6)",
 			"variationIndex": 2,
-			"variables": { "n": "6" },
+			"variables": {
+				"n": "6",
+				"t": "1",
+				"k": "6",
+				"d": "1",
+				"lo": "6",
+				"hi": "6"
+			},
 			"answers": ["\\frac{1}{6}", "\\frac{1}{6}"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v2 : 6/21 non simplifiée",
 			"variationIndex": 2,
-			"variables": { "n": "6" },
+			"variables": {
+				"n": "6",
+				"t": "1",
+				"k": "6",
+				"d": "1",
+				"lo": "6",
+				"hi": "6"
+			},
 			"answers": ["\\frac{1}{21}", "\\frac{6}{21}"],
-			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : dé à 8 faces, P(X ≤ 3) = 6/36 = 1/6",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "2",
+				"k": "3",
+				"d": "1",
+				"lo": "1",
+				"hi": "3"
+			},
+			"answers": ["\\frac{1}{36}", "\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : P(X ≤ 3) pris pour P(X = 3) (1/12)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"t": "2",
+				"k": "3",
+				"d": "1",
+				"lo": "1",
+				"hi": "3"
+			},
+			"answers": ["\\frac{1}{36}", "\\frac{1}{12}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : dé à 10 faces, P(X ≥ 8) = 27/55",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"t": "3",
+				"k": "8",
+				"d": "1",
+				"lo": "8",
+				"hi": "10"
+			},
+			"answers": ["\\frac{1}{55}", "\\frac{27}{55}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : dé à 6 faces, P(2 ≤ X ≤ 4) = 9/21 = 3/7",
+			"variationIndex": 2,
+			"variables": {
+				"n": "6",
+				"t": "4",
+				"k": "2",
+				"d": "2",
+				"lo": "2",
+				"hi": "4"
+			},
+			"answers": ["\\frac{1}{21}", "\\frac{3}{7}"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	],
 	"options": {
