@@ -183,6 +183,10 @@ Règles d'écriture qui évitent un défaut :
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
 
+Équation attendue (`y=x+1`) : `y=1+x` est juste (#622) ; `x+1=y` (membres échangés) est jugé
+« mauvaise forme », **décision de David du 2026-10-02** (on attend l'équation réduite `y = mx + p`).
+Une valeur recopiée derrière « x = » (`x=\frac32`) est jugée sur la valeur (#624).
+
 Corrigés dans le moteur (ne plus contourner) : notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
