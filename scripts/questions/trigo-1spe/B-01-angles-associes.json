@@ -1,0 +1,838 @@
+{
+	"title": "Angles associés : simplifier une expression",
+	"description": "cos et sin de −x, π − x, π + x, π/2 − x, π/2 + x, x + 2kπ, réponse réduite",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(-x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $-x$ sont symétriques par rapport à l'axe des abscisses : ils ont la même abscisse.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(-x)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(-x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $-x$ sont symétriques par rapport à l'axe des abscisses : leurs ordonnées sont opposées.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(-x)=-\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(\\pi-x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\pi-x$ sont symétriques par rapport à l'axe des ordonnées : leurs abscisses sont opposées.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(\\pi-x)=-\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(\\pi-x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\pi-x$ sont symétriques par rapport à l'axe des ordonnées : ils ont la même ordonnée.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(\\pi-x)=\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(\\pi+x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\pi+x$ sont symétriques par rapport à l'origine : leurs abscisses sont opposées.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(\\pi+x)=-\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(\\pi+x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\pi+x$ sont symétriques par rapport à l'origine : leurs ordonnées sont opposées.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(\\pi+x)=-\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(x+\\pi)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$x+\\pi=\\pi+x$ : les points du cercle trigonométrique associés à $x$ et à $x+\\pi$ sont symétriques par rapport à l'origine, leurs abscisses sont opposées.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(x+\\pi)=-\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\dfrac{\\pi}{2}-x$ sont symétriques par rapport à la droite d'équation $y=x$ : l'abscisse de l'un est l'ordonnée de l'autre.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos\\left(\\dfrac{\\pi}{2}-x\\right)=\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points du cercle trigonométrique associés à $x$ et à $\\dfrac{\\pi}{2}-x$ sont symétriques par rapport à la droite d'équation $y=x$ : l'ordonnée de l'un est l'abscisse de l'autre.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin\\left(\\dfrac{\\pi}{2}-x\\right)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $\\dfrac{\\pi}{2}+x=\\dfrac{\\pi}{2}-(-x)$, donc $\\cos\\left(\\dfrac{\\pi}{2}+x\\right)=\\sin(-x)=-\\sin x$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos\\left(\\dfrac{\\pi}{2}+x\\right)=-\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On écrit $\\dfrac{\\pi}{2}+x=\\dfrac{\\pi}{2}-(-x)$, donc $\\sin\\left(\\dfrac{\\pi}{2}+x\\right)=\\cos(-x)=\\cos x$.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin\\left(\\dfrac{\\pi}{2}+x\\right)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(x+{{eval:2*k}}\\pi)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\cos x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:2*k}}\\pi={{k}}\\times2\\pi$ : ajouter ${{eval:2*k}}\\pi$, c'est faire {{k}} tour(s) complet(s) du cercle trigonométrique. On retombe sur le même point.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(x+{{eval:2*k}}\\pi)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(x+{{eval:2*k}}\\pi)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\sin x"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{eval:2*k}}\\pi={{k}}\\times2\\pi$ : ajouter ${{eval:2*k}}\\pi$, c'est faire {{k}} tour(s) complet(s) du cercle trigonométrique. On retombe sur le même point.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(x+{{eval:2*k}}\\pi)=\\sin x }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "$\\cos(-x)$ = \\cos x",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(-x)$ : parenthèses acceptées",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(-x)$ : erreur de signe ou de symétrie (-\\cos x)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(-x)$ : mauvaise fonction (\\sin x)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(-x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\cos(-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\sin(-x)$ = -\\sin x",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(-x)$ : parenthèses acceptées",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(-x)$ : erreur de signe ou de symétrie (\\sin x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(-x)$ : mauvaise fonction (-\\cos x)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(-x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\sin(-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\cos(\\pi-x)$ = -\\cos x",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi-x)$ : parenthèses acceptées",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["-\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi-x)$ : erreur de signe ou de symétrie (\\cos x)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi-x)$ : mauvaise fonction (\\sin x)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi-x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\cos(\\pi-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\sin(\\pi-x)$ = \\sin x",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi-x)$ : parenthèses acceptées",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi-x)$ : erreur de signe ou de symétrie (-\\sin x)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi-x)$ : mauvaise fonction (\\cos x)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi-x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\sin(\\pi-x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\cos(\\pi+x)$ = -\\cos x",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi+x)$ : parenthèses acceptées",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["-\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi+x)$ : erreur de signe ou de symétrie (\\cos x)",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi+x)$ : mauvaise fonction (-\\sin x)",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(\\pi+x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\cos(\\pi+x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\sin(\\pi+x)$ = -\\sin x",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi+x)$ : parenthèses acceptées",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["-\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi+x)$ : erreur de signe ou de symétrie (\\sin x)",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi+x)$ : mauvaise fonction (-\\cos x)",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin(\\pi+x)$ : expression recopiée, non simplifiée",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\sin(\\pi+x)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\cos(x+\\pi)$ = -\\cos x",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(x+\\pi)$ : parenthèses acceptées",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["-\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos(x+\\pi)$ : erreur de signe ou de symétrie (\\cos x)",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(x+\\pi)$ : mauvaise fonction (\\sin x)",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos(x+\\pi)$ : expression recopiée, non simplifiée",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\cos(x+\\pi)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)$ = \\sin x",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)$ : parenthèses acceptées",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)$ : erreur de signe ou de symétrie (\\cos x)",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)$ : mauvaise fonction (-\\sin x)",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}-x\\right)$ : expression recopiée, non simplifiée",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\cos\\left(\\frac{\\pi}{2}-x\\right)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)$ = \\cos x",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)$ : parenthèses acceptées",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)$ : erreur de signe ou de symétrie (\\sin x)",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)$ : mauvaise fonction (-\\cos x)",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}-x\\right)$ : expression recopiée, non simplifiée",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\sin\\left(\\frac{\\pi}{2}-x\\right)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)$ = -\\sin x",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)$ : parenthèses acceptées",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["-\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)$ : erreur de signe ou de symétrie (\\sin x)",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)$ : mauvaise fonction (\\cos x)",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\cos\\left(\\dfrac{\\pi}{2}+x\\right)$ : expression recopiée, non simplifiée",
+			"variationIndex": 9,
+			"variables": {},
+			"answers": ["\\cos\\left(\\frac{\\pi}{2}+x\\right)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)$ = \\cos x",
+			"variationIndex": 10,
+			"variables": {},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)$ : parenthèses acceptées",
+			"variationIndex": 10,
+			"variables": {},
+			"answers": ["\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)$ : erreur de signe ou de symétrie (-\\cos x)",
+			"variationIndex": 10,
+			"variables": {},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)$ : mauvaise fonction (\\sin x)",
+			"variationIndex": 10,
+			"variables": {},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "$\\sin\\left(\\dfrac{\\pi}{2}+x\\right)$ : expression recopiée, non simplifiée",
+			"variationIndex": 10,
+			"variables": {},
+			"answers": ["\\sin\\left(\\frac{\\pi}{2}+x\\right)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "\\cos(x+4π) = \\cos x",
+			"variationIndex": 11,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "\\cos(x+4π) : parenthèses acceptées",
+			"variationIndex": 11,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "\\cos(x+4π) : erreur de signe ou de symétrie (-\\cos x)",
+			"variationIndex": 11,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["-\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "\\cos(x+4π) : mauvaise fonction (\\sin x)",
+			"variationIndex": 11,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "\\cos(x+4π) : expression recopiée, non simplifiée",
+			"variationIndex": 11,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\cos(x+4\\pi)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "\\sin(x+4π) = \\sin x",
+			"variationIndex": 12,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\sin x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "\\sin(x+4π) : parenthèses acceptées",
+			"variationIndex": 12,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\sin(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "\\sin(x+4π) : erreur de signe ou de symétrie (-\\sin x)",
+			"variationIndex": 12,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["-\\sin x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "\\sin(x+4π) : mauvaise fonction (\\cos x)",
+			"variationIndex": 12,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\cos x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "\\sin(x+4π) : expression recopiée, non simplifiée",
+			"variationIndex": 12,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\sin(x+4\\pi)"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

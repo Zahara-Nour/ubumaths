@@ -1,0 +1,335 @@
+{
+	"title": "Lecture graphique sur la courbe d'une fonction trigonométrique",
+	"description": "Lire une image en π/2 ou en π, un maximum ou un minimum sur la courbe de a sin x + b ou a cos x + b",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f\\left(\\dfrac{\\pi}{2}\\right)$.\n\n$f\\left(\\dfrac{\\pi}{2}\\right)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On se place en $x=\\dfrac{\\pi}{2}$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
+					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"$\\textcolor{{{color:primary.0}}}{f\\left(\\dfrac{\\pi}{2}\\right)={{eval:a+b}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique la valeur de $f(\\pi)$.\n\n$f(\\pi)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On se place en $x=\\pi$ sur l'axe des abscisses, on monte (ou on descend) jusqu'à la courbe, puis on lit l'ordonnée du point $A$ obtenu.",
+					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: A(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"$\\textcolor{{{color:primary.0}}}{f(\\pi)={{eval:b-a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le maximum de $f$ sur $\\mathbb{R}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(a)+b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le maximum est l'ordonnée des points les plus hauts de la courbe, par exemple le point $M$. La fonction est périodique : la courbe atteint ce maximum une fois par période.",
+					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:2-a/abs(a)}}*pi/2 ; f({{eval:2-a/abs(a)}}*pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"Le maximum de $f$ est $\\textcolor{{{color:primary.0}}}{{{eval:abs(a)+b}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nLis sur le graphique le minimum de $f$ sur $\\mathbb{R}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-2..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b-abs(a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le minimum est l'ordonnée des points les plus bas de la courbe, par exemple le point $M$. La fonction est périodique : la courbe atteint ce minimum une fois par période.",
+					"```courbe\nx: -pi ; 2*pi\ny: -6 ; 6\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+({{b}})   bleu   nom=C_f\npoints: M({{eval:(1+a/abs(a))/2}}*pi ; f({{eval:(1+a/abs(a))/2}}*pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"Le minimum de $f$ est $\\textcolor{{{color:primary.0}}}{{{eval:b-abs(a)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : f(x)=2sin x+1 : f(π/2)=3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : lecture en 0 au lieu de π/2 : 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : lecture en −π/2 : −1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : calcul non terminé : 2+1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["2+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 0 : f(x)=−3sin x−2 : f(π/2)=−5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "-2"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : signe oublié : 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3",
+				"b": "-2"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : f(x)=3cos x−1 : f(π)=−4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : lecture en 0 : 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : abscisse lue pour l'ordonnée : 3,14",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"answers": ["3.14"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : calcul non terminé : −3−1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "-1"
+			},
+			"answers": ["-3-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 2 : f(x)=−2sin x+1 : maximum 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : minimum au lieu du maximum : −1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : abscisse du maximum : 3π/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1"
+			},
+			"answers": ["\\frac{3\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : calcul non terminé : 2+1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-2",
+				"b": "1"
+			},
+			"answers": ["2+1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 3 : f(x)=cos x+2 : minimum 1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : maximum au lieu du minimum : 3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : −1 (minimum de cos)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : calcul non terminé : 2−1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"answers": ["2-1"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

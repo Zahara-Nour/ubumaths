@@ -1,0 +1,365 @@
+{
+	"title": "Équations trigonométriques : aucune solution, cos x = cos α, sin x = sin α",
+	"description": "cos x = k avec |k| > 1 et sin x = ±3/2, ±5/2 (ensemble vide) ; cos x = cos α dans ]−π ; π] ; sin x = sin α dans [0 ; 2π[",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{k}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant \\cos x\\leqslant 1$ : aucun point du cercle n'a pour abscisse ${{k}}$.",
+					"```trig\nequation: cos(x) = {{k}}\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:p/2}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "3|5|-3|-5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\varnothing"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour tout réel $x$, $-1\\leqslant \\sin x\\leqslant 1$ ; or $\\left|{{eval:p/2}}\\right|>1$ : aucun point du cercle n'a pour ordonnée ${{eval:p/2}}$.",
+					"```trig\nequation: sin(x) = {{p}}/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\varnothing }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\cos\\frac{\\pi}{ {{n}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5|7|8|9|10|12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{ {{n}} };\\frac{\\pi}{ {{n}} }\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos x=\\cos a$ lorsque $x$ et $a$, ou $x$ et $-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des abscisses).",
+					"Dans $\\left]-\\pi\\,;\\pi\\right]$, les solutions sont $\\frac{\\pi}{ {{n}} }$ et $-\\frac{\\pi}{ {{n}} }$.",
+					"```trig\npreset: custom\nangles: pi/{{n}}, -pi/{{n}}\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{ {{n}} }\\,;\\frac{\\pi}{ {{n}} }\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\cos\\frac{ {{k}}\\pi}{ {{n}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5|7"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"conditions": ["k < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{ {{k}}\\pi}{ {{n}} };\\frac{ {{k}}\\pi}{ {{n}} }\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos x=\\cos a$ lorsque $x$ et $a$, ou $x$ et $-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des abscisses).",
+					"Dans $\\left]-\\pi\\,;\\pi\\right]$, les solutions sont $\\frac{ {{k}}\\pi}{ {{n}} }$ et $-\\frac{ {{k}}\\pi}{ {{n}} }$.",
+					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, -{{k}}pi/{{n}}\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{ {{k}}\\pi}{ {{n}} }\\,;\\frac{ {{k}}\\pi}{ {{n}} }\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=\\sin\\frac{ {{k}}\\pi}{ {{n}} }$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5|7"
+				},
+				{
+					"name": "k",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["k < n - 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{\\frac{ {{k}}\\pi}{ {{n}} };\\frac{ {{eval:n-k}}\\pi}{ {{n}} }\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\sin x=\\sin a$ lorsque $x$ et $a$, ou $x$ et $\\pi-a$, repèrent le même point du cercle (deux points symétriques par rapport à l'axe des ordonnées).",
+					"Dans $\\left[0\\,;2\\pi\\right[$, les solutions sont $\\frac{ {{k}}\\pi}{ {{n}} }$ et $\\pi-\\frac{ {{k}}\\pi}{ {{n}} }=\\frac{ {{eval:n-k}}\\pi}{ {{n}} }$.",
+					"```trig\npreset: custom\nangles: {{k}}pi/{{n}}, {{eval:n-k}}pi/{{n}}\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{ {{k}}\\pi}{ {{n}} }\\,;\\frac{ {{eval:n-k}}\\pi}{ {{n}} }\\right\\} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cos x = 2 : ensemble vide",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "\\emptyset",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\emptyset"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "accolades vides",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\{\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0 au lieu de ∅",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "tout l'intervalle",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["]-\\pi;\\pi]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x = -3/2 : ensemble vide",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-3"
+			},
+			"answers": ["\\varnothing"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "solution « 3π/2 » (ordonnée -1)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-3"
+			},
+			"answers": ["\\{\\frac{3\\pi}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "[0;2π[ au lieu de ∅",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-3"
+			},
+			"answers": ["[0;2\\pi["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = cos π/5 : juste",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\{-\\frac{\\pi}{5};\\frac{\\pi}{5}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\{\\frac{\\pi}{5};-\\frac{\\pi}{5}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\{\\frac{\\pi}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion sinus : π − π/5",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\{\\frac{\\pi}{5};\\frac{4\\pi}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hors intervalle : 9π/5",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": ["\\{\\frac{\\pi}{5};\\frac{9\\pi}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = cos 3π/7 : juste",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7",
+				"k": "3"
+			},
+			"answers": ["\\{-\\frac{3\\pi}{7};\\frac{3\\pi}{7}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7",
+				"k": "3"
+			},
+			"answers": ["\\{\\frac{3\\pi}{7}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "hors intervalle : 11π/7",
+			"variationIndex": 3,
+			"variables": {
+				"n": "7",
+				"k": "3"
+			},
+			"answers": ["\\{\\frac{3\\pi}{7};\\frac{11\\pi}{7}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x = sin 2π/5 : juste",
+			"variationIndex": 4,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["\\{\\frac{2\\pi}{5};\\frac{3\\pi}{5}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 4,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["\\{\\frac{2\\pi}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion cosinus : ±2π/5",
+			"variationIndex": 4,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["\\{-\\frac{2\\pi}{5};\\frac{2\\pi}{5}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x = sin 4π/7 : juste",
+			"variationIndex": 4,
+			"variables": {
+				"n": "7",
+				"k": "4"
+			},
+			"answers": ["\\{\\frac{3\\pi}{7};\\frac{4\\pi}{7}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

@@ -1,0 +1,307 @@
+{
+	"title": "Cosinus et sinus des angles remarquables",
+	"description": "Valeurs exactes de cos et sin en 0, π/6, π/4, π/3 et π/2, lues sur le cercle trigonométrique",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cosinus et sinus d'un réel",
+	"level": 1,
+	"status": "draft",
+	"delay": 30,
+	"variations": [
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left(0\\right)=?$ et $\\sin\\left(0\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "1",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "0",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point $M$ associé au réel $x$ a pour coordonnées $(\\cos x\\,;\\sin x)$ : le cosinus se lit sur l'axe des abscisses, le sinus sur l'axe des ordonnées.",
+					"Le point associé à $0$ est le point $I(1\\,;0)$ du cercle.",
+					"```trig\npreset: custom\nangles: 0\nprojections: true\n```",
+					"$\\cos\\left(0\\right)=\\textcolor{{{color:primary.0}}}{1 }$ et $\\sin\\left(0\\right)=\\textcolor{{{color:primary.0}}}{0 }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{6}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point $M$ associé au réel $x$ a pour coordonnées $(\\cos x\\,;\\sin x)$ : le cosinus se lit sur l'axe des abscisses, le sinus sur l'axe des ordonnées.",
+					"Le point associé à $\\frac{\\pi}{6}$ est plus près de l'axe des abscisses : son ordonnée est la plus petite des deux valeurs $\\frac{1}{2}$ et $\\frac{\\sqrt{3}}{2}$.",
+					"```trig\npreset: custom\nangles: pi/6\nprojections: true\n```",
+					"$\\cos\\left(\\frac{\\pi}{6}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{3}}{2} }$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{1}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{4}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point $M$ associé au réel $x$ a pour coordonnées $(\\cos x\\,;\\sin x)$ : le cosinus se lit sur l'axe des abscisses, le sinus sur l'axe des ordonnées.",
+					"Le point associé à $\\frac{\\pi}{4}$ est sur la bissectrice des axes : son abscisse et son ordonnée sont égales.",
+					"```trig\npreset: custom\nangles: pi/4\nprojections: true\n```",
+					"$\\cos\\left(\\frac{\\pi}{4}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{2}}{2} }$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{2}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{3}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{2}",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "\\frac{\\sqrt{3}}{2}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point $M$ associé au réel $x$ a pour coordonnées $(\\cos x\\,;\\sin x)$ : le cosinus se lit sur l'axe des abscisses, le sinus sur l'axe des ordonnées.",
+					"Le point associé à $\\frac{\\pi}{3}$ est plus près de l'axe des ordonnées : son abscisse est la plus petite des deux valeurs $\\frac{1}{2}$ et $\\frac{\\sqrt{3}}{2}$.",
+					"```trig\npreset: custom\nangles: pi/3\nprojections: true\n```",
+					"$\\cos\\left(\\frac{\\pi}{3}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{1}{2} }$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=\\textcolor{{{color:primary.0}}}{\\frac{\\sqrt{3}}{2} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{2}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{2}\\right)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "0",
+					"acceptDecimal": true
+				},
+				{
+					"expectedAnswer": "1",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur le cercle trigonométrique, le point $M$ associé au réel $x$ a pour coordonnées $(\\cos x\\,;\\sin x)$ : le cosinus se lit sur l'axe des abscisses, le sinus sur l'axe des ordonnées.",
+					"Le point associé à $\\frac{\\pi}{2}$ est le point $J(0\\,;1)$ du cercle.",
+					"```trig\npreset: custom\nangles: pi/2\nprojections: true\n```",
+					"$\\cos\\left(\\frac{\\pi}{2}\\right)=\\textcolor{{{color:primary.0}}}{0 }$ et $\\sin\\left(\\frac{\\pi}{2}\\right)=\\textcolor{{{color:primary.0}}}{1 }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cos 0 = 1, sin 0 = 0",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["1", "0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "0 : cos et sin intervertis",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "0 : cos 0 = 0 (confusion avec sin)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/6 : √3/2 et 1/2",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/6 : √3 sans accolades",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt3}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/6 : sin = 0,5 (décimal exact)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/6 : cos et sin intervertis",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/6 : valeur approchée 0,87",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["0{,}87", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/6 : tangente au lieu du cosinus, √3/3",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{3}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/4 : √2/2 et √2/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/4 : 1/√2 (non rationalisé)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{\\sqrt{2}}", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "π/4 : 1/2 et 1/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{1}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/4 : valeur approchée 0,71",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["0{,}71", "\\frac{\\sqrt{2}}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/3 : 1/2 et √3/2",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/3 : cos = 0,5",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["0{,}5", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/3 : cos et sin intervertis",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/3 : fraction non réduite 2/4",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{2}{4}", "\\frac{\\sqrt{3}}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "π/2 : 0 et 1",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "π/2 : cos et sin intervertis",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["1", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "π/2 : sin = 0",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["0", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

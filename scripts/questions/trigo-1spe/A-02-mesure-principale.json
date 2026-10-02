@@ -1,0 +1,473 @@
+{
+	"title": "Mesure principale d'un angle",
+	"description": "Ramener une mesure en radians (17π/6, −13π/4, 25π/3…) dans ]−π ; π] en retirant ou en ajoutant des tours",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 2,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $\\frac{ {{a}}\\pi}{6}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+12*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{6}={{r}}+\\frac{ {{eval:12*k}}\\pi}{6}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $-\\frac{ {{a}}\\pi}{4}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:8*k-p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{4}={{r}}-\\frac{ {{eval:8*k}}\\pi}{4}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $\\frac{ {{a}}\\pi}{3}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+6*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{3}={{r}}+\\frac{ {{eval:6*k}}\\pi}{3}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $-\\frac{ {{a}}\\pi}{6}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:12*k-p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{12\\pi}{6}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{6}={{r}}-\\frac{ {{eval:12*k}}\\pi}{6}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $\\frac{ {{a}}\\pi}{4}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "a",
+					"expression": "eval:p+8*k"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On retire des tours complets ($2\\pi=\\frac{8\\pi}{4}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$\\frac{ {{a}}\\pi}{4}={{r}}+\\frac{ {{eval:8*k}}\\pi}{4}={{r}}+{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```"
+				]
+			}
+		},
+		{
+			"statement": "Détermine la mesure principale de l'angle orienté de mesure $-\\frac{ {{a}}\\pi}{3}$, c'est-à-dire sa mesure dans l'intervalle $\\left]-\\pi\\,;\\pi\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "a",
+					"expression": "eval:6*k-p"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On ajoute des tours complets ($2\\pi=\\frac{6\\pi}{3}$) jusqu'à tomber dans $\\left]-\\pi\\,;\\pi\\right]$ :",
+					"$$-\\frac{ {{a}}\\pi}{3}={{r}}-\\frac{ {{eval:6*k}}\\pi}{3}={{r}}-{{eval:2*k}}\\pi$$",
+					"Comme ${{r}}\\in\\left]-\\pi\\,;\\pi\\right]$, la mesure principale est $\\textcolor{{{color:primary.0}}}{{{r}} }$.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "17π/6 → 5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "17π/6 : l'angle de l'énoncé n'est pas la mesure principale",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{17\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17π/6 : erreur de signe −5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["-\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17π/6 : retrait de π au lieu de 2π, 11π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{11\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "17π/6 : fraction non réduite 10π/12",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{10\\pi}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "−13π/4 → 3π/4",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−13π/4 : erreur de signe −3π/4",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−13π/4 : un seul tour ajouté, −5π/4",
+			"variationIndex": 1,
+			"variables": {
+				"r": "\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["-\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25π/3 → π/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}",
+				"k": "4"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "25π/3 : erreur de signe −π/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}",
+				"k": "4"
+			},
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "25π/3 : un seul tour retiré, 7π/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}",
+				"k": "4"
+			},
+			"answers": ["\\frac{7\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−17π/6 → −5π/6",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["-\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−17π/6 : erreur de signe 5π/6",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−17π/6 : 7π/6 hors de ]−π ; π]",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}",
+				"k": "1"
+			},
+			"answers": ["\\frac{7\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13π/4 → −3π/4",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "13π/4 : 5π/4 hors de ]−π ; π]",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "13π/4 : erreur de signe 3π/4",
+			"variationIndex": 4,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}",
+				"k": "2"
+			},
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7π/3 → −π/3",
+			"variationIndex": 5,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}",
+				"k": "1"
+			},
+			"answers": ["-\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "−7π/3 : erreur de signe π/3",
+			"variationIndex": 5,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}",
+				"k": "1"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7π/3 : 5π/3 hors de ]−π ; π]",
+			"variationIndex": 5,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}",
+				"k": "1"
+			},
+			"answers": ["\\frac{5\\pi}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "−7π/3 : fraction non réduite −2π/6",
+			"variationIndex": 5,
+			"variables": {
+				"r": "-\\frac{\\pi}{3}",
+				"k": "1"
+			},
+			"answers": ["-\\frac{2\\pi}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}

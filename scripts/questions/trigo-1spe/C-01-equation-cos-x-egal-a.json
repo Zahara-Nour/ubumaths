@@ -1,0 +1,578 @@
+{
+	"title": "Résoudre cos x = a sur un tour (valeurs remarquables)",
+	"description": "cos x = a, a valeur remarquable, résolue dans ]−π ; π] ; réponse : ensemble fini de solutions",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Équations",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{\\pi}{3}=\\frac{1}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $\\frac{1}{2}$ sont associés à $\\frac{\\pi}{3}$ et $-\\frac{\\pi}{3}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -pi/3, pi/3\nequation: cos(x) = 1/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{3}\\,;\\frac{\\pi}{3}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{2\\pi}{3};\\frac{2\\pi}{3}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{2\\pi}{3}=-\\frac{1}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $-\\frac{1}{2}$ sont associés à $\\frac{2\\pi}{3}$ et $-\\frac{2\\pi}{3}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -2pi/3, 2pi/3\nequation: cos(x) = -1/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{2\\pi}{3}\\,;\\frac{2\\pi}{3}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{\\pi}{4}=\\frac{\\sqrt{2}}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $\\frac{\\sqrt{2}}{2}$ sont associés à $\\frac{\\pi}{4}$ et $-\\frac{\\pi}{4}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -pi/4, pi/4\nequation: cos(x) = sqrt(2)/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{4}\\,;\\frac{\\pi}{4}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{3\\pi}{4};\\frac{3\\pi}{4}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{3\\pi}{4}=-\\frac{\\sqrt{2}}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $-\\frac{\\sqrt{2}}{2}$ sont associés à $\\frac{3\\pi}{4}$ et $-\\frac{3\\pi}{4}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -3pi/4, 3pi/4\nequation: cos(x) = -sqrt(2)/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{3\\pi}{4}\\,;\\frac{3\\pi}{4}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{\\pi}{6}=\\frac{\\sqrt{3}}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $\\frac{\\sqrt{3}}{2}$ sont associés à $\\frac{\\pi}{6}$ et $-\\frac{\\pi}{6}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -pi/6, pi/6\nequation: cos(x) = sqrt(3)/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{6}\\,;\\frac{\\pi}{6}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{5\\pi}{6};\\frac{5\\pi}{6}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{5\\pi}{6}=-\\frac{\\sqrt{3}}{2}$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $-\\frac{\\sqrt{3}}{2}$ sont associés à $\\frac{5\\pi}{6}$ et $-\\frac{5\\pi}{6}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -5pi/6, 5pi/6\nequation: cos(x) = -sqrt(3)/2\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{5\\pi}{6}\\,;\\frac{5\\pi}{6}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=0$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos \\frac{\\pi}{2}=0$ et $\\cos(-x)=\\cos x$ : les points du cercle d'abscisse $0$ sont associés à $\\frac{\\pi}{2}$ et $-\\frac{\\pi}{2}$, tous deux dans $\\left]-\\pi\\,;\\pi\\right]$.",
+					"```trig\npreset: custom\nangles: -pi/2, pi/2\nequation: cos(x) = 0\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{-\\frac{\\pi}{2}\\,;\\frac{\\pi}{2}\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=1$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{0\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le seul point du cercle trigonométrique d'abscisse $1$ est le point associé à $0$.",
+					"```trig\npreset: custom\nangles: 0\nequation: cos(x) = 1\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{0\\right\\} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-1$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "\\{\\pi\\}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le seul point du cercle trigonométrique d'abscisse $-1$ est le point associé à $\\pi$ (on garde $\\pi$ et non $-\\pi$, qui n'est pas dans $\\left]-\\pi\\,;\\pi\\right]$).",
+					"```trig\npreset: custom\nangles: pi\nequation: cos(x) = -1\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\pi\\right\\} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "cos x = 1/2 : juste",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{3};-\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{3};\\frac{5\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{3};\\frac{\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = -1/2 : juste",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\{-\\frac{2\\pi}{3};\\frac{2\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\{\\frac{2\\pi}{3};-\\frac{2\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\{\\frac{2\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["\\{\\frac{2\\pi}{3};\\frac{4\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["[-\\frac{2\\pi}{3};\\frac{2\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = sqrt(2)/2 : juste",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{4};-\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{4};\\frac{7\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{4};\\frac{\\pi}{4}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = -sqrt(2)/2 : juste",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\{-\\frac{3\\pi}{4};\\frac{3\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\{\\frac{3\\pi}{4};-\\frac{3\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\{\\frac{3\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\{\\frac{3\\pi}{4};\\frac{5\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["[-\\frac{3\\pi}{4};\\frac{3\\pi}{4}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = sqrt(3)/2 : juste",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{6};-\\frac{\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{6};\\frac{11\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 4,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{6};\\frac{\\pi}{6}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = -sqrt(3)/2 : juste",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{-\\frac{5\\pi}{6};\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{\\frac{5\\pi}{6};-\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["\\{\\frac{5\\pi}{6};\\frac{7\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 5,
+			"variables": {},
+			"answers": ["[-\\frac{5\\pi}{6};\\frac{5\\pi}{6}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = 0 : juste",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{2};-\\frac{\\pi}{2}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "solution hors intervalle (2π − α)",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{2};\\frac{3\\pi}{2}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "intervalle au lieu de l'ensemble",
+			"variationIndex": 6,
+			"variables": {},
+			"answers": ["[-\\frac{\\pi}{2};\\frac{\\pi}{2}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = 1 : juste",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\{0\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "2π hors intervalle",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\{0;2\\pi\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "nombre sans accolades",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "cos x = -1 : juste",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\{\\pi\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "-π hors intervalle",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\{-\\pi;\\pi\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-π seul",
+			"variationIndex": 8,
+			"variables": {},
+			"answers": ["\\{-\\pi\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "S = en tête",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["S=\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "accolades \\left\\{ \\right\\}",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\left\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\right\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moins dans le numérateur",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{\\frac{-\\pi}{3};\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "confusion avec le sinus",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{\\frac{\\pi}{6};\\frac{5\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "valeurs approchées",
+			"variationIndex": 0,
+			"variables": {},
+			"answers": ["\\{-1{,}05;1{,}05\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

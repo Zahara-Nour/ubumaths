@@ -1,0 +1,436 @@
+{
+	"title": "Lire le réel associé à un point du cercle",
+	"description": "Mesure principale dans ]−π ; π] d'un ou deux points nommés sur le cercle trigonométrique (multiples de π/6 et de π/4)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Cercle et radians",
+	"level": 3,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```",
+					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/4\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:4*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```",
+					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```",
+					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé au point $M$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/2\n```\n\n$?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{2}|-\\frac{\\pi}{2}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:2*r/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/2\n```",
+					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/6, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{6}|-\\frac{\\pi}{6}|\\frac{5\\pi}{6}|-\\frac{5\\pi}{6}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:6*r/\\pi"
+				},
+				{
+					"name": "s",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "q",
+					"expression": "eval:4*s/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6, {{q}}*pi/4\n```",
+					"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Donne la mesure principale (dans $\\left]-\\pi\\,;\\pi\\right]$) du réel associé à chacun des points $M$ et $N$ du cercle trigonométrique.\n\n```trig\npreset: all\nlabels: false\npoints: M = {{p}}*pi/3, N = {{q}}*pi/4\n```\n\nPoint $M$ : $?$\n\nPoint $N$ : $?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "\\frac{\\pi}{3}|-\\frac{\\pi}{3}|\\frac{2\\pi}{3}|-\\frac{2\\pi}{3}"
+				},
+				{
+					"name": "p",
+					"expression": "eval:3*r/\\pi"
+				},
+				{
+					"name": "s",
+					"expression": "\\frac{\\pi}{4}|-\\frac{\\pi}{4}|\\frac{3\\pi}{4}|-\\frac{3\\pi}{4}"
+				},
+				{
+					"name": "q",
+					"expression": "eval:4*s/\\pi"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				},
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3, {{q}}*pi/4\n```",
+					"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "M en 5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en 5π/6 : symétrique lu −5π/6",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["-\\frac{5\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en 5π/6 : π/6 (lu depuis le mauvais axe)",
+			"variationIndex": 0,
+			"variables": {
+				"r": "\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −5π/6 : 7π/6 n'est pas la mesure principale",
+			"variationIndex": 0,
+			"variables": {
+				"r": "-\\frac{5\\pi}{6}"
+			},
+			"answers": ["\\frac{7\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −3π/4",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en −3π/4 : 5π/4 n'est pas la mesure principale",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −3π/4 : erreur de signe",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −3π/4 : fraction non réduite −6π/8",
+			"variationIndex": 1,
+			"variables": {
+				"r": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{6\\pi}{8}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "M en π/3",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en π/3 : écrit (1/3)π (#628)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{1}{3}\\pi"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en π/3 : écrit π/3 en ligne (#628)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\pi/3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en π/3 : π/6 (un cran de trop peu)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en π/3 : 60 (degrés)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "\\frac{\\pi}{3}"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −π/2",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{\\pi}{2}"
+			},
+			"answers": ["-\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en −π/2 : 3π/2 n'est pas la mesure principale",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{\\pi}{2}"
+			},
+			"answers": ["\\frac{3\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en −π/2 : erreur de signe",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-\\frac{\\pi}{2}"
+			},
+			"answers": ["\\frac{\\pi}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en π/6, N en −3π/4",
+			"variationIndex": 4,
+			"variables": {
+				"r": "\\frac{\\pi}{6}",
+				"s": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{\\pi}{6}", "-\\frac{3\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M et N intervertis",
+			"variationIndex": 4,
+			"variables": {
+				"r": "\\frac{\\pi}{6}",
+				"s": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["-\\frac{3\\pi}{4}", "\\frac{\\pi}{6}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N : 5π/4 n'est pas la mesure principale",
+			"variationIndex": 4,
+			"variables": {
+				"r": "\\frac{\\pi}{6}",
+				"s": "-\\frac{3\\pi}{4}"
+			},
+			"answers": ["\\frac{\\pi}{6}", "\\frac{5\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "M en 2π/3, N en −π/4",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}",
+				"s": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "M en 2π/3 : erreur de signe",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}",
+				"s": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["-\\frac{2\\pi}{3}", "-\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "N en −π/4 : 7π/4 n'est pas la mesure principale",
+			"variationIndex": 5,
+			"variables": {
+				"r": "\\frac{2\\pi}{3}",
+				"s": "-\\frac{\\pi}{4}"
+			},
+			"answers": ["\\frac{2\\pi}{3}", "\\frac{7\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

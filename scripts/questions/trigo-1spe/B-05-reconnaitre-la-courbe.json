@@ -1,0 +1,396 @@
+{
+	"title": "Reconnaître la courbe d'une fonction trigonométrique",
+	"description": "Associer une courbe à son expression : cos x, sin x, −sin x, cos x + 1, 2 sin x, sin(x − π/2)",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonctions trigonométriques",
+	"subdomain": "Fonctions cosinus et sinus",
+	"level": 3,
+	"status": "draft",
+	"delay": 30,
+	"options": {
+		"shuffleChoices": true
+	},
+	"variations": [
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=\\cos x$"
+				},
+				{
+					"content": "$f(x)=\\sin x$"
+				},
+				{
+					"content": "$f(x)=-\\cos x$"
+				},
+				{
+					"content": "$f(x)=\\cos x+1$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;1)$ et $B(\\pi\\,;-1)$, elle oscille entre $-1$ et $1$ et elle est symétrique par rapport à l'axe des ordonnées.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin 0=0$, $-\\cos 0=-1$, et $\\cos x+1$ oscille entre $0$ et $2$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=\\sin x$"
+				},
+				{
+					"content": "$f(x)=\\cos x$"
+				},
+				{
+					"content": "$f(x)=-\\sin x$"
+				},
+				{
+					"content": "$f(x)=2\\sin x$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;1\\right)$, elle oscille entre $-1$ et $1$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\cos 0=1$, $-\\sin\\left(\\dfrac{\\pi}{2}\\right)=-1$, et $2\\sin x$ oscille entre $-2$ et $2$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = -sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=-\\sin x$"
+				},
+				{
+					"content": "$f(x)=\\sin x$"
+				},
+				{
+					"content": "$f(x)=\\cos x$"
+				},
+				{
+					"content": "$f(x)=-\\cos x$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;-1\\right)$, elle oscille entre $-1$ et $1$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = -sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin\\left(\\dfrac{\\pi}{2}\\right)=1$, $\\cos 0=1$ et $-\\cos 0=-1$ : aucune de ces courbes ne passe à la fois par $O$ et par $A$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=-\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)+1   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=\\cos x+1$"
+				},
+				{
+					"content": "$f(x)=\\cos x$"
+				},
+				{
+					"content": "$f(x)=\\cos x-1$"
+				},
+				{
+					"content": "$f(x)=\\sin x+1$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;2)$ et $B(\\pi\\,;0)$, elle oscille entre $0$ et $2$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = cos(x)+1   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\cos x$ oscille entre $-1$ et $1$, $\\cos x-1$ entre $-2$ et $0$, et $\\sin 0+1=1$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\cos x+1 }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = 2*sin(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=2\\sin x$"
+				},
+				{
+					"content": "$f(x)=\\sin x$"
+				},
+				{
+					"content": "$f(x)=2\\cos x$"
+				},
+				{
+					"content": "$f(x)=-2\\sin x$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par l'origine $O$ et par $A\\left(\\dfrac{\\pi}{2}\\,;2\\right)$, elle oscille entre $-2$ et $2$.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = 2*sin(x)   bleu   nom=C_f\npoints: A(pi/2 ; f(pi/2))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin x$ oscille entre $-1$ et $1$, $2\\cos 0=2$, et $-2\\sin\\left(\\dfrac{\\pi}{2}\\right)=-2$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=2\\sin x }$."
+				]
+			}
+		},
+		{
+			"statement": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x-pi/2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+			"variables": [],
+			"choices": [
+				{
+					"content": "$f(x)=\\sin\\left(x-\\dfrac{\\pi}{2}\\right)$"
+				},
+				{
+					"content": "$f(x)=\\sin\\left(x+\\dfrac{\\pi}{2}\\right)$"
+				},
+				{
+					"content": "$f(x)=\\sin x$"
+				},
+				{
+					"content": "$f(x)=-\\sin x$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Sur la figure : la courbe passe par $A(0\\,;-1)$ et $B(\\pi\\,;1)$, elle oscille entre $-1$ et $1$ : c'est la courbe de sinus décalée de $\\dfrac{\\pi}{2}$ vers la droite.",
+					"```courbe\nx: -pi ; 2*pi\ny: -3 ; 3\ngrille: pi/2 ; 1\nf(x) = sin(x-pi/2)   bleu   nom=C_f\npoints: A(0 ; f(0)), B(pi ; f(pi))\ntaille: moyenne\ndescription: Courbe d'une fonction f, tracée dans un repère pour x de −π à 2π.\n```",
+					"On écarte les autres : $\\sin\\left(\\dfrac{\\pi}{2}\\right)=1$, et $\\sin 0=-\\sin 0=0$ : ces trois courbes ne passent pas par $A$.",
+					"Conclusion : $\\textcolor{{{color:primary.0}}}{f(x)=\\sin\\left(x-\\dfrac{\\pi}{2}\\right) }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : « \\cos x » accepté",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : « \\sin x » refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : « -\\cos x » refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : « \\cos x+1 » refusé",
+			"variationIndex": 0,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : « \\sin x » accepté",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : « \\cos x » refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : « -\\sin x » refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : « 2\\sin x » refusé",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : « -\\sin x » accepté",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : « \\sin x » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : « \\cos x » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : « -\\cos x » refusé",
+			"variationIndex": 2,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : « \\cos x+1 » accepté",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 3 : « \\cos x » refusé",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : « \\cos x-1 » refusé",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 3 : « \\sin x+1 » refusé",
+			"variationIndex": 3,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : « 2\\sin x » accepté",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 4 : « \\sin x » refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : « 2\\cos x » refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 4 : « -2\\sin x » refusé",
+			"variationIndex": 4,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 : « \\sin\\left(x-\\dfrac{\\pi}{2}\\right) » accepté",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 5 : « \\sin\\left(x+\\dfrac{\\pi}{2}\\right) » refusé",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 : « \\sin x » refusé",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 5 : « -\\sin x » refusé",
+			"variationIndex": 5,
+			"variables": {},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
