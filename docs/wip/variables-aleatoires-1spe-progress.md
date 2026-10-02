@@ -1,7 +1,7 @@
 ---
 title: Variables aléatoires 1re SPE — questions
 date: 2026-10-02
-status: en cours (rédaction des modèles)
+status: 15 modèles en brouillon (2026-10-02)
 ---
 
 # Variables aléatoires 1re SPE — point de reprise
@@ -25,4 +25,27 @@ Thème suivant après probabilités conditionnelles. Aucun modèle n'existait. D
 
 ## Modèles (`scripts/questions/variables-aleatoires-1spe/`)
 
-À rédiger (~14-16).
+| Lot | Sous-domaine (fichiers)                                                                          |
+| --- | ------------------------------------------------------------------------------------------------ |
+| A   | Loi d'une variable aléatoire (A-01 à A-04, dont arbre pondéré) ; Compléter une loi (A-05 à A-07) |
+| B   | Espérance (B-01 à B-03, dont QCM d'interprétation) ; Variance et écart-type (B-04 à B-06)        |
+| C   | Jeux et gains (C-01 gain moyen, C-02 mise équitable)                                             |
+
+**15 modèles créés en BROUILLON en production le 2026-10-02.** Chacun : `question:specs` vert
+(175 specs), 150 tirages par variation (7 050 instances) recalculés en Python (`Fraction`, arrondi
+moitié loin de zéro ; lois de somme 1 ; V par définition = König-Huygens) ; arbres lus comme
+`probability-tree` ; aucun `imaginaryI` ni `{{` résiduel ; PDF compilés 4/4 (compilateur de prod),
+pages relues. Espace insécable avant « € ».
+
+## Question ouverte pour David
+
+Décision 3 FAUSSE : le programme (`docs/wip/referentiel/1re-spe-programme.md`) liste « Linéarité
+de l'espérance » (`1SPE-159`) et König-Huygens (`1SPE-160`) en 1re SPE ; V(aX+b) n'y figure pas.
+Aucun modèle ne traite E(aX+b) → ajouter un modèle ? Aussi non fait : QCM « jeu favorable /
+équitable / défavorable » (plafond de modèles de l'agent).
+
+## Défauts moteur relevés (non corrigés, contournés ; cf. `docs/ref/fiches-exercices.md`)
+
+`%` et `or` refusés dans une condition ; `{{eval:E;();d}}` fait échouer la génération ; variable
+calculée sans `eval` substituée sans parenthèses ; `{{eval:sqrt(21/25)}}` rendu `\dfrac{1}{5}\sqrt{21}` ;
+`1,136` pour un arrondi au centième jugé « incorrect » sans message de forme ; `x_i` → `x_\imaginaryI`.

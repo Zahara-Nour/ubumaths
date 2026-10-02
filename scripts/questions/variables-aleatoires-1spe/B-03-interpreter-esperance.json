@@ -1,0 +1,249 @@
+{
+	"title": "Interpréter une espérance",
+	"description": "Choisir l'interprétation correcte d'une espérance : valeur moyenne sur un grand nombre de répétitions",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Espérance",
+	"level": 1,
+	"status": "draft",
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E(G)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..25"
+				}
+			],
+			"conditions": ["mod(m,10) != 0"],
+			"choices": [
+				{
+					"content": "Sur un grand nombre de parties, le joueur gagne en moyenne environ ${{eval:m/10;d}}$ € par partie."
+				},
+				{
+					"content": "À chaque partie, le joueur gagne exactement ${{eval:m/10;d}}$ €."
+				},
+				{
+					"content": "Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €."
+				},
+				{
+					"content": "Sur $100$ parties, le joueur est certain de gagner exactement ${{eval:10*m}}$ €."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"L'espérance est la valeur moyenne prise par $G$ lorsqu'on répète la partie un grand nombre de fois.",
+					"Elle ne dit rien d'une partie isolée : le gain d'une partie est l'une des valeurs prises par $G$, et ${{eval:m/10;d}}$ n'en fait pas forcément partie.",
+					"Sur $100$ parties, le gain total est seulement proche de $100\\times{{eval:m/10;d}}={{eval:10*m}}$ € en moyenne ; il n'est jamais certain.",
+					"Réponse : **sur un grand nombre de parties, le joueur gagne en moyenne environ ${{eval:m/10;d}}$ € par partie**."
+				]
+			}
+		},
+		{
+			"statement": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $8$ h et $9$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "21..45"
+				}
+			],
+			"conditions": ["mod(m,10) != 0"],
+			"choices": [
+				{
+					"content": "Sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute."
+				},
+				{
+					"content": "Il entre exactement ${{eval:m/10;d}}$ clients chaque minute."
+				},
+				{
+					"content": "La valeur de $X$ la plus probable est ${{eval:m/10;d}}$."
+				},
+				{
+					"content": "Pendant la moitié des minutes, il entre plus de ${{eval:m/10;d}}$ clients."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"L'espérance est la valeur moyenne prise par $X$ lorsqu'on observe un grand nombre de minutes.",
+					"$X$ ne prend que des valeurs entières : il ne peut pas entrer exactement ${{eval:m/10;d}}$ clients en une minute, et l'espérance n'est ni la valeur la plus probable, ni une valeur « du milieu ».",
+					"Réponse : **sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute**."
+				]
+			}
+		},
+		{
+			"statement": "Un dé à six faces, numérotées de $1$ à $6$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "21..49"
+				}
+			],
+			"conditions": ["mod(m,10) != 0", "m != 35"],
+			"choices": [
+				{
+					"content": "Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de ${{eval:m/10;d}}$."
+				},
+				{
+					"content": "Le résultat le plus fréquent est ${{eval:round(m/10)}}$, l'arrondi de ${{eval:m/10;d}}$."
+				},
+				{
+					"content": "À chaque lancer, on obtient un résultat proche de ${{eval:m/10;d}}$."
+				},
+				{
+					"content": "La moitié des lancers donne un résultat supérieur à ${{eval:m/10;d}}$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"L'espérance est la moyenne des résultats obtenus lorsqu'on répète le lancer un grand nombre de fois.",
+					"Elle ne renseigne ni sur le résultat le plus fréquent, ni sur un lancer isolé, ni sur la proportion de lancers au-dessus d'elle.",
+					"Réponse : **sur un grand nombre de lancers, la moyenne des résultats est proche de ${{eval:m/10;d}}$**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : moyenne sur un grand nombre de répétitions",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : valeur exacte à chaque fois refusée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : valeur la plus probable / fréquente refusée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : deux cases cochées refusées",
+			"variationIndex": 0,
+			"variables": {
+				"m": "15"
+			},
+			"selectedChoices": [0, 3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : moyenne sur un grand nombre de répétitions",
+			"variationIndex": 1,
+			"variables": {
+				"m": "23"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : valeur exacte à chaque fois refusée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "23"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : valeur la plus probable / fréquente refusée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "23"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : deux cases cochées refusées",
+			"variationIndex": 1,
+			"variables": {
+				"m": "23"
+			},
+			"selectedChoices": [0, 3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : moyenne sur un grand nombre de répétitions",
+			"variationIndex": 2,
+			"variables": {
+				"m": "38"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : valeur exacte à chaque fois refusée",
+			"variationIndex": 2,
+			"variables": {
+				"m": "38"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : valeur la plus probable / fréquente refusée",
+			"variationIndex": 2,
+			"variables": {
+				"m": "38"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : deux cases cochées refusées",
+			"variationIndex": 2,
+			"variables": {
+				"m": "38"
+			},
+			"selectedChoices": [0, 3],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

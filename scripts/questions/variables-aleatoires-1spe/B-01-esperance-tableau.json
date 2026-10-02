@@ -1,0 +1,408 @@
+{
+	"title": "Espérance à partir de la loi",
+	"description": "Calculer l'espérance d'une variable aléatoire dont la loi est donnée par un tableau",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Espérance",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/10;d}}$ | ${{eval:b/10;d}}$ | ${{eval:c/10;d}}$ | ${{eval:d/10;d}}$ |\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-5..2"
+				},
+				{
+					"name": "d1",
+					"expression": "1..3"
+				},
+				{
+					"name": "d2",
+					"expression": "1..3"
+				},
+				{
+					"name": "d3",
+					"expression": "1..3"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "x4",
+					"expression": "{{eval:x3+d3}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:8-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:9-a-b}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:10-a-b-c}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a*(x1)+b*(x2)+c*(x3)+d*(x4)}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:a*(x1)^2+b*(x2)^2+c*(x3)^2+d*(x4)^2}}"
+				}
+			],
+			"conditions": ["S != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $E(X)=\\sum p_k x_k$ : on multiplie chaque valeur $x_k$ par sa probabilité $p_k$, puis on additionne les produits.",
+					"$E(X)={{eval:a/10;d}}\\times {{x1;()}}+{{eval:b/10;d}}\\times {{x2;()}}+{{eval:c/10;d}}\\times {{x3;()}}+{{eval:d/10;d}}\\times {{x4;()}}$",
+					"$E(X)=\\textcolor{{{color:primary.0}}}{ {{eval:S/10;d}} }$",
+					"L'espérance n'est pas la moyenne des valeurs $x_k$ : chaque valeur compte autant que sa probabilité."
+				]
+			}
+		},
+		{
+			"statement": "La loi de probabilité d'une variable aléatoire $X$ est donnée par le tableau suivant.\n\n| $x_k$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ |\n|---|---|---|---|\n| $P(X=x_k)$ | ${{eval:a/12}}$ | ${{eval:b/12}}$ | ${{eval:c/12}}$ |\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-4..3"
+				},
+				{
+					"name": "d1",
+					"expression": "1..4"
+				},
+				{
+					"name": "d2",
+					"expression": "1..4"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+d1}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+d2}}"
+				},
+				{
+					"name": "a",
+					"expression": "1..10"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:11-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:12-a-b}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a*(x1)+b*(x2)+c*(x3)}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:a*(x1)^2+b*(x2)^2+c*(x3)^2}}"
+				}
+			],
+			"conditions": ["S != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S/12}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $E(X)=\\sum p_k x_k$ : on multiplie chaque valeur $x_k$ par sa probabilité $p_k$, puis on additionne les produits.",
+					"$E(X)={{eval:a/12}}\\times {{x1;()}}+{{eval:b/12}}\\times {{x2;()}}+{{eval:c/12}}\\times {{x3;()}}$",
+					"On met tout au dénominateur $12$ : $E(X)=\\dfrac{ {{S}} }{12}=\\textcolor{{{color:primary.0}}}{ {{eval:S/12}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Une machine tombe parfois en panne. On note $X$ le nombre de pannes au cours d'une semaine ; sa loi de probabilité est donnée ci-dessous.\n\n| $k$ | $0$ | $1$ | $2$ | $3$ |\n|---|---|---|---|---|\n| $P(X=k)$ | ${{eval:a/10;d}}$ | ${{eval:b/10;d}}$ | ${{eval:c/10;d}}$ | ${{eval:d/10;d}}$ |\n\nCombien de pannes par semaine la machine a-t-elle en moyenne ? Calcule l'espérance de $X$ et réponds par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..7"
+				},
+				{
+					"name": "b",
+					"expression": "1..{{eval:8-a}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:9-a-b}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:10-a-b-c}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:a*(0)+b*(1)+c*(2)+d*(3)}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:a*(0)^2+b*(1)^2+c*(2)^2+d*(3)^2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:S/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par définition, $E(X)=\\sum p_k x_k$ : on multiplie chaque valeur $x_k$ par sa probabilité $p_k$, puis on additionne les produits.",
+					"$E(X)={{eval:a/10;d}}\\times 0+{{eval:b/10;d}}\\times 1+{{eval:c/10;d}}\\times 2+{{eval:d/10;d}}\\times 3$",
+					"$E(X)=\\textcolor{{{color:primary.0}}}{ {{eval:S/10;d}} }$",
+					"Sur un grand nombre de semaines, la machine tombe en panne en moyenne ${{eval:S/10;d}}$ fois par semaine."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : E = 1,5 en fraction",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : E = 1,5 en décimal",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : moyenne des valeurs (0,5) au lieu de l'espérance",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : somme non divisée (15)",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : fraction non réduite 15/10",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "-2",
+				"d1": "1",
+				"d2": "2",
+				"d3": "3",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4"
+			},
+			"answers": ["\\frac{15}{10}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : E = -1/2",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "-3",
+				"d1": "2",
+				"d2": "3",
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["-\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : E = -0,5 en décimal",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "-3",
+				"d1": "2",
+				"d2": "3",
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["-0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "-3",
+				"d1": "2",
+				"d2": "3",
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : -6/12 non réduite",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "-3",
+				"d1": "2",
+				"d2": "3",
+				"a": "3",
+				"b": "5",
+				"c": "4"
+			},
+			"answers": ["-\\frac{6}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : E = 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : E = 1,1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["1,1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : E = 11/10 en fraction",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["\\frac{11}{10}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : moyenne des valeurs 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

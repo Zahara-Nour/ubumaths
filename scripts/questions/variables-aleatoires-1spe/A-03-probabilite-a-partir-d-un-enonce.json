@@ -1,0 +1,171 @@
+{
+	"title": "Probabilité d'une valeur de X à partir d'un énoncé",
+	"description": "Urne, dé ou deux dés : traduire une valeur de la variable aléatoire en événement, puis calculer sa probabilité (équiprobabilité)",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Loi d'une variable aléatoire",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges, ${{q}}$ boules bleues et ${{n}}$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne ${{g}}$ euros si elle est rouge, ${{h}}$ euros si elle est bleue, et il perd ${{m}}$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=-{{m}})=?$\n\n$P(X>0)=?$",
+			"variables": [
+				{ "name": "r", "expression": "2..8" },
+				{ "name": "q", "expression": "2..8" },
+				{ "name": "n", "expression": "2..8" },
+				{ "name": "g", "expression": "2..10" },
+				{ "name": "h", "expression": "1..5" },
+				{ "name": "m", "expression": "2..6" }
+			],
+			"conditions": ["g > h", "r != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/(r+q+n)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(r+q)/(r+q+n)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'urne contient ${{r}}+{{q}}+{{n}}={{eval:r+q+n}}$ boules, toutes ont la même probabilité d'être tirées.",
+					"$\\{X=-{{m}}\\}$ : le joueur perd ${{m}}$ euros, donc la boule est verte. $P(X=-{{m}})=\\dfrac{ {{n}} }{ {{eval:r+q+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:n/(r+q+n)}} }$.",
+					"$\\{X>0\\}$ : le joueur gagne de l'argent, donc la boule est rouge ou bleue. $P(X>0)=P(X={{g}})+P(X={{h}})=\\dfrac{ {{r}} }{ {{eval:r+q+n}} }+\\dfrac{ {{q}} }{ {{eval:r+q+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(r+q)/(r+q+n)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à ${{f}}$ faces, numérotées de $1$ à ${{f}}$. Si le numéro obtenu est inférieur ou égal à ${{k}}$, on gagne ${{g}}$ euros ; sinon, on perd ${{m}}$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{g}})=?$\n\n$P(X=-{{m}})=?$",
+			"variables": [
+				{ "name": "f", "expression": "8|10|12|20" },
+				{ "name": "k", "expression": "2..18" },
+				{ "name": "g", "expression": "2..10" },
+				{ "name": "m", "expression": "2..5" }
+			],
+			"conditions": ["k <= f-2", "2*k != f"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k/f}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(f-k)/f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dé est équilibré : chacune des ${{f}}$ faces a la probabilité $\\dfrac{1}{ {{f}} }$ d'apparaître.",
+					"$\\{X={{g}}\\}$ : le numéro est l'un des ${{k}}$ numéros de $1$ à ${{k}}$. $P(X={{g}})=\\dfrac{ {{k}} }{ {{f}} }=\\textcolor{{{color:primary.0}}}{ {{eval:k/f}} }$.",
+					"$\\{X=-{{m}}\\}$ : le numéro est l'un des ${{f}}-{{k}}={{eval:f-k}}$ autres. $P(X=-{{m}})=\\dfrac{ {{eval:f-k}} }{ {{f}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(f-k)/f}} }$ (ou $1-P(X={{g}})$)."
+				]
+			}
+		},
+		{
+			"statement": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{s}})=?$",
+			"variables": [{ "name": "s", "expression": "3..11" }],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(6-abs(s-7))/36}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les $6\\times6=36$ couples de numéros sont équiprobables.",
+					"La somme vaut ${{s}}$ pour ${{eval:6-abs(s-7)}}$ couples : les couples $(x\\,;y)$ avec $x+y={{s}}$, le premier numéro $x$ allant de ${{eval:max(1,s-6)}}$ à ${{eval:min(6,s-1)}}$.",
+					"$P(X={{s}})=\\dfrac{ {{eval:6-abs(s-7)}} }{36}=\\textcolor{{{color:primary.0}}}{ {{eval:(6-abs(s-7))/36}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 4 vertes sur 20 → 1/5, rouges ou bleues 16/20 → 4/5",
+			"variationIndex": 0,
+			"variables": { "r": "7", "q": "9", "n": "4", "g": "8", "h": "3", "m": "5" },
+			"answers": ["\\frac{1}{5}", "\\frac{4}{5}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : décimaux 0,2 et 0,8",
+			"variationIndex": 0,
+			"variables": { "r": "7", "q": "9", "n": "4", "g": "8", "h": "3", "m": "5" },
+			"answers": ["0,2", "0,8"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : P(X>0) limité aux rouges (7/20)",
+			"variationIndex": 0,
+			"variables": { "r": "7", "q": "9", "n": "4", "g": "8", "h": "3", "m": "5" },
+			"answers": ["\\frac{1}{5}", "\\frac{7}{20}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : 4/20 non simplifiée",
+			"variationIndex": 0,
+			"variables": { "r": "7", "q": "9", "n": "4", "g": "8", "h": "3", "m": "5" },
+			"answers": ["\\frac{4}{20}", "\\frac{4}{5}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+		},
+		{
+			"description": "v1 : dé à 12 faces, k = 3 → 1/4 et 3/4",
+			"variationIndex": 1,
+			"variables": { "f": "12", "k": "3", "g": "5", "m": "2" },
+			"answers": ["\\frac{1}{4}", "\\frac{3}{4}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : décimaux 0,25 et 0,75",
+			"variationIndex": 1,
+			"variables": { "f": "12", "k": "3", "g": "5", "m": "2" },
+			"answers": ["0,25", "0,75"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : probabilités inversées",
+			"variationIndex": 1,
+			"variables": { "f": "12", "k": "3", "g": "5", "m": "2" },
+			"answers": ["\\frac{3}{4}", "\\frac{1}{4}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v2 : P(X=5) = 4/36 = 1/9",
+			"variationIndex": 2,
+			"variables": { "s": "5" },
+			"answers": ["\\frac{1}{9}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : 4/36 non simplifiée",
+			"variationIndex": 2,
+			"variables": { "s": "5" },
+			"answers": ["\\frac{4}{36}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+		},
+		{
+			"description": "v2 : sommes supposées équiprobables (1/11)",
+			"variationIndex": 2,
+			"variables": { "s": "5" },
+			"answers": ["\\frac{1}{11}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v2 : couples non ordonnés comptés une fois (2/36 = 1/18)",
+			"variationIndex": 2,
+			"variables": { "s": "5" },
+			"answers": ["\\frac{1}{18}"],
+			"expected": { "status": "incorrect" }
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

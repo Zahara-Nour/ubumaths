@@ -1,0 +1,274 @@
+{
+	"title": "Espérance à partir d'un énoncé",
+	"description": "Déterminer la loi d'une variable aléatoire (urne, dé, cartes) puis calculer son espérance",
+	"grades": ["1_SPE"],
+	"theme": "Probabilités",
+	"domain": "Variables aléatoires",
+	"subdomain": "Espérance",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges, ${{v}}$ boules vertes et ${{b}}$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte ${{gr}}$ points, une boule verte rapporte ${{gv}}$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "2..6"
+				},
+				{
+					"name": "v",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "gr",
+					"expression": "5..10"
+				},
+				{
+					"name": "gv",
+					"expression": "2..4"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:r+v+b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(r*gr+v*gv)/N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'urne contient ${{N}}$ boules, toutes ont la même probabilité d'être tirées. $X$ prend les valeurs $0$, ${{gv}}$ et ${{gr}}$ avec $P(X=0)={{eval:b/N}}$, $P(X={{gv}})={{eval:v/N}}$ et $P(X={{gr}})={{eval:r/N}}$.",
+					"$E(X)=\\sum p_k x_k={{eval:b/N}}\\times 0+{{eval:v/N}}\\times {{gv}}+{{eval:r/N}}\\times {{gr}}$",
+					"$E(X)=\\dfrac{ {{eval:v*gv}}+{{eval:r*gr}} }{ {{N}} }=\\textcolor{{{color:primary.0}}}{ {{eval:(r*gr+v*gv)/N}} }$"
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque ${{a}}$ points si on obtient $6$, ${{b}}$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+2*b)/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le dé est équilibré : chaque face a la probabilité $\\dfrac{1}{6}$. $X$ prend les valeurs $0$ (faces $1$, $2$, $3$), ${{b}}$ (faces $4$, $5$) et ${{a}}$ (face $6$) : $P(X=0)=\\dfrac{3}{6}=\\dfrac{1}{2}$, $P(X={{b}})=\\dfrac{2}{6}=\\dfrac{1}{3}$ et $P(X={{a}})=\\dfrac{1}{6}$.",
+					"$E(X)=\\sum p_k x_k=\\dfrac{1}{2}\\times 0+\\dfrac{1}{3}\\times {{b}}+\\dfrac{1}{6}\\times {{a}}$",
+					"$E(X)=\\dfrac{ {{eval:2*b}}+{{a}} }{6}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+2*b)/6}} }$"
+				]
+			}
+		},
+		{
+			"statement": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as rapporte ${{a}}$ points, une figure rapporte ${{b}}$ points et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(a+3*b)/8}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque carte a la probabilité $\\dfrac{1}{32}$ d'être tirée. $X$ prend les valeurs $0$, ${{b}}$ et ${{a}}$ : $P(X=0)=\\dfrac{16}{32}=\\dfrac{1}{2}$, $P(X={{b}})=\\dfrac{12}{32}=\\dfrac{3}{8}$ et $P(X={{a}})=\\dfrac{4}{32}=\\dfrac{1}{8}$.",
+					"$E(X)=\\sum p_k x_k=\\dfrac{1}{2}\\times 0+\\dfrac{3}{8}\\times {{b}}+\\dfrac{1}{8}\\times {{a}}$",
+					"$E(X)=\\dfrac{ {{eval:3*b}}+{{a}} }{8}=\\textcolor{{{color:primary.0}}}{ {{eval:(a+3*b)/8}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 28/10 = 14/5",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "2",
+				"gr": "6",
+				"gv": "2"
+			},
+			"answers": ["\\frac{14}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 2,8 en décimal",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "2",
+				"gr": "6",
+				"gv": "2"
+			},
+			"answers": ["2,8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : moyenne des points (6+2+0)/3",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "2",
+				"gr": "6",
+				"gv": "2"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 28/10 non réduite",
+			"variationIndex": 0,
+			"variables": {
+				"r": "3",
+				"v": "5",
+				"b": "2",
+				"gr": "6",
+				"gv": "2"
+			},
+			"answers": ["\\frac{28}{10}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : (8+4)/6 = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "8",
+				"b": "2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 13/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{13}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 4 et 5 comptés une seule fois : (7+3)/6",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2,17 arrondi refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "7",
+				"b": "3"
+			},
+			"answers": ["2,17"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (6+6)/8 = 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "2"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "2"
+			},
+			"answers": ["1,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : effectifs pris pour probabilités : 4×6+12×2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "2"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 12/8 non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "2"
+			},
+			"answers": ["\\frac{12}{8}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
