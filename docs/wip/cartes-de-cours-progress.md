@@ -35,6 +35,10 @@ retourner une carte et auto-évaluer (FlashCard non interactif + FSRSButtons).
 
 (Décisions 5 à 9 : David, 2026-09-28.)
 
+⚠️ **Décision 7 rouverte le 2026-10-02 (Q98)** : la partie « jamais ajoutée à un paquet » est
+remplacée — les cartes de cours vont dans le paquet SRS du chapitre. Voir
+`correction-trois-niveaux-et-questions-de-cours.md`.
+
 ✅ **`/api/tests/save` réparé (#497, 2026-09-28)** : il rejetait en 400 toute instance réelle (schéma
 Zod de l'ancien format). Liste de ce qui s'écrit désormais validée par David ; rien ne s'écrit tant
 qu'aucune question n'est publiée. Avec : R2 (nature « carte » illisible → 3 tentatives puis 503 avant
