@@ -188,6 +188,16 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 			{
 				domain: 'Probabilités conditionnelles',
 				subdomains: ['Tableaux croisés', 'Arbres pondérés', 'Indépendance', 'Problèmes en contexte']
+			},
+			{
+				domain: 'Variables aléatoires',
+				subdomains: [
+					"Loi d'une variable aléatoire",
+					'Compléter une loi',
+					'Espérance',
+					'Variance et écart-type',
+					'Jeux et gains'
+				]
 			}
 		]
 	},
