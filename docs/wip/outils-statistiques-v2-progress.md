@@ -72,3 +72,21 @@ Manche 4 (2026-10-02), PR (c) — recommandations suivies :
 82. Histogramme des moyennes : classes de largeur (2σ/√n)/2 alignées sur μ, intervalle μ ± 2σ/√n
     en couleur, le reste en gris.
 83. `.simuler` se termine par « Pour aller plus loin : .fréquence … · .échantillons … ».
+
+Manche 5 (2026-10-02), lot 2 « listes qualitatives » — recommandations suivies :
+
+84. Une liste est **qualitative** dès qu'une entrée n'est pas un nombre ; toutes ses entrées sont
+    alors des modalités (texte).
+85. Modalités comparées sans la casse ni les espaces autour, accents comptés ; affichées comme leur
+    première occurrence.
+86. `fille, garçon` → message « Sépare tes valeurs par des points-virgules », comme pour les nombres.
+87. **Le renommage ne réécrit plus le contenu des listes** (constaté : renommer `A` réécrivait la
+    liste `A ; B ; A ; O`).
+88. Actions d'une liste qualitative : effectifs et fréquences, barres / circulaire ; actions
+    numériques visibles mais désactivées avec leur raison ; « Tableau croisé avec M » (même longueur).
+89. `.croiser L M [fréquences | lignes | colonnes]` : tableau de la v1 sous la ligne de l'historique.
+90. `.filtrer L = fille et M = oui` (effectif, fréquence) ; `.filtrer N si …` crée une liste ;
+    `=`, `≠`, `<`, `>`, `≤`, `≥` (et `!=`, `<=`, `>=`), `et`, `ou`, `non`, parenthèses ; même longueur.
+91. Au plus 20 modalités distinctes, 40 caractères par modalité ; plafonds D8 inchangés.
+
+PR prévues : (a) listes qualitatives (Q84-Q88, Q91) ; (b) `.croiser` ; (c) `.filtrer`.
