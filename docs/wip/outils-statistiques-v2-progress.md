@@ -28,3 +28,19 @@ Manche 1 (2026-10-02) — toutes les recommandations suivies :
 70. **Tirage reproductible** (générateur à graine) : partagé par URL, testable au chiffre près.
 71. **Pas de nouvel objet** : une liste accepte aussi des mots et devient qualitative (effectifs,
     barres, tableau croisé ; pas de moyenne).
+
+Manche 2 (2026-10-02), lot 1 « simulation » — toutes les recommandations suivies :
+
+72. **On simule une loi** : deux listes appariées (valeurs, probabilités), comme l'action « Loi »
+    de la v1 ; un événement de probabilité p = la loi `1 ; 0` / `p ; 1−p`.
+73. **« Simuler n tirages »** → une nouvelle liste des EFFECTIFS observés par valeur (appariée aux
+    valeurs), pas la liste brute : tient sous le plafond D8 (200 valeurs) jusqu'à n = 100 000.
+    Historique : fréquences observées à côté des probabilités.
+74. **« Fréquence selon n »** : courbe de la moyenne des tirages selon n, droite à E(X) ; pour `1 ; 0`
+    c'est la fréquence du succès. Vue Données, même composant SVG ; n ≤ 10 000 ; non gardée en liste.
+75. **« N échantillons de taille n »** (1SPE-173) : proportion des échantillons avec
+    |m − μ| ≤ 2σ/√n, histogramme des N moyennes, μ, σ, 2σ/√n. N ≤ 1 000, n ≤ 1 000,
+    N × n ≤ 10⁶. Moyennes non gardées en liste.
+76. **Graine** : nouvelle à chaque simulation, affichée (« graine 4821 »), gardée dans l'URL.
+77. **Saisie de n** : actions sur la carte de la liste des probabilités avec un petit champ
+    (défaut 100), et commande dans la vue Calcul (`simuler(L, M, 1000)`). Bloc des fiches : lot à part.
