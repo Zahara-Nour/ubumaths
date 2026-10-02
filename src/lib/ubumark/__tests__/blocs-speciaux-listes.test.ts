@@ -24,16 +24,33 @@ const paragraphWith = (nodes: BlockNode[], text: string) =>
 
 describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé par du texte', () => {
 	it.each([
-		['variation', ['```variation', 'variable: x', 'domain: -inf, +inf']],
-		['probtree', ['```probtree', 'Rouge:1/2', 'Bleue:1/2']],
-		['trig', ['```trig', 'preset: quarters']],
-		['line', ['```line', 'start: 0', 'end: 5']]
-	])('%s : le texte intermédiaire est un paragraphe', (_, block) => {
+		['variation', 'variation-table', ['```variation', 'variable: x', 'domain: -inf, +inf']],
+		['probtree', 'probability-tree', ['```probtree', 'Rouge:1/2', 'Bleue:1/2']],
+		['trig', 'trig-circle', ['```trig', 'preset: quarters']],
+		['line', 'number-line', ['```line', 'start: 0', 'end: 5', 'step: 1']]
+	])('%s : le bloc, puis le texte intermédiaire en paragraphe', (_, type, block) => {
 		const nodes = inItem([...block, '', 'Voici le texte qui suit le bloc', '', '```']);
 
+		expect(nodes.map((n) => n.type)).toContain(type);
 		expect(paragraphWith(nodes, 'Voici le texte qui suit le bloc')).toBeDefined();
 		const codes = nodes.filter((n) => n.type === 'code-block');
 		expect(JSON.stringify(codes)).not.toContain('Voici le texte');
+	});
+});
+
+describe('bloc spécial non fermé, sans ``` plus loin (Q63 en liste)', () => {
+	it('un cercle, puis le texte — plus de ```trig affiché brut', () => {
+		const nodes = inItem(['```trig', 'preset: quarters', '', 'Voici la suite']);
+
+		expect(nodes.map((n) => n.type)).toEqual(['paragraph', 'trig-circle', 'paragraph']);
+		expect(JSON.stringify(nodes)).not.toContain('```trig');
+	});
+
+	it('repli « source » : formules exactement écrites (Q62)', () => {
+		const nodes = inItem(['```probtree', 'zz $ x  +  1 $', '', 'Voici la suite', '', '```']);
+		const code = nodes.find((n) => n.type === 'code-block') as { code: string } | undefined;
+
+		expect(code?.code).toBe('zz $ x  +  1 $');
 	});
 });
 

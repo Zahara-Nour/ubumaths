@@ -1545,6 +1545,55 @@ function parseTextFormattingPipeline(text: string): InlineNode[] {
 // LIST POST-PROCESSING
 // ============================================================================
 
+/** Les blocs spéciaux lus aussi dans les items de liste (Q66) */
+const SPECIAL_BLOCK_KINDS = [
+	{
+		is: isVariationBlockStart,
+		find: findVariationBlocks,
+		parse: parseVariationTable,
+		language: 'variation'
+	},
+	{
+		is: isProbTreeBlockStart,
+		find: findProbTreeBlocks,
+		parse: parseProbabilityTree,
+		language: 'probtree'
+	},
+	{
+		is: isTrigCircleBlockStart,
+		find: findTrigCircleBlocks,
+		parse: parseTrigCircle,
+		language: 'trig'
+	},
+	{
+		is: isNumberLineBlockStart,
+		find: findNumberLineBlocks,
+		parse: parseNumberLine,
+		language: 'line'
+	}
+] as const;
+
+/**
+ * Les blocs ```variation / ```probtree / ```trig / ```line ouverts en tête de
+ * `lines` (Q66 dans les listes) : leur fin selon leur repérage, et leur nœud
+ * — ou leur source en bloc de code s'ils sont invalides (Q64). null sinon.
+ */
+function specialBlockFromLines(lines: string[]): { node: BlockNode; endIndex: number } | null {
+	const opener = lines[0];
+	const kind = SPECIAL_BLOCK_KINDS.find((k) => k.is(opener));
+	if (!kind) return null;
+	const endIndex = kind.find(lines)[0]?.endIndex ?? 0;
+	// Les parseurs lisent jusqu'à `end` EXCLU (la fence de fin)
+	const closed = endIndex > 0 && isSpecialBlockEnd(lines[endIndex]);
+	const end = closed ? endIndex : endIndex + 1;
+	const node: BlockNode = kind.parse(lines, 0, end).node ?? {
+		type: 'code-block',
+		language: kind.language,
+		code: lines.slice(1, end).join('\n')
+	};
+	return { node, endIndex };
+}
+
 /**
  * Parse content that may contain code blocks into block nodes
  *
@@ -1562,52 +1611,6 @@ function parseTextFormattingPipeline(text: string): InlineNode[] {
  * @param options - Parse options
  * @returns Array of block nodes
  */
-/**
- * Les blocs ```variation / ```probtree / ```trig / ```line ouverts en tête de
- * `lines` (Q66 dans les listes) : leur fin selon leur repérage, et leur nœud
- * — ou leur source en bloc de code s'ils sont invalides (Q64). null sinon.
- */
-function specialBlockFromLines(lines: string[]): { node: BlockNode; endIndex: number } | null {
-	const opener = lines[0];
-	const kinds = [
-		{
-			is: isVariationBlockStart,
-			find: findVariationBlocks,
-			parse: parseVariationTable,
-			language: 'variation'
-		},
-		{
-			is: isProbTreeBlockStart,
-			find: findProbTreeBlocks,
-			parse: parseProbabilityTree,
-			language: 'probtree'
-		},
-		{
-			is: isTrigCircleBlockStart,
-			find: findTrigCircleBlocks,
-			parse: parseTrigCircle,
-			language: 'trig'
-		},
-		{
-			is: isNumberLineBlockStart,
-			find: findNumberLineBlocks,
-			parse: parseNumberLine,
-			language: 'line'
-		}
-	] as const;
-	const kind = kinds.find((k) => k.is(opener));
-	if (!kind) return null;
-	const endIndex = kind.find(lines)[0]?.endIndex ?? 0;
-	// Les parseurs lisent jusqu'à `end` EXCLU (la fence de fin)
-	const closed = endIndex > 0 && isSpecialBlockEnd(lines[endIndex]);
-	const end = closed ? endIndex : endIndex + 1;
-	const node: BlockNode = kind.parse(lines, 0, end).node ?? {
-		type: 'code-block',
-		language: kind.language,
-		code: lines.slice(1, end).join('\n')
-	};
-	return { node, endIndex };
-}
 
 /**
  * Le texte d'un item de liste entre deux blocs de code : paragraphes, mais
@@ -1626,12 +1629,7 @@ function textWithUnclosedBlocks(
 		isCourbeBlockStart(line.trim()) ||
 		isFigureBlockStart(line.trim()) ||
 		isStatChartBlockStart(line.trim()) !== null ||
-		[
-			isVariationBlockStart,
-			isProbTreeBlockStart,
-			isTrigCircleBlockStart,
-			isNumberLineBlockStart
-		].some((is) => is(line.trim()));
+		SPECIAL_BLOCK_KINDS.some((kind) => kind.is(line.trim()));
 	const start = lines.findIndex(opens);
 
 	const paragraph = (raw: string): BlockNode[] => {
@@ -1650,14 +1648,13 @@ function textWithUnclosedBlocks(
 	// tableau de variations sont en retrait sous leur en-tête)
 	const margin = lines[start].length - lines[start].trimStart().length;
 	const special = specialBlockFromLines(
-		lines
-			.slice(start)
-			.map((line) =>
-				restoreMathPlaceholders(
-					line.slice(Math.min(margin, line.length - line.trimStart().length)).trimEnd(),
-					placeholders
-				)
+		lines.slice(start).map((line) =>
+			// Formules EXACTEMENT écrites, comme au premier niveau (Q62, revue)
+			restoreRawMath(
+				line.slice(Math.min(margin, line.length - line.trimStart().length)).trimEnd(),
+				placeholders
 			)
+		)
 	);
 	if (special) {
 		({ node, endIndex } = special);
