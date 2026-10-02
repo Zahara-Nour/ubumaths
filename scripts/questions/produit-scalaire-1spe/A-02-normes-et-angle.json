@@ -27,11 +27,11 @@
 				},
 				{
 					"name": "k",
-					"expression": "0..1"
+					"expression": "1..5"
 				},
 				{
 					"name": "s",
-					"expression": "{{eval:2*k-1}}"
+					"expression": "{{eval:sign(k-3)}}"
 				},
 				{
 					"name": "t",
@@ -45,18 +45,18 @@
 			"conditions": ["a != b"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{P}} }{2}"
+					"expectedAnswer": "{{eval:P/2}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$",
-					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{a}}\\times {{b}}\\times {{if:s>0|\\dfrac{1}{2}|\\left(-\\dfrac{1}{2}\\right)}}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }$"
+					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{a}}\\times {{b}}\\times {{if:s>0|\\dfrac{1}{2}|{{if:s<0|\\left(-\\dfrac{1}{2}\\right)|0}}}}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }${{if:s==0| : les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.|}}"
 				]
 			}
 		},
 		{
-			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{t}}^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte, sous la forme $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{t}}^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -72,11 +72,11 @@
 				},
 				{
 					"name": "k",
-					"expression": "0..1"
+					"expression": "1..5"
 				},
 				{
 					"name": "s",
-					"expression": "{{eval:2*k-1}}"
+					"expression": "{{eval:sign(k-3)}}"
 				},
 				{
 					"name": "t",
@@ -90,13 +90,13 @@
 			"conditions": ["a != b"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{P}}\\sqrt{ {{m}} } }{2}"
+					"expectedAnswer": "{{eval:P/2*sqrt(m)}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$",
-					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{a}}\\times {{b}}\\times {{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)}}={{if:mod(a*b,2)==0|{{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2*sqrt(m)}} }|\\textcolor{{{color:primary.0}}}{ {{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2} }}}$"
+					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{a}}\\times {{b}}\\times {{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|{{if:s<0|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)|0}}}}={{if:s==0|\\textcolor{{{color:primary.0}}}{0}|{{if:mod(a*b,2)==0|{{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2*sqrt(m)}} }|\\textcolor{{{color:primary.0}}}{ {{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2} }}}}}${{if:s==0| : les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.|}}"
 				]
 			}
 		},
@@ -117,11 +117,11 @@
 				},
 				{
 					"name": "k",
-					"expression": "0..1"
+					"expression": "1..5"
 				},
 				{
 					"name": "s",
-					"expression": "{{eval:2*k-1}}"
+					"expression": "{{eval:sign(k-3)}}"
 				},
 				{
 					"name": "t",
@@ -147,14 +147,14 @@
 			"conditions": ["a != b"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{P}}\\sqrt{ {{m}} } }{2}"
+					"expectedAnswer": "{{eval:P/2*sqrt(m)}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$",
 					"${{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}$ rad correspond à ${{t}}^\\circ$.",
-					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos\\left({{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}\\right)={{a}}\\times {{b}}\\times {{if:m==1|{{if:s>0|\\dfrac{1}{2}|\\left(-\\dfrac{1}{2}\\right)}}|{{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)}}}}={{if:m==1|\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }|{{if:mod(a*b,2)==0|{{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2*sqrt(m)}} }|\\textcolor{{{color:primary.0}}}{ {{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2} }}}}}$"
+					"$\\vec{u}\\cdot\\vec{v}={{a}}\\times {{b}}\\times\\cos\\left({{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}\\right)={{a}}\\times {{b}}\\times {{if:s==0|0|{{if:m==1|{{if:s>0|\\dfrac{1}{2}|\\left(-\\dfrac{1}{2}\\right)}}|{{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)}}}}}}={{if:s==0|\\textcolor{{{color:primary.0}}}{0}|{{if:m==1|\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }|{{if:mod(a*b,2)==0|{{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2*sqrt(m)}} }|\\textcolor{{{color:primary.0}}}{ {{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\sqrt{ {{m}} } }{2} }}}}}}}${{if:s==0| : les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.|}}"
 				]
 			}
 		},
@@ -175,11 +175,11 @@
 				},
 				{
 					"name": "k",
-					"expression": "0..1"
+					"expression": "1..5"
 				},
 				{
 					"name": "s",
-					"expression": "{{eval:2*k-1}}"
+					"expression": "{{eval:sign(k-3)}}"
 				},
 				{
 					"name": "t",
@@ -193,26 +193,108 @@
 			"conditions": ["a != b"],
 			"blanks": [
 				{
-					"expectedAnswer": "\\frac{ {{P}} }{2}"
+					"expectedAnswer": "{{eval:P/2}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos(\\vec{u},\\vec{v})$",
-					"$\\vec{u}\\cdot\\vec{v}={{eval:a*sqrt(m)}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{eval:a*sqrt(m)}}\\times {{b}}\\times {{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)}}$",
-					"Or $\\sqrt{ {{m}} }\\times\\sqrt{ {{m}} }={{m}}$, donc $\\vec{u}\\cdot\\vec{v}={{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\times {{m}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }$"
+					"$\\vec{u}\\cdot\\vec{v}={{eval:a*sqrt(m)}}\\times {{b}}\\times\\cos({{t}}^\\circ)={{eval:a*sqrt(m)}}\\times {{b}}\\times {{if:s>0|\\dfrac{\\sqrt{ {{m}} }}{2}|{{if:s<0|\\left(-\\dfrac{\\sqrt{ {{m}} }}{2}\\right)|0=\\textcolor{{{color:primary.0}}}{0}}}}}$",
+					"{{if:s==0|Le produit scalaire est nul : les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.|Or $\\sqrt{ {{m}} }\\times\\sqrt{ {{m}} }={{m}}$, donc $\\vec{u}\\cdot\\vec{v}={{if:s>0||-}}\\dfrac{ {{eval:a*b}}\\times {{m}} }{2}=\\textcolor{{{color:primary.0}}}{ {{eval:P/2}} }$}}"
 				]
 			}
 		}
 	],
 	"testSpecs": [
 		{
+			"description": "v0 : 90°, vecteurs orthogonaux, 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 90°, cos 90° pris pour 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5",
+				"k": "3"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 90°, 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"m": "3",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : π/2, 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"m": "2",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : π/2, cos pris pour 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "7",
+				"m": "2",
+				"k": "3"
+			},
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 90°, 0",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "5",
+				"m": "3",
+				"k": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
 			"description": "v0 : 120°, −15/2",
 			"variationIndex": 0,
 			"variables": {
 				"a": "3",
 				"b": "5",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-\\frac{15}{2}"],
 			"expected": {
@@ -225,7 +307,7 @@
 			"variables": {
 				"a": "2",
 				"b": "6",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["6"],
 			"expected": {
@@ -238,7 +320,7 @@
 			"variables": {
 				"a": "3",
 				"b": "5",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-7{,}5"],
 			"expected": {
@@ -251,7 +333,7 @@
 			"variables": {
 				"a": "3",
 				"b": "5",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["\\frac{15}{2}"],
 			"expected": {
@@ -264,7 +346,7 @@
 			"variables": {
 				"a": "3",
 				"b": "5",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-15"],
 			"expected": {
@@ -277,7 +359,7 @@
 			"variables": {
 				"a": "3",
 				"b": "5",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["\\frac{-15}{2}"],
 			"expected": {
@@ -292,7 +374,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "3",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["\\frac{15\\sqrt{3}}{2}"],
 			"expected": {
@@ -306,7 +388,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "3",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["\\frac{15}{2}"],
 			"expected": {
@@ -320,7 +402,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "3",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["12{,}99"],
 			"expected": {
@@ -334,7 +416,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "3",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["\\frac{\\sqrt{675}}{2}"],
 			"expected": {
@@ -349,7 +431,7 @@
 				"a": "4",
 				"b": "3",
 				"m": "2",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-6\\sqrt{2}"],
 			"expected": {
@@ -363,7 +445,7 @@
 				"a": "4",
 				"b": "3",
 				"m": "2",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-\\frac{12\\sqrt{2}}{2}"],
 			"expected": {
@@ -378,7 +460,7 @@
 				"a": "4",
 				"b": "3",
 				"m": "2",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["6\\sqrt{2}"],
 			"expected": {
@@ -392,7 +474,7 @@
 				"a": "3",
 				"b": "4",
 				"m": "1",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["6"],
 			"expected": {
@@ -406,7 +488,7 @@
 				"a": "3",
 				"b": "4",
 				"m": "1",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["6\\sqrt{3}"],
 			"expected": {
@@ -420,7 +502,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "2",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["-\\frac{15\\sqrt{2}}{2}"],
 			"expected": {
@@ -434,7 +516,7 @@
 				"a": "3",
 				"b": "5",
 				"m": "2",
-				"k": "0"
+				"k": "1"
 			},
 			"answers": ["\\frac{15\\sqrt{2}}{2}"],
 			"expected": {
@@ -448,7 +530,7 @@
 				"a": "2",
 				"b": "3",
 				"m": "2",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["6"],
 			"expected": {
@@ -462,7 +544,7 @@
 				"a": "2",
 				"b": "3",
 				"m": "2",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["3\\sqrt{2}\\times\\sqrt{2}"],
 			"expected": {
@@ -477,7 +559,7 @@
 				"a": "2",
 				"b": "3",
 				"m": "2",
-				"k": "1"
+				"k": "5"
 			},
 			"answers": ["6\\sqrt{2}"],
 			"expected": {

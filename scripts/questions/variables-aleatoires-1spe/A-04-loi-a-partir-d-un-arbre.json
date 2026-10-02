@@ -17,9 +17,18 @@
 		{
 			"statement": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0.{{k}}$, indépendamment de l'autre. Un tir réussi rapporte ${{g}}$ points, un tir manqué fait perdre ${{m}}$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n```probtree\nR:0.{{k}}\n  R:0.{{k}}\n  \\overline{R}:0.{{eval:10-k}}\n\\overline{R}:0.{{eval:10-k}}\n  R:0.{{k}}\n  \\overline{R}:0.{{eval:10-k}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{eval:2*g}})=?$\n\n$P(X={{eval:g-m}})=?$",
 			"variables": [
-				{ "name": "k", "expression": "1..9" },
-				{ "name": "g", "expression": "3..6" },
-				{ "name": "m", "expression": "2..3" }
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "g",
+					"expression": "3..6"
+				},
+				{
+					"name": "m",
+					"expression": "2..3"
+				}
 			],
 			"conditions": ["k != 5", "g > m"],
 			"blanks": [
@@ -39,51 +48,77 @@
 			}
 		},
 		{
-			"statement": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$\n\n$P(X\\geqslant 1)=?$",
+			"statement": "Une urne contient ${{r}}$ {{if:r == 1|boule rouge|boules rouges}} et ${{n}}$ {{if:n == 1|boule noire|boules noires}}. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$\n\n$P(X{{if:w == 1|\\geqslant|\\leqslant}} 1)=?$",
 			"variables": [
-				{ "name": "r", "expression": "1..6" },
-				{ "name": "n", "expression": "1..6" }
+				{
+					"name": "r",
+					"expression": "1..9"
+				},
+				{
+					"name": "n",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..2"
+				}
 			],
-			"conditions": ["r != n", "gcd(r,n) = 1"],
+			"conditions": ["r != n", "gcd(r,n) = 1", "r+n <= 12"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:2*r*n/(r+n)^2}}"
 				},
 				{
-					"expectedAnswer": "{{eval:1-n^2/(r+n)^2}}"
+					"expectedAnswer": "{{eval:1-((2-w)*n^2+(w-1)*r^2)/(r+n)^2}}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$\\{X=1\\}$ : une seule boule rouge, soit au premier tirage, soit au second. $P(X=1)=\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n}} }+\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{r}} }{ {{eval:r+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*r*n/(r+n)^2}} }$.",
-					"$\\{X\\geqslant 1\\}$ est l'événement contraire de $\\{X=0\\}$ (aucune boule rouge, chemin $\\overline{R}$ puis $\\overline{R}$). $P(X\\geqslant 1)=1-\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:1-n^2/(r+n)^2}} }$."
+					"{{if:w == 1|$\\{X\\geqslant 1\\}$ est l'événement contraire de $\\{X=0\\}$ (aucune boule rouge, chemin $\\overline{R}$ puis $\\overline{R}$). $P(X\\geqslant 1)=1-\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:1-n^2/(r+n)^2}} }$.|$\\{X\\leqslant 1\\}$ est l'événement contraire de $\\{X=2\\}$ (deux boules rouges, chemin $R$ puis $R$). $P(X\\leqslant 1)=1-\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{r}} }{ {{eval:r+n}} }=\\textcolor{{{color:primary.0}}}{ {{eval:1-r^2/(r+n)^2}} }$.}}"
 				]
 			}
 		},
 		{
-			"statement": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{eval:r-1}}/{{eval:r+n-1}}\n  \\overline{R}:{{n}}/{{eval:r+n-1}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n-1}}\n  \\overline{R}:{{eval:n-1}}/{{eval:r+n-1}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$",
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{eval:r-1}}/{{eval:r+n-1}}\n  \\overline{R}:{{n}}/{{eval:r+n-1}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n-1}}\n  \\overline{R}:{{eval:n-1}}/{{eval:r+n-1}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{k}})=?$",
 			"variables": [
-				{ "name": "r", "expression": "2..7" },
-				{ "name": "n", "expression": "2..7" }
+				{
+					"name": "r",
+					"expression": "2..9"
+				},
+				{
+					"name": "n",
+					"expression": "2..9"
+				},
+				{
+					"name": "k",
+					"expression": "0..2"
+				}
 			],
-			"conditions": ["r != n"],
+			"conditions": ["r != n", "r+n <= 13"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:2*r*n/((r+n)*(r+n-1))}}"
+					"expectedAnswer": "{{eval:(n*(n-1)*(k-1)*(k-2)/2+2*r*n*k*(2-k)+r*(r-1)*k*(k-1)/2)/((r+n)*(r+n-1))}}"
 				}
 			],
 			"correction": {
 				"steps": [
-					"$\\{X=1\\}$ correspond à deux chemins : $R$ puis $\\overline{R}$, et $\\overline{R}$ puis $R$. Sans remise, la deuxième boule est tirée parmi ${{eval:r+n-1}}$ boules.",
-					"$P(X=1)=\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n-1}} }+\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{r}} }{ {{eval:r+n-1}} }=\\dfrac{ {{eval:2*r*n}} }{ {{eval:(r+n)*(r+n-1)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*r*n/((r+n)*(r+n-1))}} }$."
+					"{{if:k == 1|$\\{X=1\\}$ correspond à deux chemins : $R$ puis $\\overline{R}$, et $\\overline{R}$ puis $R$. Sans remise, la deuxième boule est tirée parmi ${{eval:r+n-1}}$ boules.|{{if:k == 0|$\\{X=0\\}$ correspond au seul chemin $\\overline{R}$ puis $\\overline{R}$. Sans remise, la deuxième boule est tirée parmi ${{eval:r+n-1}}$ boules, dont ${{eval:n-1}}$ {{if:n == 2|noire|noires}}.|$\\{X=2\\}$ correspond au seul chemin $R$ puis $R$. Sans remise, la deuxième boule est tirée parmi ${{eval:r+n-1}}$ boules, dont ${{eval:r-1}}$ {{if:r == 2|rouge|rouges}}.}}}}",
+					"{{if:k == 1|$P(X=1)=\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{n}} }{ {{eval:r+n-1}} }+\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{r}} }{ {{eval:r+n-1}} }=\\dfrac{ {{eval:2*r*n}} }{ {{eval:(r+n)*(r+n-1)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:2*r*n/((r+n)*(r+n-1))}} }$.|{{if:k == 0|$P(X=0)=\\dfrac{ {{n}} }{ {{eval:r+n}} }\\times\\dfrac{ {{eval:n-1}} }{ {{eval:r+n-1}} }=\\dfrac{ {{eval:n*(n-1)}} }{ {{eval:(r+n)*(r+n-1)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:n*(n-1)/((r+n)*(r+n-1))}} }$.|$P(X=2)=\\dfrac{ {{r}} }{ {{eval:r+n}} }\\times\\dfrac{ {{eval:r-1}} }{ {{eval:r+n-1}} }=\\dfrac{ {{eval:r*(r-1)}} }{ {{eval:(r+n)*(r+n-1)}} }=\\textcolor{{{color:primary.0}}}{ {{eval:r*(r-1)/((r+n)*(r+n-1))}} }$.}}}}"
 				]
 			}
 		},
 		{
 			"statement": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0.{{a}}$, le second avec la probabilité $0.{{b}}$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n```probtree\nV:0.{{a}}\n  V:0.{{b}}\n  \\overline{V}:0.{{eval:10-b}}\n\\overline{V}:0.{{eval:10-a}}\n  V:0.{{b}}\n  \\overline{V}:0.{{eval:10-b}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$",
 			"variables": [
-				{ "name": "a", "expression": "1..9" },
-				{ "name": "b", "expression": "1..9" }
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
 			],
 			"conditions": ["a != b", "a != 5", "b != 5"],
 			"blanks": [
@@ -103,93 +138,235 @@
 		{
 			"description": "v0 : p = 0,7 → 0,49 et 0,42",
 			"variationIndex": 0,
-			"variables": { "k": "7", "g": "4", "m": "2" },
+			"variables": {
+				"k": "7",
+				"g": "4",
+				"m": "2"
+			},
 			"answers": ["\\frac{49}{100}", "\\frac{21}{50}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v0 : décimaux 0,49 et 0,42",
 			"variationIndex": 0,
-			"variables": { "k": "7", "g": "4", "m": "2" },
+			"variables": {
+				"k": "7",
+				"g": "4",
+				"m": "2"
+			},
 			"answers": ["0,49", "0,42"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v0 : un seul des deux chemins compté (0,21)",
 			"variationIndex": 0,
-			"variables": { "k": "7", "g": "4", "m": "2" },
+			"variables": {
+				"k": "7",
+				"g": "4",
+				"m": "2"
+			},
 			"answers": ["0,49", "0,21"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v0 : 42/100 non simplifiée",
 			"variationIndex": 0,
-			"variables": { "k": "7", "g": "4", "m": "2" },
+			"variables": {
+				"k": "7",
+				"g": "4",
+				"m": "2"
+			},
 			"answers": ["0,49", "\\frac{42}{100}"],
-			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
 		},
 		{
 			"description": "v1 : 2 rouges, 3 noires → 12/25 et 16/25",
 			"variationIndex": 1,
-			"variables": { "r": "2", "n": "3" },
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"w": "1"
+			},
 			"answers": ["\\frac{12}{25}", "\\frac{16}{25}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v1 : décimaux 0,48 et 0,64",
 			"variationIndex": 1,
-			"variables": { "r": "2", "n": "3" },
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"w": "1"
+			},
 			"answers": ["0,48", "0,64"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v1 : P(X≥1) confondu avec P(X=2) (4/25)",
 			"variationIndex": 1,
-			"variables": { "r": "2", "n": "3" },
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"w": "1"
+			},
 			"answers": ["\\frac{12}{25}", "\\frac{4}{25}"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v2 : 3 rouges, 5 noires → 30/56 = 15/28",
 			"variationIndex": 2,
-			"variables": { "r": "3", "n": "5" },
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "1"
+			},
 			"answers": ["\\frac{15}{28}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v2 : calcul fait avec remise (30/64 = 15/32)",
 			"variationIndex": 2,
-			"variables": { "r": "3", "n": "5" },
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "1"
+			},
 			"answers": ["\\frac{15}{32}"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
 		},
 		{
 			"description": "v2 : 30/56 non simplifiée",
 			"variationIndex": 2,
-			"variables": { "r": "3", "n": "5" },
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "1"
+			},
 			"answers": ["\\frac{30}{56}"],
-			"expected": { "status": "unoptimal_form", "constraintViolations": ["reducedFractions"] }
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
 		},
 		{
 			"description": "v3 : 0,6 et 0,3 → 0,42 + 0,12 = 27/50",
 			"variationIndex": 3,
-			"variables": { "a": "6", "b": "3" },
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
 			"answers": ["\\frac{27}{50}"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v3 : décimal 0,54 accepté",
 			"variationIndex": 3,
-			"variables": { "a": "6", "b": "3" },
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
 			"answers": ["0,54"],
-			"expected": { "status": "correct" }
+			"expected": {
+				"status": "correct"
+			}
 		},
 		{
 			"description": "v3 : produit des deux probabilités vertes (0,18)",
 			"variationIndex": 3,
-			"variables": { "a": "6", "b": "3" },
+			"variables": {
+				"a": "6",
+				"b": "3"
+			},
 			"answers": ["0,18"],
-			"expected": { "status": "incorrect" }
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P(X≤1) = 1 − 4/25 = 21/25",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"w": "2"
+			},
+			"answers": ["\\frac{12}{25}", "\\frac{21}{25}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : P(X≤1) confondu avec P(X≥1) (16/25)",
+			"variationIndex": 1,
+			"variables": {
+				"r": "2",
+				"n": "3",
+				"w": "2"
+			},
+			"answers": ["\\frac{12}{25}", "\\frac{16}{25}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 rouges, 5 noires, P(X=0) = 20/56 = 5/14",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "0"
+			},
+			"answers": ["\\frac{5}{14}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : P(X=0) avec remise (25/64)",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "0"
+			},
+			"answers": ["\\frac{25}{64}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3 rouges, 5 noires, P(X=2) = 6/56 = 3/28",
+			"variationIndex": 2,
+			"variables": {
+				"r": "3",
+				"n": "5",
+				"k": "2"
+			},
+			"answers": ["\\frac{3}{28}"],
+			"expected": {
+				"status": "correct"
+			}
 		}
 	],
 	"options": {

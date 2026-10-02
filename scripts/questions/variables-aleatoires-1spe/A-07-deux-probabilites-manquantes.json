@@ -68,7 +68,7 @@
 			}
 		},
 		{
-			"statement": "Le tableau ci-dessous donne la loi de probabilité d'une variable aléatoire $X$. Les valeurs extrêmes ${{u}}$ et ${{eval:u+s+t+w}}$ ont la même probabilité, notée $p$.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | $p$ | ${{eval:b/24}}$ | ${{eval:c/24}}$ | $p$ |\n\nRéponds par une fraction irréductible.\n\n$p=?$",
+			"statement": "Le tableau ci-dessous donne la loi de probabilité d'une variable aléatoire $X$. Les valeurs extrêmes ${{u}}$ et ${{eval:u+s+t+w}}$ ont la même probabilité, notée $p$.\n\n| $x_k$ | ${{u}}$ | ${{eval:u+s}}$ | ${{eval:u+s+t}}$ | ${{eval:u+s+t+w}}$ |\n|---|---|---|---|---|\n| $P(X=x_k)$ | $p$ | ${{eval:b/m}}$ | ${{eval:c/m}}$ | $p$ |\n\nRéponds par une fraction irréductible.\n\n$p=?$",
 			"variables": [
 				{
 					"name": "u",
@@ -87,28 +87,32 @@
 					"expression": "1..3"
 				},
 				{
+					"name": "m",
+					"expression": "20|24|30"
+				},
+				{
 					"name": "q",
-					"expression": "1..7"
+					"expression": "1..{{eval:floor(m/4)+1}}"
 				},
 				{
 					"name": "b",
-					"expression": "1..12"
+					"expression": "1..{{eval:m/2}}"
 				},
 				{
 					"name": "c",
-					"expression": "eval:24-2*q-b"
+					"expression": "eval:m-2*q-b"
 				}
 			],
 			"conditions": ["c >= 1", "b != c"],
 			"blanks": [
 				{
-					"expectedAnswer": "{{eval:q/24}}"
+					"expectedAnswer": "{{eval:q/m}}"
 				}
 			],
 			"correction": {
 				"steps": [
-					"La somme des probabilités vaut $1$ : $p+{{eval:b/24}}+{{eval:c/24}}+p=1$, soit $2p=1-{{eval:(b+c)/24}}={{eval:2*q/24}}$.",
-					"Donc $p=\\textcolor{{{color:primary.0}}}{ {{eval:q/24}} }$."
+					"La somme des probabilités vaut $1$ : $p+{{eval:b/m}}+{{eval:c/m}}+p=1$, soit $2p=1-{{eval:(b+c)/m}}={{eval:2*q/m}}$.",
+					"Donc $p=\\textcolor{{{color:primary.0}}}{ {{eval:q/m}} }$."
 				]
 			}
 		},
@@ -249,7 +253,8 @@
 				"w": "1",
 				"q": "4",
 				"b": "6",
-				"c": "10"
+				"c": "10",
+				"m": "24"
 			},
 			"answers": ["\\frac{1}{6}"],
 			"expected": {
@@ -266,7 +271,8 @@
 				"w": "1",
 				"q": "4",
 				"b": "6",
-				"c": "10"
+				"c": "10",
+				"m": "24"
 			},
 			"answers": ["\\frac{4}{24}"],
 			"expected": {
@@ -284,7 +290,8 @@
 				"w": "1",
 				"q": "4",
 				"b": "6",
-				"c": "10"
+				"c": "10",
+				"m": "24"
 			},
 			"answers": ["\\frac{1}{3}"],
 			"expected": {
@@ -341,6 +348,42 @@
 				"z": "7"
 			},
 			"answers": ["0,35", "0,25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2p = 1 − 1/5 − 1/3 = 7/15 → p = 7/30",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-2",
+				"s": "1",
+				"t": "2",
+				"w": "1",
+				"m": "30",
+				"q": "7",
+				"b": "6",
+				"c": "10"
+			},
+			"answers": ["\\frac{7}{30}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : division par 2 oubliée (7/15)",
+			"variationIndex": 1,
+			"variables": {
+				"u": "-2",
+				"s": "1",
+				"t": "2",
+				"w": "1",
+				"m": "30",
+				"q": "7",
+				"b": "6",
+				"c": "10"
+			},
+			"answers": ["\\frac{7}{15}"],
 			"expected": {
 				"status": "incorrect"
 			}

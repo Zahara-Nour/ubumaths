@@ -51,3 +51,16 @@ fixe, index piloté par le signe de E(G) ; cas équitable 29 à 34 % des tirages
 `%` et `or` refusés dans une condition ; `{{eval:E;();d}}` fait échouer la génération ; variable
 calculée sans `eval` substituée sans parenthèses ; `{{eval:sqrt(21/25)}}` rendu `\dfrac{1}{5}\sqrt{21}` ;
 `1,136` pour un arrondi au centième jugé « incorrect » sans message de forme ; `x_i` → `x_\imaginaryI` ; pas de `sign()` dans `eval` ; `;d;()` échoue aussi.
+
+## Élargissement de la variété des énoncés (2026-10-02, « occupe-toi des points pédagogiques »)
+
+Mesure : énoncés distincts sur 150 tirages par variation. Tout ce qui était sous ~40 a été élargi
+(avant → après) : A-03 v2 9 → 60 (somme de deux dés : `X = k`, `X ≤ k`, `X ≥ k`, `X < k`, `X > k`,
+`a ≤ X ≤ b` ; tableau des effectifs par somme dans le corrigé) ; A-03 v3 NOUVELLE, dé tétraédrique +
+dé cubique (46) ; A-04 v1 22 → 71 (urne jusqu'à 12 boules, `P(X ≥ 1)` ou `P(X ≤ 1)`) ; A-04 v2
+30 → 89 (`P(X = k)`, k = 0, 1 ou 2) ; A-06 v2 5 → 106 (dés à 4/6/8/10/12/20 faces, événement tiré) ;
+A-07 v1 : réponses 7 → dénominateurs 20/24/30 ; B-02 v1 23 → 58, v2 33 → 103 (jeu de 32 ou 52
+cartes) ; B-03 21/23/26 → 73/124/121 (espérance négative « perd en moyenne », heure tirée, dé à
+n faces) ; C-02 v0 20 → 63, v2 40 → 81. Pluriels corrigés (« 1 boule noire », « 1 point »).
+Specs vertes (115), 3 450 tirages recalculés en Python par énumération des issues : 0 écart, lois
+de somme 1, aucun `imaginaryI`, `{{` ni NaN. Variations non touchées : déjà ≥ 46 énoncés.

@@ -14,40 +14,44 @@
 			"variables": [
 				{
 					"name": "m",
-					"expression": "3..25"
+					"expression": "-49..49"
 				}
 			],
-			"conditions": ["mod(m,10) != 0"],
+			"conditions": ["mod(m,10) != 0", "abs(m) >= 3"],
 			"choices": [
 				{
-					"content": "Sur un grand nombre de parties, le joueur gagne en moyenne environ ${{eval:m/10;d}}$ € par partie."
+					"content": "Sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie."
 				},
 				{
-					"content": "À chaque partie, le joueur gagne exactement ${{eval:m/10;d}}$ €."
+					"content": "À chaque partie, le joueur {{if:m > 0|gagne|perd}} exactement ${{eval:abs(m)/10;d}}$ €."
 				},
 				{
-					"content": "Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €."
+					"content": "Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €."
 				},
 				{
-					"content": "Sur $100$ parties, le joueur est certain de gagner exactement ${{eval:10*m}}$ €."
+					"content": "Sur $100$ parties, le joueur est certain de {{if:m > 0|gagner|perdre}} exactement ${{eval:10*abs(m)}}$ €."
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"L'espérance est la valeur moyenne prise par $G$ lorsqu'on répète la partie un grand nombre de fois.",
+					"L'espérance est la valeur moyenne prise par $G$ lorsqu'on répète la partie un grand nombre de fois.{{if:m < 0| Ici $E(G)<0$ : en moyenne, le joueur perd de l'argent.}}",
 					"Elle ne dit rien d'une partie isolée : le gain d'une partie est l'une des valeurs prises par $G$, et ${{eval:m/10;d}}$ n'en fait pas forcément partie.",
-					"Sur $100$ parties, le gain total est seulement proche de $100\\times{{eval:m/10;d}}={{eval:10*m}}$ € en moyenne ; il n'est jamais certain.",
-					"Réponse : **sur un grand nombre de parties, le joueur gagne en moyenne environ ${{eval:m/10;d}}$ € par partie**."
+					"Sur $100$ parties, le gain total est seulement proche de $100\\times{{eval:m/10;d;()}}={{eval:10*m}}$ € en moyenne ; il n'est jamais certain.",
+					"Réponse : **sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie**."
 				]
 			}
 		},
 		{
-			"statement": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $8$ h et $9$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"statement": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre ${{h}}$ h et ${{eval:h+1}}$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
 			"variables": [
 				{
+					"name": "h",
+					"expression": "7..18"
+				},
+				{
 					"name": "m",
-					"expression": "21..45"
+					"expression": "11..49"
 				}
 			],
 			"conditions": ["mod(m,10) != 0"],
@@ -75,14 +79,18 @@
 			}
 		},
 		{
-			"statement": "Un dé à six faces, numérotées de $1$ à $6$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+			"statement": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
 			"variables": [
 				{
+					"name": "n",
+					"expression": "4|6|8|10|12"
+				},
+				{
 					"name": "m",
-					"expression": "21..49"
+					"expression": "11..{{eval:10*n-1}}"
 				}
 			],
-			"conditions": ["mod(m,10) != 0", "m != 35"],
+			"conditions": ["mod(m,10) != 0", "m != 5*(n+1)"],
 			"choices": [
 				{
 					"content": "Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de ${{eval:m/10;d}}$."
@@ -156,7 +164,8 @@
 			"description": "v1 : moyenne sur un grand nombre de répétitions",
 			"variationIndex": 1,
 			"variables": {
-				"m": "23"
+				"m": "23",
+				"h": "8"
 			},
 			"selectedChoices": [0],
 			"expected": {
@@ -167,7 +176,8 @@
 			"description": "v1 : valeur exacte à chaque fois refusée",
 			"variationIndex": 1,
 			"variables": {
-				"m": "23"
+				"m": "23",
+				"h": "8"
 			},
 			"selectedChoices": [1],
 			"expected": {
@@ -178,7 +188,8 @@
 			"description": "v1 : valeur la plus probable / fréquente refusée",
 			"variationIndex": 1,
 			"variables": {
-				"m": "23"
+				"m": "23",
+				"h": "8"
 			},
 			"selectedChoices": [2],
 			"expected": {
@@ -189,7 +200,8 @@
 			"description": "v1 : deux cases cochées refusées",
 			"variationIndex": 1,
 			"variables": {
-				"m": "23"
+				"m": "23",
+				"h": "8"
 			},
 			"selectedChoices": [0, 3],
 			"expected": {
@@ -200,7 +212,8 @@
 			"description": "v2 : moyenne sur un grand nombre de répétitions",
 			"variationIndex": 2,
 			"variables": {
-				"m": "38"
+				"m": "38",
+				"n": "6"
 			},
 			"selectedChoices": [0],
 			"expected": {
@@ -211,7 +224,8 @@
 			"description": "v2 : valeur exacte à chaque fois refusée",
 			"variationIndex": 2,
 			"variables": {
-				"m": "38"
+				"m": "38",
+				"n": "6"
 			},
 			"selectedChoices": [1],
 			"expected": {
@@ -222,7 +236,8 @@
 			"description": "v2 : valeur la plus probable / fréquente refusée",
 			"variationIndex": 2,
 			"variables": {
-				"m": "38"
+				"m": "38",
+				"n": "6"
 			},
 			"selectedChoices": [2],
 			"expected": {
@@ -233,9 +248,56 @@
 			"description": "v2 : deux cases cochées refusées",
 			"variationIndex": 2,
 			"variables": {
-				"m": "38"
+				"m": "38",
+				"n": "6"
 			},
 			"selectedChoices": [0, 3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : E(G) = −1,5 → perd en moyenne 1,5 €",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-15"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : E(G) = −1,5, « perd exactement » refusé",
+			"variationIndex": 0,
+			"variables": {
+				"m": "-15"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : dé à 10 faces, E(X) = 7,3",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"m": "73"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : dé à 10 faces, plus fréquent refusé",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"m": "73"
+			},
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}

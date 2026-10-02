@@ -19,14 +19,14 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "6..20"
+					"expression": "4..30"
 				},
 				{
 					"name": "b",
-					"expression": "2..5"
+					"expression": "1..8"
 				}
 			],
-			"conditions": ["mod(a+2*b,3) == 0"],
+			"conditions": ["mod(a+2*b,3) == 0", "b < a"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:(a+2*b)/6}}"
@@ -83,14 +83,14 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "4..20"
+					"expression": "4..30"
 				},
 				{
 					"name": "b",
-					"expression": "1..5"
+					"expression": "1..8"
 				}
 			],
-			"conditions": ["mod(a+3*b,2) == 0", "a != b"],
+			"conditions": ["mod(a+3*b,2) == 0", "b < a"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:(a+3*b)/8}}"
@@ -245,6 +245,30 @@
 			"answers": ["72"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a = 25, b = 7 → m = 39/6 = 6,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "25",
+				"b": "7"
+			},
+			"answers": ["6,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : a = 28, b = 8 → m = 52/8 = 6,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "28",
+				"b": "8"
+			},
+			"answers": ["6,5"],
+			"expected": {
+				"status": "correct"
 			}
 		}
 	],

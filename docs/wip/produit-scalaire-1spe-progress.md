@@ -41,5 +41,29 @@ Figures : le DSL ne règle pas la position du nom d'un point → noms posés par
 pas en italique ; ancrage écran ≠ PDF). Ajout possible à geometry-core (non fait) :
 `point(…, etiquette="haut-gauche")`, `texte(…, ancre=…)` aligné écran/PDF.
 
-Points à relire : A-02 sans 90° ; C-01 n'atteint pas 30/60/120/150° par coordonnées entières
-(travaillés par normes et u·v) ; C-03 v 120° : 4 triangles distincts ; B-03 v3 ne contrôle que u·v.
+## Points à relire — traités le 2026-10-02 (branche `fix/questions-points-pedagogiques`, pas encore en base)
+
+Vérifié pour chaque modèle touché : `question:specs --instances 150` vert, 150 tirages par variation
+recalculés en Python (0 écart), `buildFigureScene` sans erreur ni avertissement, aucun résidu
+(`imaginaryI`, `lVert`, `{{`, NaN). **Les brouillons en base sont à mettre à jour (David).**
+
+- **A-02** : 90° tiré dans les 4 variations (`k` ∈ 1..5, `s = sign(k-3)` → 20 % attendu ; mesuré
+  15 %, 14 %, 19 %, 19 % sur 150), π/2 dans la variation en radians. Réponse 0, correction
+  « cos 90° = 0 … les vecteurs sont orthogonaux ». Réponse attendue passée à `{{eval:…}}` (sinon
+  `\frac{0}{2}`) ; énoncé v1 : « un entier, ou une écriture k√n… ». Specs ajoutées (90° → 0).
+- **C-03** : v 120° — 15 triangles distincts sur 150 tirages (au lieu de 4) ; v 60° — 18 (au lieu
+  de 8). Cause du 4 : la condition `m != 2*n` (utile à 60°, où elle exclut l'équilatéral) éliminait
+  à 120° la famille (3, 5, 7) ; retirée pour 120°. Plages élargies (m, n, facteur k ≤ 4 ou 5) ;
+  côtés jusqu'à **35 cm** (120°) et 32 cm (60°), rapport des côtés ≤ 2,2 conservé. Figures relues.
+- **C-01** : deux variations ajoutées (v4 : 30°/150°, v5 : 60°/120°), coordonnées en k√3 et k
+  (u(√3 ; 1), v(2 ; 2√3)…), normes entières, cos exact puis angle. 92 et 94 couples distincts ;
+  angles équilibrés (30 : 78, 150 : 72, 60 : 82, 120 : 68). 12 specs ajoutées.
+- **B-04-orthogonaux-ou-non** (nouveau, « Propriétés ») : QCM 2 choix, ordre fixe,
+  `correctChoiceIndex` = `abs(sign(N))`. v0 coordonnées, v1 normes + angle en degrés, v2 en radians
+  (mesures négatives ou > π : −π/2, 3π/2…), v3 points A, B, C. Orthogonaux : 40 %, 39 %, 53 %, 46 %.
+  B-03 laissé tel quel : sa v3 contrôle la VALEUR de u·v, B-04 la CONCLUSION (complémentaires).
+- **A-05** : le milieu I de [BC] interdit un trait sur BC (il tombe sur I : caché par [AI] dans le
+  triangle, sur le nom I dans le carré — essayé et regardé). Codage retenu : chaque côté coupé en
+  deux moitiés marquées d'un même trait (points milieux masqués), donc tous les côtés égaux ET I
+  milieu de [BC]. Lisible, mais inhabituel : à valider par David.
+- Hors champ, vu en passant : le rectangle de A-05 v2 n'a pas de marque d'angle droit.
