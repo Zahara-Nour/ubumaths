@@ -85,3 +85,65 @@ Anon : rien. Personne ne perd d'accès. (Correction : avant, l'élève ne lisait
   écriture (vérifié par le nombre de lignes) ; prof / admin tout ; anon rien ; non-régression des séries
   d'évaluation.
 - Q125 oui : le lien suit la série (modification visible ; une série est retirée à chaque usage).
+
+### Étape 2 — état (2026-10-02, non commité)
+
+**Fait**
+
+- Tests d'intégration D'ABORD : `tests/integration/series-de-chapitre.test.ts` (26 cas). Preuve rouge :
+  sans la migration, `beforeAll` échoue (table absente) → 22/22 non passés ; migration SANS
+  l'élargissement de `student_can_read_series` → 4 rouges ; branche chapitre sans `published_at <= now()`
+  → 2 rouges ; sans `is_visible` + `is_class_student` → 5 rouges.
+- Migration `20261002100000_series_de_chapitre.sql` : table `chapter_series` (form `flash` | `interactive`,
+  défaut flash ; `published_at`, `section_id` / `section_order` + clé composite ; unique
+  (chapitre, série) ; FK chapitre ET série en CASCADE), trigger `published_at_horloge_base`, RLS calquée
+  sur `chapter_worksheets` sans la garde « distribuée », `revoke all from anon, public` + grants explicites,
+  `student_can_read_series` élargie par OU. Additive, rollback en en-tête. **Pas poussée** (`db:migrate`).
+- Code : `server/chapter-series.ts` (lister, rattacher, forme, retirer — chaque écriture vérifiée par
+  `.select()`), `validation/chapter-series.ts` (Zod), publication (`setContentPublication` type
+  `series`), sections (`assignToSection` type `series` + contrôle « zéro ligne → erreur » pour TOUS les
+  types), page prof (actions `linkSeries` / `setSeriesForm` / `unlinkSeries`, boîte « Ajouter une
+  série » + lien « Composer au panier »), plan prof (ligne Série, bouton de forme, publier, retirer),
+  élève (`ChapterSeriesCard` : titre = lien `/automaths/test?categories=…&mode=…`, sans note).
+- Types provisoires `DatabaseWithChapterSeries` dans `database-helpers.ts` (un seul transtypage,
+  `asChapterSeriesClient`) : à retirer après `db:types`.
+
+**Reste**
+
+- Revue `code-reviewer` + `security-auditor` (session principale), puis PR. Ordre de livraison : la
+  migration doit être en prod AVANT le code (sinon la page prof de chapitre fait 500 :
+  `listChapterSeries` échoue) → soit deux PR (migration, `db:migrate`, `db:types`, puis code), soit une
+  PR avec `db:migrate` avant le déploiement.
+
+**Doutes (à trancher par David)**
+
+- S2 « programmée » : le trigger `published_at_horloge_base` réécrit toute date publiée en `now()` à
+  l'UPDATE (Q43 = A : pas de publication programmée). Seuls publier / retirer sont proposés, comme les
+  autres contenus. Programmer demanderait de revenir sur Q43.
+- Unicité (chapitre, série) : la même série ne peut pas figurer deux fois (ex. flash ET entraînement).
+- Les modèles de chapitre (`createTemplateFromChapter`, instanciation) n'emportent PAS les séries.
+- Pas de route REST `api/teacher/chapters/[id]/series` : l'écran passe par les actions de page (comme
+  les fiches) ; le rangement passe par `sections/assign` existant.
+
+### Étape 2 — décisions Q126–Q129 et corrections (2026-10-02, non commité)
+
+- **Q126 oui** : publier / retirer seulement (pas de programmation, Q43). L'écran ne propose que
+  `PublicationToggle` (Publier / Retirer).
+- **Q127 oui** : unicité (chapitre, série) conservée.
+- **Q128** : les modèles n'emportent pas les séries → `hasContent` de la page prof ne compte plus les
+  séries (aligné sur `hasContent(snapshot)` de `chapter-templates.ts`).
+- **Q129 (b)** : rattacher la série d'une évaluation NON TERMINÉE (statut ≠ `archived` et date limite non
+  dépassée : brouillon = à venir, publiée = en cours) → rattachement fait + avertissement « Cette série
+  est aussi celle d'une évaluation en cours : tes élèves pourront s'entraîner dessus avant. »
+  (`findOngoingEvaluation` / `isEvaluationUnfinished`).
+- **Propriété** : WITH CHECK de la policy prof exige `series.created_by = auth.uid() or is_admin()`
+  (preuve rouge : 2 cas rouges sans la clause) ; `linkSeries` vérifie aussi côté code (→ 404).
+- **Codes** : introuvable / refusé → 404 ; doublon → 409 ; 23503 → 409 « Cette série n'existe plus. » ;
+  `sections/assign` zéro ligne → 404.
+
+**Découpage en deux livraisons** (`db:types` lit la prod)
+
+- A (migration) : `supabase/migrations/20261002100000_series_de_chapitre.sql`,
+  `tests/integration/series-de-chapitre.test.ts` (base seule, sans code applicatif), ce document.
+- B (code, après `db:migrate` + `db:types`) : tout le reste ; retirer alors `DatabaseWithChapterSeries`
+  et `asChapterSeriesClient`.
