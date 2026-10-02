@@ -3,11 +3,12 @@
  *
  * In the custom parser:
  * - 'e' is parsed as MathConstantNode('euler') - Euler's number
- * - 'i' is parsed as ComplexNode(0, 1) - imaginary unit
+ * - 'i' is parsed as ComplexNode(0, 1) - imaginary unit, sauf en indice (x_i : variable)
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseCustomSafe } from '../index';
+import { parseCustomSafe, parseCustomRD } from '../index';
+import { toLatex } from '../../../latex-generator';
 import {
 	isMathConstant,
 	isEulerConstant,
@@ -109,6 +110,28 @@ describe('Reserved constants in custom parser', () => {
 
 			// Should be: a + (b * i)
 			expect(result.ast!.type).toBe('addition');
+		});
+	});
+	// Un `i` en indice est un nom d'indice (x_i, p_i, u_{i+1}), jamais l'unité imaginaire
+	describe("'i' en indice", () => {
+		it.each([
+			['x_i', 'x_i'],
+			['p_i', 'p_i'],
+			['u_{i+1}', 'u_{i + 1}'],
+			['a_{ij}', 'a_{i j}'],
+			['x_i^2', 'x_i^2']
+		])('%s garde un i variable (%s)', (input, latex) => {
+			const result = parseCustomSafe(input);
+			expect(result.errors).toHaveLength(0);
+			expect(toLatex(result.ast!)).toBe(latex);
+			expect(toLatex(parseCustomRD(input))).toBe(latex);
+		});
+
+		it("hors indice, 'i' reste l'unité imaginaire (z = 1 + i, x_i + i)", () => {
+			const z = parseCustomSafe('1+i');
+			expect(toLatex(z.ast!)).toBe('1 + \\imaginaryI');
+			expect(toLatex(parseCustomSafe('x_i+i').ast!)).toBe('x_i + \\imaginaryI');
+			expect(toLatex(parseCustomRD('x_i+i'))).toBe('x_i + \\imaginaryI');
 		});
 	});
 });

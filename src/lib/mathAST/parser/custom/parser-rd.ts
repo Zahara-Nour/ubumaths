@@ -141,6 +141,8 @@ class CustomRDParser {
 	private readonly errors: ParseError[] = [];
 	private currentToken: CustomToken;
 	private holeCounter: number = 0;
+	/** Profondeur d'indice : un `i` en indice (x_i, u_{i+1}) est un nom d'indice, pas l'unité imaginaire */
+	private subscriptDepth: number = 0;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -537,9 +539,20 @@ class CustomRDParser {
 	}
 
 	/**
-	 * Parse the operand of a subscript (handles braces and single tokens)
+	 * Parse the operand of a subscript (handles braces and single tokens).
+	 * Dans un indice, `i` est une variable (x_i, p_i, u_{i+1}) : l'unité imaginaire n'y a
+	 * pas de sens, et la lire ainsi rendait `x_\imaginaryI` dans un énoncé.
 	 */
 	private parseSubscriptOperand(): MathNode {
+		this.subscriptDepth++;
+		try {
+			return this.parseSubscriptOperandContent();
+		} finally {
+			this.subscriptDepth--;
+		}
+	}
+
+	private parseSubscriptOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
@@ -807,7 +820,7 @@ class CustomRDParser {
 		if (letter === 'e') {
 			return this.applyColor(euler());
 		}
-		if (letter === 'i') {
+		if (letter === 'i' && this.subscriptDepth === 0) {
 			return this.applyColor(complex(MathAST.number('0'), MathAST.number('1')));
 		}
 
