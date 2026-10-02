@@ -54,6 +54,7 @@ import {
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
+import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -1127,28 +1128,65 @@ function acceptsVariablePrefix(blank: InstanceBlank): boolean {
 }
 
 /**
- * Réponses (et leur LaTeX) sans « variable = » en tête. Case par case en mode
- * positionnel ; en `orderIndependent`, seulement si TOUTES les cases l'admettent
- * (la case d'une réponse n'est pas encore connue).
+ * Une case où un « ° » recopié derrière la valeur est ignoré (cf.
+ * answer-degree-suffix) : comme le préfixe, mais jamais pour une case à unité,
+ * qui garde le traitement des unités (° y est une unité).
  */
-function withoutVariablePrefixes(
+function acceptsDegreeSuffix(blank: InstanceBlank): boolean {
+	return (
+		acceptsVariablePrefix(blank) &&
+		!blank.unit?.expected &&
+		expectsUnitlessValue(blank.expectedAnswer)
+	);
+}
+
+/**
+ * Réponses (et leur LaTeX) passées par `transform` dans les cases qui l'admettent.
+ * Case par case en mode positionnel ; en `orderIndependent`, seulement si TOUTES
+ * les cases l'admettent (la case d'une réponse n'est pas encore connue).
+ */
+function transformAcceptedAnswers(
 	userAnswers: string[],
 	instance: QuestionInstance,
-	userAnswersLatex: string[] | undefined
+	userAnswersLatex: string[] | undefined,
+	accepts: (blank: InstanceBlank) => boolean,
+	transform: (answer: string, expected: string) => string
 ): { answers: string[]; latex: string[] | undefined } {
 	const blanks = instance.blanks ?? [];
 	// Ordre libre : la case d'une réponse n'est pas connue → toutes doivent l'admettre
 	const orderFree = instance.options?.orderIndependent === true;
-	const allAccept = blanks.every(acceptsVariablePrefix);
+	const allAccept = blanks.every(accepts);
 	const strip = (answer: string, i: number): string => {
 		const blank = blanks[i];
-		const accepts = orderFree ? allAccept : blank !== undefined && acceptsVariablePrefix(blank);
-		return accepts && blank ? withoutVariablePrefix(answer, blank.expectedAnswer) : answer;
+		const accepted = orderFree ? allAccept : blank !== undefined && accepts(blank);
+		return accepted && blank ? transform(answer, blank.expectedAnswer) : answer;
 	};
 	return {
 		answers: userAnswers.map(strip),
 		latex: userAnswersLatex?.map(strip)
 	};
+}
+
+/** Réponses sans « variable = » recopié en tête ni « ° » recopié en fin */
+function withoutCopiedDecorations(
+	userAnswers: string[],
+	instance: QuestionInstance,
+	userAnswersLatex: string[] | undefined
+): { answers: string[]; latex: string[] | undefined } {
+	const prefixFree = transformAcceptedAnswers(
+		userAnswers,
+		instance,
+		userAnswersLatex,
+		acceptsVariablePrefix,
+		withoutVariablePrefix
+	);
+	return transformAcceptedAnswers(
+		prefixFree.answers,
+		instance,
+		prefixFree.latex,
+		acceptsDegreeSuffix,
+		withoutDegreeSuffix
+	);
 }
 
 /**
@@ -1165,8 +1203,8 @@ export function validateBlanks(
 		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
 	}
 
-	// « x = » recopié devant la valeur : ignoré (décision du 2026-10-02)
-	const { answers: userAnswers, latex: userAnswersLatex } = withoutVariablePrefixes(
+	// « x = » recopié devant la valeur, « ° » recopié derrière : ignorés (2026-10-02)
+	const { answers: userAnswers, latex: userAnswersLatex } = withoutCopiedDecorations(
 		rawUserAnswers,
 		instance,
 		rawUserAnswersLatex
@@ -1551,8 +1589,8 @@ export function validateBlanksDetailed(
 		};
 	}
 
-	// « x = » recopié devant la valeur : ignoré, comme dans validateBlanks
-	const { answers: userAnswers, latex: userAnswersLatex } = withoutVariablePrefixes(
+	// « x = » et « ° » recopiés : ignorés, comme dans validateBlanks
+	const { answers: userAnswers, latex: userAnswersLatex } = withoutCopiedDecorations(
 		rawUserAnswers,
 		instance,
 		rawUserAnswersLatex
