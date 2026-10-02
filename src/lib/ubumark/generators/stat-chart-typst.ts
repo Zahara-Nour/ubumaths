@@ -29,6 +29,7 @@ import {
 	type CumulativeScene,
 	type HistogramScene,
 	type LawScene,
+	type SimulationScene,
 	type MeanScene,
 	type PieScene,
 	type ScenePoint,
@@ -402,6 +403,31 @@ function lawTypst(scene: LawScene): string {
 	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.values.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
 }
 
+/**
+ * Simulation (v2, lot 3) : une ligne par valeur, les nombres de la scène tels
+ * quels — l'écran et le PDF montrent les mêmes tirages.
+ */
+function simulationTypst(scene: SimulationScene): string {
+	const letter = scene.variable.toLowerCase();
+	const cells: string[] = [];
+	const push = (content: string) => cells.push(`  ${content}`);
+	const header = (text: string) => `text(weight: "bold")${textContent(text)}`;
+
+	push(`[$${letter}_i$]`);
+	push(header(scene.headers.count));
+	push(header(scene.headers.frequency));
+	push(header(scene.headers.probability));
+	for (const row of scene.rows) {
+		push(textContent(row.value));
+		push(textContent(row.count));
+		push(textContent(row.frequency));
+		push(textContent(row.probability));
+	}
+
+	const caption = `#align(center, text(size: 8pt)${textContent(scene.caption)})\n`;
+	return `${titleBlock(scene.title)}${caption}#align(center)[#table(\n  columns: 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+}
+
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
@@ -422,6 +448,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return crossTableTypst(scene);
 		case 'loi':
 			return lawTypst(scene);
+		case 'simulation':
+			return simulationTypst(scene);
 		case 'moyenne-selon-n':
 			return meanTypst(scene, size);
 	}

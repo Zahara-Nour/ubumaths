@@ -132,6 +132,7 @@
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
 	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
 	let law = $derived(scene?.kind === 'loi' ? scene : null);
+	let simulation = $derived(scene?.kind === 'simulation' ? scene : null);
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	/** Histogramme, polygone ou moyenne selon n : abscisses continues, axe vertical gradué */
 	let classChart = $derived(histogram ?? cumulative ?? mean);
@@ -205,11 +206,41 @@
 {#if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
-		{#if scene.title && !crossTable && !law}
+		{#if scene.title && !crossTable && !law && !simulation}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
-		{#if law}
+		{#if simulation}
+			<!-- Simulation (v2, lot 3) : une ligne par valeur ; le titre de l'auteur
+			     et la légende des tirages dans <caption> -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+				<table class="stat-tableau">
+					<caption id={captionId}
+						>{#if simulation.title}<span class="stat-titre block">{simulation.title}</span
+							>{/if}<span>{simulation.caption}</span></caption
+					>
+					<thead>
+						<tr>
+							<th scope="col"><i>{simulation.variable.toLowerCase()}</i><sub>i</sub></th>
+							<th scope="col">{simulation.headers.count}</th>
+							<th scope="col">{simulation.headers.frequency}</th>
+							<th scope="col">{simulation.headers.probability}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each simulation.rows as row, i (i)}
+							<tr>
+								<th scope="row">{row.value}</th>
+								<td>{row.count}</td>
+								<td>{row.frequency}</td>
+								<td>{row.probability}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else if law}
 			<!-- Loi d'une variable aléatoire (lot 6) : même tableau accessible que
 			     le tableau croisé, deux lignes `gᵢ` / `P(G = gᵢ)` -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->

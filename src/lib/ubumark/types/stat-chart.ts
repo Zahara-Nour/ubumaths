@@ -29,7 +29,8 @@ export const STAT_CHART_KINDS = [
 	'histogramme',
 	'frequences-cumulees',
 	'tableau-croise',
-	'loi'
+	'loi',
+	'simulation'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -83,6 +84,26 @@ export interface LawData {
 	/** Indices des valeurs dont la probabilité est à compléter (`masquer:`) */
 	masked: number[];
 	indicators: LawIndicator[];
+}
+
+/** Ce que simule un bloc ```simulation (v2, lot 3) ; seul `tirages` est livré */
+export const SIMULATION_MODES = ['tirages', 'moyenne', 'échantillons'] as const;
+export type SimulationMode = (typeof SIMULATION_MODES)[number];
+
+/**
+ * Simulation d'une loi (v2, lot 3) : la loi telle qu'écrite, et de quoi refaire
+ * les MÊMES tirages à l'écran et sur le PDF (graine fixe, Q70).
+ */
+export interface SimulationData {
+	/** Une lettre majuscule, autre que P */
+	variable: string;
+	values: string[];
+	/** Toutes connues : une probabilité « ? » ne se simule pas */
+	probabilities: string[];
+	mode: SimulationMode;
+	/** Nombre de tirages */
+	draws: number;
+	seed: number;
 }
 
 /** Indicateurs affichables sous la figure (Q28) */
@@ -153,6 +174,8 @@ export interface StatChartSpec {
 	table: CrossTableData | null;
 	/** Loi d'une variable aléatoire (`data` reste vide), sinon null */
 	law: LawData | null;
+	/** Bloc ```simulation : la loi et les tirages */
+	simulation: SimulationData | null;
 }
 
 // ============================================================================
@@ -215,6 +238,10 @@ export const STAT_CHART_LIMITS = {
 	tableSize: 8,
 	/** Valeurs d'une variable aléatoire (Q41) */
 	lawValues: 12,
+	/** Tirages d'un bloc ```simulation (rendu instantané, effectifs lisibles) */
+	simulationDraws: 10_000,
+	/** Graine d'un bloc ```simulation : au plus 9 chiffres */
+	simulationSeed: 999_999_999,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

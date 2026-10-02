@@ -43,6 +43,9 @@ import {
 	type CrossTableDisplay,
 	type LawData,
 	type LawIndicator,
+	SIMULATION_MODES,
+	type SimulationData,
+	type SimulationMode,
 	CLASS_INDICATORS,
 	STAT_CHART_DIRECTIONS,
 	STAT_CHART_INDICATORS,
@@ -94,6 +97,9 @@ interface Options {
 	lawIndicators: LawIndicator[];
 	/** Valeurs écrites dans `masquer:` d'une loi, vérifiées une fois tout lu */
 	lawMasked: string[];
+	simulationMode: SimulationMode;
+	draws: number;
+	seed: number;
 }
 
 /** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
@@ -114,7 +120,7 @@ interface TableRow {
 // ============================================================================
 
 const BLOCK_START_REGEX =
-	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi)\s*$/;
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -151,7 +157,10 @@ const OPTION_KEYS = [
 	'totaux',
 	'afficher',
 	'masquer',
-	'coin'
+	'coin',
+	'mode',
+	'tirages',
+	'graine'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -181,7 +190,16 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	totaux: ['tableau-croise'],
 	afficher: ['tableau-croise'],
 	masquer: ['tableau-croise', 'loi'],
-	coin: ['tableau-croise']
+	coin: ['tableau-croise'],
+	mode: ['simulation'],
+	tirages: ['simulation'],
+	graine: ['simulation']
+};
+
+/** Options dont l'auteur écrit l'accent */
+const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
+	etiquettes: 'étiquettes',
+	legende: 'légende'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -190,7 +208,8 @@ const KIND_NAME: Record<StatChartKind, string> = {
 	histogramme: 'histogrammes',
 	'frequences-cumulees': 'polygones des fréquences cumulées',
 	'tableau-croise': 'tableaux croisés',
-	loi: 'lois de variables aléatoires'
+	loi: 'lois de variables aléatoires',
+	simulation: 'simulations'
 };
 
 /** Indicateurs d'une loi, tels que l'auteur les écrit */
@@ -463,6 +482,25 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 		case 'coin':
 			options.corner = parseText(value, 'coin');
 			return;
+		case 'mode':
+			options.simulationMode = parseSimulationMode(value);
+			return;
+		case 'tirages':
+			options.draws = parseWhole(
+				value,
+				1,
+				STAT_CHART_LIMITS.simulationDraws,
+				'tirages : un entier entre 1 et 10 000'
+			);
+			return;
+		case 'graine':
+			options.seed = parseWhole(
+				value,
+				0,
+				STAT_CHART_LIMITS.simulationSeed,
+				'graine : un entier entre 0 et 999 999 999'
+			);
+			return;
 		case 'masquer':
 			if (kind === 'loi') {
 				options.lawMasked = value
@@ -488,6 +526,26 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				});
 			return;
 	}
+}
+
+/** Un entier de `min` à `max` ; `10 000` s'écrit avec ses espaces */
+function parseWhole(raw: string, min: number, max: number, message: string): number {
+	const digits = raw.trim().replace(/[\s\u00a0\u202f]/g, '');
+	if (!/^\d{1,10}$/.test(digits)) throw new LineError(message);
+	const value = Number(digits);
+	if (value < min || value > max) throw new LineError(message);
+	return value;
+}
+
+/** `mode:` d'une simulation : seul `tirages` est livré (v2, lot 3 PR a) */
+function parseSimulationMode(raw: string): SimulationMode {
+	const written = raw.trim();
+	const mode = SIMULATION_MODES.find((m) => normalizeKey(m) === normalizeKey(written));
+	if (mode === undefined) {
+		throw new LineError(`mode « ${written} » inconnu (choisir : ${SIMULATION_MODES.join(', ')})`);
+	}
+	if (mode !== 'tirages') throw new LineError(`mode « ${mode} » : arrive bientôt`);
+	return mode;
 }
 
 function parseLawIndicators(raw: string): LawIndicator[] {
@@ -814,11 +872,16 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		masked: [],
 		corner: null,
 		lawIndicators: [],
-		lawMasked: []
+		lawMasked: [],
+		simulationMode: 'tirages',
+		draws: 100,
+		seed: 1
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
-	const isLaw = kind === 'loi';
+	// Une simulation écrit sa loi comme le bloc ```loi
+	const isSimulation = kind === 'simulation';
+	const isLaw = kind === 'loi' || isSimulation;
 	const tableRows: TableRow[] = [];
 	const isTable = kind === 'tableau-croise';
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
@@ -852,9 +915,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					throw new LineError(`écrire « ${kv[1]} = ${kv[2].trim()} » (catégorie = effectif)`);
 				}
 				if (kv) {
-					throw new LineError(
-						`option « ${kv[1]} » inconnue (options : titre, axes, description, taille, valeurs, couleur, étiquettes, légende, sens, lecture, indicateurs, lignes, colonnes, totaux, afficher, masquer, coin)`
-					);
+					// Seules les options de CE bloc : une coquille dans ```loi ne
+					// propose plus `tirages`, refusé ensuite (revue de la PR simulation)
+					const choices = OPTION_KEYS.filter((k) => OPTION_KINDS[k]?.includes(kind) ?? true)
+						.map((k) => OPTION_SPELLING[k] ?? k)
+						.join(', ');
+					throw new LineError(`option « ${kv[1]} » inconnue (options : ${choices})`);
 				}
 				throw new LineError('écrire « catégorie = effectif » ou « option: valeur »');
 			}
@@ -871,6 +937,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				if (written === 'P') {
 					if (lawProbabilities !== null) throw new LineError('ligne « P = … » déjà donnée');
 					for (const text of texts) {
+						if (text === '?' && isSimulation) {
+							throw new LineError('une simulation demande toutes les probabilités (pas de « ? »)');
+						}
 						if (text !== '?' && Fraction.parse(text) === null) {
 							throw new LineError(
 								`« ${text} » n'est pas une probabilité (écrire 1/6, 0,25 ou 25 %)`
@@ -957,10 +1026,21 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	let table: CrossTableData | null = null;
 	let law: LawData | null = null;
+	let simulation: SimulationData | null = null;
 	if (errors.length === 0 && isLaw) {
 		const checked = checkLaw(lawVariable, lawProbabilities, options, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
-		else law = checked.law;
+		else if (isSimulation) {
+			simulation = {
+				variable: checked.law.variable,
+				values: checked.law.values,
+				// Le parseur a refusé « ? » dans une simulation
+				probabilities: checked.law.probabilities.map((p) => p ?? ''),
+				mode: options.simulationMode,
+				draws: options.draws,
+				seed: options.seed
+			};
+		} else law = checked.law;
 	} else if (errors.length === 0 && isTable) {
 		const checked = checkTable(options, tableRows, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
@@ -994,7 +1074,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					reading: options.reading,
 					indicators: options.indicators,
 					table,
-					law
+					law,
+					simulation
 				}
 			: null;
 

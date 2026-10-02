@@ -157,7 +157,8 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 			masked: [],
 			corner: `${rowsName} \\ ${columnsName}`
 		},
-		law: null
+		law: null,
+		simulation: null
 	};
 
 	const count = rowCategories.length;

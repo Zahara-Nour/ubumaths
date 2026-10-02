@@ -40,6 +40,8 @@ import { crossTable } from '$lib/statistics/cross-table';
 import { formatApproxValue, formatLawIndicators } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
+import { simulateCounts } from '$lib/statistics/simulation';
+import { createRandomSource } from '$lib/utils/random';
 
 // ============================================================================
 // TYPES
@@ -238,6 +240,34 @@ export interface LawScene extends SceneCommon {
 	hiddenLabel: string;
 }
 
+/** Une valeur simulée : une ligne du tableau */
+export interface SimulationRow {
+	/** Valeur telle qu'écrite, vrai signe moins, séparateur selon la langue */
+	value: string;
+	/** Effectif observé */
+	count: string;
+	/** Fréquence observée, au millième */
+	frequency: string;
+	/** Probabilité telle qu'écrite */
+	probability: string;
+}
+
+/**
+ * Bloc ```simulation, mode `tirages` (v2, lot 3) : effectifs et fréquences
+ * observés à côté des probabilités. La graine fixe les tirages : l'écran et le
+ * PDF montrent les mêmes nombres.
+ */
+export interface SimulationScene extends SceneCommon {
+	kind: 'simulation';
+	/** Lettre de la variable (`G`) : en-tête `gᵢ` */
+	variable: string;
+	/** « Simulation de 600 tirages (graine 42) » */
+	caption: string;
+	/** En-têtes des trois colonnes après celle des valeurs */
+	headers: { count: string; frequency: string; probability: string };
+	rows: SimulationRow[];
+}
+
 /**
  * Moyenne des tirages selon leur nombre (atelier, `.fréquence`, Q81) : la loi
  * des grands nombres. Jamais produite par un bloc ubumark.
@@ -261,6 +291,7 @@ export interface MeanScene extends SceneCommon {
 }
 
 export type StatChartScene =
+	| SimulationScene
 	| MeanScene
 	| LawScene
 	| BarScene
@@ -1036,6 +1067,76 @@ function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
 }
 
 // ============================================================================
+// SIMULATION
+// ============================================================================
+
+const SIMULATION_TEXT: Record<
+	ContentLocale,
+	{
+		caption: (draws: string, plural: boolean, seed: number) => string;
+		headers: SimulationScene['headers'];
+	}
+> = {
+	fr: {
+		caption: (draws, plural, seed) =>
+			`Simulation de ${draws} tirage${plural ? 's' : ''} (graine ${seed})`,
+		headers: { count: 'Effectif', frequency: 'Fréquence observée', probability: 'Probabilité' }
+	},
+	en: {
+		caption: (draws, plural, seed) =>
+			`Simulation of ${draws} draw${plural ? 's' : ''} (seed ${seed})`,
+		headers: { count: 'Count', frequency: 'Observed frequency', probability: 'Probability' }
+	}
+};
+
+/** 10000 → « 10 000 » (espace insécable) ou « 10,000 » */
+function groupedCount(value: number, locale: ContentLocale): string {
+	const separator = locale === 'en' ? ',' : '\u00a0';
+	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+}
+
+function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): SimulationScene {
+	const simulation = spec.simulation;
+	if (simulation === null) throw new Error('Simulation sans données');
+	const outcome = simulateCounts(
+		simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
+		simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO),
+		simulation.draws,
+		createRandomSource(simulation.seed)
+	);
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+
+	const text = SIMULATION_TEXT[locale];
+	const n = simulation.draws;
+	const caption = text.caption(groupedCount(n, locale), n > 1, simulation.seed);
+	// Toujours trois décimales : une colonne de fréquences se lit alignée.
+	// Arrondi en millièmes ENTIERS : `toFixed` sur 3/80 = 0,0375 rendait 0,037
+	// (le flottant est un peu sous le demi), revue de la PR
+	const frequency = (count: number) => {
+		const thousandths = Math.round((count * 1000) / n);
+		const fraction = String(thousandths % 1000).padStart(3, '0');
+		return `${Math.floor(thousandths / 1000)}${locale === 'en' ? '.' : ','}${fraction}`;
+	};
+	return {
+		kind: 'simulation',
+		title: spec.title,
+		accessibleTitle: caption,
+		description: caption,
+		pixelSize: { width: 0, height: 0 },
+		indicators: [],
+		variable: simulation.variable,
+		caption,
+		headers: text.headers,
+		rows: simulation.values.map((value, i) => ({
+			value: asWritten(value, locale),
+			count: groupedCount(outcome.value.counts[i], locale),
+			frequency: frequency(outcome.value.counts[i]),
+			probability: asWritten(simulation.probabilities[i], locale)
+		}))
+	};
+}
+
+// ============================================================================
 // SCÈNE
 // ============================================================================
 
@@ -1057,5 +1158,7 @@ export function buildStatChartScene(
 			return buildCrossTableScene(spec, locale);
 		case 'loi':
 			return buildLawScene(spec, locale);
+		case 'simulation':
+			return buildSimulationScene(spec, locale);
 	}
 }
