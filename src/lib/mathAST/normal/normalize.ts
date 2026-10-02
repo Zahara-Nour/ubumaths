@@ -87,6 +87,7 @@ import { divide, euler, number, opposite, parentheses, piConstant, superscript }
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
 import { expandEulerPowers } from './rules/euler-power';
 import { expandPositiveBasePowers } from './rules/general-power';
+import { expandFractionalPowers } from './rules/fractional-power';
 import { expandLogBases } from './rules/log-base';
 import type { AssumptionOracle } from '../assumptions';
 import { canFactorOutNegative, isEvenFunction, isOddFunction } from './parity.js';
@@ -2118,7 +2119,14 @@ export function equivalenceForm(node: MathNode, ctx?: NormalizeContext): NormalF
 		// Base variable : seulement si l'énoncé la déclare strictement positive
 		...(assumptions && { isPositiveBase: assumptions.isPositive })
 	});
-	const withDefinitions = expandTrigDefinitions(withPositiveBases);
+	// `x^{-\frac12}`, `x^{0.5}`, `(4x+1)^{\frac12}` deviennent des radicaux :
+	// une seule porte d'entrée pour les deux écritures d'une racine. Après
+	// `expandPositiveBasePowers`, qui laisse les exposants rationnels intacts.
+	// Détail dans `rules/fractional-power.ts`.
+	const withRoots = expandFractionalPowers(withPositiveBases, {
+		rationalValue: (candidate) => exactRationalValue(candidate, ctx)
+	});
+	const withDefinitions = expandTrigDefinitions(withRoots);
 	const withArcs = expandCommensurableArcs(withDefinitions, {
 		// La décomposition d'un argument ne doit rien raconter à l'élève : on ne
 		// passe que l'interruption, jamais l'enregistreur d'étapes.
