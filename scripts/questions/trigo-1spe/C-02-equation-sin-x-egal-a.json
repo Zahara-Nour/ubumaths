@@ -15,98 +15,92 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
 			"blanks": [
 				{
-					"expectedAnswer": "\\{\\frac{\\pi}{6};\\frac{5\\pi}{6}\\}"
+					"expectedAnswer": "\\{{{a}};\\frac{ {{u}}\\pi}{ {{w}} }\\}"
 				}
 			],
 			"correction": {
 				"steps": [
-					"$\\sin \\frac{\\pi}{6}=\\frac{1}{2}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée $\\frac{1}{2}$ sont associés à $\\frac{\\pi}{6}$ et $\\pi-\\frac{\\pi}{6}=\\frac{5\\pi}{6}$.",
-					"```trig\npreset: custom\nangles: pi/6, 5pi/6\nequation: sin(x) = 1/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{\\pi}{6}\\,;\\frac{5\\pi}{6}\\right\\} }$."
+					"$\\sin {{a}}={{eval:sin(n*pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée ${{eval:sin(n*pi/12)}}$ sont associés à ${{a}}$ et $\\pi-{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, {{u}}*pi/{{w}}\nequation: sin(x) = sin({{n}}*pi/12)\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{{{a}}\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right\\} }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=-\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x={{eval:-sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12+n)/gcd(12+n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12+n,12)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(24-n)/gcd(24-n,12)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:12/gcd(24-n,12)"
+				}
+			],
 			"blanks": [
 				{
-					"expectedAnswer": "\\{\\frac{7\\pi}{6};\\frac{11\\pi}{6}\\}"
+					"expectedAnswer": "\\{\\frac{ {{u}}\\pi}{ {{w}} };\\frac{ {{g}}\\pi}{ {{h}} }\\}"
 				}
 			],
 			"correction": {
 				"steps": [
-					"$\\sin\\left(-\\frac{\\pi}{6}\\right)=-\\frac{1}{2}$ : un point est associé à $-\\frac{\\pi}{6}$, qui s'écrit $2\\pi-\\frac{\\pi}{6}=\\frac{11\\pi}{6}$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+\\frac{\\pi}{6}=\\frac{7\\pi}{6}$.",
-					"```trig\npreset: custom\nangles: 7pi/6, 11pi/6\nequation: sin(x) = -1/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{7\\pi}{6}\\,;\\frac{11\\pi}{6}\\right\\} }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "\\{\\frac{\\pi}{4};\\frac{3\\pi}{4}\\}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{\\pi}{4}=\\frac{\\sqrt{2}}{2}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée $\\frac{\\sqrt{2}}{2}$ sont associés à $\\frac{\\pi}{4}$ et $\\pi-\\frac{\\pi}{4}=\\frac{3\\pi}{4}$.",
-					"```trig\npreset: custom\nangles: pi/4, 3pi/4\nequation: sin(x) = sqrt(2)/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{\\pi}{4}\\,;\\frac{3\\pi}{4}\\right\\} }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=-\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "\\{\\frac{5\\pi}{4};\\frac{7\\pi}{4}\\}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin\\left(-\\frac{\\pi}{4}\\right)=-\\frac{\\sqrt{2}}{2}$ : un point est associé à $-\\frac{\\pi}{4}$, qui s'écrit $2\\pi-\\frac{\\pi}{4}=\\frac{7\\pi}{4}$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+\\frac{\\pi}{4}=\\frac{5\\pi}{4}$.",
-					"```trig\npreset: custom\nangles: 5pi/4, 7pi/4\nequation: sin(x) = -sqrt(2)/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{5\\pi}{4}\\,;\\frac{7\\pi}{4}\\right\\} }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "\\{\\frac{\\pi}{3};\\frac{2\\pi}{3}\\}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{\\pi}{3}=\\frac{\\sqrt{3}}{2}$ et $\\sin(\\pi-x)=\\sin x$ : les points du cercle d'ordonnée $\\frac{\\sqrt{3}}{2}$ sont associés à $\\frac{\\pi}{3}$ et $\\pi-\\frac{\\pi}{3}=\\frac{2\\pi}{3}$.",
-					"```trig\npreset: custom\nangles: pi/3, 2pi/3\nequation: sin(x) = sqrt(3)/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{\\pi}{3}\\,;\\frac{2\\pi}{3}\\right\\} }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin x=-\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "\\{\\frac{4\\pi}{3};\\frac{5\\pi}{3}\\}"
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin\\left(-\\frac{\\pi}{3}\\right)=-\\frac{\\sqrt{3}}{2}$ : un point est associé à $-\\frac{\\pi}{3}$, qui s'écrit $2\\pi-\\frac{\\pi}{3}=\\frac{5\\pi}{3}$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+\\frac{\\pi}{3}=\\frac{4\\pi}{3}$.",
-					"```trig\npreset: custom\nangles: 4pi/3, 5pi/3\nequation: sin(x) = -sqrt(3)/2\nmode: points\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{4\\pi}{3}\\,;\\frac{5\\pi}{3}\\right\\} }$."
+					"$\\sin\\left(-{{a}}\\right)={{eval:-sin(n*pi/12)}}$ : un point est associé à $-{{a}}$, qui s'écrit $2\\pi-{{a}}=\\frac{ {{g}}\\pi}{ {{h}} }$ dans $\\left[0\\,;2\\pi\\right[$ ; l'autre à $\\pi+{{a}}=\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"```trig\npreset: custom\nangles: {{u}}*pi/{{w}}, {{g}}*pi/{{h}}\nequation: sin(x) = sin(-{{n}}*pi/12)\nmode: points\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left\\{\\frac{ {{u}}\\pi}{ {{w}} }\\,;\\frac{ {{g}}\\pi}{ {{h}} }\\right\\} }$."
 				]
 			}
 		},
@@ -163,7 +157,9 @@
 		{
 			"description": "sin x = 1/2 : juste",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{\\pi}{6};\\frac{5\\pi}{6}\\}"],
 			"expected": {
 				"status": "correct"
@@ -172,7 +168,9 @@
 		{
 			"description": "ordre inversé : juste",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{5\\pi}{6};\\frac{\\pi}{6}\\}"],
 			"expected": {
 				"status": "correct"
@@ -181,7 +179,9 @@
 		{
 			"description": "une seule solution",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{\\pi}{6}\\}"],
 			"expected": {
 				"status": "incorrect"
@@ -190,8 +190,98 @@
 		{
 			"description": "confusion avec le cosinus (±α)",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x = sqrt(2)/2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\{\\frac{\\pi}{4};\\frac{3\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\{\\frac{3\\pi}{4};\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\{\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion avec le cosinus (±α)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x = sqrt(3)/2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\{\\frac{\\pi}{3};\\frac{2\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre inversé : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\{\\frac{2\\pi}{3};\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "une seule solution",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\{\\frac{\\pi}{3}\\}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion avec le cosinus (±α)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -199,7 +289,9 @@
 		{
 			"description": "sin x = -1/2 : juste",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{7\\pi}{6};\\frac{11\\pi}{6}\\}"],
 			"expected": {
 				"status": "correct"
@@ -208,7 +300,9 @@
 		{
 			"description": "ordre inversé : juste",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{11\\pi}{6};\\frac{7\\pi}{6}\\}"],
 			"expected": {
 				"status": "correct"
@@ -217,7 +311,9 @@
 		{
 			"description": "une seule solution",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{\\frac{7\\pi}{6}\\}"],
 			"expected": {
 				"status": "incorrect"
@@ -226,52 +322,20 @@
 		{
 			"description": "arcsin négatif gardé (hors intervalle)",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["\\{-\\frac{\\pi}{6};\\frac{7\\pi}{6}\\}"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "sin x = sqrt(2)/2 : juste",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["\\{\\frac{\\pi}{4};\\frac{3\\pi}{4}\\}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "ordre inversé : juste",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["\\{\\frac{3\\pi}{4};\\frac{\\pi}{4}\\}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "une seule solution",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["\\{\\frac{\\pi}{4}\\}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "confusion avec le cosinus (±α)",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "sin x = -sqrt(2)/2 : juste",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["\\{\\frac{5\\pi}{4};\\frac{7\\pi}{4}\\}"],
 			"expected": {
 				"status": "correct"
@@ -279,8 +343,10 @@
 		},
 		{
 			"description": "ordre inversé : juste",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["\\{\\frac{7\\pi}{4};\\frac{5\\pi}{4}\\}"],
 			"expected": {
 				"status": "correct"
@@ -288,8 +354,10 @@
 		},
 		{
 			"description": "une seule solution",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["\\{\\frac{5\\pi}{4}\\}"],
 			"expected": {
 				"status": "incorrect"
@@ -297,53 +365,21 @@
 		},
 		{
 			"description": "arcsin négatif gardé (hors intervalle)",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["\\{-\\frac{\\pi}{4};\\frac{5\\pi}{4}\\}"],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "sin x = sqrt(3)/2 : juste",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["\\{\\frac{\\pi}{3};\\frac{2\\pi}{3}\\}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "ordre inversé : juste",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["\\{\\frac{2\\pi}{3};\\frac{\\pi}{3}\\}"],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "une seule solution",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["\\{\\frac{\\pi}{3}\\}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "confusion avec le cosinus (±α)",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "sin x = -sqrt(3)/2 : juste",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["\\{\\frac{4\\pi}{3};\\frac{5\\pi}{3}\\}"],
 			"expected": {
 				"status": "correct"
@@ -351,8 +387,10 @@
 		},
 		{
 			"description": "ordre inversé : juste",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["\\{\\frac{5\\pi}{3};\\frac{4\\pi}{3}\\}"],
 			"expected": {
 				"status": "correct"
@@ -360,8 +398,10 @@
 		},
 		{
 			"description": "une seule solution",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["\\{\\frac{4\\pi}{3}\\}"],
 			"expected": {
 				"status": "incorrect"
@@ -369,8 +409,10 @@
 		},
 		{
 			"description": "arcsin négatif gardé (hors intervalle)",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["\\{-\\frac{\\pi}{3};\\frac{4\\pi}{3}\\}"],
 			"expected": {
 				"status": "incorrect"
@@ -378,7 +420,7 @@
 		},
 		{
 			"description": "sin x = 0 : juste",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["\\{0;\\pi\\}"],
 			"expected": {
@@ -387,7 +429,7 @@
 		},
 		{
 			"description": "ordre inversé : juste",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["\\{\\pi;0\\}"],
 			"expected": {
@@ -396,7 +438,7 @@
 		},
 		{
 			"description": "une seule solution",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["\\{0\\}"],
 			"expected": {
@@ -405,7 +447,7 @@
 		},
 		{
 			"description": "2π hors intervalle",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["\\{0;\\pi;2\\pi\\}"],
 			"expected": {
@@ -414,7 +456,7 @@
 		},
 		{
 			"description": "sin x = 1 : juste",
-			"variationIndex": 7,
+			"variationIndex": 3,
 			"variables": {},
 			"answers": ["\\{\\frac{\\pi}{2}\\}"],
 			"expected": {
@@ -423,7 +465,7 @@
 		},
 		{
 			"description": "confusion avec cos x = 1",
-			"variationIndex": 7,
+			"variationIndex": 3,
 			"variables": {},
 			"answers": ["\\{0\\}"],
 			"expected": {
@@ -432,7 +474,7 @@
 		},
 		{
 			"description": "nombre sans accolades",
-			"variationIndex": 7,
+			"variationIndex": 3,
 			"variables": {},
 			"answers": ["\\frac{\\pi}{2}"],
 			"expected": {
@@ -441,7 +483,7 @@
 		},
 		{
 			"description": "sin x = -1 : juste",
-			"variationIndex": 8,
+			"variationIndex": 4,
 			"variables": {},
 			"answers": ["\\{\\frac{3\\pi}{2}\\}"],
 			"expected": {
@@ -450,7 +492,7 @@
 		},
 		{
 			"description": "-π/2 hors intervalle",
-			"variationIndex": 8,
+			"variationIndex": 4,
 			"variables": {},
 			"answers": ["\\{-\\frac{\\pi}{2}\\}"],
 			"expected": {
@@ -459,7 +501,7 @@
 		},
 		{
 			"description": "confusion avec cos x = -1",
-			"variationIndex": 8,
+			"variationIndex": 4,
 			"variables": {},
 			"answers": ["\\{\\pi\\}"],
 			"expected": {

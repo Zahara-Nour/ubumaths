@@ -15,98 +15,92 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12-n)/gcd(12-n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12-n,12)"
+				}
+			],
 			"blanks": [
 				{
-					"expectedAnswer": "]\\frac{\\pi}{6};\\frac{5\\pi}{6}["
+					"expectedAnswer": "]{{a}};\\frac{ {{u}}\\pi}{ {{w}} }["
 				}
 			],
 			"correction": {
 				"steps": [
-					"$\\sin \\frac{\\pi}{6}=\\sin \\frac{5\\pi}{6}=\\frac{1}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $\\frac{1}{2}$ forment l'arc qui va de $\\frac{\\pi}{6}$ à $\\frac{5\\pi}{6}$.",
-					"```trig\npreset: custom\nangles: pi/6, 5pi/6\nequation: sin(x) > 1/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left]\\frac{\\pi}{6}\\,;\\frac{5\\pi}{6}\\right[ }$."
+					"$\\sin {{a}}=\\sin \\frac{ {{u}}\\pi}{ {{w}} }={{eval:sin(n*pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:sin(n*pi/12)}}$ forment l'arc qui va de ${{a}}$ à $\\frac{ {{u}}\\pi}{ {{w}} }$.",
+					"```trig\npreset: custom\nangles: {{c}}*pi/{{q}}, {{u}}*pi/{{w}}\nequation: sin(x) > sin({{n}}*pi/12)\nmode: arc\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left]{{a}}\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right[ }$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\frac{1}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
+			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:-sin(n*pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+				},
+				{
+					"name": "n",
+					"expression": "eval:12*a/\\pi"
+				},
+				{
+					"name": "c",
+					"expression": "eval:n/gcd(abs(n),12)"
+				},
+				{
+					"name": "q",
+					"expression": "eval:12/gcd(abs(n),12)"
+				},
+				{
+					"name": "u",
+					"expression": "eval:(12+n)/gcd(12+n,12)"
+				},
+				{
+					"name": "w",
+					"expression": "eval:12/gcd(12+n,12)"
+				},
+				{
+					"name": "g",
+					"expression": "eval:(24-n)/gcd(24-n,12)"
+				},
+				{
+					"name": "h",
+					"expression": "eval:12/gcd(24-n,12)"
+				}
+			],
 			"blanks": [
 				{
-					"expectedAnswer": "[0;\\frac{7\\pi}{6}[\\cup]\\frac{11\\pi}{6};2\\pi["
+					"expectedAnswer": "[0;\\frac{ {{u}}\\pi}{ {{w}} }[\\cup]\\frac{ {{g}}\\pi}{ {{h}} };2\\pi["
 				}
 			],
 			"correction": {
 				"steps": [
-					"$\\sin \\frac{7\\pi}{6}=\\sin \\frac{11\\pi}{6}=-\\frac{1}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $-\\frac{1}{2}$ forment l'arc qui va de $\\frac{11\\pi}{6}$ à $\\frac{7\\pi}{6}$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
-					"```trig\npreset: custom\nangles: 0, 7pi/6, 11pi/6\nequation: sin(x) > -1/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\frac{7\\pi}{6}\\right[\\cup\\left]\\frac{11\\pi}{6}\\,;2\\pi\\right[ }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "]\\frac{\\pi}{4};\\frac{3\\pi}{4}["
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{\\pi}{4}=\\sin \\frac{3\\pi}{4}=\\frac{\\sqrt{2}}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $\\frac{\\sqrt{2}}{2}$ forment l'arc qui va de $\\frac{\\pi}{4}$ à $\\frac{3\\pi}{4}$.",
-					"```trig\npreset: custom\nangles: pi/4, 3pi/4\nequation: sin(x) > sqrt(2)/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left]\\frac{\\pi}{4}\\,;\\frac{3\\pi}{4}\\right[ }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\frac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "[0;\\frac{5\\pi}{4}[\\cup]\\frac{7\\pi}{4};2\\pi["
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{5\\pi}{4}=\\sin \\frac{7\\pi}{4}=-\\frac{\\sqrt{2}}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $-\\frac{\\sqrt{2}}{2}$ forment l'arc qui va de $\\frac{7\\pi}{4}$ à $\\frac{5\\pi}{4}$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
-					"```trig\npreset: custom\nangles: 0, 5pi/4, 7pi/4\nequation: sin(x) > -sqrt(2)/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\frac{5\\pi}{4}\\right[\\cup\\left]\\frac{7\\pi}{4}\\,;2\\pi\\right[ }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "]\\frac{\\pi}{3};\\frac{2\\pi}{3}["
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{\\pi}{3}=\\sin \\frac{2\\pi}{3}=\\frac{\\sqrt{3}}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $\\frac{\\sqrt{3}}{2}$ forment l'arc qui va de $\\frac{\\pi}{3}$ à $\\frac{2\\pi}{3}$.",
-					"```trig\npreset: custom\nangles: pi/3, 2pi/3\nequation: sin(x) > sqrt(3)/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left]\\frac{\\pi}{3}\\,;\\frac{2\\pi}{3}\\right[ }$."
-				]
-			}
-		},
-		{
-			"statement": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\frac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S=?$.",
-			"variables": [],
-			"blanks": [
-				{
-					"expectedAnswer": "[0;\\frac{4\\pi}{3}[\\cup]\\frac{5\\pi}{3};2\\pi["
-				}
-			],
-			"correction": {
-				"steps": [
-					"$\\sin \\frac{4\\pi}{3}=\\sin \\frac{5\\pi}{3}=-\\frac{\\sqrt{3}}{2}$. Sur le cercle, les points d'ordonnée strictement supérieure à $-\\frac{\\sqrt{3}}{2}$ forment l'arc qui va de $\\frac{5\\pi}{3}$ à $\\frac{4\\pi}{3}$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
-					"```trig\npreset: custom\nangles: 0, 4pi/3, 5pi/3\nequation: sin(x) > -sqrt(3)/2\nmode: arc\n```",
-					"$S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\frac{4\\pi}{3}\\right[\\cup\\left]\\frac{5\\pi}{3}\\,;2\\pi\\right[ }$."
+					"$\\sin \\frac{ {{u}}\\pi}{ {{w}} }=\\sin \\frac{ {{g}}\\pi}{ {{h}} }={{eval:-sin(n*pi/12)}}$. Sur le cercle, les points d'ordonnée strictement supérieure à ${{eval:-sin(n*pi/12)}}$ forment l'arc qui va de $\\frac{ {{g}}\\pi}{ {{h}} }$ à $\\frac{ {{u}}\\pi}{ {{w}} }$ en passant par $0$ : dans $\\left[0\\,;2\\pi\\right[$, il donne deux intervalles.",
+					"```trig\npreset: custom\nangles: 0, {{u}}*pi/{{w}}, {{g}}*pi/{{h}}\nequation: sin(x) > sin(-{{n}}*pi/12)\nmode: arc\n```",
+					"$S=\\textcolor{{{color:primary.0}}}{\\left[0\\,;\\frac{ {{u}}\\pi}{ {{w}} }\\right[\\cup\\left]\\frac{ {{g}}\\pi}{ {{h}} }\\,;2\\pi\\right[ }$."
 				]
 			}
 		},
@@ -131,7 +125,9 @@
 		{
 			"description": "sin x > 1/2 : juste",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["]\\frac{\\pi}{6};\\frac{5\\pi}{6}["],
 			"expected": {
 				"status": "correct"
@@ -140,7 +136,9 @@
 		{
 			"description": "bornes incluses à tort",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["[\\frac{\\pi}{6};\\frac{5\\pi}{6}]"],
 			"expected": {
 				"status": "incorrect"
@@ -149,7 +147,9 @@
 		{
 			"description": "arc complémentaire",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["[0;\\frac{\\pi}{6}[\\cup]\\frac{5\\pi}{6};2\\pi["],
 			"expected": {
 				"status": "incorrect"
@@ -158,16 +158,120 @@
 		{
 			"description": "confusion avec le cosinus",
 			"variationIndex": 0,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["]-\\frac{\\pi}{6};\\frac{\\pi}{6}["],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
+			"description": "sin x > sqrt(2)/2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["]\\frac{\\pi}{4};\\frac{3\\pi}{4}["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes incluses à tort",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["[\\frac{\\pi}{4};\\frac{3\\pi}{4}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arc complémentaire",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["[0;\\frac{\\pi}{4}[\\cup]\\frac{3\\pi}{4};2\\pi["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion avec le cosinus",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
+			"answers": ["]-\\frac{\\pi}{4};\\frac{\\pi}{4}["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "sin x > sqrt(3)/2 : juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["]\\frac{\\pi}{3};\\frac{2\\pi}{3}["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes incluses à tort",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[\\frac{\\pi}{3};\\frac{2\\pi}{3}]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "arc complémentaire",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["[0;\\frac{\\pi}{3}[\\cup]\\frac{2\\pi}{3};2\\pi["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "confusion avec le cosinus",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
+			"answers": ["]-\\frac{\\pi}{3};\\frac{\\pi}{3}["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "borne non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
+			"answers": ["]\\frac{2\\pi}{12};\\frac{10\\pi}{12}["],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["intervalForm"]
+			}
+		},
+		{
 			"description": "sin x > -1/2 : juste",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["[0;\\frac{7\\pi}{6}[\\cup]\\frac{11\\pi}{6};2\\pi["],
 			"expected": {
 				"status": "correct"
@@ -176,7 +280,9 @@
 		{
 			"description": "réunion dans l'autre ordre : juste",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["]\\frac{11\\pi}{6};2\\pi[\\cup[0;\\frac{7\\pi}{6}["],
 			"expected": {
 				"status": "correct"
@@ -185,7 +291,9 @@
 		{
 			"description": "arc écrit hors intervalle",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["]-\\frac{\\pi}{6};\\frac{7\\pi}{6}["],
 			"expected": {
 				"status": "incorrect"
@@ -194,7 +302,9 @@
 		{
 			"description": "un seul des deux intervalles",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["[0;\\frac{7\\pi}{6}["],
 			"expected": {
 				"status": "incorrect"
@@ -203,52 +313,20 @@
 		{
 			"description": "0 exclu à tort",
 			"variationIndex": 1,
-			"variables": {},
+			"variables": {
+				"a": "\\frac{\\pi}{6}"
+			},
 			"answers": ["]0;\\frac{7\\pi}{6}[\\cup]\\frac{11\\pi}{6};2\\pi["],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "sin x > sqrt(2)/2 : juste",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["]\\frac{\\pi}{4};\\frac{3\\pi}{4}["],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "bornes incluses à tort",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["[\\frac{\\pi}{4};\\frac{3\\pi}{4}]"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "arc complémentaire",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["[0;\\frac{\\pi}{4}[\\cup]\\frac{3\\pi}{4};2\\pi["],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "confusion avec le cosinus",
-			"variationIndex": 2,
-			"variables": {},
-			"answers": ["]-\\frac{\\pi}{4};\\frac{\\pi}{4}["],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "sin x > -sqrt(2)/2 : juste",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["[0;\\frac{5\\pi}{4}[\\cup]\\frac{7\\pi}{4};2\\pi["],
 			"expected": {
 				"status": "correct"
@@ -256,8 +334,10 @@
 		},
 		{
 			"description": "réunion dans l'autre ordre : juste",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["]\\frac{7\\pi}{4};2\\pi[\\cup[0;\\frac{5\\pi}{4}["],
 			"expected": {
 				"status": "correct"
@@ -265,8 +345,10 @@
 		},
 		{
 			"description": "arc écrit hors intervalle",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["]-\\frac{\\pi}{4};\\frac{5\\pi}{4}["],
 			"expected": {
 				"status": "incorrect"
@@ -274,8 +356,10 @@
 		},
 		{
 			"description": "un seul des deux intervalles",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["[0;\\frac{5\\pi}{4}["],
 			"expected": {
 				"status": "incorrect"
@@ -283,53 +367,21 @@
 		},
 		{
 			"description": "0 exclu à tort",
-			"variationIndex": 3,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{4}"
+			},
 			"answers": ["]0;\\frac{5\\pi}{4}[\\cup]\\frac{7\\pi}{4};2\\pi["],
 			"expected": {
 				"status": "incorrect"
 			}
 		},
 		{
-			"description": "sin x > sqrt(3)/2 : juste",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["]\\frac{\\pi}{3};\\frac{2\\pi}{3}["],
-			"expected": {
-				"status": "correct"
-			}
-		},
-		{
-			"description": "bornes incluses à tort",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["[\\frac{\\pi}{3};\\frac{2\\pi}{3}]"],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "arc complémentaire",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["[0;\\frac{\\pi}{3}[\\cup]\\frac{2\\pi}{3};2\\pi["],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
-			"description": "confusion avec le cosinus",
-			"variationIndex": 4,
-			"variables": {},
-			"answers": ["]-\\frac{\\pi}{3};\\frac{\\pi}{3}["],
-			"expected": {
-				"status": "incorrect"
-			}
-		},
-		{
 			"description": "sin x > -sqrt(3)/2 : juste",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["[0;\\frac{4\\pi}{3}[\\cup]\\frac{5\\pi}{3};2\\pi["],
 			"expected": {
 				"status": "correct"
@@ -337,8 +389,10 @@
 		},
 		{
 			"description": "réunion dans l'autre ordre : juste",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["]\\frac{5\\pi}{3};2\\pi[\\cup[0;\\frac{4\\pi}{3}["],
 			"expected": {
 				"status": "correct"
@@ -346,8 +400,10 @@
 		},
 		{
 			"description": "arc écrit hors intervalle",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["]-\\frac{\\pi}{3};\\frac{4\\pi}{3}["],
 			"expected": {
 				"status": "incorrect"
@@ -355,8 +411,10 @@
 		},
 		{
 			"description": "un seul des deux intervalles",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["[0;\\frac{4\\pi}{3}["],
 			"expected": {
 				"status": "incorrect"
@@ -364,8 +422,10 @@
 		},
 		{
 			"description": "0 exclu à tort",
-			"variationIndex": 5,
-			"variables": {},
+			"variationIndex": 1,
+			"variables": {
+				"a": "\\frac{\\pi}{3}"
+			},
 			"answers": ["]0;\\frac{4\\pi}{3}[\\cup]\\frac{5\\pi}{3};2\\pi["],
 			"expected": {
 				"status": "incorrect"
@@ -373,7 +433,7 @@
 		},
 		{
 			"description": "sin x > 0 : juste",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["]0;\\pi["],
 			"expected": {
@@ -382,7 +442,7 @@
 		},
 		{
 			"description": "bornes incluses à tort",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["[0;\\pi]"],
 			"expected": {
@@ -391,7 +451,7 @@
 		},
 		{
 			"description": "arc complémentaire",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["]\\pi;2\\pi["],
 			"expected": {
@@ -400,21 +460,11 @@
 		},
 		{
 			"description": "confusion avec le cosinus",
-			"variationIndex": 6,
+			"variationIndex": 2,
 			"variables": {},
 			"answers": ["]-\\frac{\\pi}{2};\\frac{\\pi}{2}["],
 			"expected": {
 				"status": "incorrect"
-			}
-		},
-		{
-			"description": "borne non simplifiée",
-			"variationIndex": 0,
-			"variables": {},
-			"answers": ["]\\frac{2\\pi}{12};\\frac{10\\pi}{12}["],
-			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["intervalForm"]
 			}
 		}
 	]

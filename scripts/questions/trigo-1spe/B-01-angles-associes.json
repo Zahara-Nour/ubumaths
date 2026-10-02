@@ -175,11 +175,11 @@
 			}
 		},
 		{
-			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(x+{{eval:2*k}}\\pi)=?$",
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\cos(x{{eval:2*k;+}}\\pi)=?$",
 			"variables": [
 				{
 					"name": "k",
-					"expression": "1..3"
+					"expression": "1..3;±"
 				}
 			],
 			"blanks": [
@@ -189,17 +189,17 @@
 			],
 			"correction": {
 				"steps": [
-					"${{eval:2*k}}\\pi={{k}}\\times2\\pi$ : ajouter ${{eval:2*k}}\\pi$, c'est faire {{k}} tour(s) complet(s) du cercle trigonométrique. On retombe sur le même point.",
-					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(x+{{eval:2*k}}\\pi)=\\cos x }$."
+					"$x{{eval:2*k;+}}\\pi=x+{{k;()}}\\times2\\pi$ : on fait {{eval:abs(k)}} tour(s) complet(s) du cercle trigonométrique, dans un sens ou dans l'autre. On retombe sur le même point.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\cos(x{{eval:2*k;+}}\\pi)=\\cos x }$."
 				]
 			}
 		},
 		{
-			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(x+{{eval:2*k}}\\pi)=?$",
+			"statement": "Simplifie l'expression, pour tout réel $x$.\n\n$\\sin(x{{eval:2*k;+}}\\pi)=?$",
 			"variables": [
 				{
 					"name": "k",
-					"expression": "1..3"
+					"expression": "1..3;±"
 				}
 			],
 			"blanks": [
@@ -209,8 +209,8 @@
 			],
 			"correction": {
 				"steps": [
-					"${{eval:2*k}}\\pi={{k}}\\times2\\pi$ : ajouter ${{eval:2*k}}\\pi$, c'est faire {{k}} tour(s) complet(s) du cercle trigonométrique. On retombe sur le même point.",
-					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(x+{{eval:2*k}}\\pi)=\\sin x }$."
+					"$x{{eval:2*k;+}}\\pi=x+{{k;()}}\\times2\\pi$ : on fait {{eval:abs(k)}} tour(s) complet(s) du cercle trigonométrique, dans un sens ou dans l'autre. On retombe sur le même point.",
+					"Donc $\\textcolor{{{color:primary.0}}}{\\sin(x{{eval:2*k;+}}\\pi)=\\sin x }$."
 				]
 			}
 		}

@@ -29,7 +29,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/6\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6\nmesures: principales\n```",
 					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
 				]
 			}
@@ -54,7 +54,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/4\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/4\nmesures: principales\n```",
 					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
 				]
 			}
@@ -79,7 +79,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/3\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3\nmesures: principales\n```",
 					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
 				]
 			}
@@ -89,7 +89,7 @@
 			"variables": [
 				{
 					"name": "r",
-					"expression": "\\frac{\\pi}{2}|-\\frac{\\pi}{2}"
+					"expression": "\\frac{\\pi}{2}|-\\frac{\\pi}{2}|\\pi|0"
 				},
 				{
 					"name": "p",
@@ -104,7 +104,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/2\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/2\nmesures: principales\n```",
 					"Le point $M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$, qui appartient bien à $\\left]-\\pi\\,;\\pi\\right]$."
 				]
 			}
@@ -140,7 +140,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/6, {{q}}*pi/4\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/6, {{q}}*pi/4\nmesures: principales\n```",
 					"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
 				]
 			}
@@ -176,7 +176,7 @@
 			"correction": {
 				"steps": [
 					"Les points marqués sur le cercle sont ceux des angles remarquables : deux points voisins sont séparés de $\\frac{\\pi}{6}$ ou de $\\frac{\\pi}{4}$. Un point du demi-cercle supérieur a une mesure principale positive, un point du demi-cercle inférieur une mesure principale négative.",
-					"```trig\npreset: custom\nangles: {{p}}*pi/3, {{q}}*pi/4\n```",
+					"```trig\npreset: custom\nangles: {{p}}*pi/3, {{q}}*pi/4\nmesures: principales\n```",
 					"$M$ est associé au réel $\\textcolor{{{color:primary.0}}}{{{r}} }$ et $N$ au réel $\\textcolor{{{color:primary.0}}}{{{s}} }$."
 				]
 			}
