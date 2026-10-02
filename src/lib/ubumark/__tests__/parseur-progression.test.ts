@@ -33,10 +33,9 @@ describe('le parseur avance toujours', () => {
 	it('``` indenté après un paragraphe : plus de blocage, rien de perdu', () => {
 		const children = parseMarkdown('texte\n\n  ```ts\n  x\n  ```').children;
 
-		// Affiché en texte (la détection des blocs de code ne voit pas une fence
-		// indentée) : le code est là, rien n'est perdu
-		expect(children.map((c) => c.type)).toEqual(['paragraph', 'paragraph', 'paragraph']);
-		expect(textOf(children[1])).toContain(escaped('  ```ts\n  x'));
+		// Un bloc de code depuis Q56 (avant : du texte, backticks visibles)
+		expect(children.map((c) => c.type)).toEqual(['paragraph', 'code-block']);
+		expect(children[1]).toMatchObject({ code: 'x', language: 'ts' });
 	});
 
 	it('item de liste dont le code indenté contient une tabulation', () => {

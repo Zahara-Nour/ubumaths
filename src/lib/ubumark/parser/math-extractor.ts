@@ -68,12 +68,12 @@ const INLINE_MATH_REGEX = /(?<!\\)\$([^$\n]+)\$/g;
  * Note: Block math CAN span multiple lines ([\s\S] matches everything)
  * Non-greedy (+?) ensures we match the shortest possible expression
  */
-const BLOCK_MATH_REGEX = /(?<!\\)\$\$([\s\S]+?)\$\$/g;
+export const BLOCK_MATH_REGEX = /(?<!\\)\$\$([\s\S]+?)\$\$/g;
 
 /**
  * Regex for matching escaped dollar signs \$
  */
-const ESCAPED_DOLLAR_REGEX = /\\\$/g;
+export const ESCAPED_DOLLAR_REGEX = /\\\$/g;
 
 /**
  * Temporary placeholder for escaped dollars (will be replaced back to $ after extraction)
@@ -98,12 +98,12 @@ const INLINE_CUSTOM_REGEX = /(?<!\\)~([^~\n]+)~(?!~)/g;
  * - (?<!~)~~ ensures closing ~~ is not preceded by another ~
  * - ~~(?!~) ensures closing ~~ is not followed by another ~
  */
-const BLOCK_CUSTOM_REGEX = /(?<!\\)(?<!~)~~(?!~)([\s\S]+?)(?<!~)~~(?!~)/g;
+export const BLOCK_CUSTOM_REGEX = /(?<!\\)(?<!~)~~(?!~)([\s\S]+?)(?<!~)~~(?!~)/g;
 
 /**
  * Regex for matching escaped tildes \~
  */
-const ESCAPED_TILDE_REGEX = /\\~/g;
+export const ESCAPED_TILDE_REGEX = /\\~/g;
 
 /**
  * Temporary placeholder for escaped tildes (will be replaced back to ~ after extraction)
