@@ -9,6 +9,8 @@ import { DependencyGraph } from './dependency-graph';
 import type {
 	GeoElement,
 	GeoStyle,
+	LabelPosition,
+	TextAnchor,
 	GeoFreePoint,
 	GeoMidpoint,
 	GeoIntersectionLL,
@@ -3393,6 +3395,7 @@ export class Figure {
 			position?: { x: number; y: number };
 			autoPosition?: 'midpoint' | 'bisector' | 'centroid';
 			autoTargetIds?: string[];
+			textAnchor?: TextAnchor;
 		},
 		options?: ElementOptions
 	): string {
@@ -3408,6 +3411,7 @@ export class Figure {
 			position: positioning.position,
 			autoPosition: positioning.autoPosition,
 			autoTargetIds: positioning.autoTargetIds,
+			...(positioning.textAnchor ? { textAnchor: positioning.textAnchor } : {}),
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
 			label: options?.label,
@@ -4580,6 +4584,24 @@ export class Figure {
 		const el = this.elements.get(id);
 		if (!el) throw new Error(`setLabelOffset: "${id}" does not exist`);
 		const updated = { ...el, labelOffset: { dx, dy } } as GeoElement;
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
+	/** Côté du nom d'un élément (DSL `etiquette=`) ; `undefined` = défaut (en haut à droite). */
+	setLabelPosition(id: string, position: LabelPosition | undefined): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`setLabelPosition: "${id}" does not exist`);
+		const updated = { ...el, labelPosition: position } as GeoElement;
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
+	/** Masque (ou réaffiche) le nom seul, l'élément restant dessiné (DSL `etiquette="aucune"`). */
+	setLabelHidden(id: string, hidden: boolean): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`setLabelHidden: "${id}" does not exist`);
+		const updated = { ...el, labelHidden: hidden } as GeoElement;
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}

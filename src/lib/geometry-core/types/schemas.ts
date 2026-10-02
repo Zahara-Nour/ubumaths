@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { toLatex, parseLatex } from '$lib/mathAST';
 import { viewportSchema } from '../viewport/types';
 import type { GeoValue } from './geo-value';
+import { LABEL_POSITIONS } from './elements';
 
 // =============================================================================
 // GeoValue schema
@@ -77,7 +78,9 @@ const baseElementSchema = z.object({
 			dx: z.number().finite(),
 			dy: z.number().finite()
 		})
-		.optional()
+		.optional(),
+	labelPosition: z.enum(LABEL_POSITIONS).optional(),
+	labelHidden: z.boolean().optional()
 });
 
 const freePointSchema = baseElementSchema.extend({
@@ -274,6 +277,7 @@ const textSchema = baseElementSchema.extend({
 	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
 	autoPosition: z.enum(['midpoint', 'bisector', 'centroid']).optional(),
 	autoTargetIds: z.array(z.string().min(1)).optional(),
+	textAnchor: z.enum([...LABEL_POSITIONS, 'center']).optional(),
 	dependsOn: z.array(z.string())
 });
 

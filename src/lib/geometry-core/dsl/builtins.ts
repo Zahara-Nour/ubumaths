@@ -71,7 +71,7 @@ import {
 	isVectorByPoints,
 	isLine
 } from '../types/elements';
-import type { GeoVector, GeoSegment, GeoLine } from '../types/elements';
+import type { GeoVector, GeoSegment, GeoLine, LabelPosition, TextAnchor } from '../types/elements';
 import { intersectLL } from '../geometry/intersections';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
@@ -256,8 +256,80 @@ const STYLE_ARGS = new Set([
 	'motif',
 	'sommets_nets',
 	'remplissage',
-	'opacite_fond'
+	'opacite_fond',
+	// `visible=faux` à la création : sans lui dans cette liste, l'argument
+	// était ignoré en silence (l'objet restait visible).
+	'visible',
+	'etiquette',
+	// Alias de `trait=` (`style="pointille"` s'écrit naturellement)
+	'style'
 ]);
+
+/** Valeurs de `trait=` (et de son alias `style=`) → tiret du style ; `continu` = aucun */
+const TRAIT_MAP: Record<string, 'dashed' | 'dotted' | undefined> = {
+	continu: undefined,
+	tirets: 'dashed',
+	pointilles: 'dotted',
+	pointille: 'dotted'
+};
+
+/** Directions du DSL (`etiquette=`, `ancre=`) → direction interne */
+const DIRECTION_MAP: Record<string, LabelPosition> = {
+	haut: 'top',
+	bas: 'bottom',
+	gauche: 'left',
+	droite: 'right',
+	'haut-gauche': 'top-left',
+	'haut-droite': 'top-right',
+	'bas-gauche': 'bottom-left',
+	'bas-droite': 'bottom-right'
+};
+
+/** Valeur d'un argument nommé parmi une liste fermée, sinon erreur qui liste les valeurs permises */
+function requireNamedChoice(
+	val: ResolvedValue,
+	key: string,
+	allowed: readonly string[],
+	line: number,
+	example: string
+): string {
+	if (val.type === 'string' && allowed.includes(val.value)) return val.value;
+	const got = val.type === 'string' ? `\`"${val.value}"\`` : 'une valeur qui n’est pas une chaîne';
+	throw new DslRuntimeError(
+		{
+			summary: `\`${key}\` : valeur invalide (${got}).`,
+			hint: `Valeurs autorisées : ${allowed.map((v) => `\`"${v}"\``).join(', ')}. Exemple : \`${example}\`.`
+		},
+		line
+	);
+}
+
+/** `etiquette=` : côté du nom d'un point, ou `"aucune"` (nom masqué, point dessiné). */
+function applyLabelPosition(figure: Figure, elId: string, val: ResolvedValue, line: number): void {
+	const value = requireNamedChoice(
+		val,
+		'etiquette',
+		[...Object.keys(DIRECTION_MAP), 'aucune'],
+		line,
+		'A = point(0, 0, etiquette="bas-gauche")'
+	);
+	const el = figure.getElementById(elId);
+	if (!el || !isPointElement(el)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`etiquette` ne s’applique qu’à un point (position de son nom).',
+				hint: 'Pour écrire près d’un autre objet, utilisez `texte(x, y, "…", ancre="…")`.'
+			},
+			line
+		);
+	}
+	if (value === 'aucune') {
+		figure.setLabelHidden(elId, true);
+	} else {
+		figure.setLabelHidden(elId, false);
+		figure.setLabelPosition(elId, DIRECTION_MAP[value]);
+	}
+}
 
 function applyInlineStyle(
 	figure: Figure,
@@ -285,11 +357,17 @@ function applyInlineStyle(
 	if (named.has('trait')) {
 		const tv = named.get('trait')!;
 		const traitName = tv.type === 'string' ? tv.value : 'continu';
-		const TRAIT_MAP: Record<string, string | undefined> = {
-			continu: undefined,
-			tirets: 'dashed',
-			pointilles: 'dotted'
-		};
+		const dash = TRAIT_MAP[traitName];
+		if (dash) style.dash = dash;
+	} else if (named.has('style')) {
+		// Alias : valeur contrôlée (un `style=` inconnu était ignoré en silence)
+		const traitName = requireNamedChoice(
+			named.get('style')!,
+			'style',
+			Object.keys(TRAIT_MAP),
+			line,
+			'segment(A, B, trait="pointilles")'
+		);
 		const dash = TRAIT_MAP[traitName];
 		if (dash) style.dash = dash;
 	}
@@ -338,6 +416,9 @@ function applyInlineStyle(
 	}
 	if (Object.keys(style).length > 0) {
 		figure.updateStyle(elId, style);
+	}
+	if (named.has('etiquette')) {
+		applyLabelPosition(figure, elId, named.get('etiquette')!, line);
 	}
 	// Visibility is a top-level field on GeoElement (not in `style`), handled separately.
 	if (named.has('visible')) {
@@ -1557,6 +1638,10 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 					{
 						syntax: 'texte(P, "label", dx=0.2, dy=-0.1)',
 						description: 'texte ancré au point `P` avec décalage'
+					},
+					{
+						syntax: 'texte(x, y, "5 cm", ancre="bas-gauche")',
+						description: 'point du texte posé sur la position (défaut : `centre`)'
 					}
 				]
 			},
@@ -1568,6 +1653,7 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 		anchorId?: string;
 		anchorOffset?: { dx: number; dy: number };
 		position?: { x: number; y: number };
+		textAnchor?: TextAnchor;
 	};
 
 	if (pos.length >= 3 && isNumericLikeArg(pos[0]) && isNumericLikeArg(pos[1])) {
@@ -1605,6 +1691,18 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 			'texte() attend: texte(x, y, "text") ou texte(point, "text", dx=..., dy=...)',
 			line
 		);
+	}
+
+	if (named.has('ancre')) {
+		const anchor = requireNamedChoice(
+			named.get('ancre')!,
+			'ancre',
+			['centre', ...Object.keys(DIRECTION_MAP)],
+			line,
+			'texte(2, 3, "5 cm", ancre="bas-gauche")'
+		);
+		const textAnchor: TextAnchor = anchor === 'centre' ? 'center' : DIRECTION_MAP[anchor];
+		positioning = { ...positioning, textAnchor };
 	}
 
 	const scalarRefs: string[] = [];
