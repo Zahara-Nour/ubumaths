@@ -1,7 +1,7 @@
 ---
 title: Produit scalaire 1re SPE — questions
 date: 2026-10-02
-status: en cours (rédaction des modèles)
+status: 13 modèles en brouillon (2026-10-02)
 ---
 
 # Produit scalaire 1re SPE — point de reprise
@@ -25,4 +25,21 @@ illustrer. Un repère pour `figure = chantier séparé éventuel (géométrie re
 
 ## Modèles (`scripts/questions/produit-scalaire-1spe/`)
 
-À rédiger (~13-14).
+| Sous-domaine                 | Fichiers                                                                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Calculer un produit scalaire | A-01 coordonnées, A-02 normes et angle, A-03 projection (figure), A-04 normes seules, A-05 choisir la méthode (figure) |
+| Propriétés                   | B-01 bilinéarité, B-02 ‖u+v‖² et ‖u−v‖², B-03 orthogonalité                                                            |
+| Angles et longueurs          | C-01 angle de deux vecteurs, C-02 Al-Kashi longueur (figure), C-03 Al-Kashi angle (figure)                             |
+| Lieux de points              | D-01 cercle de diamètre [AB], D-02 MA·MB = k                                                                           |
+
+**13 modèles créés en BROUILLON en production le 2026-10-02.** `question:specs` 190/190 ;
+150 tirages par variation (7 350 instances) recalculés en Python, 0 écart ; 1 200 + 2 400 figures
+passées par `buildFigureScene` sans erreur, longueurs/angles tracés conformes à l'énoncé ; PDF
+compilés (compilateur de prod), pages relues.
+
+Figures : le DSL ne règle pas la position du nom d'un point → noms posés par `texte()` (droits,
+pas en italique ; ancrage écran ≠ PDF). Ajout possible à geometry-core (non fait) :
+`point(…, etiquette="haut-gauche")`, `texte(…, ancre=…)` aligné écran/PDF.
+
+Points à relire : A-02 sans 90° ; C-01 n'atteint pas 30/60/120/150° par coordonnées entières
+(travaillés par normes et u·v) ; C-03 v 120° : 4 triangles distincts ; B-03 v3 ne contrôle que u·v.

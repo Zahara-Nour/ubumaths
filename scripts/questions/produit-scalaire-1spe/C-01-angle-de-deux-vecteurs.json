@@ -1,0 +1,464 @@
+{
+	"title": "Angle de deux vecteurs",
+	"description": "Calculer le cosinus de l'angle de deux vecteurs à partir de leurs coordonnées ou de leurs normes, puis une mesure de l'angle",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Angles et longueurs",
+	"level": 2,
+	"status": "draft",
+	"delay": 150,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:k*(p-q)}}"
+				},
+				{
+					"name": "y",
+					"expression": "{{eval:k*(p+q)}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:p^2+q^2}}"
+				}
+			],
+			"conditions": ["abs(p) != abs(q)", "abs(x) <= 9", "abs(y) <= 9"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{\\sqrt{2}}{2}"
+				},
+				{
+					"expectedAnswer": "45"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $\\vec{u}$ et $\\vec{v}$ sont non nuls, $\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos\\theta$, donc $\\cos\\theta=\\dfrac{\\vec{u}\\cdot\\vec{v}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}$.",
+					"$\\vec{u}\\cdot\\vec{v}={{p}}\\times {{x;()}}+{{q;()}}\\times {{y;()}}={{eval:k*S}}$",
+					"$\\|\\vec{u}\\|=\\sqrt{ {{eval:p^2}}+{{eval:q^2}} }=\\sqrt{ {{S}} }$ et $\\|\\vec{v}\\|=\\sqrt{ {{eval:x^2}}+{{eval:y^2}} }=\\sqrt{ {{eval:2*k^2*S}} }$.",
+					"$\\cos\\theta=\\dfrac{ {{eval:k*S}} }{\\sqrt{ {{S}} }\\times\\sqrt{ {{eval:2*k^2*S}} }}=\\dfrac{ {{eval:k*S}} }{\\sqrt{ {{eval:2*k^2*S^2}} }}=\\dfrac{ {{eval:k*S}} }{ {{eval:k*S}}\\sqrt{2} }=\\dfrac{1}{\\sqrt{2}}=\\textcolor{{{color:primary.0}}}{ \\dfrac{\\sqrt{2}}{2} }$",
+					"$\\cos 45^\\circ=\\dfrac{\\sqrt{2}}{2}$ et $\\theta$ est entre $0^\\circ$ et $180^\\circ$, donc $\\theta=\\textcolor{{{color:primary.0}}}{ 45^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+			"variables": [
+				{
+					"name": "xa",
+					"expression": "-3..3"
+				},
+				{
+					"name": "ya",
+					"expression": "-3..3"
+				},
+				{
+					"name": "p",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "q",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "dx",
+					"expression": "{{eval:-k*(p+q)}}"
+				},
+				{
+					"name": "dy",
+					"expression": "{{eval:k*(p-q)}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{eval:xa+p}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{eval:ya+q}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{eval:xa+dx}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{eval:ya+dy}}"
+				},
+				{
+					"name": "S",
+					"expression": "{{eval:p^2+q^2}}"
+				}
+			],
+			"conditions": ["abs(p) != abs(q)", "abs(xc) <= 9", "abs(yc) <= 9"],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{\\sqrt{2}}{2}"
+				},
+				{
+					"expectedAnswer": "135"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\cos\\widehat{BAC}=\\dfrac{\\overrightarrow{AB}\\cdot\\overrightarrow{AC}}{AB\\times AC}$.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}{{dx}}\\\\{{dy}}\\end{pmatrix}$, donc $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}\\times {{dx;()}}+{{q;()}}\\times {{dy;()}}={{eval:-k*S}}$.",
+					"$AB=\\sqrt{ {{S}} }$ et $AC=\\sqrt{ {{eval:dx^2}}+{{eval:dy^2}} }=\\sqrt{ {{eval:2*k^2*S}} }$.",
+					"$\\cos\\widehat{BAC}=\\dfrac{ {{eval:-k*S}} }{\\sqrt{ {{S}} }\\times\\sqrt{ {{eval:2*k^2*S}} }}=\\dfrac{ {{eval:-k*S}} }{ {{eval:k*S}}\\sqrt{2} }=-\\dfrac{1}{\\sqrt{2}}=\\textcolor{{{color:primary.0}}}{ -\\dfrac{\\sqrt{2}}{2} }$",
+					"$\\cos 135^\\circ=-\\dfrac{\\sqrt{2}}{2}$, donc $\\widehat{BAC}=\\textcolor{{{color:primary.0}}}{ 135^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{eval:s*a*b/2}}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "s",
+					"expression": "-1..1!0"
+				}
+			],
+			"conditions": ["mod(a*b,2) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:90-30*s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $\\vec{u}$ et $\\vec{v}$ sont non nuls, $\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos\\theta$, donc $\\cos\\theta=\\dfrac{\\vec{u}\\cdot\\vec{v}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}$.",
+					"$\\cos\\theta=\\dfrac{ {{eval:s*a*b/2}} }{ {{a}}\\times {{b}} }=\\textcolor{{{color:primary.0}}}{ {{eval:s/2}} }$",
+					"$\\cos {{eval:90-30*s}}^\\circ={{eval:s/2}}$ et $\\theta$ est entre $0^\\circ$ et $180^\\circ$, donc $\\theta=\\textcolor{{{color:primary.0}}}{ {{eval:90-30*s}}^\\circ }$."
+				]
+			}
+		},
+		{
+			"statement": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx ?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "q",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "x",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "y",
+					"expression": "-6..6!0"
+				},
+				{
+					"name": "P",
+					"expression": "{{eval:p*x+q*y}}"
+				},
+				{
+					"name": "Q",
+					"expression": "{{eval:(p^2+q^2)*(x^2+y^2)}}"
+				},
+				{
+					"name": "D",
+					"expression": "{{eval:arccos(P/sqrt(Q))*180/pi}}"
+				},
+				{
+					"name": "R",
+					"expression": "{{eval:round(D)}}"
+				}
+			],
+			"conditions": ["p*y-q*x != 0", "P != 0", "abs(abs(D-round(D))-0.5) > 0.1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{R}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Si $\\vec{u}$ et $\\vec{v}$ sont non nuls, $\\vec{u}\\cdot\\vec{v}=\\|\\vec{u}\\|\\times\\|\\vec{v}\\|\\times\\cos\\theta$, donc $\\cos\\theta=\\dfrac{\\vec{u}\\cdot\\vec{v}}{\\|\\vec{u}\\|\\times\\|\\vec{v}\\|}$.",
+					"$\\vec{u}\\cdot\\vec{v}={{p}}\\times {{x;()}}+{{q;()}}\\times {{y;()}}={{P}}$, $\\|\\vec{u}\\|=\\sqrt{ {{eval:p^2+q^2}} }$ et $\\|\\vec{v}\\|=\\sqrt{ {{eval:x^2+y^2}} }$.",
+					"$\\cos\\theta=\\dfrac{ {{P}} }{\\sqrt{ {{eval:p^2+q^2}} }\\times\\sqrt{ {{eval:x^2+y^2}} }}$",
+					"À la calculatrice (touche $\\cos^{-1}$, en mode degrés) : $\\theta\\approx \\textcolor{{{color:primary.0}}}{ {{R}}^\\circ }$ (arrondi au degré)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : √2/2 et 45",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 45° avec le symbole degré",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "45^\\circ"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 1/√2 (dénominateur avec racine)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{1}{\\sqrt{2}}", "45"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : angle en radians refusé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\pi}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : cos = 1/2 et 60 (faux)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{1}{2}", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : cos approché 0,71 refusé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["0,71", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −√2/2 et 135",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "0",
+				"p": "2",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "135"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe oublié (√2/2 et 45)",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "0",
+				"p": "2",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["\\frac{\\sqrt{2}}{2}", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : bon cos mais angle 45",
+			"variationIndex": 1,
+			"variables": {
+				"xa": "1",
+				"ya": "0",
+				"p": "2",
+				"q": "1",
+				"k": "1"
+			},
+			"answers": ["-\\frac{\\sqrt{2}}{2}", "45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : −1/2 et 120",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"s": "-1"
+			},
+			"answers": ["-\\frac{1}{2}", "120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −0,5 décimal exact",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"s": "-1"
+			},
+			"answers": ["-0,5", "120"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 60 au lieu de 120",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"s": "-1"
+			},
+			"answers": ["-\\frac{1}{2}", "60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : −6/12 non réduite",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3",
+				"s": "-1"
+			},
+			"answers": ["-\\frac{6}{12}", "120"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v3 : 58",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["58"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 58°",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["58^\\circ"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : troncature 57 refusée",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : radians (1,0) refusé",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3",
+				"q": "1",
+				"x": "1",
+				"y": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

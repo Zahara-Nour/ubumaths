@@ -194,6 +194,20 @@ Toujours vrai :
   statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
   forme dans l'énoncé ; une valeur arrondie demande `precision`.
+- **`\lVert … \rVert`** et **`\perp`** sortent en texte brut dans le PDF : écrire `\|\vec u\|` et
+  « sont orthogonaux » (relevé sur le produit scalaire, 2026-10-02).
+- **`pi` dans une condition** n'est pas π (`cos(pi/6) >= 0.1` vaut faux, sans erreur) : passer
+  par une variable.
+- **Variables calculées AVANT les conditions** : une division par zéro ou un `arccos` hors de
+  [−1 ; 1] fait échouer le tirage au lieu de le relancer ; exclure à la source (`-5..5!0`).
+- **Variable de plusieurs lettres** contenant du LaTeX : casse `round()` ; nom d'une lettre.
+- **`{{eval:-sqrt(2)/2}}`** se rend `-\dfrac{1}{2}\sqrt{2}` et la bonne réponse devient « mauvaise
+  forme » : écrire `\frac{ {{P}}\sqrt{m} }{2}` à la main.
+- **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
+- **Bloc ```figure** : pas d'axes ni de grille ; le nom d'un point est toujours en haut à droite
+  (aucun argument du DSL ne règle `labelOffset`) → `masque(A)` puis `texte(x, y, "A")` ; pointillés
+  `trait="pointilles"` (ou `"tirets"`), `style=` n'est pas lu ; un `texte` est ancré à gauche à
+  l'écran mais centré dans le PDF (compromis de décalage) ; les noms posés à la main sont droits.
 
 Règles d'écriture qui évitent un défaut :
 

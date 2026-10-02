@@ -1,0 +1,441 @@
+{
+	"title": "Produit scalaire avec les coordonnées",
+	"description": "Calculer un produit scalaire dans une base orthonormée à partir des coordonnées de deux vecteurs ou de points",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Calculer un produit scalaire",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Dans une base orthonormée, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{x1}}\\\\{{y1}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x2}}\\\\{{y2}}\\end{pmatrix}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "y1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "x2",
+					"expression": "-6..6"
+				},
+				{
+					"name": "y2",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["x1*x2 != 0", "y1*y2 != 0", "x1*x2+y1*y2 != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:x1*x2+y1*y2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une base orthonormée, si $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$, alors $\\vec{u}\\cdot\\vec{v}=xx'+yy'$.",
+					"$\\vec{u}\\cdot\\vec{v}={{x1}}\\times {{x2;()}}+{{y1;()}}\\times {{y2;()}}={{eval:x1*x2}}{{eval:y1*y2;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:x1*x2+y1*y2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé, on considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$ et $C({{xC}}\\,;{{yC}})$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ux",
+					"expression": "{{eval:xB-xA}}"
+				},
+				{
+					"name": "uy",
+					"expression": "{{eval:yB-yA}}"
+				},
+				{
+					"name": "vx",
+					"expression": "{{eval:xC-xA}}"
+				},
+				{
+					"name": "vy",
+					"expression": "{{eval:yC-yA}}"
+				}
+			],
+			"conditions": [
+				"ux*vx != 0",
+				"uy*vy != 0",
+				"ux*vx+uy*vy != 0",
+				"ux*vy-uy*vx != 0",
+				"abs(ux) <= 7",
+				"abs(uy) <= 7",
+				"abs(vx) <= 7",
+				"abs(vy) <= 7"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ux*vx+uy*vy}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord les coordonnées des vecteurs.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{xB}}-{{xA;()}}\\\\{{yB}}-{{yA;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AC}\\begin{pmatrix}{{xC}}-{{xA;()}}\\\\{{yC}}-{{yA;()}}\\end{pmatrix}$, soit $\\overrightarrow{AC}\\begin{pmatrix}{{vx}}\\\\{{vy}}\\end{pmatrix}$.",
+					"Dans une base orthonormée, $\\vec{u}\\cdot\\vec{v}=xx'+yy'$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{ux}}\\times {{vx;()}}+{{uy;()}}\\times {{vy;()}}={{eval:ux*vx}}{{eval:uy*vy;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:ux*vx+uy*vy}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans un repère orthonormé, on considère les points $A({{xA}}\\,;{{yA}})$, $B({{xB}}\\,;{{yB}})$, $C({{xC}}\\,;{{yC}})$ et $D({{xD}}\\,;{{yD}})$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{CD}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=?$",
+			"variables": [
+				{
+					"name": "xA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yA",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yB",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yC",
+					"expression": "-5..5"
+				},
+				{
+					"name": "xD",
+					"expression": "-5..5"
+				},
+				{
+					"name": "yD",
+					"expression": "-5..5"
+				},
+				{
+					"name": "ux",
+					"expression": "{{eval:xB-xA}}"
+				},
+				{
+					"name": "uy",
+					"expression": "{{eval:yB-yA}}"
+				},
+				{
+					"name": "vx",
+					"expression": "{{eval:xD-xC}}"
+				},
+				{
+					"name": "vy",
+					"expression": "{{eval:yD-yC}}"
+				}
+			],
+			"conditions": [
+				"ux*vx != 0",
+				"uy*vy != 0",
+				"ux*vx+uy*vy != 0",
+				"ux*vy-uy*vx != 0",
+				"abs(ux) <= 7",
+				"abs(uy) <= 7",
+				"abs(vx) <= 7",
+				"abs(vy) <= 7"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:ux*vx+uy*vy}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule d'abord les coordonnées des vecteurs.",
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{xB}}-{{xA;()}}\\\\{{yB}}-{{yA;()}}\\end{pmatrix}$, soit $\\overrightarrow{AB}\\begin{pmatrix}{{ux}}\\\\{{uy}}\\end{pmatrix}$.",
+					"$\\overrightarrow{CD}\\begin{pmatrix}{{xD}}-{{xC;()}}\\\\{{yD}}-{{yC;()}}\\end{pmatrix}$, soit $\\overrightarrow{CD}\\begin{pmatrix}{{vx}}\\\\{{vy}}\\end{pmatrix}$.",
+					"Dans une base orthonormée, $\\vec{u}\\cdot\\vec{v}=xx'+yy'$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}={{ux}}\\times {{vx;()}}+{{uy;()}}\\times {{vy;()}}={{eval:ux*vx}}{{eval:uy*vy;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:ux*vx+uy*vy}} }$"
+				]
+			}
+		},
+		{
+			"statement": "Dans une base orthonormée, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{x1}}\\\\{{eval:y1/2}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:x2/2}}\\\\{{y2}}\\end{pmatrix}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "-6..6"
+				},
+				{
+					"name": "y1",
+					"expression": "-7..7"
+				},
+				{
+					"name": "x2",
+					"expression": "-7..7"
+				},
+				{
+					"name": "y2",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": [
+				"x1*y2 != 0",
+				"mod(abs(y1),2) == 1",
+				"mod(abs(x2),2) == 1",
+				"x1*x2+y1*y2 != 0",
+				"mod(abs(x1*x2+y1*y2),2) == 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{eval:x1*x2+y1*y2}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans une base orthonormée, si $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}$, alors $\\vec{u}\\cdot\\vec{v}=xx'+yy'$.",
+					"$\\vec{u}\\cdot\\vec{v}={{x1}}\\times {{if:x2<0|\\left({{eval:x2/2}}\\right)|{{eval:x2/2}}}}+{{if:y1<0|\\left({{eval:y1/2}}\\right)|{{eval:y1/2}}}}\\times {{y2;()}}={{eval:x1*x2/2}}{{eval:y1*y2/2;+}}=\\textcolor{{{color:primary.0}}}{ {{eval:(x1*x2+y1*y2)/2}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 12−10 = 2",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"y1": "-2",
+				"x2": "4",
+				"y2": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : xx'−yy'",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"y1": "-2",
+				"x2": "4",
+				"y2": "5"
+			},
+			"answers": ["22"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : xy'+x'y",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"y1": "-2",
+				"x2": "4",
+				"y2": "5"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : somme non calculée",
+			"variationIndex": 0,
+			"variables": {
+				"x1": "3",
+				"y1": "-2",
+				"x2": "4",
+				"y2": "5"
+			},
+			"answers": ["12-10"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : −15",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "4",
+				"yB": "-1",
+				"xC": "-1",
+				"yC": "5"
+			},
+			"answers": ["-15"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : coordonnées A−B au lieu de B−A pour un seul vecteur",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "4",
+				"yB": "-1",
+				"xC": "-1",
+				"yC": "5"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : xx'−yy'",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "4",
+				"yB": "-1",
+				"xC": "-1",
+				"yC": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 18",
+			"variationIndex": 2,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "4",
+				"yB": "-1",
+				"xC": "-1",
+				"yC": "5",
+				"xD": "1",
+				"yD": "1"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : xx'−yy'",
+			"variationIndex": 2,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "4",
+				"yB": "-1",
+				"xC": "-1",
+				"yC": "5",
+				"xD": "1",
+				"yD": "1"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 1/2",
+			"variationIndex": 3,
+			"variables": {
+				"x1": "2",
+				"y1": "3",
+				"x2": "-1",
+				"y2": "1"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 0,5",
+			"variationIndex": 3,
+			"variables": {
+				"x1": "2",
+				"y1": "3",
+				"x2": "-1",
+				"y2": "1"
+			},
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : xx'−yy'",
+			"variationIndex": 3,
+			"variables": {
+				"x1": "2",
+				"y1": "3",
+				"x2": "-1",
+				"y2": "1"
+			},
+			"answers": ["-\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : fraction non simplifiée",
+			"variationIndex": 3,
+			"variables": {
+				"x1": "2",
+				"y1": "3",
+				"x2": "-1",
+				"y2": "1"
+			},
+			"answers": ["\\frac{2}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

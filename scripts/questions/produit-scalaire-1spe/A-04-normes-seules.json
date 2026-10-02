@@ -1,0 +1,363 @@
+{
+	"title": "Produit scalaire avec les normes",
+	"description": "Calculer un produit scalaire à partir de normes seulement, avec les identités de polarisation",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Produit scalaire",
+	"subdomain": "Calculer un produit scalaire",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:c*c-a*a-b*b}}"
+				}
+			],
+			"conditions": ["N != 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left(\\|\\vec{u}+\\vec{v}\\|^2-\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2\\right)$.",
+					"$\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left({{c}}^2-{{a}}^2-{{b}}^2\\right)=\\dfrac{1}{2}\\left({{eval:c*c}}-{{eval:a*a}}-{{eval:b*b}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:N/2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}-\\vec{v}\\|={{c}}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:a*a+b*b-c*c}}"
+				}
+			],
+			"conditions": ["N != 0", "a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}-\\vec{v}\\|^2=\\|\\vec{u}\\|^2-2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left(\\|\\vec{u}\\|^2+\\|\\vec{v}\\|^2-\\|\\vec{u}-\\vec{v}\\|^2\\right)$.",
+					"$\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left({{a}}^2+{{b}}^2-{{c}}^2\\right)=\\dfrac{1}{2}\\left({{eval:a*a}}+{{eval:b*b}}-{{eval:c*c}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:N/2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "$ABC$ est un triangle tel que $AB={{a}}$, $AC={{b}}$ et $BC={{c}}$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..8"
+				},
+				{
+					"name": "b",
+					"expression": "2..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:a*a+b*b-c*c}}"
+				}
+			],
+			"conditions": ["N != 0", "a != b", "b != c", "a != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\overrightarrow{BC}=\\overrightarrow{AC}-\\overrightarrow{AB}$, donc $BC^2=AC^2-2\\,\\overrightarrow{AB}\\cdot\\overrightarrow{AC}+AB^2$.",
+					"On en déduit $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\dfrac{1}{2}\\left(AB^2+AC^2-BC^2\\right)$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=\\dfrac{1}{2}\\left({{a}}^2+{{b}}^2-{{c}}^2\\right)=\\dfrac{1}{2}\\left({{eval:a*a}}+{{eval:b*b}}-{{eval:c*c}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:N/2}} }$"
+				]
+			}
+		},
+		{
+			"statement": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ {{n}} }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6"
+				},
+				{
+					"name": "b",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:(a-b)^2+1}}..{{eval:(a+b)^2-1}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:n-a*a-b*b}}"
+				}
+			],
+			"conditions": [
+				"N != 0",
+				"a != b",
+				"sqrt(n) != round(sqrt(n))",
+				"mod(n,4) != 0",
+				"mod(n,9) != 0",
+				"mod(n,25) != 0",
+				"mod(n,49) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{ {{N}} }{2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\|\\vec{u}+\\vec{v}\\|^2=\\|\\vec{u}\\|^2+2\\,\\vec{u}\\cdot\\vec{v}+\\|\\vec{v}\\|^2$, donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left(\\|\\vec{u}+\\vec{v}\\|^2-\\|\\vec{u}\\|^2-\\|\\vec{v}\\|^2\\right)$.",
+					"$\\left(\\sqrt{ {{n}} }\\right)^2={{n}}$, donc $\\vec{u}\\cdot\\vec{v}=\\dfrac{1}{2}\\left({{n}}-{{eval:a*a}}-{{eval:b*b}}\\right)=\\textcolor{{{color:primary.0}}}{ {{eval:N/2}} }$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : (36−9−16)/2 = 11/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["\\frac{11}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 5,5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["5{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ½ oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : formule de ‖u−v‖ utilisée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["-\\frac{11}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : calcul non effectué",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "6"
+			},
+			"answers": ["\\frac{36-9-16}{2}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : (9+16−4)/2 = 21/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["\\frac{21}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : formule de ‖u+v‖ utilisée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["-\\frac{21}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : normes non élevées au carré",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "4",
+				"c": "2"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (25+36−49)/2 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "6",
+				"c": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ½ oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "6",
+				"c": "7"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : signe faux",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "6",
+				"c": "7"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : fraction non simplifiée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "5",
+				"b": "6",
+				"c": "7"
+			},
+			"answers": ["\\frac{12}{2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v3 : (11−4−9)/2 = −1",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "11"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : √11 non élevé au carré",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "11"
+			},
+			"answers": ["\\frac{\\sqrt{11}-13}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : ½ oublié",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"n": "11"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
