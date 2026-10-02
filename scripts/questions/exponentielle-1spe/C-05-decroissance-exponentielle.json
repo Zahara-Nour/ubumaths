@@ -1,0 +1,327 @@
+{
+	"title": "Décroissance exponentielle",
+	"description": "Modèle de décroissance : valeur initiale, sens de variation, valeur approchée de N(t₀) arrondie à l'unité",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Suites et modélisation",
+	"level": 2,
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N(0)=?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "200|400|500|800|1000|1500|2000"
+				},
+				{
+					"name": "k",
+					"expression": "0.05|0.1|0.2|0.3|0.5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{N}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le début du traitement correspond à $t=0$.",
+					"$$N(0)={{N}}\\,e^{-{{k}}\\times0}={{N}}\\times e^{0}={{N}}\\times1={{N}}$$",
+					"Conclusion : il y a ${{N}}$ bactéries au début du traitement."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "200|400|500|800|1000|1500|2000"
+				},
+				{
+					"name": "k",
+					"expression": "0.05|0.1|0.2|0.3|0.5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "décroissante",
+					"pool": ["croissante", "décroissante", "constante"]
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction $t\\mapsto e^{-{{k}}t}$ est de la forme $t\\mapsto e^{mt}$ avec $m=-{{k}}<0$ : elle est décroissante.",
+					"On la multiplie par ${{N}}>0$, ce qui ne change pas le sens de variation.",
+					"Conclusion : $N$ est décroissante sur $[0\\,;+\\infty[$ (le nombre de bactéries diminue)."
+				]
+			}
+		},
+		{
+			"statement": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de ${{t}}$ heures ? Arrondis à l'unité.\n\n$N({{t}})\\approx ?$",
+			"variables": [
+				{
+					"name": "N",
+					"expression": "200|400|500|800|1000|1500|2000"
+				},
+				{
+					"name": "k",
+					"expression": "0.05|0.1|0.2|0.3|0.5"
+				},
+				{
+					"name": "t",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["abs(N*exp(-k*t)-round(N*exp(-k*t))) <= 0.4", "k*t >= 0.2", "k*t <= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(N*exp(-k*t))}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $t$ par ${{t}}$ :",
+					"$$N({{t}})={{N}}\\,e^{-{{k}}\\times{{t}}}={{N}}\\,e^{-{{eval:k*t;d}}}\\approx{{eval:round(N*exp(-k*t)*100)/100;d}}$$",
+					"Conclusion : arrondi à l'unité, il reste environ $\\mathbf{ {{eval:round(N*exp(-k*t))}} }$ bactéries."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "variation 0 : N0=500 : 500",
+			"variationIndex": 0,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : N0=2000 : 2 000",
+			"variationIndex": 0,
+			"variables": {
+				"N": "2000",
+				"k": "0.1"
+			},
+			"answers": ["2\\,000"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 0 : N0=2000 : 2000 sans espace",
+			"variationIndex": 0,
+			"variables": {
+				"N": "2000",
+				"k": "0.1"
+			},
+			"answers": ["2000"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "variation 0 : N0=500 : 0",
+			"variationIndex": 0,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : N0=500 : N(1) ≈ 409 au lieu de N(0)",
+			"variationIndex": 0,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["409"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 0 : N0=500 : 500e^0 calcul non terminé",
+			"variationIndex": 0,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["500e^{0}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "variation 1 : décroissante",
+			"variationIndex": 1,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["décroissante"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : Decroissante (majuscule, sans accent)",
+			"variationIndex": 1,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["Decroissante"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 1 : croissante",
+			"variationIndex": 1,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["croissante"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 1 : constante",
+			"variationIndex": 1,
+			"variables": {
+				"N": "500",
+				"k": "0.2"
+			},
+			"answers": ["constante"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 500e^{−0,6} ≈ 274,4 → 274",
+			"variationIndex": 2,
+			"variables": {
+				"N": "500",
+				"k": "0.2",
+				"t": "3"
+			},
+			"answers": ["274"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : 275 (arrondi par excès)",
+			"variationIndex": 2,
+			"variables": {
+				"N": "500",
+				"k": "0.2",
+				"t": "3"
+			},
+			"answers": ["275"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 274,4 (trop de décimales)",
+			"variationIndex": 2,
+			"variables": {
+				"N": "500",
+				"k": "0.2",
+				"t": "3"
+			},
+			"answers": ["274{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 273",
+			"variationIndex": 2,
+			"variables": {
+				"N": "500",
+				"k": "0.2",
+				"t": "3"
+			},
+			"answers": ["273"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 500 (N(0))",
+			"variationIndex": 2,
+			"variables": {
+				"N": "500",
+				"k": "0.2",
+				"t": "3"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "variation 2 : 2000e^{−0,35} ≈ 1 409,4 → 1 409",
+			"variationIndex": 2,
+			"variables": {
+				"N": "2000",
+				"k": "0.05",
+				"t": "7"
+			},
+			"answers": ["1\\,409"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "variation 2 : 1409 sans espace",
+			"variationIndex": 2,
+			"variables": {
+				"N": "2000",
+				"k": "0.05",
+				"t": "7"
+			},
+			"answers": ["1409"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["spaces"]
+			}
+		},
+		{
+			"description": "variation 2 : 800e^{−2} ≈ 108,3 → 108",
+			"variationIndex": 2,
+			"variables": {
+				"N": "800",
+				"k": "0.5",
+				"t": "4"
+			},
+			"answers": ["108"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}

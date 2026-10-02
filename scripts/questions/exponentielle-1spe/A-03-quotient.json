@@ -1,0 +1,299 @@
+{
+	"title": "Quotient d'exponentielles",
+	"description": "eᵃ / eᵇ = eᵃ⁻ᵇ, exposants entiers puis affines en x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 3,
+	"status": "draft",
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{e^{ {{p}} }}{e^{ {{q}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": ["p != q", "p-q != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:p-q}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\dfrac{e^a}{e^b}=e^{a-b}$ : pour un quotient, on **soustrait** l'exposant du dénominateur.",
+					"$A=e^{ {{p}}-{{eval:q;()}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:p-q}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{e^{ {{eval:a*x+b}} }}{e^{ {{eval:c*x+d}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a != c", "b != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(a-c)*x+b-d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\dfrac{e^a}{e^b}=e^{a-b}$ : pour un quotient, on **soustrait** l'exposant du dénominateur.",
+					"Attention aux parenthèses : on soustrait **tout** l'exposant du dénominateur.",
+					"$A=e^{ {{eval:a*x+b}}-({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a-c)*x+b-d}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{e^{ {{p}} }}{e^{ {{eval:c*x+d}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["p != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:-c*x+p-d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\dfrac{e^a}{e^b}=e^{a-b}$ : pour un quotient, on **soustrait** l'exposant du dénominateur.",
+					"$A=e^{ {{p}}-({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:-c*x+p-d}} } }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e²/e⁻³ = e⁵",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["e^{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "exposants additionnés : e⁻¹",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["e^{-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposants divisés",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["e^{-\\frac{2}{3}}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non calculé",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-3"
+			},
+			"answers": ["e^{2+3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "e^{3x+1}/e^{x-2} = e^{2x+3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["e^{2x+3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre des termes : e^{3+2x}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["e^{3+2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "parenthèses oubliées : e^{2x-1}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["e^{2x-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposants additionnés : e^{4x-1}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["e^{4x-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non réduit",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["e^{3x+1-(x-2)}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "quotient recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "1",
+				"d": "-2"
+			},
+			"answers": ["\\frac{e^{3x+1}}{e^{x-2}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "e²/e^{3x-1} = e^{-3x+3}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"c": "3",
+				"d": "-1"
+			},
+			"answers": ["e^{-3x+3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme e^{3-3x}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"c": "3",
+				"d": "-1"
+			},
+			"answers": ["e^{3-3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "quotient renversé : e^{3x-3}",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"c": "3",
+				"d": "-1"
+			},
+			"answers": ["e^{3x-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/e^{3x-3} : pas sous la forme e^…",
+			"variationIndex": 2,
+			"variables": {
+				"p": "2",
+				"c": "3",
+				"d": "-1"
+			},
+			"answers": ["\\frac{1}{e^{3x-3}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

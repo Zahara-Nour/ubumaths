@@ -227,6 +227,17 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 				subdomains: ['Apprivoiser', 'Racines', 'Vrai ou Faux']
 			},
 			{ domain: 'Dérivation', subdomains: ['Apprivoiser'] },
+			{
+				domain: 'Fonction exponentielle',
+				subdomains: [
+					'Propriétés algébriques',
+					'Équations et inéquations',
+					'Dérivation',
+					'Variations',
+					'Représentation graphique',
+					'Suites et modélisation'
+				]
+			},
 			{ domain: 'Etude de fonction', subdomains: ['Flash'] }
 		]
 	},

@@ -1,0 +1,249 @@
+{
+	"title": "Résoudre une équation du type eᵘ = eᵛ",
+	"description": "e^u = e^v ⇔ u = v avec u et v affines, et e^u = 1/e^v",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Équations et inéquations",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=e^{ {{eval:c*x+d}} }$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["a != c", "b != d", "a-c != 1", "a-c != -1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d-b)/(a-c)}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
+					"$e^{ {{eval:a*x+b}} }=e^{ {{eval:c*x+d}} }\\iff {{eval:a*x+b}}={{eval:c*x+d}}\\iff {{eval:(a-c)*x}}={{eval:d-b}}$.",
+					"$x=\\dfrac{ {{eval:d-b}} }{ {{eval:a-c}} }=\\textcolor{{{color:primary.0}}}{{{eval:(d-b)/(a-c)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=\\dfrac{1}{e^{ {{eval:c*x+d}} }}$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["a+c != 0", "b+d != 0", "a+c != 1", "a+c != -1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-(b+d)/(a+c)}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"D'abord $\\dfrac{1}{e^{ {{eval:c*x+d}} }}=e^{ {{eval:-c*x-d}} }$.",
+					"Puis $e^u=e^v\\iff u=v$ : ${{eval:a*x+b}}={{eval:-c*x-d}}\\iff {{eval:(a+c)*x}}={{eval:-b-d}}$.",
+					"$x=\\dfrac{ {{eval:-b-d}} }{ {{eval:a+c}} }=\\textcolor{{{color:primary.0}}}{{{eval:-(b+d)/(a+c)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^{3x-2}=e^{x+5} : x = 7/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimal exact 3,5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["3{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimal faux 3,4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["3{,}4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de b mal transposé : x = 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x ajoutés : x = 7/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["\\frac{7}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["\\frac{5+2}{3-1}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "e^{2x+1}=1/e^{x+3} : x = -4/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["-\\frac{4}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "inverse ignoré : x = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur de signe : x = 4/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "-4/3 : valeur approchée -1,33 refusée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["-1{,}33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "calcul non effectué",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["\\frac{-3-1}{2+1}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

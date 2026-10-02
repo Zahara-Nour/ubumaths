@@ -1,0 +1,288 @@
+{
+	"title": "Puissance et inverse d'une exponentielle",
+	"description": "(eᵃ)ⁿ = eⁿᵃ et 1/eᵃ = e⁻ᵃ",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 4,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:n*a*x+n*b}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\left(e^a\\right)^n=e^{na}$ : on **multiplie** l'exposant par $n$ (tout l'exposant).",
+					"$A=e^{ {{n}}({{eval:a*x+b}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:n*a*x+n*b}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{1}{e^{ {{eval:a*x+b}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:-a*x-b}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\dfrac{1}{e^a}=e^{-a}$ : on prend l'**opposé** de tout l'exposant.",
+					"$A=e^{-({{eval:a*x+b}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:-a*x-b}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\left(e^{ {{p}} }\\right)^{ {{q}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "q",
+					"expression": "2..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:p*q}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\left(e^a\\right)^n=e^{na}$ : on **multiplie** les exposants.",
+					"$A=e^{ {{p}}\\times{{eval:q;()}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:p*q}} } }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(e^{2x-1})³ = e^{6x-3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["e^{6x-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre des termes : e^{-3+6x}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["e^{-3+6x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "seul le terme en x multiplié : e^{6x-1}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["e^{6x-1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant plus n : e^{2x+2}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["e^{2x+2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non développé e^{3(2x-1)}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-1",
+				"n": "3"
+			},
+			"answers": ["e^{3(2x-1)}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "1/e^{2x-3} = e^{-2x+3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["e^{-2x+3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme e^{3-2x}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["e^{3-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "seul le terme en x changé : e^{-2x-3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["e^{-2x-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "opposé du nombre : -e^{2x-3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["-e^{2x-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "opposé non distribué e^{-(2x-3)}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["e^{-(2x-3)}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "inverse recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3"
+			},
+			"answers": ["\\frac{1}{e^{2x-3}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(e⁻²)³ = e⁻⁶",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2",
+				"q": "3"
+			},
+			"answers": ["e^{-6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "exposants additionnés : e¹",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2",
+				"q": "3"
+			},
+			"answers": ["e^{1}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "puissance de l'exposant : e⁻⁸",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2",
+				"q": "3"
+			},
+			"answers": ["e^{-8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "produit non calculé",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2",
+				"q": "3"
+			},
+			"answers": ["e^{-2\\times3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

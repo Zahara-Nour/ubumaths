@@ -1,0 +1,231 @@
+{
+	"title": "Extremum de x ↦ (x + a)eˣ",
+	"description": "Dérivée (x + a + 1)eˣ, signe, abscisse et valeur exacte de l'extremum (−e^(−a−1))",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"status": "draft",
+	"subdomain": "Variations",
+	"level": 3,
+	"delay": 120,
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{eval:x+a}})e^{x}$. Elle admet un extremum.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["a != 0 && a != -1 && a != -2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-a-1}}"
+				},
+				{
+					"expectedAnswer": "-e^{ {{eval:-a-1}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{eval:x+a}}$ et $v(x)=e^x$ : $f'(x)=1\\times e^x+({{eval:x+a}})e^x=({{eval:x+a+1}})e^{x}$.",
+					"Comme $e^x>0$, $f'(x)$ a le signe de ${{eval:x+a+1}}$ : négatif avant ${{eval:-a-1}}$, positif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:-a-1}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:-a-1}}: -\n  {{eval:-a-1}}: z\n  {{eval:-a-1}},+inf: +\n\nvariation: f(x)\n  {{eval:-a-1}}: -e^{ {{eval:-a-1}} }, bottom\n```",
+					"$f$ est décroissante puis croissante : elle admet un **minimum** en $x_0=\\textcolor{{{color:primary.0}}}{ {{eval:-a-1}} }$, qui vaut $f({{eval:-a-1}})=({{eval:-a-1}}{{eval:a;+}})e^{ {{eval:-a-1}} }=\\textcolor{{{color:primary.0}}}{-e^{ {{eval:-a-1}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{eval:-x+a}})e^{x}$. Elle admet un extremum.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-6..7"
+				}
+			],
+			"conditions": ["a != 0 && a != 1 && a != 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-1}}"
+				},
+				{
+					"expectedAnswer": "e^{ {{eval:a-1}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $u(x)={{eval:-x+a}}$ et $v(x)=e^x$ : $f'(x)=-1\\times e^x+({{eval:-x+a}})e^x=({{eval:-x+a-1}})e^{x}$.",
+					"Comme $e^x>0$, $f'(x)$ a le signe de ${{eval:-x+a-1}}$ : positif avant ${{eval:a-1}}$, négatif après.",
+					"```variation\nvariable: x\ndomain: -inf, {{eval:a-1}}, +inf\n\nsign: f'(x)\n  -inf,{{eval:a-1}}: +\n  {{eval:a-1}}: z\n  {{eval:a-1}},+inf: -\n\nvariation: f(x)\n  {{eval:a-1}}: e^{ {{eval:a-1}} }, top\n```",
+					"$f$ est croissante puis décroissante : elle admet un **maximum** en $x_0=\\textcolor{{{color:primary.0}}}{ {{eval:a-1}} }$, qui vaut $f({{eval:a-1}})=(-{{eval:a-1;()}}{{eval:a;+}})e^{ {{eval:a-1}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:a-1}} }}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(x+2)eˣ : min en −3, −e^{−3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-3", "-e^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "valeur écrite −1/e³",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-3", "-\\frac{1}{e^{3}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "racine de f au lieu de f′ : x₀ = −2, f = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-2", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "signe de la valeur : e^{−3}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-3", "e^{-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "facteur (x₀+a) oublié : valeur e^{−3}… et x₀ = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["3", "-e^{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "bonne abscisse, valeur −3e^{−3} (x₀ eˣ⁰)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-3", "-3e^{-3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "valeur approchée −0,05 refusée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-3", "-0{,}05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x−5)eˣ : min en 4, −e⁴",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-5"
+			},
+			"answers": ["4", "-e^{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x−5)eˣ : x₀ = −4 (signe)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-5"
+			},
+			"answers": ["-4", "-e^{-4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−x+4)eˣ : max en 3, e³",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["3", "e^{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(−x+4)eˣ : x₀ = 4 (racine de f)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−x+4)eˣ : valeur −e³ (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["3", "-e^{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(−x−2)eˣ : max en −3, e^{−3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["-3", "e^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(−x−2)eˣ : valeur 1/e³ (forme)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["-3", "\\frac{1}{e^{3}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

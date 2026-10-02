@@ -1,0 +1,229 @@
+{
+	"title": "Simplifier une expression exponentielle",
+	"description": "Puissance, produit et quotient combinés : réponse e^{ax+b} réduite",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 5,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{\\left(e^{ {{eval:a*x}} }\\right)^{ {{n}} }\\times e^{ {{eval:b*x+c}} }}{e^{ {{eval:d*x+f}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "f",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["n*a+b-d != 0", "c != f"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(n*a+b-d)*x+c-f}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Puissance : $\\left(e^{ {{eval:a*x}} }\\right)^{ {{n}} }=e^{ {{eval:n*a*x}} }$.",
+					"Produit (on additionne) : $e^{ {{eval:n*a*x}} }\\times e^{ {{eval:b*x+c}} }=e^{ {{eval:(n*a+b)*x+c}} }$.",
+					"Quotient (on soustrait tout l'exposant) : $A=e^{ {{eval:(n*a+b)*x+c}}-({{eval:d*x+f}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(n*a+b-d)*x+c-f}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=\\dfrac{\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }}{e^{ {{eval:c*x}} }\\times e^{ {{d}} }}$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "n",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["n*a-c != 0", "n*b-d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(n*a-c)*x+n*b-d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Numérateur (puissance) : $\\left(e^{ {{eval:a*x+b}} }\\right)^{ {{n}} }=e^{ {{eval:n*a*x+n*b}} }$.",
+					"Dénominateur (produit) : $e^{ {{eval:c*x}} }\\times e^{ {{d}} }=e^{ {{eval:c*x+d}} }$.",
+					"Quotient : $A=e^{ {{eval:n*a*x+n*b}}-({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(n*a-c)*x+n*b-d}} } }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "(e^{2x})²×e^{-x+3}/e^{x-1} = e^{2x+4}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"f": "-1"
+			},
+			"answers": ["e^{2x+4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "puissance oubliée : e⁴",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"f": "-1"
+			},
+			"answers": ["e^{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "parenthèses oubliées : e^{2x+2}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"f": "-1"
+			},
+			"answers": ["e^{2x+2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non réduit",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"n": "2",
+				"b": "-1",
+				"c": "3",
+				"d": "1",
+				"f": "-1"
+			},
+			"answers": ["e^{4x-x+3-(x-1)}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "(e^{x+2})³/(e^{-2x}×e⁴) = e^{5x+2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "3",
+				"c": "-2",
+				"d": "4"
+			},
+			"answers": ["e^{5x+2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "puissance appliquée au seul terme en x : e^{5x-2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "3",
+				"c": "-2",
+				"d": "4"
+			},
+			"answers": ["e^{5x-2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "erreur de signe sur -2x : e^{x+2}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "3",
+				"c": "-2",
+				"d": "4"
+			},
+			"answers": ["e^{x+2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "quotient non simplifié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"n": "3",
+				"c": "-2",
+				"d": "4"
+			},
+			"answers": ["\\frac{e^{3x+6}}{e^{-2x+4}}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		}
+	]
+}

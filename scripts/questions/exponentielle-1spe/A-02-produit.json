@@ -1,0 +1,333 @@
+{
+	"title": "Produit d'exponentielles",
+	"description": "eᵃ × eᵇ = eᵃ⁺ᵇ, exposants entiers puis affines en x",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Propriétés algébriques",
+	"level": 2,
+	"status": "draft",
+	"delay": 40,
+	"variations": [
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{p}} }\\times e^{ {{q}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..7;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..7;±"
+				}
+			],
+			"conditions": ["p+q != 0", "p+q != 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:p+q}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
+					"$A=e^{ {{p}}+{{eval:q;()}} }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:p+q}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a+c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(a+c)*x+d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
+					"$A=e^{ {{eval:a*x}}+({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+c)*x+d}} } }$."
+				]
+			}
+		},
+		{
+			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{eval:a*x+b}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..6;±"
+				}
+			],
+			"conditions": ["a+c != 0", "b+d != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "e^{ {{eval:(a+c)*x+b+d}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $e^a\\times e^b=e^{a+b}$ : pour un produit, on **additionne** les exposants.",
+					"$A=e^{ {{eval:a*x+b}}+({{eval:c*x+d}}) }=\\textcolor{{{color:primary.0}}}{e^{ {{eval:(a+c)*x+b+d}} } }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e²×e⁻⁵ = e⁻³",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["e^{-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "exposants multipliés : e⁻¹⁰",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["e^{-10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non calculé e^{2-5}",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["e^{2-5}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "1/e³ : pas sous la forme e^…",
+			"variationIndex": 0,
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"answers": ["\\frac{1}{e^3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "e^{2x}×e^{x-3} = e^{3x-3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{3x-3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ordre des termes : e^{-3+3x}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{-3+3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "exposants multipliés : e^{2x²-6x}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{2x^2-6x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^{3x-3} recopié en e^{3x+3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{3x+3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non réduit e^{2x+x-3}",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{2x+x-3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "produit recopié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"c": "1",
+				"d": "-3"
+			},
+			"answers": ["e^{2x}\\times e^{x-3}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["products", "form"]
+			}
+		},
+		{
+			"description": "e^{3x-1}×e^{-5x+4} = e^{-2x+3}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "-5",
+				"d": "4"
+			},
+			"answers": ["e^{-2x+3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "forme e^{3-2x}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "-5",
+				"d": "4"
+			},
+			"answers": ["e^{3-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur de signe : e^{-2x-5}",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "-5",
+				"d": "4"
+			},
+			"answers": ["e^{-2x-5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "exposant non réduit",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-1",
+				"c": "-5",
+				"d": "4"
+			},
+			"answers": ["e^{3x-1-5x+4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"answers": ["\\exp(-3)"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exp acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\exponentialE^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\exponentialE acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\mathrm{e}^{-3}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"p": "2",
+				"q": "-5"
+			},
+			"description": "notation \\mathrm{e} acceptée (décision du 2026-10-02)",
+			"variationIndex": 0
+		}
+	]
+}

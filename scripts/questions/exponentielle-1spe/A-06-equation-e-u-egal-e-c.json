@@ -1,0 +1,257 @@
+{
+	"title": "Résoudre une équation du type eᵘ = eᶜ",
+	"description": "e^u = e^v ⇔ u = v, avec v constant : solution entière ou fraction",
+	"grades": ["1_SPE"],
+	"theme": "Fonctions",
+	"domain": "Fonction exponentielle",
+	"subdomain": "Équations et inéquations",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"variations": [
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=e^{ {{c}} }$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c-b)/a}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
+					"$e^{ {{eval:a*x+b}} }=e^{ {{c}} }\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
+					"On divise par ${{a}}$ : $x=\\dfrac{ {{eval:c-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $e^{ {{eval:a*x+b}} }=e^{ {{c}} }$.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
+					"name": "a",
+					"expression": "-6..-2"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				}
+			],
+			"conditions": ["c != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(c-b)/a}}",
+					"acceptDecimal": true
+				}
+			],
+			"correction": {
+				"steps": [
+					"La fonction exponentielle est strictement croissante : $e^u=e^v\\iff u=v$.",
+					"$e^{ {{eval:a*x+b}} }=e^{ {{c}} }\\iff {{eval:a*x+b}}={{c}}\\iff {{eval:a*x}}={{eval:c-b}}$.",
+					"On divise par ${{a}}$ : $x=\\dfrac{ {{eval:c-b}} }{ {{a}} }=\\textcolor{{{color:primary.0}}}{{{eval:(c-b)/a}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "e^{4x+1}=e⁷ : x = 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "b ajouté au lieu de retranché : x = 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^c lu comme c·e : x non divisé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fraction non réduite 6/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "calcul non effectué",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["\\frac{7-1}{4}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "décimal exact 1,5 accepté",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["1{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "décimal faux 1,6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"b": "1",
+				"c": "7"
+			},
+			"answers": ["1{,}6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x = 7/3 exact",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "8"
+			},
+			"answers": ["\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "7/3 : valeur approchée 2,33 refusée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "1",
+				"c": "8"
+			},
+			"answers": ["2{,}33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "e^{-2x+3}=e⁻⁴ : x = 7/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4"
+			},
+			"answers": ["\\frac{7}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "erreur de signe : x = -7/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4"
+			},
+			"answers": ["-\\frac{7}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "b ajouté : x = 1/2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4"
+			},
+			"answers": ["\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "fraction -7/-2 non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-2",
+				"b": "3",
+				"c": "-4"
+			},
+			"answers": ["\\frac{-7}{-2}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		}
+	]
+}
