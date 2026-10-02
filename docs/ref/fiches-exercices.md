@@ -204,10 +204,14 @@ Toujours vrai :
 - **`{{eval:-sqrt(2)/2}}`** se rend `-\dfrac{1}{2}\sqrt{2}` et la bonne réponse devient « mauvaise
   forme » : écrire `\frac{ {{P}}\sqrt{m} }{2}` à la main.
 - **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
-- **Bloc ```figure** : pas d'axes ni de grille ; le nom d'un point est toujours en haut à droite
-  (aucun argument du DSL ne règle `labelOffset`) → `masque(A)` puis `texte(x, y, "A")` ; pointillés
-  `trait="pointilles"` (ou `"tirets"`), `style=` n'est pas lu ; un `texte` est ancré à gauche à
-  l'écran mais centré dans le PDF (compromis de décalage) ; les noms posés à la main sont droits.
+- **Bloc ```figure** : pas d'axes ni de grille. Nom d'un point : `etiquette="bas-gauche"` (8
+  directions `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite` — défaut —,
+  `bas-gauche`, `bas-droite` ; `"aucune"` masque le nom seul), sur `point(…)` comme sur tout point
+  construit (`milieu`, `intersection`, `projection`…) ou après coup avec `style(A, etiquette=…)` ;
+  plus de `masque(A)` + `texte` (corrigé le 2026-10-02 : le nom restait en haut à droite). Un
+  `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
+  coin bas-gauche sur `(x, y)`. Pointillés `trait="pointilles"` / `"tirets"` (alias
+  `style="pointille"`). `point(…, visible=faux)` = point masqué, utilisable dans les constructions.
 
 Règles d'écriture qui évitent un défaut :
 

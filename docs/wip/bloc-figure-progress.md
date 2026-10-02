@@ -149,7 +149,7 @@ marque="carre")`. `mtexte`/`rtexte` refusés : leur LaTeX n'a pas d'équivalent 
   (à l'écran il est coupé). Le prof est averti pour les points hors fenêtre.
 - `#` dans une chaîne du DSL : refusé par le tokenizer de geometry-core (« Chaîne non fermée »,
   message situé) — défaut préexistant du DSL, hors périmètre.
-- Les étiquettes peuvent chevaucher les traits (placement fixe, comme geometry-core).
+- Étiquettes : placement réglable depuis le 2026-10-02 (`etiquette=`, `ancre=`, voir `figure-etiquettes-progress.md`).
 - Export LaTeX : non (le générateur LaTeX ignore le bloc).
 
 ## Relecture (2026-10-01) — corrections
