@@ -29,6 +29,7 @@ import {
 	type CumulativeScene,
 	type HistogramScene,
 	type LawScene,
+	type MeanScene,
 	type PieScene,
 	type ScenePoint,
 	type SceneTick,
@@ -329,6 +330,33 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
 }
 
+/**
+ * Moyenne des tirages selon n (atelier, Q81). Aucun bloc ne la produit : elle
+ * est rendue pour qu'une scène de ce genre ne fasse jamais échouer une fiche.
+ */
+function meanTypst(scene: MeanScene, size: CourbeSize): string {
+	const W = WIDTH_CM[size];
+	const H = W * STAT_CHART_ASPECT_RATIO;
+	const X = (x: number) => fmt(((x - scene.xMin) / Math.max(1, scene.xMax - scene.xMin)) * W);
+	const Y = (y: number) => fmt(((y - scene.yMin) / (scene.yMax - scene.yMin || 1)) * H);
+	const color = TYPST_COLORS[scene.color];
+	const path = scene.points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+	const reference = Y(scene.reference.value);
+	const lines = [
+		'  import cetz.draw: *',
+		'  // graduations',
+		...valueTicks(scene.ticks, W, Y),
+		'  // courbe',
+		`  line(${path}, stroke: (paint: ${color}, thickness: 1pt, join: "round"))`,
+		'  // espérance',
+		`  line((0, ${reference}), (${fmt(W)}, ${reference}), stroke: (paint: luma(90), thickness: 0.6pt, dash: "dashed"))`,
+		`  content((${fmt(W)}, ${reference}), anchor: "south-east", text(size: 6.5pt)${textContent(scene.reference.label)})`,
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	];
+	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+}
+
 // ============================================================================
 // TABLEAU CROISÉ
 // ============================================================================
@@ -394,6 +422,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return crossTableTypst(scene);
 		case 'loi':
 			return lawTypst(scene);
+		case 'moyenne-selon-n':
+			return meanTypst(scene, size);
 	}
 }
 

@@ -17,9 +17,11 @@ import { isList, type ListObject } from './types';
 import { readListValue } from './parse';
 import { nextName } from './names';
 import { Fraction } from '$lib/statistics/fraction';
-import { formatStatNumber } from '$lib/statistics/format';
-import { simulateCounts } from '$lib/statistics/simulation';
+import { formatFraction, formatStatNumber } from '$lib/statistics/format';
+import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
 import { createRandomSource } from '$lib/utils/random';
+import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { buildRunningMeanScene, buildSampleMeansScene } from '$lib/ubumark/utils/simulation-scene';
 
 // =============================================================================
 // Types
@@ -30,7 +32,7 @@ export type LawFractions =
 	| { readonly ok: false; readonly message: string };
 
 export type SimulateResult =
-	| { readonly ok: true; readonly text: string }
+	| { readonly ok: true; readonly text: string; readonly chart?: StatChartScene }
 	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
@@ -39,6 +41,10 @@ export type SimulateResult =
 
 const USAGE =
 	'Écris la commande ainsi : .simuler L M 100 (valeurs, probabilités, nombre de tirages).';
+const FREQUENCY_USAGE =
+	'Écris la commande ainsi : .fréquence L M 1000 (valeurs, probabilités, nombre de tirages).';
+const SAMPLES_USAGE =
+	'Écris la commande ainsi : .échantillons L M 50 100 (valeurs, probabilités, nombre d’échantillons, taille).';
 
 // =============================================================================
 // Fonctions
@@ -99,6 +105,40 @@ function frequency(count: number, n: number): string {
 	return formatStatNumber(Number((count / n).toFixed(3)), 'fr');
 }
 
+/** Les deux listes nommées et leur loi en fractions, ou le refus */
+function listsAndLaw(
+	atelier: Atelier,
+	valuesName: string,
+	probabilitiesName: string
+):
+	| { ok: true; values: ListObject; probabilities: ListObject; law: Fraction[][] }
+	| { ok: false; message: string } {
+	for (const name of [valuesName, probabilitiesName]) {
+		if (listNamed(atelier, name) === null) {
+			return { ok: false, message: `« ${name} » n’est pas une liste de l’atelier.` };
+		}
+	}
+	const values = listNamed(atelier, valuesName)!;
+	const probabilities = listNamed(atelier, probabilitiesName)!;
+	const law = lawFractions(values, probabilities);
+	if (!law.ok) return law;
+	return { ok: true, values, probabilities, law: [law.values, law.probabilities] };
+}
+
+/**
+ * Un nombre de tirages tel que tapé : des chiffres seulement. `Number` lirait
+ * `0x10`, `1e3`, et `1,000` (virgule décimale) donnerait UN tirage sans
+ * prévenir (revue) — NaN est refusé par le moteur, avec le bon message.
+ */
+function readCount(written: string): number {
+	return /^\d+$/.test(written) ? Number(written) : Number.NaN;
+}
+
+/** Un réel au millième, à la française */
+function thousandth(value: number): string {
+	return formatStatNumber(Number(value.toFixed(3)), 'fr');
+}
+
 /**
  * `.simuler L M n` : n tirages de la loi, effectifs dans une nouvelle liste.
  *
@@ -112,20 +152,12 @@ export function simulateCommand(atelier: Atelier, argument: string, seed: number
 	const [valuesName, probabilitiesName, ...rest] = parts;
 	const written = rest.join('');
 
-	for (const name of [valuesName, probabilitiesName]) {
-		if (listNamed(atelier, name) === null) {
-			return { ok: false, message: `« ${name} » n’est pas une liste de l’atelier.` };
-		}
-	}
-	const values = listNamed(atelier, valuesName)!;
-	const probabilities = listNamed(atelier, probabilitiesName)!;
+	const found = listsAndLaw(atelier, valuesName, probabilitiesName);
+	if (!found.ok) return found;
+	const { values, probabilities } = found;
+	const law = { values: found.law[0], probabilities: found.law[1] };
 
-	const law = lawFractions(values, probabilities);
-	if (!law.ok) return law;
-
-	// Des chiffres seulement : `Number` lirait `0x10`, `1e3`, et `1,000` (virgule
-	// décimale) donnerait UN tirage sans prévenir (revue) — NaN est refusé plus loin
-	const n = /^\d+$/.test(written) ? Number(written) : Number.NaN;
+	const n = readCount(written);
 	const outcome = simulateCounts(law.values, law.probabilities, n, createRandomSource(seed));
 	if (!outcome.ok) return outcome;
 
@@ -150,7 +182,66 @@ export function simulateCommand(atelier: Atelier, argument: string, seed: number
 		ok: true,
 		text: [
 			`${draws} de ${valuesName} avec probabilités ${probabilitiesName} (graine ${seed}) → effectifs dans ${name}`,
-			...lines
+			...lines,
+			// Q83 : les deux autres simulations, avec les noms de l'élève
+			`Pour aller plus loin : .fréquence ${valuesName} ${probabilitiesName} 1000 · .échantillons ${valuesName} ${probabilitiesName} 50 100`
 		].join('\n')
+	};
+}
+
+/** `.fréquence L M n` : la moyenne des tirages selon n, et sa courbe (Q74, Q81) */
+export function frequencyCommand(atelier: Atelier, argument: string, seed: number): SimulateResult {
+	const parts = argument.trim().split(/\s+/);
+	if (parts.length < 3) return { ok: false, message: FREQUENCY_USAGE };
+	const [valuesName, probabilitiesName, ...rest] = parts;
+	const found = listsAndLaw(atelier, valuesName, probabilitiesName);
+	if (!found.ok) return found;
+	const [xs, ps] = found.law;
+
+	const n = readCount(rest.join(''));
+	const outcome = simulateRunningMean(xs, ps, n, createRandomSource(seed));
+	if (!outcome.ok) return outcome;
+
+	const { means, expectation } = outcome.value;
+	const expectationText = formatFraction(expectation);
+	return {
+		ok: true,
+		text: [
+			`${grouped(n)} ${n === 1 ? 'tirage' : 'tirages'} de ${valuesName} avec probabilités ${probabilitiesName} (graine ${seed})`,
+			`moyenne des tirages : ${thousandth(means[n - 1])} — espérance E = ${expectationText}`
+		].join('\n'),
+		chart: buildRunningMeanScene(means, expectation.toNumber(), expectationText, 'fr')
+	};
+}
+
+/** `.échantillons L M N n` : N échantillons de taille n, et leur histogramme (Q75, Q82) */
+export function samplesCommand(atelier: Atelier, argument: string, seed: number): SimulateResult {
+	const parts = argument.trim().split(/\s+/);
+	// Deux nombres : pas d'espace de milliers ici (« 1 000 » serait ambigu)
+	if (parts.length !== 4) return { ok: false, message: SAMPLES_USAGE };
+	const [valuesName, probabilitiesName, countText, sizeText] = parts;
+	const found = listsAndLaw(atelier, valuesName, probabilitiesName);
+	if (!found.ok) return found;
+	const [xs, ps] = found.law;
+
+	const sampleCount = readCount(countText);
+	const sampleSize = readCount(sizeText);
+	const outcome = simulateSamples(xs, ps, sampleCount, sampleSize, createRandomSource(seed));
+	if (!outcome.ok) return outcome;
+
+	const { means, expectation, deviation, margin, within } = outcome.value;
+	// 100 % seulement si TOUS y sont (999 sur 1 000 ne s'arrondit pas à 100)
+	const percent =
+		within === sampleCount ? 100 : Math.min(99, Math.round((100 * within) / sampleCount));
+	// 0 et 1 au singulier, en français
+	const plural = within > 1;
+	return {
+		ok: true,
+		text: [
+			`${grouped(sampleCount)} ${sampleCount === 1 ? 'échantillon' : 'échantillons'} de ${grouped(sampleSize)} ${sampleSize === 1 ? 'tirage' : 'tirages'} de ${valuesName} avec probabilités ${probabilitiesName} (graine ${seed})`,
+			`μ = ${formatFraction(expectation)} ; σ ≈ ${thousandth(deviation)} ; 2σ/√n ≈ ${thousandth(margin)}`,
+			`${grouped(within)} ${plural ? 'échantillons' : 'échantillon'} sur ${grouped(sampleCount)} (${percent} %) ${plural ? 'ont' : 'a'} une moyenne à moins de ${thousandth(margin)} de μ`
+		].join('\n'),
+		chart: buildSampleMeansScene(means, expectation.toNumber(), margin, 'fr')
 	};
 }

@@ -33,6 +33,7 @@ import { nextName } from './names';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 
 // =============================================================================
 // Types
@@ -63,6 +64,8 @@ export interface Entry {
 	 * description en texte de terminal.
 	 */
 	readonly table?: VariationTableNode;
+	/** Le graphique d'une simulation (`.fréquence`, `.échantillons`, Q80) */
+	readonly chart?: StatChartScene;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 }
@@ -115,6 +118,7 @@ export class CalcDesk {
 			text: textOf(result),
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
+			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
 			failed: result.kind === 'refus',
 			result
 		});

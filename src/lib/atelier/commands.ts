@@ -98,6 +98,24 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	[
+		'frequency',
+		{
+			french: 'fréquence',
+			description: 'Moyenne des tirages selon leur nombre : la loi des grands nombres',
+			example: '.fréquence L M 1000',
+			exampleSetup: { L: '1 ; 0', M: '1/2 ; 1/2' }
+		}
+	],
+	[
+		'samples',
+		{
+			french: 'échantillons',
+			description: 'N échantillons de taille n, et l’écart de leur moyenne à μ',
+			example: '.échantillons L M 50 100',
+			exampleSetup: { L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6' }
+		}
+	],
+	[
 		'solve',
 		{ french: 'résoudre', description: 'Résoudre une équation', example: '.résoudre x^2-3x+1=0' }
 	],
@@ -254,7 +272,12 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
  * l'intention `factoriser` de `pedagogical-simplify` n'était donc atteignable
  * depuis aucune interface.
  */
-export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set(['factor', 'simulate']);
+export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
+	'factor',
+	'simulate',
+	'frequency',
+	'samples'
+]);
 
 /**
  * Les commandes branchées en dur dans le moteur, absentes du registre.

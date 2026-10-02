@@ -257,3 +257,31 @@ describe('les commandes se découvrent', () => {
 		expect(container.querySelector('.commandes')).toBeNull();
 	});
 });
+
+// Outils statistiques v2, Q80 : le graphique d'une simulation sous la ligne
+describe('les simulations dessinent sous la ligne', () => {
+	it('.fréquence : une courbe VISIBLE dans l’historique', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 0' });
+		atelier.create({ kind: 'list', name: 'M', definition: '1/2 ; 1/2' });
+		const { submit, container } = await open(atelier);
+
+		await submit('.fréquence L M 300');
+		const curve = container.querySelector<SVGPolylineElement>('.stat-polygone');
+
+		expect(curve).not.toBeNull();
+		expect(curve!.getBoundingClientRect().width).toBeGreaterThan(0);
+		expect(container.textContent).toContain('espérance 1/2');
+	});
+
+	it('.échantillons : un histogramme dans l’historique', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3 ; 4 ; 5 ; 6' });
+		atelier.create({ kind: 'list', name: 'M', definition: '1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6' });
+		const { submit, container } = await open(atelier);
+
+		await submit('.échantillons L M 30 40');
+
+		expect(container.querySelectorAll('.stat-rectangle').length).toBeGreaterThan(0);
+	});
+});
