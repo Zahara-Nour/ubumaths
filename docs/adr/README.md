@@ -25,6 +25,7 @@ contourner en silence.
 | 0014 | [Acquisition sur le verdict du client (à réétudier)](0014-acquisition-sur-verdict-client-a-reetudier.md)             | 2026-09-30 |
 | 0015 | [Évaluation notée : correction côté serveur](0015-evaluation-notee-correction-serveur.md)                            | 2026-09-30 |
 | 0016 | [Auto-évaluation : le meilleur résultat du jour](0016-auto-evaluation-meilleur-resultat-du-jour.md)                  | 2026-09-30 |
+| 0017 | [Correction concise et détaillée : détails marqués dans le texte](0017-correction-concise-et-detaillee.md)           | 2026-10-02 |
 
 ## Écrire un ADR
 
