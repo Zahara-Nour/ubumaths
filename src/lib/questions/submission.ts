@@ -41,9 +41,14 @@ function toAnswer(position: number, answer: TestAnswerResult | undefined): Submi
 		typeof value === 'number' ||
 		(Array.isArray(value) && value.every((v) => typeof v === 'number'))
 	) {
-		const choices = (Array.isArray(value) ? (value as number[]) : [value])
-			.filter((c) => Number.isInteger(c) && c >= 0 && c < MAX_ANSWER_PARTS)
-			.slice(0, MAX_ANSWER_PARTS);
+		// Sans doublon : le schéma de l'envoi refuserait toute la copie (V5)
+		const choices = [
+			...new Set(
+				(Array.isArray(value) ? (value as number[]) : [value]).filter(
+					(c) => Number.isInteger(c) && c >= 0 && c < MAX_ANSWER_PARTS
+				)
+			)
+		].slice(0, MAX_ANSWER_PARTS);
 		return { position, choices, timeSpent };
 	}
 

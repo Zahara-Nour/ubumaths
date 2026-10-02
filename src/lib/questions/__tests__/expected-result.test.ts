@@ -283,6 +283,7 @@ describe('R5 — QCM', () => {
 		expect(r.lines).toEqual([
 			{
 				kind: 'choices',
+				multiple: true,
 				choices: [
 					{ originalIndex: 2, content: 'c', checked: false, isCorrect: true, status: 'unoptimal' },
 					{ originalIndex: 0, content: 'a', checked: true, isCorrect: true, status: 'correct' },

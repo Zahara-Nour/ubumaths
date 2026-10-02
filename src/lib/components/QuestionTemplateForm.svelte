@@ -96,6 +96,7 @@
 	import SharedFieldsEditor from './SharedFieldsEditor.svelte';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
+	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -1022,6 +1023,13 @@
 			return;
 		}
 		const templateData = buildTemplate();
+		// QCM (V1) : plusieurs bonnes réponses sans « plusieurs réponses » → refusé,
+		// même en brouillon (le serveur refuserait aussi)
+		const countErrors = choiceAnswerCountErrors(templateData, { draft: true });
+		if (countErrors.length > 0) {
+			if (!options?.silent) toaster.error(countErrors[0]);
+			return;
+		}
 		onSave(templateData, options);
 	}
 
@@ -1152,7 +1160,12 @@
 		if (!hasAnswer) errors.push(`Variation ${index + 1} : réponse manquante`);
 		return errors;
 	}
-	let variationErrors = $derived(variations.flatMap((v, i) => getVariationErrors(v, i)));
+	// QCM (V1) : exactement une bonne réponse, au moins une avec « plusieurs réponses »
+	let answerCountErrors = $derived(choiceAnswerCountErrors(previewTemplate));
+	let variationErrors = $derived([
+		...variations.flatMap((v, i) => getVariationErrors(v, i)),
+		...(hasAttemptedPublish ? answerCountErrors : [])
+	]);
 
 	// Variables tirées (partagées + variations) : une hypothèse ne peut pas les viser
 	let drawnVariableNames = $derived(
@@ -1180,7 +1193,8 @@
 			theme.trim().length > 0 &&
 			domain.trim().length > 0 &&
 			level > 0 &&
-			assumptionsAreValid
+			assumptionsAreValid &&
+			answerCountErrors.length === 0
 	);
 </script>
 
@@ -1559,7 +1573,8 @@
 		<SharedFieldsEditor
 			bind:open={sharedFieldsOpen}
 			{questionType}
-			{multipleAnswers}
+			bind:multipleAnswers
+			bind:shuffleChoices={optShuffleChoices}
 			bind:sharedStatement
 			bind:sharedVariables
 			bind:sharedCorrectChoiceIndex
@@ -1764,7 +1779,8 @@
 														bind:answer={variation.correctChoiceIndex}
 														bind:blanks={variation.blanks}
 														bind:choices={variation.choices}
-														{multipleAnswers}
+														bind:multipleAnswers
+														bind:shuffleChoices={optShuffleChoices}
 													/>
 												</Card.Content>
 											</Collapsible.Content>

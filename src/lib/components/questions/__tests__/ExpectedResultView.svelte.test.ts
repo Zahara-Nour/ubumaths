@@ -146,6 +146,7 @@ describe('R5 — QCM', () => {
 			lines: [
 				{
 					kind: 'choices',
+					multiple: true,
 					choices: [
 						{
 							originalIndex: 2,
@@ -245,5 +246,38 @@ describe('sécurité — une valeur math est rendue comme formule', () => {
 		const { container } = await show(buildExpectedResult(inst, answer([HOSTILE])));
 		expect(container.querySelector('a')).toBeNull();
 		expect(container.innerHTML).not.toContain('href');
+	});
+});
+
+describe('R5 — QCM : indicateur cohérent avec la saisie (Q109 a)', () => {
+	function choicesResult(multiple: boolean): ExpectedResult {
+		return {
+			status: 'correct',
+			lines: [
+				{
+					kind: 'choices',
+					multiple,
+					choices: [
+						{ originalIndex: 0, content: 'a', checked: true, isCorrect: true, status: 'correct' },
+						{ originalIndex: 1, content: 'b', checked: false, isCorrect: false, status: 'neutral' }
+					]
+				}
+			]
+		};
+	}
+
+	const marks = (container: HTMLElement) =>
+		[...container.querySelectorAll('[data-kind="choices"] [data-indicator]')].map((m) =>
+			m.getAttribute('data-indicator')
+		);
+
+	it('réponse unique : rond plein / rond vide', async () => {
+		const { container } = await show(choicesResult(false));
+		expect(marks(container)).toEqual(['circle-dot', 'circle']);
+	});
+
+	it('plusieurs réponses : case cochée / case vide', async () => {
+		const { container } = await show(choicesResult(true));
+		expect(marks(container)).toEqual(['square-check', 'square']);
 	});
 });

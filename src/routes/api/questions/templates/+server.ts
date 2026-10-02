@@ -13,6 +13,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType } from '$lib/questions/types';
 import { validateTemplate } from '$lib/questions';
+import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
 import { detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';
 import {
@@ -149,6 +150,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// précisément ces garanties, et l'insertion ne pouvait donc plus prouver
 		// qu'elle fournissait les colonnes obligatoires.
 		const templateData = validation.data;
+
+		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
+		// en brouillon ; « aucune » n'est refusée qu'à la publication (validateTemplate)
+		if (templateData.status !== 'published') {
+			const countErrors = choiceAnswerCountErrors(templateData as QuestionTemplate, {
+				draft: true
+			});
+			if (countErrors.length > 0) {
+				return json({ success: false, errors: countErrors }, { status: 400 });
+			}
+		}
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {

@@ -479,8 +479,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				};
 			});
 
-			// Shuffle choices
-			shuffledChoices = shuffleChoices(resolvedChoices, random);
+			// Mélange, sauf `options.shuffleChoices === false` (Vrai / Faux, Oui / Non… :
+			// l'ordre écrit par l'auteur fait foi, Q106). Pas mélangé = identité.
+			shuffledChoices =
+				template.options?.shuffleChoices === false
+					? resolvedChoices.map((choice, index) => ({
+							content: choice.content,
+							originalIndex: index
+						}))
+					: shuffleChoices(resolvedChoices, random);
 		}
 
 		// 7c. Resolve correction with pseudo-variables (AFTER blanks and choices)

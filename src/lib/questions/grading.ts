@@ -15,6 +15,10 @@
 
 import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
 import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
+import { statusFromChoices } from './choices';
+
+// Le barème d'un QCM vit dans `choices` : la validation du navigateur l'emploie aussi (V4)
+export { statusFromChoices };
 
 // Types
 export type QuestionPoints = 0 | 0.5 | 1;
@@ -82,24 +86,6 @@ export function statusFromBlankStatuses(statuses: readonly ValidationStatus[]): 
 	if (empty > statuses.length / 2) return 'incorrect';
 	if (empty > 0 || statuses.includes('unoptimal_form')) return 'unoptimal_form';
 	return 'correct';
-}
-
-/**
- * Statut d'un QCM (A4), indices d'ORIGINE : rien coché → empty ; un mauvais
- * coché → incorrect ; exactement les bons → correct ; des bons seulement, mais
- * pas tous → unoptimal_form (½).
- */
-export function statusFromChoices(
-	selected: readonly number[],
-	correct: readonly number[]
-): ValidationStatus {
-	const chosen = new Set(selected);
-	if (chosen.size === 0) return 'empty';
-	const good = new Set(correct);
-	for (const index of chosen) {
-		if (!good.has(index)) return 'incorrect';
-	}
-	return chosen.size === good.size ? 'correct' : 'unoptimal_form';
 }
 
 /** Arrondi au demi-point le plus proche, quart au-dessus (12,46 → 12,5 ; 12,25 → 12,5) */

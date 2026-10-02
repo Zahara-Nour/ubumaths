@@ -36,9 +36,13 @@ import {
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
 import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
-import { CONSTRAINT_FEEDBACK, FORGOTTEN_PERCENT_SIGN } from '$lib/questions/feedback';
+import {
+	CONSTRAINT_FEEDBACK,
+	FORGOTTEN_PERCENT_SIGN,
+	MISSING_CHOICES_FEEDBACK
+} from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
-import { choiceLetter, toDisplayedChoicePosition } from '$lib/questions/choices';
+import { choiceLetter, statusFromChoices, toDisplayedChoicePosition } from '$lib/questions/choices';
 import {
 	getRequiredFormFeedback,
 	REQUIRED_FORM_FEEDBACK,
@@ -1851,13 +1855,16 @@ export function validateAnswerDetailed(
 // ============================================================================
 
 /**
- * Validate multiple choice answer(s)
+ * Valide un QCM : même statut que la note du serveur (`statusFromChoices`, V4).
+ * - toutes les bonnes, aucune mauvaise → correct ;
+ * - une partie des bonnes, aucune mauvaise → unoptimal_form (½), « Il manque
+ *   des réponses. », `isCorrect` faux (SRS : à revoir, Q40) ;
+ * - une mauvaise cochée → incorrect ; rien coché → empty.
  *
- * @param userAnswer - Selected choice index(es)
- * @param correctAnswer - Correct choice index(es) from instance
- * @param multipleAnswers - Whether multiple answers are allowed
+ * @param userAnswer - Choix cochés (indices d'origine)
+ * @param correctAnswer - Bons choix (indices d'origine) de l'instance
+ * @param multipleAnswers - Plusieurs réponses attendues
  * @param letterOf - Lettre d'un indice d'origine dans le message (défaut : sans mélange)
- * @returns Validation result
  */
 export function validateChoice(
 	userAnswer: number | number[],
@@ -1865,28 +1872,25 @@ export function validateChoice(
 	multipleAnswers?: boolean,
 	letterOf: (originalIndex: number) => string = choiceLetter
 ): ValidationResult {
-	// Normalize answers to arrays of numbers
-	const userIndexes = Array.isArray(userAnswer) ? userAnswer : [userAnswer];
-	const correctIndexes = Array.isArray(correctAnswer)
-		? correctAnswer.map(Number)
-		: [Number(correctAnswer)];
+	// Indice illisible (aucun choix coché en réponse unique) : il ne désigne rien
+	const userIndexes = (Array.isArray(userAnswer) ? userAnswer : [userAnswer]).filter((index) =>
+		Number.isInteger(index)
+	);
+	const correctIndexes = (Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer]).map(
+		Number
+	);
 
-	// Sort for comparison
-	const userSorted = [...userIndexes].sort((a, b) => a - b);
-	const correctSorted = [...correctIndexes].sort((a, b) => a - b);
-
-	// Check if arrays are equal
-	const isCorrect =
-		userSorted.length === correctSorted.length &&
-		userSorted.every((val, i) => val === correctSorted[i]);
-
+	const status = statusFromChoices(userIndexes, correctIndexes);
+	if (status === 'correct') return { isCorrect: true, status, message: 'Correct !' };
+	if (status === 'unoptimal_form') {
+		return { isCorrect: false, status, message: 'Incomplet', feedback: MISSING_CHOICES_FEEDBACK };
+	}
 	return {
-		isCorrect,
-		message: isCorrect ? 'Correct !' : 'Incorrect',
-		feedback: isCorrect
-			? undefined
-			: multipleAnswers
-				? `Les choix corrects sont: ${correctIndexes.map(letterOf).sort().join(', ')}`
-				: `Le choix correct est: ${letterOf(correctIndexes[0])}`
+		isCorrect: false,
+		status,
+		message: 'Incorrect',
+		feedback: multipleAnswers
+			? `Les choix corrects sont: ${correctIndexes.map(letterOf).sort().join(', ')}`
+			: `Le choix correct est: ${letterOf(correctIndexes[0])}`
 	};
 }

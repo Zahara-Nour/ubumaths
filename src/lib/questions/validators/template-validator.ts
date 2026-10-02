@@ -12,6 +12,7 @@ import { getQuestionType } from '../types';
 import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
+import { choiceAnswerCountErrors } from './choice-answer-count';
 
 /**
  * Validate a question template
@@ -54,6 +55,9 @@ export function validateTemplate(template: QuestionTemplate): string[] {
 		const variationErrors = validateVariation(variation, inferredType, index, template.shared);
 		errors.push(...variationErrors);
 	});
+
+	// QCM : exactement une bonne réponse, au moins une avec « plusieurs réponses » (V1)
+	errors.push(...choiceAnswerCountErrors(template));
 
 	// Hypothèses de l'énoncé : jamais sur une variable tirée (ADR 0012)
 	for (const name of findAssumptionCollisions(template.options?.answerAssumptions, template)) {
@@ -198,17 +202,7 @@ function validateVariation(
 				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
 			}
 
-			// Au moins une bonne réponse : `isCorrect` sur un choix, ou `correctChoiceIndex`
-			// (QCM « dynamique », dont la bonne réponse dépend des variables)
-			if (variation.choices) {
-				const hasCorrect =
-					variation.choices.some((choice) => choice.isCorrect) ||
-					variation.correctChoiceIndex !== undefined ||
-					shared?.correctChoiceIndex !== undefined;
-				if (!hasCorrect) {
-					errors.push(`${prefix} multiple_choice requires at least one correct choice`);
-				}
-			}
+			// Nombre de bonnes réponses : `choiceAnswerCountErrors` (V1), sur tout le modèle
 			break;
 		}
 	}

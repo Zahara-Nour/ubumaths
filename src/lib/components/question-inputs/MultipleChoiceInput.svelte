@@ -8,7 +8,8 @@
 	Props:
 	- choices: Array of choices with content (ResolvedMarkdown) and correctness
 	- selectedIndexes: Array of selected choice indexes (bindable)
-	- multipleAnswers: Whether multiple selections are allowed
+	- multipleAnswers: Whether multiple selections are allowed (affiche la consigne
+	  « Coche toutes les bonnes réponses. »)
 	- disabled: Whether inputs are disabled
 	- showValidation: Whether to show correct/incorrect indicators
 	- onSubmit: Callback when a choice is clicked (in single-answer mode)
@@ -17,8 +18,9 @@
 <script lang="ts">
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Check, X } from '@lucide/svelte';
+	import { Check, X, Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
+	import { MULTIPLE_ANSWERS_INSTRUCTION } from '$lib/questions/feedback';
 
 	interface Choice {
 		/** Choice content as resolved markdown string */
@@ -74,6 +76,23 @@
 		return selectedIndexes.includes(index);
 	}
 
+	// Flèches : passer d'un choix à l'autre (Espace / Entrée choisissent, bouton natif)
+	function handleKeydown(event: KeyboardEvent) {
+		const step =
+			event.key === 'ArrowDown' || event.key === 'ArrowRight'
+				? 1
+				: event.key === 'ArrowUp' || event.key === 'ArrowLeft'
+					? -1
+					: 0;
+		if (step === 0) return;
+		const grid = event.currentTarget as HTMLElement;
+		const buttons = [...grid.querySelectorAll<HTMLButtonElement>('.choice-button')];
+		const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+		if (current === -1) return;
+		event.preventDefault();
+		buttons[(current + step + buttons.length) % buttons.length].focus();
+	}
+
 	// Get choice letter (A, B, C, ...)
 	function getChoiceLetter(index: number): string {
 		return String.fromCharCode(65 + index);
@@ -81,8 +100,20 @@
 </script>
 
 <div class="multiple-choice-container">
+	<!-- Consigne d'un QCM à plusieurs réponses (V2, Q107 b) : sous l'énoncé, avant
+	     les choix, partout (entraînement, flash-cards, en classe, après correction) -->
+	{#if multipleAnswers}
+		<p class="multiple-answers-instruction">{MULTIPLE_ANSWERS_INSTRUCTION}</p>
+	{/if}
+
 	<!-- Choice buttons -->
-	<div class="choices-grid">
+	<!-- Réponse unique : groupe radio ; plusieurs réponses : groupe de cases (Q109 a) -->
+	<div
+		class="choices-grid"
+		role={multipleAnswers ? 'group' : 'radiogroup'}
+		aria-label="Choix"
+		onkeydown={handleKeydown}
+	>
 		{#each choices as choice, i (i)}
 			{@const selected = isSelected(i)}
 			{@const correct = showValidation && choice.isCorrect}
@@ -97,9 +128,26 @@
 					incorrect && 'incorrect',
 					disabled && 'disabled'
 				)}
+				role={multipleAnswers ? 'checkbox' : 'radio'}
+				aria-checked={selected}
 				onclick={() => toggleChoice(i)}
 				{disabled}
 			>
+				<!-- Indicateur décoratif : case ☐ / ☑ (plusieurs réponses), rond ○ / ● (une seule) -->
+				<span class="choice-indicator">
+					{#if multipleAnswers}
+						{#if selected}
+							<SquareCheck class="h-5 w-5" aria-hidden="true" data-indicator="square-check" />
+						{:else}
+							<Square class="h-5 w-5" aria-hidden="true" data-indicator="square" />
+						{/if}
+					{:else if selected}
+						<CircleDot class="h-5 w-5" aria-hidden="true" data-indicator="circle-dot" />
+					{:else}
+						<Circle class="h-5 w-5" aria-hidden="true" data-indicator="circle" />
+					{/if}
+				</span>
+
 				<!-- Choice letter badge -->
 				<span class="choice-letter">{getChoiceLetter(i)}</span>
 
@@ -122,14 +170,10 @@
 		{/each}
 	</div>
 
-	<!-- Helper text -->
-	{#if !disabled && !showValidation}
+	<!-- Aide de la réponse unique (la consigne « plusieurs réponses » est au-dessus) -->
+	{#if !multipleAnswers && !disabled && !showValidation}
 		<div class="helper-text">
-			<span class="text-xs text-muted-foreground">
-				{multipleAnswers
-					? 'Sélectionnez toutes les réponses correctes'
-					: 'Sélectionnez une réponse'}
-			</span>
+			<span class="text-xs text-muted-foreground"> Sélectionnez une réponse </span>
 		</div>
 	{/if}
 </div>
@@ -137,6 +181,12 @@
 <style>
 	.multiple-choice-container {
 		width: 100%;
+	}
+
+	.multiple-answers-instruction {
+		margin-bottom: calc(0.75rem * var(--font-scale, 1));
+		font-size: calc(0.875rem * var(--font-scale, 1));
+		font-weight: 600;
 	}
 
 	.choices-grid {
@@ -153,7 +203,7 @@
 		padding: calc(1rem * var(--font-scale, 1));
 		font-size: calc(1rem * var(--font-scale, 1));
 		text-align: left;
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		border-radius: calc(0.5rem * var(--font-scale, 1));
 		background: var(--color-background);
 		cursor: pointer;
@@ -161,7 +211,7 @@
 	}
 
 	.choice-button:hover:not(.disabled) {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		background: color-mix(in srgb, var(--color-muted) 50%, transparent);
 		transform: translateY(-2px);
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -172,7 +222,7 @@
 	}
 
 	.choice-button.selected {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 	}
 
@@ -205,6 +255,16 @@
 		cursor: not-allowed;
 	}
 
+	.choice-indicator {
+		display: inline-flex;
+		flex-shrink: 0;
+		color: var(--color-muted-foreground);
+	}
+
+	.choice-button.selected .choice-indicator {
+		color: var(--color-primary);
+	}
+
 	.choice-letter {
 		display: inline-flex;
 		align-items: center;
@@ -216,12 +276,12 @@
 		font-size: calc(0.875rem * var(--font-scale, 1));
 		border-radius: calc(0.375rem * var(--font-scale, 1));
 		background: var(--color-muted);
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	.choice-button.selected .choice-letter {
 		background: var(--color-primary);
-		color: hsl(var(--primary-foreground));
+		color: var(--color-primary-foreground);
 	}
 
 	.choice-button.correct .choice-letter {
@@ -255,7 +315,7 @@
 	.helper-text {
 		margin-top: calc(0.5rem * var(--font-scale, 1));
 		font-size: calc(0.75rem * var(--font-scale, 1));
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	/* Responsive: 2 columns on medium screens */

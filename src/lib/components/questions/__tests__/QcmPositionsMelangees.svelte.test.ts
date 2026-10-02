@@ -59,7 +59,9 @@ async function answer(card: Card, instance: QuestionInstance, clicks: string[]) 
 		props: { instance, interactive: true, onAnswerSubmit }
 	});
 	for (const city of clicks) {
-		await page.getByRole('button', { name: city }).click();
+		// Choix = boutons à rôle radio (une réponse) ou case (plusieurs), Q109 a
+		const role = instance.multipleAnswers ? 'checkbox' : 'radio';
+		await page.getByRole(role, { name: city }).click();
 	}
 	await page.getByRole('button', { name: 'Valider' }).click();
 	expect(onAnswerSubmit).toHaveBeenCalledTimes(1);

@@ -12,6 +12,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { getQuestionType, mapDbTemplateToForm } from '$lib/questions/types';
 import { validateTemplate, detectCircularDependencies } from '$lib/questions';
+import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
@@ -208,6 +209,15 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 					{ success: false, errors: collisions.map(assumptionCollisionMessage) },
 					{ status: 400 }
 				);
+			}
+		}
+
+		// QCM (V1) : jamais plusieurs bonnes réponses sans « plusieurs réponses », même
+		// en brouillon ; « aucune » n'est refusée qu'à la publication (validateTemplate)
+		if (merged.status !== 'published') {
+			const countErrors = choiceAnswerCountErrors(merged, { draft: true });
+			if (countErrors.length > 0) {
+				return json({ success: false, errors: countErrors }, { status: 400 });
 			}
 		}
 

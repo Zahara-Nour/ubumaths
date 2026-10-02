@@ -35,6 +35,8 @@
 		open: boolean;
 		questionType: QuestionType;
 		multipleAnswers: boolean | undefined;
+		/** Mélange des choix : le préréglage « Vrai / Faux » le coupe (Q106) */
+		shuffleChoices: boolean;
 		sharedStatement: TemplateMarkdown;
 		sharedVariables: QuestionVariable[];
 		sharedCorrectChoiceIndex: string | string[];
@@ -59,7 +61,8 @@
 	let {
 		open = $bindable(),
 		questionType,
-		multipleAnswers,
+		multipleAnswers = $bindable(),
+		shuffleChoices = $bindable(),
 		sharedStatement = $bindable(),
 		sharedVariables = $bindable(),
 		sharedCorrectChoiceIndex = $bindable(),
@@ -201,7 +204,8 @@
 								{questionType}
 								bind:answer={sharedCorrectChoiceIndex}
 								bind:choices={sharedChoices}
-								{multipleAnswers}
+								bind:multipleAnswers
+								bind:shuffleChoices
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>
