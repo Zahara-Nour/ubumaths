@@ -163,6 +163,16 @@ contourner : réponse attendue réduite à `e` ou `i` ; `{{eval:…}}` contenant
 `\exponentialE`, accepté comme e) ; nom de variable avec un chiffre (`u1`, `q2`) dans une
 condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`).
 
+Corrigés dans le moteur le 2026-10-02 (branche `fix/pieges-generation-2`), ne plus contourner :
+dans une condition, `a % 10 != 0` (= `mod(a, 10)`, l'opérande gauche est le produit qui précède),
+`and` / `or` / `not` (= `&&` / `||` / `!(…)`, `not a = 1` nie toute la comparaison ; `!a = 1` est
+désormais une erreur explicite) et `pi` (= π, comme dans `{{eval:…}}`) ; `sign()` dans `eval` et
+dans une condition (−1, 0 ou 1) ; modificateurs enchaînés en plusieurs `;` (`{{eval:E;();d}}` =
+`{{eval:E;d;()}}` = `{{eval:E;d,()}}`) ; tirage dont une variable ne se calcule pas (division par
+zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite après 100 essais ; variable
+de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
+dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -177,30 +187,17 @@ Toujours vrai :
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
 - **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
   comme un tirage) : une variation par cas.
-- **Condition** : ni `%` ni `or` (« Unexpected token », ou échec après 100 essais) ; écrire
-  `mod(a,10) != 0` et `||` (relevé sur les variables aléatoires, 2026-10-02).
-- **Modificateurs combinés** : `{{eval:E;();d}}` comme `{{eval:E;d;()}}` font échouer toute la
-  génération (« Empty parentheses not allowed ») ; écrire `\left({{eval:E;d}}\right)`.
-- **Pas de `sign()`** dans `eval` (« Unknown function ») : pour N entier, le signe vaut
-  `(abs(N+1)-abs(N-1))/2` (pilote un `correctChoiceIndex` de QCM).
 - **Virgule décimale en dur** dans une formule (`0,1\times`) : laissée telle quelle à côté des
   décimaux calculés ; écrire `{{eval:1/10;d}}`.
 - **Variable calculée** utilisée sans `{{eval:…}}` : substituée telle quelle, sans parenthèses
   (`T/g` → « 11\*11-3/2 ») ; toujours passer par `{{eval:…}}`.
 - **`{{eval:sqrt(21/25)}}`** se rend `\dfrac{1}{5}\sqrt{21}` ; écrire `\dfrac{\sqrt{N}}{B}` à la main.
-- **Indice `i`** : `x_i`, `p_i` sont rendus `x_\imaginaryI` (le `i` devient l'unité imaginaire) ;
-  écrire `x_k`, `p_k`.
 - **Trou dans une cellule de tableau** : affiché mais NON saisissable (le tableau est un bloc
   statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
   forme dans l'énoncé ; une valeur arrondie demande `precision`.
 - **`\lVert … \rVert`** et **`\perp`** sortent en texte brut dans le PDF : écrire `\|\vec u\|` et
   « sont orthogonaux » (relevé sur le produit scalaire, 2026-10-02).
-- **`pi` dans une condition** n'est pas π (`cos(pi/6) >= 0.1` vaut faux, sans erreur) : passer
-  par une variable.
-- **Variables calculées AVANT les conditions** : une division par zéro ou un `arccos` hors de
-  [−1 ; 1] fait échouer le tirage au lieu de le relancer ; exclure à la source (`-5..5!0`).
-- **Variable de plusieurs lettres** contenant du LaTeX : casse `round()` ; nom d'une lettre.
 - **`{{eval:-sqrt(2)/2}}`** se rend `-\dfrac{1}{2}\sqrt{2}` et la bonne réponse devient « mauvaise
   forme » : écrire `\frac{ {{P}}\sqrt{m} }{2}` à la main.
 - **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
