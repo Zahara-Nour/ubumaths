@@ -58,6 +58,7 @@ import {
 	extractBlockquoteContent
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
+import { dedentIndentedFences } from './indented-fences';
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
@@ -372,8 +373,8 @@ function extractExpressionMarker(expression: string): {
  * const ast = parseMarkdown("# Hello\n\nCalculate $x^2$");
  */
 export function parseMarkdown(markdown: string, options: ParseOptions = {}): DocumentNode {
-	// Normalize line endings
-	const normalized = markdown.replace(/\r\n/g, '\n');
+	// Normalize line endings ; fences indentées ramenées à la marge (Q56-Q59)
+	const normalized = dedentIndentedFences(markdown.replace(/\r\n/g, '\n'));
 
 	// Keep original lines for code blocks (before math extraction)
 	const originalLines = normalized.split('\n');
