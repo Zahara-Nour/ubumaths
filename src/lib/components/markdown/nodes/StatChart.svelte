@@ -19,6 +19,7 @@
 	import type { CourbeColor } from '$lib/ubumark/types/courbe';
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
 	import {
+		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
 		buildStatChartScene,
 		type ScenePoint,
@@ -54,8 +55,6 @@
 	/** Marge gauche d'un histogramme ou d'un polygone (graduations jusqu'à « 100 ») */
 	const CLASS_PAD_LEFT = 44;
 
-	/** Rayon d'un repère numéroté, en px */
-	const MARKER_PX = 9;
 	/** Les repères extérieurs sont à 1,2 rayon du centre : marge en part du rayon, plus le repère */
 	const PIE_PAD_RATIO = 0.22;
 
@@ -175,7 +174,7 @@
 	}
 
 	let pieRadius = $derived(plotWidth / 2);
-	let piePad = $derived(pieRadius * PIE_PAD_RATIO + MARKER_PX + 2);
+	let piePad = $derived(pieRadius * PIE_PAD_RATIO + PIE_MARKER_PX + 2);
 
 	/** Point du repère de la scène (rayon 1, y vers le haut) → écran */
 	function pieX(p: ScenePoint): number {
@@ -520,17 +519,12 @@
 					{#each pie.sectors as sector, i (i)}
 						<g class="stat-repere">
 							{#if sector.leader}
-								<line
-									x1={pieX(sector.leader[0])}
-									y1={pieY(sector.leader[0])}
-									x2={pieX(sector.leader[1])}
-									y2={pieY(sector.leader[1])}
-								/>
+								<polyline points={piePoints(sector.leader)} />
 							{/if}
 							<circle
 								cx={pieX(sector.markerPosition)}
 								cy={pieY(sector.markerPosition)}
-								r={MARKER_PX}
+								r={PIE_MARKER_PX}
 							/>
 							<text
 								x={pieX(sector.markerPosition)}
@@ -791,7 +785,8 @@
 		stroke-width: 1;
 	}
 
-	.stat-repere line {
+	.stat-repere polyline {
+		fill: none;
 		stroke: var(--color-foreground);
 		stroke-width: 1;
 	}

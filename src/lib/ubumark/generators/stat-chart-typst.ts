@@ -21,6 +21,7 @@ import type { CourbeColor, CourbeSize } from '../types/courbe';
 import type { StatChartNode } from '../types/stat-chart';
 import { WIDTH_CM } from './courbe-typst';
 import {
+	PIE_MARKER_CM,
 	STAT_CHART_ASPECT_RATIO,
 	buildStatChartScene,
 	type BarScene,
@@ -175,12 +176,10 @@ function pieTypst(scene: PieScene, size: CourbeSize): string {
 	for (const sector of scene.sectors) {
 		lines.push('  // repère');
 		if (sector.leader) {
-			lines.push(
-				`  line(${P(sector.leader[0])}, ${P(sector.leader[1])}, stroke: 0.4pt + luma(60))`
-			);
+			lines.push(`  line(${sector.leader.map(P).join(', ')}, stroke: 0.4pt + luma(60))`);
 		}
 		lines.push(
-			`  circle(${P(sector.markerPosition)}, radius: 0.17, fill: white, stroke: 0.4pt + luma(60))`
+			`  circle(${P(sector.markerPosition)}, radius: ${PIE_MARKER_CM}, fill: white, stroke: 0.4pt + luma(60))`
 		);
 		lines.push(
 			`  content(${P(sector.markerPosition)}, text(size: 6.5pt, weight: "bold")[${sector.marker}])`

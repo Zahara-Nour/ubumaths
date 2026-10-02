@@ -116,8 +116,12 @@ export interface SceneSector {
 	marker: number;
 	/** Centre du repère : dans le secteur, ou hors du disque s'il est trop petit */
 	markerPosition: ScenePoint;
-	/** Trait du bord du disque vers un repère placé dehors, sinon null */
-	leader: [ScenePoint, ScenePoint] | null;
+	/**
+	 * Trait vers un repère placé dehors, sinon null : il part du milieu du
+	 * secteur, sort à l'aplomb, puis rejoint le repère (coudé : un repère
+	 * écarté de ses voisins, Q54, aurait sinon un trait qui coupe le disque)
+	 */
+	leader: ScenePoint[] | null;
 }
 
 export interface SceneLegendItem {
@@ -273,7 +277,18 @@ const MARKER_INSIDE_MIN_DEGREES = 20;
 /** Distance au centre d'un repère intérieur, extérieur, et bout du trait (rayon = 1) */
 const MARKER_INSIDE_RADIUS = 0.62;
 const MARKER_OUTSIDE_RADIUS = 1.2;
-const LEADER_END_RADIUS = 1.1;
+const LEADER_ELBOW_RADIUS = 1.05;
+
+/** Rayon d'un repère numéroté : à l'écran (px), dans le PDF (cm) */
+export const PIE_MARKER_PX = 9;
+export const PIE_MARKER_CM = 0.17;
+
+/**
+ * Le même, en rayons du disque, ARRONDI AU-DESSUS du plus grand des rendus :
+ * 0,17 cm sur un disque de 1,35 cm (PDF, petite taille) ≈ 0,126 ; 9 px sur
+ * 105 px (écran, petite taille) ≈ 0,086. Un test le recalcule depuis les tailles.
+ */
+export const PIE_MARKER_RADIUS = 0.13;
 
 /** Pas d'échantillonnage des arcs, en degrés */
 const ARC_STEP_DEGREES = 3;
@@ -496,6 +511,72 @@ function sectorColors(count: number): number[] {
 	return colors;
 }
 
+/**
+ * Écarter les repères extérieurs voisins (Q54) : deux petits secteurs
+ * consécutifs plaçaient leurs repères l'un sur l'autre.
+ *
+ * Chaque groupe de repères trop proches est étalé à pas constant autour de la
+ * moyenne de ses angles, dans l'ordre des secteurs ; deux groupes qui se
+ * touchent alors fusionnent. Le parcours commence après le plus grand vide,
+ * pour qu'un groupe à cheval sur midi ne soit pas coupé en deux.
+ *
+ * @param angles milieux des secteurs, en degrés depuis midi, croissants
+ * @returns les angles des repères, dans le même ordre
+ */
+function spreadOutsideMarkers(angles: readonly number[]): number[] {
+	const n = angles.length;
+	if (n < 2) return [...angles];
+	// Corde voulue entre deux centres : un diamètre de repère, et un peu d'air
+	const chord = 2 * PIE_MARKER_RADIUS * 1.05;
+	const wanted = (2 * Math.asin(chord / (2 * MARKER_OUTSIDE_RADIUS)) * 180) / Math.PI;
+	// Trop de repères pour le tour : répartis régulièrement, au mieux
+	const step = Math.min(wanted, 360 / n);
+
+	let first = 0;
+	let widest = -1;
+	for (let i = 0; i < n; i++) {
+		const gap = (angles[i] - angles[(i + n - 1) % n] + 360) % 360 || 360;
+		if (gap > widest) [widest, first] = [gap, i];
+	}
+	// Le tour, déplié en angles croissants à partir du plus grand vide
+	const sequence = Array.from({ length: n }, (_, k) => {
+		const index = (first + k) % n;
+		const angle = angles[index] < angles[first] ? angles[index] + 360 : angles[index];
+		return { index, angle };
+	});
+
+	type Cluster = { members: typeof sequence; center: number };
+	const half = (c: Cluster) => ((c.members.length - 1) / 2) * step;
+	const pack = (items: typeof sequence): Cluster[] => {
+		const clusters: Cluster[] = [];
+		for (const item of items) {
+			clusters.push({ members: [item], center: item.angle });
+			while (clusters.length > 1) {
+				const [previous, last] = clusters.slice(-2);
+				if (last.center - half(last) - (previous.center + half(previous)) >= step - 1e-9) break;
+				const members = [...previous.members, ...last.members];
+				const center = members.reduce((sum, m) => sum + m.angle, 0) / members.length;
+				clusters.splice(-2, 2, { members, center });
+			}
+		}
+		return clusters;
+	};
+
+	// La jonction du tour (dernier groupe → premier + 360°) n'est pas revérifiée :
+	// au plus 12 catégories (parseur), elle ne se chevauche jamais — un fuzz sur
+	// de vrais disques le prouve (scene.test.ts). Au-delà de 15 repères, si.
+	const clusters = pack(sequence);
+
+	const result = new Array<number>(n);
+	for (const cluster of clusters) {
+		cluster.members.forEach((m, j) => {
+			const angle = cluster.center + (j - (cluster.members.length - 1) / 2) * step;
+			result[m.index] = ((angle % 360) + 360) % 360;
+		});
+	}
+	return result;
+}
+
 function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 	const width = COURBE_PIXEL_WIDTH[spec.size] * STAT_CHART_ASPECT_RATIO;
 	const outcome = categoryFrequencies(spec.data.map((d) => d.value));
@@ -512,6 +593,7 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 	const sectors: SceneSector[] = [];
 	const legend: SceneLegendItem[] = [];
 	const listed: string[] = [];
+	const outsideAngles: { index: number; angle: number }[] = [];
 	let start = 0;
 
 	spec.data.forEach((d, i) => {
@@ -539,8 +621,9 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 				colorIndex,
 				marker,
 				markerPosition: scaled(middle, inside ? MARKER_INSIDE_RADIUS : MARKER_OUTSIDE_RADIUS),
-				leader: inside ? null : [middle, scaled(middle, LEADER_END_RADIUS)]
+				leader: inside ? null : [middle, scaled(middle, LEADER_ELBOW_RADIUS)]
 			});
+			if (!inside) outsideAngles.push({ index: sectors.length - 1, angle: (start + end) / 2 });
 			start = end;
 		}
 
@@ -553,6 +636,15 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 			marker
 		});
 		listed.push(shown === null ? d.label : `${d.label} ${shown}`);
+	});
+
+	// Les repères extérieurs écartés ; le trait part toujours du milieu du secteur
+	const spread = spreadOutsideMarkers(outsideAngles.map((o) => o.angle));
+	outsideAngles.forEach(({ index }, k) => {
+		const sector = sectors[index];
+		const toward = onCircle(spread[k]);
+		sector.markerPosition = scaled(toward, MARKER_OUTSIDE_RADIUS);
+		sector.leader = [...sector.leader!, sector.markerPosition];
 	});
 
 	return {
