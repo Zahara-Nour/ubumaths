@@ -35,7 +35,10 @@ import type {
 	ProbTreeParseResult,
 	ProbTreeBlockRange
 } from '../types/probability-tree';
-import { unclosedBlockEnd } from './unclosed-block';
+import { specialBlockEnd } from './unclosed-block';
+
+/** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
+const BLOCK_KEYS = ['root', 'outcomes', 'intersection'];
 
 // ============================================================================
 // CONSTANTS
@@ -121,15 +124,9 @@ export function findProbTreeBlocks(lines: string[]): ProbTreeBlockRange[] {
 	while (i < lines.length) {
 		if (isProbTreeBlockStart(lines[i])) {
 			const startIndex = i;
-			i++;
-
-			// Find the end of the block
-			while (i < lines.length && !isBlockEnd(lines[i])) {
-				i++;
-			}
-
-			// Non fermé : jusqu'à la première ligne vide (Q63)
-			const endIndex = i < lines.length ? i : unclosedBlockEnd(lines, startIndex);
+			// Fermé par un ``` qui ne fait pas lire du texte comme contenu (Q66),
+			// sinon jusqu'à la première ligne vide (Q63)
+			const { endIndex } = specialBlockEnd(lines, startIndex, isBlockEnd, BLOCK_KEYS);
 			blocks.push({ startIndex, endIndex });
 			i = endIndex;
 		}

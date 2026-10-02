@@ -38,7 +38,21 @@ import type {
 } from '../types/number-line';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { unclosedBlockEnd } from './unclosed-block';
+import { specialBlockEnd } from './unclosed-block';
+
+/** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
+const BLOCK_KEYS = [
+	'start',
+	'end',
+	'step',
+	'major',
+	'scale',
+	'labels',
+	'points',
+	'segments',
+	'arrows',
+	'hidden'
+];
 
 // ============================================================================
 // CONSTANTS
@@ -69,14 +83,14 @@ export function findNumberLineBlocks(lines: string[]): NumberLineBlockRange[] {
 	while (i < lines.length) {
 		if (isNumberLineBlockStart(lines[i])) {
 			const startIndex = i;
-			i++;
-
-			while (i < lines.length && !BLOCK_END_REGEX.test(lines[i])) {
-				i++;
-			}
-
-			// Non fermé : jusqu'à la première ligne vide (Q63)
-			const endIndex = i < lines.length ? i : unclosedBlockEnd(lines, startIndex);
+			// Fermé par un ``` qui ne fait pas lire du texte comme contenu (Q66),
+			// sinon jusqu'à la première ligne vide (Q63)
+			const { endIndex } = specialBlockEnd(
+				lines,
+				startIndex,
+				(line) => BLOCK_END_REGEX.test(line),
+				BLOCK_KEYS
+			);
 			blocks.push({ startIndex, endIndex });
 			i = endIndex;
 		}
