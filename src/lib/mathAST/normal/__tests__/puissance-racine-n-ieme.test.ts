@@ -200,10 +200,15 @@ describe('radicande négatif d’indice impair : opaque, pas faux', () => {
  * devenaient fausses — d'où sa réparation ici plutôt qu'un contournement.
  */
 describe('une base somme est parenthésée', () => {
+	// Ces attendus valaient `\left( x + 1 \right)^{3/2}` jusqu'au 2026-10-02 :
+	// ils enregistraient un arbre FAUX, dont l'exposant était un nombre `"3/2"`
+	// que `compile` et `normalize` lisaient `3`. Le radical reste désormais tel
+	// quel — base dans la racine, aucune base nue, valeur juste
+	// (cf. `simplify/__tests__/preserve-valeur.test.ts`).
 	it.each([
-		['\\sqrt[3]{x+1}^{2}', '\\left( x + 1 \\right)^{2/3}'],
-		['\\sqrt[4]{x+1}^{6}', '\\left( x + 1 \\right)^{3/2}'],
-		['\\sqrt{x+1}^{3}', '\\left( x + 1 \\right)^{3/2}']
+		['\\sqrt[3]{x+1}^{2}', '\\sqrt[3]{x + 1}^2'],
+		['\\sqrt[4]{x+1}^{6}', '\\sqrt[4]{x + 1}^6'],
+		['\\sqrt{x+1}^{3}', '\\sqrt{x + 1}^3']
 	])('%s se rend %s', (entree, attendu) => {
 		expect(toLatex(simplify(parseLatex(entree)).result)).toBe(attendu);
 	});
