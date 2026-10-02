@@ -40,7 +40,7 @@ import {
 } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
-import { normalizeExpression } from '$lib/ubumark/parameterization';
+import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
 import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
@@ -149,6 +149,23 @@ function resolveRequiredForm(
 	return requiredForm.acceptable === undefined
 		? { pattern: resolve(requiredForm.pattern) }
 		: { pattern: resolve(requiredForm.pattern), acceptable: resolve(requiredForm.acceptable) };
+}
+
+/**
+ * Normalise une réponse attendue (ou un préremplissage) écrite en syntaxe simplifiée.
+ * Un nom nu qui ne désigne AUCUNE variable déclarée reste tel quel : `e`, `i` sont des
+ * constantes (Euler, imaginaire), pas des variables manquantes. Seul un nom déclaré
+ * devient une référence `{{nom}}`.
+ */
+function normalizeAnswerExpression(
+	expression: string,
+	resolvedVariables: ResolvedVariable[]
+): string {
+	if (detectExpressionType(expression) === 'variable-ref') {
+		const name = expression.trim();
+		if (!resolvedVariables.some((v) => v.name === name)) return expression;
+	}
+	return normalizeExpression(expression);
 }
 
 /** Un marqueur `{{…}}`, imbrications comprises (`{{eval:{{a}}*2}}`) */
@@ -344,7 +361,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					);
 				}
 				const isMathBlank = blankResult.blankTypes[i] === 'math';
-				const normalized = isMathBlank ? normalizeExpression(rawExpected) : rawExpected;
+				const normalized = isMathBlank
+					? normalizeAnswerExpression(rawExpected, resolvedVariables)
+					: rawExpected;
 				const expectedAnswer = normalized.includes('{{')
 					? resolveExpression(normalized, resolvedVariables, random)
 					: normalized;
@@ -382,7 +401,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				};
 				if (blank.prefilled) {
 					resolved.prefilled = resolveExpression(
-						normalizeExpression(blank.prefilled),
+						normalizeAnswerExpression(blank.prefilled, resolvedVariables),
 						resolvedVariables,
 						random
 					);

@@ -100,6 +100,21 @@ function substituteBareNames(text: string, resolved: ResolvedVariable[]): string
 }
 
 /**
+ * Réécrit `{{nom;modificateurs}}` en `{{eval:nom;modificateurs}}` quand `nom` est une variable
+ * déclarée. Un vrai tirage (`{{2..9;±}}`) ne commence pas par un nom : il n'est pas touché, et
+ * un nom inconnu non plus (l'erreur de tirage reste visible).
+ */
+function modifiedVariablesAsEval(text: string, resolved: ResolvedVariable[]): string {
+	if (resolved.length === 0) return text;
+	const names = new Set(resolved.map((v) => v.name));
+	return text.replace(
+		/\{\{([A-Za-z_]\w*);([^{};]+)\}\}/g,
+		(token, name: string, modifiers: string) =>
+			names.has(name) ? `{{eval:${name};${modifiers}}}` : token
+	);
+}
+
+/**
  * Liaisons des variables d'une lettre pour un calcul. Une lettre qui est la VALEUR tirée
  * d'une variable (a = « b ») et que l'auteur n'a pas écrite dans ce calcul n'est pas liée :
  * dans `{{eval:{{expression1}}}}` avec expression1 = « 6*2*b », le `b` est l'inconnue, pas
@@ -200,7 +215,7 @@ function lettersOf(value: string): Set<string> {
  * `+`/`-` from a discrete list and be used as the operator itself, e.g.
  * `{{eval:5{{op}}3}}` — wrapping it (`5{+}3`) would break parsing.
  */
-function braceWrap(value: string): string {
+export function braceWrap(value: string): string {
 	if (/^\s*[+\-*/^]\s*$/.test(value)) return value;
 	// Un résultat exact (`\dfrac{9}{7}`) repasse en syntaxe maison : sinon tout le calcul
 	// part dans parseLatex, qui ne lit ni `2{…}` ni `sqrt(…)`
@@ -384,6 +399,10 @@ export function resolveExpression(
 	if (!result.includes('{{')) {
 		return substituteBareNames(result, alreadyResolved);
 	}
+
+	// STAGE 0.5: `{{b;+}}` sur une variable DÉCLARÉE = `{{eval:b;+}}` (signe, parenthèses…).
+	// Le tokenizer lit tout `;` comme un modificateur de tirage, et `b` n'est pas un tirage.
+	result = modifiedVariablesAsEval(result, alreadyResolved);
 
 	// STAGE 1: Replace variable references {{name}}
 	const variableTokens = tokenize(result).filter((t) => t.type === 'variable');
