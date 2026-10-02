@@ -110,3 +110,15 @@ glossaire `CONTEXT.md` (Résultat attendu, Correction concise / détaillée).
   = case vide ; `fillMarkdown` en une passe ; formule « expression » rendue avec `displayLatex`.
 - Doutes : sosies pleine chasse visibles si l'élève tape `(`, `*`… dans une case texte ; une
   réponse non appariée ne reçoit un message que si les cases libres n’en donnent qu’un seul.
+
+## Audit de sécurité de la PR #643 (2026-10-02) — exigences pour le lot 2
+
+- Corrigé : `\style` (alias de `\htmlStyle`), `\bbox`, couleurs et dimensions sans borne (`\rule`,
+  `\kern`, `\raisebox`…) neutralisés ; test sur la **sortie réelle de MathLive**
+  (`student-answer-safety.render.test.ts`).
+- ⚠️ **Lot 2 (bloquant si oublié)** : toute valeur `context: 'math'` doit être rendue **comme formule**
+  (jamais en texte markdown sans `$…$`), sinon `[clic](https://…)` redeviendrait un lien. À verrouiller
+  par un test au branchement de l'affichage, et repasser `security-auditor`.
+- Envisager une **liste blanche** de commandes LaTeX plutôt que la liste noire actuelle (un alias a
+  déjà été manqué).
+- Mineur : `escapeStudentText` ne neutralise pas le barré `-/-…-/-` (cosmétique).

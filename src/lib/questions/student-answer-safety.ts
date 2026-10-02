@@ -16,9 +16,14 @@
  */
 
 // Constantes
-/** Commandes LaTeX interdites dans une réponse d'élève affichée */
+/**
+ * Commandes LaTeX interdites dans une réponse d'élève affichée. MathLive a des
+ * alias (`\\style` = `\\htmlStyle`) et accepte des styles CSS (`\\bbox`, couleurs)
+ * ou des dimensions sans borne (`\\rule`, `\\kern`, `\\raisebox`) : un calque plein
+ * écran ou une image espion chez le professeur (audit de la PR #643).
+ */
 const FORBIDDEN_LATEX_COMMAND =
-	/\\(?:href|url|htmlData|htmlClass|htmlStyle|htmlId|class|cssId|includegraphics|def|gdef|edef|xdef|let|newcommand|renewcommand|providecommand|DeclareMathOperator|csname|endcsname|placeholder|mathtip|texttip|toggle|tooltip)(?![a-zA-Z])/g;
+	/\\(?:href|url|htmlData|htmlClass|htmlStyle|htmlId|class|cssId|includegraphics|def|gdef|edef|xdef|let|newcommand|renewcommand|providecommand|DeclareMathOperator|csname|endcsname|placeholder|mathtip|texttip|toggle|tooltip|style|bbox|color|textcolor|colorbox|fcolorbox|rule|kern|mkern|mskip|hskip|hspace|vspace|raisebox|lower|raise|moveleft|moveright)(?![a-zA-Z])/g;
 
 /** Caractère de syntaxe → sosie inerte */
 const TEXT_LOOKALIKES: Record<string, string> = {
