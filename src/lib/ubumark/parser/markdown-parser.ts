@@ -812,7 +812,14 @@ function parseBlocks(
 		}
 
 		// Otherwise, collect paragraph lines
-		const paragraphLines: string[] = [];
+		//
+		// ⚠️ La PREMIÈRE ligne est toujours prise (Q55) : arrivée ici, aucun bloc
+		// ne l'a reconnue. Elle peut pourtant passer un garde d'arrêt ci-dessous
+		// (`| a |` sans ligne d'alignement, ``` indenté…) ; sans cette prise,
+		// rien n'était consommé et la boucle repartait sur la même ligne, sans fin.
+		// Jamais vide : les lignes vides sont sautées en tête de boucle.
+		const paragraphLines: string[] = [lines[i]];
+		i++;
 		while (
 			i < lines.length &&
 			lines[i].trim() !== '' &&
@@ -830,7 +837,7 @@ function parseBlocks(
 			i++;
 		}
 
-		if (paragraphLines.length > 0) {
+		{
 			const paragraphText = paragraphLines.join('\n');
 			// Check if paragraph contains block math - if so, split into separate blocks
 			if (containsBlockMath(paragraphText, placeholders)) {
