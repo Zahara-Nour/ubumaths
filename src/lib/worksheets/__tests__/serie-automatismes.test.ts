@@ -249,3 +249,32 @@ describe('buildSerie — erreurs (rien ne doit être écrit)', () => {
 		expect(() => buildSerie(modeles, [])).toThrow(/vide/);
 	});
 });
+
+/**
+ * Correction concise / détaillée (ADR 0017) : avant le lot 3 (réglage du
+ * corrigé), la fiche prend la version détaillée — jamais de `\detail{` brut,
+ * qui ferait échouer Typst pour TOUTE la fiche.
+ */
+describe('buildSerie — détails de correction', () => {
+	const marquee = {
+		...base,
+		id: 'marquee',
+		options: { courseCard: true },
+		variations: [
+			{
+				statement: 'Combien font $1 + 1$ ?',
+				correction: {
+					steps: ['$x = 1 + 1 \\detail{= 2 \\times 1} = 2$ [car on ajoute]{.rappel}.']
+				}
+			}
+		]
+	} as unknown as QuestionTemplate;
+
+	it('la version détaillée, sans marqueur \\detail brut', () => {
+		const serie = buildSerie(new Map([[marquee.id, marquee]]), [
+			{ templateId: 'marquee', seed: 1 }
+		]);
+		expect(serie.solution).not.toContain('\\detail');
+		expect(serie.solution).toContain('2 \\times 1');
+	});
+});

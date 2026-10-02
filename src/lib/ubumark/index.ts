@@ -282,6 +282,8 @@ export { applyDisplayTransforms, canTransform, getExpressionStructure } from './
 
 // List depth analysis
 export { getMaxEnumerateDepth, getEnumerateDepth } from './utils/list-depth';
+export type { DetailKind, CalloutKind } from './utils/detail-kinds';
+export { DETAIL_KIND_LABELS, parseDetailKind, parseCalloutKind } from './utils/detail-kinds';
 
 // ============================================================================
 // GENERATOR EXPORTS

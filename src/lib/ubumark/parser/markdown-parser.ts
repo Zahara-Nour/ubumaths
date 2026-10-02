@@ -56,11 +56,18 @@ import {
 import {
 	isBlockquoteLine,
 	findBlockquoteBlocks,
-	extractBlockquoteContent
+	extractBlockquoteContent,
+	extractCalloutMarker
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { dedentIndentedFences } from './indented-fences';
 import { blockLineRanges, isFenceLine } from './block-ranges';
+import {
+	INLINE_CODE_REGEX,
+	INLINE_DETAIL_REGEX,
+	maskSpans,
+	parseDetailKind
+} from '../utils/detail-kinds';
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 import { findTrigCircleBlocks, parseTrigCircle } from './trig-circle-parser';
@@ -667,14 +674,18 @@ function parseBlocks(
 			const [start, end] = blockquoteBlock;
 			const blockquoteLines = lines.slice(start, end + 1);
 			// Extract content without > markers
-			const contentLines = extractBlockquoteContent(blockquoteLines);
+			// Encadré typé `> [!rappel]` : marqueur retiré du contenu (ADR 0017)
+			const { callout, lines: contentLines } = extractCalloutMarker(
+				extractBlockquoteContent(blockquoteLines)
+			);
 			// Parse the extracted content recursively
 			const children = parseBlocks(contentLines, placeholders, options);
 
 			// Create blockquote node with parsed children
 			const processedBlockquote: BlockquoteNode = {
 				type: 'blockquote',
-				children
+				children,
+				...(callout && { callout })
 			};
 			blocks.push(processedBlockquote);
 			i = end + 1;
@@ -931,7 +942,8 @@ function parseInlineContent(
 								...(node.italic && { italic: true }),
 								...(node.code && { code: true }),
 								...(node.strikethrough && { strikethrough: true }),
-								...(node.highlight && { highlight: true })
+								...(node.highlight && { highlight: true }),
+								...(node.detail && { detail: node.detail })
 							});
 						}
 					} else {
@@ -943,7 +955,9 @@ function parseInlineContent(
 							syntax: segment.syntax,
 							...(exprInfo.expressionName && {
 								expressionName: exprInfo.expressionName
-							})
+							}),
+							// Une formule dans un détail en ligne en hérite le type
+							...(node.detail && { detail: node.detail })
 						});
 					}
 				}
@@ -1408,6 +1422,39 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
 
+	// Étape 0 : détails en ligne `[texte]{.rappel}` (ADR 0017). Leur texte suit
+	// le même pipeline, puis chaque nœud texte est marqué du type de détail.
+	// Type inconnu : laissé littéral. Le code en ligne passe avant : on cherche
+	// dans un texte où il est masqué, on découpe l'original aux mêmes indices.
+	const nodes: InlineNode[] = [];
+	const masked = maskSpans(text, [INLINE_CODE_REGEX]);
+	const detailRegex = new RegExp(INLINE_DETAIL_REGEX.source, INLINE_DETAIL_REGEX.flags);
+	let position = 0;
+	let match: RegExpExecArray | null;
+	while ((match = detailRegex.exec(masked)) !== null) {
+		const kind = parseDetailKind(match[2]);
+		if (!kind) continue;
+		if (match.index > position) {
+			nodes.push(...parseTextFormattingPipeline(text.slice(position, match.index)));
+		}
+		const inner = text.slice(match.index + 1, match.index + 1 + match[1].length);
+		for (const node of parseTextFormattingPipeline(inner)) {
+			nodes.push(node.type === 'text' ? { ...node, detail: kind } : node);
+		}
+		position = match.index + match[0].length;
+	}
+	if (position < text.length) {
+		nodes.push(...parseTextFormattingPipeline(text.slice(position)));
+	}
+	return nodes;
+}
+
+/**
+ * Pipeline de {@link parseTextFormatting}, hors détails en ligne.
+ */
+function parseTextFormattingPipeline(text: string): InlineNode[] {
+	if (!text) return [];
+
 	// Step 1: Extract blanks first
 	const blankSegments = parseTextForBlanks(text);
 
@@ -1742,7 +1789,9 @@ function parseContentWithBlockquote(
 			}
 
 			// Extract content without > markers (returns string[])
-			const quoteContentLines = extractBlockquoteContent(quoteLines);
+			const { callout, lines: quoteContentLines } = extractCalloutMarker(
+				extractBlockquoteContent(quoteLines)
+			);
 
 			// For roundtrip fidelity: treat each line as a separate paragraph
 			// within the blockquote (NOT CommonMark's default soft-break behavior)
@@ -1767,7 +1816,8 @@ function parseContentWithBlockquote(
 
 			blocks.push({
 				type: 'blockquote',
-				children: quoteChildren
+				children: quoteChildren,
+				...(callout && { callout })
 			});
 		} else if (line.trim()) {
 			// Non-empty, non-blockquote line - collect as paragraph
