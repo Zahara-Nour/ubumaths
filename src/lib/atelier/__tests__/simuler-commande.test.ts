@@ -58,7 +58,8 @@ describe('cas nominal', () => {
 		expect(text.split('\n')[0]).toBe(
 			'600 tirages de L avec probabilités M (graine 4821) → effectifs dans N'
 		);
-		expect(text.split('\n')).toHaveLength(7);
+		// 1 en-tête, 6 valeurs, et la piste de Q83
+		expect(text.split('\n')).toHaveLength(8);
 		expect(text.split('\n')[1]).toMatch(/^1 : \d+ fois, fréquence 0,\d+ — probabilité 1\/6$/);
 	});
 

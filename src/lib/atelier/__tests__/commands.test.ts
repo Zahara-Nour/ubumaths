@@ -123,10 +123,17 @@ describe('le catalogue des commandes', () => {
 				const before = atelier.objects.length;
 				const result = runInput({ atelier, engine: new WebReplEngine() }, command.example);
 				const latex = result.kind === 'commande' ? result.latex : undefined;
-				// « Crée un objet » ne vaut que pour un exemple à décor déclaré
-				const created = command.exampleSetup !== undefined && atelier.objects.length > before;
+				// « Crée un objet » ou « dessine un graphique » (simulations, Q80)
+				// ne valent que pour un exemple à décor déclaré
+				const staged = command.exampleSetup !== undefined;
+				const created = staged && atelier.objects.length > before;
+				const drawn = staged && result.kind === 'commande' && result.chart !== undefined;
 				expect(
-					{ commande: command.french, kind: result.kind, repond: latex !== undefined || created },
+					{
+						commande: command.french,
+						kind: result.kind,
+						repond: latex !== undefined || created || drawn
+					},
 					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
 				).toMatchObject({ kind: 'commande', repond: true });
 				continue;

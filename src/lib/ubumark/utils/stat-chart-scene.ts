@@ -146,6 +146,11 @@ export interface SceneRect {
 	height: number;
 	/** Effectif écrit dans le rectangle (`valeurs: oui`) */
 	valueLabel: string;
+	/**
+	 * Classe mise en valeur : dans l'intervalle μ ± 2σ/√n de l'histogramme des
+	 * moyennes d'échantillons (atelier, Q82). Absent ailleurs.
+	 */
+	highlighted?: boolean;
 }
 
 export interface HistogramScene extends SceneCommon {
@@ -233,7 +238,30 @@ export interface LawScene extends SceneCommon {
 	hiddenLabel: string;
 }
 
+/**
+ * Moyenne des tirages selon leur nombre (atelier, `.fréquence`, Q81) : la loi
+ * des grands nombres. Jamais produite par un bloc ubumark.
+ */
+export interface MeanScene extends SceneCommon {
+	kind: 'moyenne-selon-n';
+	/** 1 et le nombre de tirages */
+	xMin: number;
+	xMax: number;
+	yMin: number;
+	yMax: number;
+	/** Moyenne des x premiers tirages ; au plus `RUNNING_MEAN_MAX_POINTS` points */
+	points: ScenePoint[];
+	xTicks: SceneTick[];
+	/** Graduations verticales, de `yMin` à `yMax` */
+	ticks: SceneTick[];
+	/** La droite y = E(X), en pointillés */
+	reference: { value: number; label: string };
+	axisTitles: { x: string; y: string };
+	color: CourbeColor;
+}
+
 export type StatChartScene =
+	| MeanScene
 	| LawScene
 	| BarScene
 	| PieScene

@@ -15,6 +15,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
+	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -142,6 +143,13 @@
 				{#if entry.table !== undefined}
 					<div class="tableau">
 						<VariationTable node={entry.table} />
+					</div>
+				{/if}
+				<!-- Le graphique d'une simulation (Q80) : sous la ligne, à côté des
+				     nombres qu'il illustre -->
+				{#if entry.chart !== undefined}
+					<div class="tableau">
+						<StatChart scene={entry.chart} />
 					</div>
 				{/if}
 			</li>

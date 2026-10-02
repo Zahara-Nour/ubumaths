@@ -30,13 +30,19 @@
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
 	interface Props {
-		node: StatChartNode;
+		/** Le bloc ubumark ; absent quand une scène est donnée (atelier) */
+		node?: StatChartNode;
+		/**
+		 * Une scène déjà construite (simulations de l'atelier, Q80) : dessinée
+		 * telle quelle, sans bloc ni erreur d'auteur
+		 */
+		scene?: StatChartScene;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
 		class?: string;
 	}
 
-	let { node, showErrors, class: className = '' }: Props = $props();
+	let { node, scene: given, showErrors, class: className = '' }: Props = $props();
 
 	/** Marges autour du cadre des barres, en px (la gauche s'élargit selon les textes) */
 	const PAD_LEFT_MIN = 40;
@@ -91,14 +97,15 @@
 	const budget = readRenderBudget();
 
 	let errorsVisible = $derived(showErrors ?? authoring());
-	let admitted = $derived(budget()?.admits(node) ?? true);
+	let admitted = $derived(node === undefined ? true : (budget()?.admits(node) ?? true));
 	/**
 	 * Une exception de la scène ne doit jamais remonter : elle cassait le rendu
 	 * de TOUTE la page (revue du lot 3). Le bloc tombe en erreur, comme une
 	 * faute d'auteur.
 	 */
 	let computed = $derived.by((): { scene: StatChartScene | null; failed: boolean } => {
-		const spec = node.spec;
+		if (given !== undefined) return { scene: given, failed: false };
+		const spec = node?.spec;
 		if (!spec || !admitted) return { scene: null, failed: false };
 		try {
 			const built = withinBudget(budget(), () => buildStatChartScene(spec, { locale: locale() }));
@@ -108,13 +115,15 @@
 		}
 	});
 	let scene = $derived(computed.scene);
-	let overBudget = $derived(node.spec !== null && scene === null && !computed.failed);
+	let overBudget = $derived(
+		node !== undefined && node.spec !== null && scene === null && !computed.failed
+	);
 	let shownErrors = $derived(
 		computed.failed
 			? [{ message: FAILED_MESSAGE }]
 			: overBudget
 				? [{ message: OVER_BUDGET_MESSAGE }]
-				: node.errors
+				: (node?.errors ?? [])
 	);
 
 	let bars = $derived(scene?.kind === 'barres' ? scene : null);
@@ -123,10 +132,13 @@
 	let cumulative = $derived(scene?.kind === 'frequences-cumulees' ? scene : null);
 	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
 	let law = $derived(scene?.kind === 'loi' ? scene : null);
-	/** Histogramme ou polygone : abscisses dans l'unité des classes */
-	let classChart = $derived(histogram ?? cumulative);
-	/** Haut de l'axe vertical : carreaux / effectif (histogramme) ou 100 % (polygone) */
-	let classYMax = $derived(histogram ? histogram.yMax : 100);
+	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
+	/** Histogramme, polygone ou moyenne selon n : abscisses continues, axe vertical gradué */
+	let classChart = $derived(histogram ?? cumulative ?? mean);
+	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne */
+	let classYMax = $derived(histogram ? histogram.yMax : mean ? mean.yMax : 100);
+	/** Bas de l'axe vertical : 0, sauf la moyenne selon n (valeurs négatives possibles) */
+	let classYMin = $derived(mean ? mean.yMin : 0);
 	let classPadBottom = $derived(PAD_BOTTOM_FLAT + (classChart?.axisTitles.x ? AXIS_TITLE_PX : 0));
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
@@ -170,7 +182,7 @@
 
 	/** Ordonnée d'écran, de 0 à `classYMax` */
 	function cy(value: number): number {
-		return PAD_TOP + (1 - value / classYMax) * plotHeight;
+		return PAD_TOP + (1 - (value - classYMin) / (classYMax - classYMin || 1)) * plotHeight;
 	}
 
 	let pieRadius = $derived(plotWidth / 2);
@@ -403,7 +415,10 @@
 							y={cy(rect.height)}
 							width={cx(rect.upper) - cx(rect.lower)}
 							height={cy(0) - cy(rect.height)}
-							style:fill={COLOR_VAR[histogram.color]}
+							class:stat-rectangle-hors={rect.highlighted === false}
+							style:fill={rect.highlighted === false
+								? 'var(--color-muted-foreground)'
+								: COLOR_VAR[histogram.color]}
 						/>
 						<!-- Au-dessus, pas dedans : un rectangle bas ou nul le cachait, et le
 						     texte clair sur rouge ou bleu sombre manquait de contraste (audit a11y) -->
@@ -464,14 +479,46 @@
 					{/each}
 				{/if}
 
+				{#if mean}
+					<!-- Moyenne des tirages selon n (Q81), et la droite y = E(X) -->
+					<line
+						class="stat-reference"
+						x1={cx(mean.xMin)}
+						y1={cy(mean.reference.value)}
+						x2={cx(mean.xMax)}
+						y2={cy(mean.reference.value)}
+					/>
+					<text
+						class="stat-reference-texte"
+						x={cx(mean.xMax)}
+						y={cy(mean.reference.value) - 4}
+						text-anchor="end">{mean.reference.label}</text
+					>
+					<polyline
+						class="stat-polygone"
+						points={mean.points.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`).join(' ')}
+						style:stroke={COLOR_VAR[mean.color]}
+					/>
+				{/if}
+
 				<!-- Bornes des classes et axes -->
 				<g class="stat-axes" aria-hidden="true">
 					{#each classChart.xTicks as tick, i (i)}
-						<line x1={cx(tick.value)} y1={cy(0)} x2={cx(tick.value)} y2={cy(0) + 4} />
-						<text x={cx(tick.value)} y={cy(0) + 16} text-anchor="middle">{tick.label}</text>
+						<line
+							x1={cx(tick.value)}
+							y1={cy(classYMin)}
+							x2={cx(tick.value)}
+							y2={cy(classYMin) + 4}
+						/>
+						<text x={cx(tick.value)} y={cy(classYMin) + 16} text-anchor="middle">{tick.label}</text>
 					{/each}
-					<line x1={CLASS_PAD_LEFT} y1={cy(0)} x2={CLASS_PAD_LEFT + plotWidth} y2={cy(0)} />
-					<line x1={CLASS_PAD_LEFT} y1={cy(0)} x2={CLASS_PAD_LEFT} y2={PAD_TOP - 10} />
+					<line
+						x1={CLASS_PAD_LEFT}
+						y1={cy(classYMin)}
+						x2={CLASS_PAD_LEFT + plotWidth}
+						y2={cy(classYMin)}
+					/>
+					<line x1={CLASS_PAD_LEFT} y1={cy(classYMin)} x2={CLASS_PAD_LEFT} y2={PAD_TOP - 10} />
 					<polygon
 						points="{CLASS_PAD_LEFT},{PAD_TOP - 14} {CLASS_PAD_LEFT - 3.5},{PAD_TOP -
 							7} {CLASS_PAD_LEFT + 3.5},{PAD_TOP - 7}"
@@ -560,7 +607,7 @@
 			</ul>
 		{/if}
 
-		{#if errorsVisible && node.warnings.length > 0}
+		{#if errorsVisible && node && node.warnings.length > 0}
 			<!-- Texte en couleur de premier plan : `text-warning` ne fait que 3:1 (audit a11y) -->
 			<ul class="mt-1 border-l-2 border-warning pl-2 text-xs text-foreground">
 				{#each node.warnings as w, i (i)}
@@ -574,7 +621,7 @@
 		class="stat-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
 	>
 		<!-- Texte en couleur de premier plan : `text-destructive` ne fait que 3,3:1 (audit a11y) -->
-		<p class="font-medium">Bloc {node.kind} : diagramme non dessiné</p>
+		<p class="font-medium">Bloc {node?.kind} : diagramme non dessiné</p>
 		<ul class="mt-1 list-disc pl-5">
 			{#each shownErrors as e, i (i)}
 				<li>{e.message}</li>
@@ -729,6 +776,23 @@
 	.stat-quadrillage line {
 		stroke: color-mix(in oklab, var(--color-foreground) 50%, transparent);
 		stroke-width: 0.75;
+	}
+
+	/* Classes hors de μ ± 2σ/√n (Q82) : grises, sans transparence — à 0,45 elles
+	   tombaient sous 3:1 de contraste (WCAG 1.4.11, revue) */
+	.stat-rectangle-hors {
+		opacity: 1;
+	}
+
+	.stat-reference {
+		stroke: var(--color-foreground);
+		stroke-width: 1;
+		stroke-dasharray: 5 4;
+	}
+
+	.stat-svg .stat-reference-texte {
+		font-size: 11px;
+		fill: var(--color-foreground);
 	}
 
 	.stat-polygone {

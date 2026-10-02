@@ -22,7 +22,8 @@ import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
-import { simulateCommand } from './simulate';
+import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
+import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
 import { simplifySteps } from './simplify-steps';
@@ -75,6 +76,8 @@ export type CalcResult =
 			 * produire. Absentes = repli : la ligne garde la sortie du moteur.
 			 */
 			readonly steps?: readonly RenderedStep[];
+			/** Le graphique d'une simulation, dessiné sous la ligne (Q80) */
+			readonly chart?: StatChartScene;
 	  }
 	| { readonly kind: 'refus'; readonly message: string };
 
@@ -237,6 +240,13 @@ function runAtelierCommand(name: string, input: string, argument: string): CalcR
 	}
 }
 
+/** Les simulations, servies par l'atelier (Q72-Q83) */
+const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
+	simulate: simulateCommand,
+	frequency: frequencyCommand,
+	samples: samplesCommand
+};
+
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
 function randomSeed(): number {
 	return 1000 + Math.floor(Math.random() * 9000);
@@ -286,14 +296,20 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 */
 	const name = known.name.toLowerCase();
 
-	// `.simuler L M n` lit des NOMS de listes : il passe avant la substitution
+	// Les simulations lisent des NOMS de listes : elles passent avant la substitution
 	// des noms par leurs expressions, qui en ferait des listes de nombres
-	if (known.name === 'simulate') {
+	const simulation = SIMULATIONS[known.name];
+	if (simulation !== undefined) {
 		const seed = (session.seed ?? randomSeed)();
 		const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
-		const outcome = simulateCommand(session.atelier, typedArgument, seed);
+		const outcome = simulation(session.atelier, typedArgument, seed);
 		return outcome.ok
-			? { kind: 'commande', input, output: outcome.text }
+			? {
+					kind: 'commande',
+					input,
+					output: outcome.text,
+					...(outcome.chart && { chart: outcome.chart })
+				}
 			: { kind: 'refus', message: outcome.message };
 	}
 
