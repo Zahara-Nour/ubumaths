@@ -285,3 +285,29 @@ describe('les simulations dessinent sous la ligne', () => {
 		expect(container.querySelectorAll('.stat-rectangle').length).toBeGreaterThan(0);
 	});
 });
+
+// Outils statistiques v2, Q89 : le tableau croisé sous la ligne de l'historique
+describe('.croiser dessine le tableau sous la ligne', () => {
+	it('un tableau accessible, cases et totaux lisibles', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: 'fille ; garçon ; fille' });
+		atelier.create({ kind: 'list', name: 'M', definition: 'oui ; oui ; non' });
+		const { submit, container } = await open(atelier);
+
+		await submit('.croiser L M');
+		const tableEl = container.querySelector('table.stat-tableau');
+
+		expect(tableEl).not.toBeNull();
+		expect(tableEl!.querySelector('caption')?.textContent?.trim()).toBe('Tableau croisé');
+		// Une case précise (fille × oui = 1) et le coin lu par le lecteur d'écran
+		const fille = [...tableEl!.querySelectorAll('tbody tr')].find(
+			(row) => row.querySelector('th')?.textContent?.trim() === 'fille'
+		);
+		expect([...fille!.querySelectorAll('td')].map((td) => td.textContent?.trim())).toEqual([
+			'1',
+			'1',
+			'2'
+		]);
+		expect(tableEl!.textContent).toContain('lignes : L, colonnes : M');
+	});
+});

@@ -98,6 +98,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	[
+		'cross',
+		{
+			french: 'croiser',
+			description: 'Tableau croisé de deux listes de mots, une entrée par individu',
+			example: '.croiser L M',
+			exampleSetup: { L: 'fille ; garçon ; fille', M: 'oui ; oui ; non' }
+		}
+	],
+	[
 		'frequency',
 		{
 			french: 'fréquence',
@@ -276,7 +285,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'factor',
 	'simulate',
 	'frequency',
-	'samples'
+	'samples',
+	'cross'
 ]);
 
 /**

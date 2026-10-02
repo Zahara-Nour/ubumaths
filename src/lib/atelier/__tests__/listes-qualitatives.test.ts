@@ -138,8 +138,9 @@ describe('Q88 — les actions d’une liste qualitative', () => {
 		);
 	});
 
-	it('aucune action à deux listes pour l’instant, et au plus 10 boutons', () => {
-		expect(actions.filter((a) => a.partner !== undefined)).toEqual([]);
+	// Q89 : la seule action à deux listes d'une liste qualitative, le tableau croisé
+	it('une seule action à deux listes (tableau croisé), et au plus 10 boutons', () => {
+		expect(actions.filter((a) => a.partner !== undefined).map((a) => a.id)).toEqual(['cross:M']);
 		expect(actions.length).toBeLessThanOrEqual(10);
 	});
 
