@@ -1,7 +1,7 @@
 ---
 title: Dérivation 1re SPE — questions
 date: 2026-10-02
-status: #637 mergée, #638 en CI ; 16 modèles en brouillon + 74d77343 corrigé (2026-10-02)
+status: livré (#637, #638, #640, #641, #642) ; 16 modèles en brouillon + 74d77343 corrigé (2026-10-02)
 ---
 
 # Dérivation 1re SPE — point de reprise
@@ -40,10 +40,13 @@ réduite), C-01 à C-04.
 ## Défauts trouvés en route
 
 - #638 : puissances fractionnaires ≡ racines (`\frac12 x^{-\frac12}` jugé faux pour `\frac{1}{2\sqrt x}`).
-- **`simplify` AFFICHE une valeur fausse** : `(4x+1)^{\frac12}` → `4x+1`, `2^{\frac12}` → `2`,
-  `(x+1)^{\frac32}` → LaTeX défectueux (utilisé par l'analyse du grapheur). À corriger après #638
-  (même fichier `normal/normalize.ts`).
-- Conditions : `==` toujours FAUX, sans erreur (écrire `=`) ; 0 modèle de production touché (mesuré).
+- **`simplify` AFFICHAIT une valeur fausse** (`(4x+1)^{\frac12}` → `4x+1`, `2^{\frac12}` → `2`) :
+  corrigé par #642 (exposant « 1/2 » relu comme 1) ; touchait l'ordonnée exacte des extremums du
+  grapheur et la commande `.simplify` (calculatrice, console, atelier), PAS les corrigés élèves ni la
+  correction des réponses. Garde-fou ajouté : `simplify/__tests__/preserve-valeur.test.ts`.
+- Conditions : `==` toujours FAUX en silence, `!(a = b)` aussi → corrigé par #641 ; une condition
+  illisible lève une erreur explicite. Vérifié : 14 880 générations de toute la production, 0 échec
+  avant comme après.
 - Bloc courbe : le nom d'une courbe s'écarte des points, pas des autres noms (« C_f » + « T » → « CT ») ;
   contourné en retirant les noms dans A-03, A-06.
 
