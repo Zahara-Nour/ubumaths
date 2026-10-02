@@ -18,9 +18,10 @@ import type { SectionContentKind } from './validation/chapter-sections';
 type ChapterSection = Database['public']['Tables']['chapter_sections']['Row'];
 
 /**
- * Les quatre tables qu'une section peut ranger.
+ * Les cinq tables qu'une section peut ranger.
  *
- * ⚠️ Miroir du tableau de la migration `20260915260000` : ajouter un type de
+ * ⚠️ Miroir du tableau de la migration `20260915260000` (plus `chapter_series`,
+ * créée avec ces colonnes en `20261002100000`) : ajouter un type de
  * contenu demande de toucher les deux, sinon le nouveau type ne sera jamais
  * rangeable et rien ne le signalera.
  */
@@ -28,7 +29,10 @@ const CONTENT_TABLES: Record<SectionContentKind, string> = {
 	document: 'chapter_documents',
 	exercise: 'chapter_exercises',
 	checklistItem: 'chapter_checklist_items',
-	worksheet: 'chapter_worksheets'
+	worksheet: 'chapter_worksheets',
+	// Séries de chapitre (migration `20261002100000`) : mêmes colonnes et même
+	// clé composite que les quatre autres.
+	series: 'chapter_series'
 };
 
 export type SectionOrderUpdate = { id: string; displayOrder: number };
@@ -204,19 +208,28 @@ export async function assignToSection(
 	sectionId: string | null,
 	items: SectionAssignment[],
 	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
+): Promise<{ error: Error | null; notFound?: boolean }> {
 	for (const item of items) {
 		const table = CONTENT_TABLES[item.kind];
 
-		const { error } = await supabase
+		const { data, error } = await supabase
 			.from(table as never)
 			.update({ section_id: sectionId, section_order: item.sectionOrder } as never)
 			.eq('id', item.id)
-			.eq('chapter_id', chapterId);
+			.eq('chapter_id', chapterId)
+			.select('id');
 
 		if (error) {
 			console.error(`[assignToSection] ${table} :`, error);
 			return { error: new Error(error.message) };
+		}
+
+		// La RLS échoue en silence : un rangement refusé (ou une ressource d'un
+		// autre chapitre) rend zéro ligne SANS erreur. Sans ce contrôle, l'écran
+		// annonçait « rangé » et le rechargement montrait l'ancien plan.
+		if (!data || (data as unknown[]).length !== 1) {
+			console.error(`[assignToSection] ${table} : aucune ligne rangée pour ${item.id}`);
+			return { error: new Error('Ressource introuvable dans ce chapitre'), notFound: true };
 		}
 	}
 

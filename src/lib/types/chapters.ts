@@ -215,7 +215,7 @@ export interface ChapterDocument {
  * dans une table fermée, pour qu'un formulaire ne puisse jamais désigner la
  * table à écrire.
  */
-export type ChapterContentType = 'document' | 'exercise' | 'checklist' | 'worksheet';
+export type ChapterContentType = 'document' | 'exercise' | 'checklist' | 'worksheet' | 'series';
 
 /**
  * Chapter checklist item - an item students can check off
@@ -320,6 +320,35 @@ export interface ChapterWorksheet {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+}
+
+/**
+ * Série rattachée à un chapitre (`chapter_series`).
+ *
+ * Le lien SUIT la série (Q125) : titre et composition sont relus à chaque
+ * chargement, une modification de la série est donc visible dans le chapitre.
+ * `form` est choisie au rattachement (Q124 a) : flash-cards par défaut, ou
+ * entraînement — jamais une évaluation, donc sans note.
+ */
+export interface ChapterSeries {
+	id: string;
+	chapterId: string;
+	seriesId: string;
+	form: 'flash' | 'interactive';
+	displayOrder: number;
+	/** Section du chapitre qui range ce contenu. `null` = « Non classé ». */
+	sectionId: string | null;
+	/** Ordre À L'INTÉRIEUR de la section, partagé avec les autres types. */
+	sectionOrder: number;
+	createdAt: string;
+	/** Mise à disposition des élèves. `null` = préparé, invisible. */
+	publishedAt: string | null;
+	/** Titre de la série, `null` si elle n'a pas pu être relue. */
+	title: string | null;
+	/** Nombre total de questions de la série. */
+	questionCount: number;
+	/** Lien de lancement dans la forme choisie, `null` si la composition est illisible. */
+	launchHref: string | null;
 }
 
 /**

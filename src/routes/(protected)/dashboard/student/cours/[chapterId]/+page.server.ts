@@ -17,6 +17,7 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters';
 import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-plan';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
+import { listChapterSeries } from '$lib/server/chapter-series';
 
 // `fetch` vient de l'événement, jamais du global : une URL relative ferait
 // lever `Failed to parse URL` au `fetch` de Node — hors `try`, donc 500 sur
@@ -116,7 +117,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// tous types. Les deux lectures passent par `locals.supabase`, donc aux
 	// droits de l'élève — une section d'un chapitre qui n'est pas le sien, ou
 	// une fiche non distribuée, ne remontent pas.
-	const [sectionsResult, placementsResult] = await Promise.all([
+	const [sectionsResult, placementsResult, seriesResult] = await Promise.all([
 		locals.supabase
 			.from('chapter_sections')
 			.select('*')
@@ -125,8 +126,17 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		locals.supabase
 			.from('chapter_worksheets')
 			.select('worksheet_id, section_id, section_order')
-			.eq('chapter_id', chapter.id)
+			.eq('chapter_id', chapter.id),
+		// Les séries du chapitre : la RLS ne rend que les rattachements PUBLIÉS
+		// d'un chapitre visible de la classe de l'élève (Q123).
+		listChapterSeries(chapter.id, locals.supabase)
 	]);
+
+	// Même règle que pour les fiches : une panne ne se lit pas « aucune série ».
+	if (seriesResult.error) {
+		console.error(`Séries du chapitre illisibles pour ${chapter.id} :`, seriesResult.error);
+	}
+	const seriesUnavailable = seriesResult.error !== null;
 
 	// Une panne de rangement ne doit pas se lire « chapitre vide » : le plan
 	// retombe alors sur « Non classé », qui montre TOUT plutôt que rien.
@@ -159,7 +169,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		checklistItems: chapter.checklistItemsWithProgress,
 		worksheets: worksheetsData.worksheets || [],
 		exerciseTitles: exerciseDetails,
-		worksheetPlacements
+		worksheetPlacements,
+		series: seriesResult.data ?? []
 	});
 
 	return {
@@ -168,7 +179,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		className: classInfo?.name || 'Classe',
 		exerciseDetails,
 		worksheets: worksheetsData.worksheets || [],
-		worksheetsUnavailable
+		// Une seule bannière « partie du chapitre non chargée » couvre les deux.
+		worksheetsUnavailable: worksheetsUnavailable || seriesUnavailable
 	};
 };
 

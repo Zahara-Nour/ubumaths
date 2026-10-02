@@ -37,7 +37,8 @@ const TABLES = {
 	document: 'chapter_documents',
 	exercise: 'chapter_exercises',
 	checklist: 'chapter_checklist_items',
-	worksheet: 'chapter_worksheets'
+	worksheet: 'chapter_worksheets',
+	series: 'chapter_series'
 } as const satisfies Record<ChapterContentType, string>;
 
 /** Les types acceptés, pour construire le schéma Zod de l'appelant. */

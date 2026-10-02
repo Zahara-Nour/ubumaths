@@ -660,3 +660,13 @@ export function toJson<T>(value: T): Json {
 export function rpcNullable<T>(value: T | null | undefined): T {
 	return (value ?? null) as T;
 }
+
+// =============================================================================
+// SÉRIES DE CHAPITRE
+// =============================================================================
+
+/** Forme de lancement d'une série de chapitre (`chapter_series.form`). */
+export type ChapterSeriesForm = 'flash' | 'interactive';
+
+/** `public.chapter_series` (migration `20261002100000_series_de_chapitre.sql`). */
+export type ChapterSeriesRow = Database['public']['Tables']['chapter_series']['Row'];
