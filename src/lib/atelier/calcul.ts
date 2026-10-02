@@ -23,6 +23,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
+import { crossCommand } from './cross';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
 import { deriveSteps } from './derive-steps';
@@ -244,7 +245,9 @@ function runAtelierCommand(name: string, input: string, argument: string): CalcR
 const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	simulate: simulateCommand,
 	frequency: frequencyCommand,
-	samples: samplesCommand
+	samples: samplesCommand,
+	// Tableau croisé (Q89) : lit des NOMS de listes, pas de hasard
+	cross: (atelier, argument) => crossCommand(atelier, argument)
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */

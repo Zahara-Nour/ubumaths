@@ -17,7 +17,8 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import { isValue, isList, isQualitative } from './types';
+import { isValue, isList, isQualitative, type ListObject } from './types';
+import { crossProblem } from './cross';
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -223,16 +224,34 @@ export function wordsReason(name: string): string {
 
 /**
  * Les actions d'une liste QUALITATIVE (Q88) : effectifs, barres, circulaire ;
- * « Statistiques » reste visible, désactivée avec sa raison. Aucune action à
- * deux listes pour l'instant (« Tableau croisé avec M » arrive avec `.croiser`)
- * : six boutons désactivés dépasseraient le plafond de 10 (Q78).
+ * « Statistiques » reste visible, désactivée avec sa raison. Une SEULE action
+ * à deux listes, « Tableau croisé avec M » (Q89) : les six actions numériques,
+ * toutes désactivées, dépasseraient le plafond de 10 boutons (Q78).
  */
-function qualitativeActions(name: string): ObjectAction[] {
-	return [
+function qualitativeActions(
+	object: ListObject,
+	atelier: Atelier | undefined,
+	chosen: string | undefined
+): ObjectAction[] {
+	const own: ObjectAction[] = [
 		{ id: 'counts', label: 'Effectifs' },
 		{ id: 'chart', label: 'Diagramme en barres' },
 		{ id: 'pie', label: 'Diagramme circulaire' },
-		{ ...BY_KIND.list[0], disabledReason: wordsReason(name) }
+		{ ...BY_KIND.list[0], disabledReason: wordsReason(object.name) }
+	];
+	// Une seule action à deux listes (Q89) : le tableau croisé avec la partenaire
+	const wanted = atelier === undefined ? null : chosenPartner(object, atelier, chosen);
+	const partner = wanted === null ? undefined : atelier!.get(wanted);
+	if (partner === undefined || !isList(partner)) return own;
+	const reason = crossProblem(object, partner);
+	return [
+		...own,
+		{
+			id: `cross:${partner.name}`,
+			label: `Tableau croisé avec ${partner.name}`,
+			partner: partner.name,
+			...(reason !== undefined && { disabledReason: reason })
+		}
 	];
 }
 
@@ -266,7 +285,7 @@ export function actionsFor(
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
 		isList(object) && isQualitative(object)
-			? qualitativeActions(object.name)
+			? qualitativeActions(object, atelier, partner)
 			: isList(object) && atelier !== undefined
 				? [
 						BY_KIND.list[0],

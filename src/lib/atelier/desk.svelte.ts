@@ -418,6 +418,12 @@ export class CalcDesk {
 			this.draft = `${name}(`;
 			return 'needs-argument';
 		}
+		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
+		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
+		if (actionId.startsWith('cross:')) {
+			this.draft = `.croiser ${name} ${actionId.slice('cross:'.length)}`;
+			return 'needs-argument';
+		}
 		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut
 		// (Q77), l'élève valide ou change le nombre
 		if (actionId.startsWith('simulate:')) {
