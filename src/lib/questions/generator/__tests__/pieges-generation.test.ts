@@ -1,6 +1,6 @@
 /**
  * Pièges de la génération : constantes nues en réponse attendue, noms de variables
- * alphanumériques dans les conditions.
+ * alphanumériques dans les conditions, modificateur `;+` sur une variable déclarée.
  */
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../instance-generator';
@@ -105,6 +105,52 @@ describe('nom de variable contenant un chiffre (B)', () => {
 				seed
 			);
 			expect(Number(value(instance, 'a')) * Number(value(instance, 'b'))).not.toBe(4);
+		}
+	});
+});
+
+describe('modificateur sur une variable déclarée (C)', () => {
+	it('{{b;+}} affiche le signe, comme {{eval:b;+}}', () => {
+		for (let seed = 0; seed < 10; seed++) {
+			const instance = generate(
+				{
+					variables: [{ name: 'b', expression: '2..5;±' }],
+					statement: templateMarkdown('$y=x{{b;+}}$ et $y=x{{eval:b;+}}$ $?$'),
+					blanks: [{ expectedAnswer: '1' }]
+				},
+				seed
+			);
+			const b = Number(value(instance, 'b'));
+			const signed = b > 0 ? `+${b}` : `${b}`;
+			expect(compact(instance)).toContain(`$y=x${signed}$et$y=x${signed}$`);
+		}
+	});
+
+	it('{{b;()}} parenthèse un négatif, comme {{eval:b;()}}', () => {
+		for (let seed = 0; seed < 10; seed++) {
+			const instance = generate(
+				{
+					variables: [{ name: 'b', expression: '2..5;±' }],
+					statement: templateMarkdown('$3\\times{{b;()}}$ et $3\\times{{eval:b;()}}$ $?$'),
+					blanks: [{ expectedAnswer: '1' }]
+				},
+				seed
+			);
+			const b = Number(value(instance, 'b'));
+			const shown = b < 0 ? `(${b})` : `${b}`;
+			expect(compact(instance)).toContain(`$3\\times${shown}$et$3\\times${shown}$`);
+		}
+	});
+
+	it.each(['2..9;±', '2..9;+-'])('les vrais tirages {{%s}} restent des tirages', (spec) => {
+		for (let seed = 0; seed < 10; seed++) {
+			const instance = generate(
+				{ statement: templateMarkdown(`$n={{${spec}}}$ $?$`), blanks: [{ expectedAnswer: '1' }] },
+				seed
+			);
+			const n = Number(compact(instance).match(/\$n=(-?\d+)\$/)?.[1]);
+			expect(Math.abs(n)).toBeGreaterThanOrEqual(2);
+			expect(Math.abs(n)).toBeLessThanOrEqual(9);
 		}
 	});
 });
