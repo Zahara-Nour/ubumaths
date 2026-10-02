@@ -1,7 +1,7 @@
 ---
 title: Fonction exponentielle 1re SPE — questions
 date: 2026-10-02
-status: #616 mergée ; 21 modèles en brouillon (2026-10-02) ; #618 (équivalence) en PR
+status: #616 mergée ; 21 modèles en brouillon (2026-10-02) ; #618 (équivalence) mergée
 ---
 
 # Fonction exponentielle 1re SPE — point de reprise
