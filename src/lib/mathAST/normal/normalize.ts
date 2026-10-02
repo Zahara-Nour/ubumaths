@@ -73,6 +73,7 @@ import {
 	floatToRational,
 	divRational,
 	powRational,
+	parseRational,
 	ZERO
 } from './rational';
 import { simplifyRadical, integerNthRoot } from './radical';
@@ -682,7 +683,7 @@ function rationalizeByConjugate(
 /**
  * Checks if a polynomial contains any imaginary terms.
  */
-function hasImaginaryTerms(terms: NormalTerm[]): boolean {
+function hasImaginaryTerms(terms: readonly NormalTerm[]): boolean {
 	for (const term of terms) {
 		for (const algTerm of term.coefficient.terms) {
 			if (algTerm.hasImaginaryUnit === true) {
@@ -1524,6 +1525,15 @@ function getNonNegativeIntExponent(node: MathNode): number | null {
  */
 function getRationalExponent(node: MathNode): Rational | null {
 	if (node.type === 'number') {
+		// Un nombre `"p/q"` ne doit jamais être lu par `parseFloat`, qui rend `p`
+		// et efface la puissance. On le lit exactement, ou pas du tout.
+		if (node.value.includes('/')) {
+			try {
+				return parseRational(node.value);
+			} catch {
+				return null;
+			}
+		}
 		const val = parseFloat(node.value);
 		if (Number.isInteger(val)) {
 			return fromInteger(val);
@@ -4990,18 +5000,47 @@ function normalizeSymbolicPower(
 		return normalFormFromPolynomial(polynomialFromTerm(term));
 	}
 
+	// Demi-entier : `b^{n/2}` = `b^k · √b` (et son inverse si n < 0). La racine
+	// passe par la voie `sqrt`, qui sait rendre `√2` exact et `√(4x+1)` lisible,
+	// au lieu d'un exposant fractionnaire opaque. Base complexe exclue : `√i`
+	// n'a pas de sens réel, `i^{1/2}` reste une puissance.
+	if (
+		exponent.d === 2n &&
+		!hasImaginaryTerms(baseForm.numerator) &&
+		!hasImaginaryTerms(baseForm.denominator)
+	) {
+		const absN = exponent.n < 0n ? -exponent.n : exponent.n;
+		const k = absN / 2n;
+		const sqrtNode: MathNode = { type: 'function', name: 'sqrt', args: [base] };
+		const sqrtForm = normalizeNode(sqrtNode, ctx);
+		const positive =
+			k === 0n ? sqrtForm : mulNormalForms(powNormalForm(baseForm, Number(k)), sqrtForm);
+		return exponent.n < 0n ? divNormalForms(ONE_NORMAL_FORM, positive) : positive;
+	}
+
 	// Complex base with rational exponent - treat as opaque
 	//
-	const powerNode: MathNode = {
-		type: 'superscript',
-		base,
-		superscript: {
-			type: 'number',
-			value: exponent.d === 1n ? exponent.n.toString() : `${exponent.n}/${exponent.d}`
-		}
-	};
+	// ⚠️ L'exposant s'écrit en VRAI nœud (fraction, `opposite` si négatif),
+	// jamais en nombre `"1/2"`. Ce nombre-là, relu par `getRationalExponent`
+	// (`parseFloat("1/2")` = 1), faisait disparaître la puissance : mesuré le
+	// 2026-10-02, `simplify((4x+1)^{1/2})` affichait `4x+1` et `2^{1/2}`
+	// affichait `2` — une valeur FAUSSE montrée à l'élève. Un `"-1/2"` violait
+	// en plus l'invariant « pas de nombre négatif ».
+	const powerNode: MathNode = superscript(base, rationalToExponentNode(exponent));
 
 	return normalizeOpaqueNode(powerNode);
+}
+
+/**
+ * Un rationnel en nœud d'exposant : `n`, `\frac{n}{d}`, ou leur opposé.
+ */
+function rationalToExponentNode(r: Rational): MathNode {
+	const absN = r.n < 0n ? -r.n : r.n;
+	const magnitude: MathNode =
+		r.d === 1n
+			? number(absN.toString())
+			: divide(number(absN.toString()), number(r.d.toString()), 'fraction');
+	return r.n < 0n ? opposite(magnitude) : magnitude;
 }
 
 /**
