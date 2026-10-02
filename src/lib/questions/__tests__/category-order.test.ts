@@ -123,6 +123,25 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Probabilités conditionnelles : tableaux, arbres, indépendance, problèmes', () => {
+		const subdomains = [
+			'Problèmes en contexte',
+			'Indépendance',
+			'Tableaux croisés',
+			'Arbres pondérés'
+		].map((subdomain) => ({
+			theme: 'Probabilités',
+			domain: 'Probabilités conditionnelles',
+			subdomain
+		}));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Tableaux croisés',
+			'Arbres pondérés',
+			'Indépendance',
+			'Problèmes en contexte'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',
