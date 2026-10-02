@@ -161,7 +161,10 @@ Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas 
 Corrigés dans le moteur le 2026-10-02 (#616 et la PR `fix/pieges-generation`), ne plus
 contourner : réponse attendue réduite à `e` ou `i` ; `{{eval:…}}` contenant e (rendu
 `\exponentialE`, accepté comme e) ; nom de variable avec un chiffre (`u1`, `q2`) dans une
-condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`).
+condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`) ; et (PR
+`fix/pieges-rendu`) `{{eval:sqrt(21/25)}}` / `{{eval:-sqrt(2)/2}}` rendus `\dfrac{\sqrt{21}}{5}` /
+`-\dfrac{\sqrt{2}}{2}` (la bonne réponse de l'élève n'est plus « mauvaise forme ») ; dans le PDF,
+`\lVert … \rVert`, `\lvert … \rvert`, `\perp`, `\parallel`, `\angle`, `\triangle`.
 
 Toujours vrai :
 
@@ -183,26 +186,25 @@ Toujours vrai :
   génération (« Empty parentheses not allowed ») ; écrire `\left({{eval:E;d}}\right)`.
 - **Pas de `sign()`** dans `eval` (« Unknown function ») : pour N entier, le signe vaut
   `(abs(N+1)-abs(N-1))/2` (pilote un `correctChoiceIndex` de QCM).
-- **Virgule décimale en dur** dans une formule (`0,1\times`) : laissée telle quelle à côté des
-  décimaux calculés ; écrire `{{eval:1/10;d}}`.
+- **Virgule décimale en dur** dans une formule (`0,1\times`) : la virgule nue est une ponctuation
+  (espace après, à l'écran comme dans le PDF : « 0, 1 × 0,3 ») et reste une virgule dans un document
+  anglais (« 0, 1 × 0.3 »). Écrire `{{eval:1/10;d}}` (virgule ou point selon la langue) ; `0{,}1`
+  s'affiche bien en français mais reste une virgule en anglais (décision du 2026-09-25).
 - **Variable calculée** utilisée sans `{{eval:…}}` : substituée telle quelle, sans parenthèses
   (`T/g` → « 11\*11-3/2 ») ; toujours passer par `{{eval:…}}`.
-- **`{{eval:sqrt(21/25)}}`** se rend `\dfrac{1}{5}\sqrt{21}` ; écrire `\dfrac{\sqrt{N}}{B}` à la main.
 - **Indice `i`** : `x_i`, `p_i` sont rendus `x_\imaginaryI` (le `i` devient l'unité imaginaire) ;
   écrire `x_k`, `p_k`.
 - **Trou dans une cellule de tableau** : affiché mais NON saisissable (le tableau est un bloc
   statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
-  forme dans l'énoncé ; une valeur arrondie demande `precision`.
-- **`\lVert … \rVert`** et **`\perp`** sortent en texte brut dans le PDF : écrire `\|\vec u\|` et
-  « sont orthogonaux » (relevé sur le produit scalaire, 2026-10-02).
+  forme dans l'énoncé ; une valeur arrondie demande `precision`. Une réponse avec trop de
+  décimales (`1,136` pour `1,14`) est « incorrect », AVEC le message « Arrondis au centième. » sous
+  la case (la spec ne montre que le statut).
 - **`pi` dans une condition** n'est pas π (`cos(pi/6) >= 0.1` vaut faux, sans erreur) : passer
   par une variable.
 - **Variables calculées AVANT les conditions** : une division par zéro ou un `arccos` hors de
   [−1 ; 1] fait échouer le tirage au lieu de le relancer ; exclure à la source (`-5..5!0`).
 - **Variable de plusieurs lettres** contenant du LaTeX : casse `round()` ; nom d'une lettre.
-- **`{{eval:-sqrt(2)/2}}`** se rend `-\dfrac{1}{2}\sqrt{2}` et la bonne réponse devient « mauvaise
-  forme » : écrire `\frac{ {{P}}\sqrt{m} }{2}` à la main.
 - **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
 - **Bloc ```figure** : pas d'axes ni de grille ; le nom d'un point est toujours en haut à droite
   (aucun argument du DSL ne règle `labelOffset`) → `masque(A)` puis `texte(x, y, "A")` ; pointillés

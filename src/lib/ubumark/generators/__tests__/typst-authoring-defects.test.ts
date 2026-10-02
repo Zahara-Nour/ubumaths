@@ -97,3 +97,32 @@ describe('10. lettre grecque suivie d’une parenthèse (point Ω(1 ; 2))', () =
 		expect(convertLatexToTypstMath('2\\pi')).toBe('2pi');
 	});
 });
+
+// Relevé en rédigeant les modèles de produit scalaire (2026-10-02) : sortaient en texte
+// brut dans le PDF (« lVert », « perp »). Les symboles sont écrits en Unicode : un nom
+// Typst (`perp`, `parallel`) collé à la commande suivante (`\perp\vec v`) formait un mot
+// inconnu, « perparrow ».
+describe('11. commandes de géométrie de 1re', () => {
+	it('\\lVert … \\rVert : norme, comme \\| … \\|', () => {
+		expect(convertLatexToTypstMath('\\lVert\\vec{v}\\rVert')).toBe('||arrow(v)||');
+		expect(convertLatexToTypstMath('\\left\\lVert \\vec{v} \\right\\rVert')).toBe(
+			'lr(|| arrow(v) ||)'
+		);
+		// Forme existante inchangée
+		expect(convertLatexToTypstMath('\\|\\vec u\\|')).toBe('||arrow(u)||');
+	});
+
+	it('\\lvert … \\rvert : valeur absolue', () => {
+		expect(convertLatexToTypstMath('\\lvert x\\rvert')).toBe('|x|');
+		expect(convertLatexToTypstMath('\\left\\lvert x \\right\\rvert')).toBe('lr(|x |)');
+	});
+
+	it.each([
+		['\\vec u\\perp\\vec v', 'arrow(u) ⟂ arrow(v)'],
+		['(AB)\\parallel(CD)', '(A B) ∥ (C D)'],
+		['\\angle ABC', '∠ A B C'],
+		['\\triangle ABC', '△ A B C']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+});
