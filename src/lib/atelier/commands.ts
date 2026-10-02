@@ -107,6 +107,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	[
+		'filter',
+		{
+			french: 'filtrer',
+			description: 'Compter (ou garder) les individus qui vérifient un critère : et, ou, non',
+			example: '.filtrer L = fille et M = oui',
+			exampleSetup: { L: 'fille ; garçon ; fille', M: 'oui ; oui ; non' }
+		}
+	],
+	[
 		'frequency',
 		{
 			french: 'fréquence',
@@ -286,7 +295,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'simulate',
 	'frequency',
 	'samples',
-	'cross'
+	'cross',
+	'filter'
 ]);
 
 /**
