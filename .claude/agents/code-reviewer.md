@@ -40,7 +40,7 @@ When suggesting cleanups, never recommend `rm`/`mv` on untracked files. If you s
 - `npx tsc --noEmit <file>` (false positives on `$lib`)
 - `pnpm test:triggers` (memory `feedback_no-trigger-tests` — Docker-based, doesn't work locally)
 
-**Allowed for verification:** `pnpm check:incremental` (incremental, ~30s), `npx eslint <changed files>`, `mcp__svelte__svelte-autofixer` per `.svelte` file. These run ONCE at the end of the plan — not per phase, not per file.
+**Allowed for verification:** `pnpm check:incremental` (incremental, ~30s), `npx eslint <changed files>`, `pnpm svelte:autofix <file>` (or `mcp__svelte__svelte-autofixer` if the MCP server is configured) per `.svelte` file. These run ONCE at the end of the plan — not per phase, not per file.
 
 **Baseline `pnpm check:incremental`** ≈ 9 ERRORS / 46 WARNINGS — stable, pre-existing. Do NOT comment or analyze them; verify only that your edits don't increase the count (memory `project_preexisting-svelte-check-errors`).
 

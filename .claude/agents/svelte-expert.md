@@ -32,6 +32,8 @@ After modifying or creating any `.svelte` file you MUST call the MCP tool:
 mcp__svelte__svelte-autofixer(code: <file content>, desired_svelte_version: 5, filename: "Component.svelte")
 ```
 
+(or, without the Svelte MCP server — not configured in `.mcp.json` — run `pnpm svelte:autofix <path/to/Component.svelte>`: same tool, same output)
+
 This is CLAUDE.md règle #5 — it auto-detects and corrects Svelte 5 issues (runes, syntax, deprecated patterns). Re-run after applying corrections to confirm zero issues remain. Never skip this step.
 
 For documentation lookups, use `mcp__svelte__get-documentation` and `mcp__svelte__list-sections` rather than inferring from memory.
