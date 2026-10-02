@@ -40,7 +40,7 @@ function sceneOf(source: string, locale: 'fr' | 'en' = 'fr') {
 }
 
 function countsOf(source: string): number[] {
-	return sceneOf(source).rows.map((row) => Number(row.count));
+	return sceneOf(source).rows.map((row) => Number(row.count.replace(/\s/g, '')));
 }
 
 /** Les effectifs que rend le module statistique pour cette graine */
@@ -53,6 +53,12 @@ function expectedCounts(probabilities: string[], values: string[], n: number, se
 	);
 	if (!outcome.ok) throw new Error(outcome.message);
 	return [...outcome.value.counts];
+}
+
+/** Cases de données du `#table(` Typst, dans l'ordre (en-têtes exclus) */
+function typstCells(typst: string): string[] {
+	const table = typst.slice(typst.indexOf('#table('));
+	return [...table.matchAll(/^ {2}\[#"((?:[^"\\]|\\.)*)"\]/gm)].map((m) => m[1]);
 }
 
 // =============================================================================
@@ -123,6 +129,39 @@ describe('simulation — scène', () => {
 		expect(scene.rows[0].value).toBe('−2');
 	});
 
+	it('arrondi au millième juste sur un demi : 3 sur 80 = 0,0375 → 0,038', () => {
+		// Graine choisie pour que la valeur 1 sorte 3 fois sur 80
+		const seed = Array.from({ length: 2000 }, (_, i) => i).find(
+			(g) => countsOf(`X = 1 ; 2\nP = 1/20 ; 19/20\ntirages: 80\ngraine: ${g}`)[0] === 3
+		);
+		expect(seed, 'aucune graine ne donne 3 sur 80').toBeDefined();
+		const scene = sceneOf(`X = 1 ; 2\nP = 1/20 ; 19/20\ntirages: 80\ngraine: ${seed}`);
+
+		expect(scene.rows[0].count).toBe('3');
+		expect(scene.rows[0].frequency).toBe('0,038');
+		expect(scene.rows[1].frequency).toBe('0,963');
+	});
+
+	it('une probabilité nulle ne sort jamais ; valeurs décimales selon la langue', () => {
+		const source = 'X = 0,5 ; 1 ; 2\nP = 0 ; 1/2 ; 1/2\ntirages: 1000';
+
+		expect(countsOf(source)[0]).toBe(0);
+		expect(sceneOf(source).rows[0].value).toBe('0,5');
+		expect(sceneOf(source, 'en').rows[0].value).toBe('0.5');
+		expect(sceneOf(source, 'en').rows[0].frequency).toBe('0.000');
+	});
+
+	it('10 000 tirages : groupés dans la légende et les effectifs, et ils font 10 000', () => {
+		const scene = sceneOf(`${GAME}\ntirages: 10 000`);
+
+		expect(scene.caption).toBe('Simulation de 10\u00a0000 tirages (graine 1)');
+		expect(countsOf(`${GAME}\ntirages: 10 000`).reduce((a, b) => a + b, 0)).toBe(10000);
+		expect(scene.rows.some((row) => /^\d\u00a0\d{3}$/.test(row.count))).toBe(true);
+		expect(sceneOf(`${GAME}\ntirages: 10 000`, 'en').caption).toBe(
+			'Simulation of 10,000 draws (seed 1)'
+		);
+	});
+
 	it('légende : nombre de tirages et graine, selon la langue', () => {
 		expect(sceneOf(`${DIE}\ntirages: 600\ngraine: 42`).caption).toBe(
 			'Simulation de 600 tirages (graine 42)'
@@ -149,15 +188,24 @@ describe('simulation — Typst : les mêmes nombres qu’à l’écran', () => {
 		const typst = generateStatChartTypst(parseStatChartContent('simulation', source));
 		const scene = sceneOf(source);
 
-		expect(typst).toContain('#table(');
 		expect(typst).toContain('Simulation de 600 tirages (graine 42)');
-		for (const row of scene.rows) {
-			expect(typst).toContain(`[#"${row.value}"]`);
-			expect(typst).toContain(`[#"${row.count}"]`);
-			expect(typst).toContain(`[#"${row.frequency}"]`);
-			expect(typst).toContain(`[#"${row.probability}"]`);
-		}
+		expect(typstCells(typst)).toEqual(
+			scene.rows.flatMap((r) => [r.value, r.count, r.frequency, r.probability])
+		);
 		expect(typst).not.toContain('Figure indisponible');
+	});
+
+	it('document anglais : point décimal et en-têtes anglais', () => {
+		const source = `${GAME}\ntirages: 600\ngraine: 42`;
+		const typst = generateStatChartTypst(parseStatChartContent('simulation', source), {
+			language: 'en'
+		});
+
+		expect(typst).toContain('Simulation of 600 draws (seed 42)');
+		expect(typst).toContain('Observed frequency');
+		expect(typstCells(typst)).toEqual(
+			sceneOf(source, 'en').rows.flatMap((r) => [r.value, r.count, r.frequency, r.probability])
+		);
 	});
 
 	it('bloc en erreur : le cadre neutre', () => {
@@ -218,6 +266,13 @@ describe('simulation — erreurs situées', () => {
 	it('les options des simulations ne s’appliquent pas aux autres blocs', () => {
 		expect(parseStatChartContent('loi', `${DIE}\ntirages: 10`).errors[0].message).toMatch(
 			/ne s'applique pas aux lois/
+		);
+		// Une coquille ne propose que les options de CE bloc
+		const law = parseStatChartContent('loi', `${DIE}\nindicateur: espérance`).errors[0].message;
+		expect(law).toContain('indicateurs');
+		expect(law).not.toContain('tirages');
+		expect(errorOf(`${DIE}\ntirage: beaucoup`)).toBe(
+			'Ligne 3 : option « tirage » inconnue (options : titre, mode, tirages, graine)'
 		);
 	});
 });

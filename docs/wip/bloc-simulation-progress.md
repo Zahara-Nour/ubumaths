@@ -7,4 +7,5 @@ Spec validée par David le 2026-10-02 (cf. `outils-statistiques-v2-progress.md`)
 - [x] Scène `SimulationScene` (effectifs par `simulateCounts` + graine), Typst, rendu écran (tableau accessible)
 - [x] Tests : `simulation-block.test.ts` (serveur), `StatChart.svelte.test.ts` (navigateur)
 - [x] Fiche compilée avec `compile-prod.mjs` (FR + EN) : mêmes nombres qu'à l'écran
-- [ ] check:incremental, lint, revue, PR
+- [x] check:incremental (0 erreur), lint:fast, revue (arrondi au demi-millième corrigé, message d’option propre au bloc, tests Typst ordonnés + anglais)
+- [ ] PR, CI, merge

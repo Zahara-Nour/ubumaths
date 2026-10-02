@@ -1109,10 +1109,13 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): Simul
 	const text = SIMULATION_TEXT[locale];
 	const n = simulation.draws;
 	const caption = text.caption(groupedCount(n, locale), n > 1, simulation.seed);
-	// Toujours trois décimales : une colonne de fréquences se lit alignée
+	// Toujours trois décimales : une colonne de fréquences se lit alignée.
+	// Arrondi en millièmes ENTIERS : `toFixed` sur 3/80 = 0,0375 rendait 0,037
+	// (le flottant est un peu sous le demi), revue de la PR
 	const frequency = (count: number) => {
-		const fixed = (count / n).toFixed(3);
-		return locale === 'en' ? fixed : fixed.replace('.', ',');
+		const thousandths = Math.round((count * 1000) / n);
+		const fraction = String(thousandths % 1000).padStart(3, '0');
+		return `${Math.floor(thousandths / 1000)}${locale === 'en' ? '.' : ','}${fraction}`;
 	};
 	return {
 		kind: 'simulation',

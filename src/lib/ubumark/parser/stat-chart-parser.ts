@@ -196,6 +196,12 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	graine: ['simulation']
 };
 
+/** Options dont l'auteur écrit l'accent */
+const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
+	etiquettes: 'étiquettes',
+	legende: 'légende'
+};
+
 const KIND_NAME: Record<StatChartKind, string> = {
 	barres: 'diagrammes en barres',
 	circulaire: 'diagrammes circulaires',
@@ -909,9 +915,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					throw new LineError(`écrire « ${kv[1]} = ${kv[2].trim()} » (catégorie = effectif)`);
 				}
 				if (kv) {
-					throw new LineError(
-						`option « ${kv[1]} » inconnue (options : titre, axes, description, taille, valeurs, couleur, étiquettes, légende, sens, lecture, indicateurs, lignes, colonnes, totaux, afficher, masquer, coin, mode, tirages, graine)`
-					);
+					// Seules les options de CE bloc : une coquille dans ```loi ne
+					// propose plus `tirages`, refusé ensuite (revue de la PR simulation)
+					const choices = OPTION_KEYS.filter((k) => OPTION_KINDS[k]?.includes(kind) ?? true)
+						.map((k) => OPTION_SPELLING[k] ?? k)
+						.join(', ');
+					throw new LineError(`option « ${kv[1]} » inconnue (options : ${choices})`);
 				}
 				throw new LineError('écrire « catégorie = effectif » ou « option: valeur »');
 			}
