@@ -48,7 +48,8 @@ function generate(t: QuestionTemplate, seed = 1): QuestionInstance {
 
 /** `$$<<expr:expression>>a + 1$$`, une case (convention expression) */
 const expressionInstance = generate(REAL_TEMPLATES.singleBlank, 3);
-const exprLhs = expressionInstance.expressions![0].latex;
+const exprLhs =
+	expressionInstance.expressions![0].displayLatex ?? expressionInstance.expressions![0].latex;
 const exprSolution = expressionInstance.blanks![0].expectedAnswer;
 
 /** `$3 + 5 = ?$` */
@@ -466,5 +467,155 @@ describe('fillMarkdown', () => {
 		expect(fillMarkdown('$\\placeholder[0]{}$ et {{blank:1}}', [], (f) => f.value)).toBe(
 			'$\\text{……}$ et ……'
 		);
+	});
+});
+
+describe('Revue PR #643 — sécurité : la réponse de l’élève est neutralisée DANS la structure', () => {
+	it('formule : `\\href`, `\\htmlClass`, `$` retirés de la comparaison R1', () => {
+		const hostile = '\\href{javascript:alert(1)}{9}\\htmlClass{x}{1}$ [a](b) $';
+		const r = buildExpectedResult(equalsInstance, answer([hostile]));
+		const value = line(r, 'comparison').answer.value ?? '';
+		expect(value).not.toMatch(/\\(?:href|htmlClass)(?![a-zA-Z])/);
+		expect(value).not.toContain('$');
+	});
+
+	it('texte : aucun lien ni formule fabricable dans « Ta réponse »', () => {
+		const inst = generate(
+			template("Un triangle à trois côtés égaux s'appelle un [_].", [
+				{ expectedAnswer: 'équilatéral' }
+			])
+		);
+		const r = buildExpectedResult(inst, answer(['[clic](https://evil.example) $x$']));
+		const value = line(r, 'your-answer').fills[0].value ?? '';
+		expect(value).not.toMatch(/[[\]()$]/);
+	});
+
+	it('case graphique : réponse en texte neutralisée aussi', () => {
+		const inst = {
+			...equalsInstance,
+			statement: 'Place le point.' as ResolvedMarkdown,
+			blanks: [{ expectedAnswer: '2.5', type: 'graphical' } as InstanceBlank]
+		};
+		const r = buildExpectedResult(inst, answer(['\\href{javascript:x}{3}']));
+		expect(line(r, 'expected-only').studentAnswer).not.toContain('\\href');
+	});
+});
+
+describe('Revue PR #643 — R1 seulement sans autre relation', () => {
+	const r1 = (statement: string, expected = '3') =>
+		kinds(
+			buildExpectedResult(
+				generate(template(statement, [{ expectedAnswer: expected }])),
+				answer(['999'])
+			)
+		);
+
+	it.each([
+		['$2x+1=7 \\Longleftrightarrow x=?$'],
+		['$a \\implies b=?$'],
+		['$x \\in A=?$'],
+		['$x \\equiv y=?$'],
+		['$a \\mapsto b=?$'],
+		['$x \\leqslant y=?$'],
+		['$a \\longrightarrow b=?$'],
+		['$a \\sim b=?$'],
+		['$?=3$'],
+		['$\\pi \\approx ?$'],
+		['$x = 2+3 = ?$']
+	])('%s → R3', (statement) => {
+		expect(r1(statement)).toEqual(['filled-statement', 'your-answer']);
+	});
+
+	it('`$x = ?$ cm` : unité hors formule → R3 (l’unité n’est pas perdue)', () => {
+		expect(r1('La longueur vaut $x = ?$ cm.')).toEqual(['filled-statement', 'your-answer']);
+	});
+
+	it('`$x = ?$.` (ponctuation seule après) : R1', () => {
+		expect(r1('Calcule $x = ?$.')[0]).toBe('comparison');
+	});
+
+	it('`$f(x)=?$`, `\\left(…\\right)` : R1', () => {
+		expect(r1('$f(x)=?$')[0]).toBe('comparison');
+		expect(r1('$\\left(2+1\\right)\\times 3=?$')[0]).toBe('comparison');
+	});
+});
+
+describe('Revue PR #643 — mineurs', () => {
+	it('case vide dans « Ta réponse » : valeur `null` (absence explicite)', () => {
+		const inst = generate(
+			template('Le nombre $?$ est [_].', [{ expectedAnswer: '4' }, { expectedAnswer: 'pair' }])
+		);
+		const r = buildExpectedResult(inst, answer(['4', '']));
+		expect(line(r, 'your-answer').fills[1]).toEqual({
+			index: 1,
+			context: 'text',
+			value: null,
+			status: 'empty'
+		});
+	});
+
+	it('« x = » recopié : la réponse affichée est `5`, pas `x=5`', () => {
+		const inst = generate(template('$x=?$', [{ expectedAnswer: '5' }]));
+		const r = buildExpectedResult(inst, answer(['x=5']));
+		expect(line(r, 'comparison').answer.value).toBe('5');
+	});
+
+	it('fillMarkdown en une passe : une valeur `{{blank:1}}` n’est pas remplacée à nouveau', () => {
+		const out = fillMarkdown(
+			'$\\placeholder[0]{}$ {{blank:1}}',
+			[
+				{ index: 0, context: 'math', value: '{{blank:1}}', status: 'incorrect' },
+				{ index: 1, context: 'text', value: 'mot', status: 'correct' }
+			],
+			(f) => `<${f.value}>`
+		);
+		expect(out).toBe('$<{{blank:1}}>$ <mot>');
+	});
+
+	it('membre gauche R1 = `displayLatex` de l’expression (tel qu’affiché)', () => {
+		const inst: QuestionInstance = {
+			...expressionInstance,
+			statement: '$$<<expr:expression>>1000 + 1$$' as ResolvedMarkdown,
+			expressions: [
+				{
+					name: 'expression',
+					latex: '1000 + 1',
+					displayLatex: '1{}000 + 1',
+					answerFormat: '\\placeholder[0]{}'
+				}
+			],
+			blanks: [{ expectedAnswer: '1001', type: 'math', expressionName: 'expression' }]
+		};
+		const r = buildExpectedResult(inst, answer(['9']));
+		expect(line(r, 'comparison').lhs).toBe('1{}000 + 1');
+		const r9 = buildExpectedResult(inst);
+		expect(line(r9, 'filled-statement').markdown).toBe('$$1{}000 + 1 = \\placeholder[0]{}$$');
+	});
+
+	it('QCM à règles : l’issue des choix suit les règles (statut et choix cohérents)', () => {
+		const inst = {
+			templateId: 'qcm-regles',
+			statement: 'Choisis un nombre pair' as ResolvedMarkdown,
+			grades: ['6'],
+			theme: 'x',
+			domain: 'y',
+			level: 1,
+			generatedAt: '',
+			// Les données des choix disent l'inverse des règles : les règles décident
+			choices: [
+				{ content: '3' as ResolvedMarkdown, isCorrect: true },
+				{ content: '4' as ResolvedMarkdown, isCorrect: false }
+			],
+			correctChoiceIndex: '0',
+			validationRules: [{ type: 'custom', expression: 'answer == 1' }]
+		} as QuestionInstance;
+		const r = buildExpectedResult(inst, { choiceIndexes: [1] });
+		expect(r.status).toBe('correct');
+		const choices = line(r, 'choices').choices;
+		expect(choices.find((c) => c.originalIndex === 1)).toMatchObject({
+			checked: true,
+			isCorrect: true,
+			status: 'correct'
+		});
 	});
 });

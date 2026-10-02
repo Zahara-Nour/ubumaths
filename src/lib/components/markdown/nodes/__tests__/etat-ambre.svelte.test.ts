@@ -121,3 +121,50 @@ describe('MathPrompt — ambre', () => {
 		expect(field.classList.contains('math-prompt-unoptimal')).toBe(false);
 	});
 });
+
+describe('Revue PR #643 — l’état n’est pas porté par la seule couleur', () => {
+	/** Texte lu par un lecteur d'écran via aria-describedby */
+	function description(el: Element): string {
+		const ids = (el.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+		return ids.map((id) => document.getElementById(id)?.textContent?.trim() ?? '').join(' ');
+	}
+
+	it.each([
+		[true, true, 'forme à améliorer'],
+		[true, false, 'juste'],
+		[false, false, 'fausse']
+	])('BlankInput isCorrect=%s unoptimal=%s → « %s »', async (isCorrect, unoptimal, text) => {
+		const screen = await render(BlankInput, {
+			target: mainElement(),
+			props: { index: 0, value: '8', isCorrect, unoptimal }
+		});
+		const input = screen.container.querySelector('input')!;
+		expect(description(input)).toContain(text);
+	});
+
+	it('BlankInput non corrigé : aucune description', async () => {
+		const screen = await render(BlankInput, {
+			target: mainElement(),
+			props: { index: 0, value: '' }
+		});
+		expect(description(screen.container.querySelector('input')!)).toBe('');
+	});
+
+	it('MathPrompt : chaque case corrigée a son libellé (dont « forme à améliorer »)', async () => {
+		const screen = await render(MathPrompt, {
+			target: mainElement(),
+			props: {
+				expression: '\\placeholder[0]{}\\times10^{\\placeholder[1]{}}',
+				syntax: 'latex',
+				inputs: [
+					{ index: 0, value: '', type: 'math', isCorrect: false },
+					{ index: 1, value: '', type: 'math', isCorrect: true, unoptimal: true }
+				]
+			}
+		});
+		const field = screen.container.querySelector('math-field')!;
+		const text = description(field);
+		expect(text).toContain('Case 1 : fausse');
+		expect(text).toContain('Case 2 : forme à améliorer');
+	});
+});

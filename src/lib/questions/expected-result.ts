@@ -19,6 +19,7 @@
 
 import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
 import { rulesDecide } from './rules-suffice';
+import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import {
 	validateAnswerDetailed,
 	type DetailedVerdict,
@@ -40,8 +41,12 @@ export interface ExpectedFill {
 	index: number;
 	/** `math` : LaTeX, dans une formule ; `text` : texte, dans une phrase */
 	context: 'math' | 'text';
-	/** LaTeX (math, tel que saisi pour une réponse d'élève) ou texte brut */
-	value: string;
+	/**
+	 * LaTeX (math) ou texte. Réponse d'élève : telle que saisie, mais NEUTRALISÉE
+	 * (`student-answer-safety`) — elle peut être lue par un autre utilisateur.
+	 * `null` : case laissée vide (statut `empty`).
+	 */
+	value: string | null;
 	status: ExpectedStatus;
 }
 
@@ -96,11 +101,25 @@ const MATH_ZONE = /\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
 const EXPR_MARKER = /^\s*<<expr:([A-Za-z0-9_]+)>>/;
 const PLACEHOLDER = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
 const TEXT_BLANK = /\{\{blank:(\d+)\}\}/g;
+/** Les deux marqueurs de case en une passe (une valeur insérée n'est jamais relue) */
+const ANY_BLANK = new RegExp(`${PLACEHOLDER.source}|${TEXT_BLANK.source}`, 'g');
 /** Formule « membre gauche = case » (R1) */
 const LHS_EQUALS_BLANK = /^([\s\S]*?)\s*=\s*\\placeholder\[(\d+)\]\{[^}]*\}\s*$/;
-/** Relation (autre que `=`) dans le membre gauche : ce n'est plus R1 */
-const OTHER_RELATION =
-	/[<>]|\\(?:leq?|geq?|neq?|lt|gt|approx|leqslant|geqslant|in|subset|iff|Leftrightarrow|Rightarrow)(?![a-zA-Z])/;
+/**
+ * Relation dans le membre gauche (dont un second `=`) : ce n'est plus R1. Règle
+ * large : toute flèche (`…arrow`, `…Arrow`), toute commande d'inégalité ou
+ * d'appartenance, et les symboles Unicode de relation.
+ */
+const ANY_RELATION = new RegExp(
+	[
+		String.raw`[<>=≠≤≥≈≡∼≃∈∉⊂⊃⊆⊇→←↔⇒⇐⇔⟹⟸⟺↦]`,
+		String.raw`\\[a-zA-Z]*(?:arrow|Arrow)[a-zA-Z]*(?![a-zA-Z])`,
+		// Liste fermée (pas de `le…` ouvert : `\left` n'est pas une relation)
+		String.raw`\\(?:le|leq|leqq|leqslant|lneq|lneqq|lesssim|nle|nleq|nleqq|nleqslant|ge|geq|geqq|geqslant|gneq|gneqq|gtrsim|nge|ngeq|ngeqq|ngeqslant|lt|gt|ll|gg|lll|ggg|ne|neq|eqsim|approx|approxeq|equiv|sim|simeq|nsim|cong|ncong|propto|asymp|doteq|implies|impliedby|iff|to|gets|mapsto|longmapsto|in|notin|ni|owns|subset|subseteq|subsetneq|nsubseteq|supset|supseteq|supsetneq|nsupseteq|sqsubset|sqsubseteq|sqsupset|sqsupseteq|prec|preceq|succ|succeq|parallel|nparallel|perp|models|vdash|dashv|lessgtr|gtrless|nless|ngtr)(?![a-zA-Z])`
+	].join('|')
+);
+/** Ce qui peut suivre la formule R1 sur sa ligne : ponctuation seule (sinon une unité se perdrait) */
+const TRAILING_PUNCTUATION = /^[\s.,;:!?…»)]*$/;
 
 // Functions
 /** Statut de validation → statut d'affichage */
@@ -125,15 +144,14 @@ export function fillMarkdown(
 	decorate: (fill: ExpectedFill) => string
 ): string {
 	const byIndex = new Map(fills.map((f) => [f.index, f]));
-	return markdown
-		.replace(PLACEHOLDER, (_m, i: string) => {
-			const fill = byIndex.get(Number(i));
-			return fill ? decorate(fill) : `\\text{${BLANK_TEXT}}`;
-		})
-		.replace(TEXT_BLANK, (_m, i: string) => {
-			const fill = byIndex.get(Number(i));
-			return fill ? decorate(fill) : BLANK_TEXT;
-		});
+	return markdown.replace(
+		ANY_BLANK,
+		(_m, mathIndex: string | undefined, textIndex: string | undefined) => {
+			const fill = byIndex.get(Number(mathIndex ?? textIndex));
+			if (fill) return decorate(fill);
+			return mathIndex !== undefined ? `\\text{${BLANK_TEXT}}` : BLANK_TEXT;
+		}
+	);
 }
 
 /**
@@ -148,8 +166,10 @@ function prepareStatement(statement: string, instance: QuestionInstance): string
 		const marker = raw.match(EXPR_MARKER);
 		let content = marker ? raw.slice(marker[0].length) : raw;
 		if (marker && !new RegExp(PLACEHOLDER.source).test(content)) {
-			const format = expressions.find((e) => e.name === marker[1])?.answerFormat;
-			if (format) content = `${content.trim()} = ${format}`;
+			const expression = expressions.find((e) => e.name === marker[1]);
+			// Écriture affichée (espaces de milliers…), comme l'écran de la question
+			if (expression?.displayLatex) content = expression.displayLatex;
+			if (expression?.answerFormat) content = `${content.trim()} = ${expression.answerFormat}`;
 		}
 		return block !== undefined ? `$$${content}$$` : `$${content}$`;
 	});
@@ -169,16 +189,20 @@ function markedIndexes(markdown: string): Set<number> {
 function wholeRightHandSide(markdown: string, instance: QuestionInstance): string | null {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length !== 1 || blanks[0].type !== 'math') return null;
-	const zones = [...markdown.matchAll(MATH_ZONE)]
-		.map((m) => m[1] ?? m[2])
-		.filter((zone) => new RegExp(PLACEHOLDER.source).test(zone));
+	const zones = [...markdown.matchAll(MATH_ZONE)].filter((m) =>
+		new RegExp(PLACEHOLDER.source).test(m[1] ?? m[2])
+	);
 	if (zones.length !== 1) return null;
-	const match = zones[0].match(LHS_EQUALS_BLANK);
+	const [zone] = zones;
+	const match = (zone[1] ?? zone[2]).match(LHS_EQUALS_BLANK);
 	if (!match || match[2] !== '0') return null;
 	const lhs = match[1].trim();
-	if (lhs === '' || new RegExp(PLACEHOLDER.source).test(lhs) || OTHER_RELATION.test(lhs)) {
+	if (lhs === '' || new RegExp(PLACEHOLDER.source).test(lhs) || ANY_RELATION.test(lhs)) {
 		return null;
 	}
+	// Texte après la formule sur sa ligne (`$x = ?$ cm`) : la ligne R1 le perdrait
+	const after = markdown.slice((zone.index ?? 0) + zone[0].length).split('\n')[0];
+	if (!TRAILING_PUNCTUATION.test(after)) return null;
 	return lhs;
 }
 
@@ -188,8 +212,8 @@ interface BlankView {
 	graphical: boolean;
 	expected: string;
 	rulesDecide: boolean;
-	/** Réponse de l'élève : LaTeX tel que saisi (R6), sinon la valeur */
-	student: string;
+	/** Réponse de l'élève, neutralisée (R6 + sécurité) ; `null` si la case est vide */
+	student: string | null;
 	status: ValidationStatus | null;
 	remarks: string[];
 }
@@ -202,9 +226,18 @@ function blankViews(
 	return (instance.blanks ?? []).flatMap((blank, index) => {
 		if (!blank) return [];
 		const context = blank.type === 'text' ? 'text' : 'math';
-		const value = answer?.values?.[index] ?? blank.prefilled ?? '';
-		const student = context === 'math' ? answer?.latex?.[index] || value : value;
 		const detail = verdict?.blanks[index];
+		const value = answer?.values?.[index] ?? blank.prefilled ?? '';
+		// Réponse retenue par le validateur (sans « x = » recopié), sinon telle que saisie
+		const typed = detail?.answer ?? (context === 'math' ? answer?.latex?.[index] || value : value);
+		// Neutralisée : la réponse peut être lue par le professeur (autre utilisateur).
+		// Case graphique : réponse montrée en texte (R8)
+		const student =
+			typed.trim() === ''
+				? null
+				: context === 'math' && blank.type !== 'graphical'
+					? neutralizeStudentLatex(typed)
+					: escapeStudentText(typed);
 		return [
 			{
 				index,
@@ -229,7 +262,7 @@ function solutionFill(view: BlankView, status: ExpectedStatus): ExpectedFill {
 	return {
 		index: view.index,
 		context: view.context,
-		value: own ? view.student : view.expected,
+		value: own ? (view.student ?? view.expected) : view.expected,
 		status
 	};
 }
@@ -259,7 +292,7 @@ function comparisonLines(lhs: string, view: BlankView): ExpectedLine[] {
 	const solution: ExpectedLine = {
 		kind: 'solution',
 		lhs,
-		latex: solutionFill(view, 'solution').value,
+		latex: solutionFill(view, 'solution').value ?? view.expected,
 		possible: isOnlyPossible(view)
 	};
 	if (status === 'empty') return [solution, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
@@ -304,7 +337,7 @@ function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
 		context: view.context,
 		value: view.expected,
 		...(withAnswer && {
-			studentAnswer: view.student,
+			studentAnswer: view.student ?? '',
 			studentStatus: toExpectedStatus(view.status ?? 'empty')
 		})
 	};
@@ -328,7 +361,9 @@ function choiceLines(
 				if (!choice) return [];
 				const detail = verdict?.choices?.find((c) => c.originalIndex === originalIndex);
 				const checked = detail?.checked ?? false;
-				let status: ExpectedStatus = choice.isCorrect ? 'solution' : 'neutral';
+				// QCM à règles : ce sont elles qui disent quels choix sont bons
+				const isCorrect = detail?.isCorrect ?? choice.isCorrect;
+				let status: ExpectedStatus = isCorrect ? 'solution' : 'neutral';
 				if (detail && !nothingChecked) {
 					if (detail.outcome === 'checked-correct') status = 'correct';
 					else if (detail.outcome === 'checked-wrong') status = 'incorrect';
@@ -340,7 +375,7 @@ function choiceLines(
 						originalIndex,
 						content: String(choice.content),
 						checked,
-						isCorrect: choice.isCorrect,
+						isCorrect,
 						status
 					}
 				];

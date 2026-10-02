@@ -1599,16 +1599,28 @@ function detailBlanks(
 	rawUserAnswers: string[],
 	instance: QuestionInstance,
 	rawUserAnswersLatex?: string[]
-): { result: ValidationResult; statuses: ValidationStatus[]; remarks: string[][] } {
+): {
+	result: ValidationResult;
+	statuses: ValidationStatus[];
+	remarks: string[][];
+	/** Réponses retenues (sans « x = » ni « ° » recopiés), LaTeX de préférence */
+	answers: string[];
+} {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length === 0) {
-		return { result: { isCorrect: rawUserAnswers.length === 0 }, statuses: [], remarks: [] };
+		return {
+			result: { isCorrect: rawUserAnswers.length === 0 },
+			statuses: [],
+			remarks: [],
+			answers: []
+		};
 	}
 	if (rawUserAnswers.length !== blanks.length) {
 		return {
 			result: { isCorrect: false, message: 'Nombre de réponses incorrect' },
 			statuses: blanks.map(() => 'incorrect'),
-			remarks: blanks.map(() => [])
+			remarks: blanks.map(() => []),
+			answers: blanks.map((_, i) => rawUserAnswersLatex?.[i] || rawUserAnswers[i] || '')
 		};
 	}
 
@@ -1618,6 +1630,7 @@ function detailBlanks(
 		instance,
 		rawUserAnswersLatex
 	);
+	const answers = userAnswers.map((answer, i) => userAnswersLatex?.[i] || answer);
 
 	if (!instance.options?.orderIndependent) {
 		const results = blanks.map((blank, i) =>
@@ -1626,7 +1639,8 @@ function detailBlanks(
 		return {
 			result: aggregateOrderedBlanks(results),
 			statuses: results.map(singleBlankStatus),
-			remarks: results.map((r) => remarksOf(r.feedback, r.constraintViolations))
+			remarks: results.map((r) => remarksOf(r.feedback, r.constraintViolations)),
+			answers
 		};
 	}
 
@@ -1634,7 +1648,8 @@ function detailBlanks(
 	return {
 		result: validateBlanksOrderIndependent(userAnswers, instance, userAnswersLatex),
 		statuses: perAnswer.map((d) => d.status),
-		remarks: perAnswer.map((d) => d.remarks)
+		remarks: perAnswer.map((d) => d.remarks),
+		answers
 	};
 }
 
@@ -1650,12 +1665,40 @@ function orderIndependentDetails(
 		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
 	);
 	const matching = maximumMatching(accepts, blanks.length);
+	const used = new Set(matching.filter((b) => b !== -1));
+	const freeBlanks = blanks.filter((_, b) => !used.has(b));
 	return userAnswers.map((answer, a) => {
 		if (!answer.trim()) return { status: 'empty', remarks: [] };
-		if (matching[a] === -1) return { status: 'incorrect', remarks: [] };
+		if (matching[a] === -1) {
+			return {
+				status: 'incorrect',
+				remarks: unmatchedRemarks(answer, userAnswersLatex?.[a], freeBlanks, instance)
+			};
+		}
 		const form = matchedAnswerForm(answer, userAnswersLatex?.[a], blanks[matching[a]], instance);
 		return { status: form.status, remarks: remarksOf(undefined, form.violations) };
 	});
+}
+
+/**
+ * Message propre d'une réponse non appariée (`orderIndependent`) : le message
+ * (% oublié, unité, réponse démesurée…) que lui donnent les cases libres, s'il
+ * est le seul. Messages différents selon la case : aucun, la case visée n'étant
+ * pas connue.
+ */
+function unmatchedRemarks(
+	answer: string,
+	latex: string | undefined,
+	freeBlanks: readonly InstanceBlank[],
+	instance: QuestionInstance
+): string[] {
+	if (freeBlanks.length === 0) return [];
+	const messages = new Set(
+		freeBlanks.flatMap(
+			(blank) => validateSingleBlank(answer, blank, latex, instance).feedback ?? []
+		)
+	);
+	return messages.size === 1 ? [...messages] : [];
 }
 
 // ============================================================================
@@ -1677,6 +1720,8 @@ export interface BlankVerdict {
 	status: ValidationStatus;
 	/** Remarques propres à CETTE case (forme, unité…), en français */
 	remarks: string[];
+	/** Réponse retenue (LaTeX saisi, sans « x = » ni « ° » recopiés) ; brute, non neutralisée */
+	answer: string;
 }
 
 /** Issue d'un choix de QCM : bon coché, faux coché, bon oublié, faux laissé */
@@ -1716,12 +1761,30 @@ function correctChoices(instance: QuestionInstance): Set<number> {
 	return new Set(list.map(Number).filter((n) => Number.isInteger(n)));
 }
 
+/**
+ * Bons choix d'un QCM à règles (`validationRules`) : ce sont les règles qui
+ * jugent, choix par choix (même évaluation que `validateAnswer` sur un choix).
+ */
+function choicesAcceptedByRules(instance: QuestionInstance, count: number): Set<number> {
+	const accepted = new Set<number>();
+	for (let i = 0; i < count; i++) {
+		if (validateAnswer(i, instance).isCorrect) accepted.add(i);
+	}
+	return accepted;
+}
+
 function detailChoices(instance: QuestionInstance, answer: StudentAnswer): DetailedVerdict {
 	const checked = answer.choiceIndexes ?? [];
-	const result = validateAnswer(instance.multipleAnswers ? checked : (checked[0] ?? []), instance);
-	const good = correctChoices(instance);
+	const result = validateAnswer(
+		instance.multipleAnswers ? checked : (checked[0] ?? []),
+		instance,
+		answer.latex
+	);
+	const byRules = (instance.validationRules?.length ?? 0) > 0;
+	const declared = correctChoices(instance);
+	const count = Math.max(instance.choices?.length ?? 0, ...[...declared].map((i) => i + 1));
+	const good = byRules ? choicesAcceptedByRules(instance, count) : declared;
 	const chosen = new Set(checked);
-	const count = Math.max(instance.choices?.length ?? 0, ...[...good].map((i) => i + 1));
 	const choices = Array.from({ length: count }, (_, i): ChoiceVerdict => {
 		const isCorrect = good.has(i);
 		const isChecked = chosen.has(i);
@@ -1758,17 +1821,27 @@ export function validateAnswerDetailed(
 
 		const blanks = instance.blanks ?? [];
 		const values = answer.values ?? blanks.map((b) => b.prefilled ?? '');
-		const { result, statuses, remarks } = detailBlanks(values, instance, answer.latex);
+		const { result, statuses, remarks, answers } = detailBlanks(values, instance, answer.latex);
 		return {
 			status: statusOfResult(result),
-			blanks: statuses.map((status, index) => ({ index, status, remarks: remarks[index] ?? [] })),
+			blanks: statuses.map((status, index) => ({
+				index,
+				status,
+				remarks: remarks[index] ?? [],
+				answer: answers[index] ?? ''
+			})),
 			...(result.feedback && { feedback: result.feedback })
 		};
 	} catch {
 		const blanks = instance?.blanks ?? [];
 		return {
 			status: 'incorrect',
-			blanks: blanks.map((_, index) => ({ index, status: 'incorrect', remarks: [] }))
+			blanks: blanks.map((_, index) => ({
+				index,
+				status: 'incorrect' as const,
+				remarks: [],
+				answer: answer.latex?.[index] || answer.values?.[index] || ''
+			}))
 		};
 	}
 }

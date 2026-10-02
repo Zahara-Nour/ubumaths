@@ -93,3 +93,20 @@ glossaire `CONTEXT.md` (Résultat attendu, Correction concise / détaillée).
 - **R9 + rulesSuffice** : `possible: true` (la solution montrée n'est qu'un exemple).
 - **QCM rien coché** : statut global = `validateAnswer` (`incorrect`), mais ligne « Tu n'as rien répondu. ».
 - `figer` (`serie-automatismes.ts`) laissé intact : pas factorisé (marqueur `<<expr>>` toujours refusé).
+
+## Revue de la PR #643 — corrigée (2026-10-02, non commitée)
+
+- **Sécurité** : `src/lib/questions/student-answer-safety.ts` — `neutralizeStudentLatex` (retire
+  `\href`, `\url`, `\html*`, `\class`, `\cssId`, `\includegraphics`, `\def`…, `\placeholder`, tout `$`,
+  sauts de ligne ; jusqu'au point fixe) et `escapeStudentText` (caractères de syntaxe → sosies pleine
+  chasse, `==` cassé). Appliqués DANS `buildExpectedResult` (fills, comparaison, `expected-only`).
+- **R1** : membre gauche sans AUCUNE relation (liste fermée de commandes + toute flèche + symboles
+  Unicode + second `=`) ; texte non ponctué après la formule (`$x = ?$ cm`) → R3.
+- **A11y R12** : libellé `sr-only` relié par `aria-describedby` (« réponse juste / juste, forme à
+  améliorer / fausse » ; MathPrompt : « Case N : … »).
+- **Mineurs** : QCM → LaTeX transmis, choix jugés par les `validationRules` s'il y en a ;
+  `orderIndependent` → message propre d'une réponse non appariée (s'il est unique parmi les cases
+  libres) ; `BlankVerdict.answer` = réponse sans « x = » / « ° » recopiés ; `ExpectedFill.value: null`
+  = case vide ; `fillMarkdown` en une passe ; formule « expression » rendue avec `displayLatex`.
+- Doutes : sosies pleine chasse visibles si l'élève tape `(`, `*`… dans une case texte ; une
+  réponse non appariée ne reçoit un message que si les cases libres n’en donnent qu’un seul.

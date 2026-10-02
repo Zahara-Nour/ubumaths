@@ -111,6 +111,24 @@
 				inputs.some((i) => i.index === idx && i.isCorrect === true && i.unoptimal !== true)
 			)
 	);
+	// L'état ne doit pas passer par la seule couleur : un libellé par case corrigée
+	const uid = $props.id();
+	const statesId = `${uid}-etats`;
+	let stateLabels = $derived(
+		promptIndices.flatMap((idx) => {
+			const input = inputs.find((i) => i.index === idx);
+			if (!input || input.isCorrect === null) return [];
+			const label =
+				input.isCorrect === false
+					? 'fausse'
+					: input.unoptimal === true
+						? 'forme à améliorer'
+						: 'juste';
+			return [`Case ${idx + 1} : ${label}`];
+		})
+	);
+	let describedBy = $derived(stateLabels.length > 0 ? statesId : undefined);
+
 	let unoptimalAttr = $derived(
 		unoptimalPrompts.length > 0 ? unoptimalPrompts.join(' ') : undefined
 	);
@@ -197,9 +215,11 @@
 			class="math-prompt-block"
 			class:math-prompt-unoptimal={amberField}
 			data-unoptimal-prompts={unoptimalAttr}
+			aria-describedby={describedBy}
 		>
 			{latex}
 		</math-field>
+		{#if describedBy}<span id={statesId} class="sr-only">{stateLabels.join(' ; ')}</span>{/if}
 	</div>
 {:else}
 	<math-field
@@ -210,9 +230,11 @@
 		class="math-prompt-inline {className}"
 		class:math-prompt-unoptimal={amberField}
 		data-unoptimal-prompts={unoptimalAttr}
+		aria-describedby={describedBy}
 	>
 		{latex}
-	</math-field>
+	</math-field>{#if describedBy}<span id={statesId} class="sr-only">{stateLabels.join(' ; ')}</span
+		>{/if}
 {/if}
 
 <style>

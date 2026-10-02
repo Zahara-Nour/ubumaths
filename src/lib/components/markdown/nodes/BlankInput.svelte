@@ -48,6 +48,17 @@
 		class: className = ''
 	}: Props = $props();
 
+	// Identifiant du libellé d'état (lu par aria-describedby)
+	const uid = $props.id();
+	const stateId = `${uid}-etat`;
+
+	// L'état ne doit pas passer par la seule couleur : libellé pour lecteur d'écran
+	const STATE_LABELS = {
+		correct: 'réponse juste',
+		unoptimal: 'réponse juste, forme à améliorer',
+		incorrect: 'réponse fausse'
+	} as const;
+
 	/**
 	 * Handle input events - update value and notify parent
 	 */
@@ -68,7 +79,7 @@
 	}
 
 	// État d'affichage : la forme non optimale (ambre) n'existe que sur une réponse juste
-	let validationState = $derived(
+	let validationState: 'correct' | 'unoptimal' | 'incorrect' | undefined = $derived(
 		isCorrect === true
 			? unoptimal
 				? 'unoptimal'
@@ -114,7 +125,9 @@
 	class={inputClasses}
 	aria-label="Reponse {index}"
 	aria-invalid={isCorrect === false ? 'true' : undefined}
+	aria-describedby={validationState ? stateId : undefined}
 	data-state={validationState}
 	autocomplete="off"
 	spellcheck="false"
-/>
+/>{#if validationState}<span id={stateId} class="sr-only">{STATE_LABELS[validationState]}</span
+	>{/if}

@@ -12,7 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { validateAnswer, validateAnswerDetailed } from '../answer-validator';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { REAL_TEMPLATES } from '$lib/server/validation/__tests__/fixtures/real-templates';
-import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
+import { CONSTRAINT_FEEDBACK, FORGOTTEN_PERCENT_SIGN } from '$lib/questions/feedback';
 import type { InstanceBlank, QuestionInstance, ValidationStatus } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -80,7 +80,7 @@ describe('validateAnswerDetailed — statut de chaque case', () => {
 	it('forme non optimale : remarque rattachée à SA case, pas à l’autre', () => {
 		// `08` : zéro inutile (contrainte `zeros`, avertissement par défaut)
 		const v = validateAnswerDetailed(two, { values: ['7', '08'], latex: ['7', '08'] });
-		expect(v.blanks[0]).toEqual({ index: 0, status: 'correct', remarks: [] });
+		expect(v.blanks[0]).toEqual({ index: 0, status: 'correct', remarks: [], answer: '7' });
 		expect(v.blanks[1].status).toBe('unoptimal_form');
 		expect(v.blanks[1].remarks).toContain(CONSTRAINT_FEEDBACK.zeros.single);
 		expect(v.status).toBe('unoptimal_form');
@@ -264,5 +264,54 @@ describe('validateAnswerDetailed — non-régression sur des modèles réels', (
 				r.status ?? (r.isCorrect ? 'correct' : 'incorrect')
 			);
 		}
+	});
+});
+
+describe('Revue PR #643', () => {
+	it('orderIndependent : réponse non appariée, son message propre est gardé (% oublié)', () => {
+		const inst = instanceWith([math('20\\%'), math('30\\%')], { orderIndependent: true });
+		const v = validateAnswerDetailed(inst, { values: ['20', '30'], latex: ['20', '30'] });
+		expect(v.blanks.map((b) => b.status)).toEqual(['incorrect', 'incorrect']);
+		expect(v.blanks[0].remarks).toEqual([FORGOTTEN_PERCENT_SIGN]);
+	});
+
+	it('réponse retenue sans « x = » recopié (`answer`)', () => {
+		const inst = instanceWith([math('5')]);
+		const v = validateAnswerDetailed(inst, { values: ['x=5'], latex: ['x=5'] });
+		expect(v.blanks[0]).toMatchObject({ status: 'correct', answer: '5' });
+	});
+
+	it('QCM à règles : issue de chaque choix selon les règles', () => {
+		const inst = instanceWith([], undefined, {
+			blanks: undefined,
+			choices: [
+				{ content: '3' as ResolvedMarkdown, isCorrect: true },
+				{ content: '4' as ResolvedMarkdown, isCorrect: false }
+			],
+			correctChoiceIndex: '0',
+			validationRules: [{ type: 'custom', expression: 'answer == 1' }]
+		});
+		const v = validateAnswerDetailed(inst, { choiceIndexes: [1] });
+		expect(v.status).toBe('correct');
+		expect(v.choices?.map((c) => c.outcome)).toEqual(['unchecked', 'checked-correct']);
+		const w = validateAnswerDetailed(inst, { choiceIndexes: [0] });
+		expect(w.status).toBe('incorrect');
+		expect(w.choices?.map((c) => c.outcome)).toEqual(['checked-wrong', 'missed']);
+	});
+
+	it('QCM : le LaTeX est transmis à validateAnswer (forme exigée)', () => {
+		const inst = instanceWith([], undefined, {
+			blanks: undefined,
+			choices: [
+				{ content: 'a' as ResolvedMarkdown, isCorrect: true },
+				{ content: 'b' as ResolvedMarkdown, isCorrect: false }
+			],
+			correctChoiceIndex: '0',
+			requiredForm: 'fraction'
+		} as Partial<QuestionInstance>);
+		const latex = ['3'];
+		const r = validateAnswer(0, inst, latex);
+		const v = validateAnswerDetailed(inst, { choiceIndexes: [0], latex });
+		expect(v.status).toBe(r.status ?? (r.isCorrect ? 'correct' : 'incorrect'));
 	});
 });
