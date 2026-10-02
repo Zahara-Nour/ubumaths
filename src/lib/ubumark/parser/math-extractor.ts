@@ -190,6 +190,29 @@ export function extractMathOutside(
 	return { text: parts.join('\n'), placeholders };
 }
 
+/** Le texte remplacé tel qu'écrit : les échappements masqués redeviennent `\$`, `\~` */
+function rawOf(match: string): string {
+	return match
+		.replace(new RegExp(ESCAPED_DOLLAR_PLACEHOLDER, 'g'), '\\$')
+		.replace(new RegExp(ESCAPED_TILDE_PLACEHOLDER, 'g'), '\\~');
+}
+
+/**
+ * Rendre au texte ses formules EXACTEMENT écrites (Q62) : le code d'un bloc
+ * dans un item de liste affichait `§M:0§`. Contrairement à
+ * `restoreMathPlaceholders`, rien n'est rogné ni re-délimité.
+ */
+export function restoreRawMath(text: string, placeholders: MathPlaceholder[]): string {
+	const token = new RegExp(`${PLACEHOLDER_PREFIX}(\\d+)${PLACEHOLDER_SUFFIX}`, 'g');
+	let result = text;
+	// Une formule peut en contenir une autre (`~~ … $$a$$ … ~~`) : on recommence
+	for (let depth = 0; depth < 8 && token.test(result); depth++) {
+		token.lastIndex = 0;
+		result = result.replace(token, (whole) => findPlaceholder(placeholders, whole)?.raw ?? whole);
+	}
+	return result;
+}
+
 /** Les étapes de l'extraction, numérotation à la suite de `placeholders`. */
 function extractInto(markdown: string, placeholders: MathPlaceholder[]): string {
 	let text = markdown;
@@ -211,7 +234,8 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 			syntax: 'latex',
 			isBlock: true,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			raw: rawOf(match)
 		});
 
 		placeholderIndex++;
@@ -228,7 +252,8 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 			syntax: 'custom',
 			isBlock: true,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			raw: rawOf(match)
 		});
 
 		placeholderIndex++;
@@ -245,7 +270,8 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 			syntax: 'latex',
 			isBlock: false,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			raw: rawOf(match)
 		});
 
 		placeholderIndex++;
@@ -262,7 +288,8 @@ function extractInto(markdown: string, placeholders: MathPlaceholder[]): string 
 			syntax: 'custom',
 			isBlock: false,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			raw: rawOf(match)
 		});
 
 		placeholderIndex++;

@@ -41,6 +41,7 @@ import type {
 	LimitValue,
 	LimitSide
 } from '../types/variation-table';
+import { unclosedBlockEnd } from './unclosed-block';
 
 // ============================================================================
 // CONSTANTS
@@ -772,9 +773,11 @@ export function findVariationBlocks(lines: string[]): VariationBlockRange[] {
 				blocks.push({ startIndex, endIndex });
 				i = endIndex + 1;
 			} else {
-				// Unclosed block - treat rest as content
-				blocks.push({ startIndex, endIndex: lines.length - 1 });
-				break;
+				// Non fermé : jusqu'à la première ligne vide (Q63) — avant, toute
+				// la suite du document, qui disparaissait avec le bloc
+				const endIndex = unclosedBlockEnd(lines, startIndex);
+				blocks.push({ startIndex, endIndex });
+				i = endIndex + 1;
 			}
 		} else {
 			i++;
