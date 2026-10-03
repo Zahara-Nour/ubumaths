@@ -521,14 +521,22 @@ function frequencyTableTypst(scene: FrequencyTableScene): string {
 	// « [10 ; 15[ ») : espaces insécables ; les en-têtes, eux, vont à la ligne
 	const solid = (text: string) => text.replace(/ /g, '\u00a0');
 	const cell = (text: string) => textContent(solid(text));
+	// Une case à compléter garde de quoi écrire « 37,5 % » (Q130) ; 1,2 cm faisait déborder
+	// six cases masquées sur une demi-page
+	const HOLE = '[#box(width: 0.8cm)]';
 	const cells: string[] = [];
 	if (!scene.vertical) {
 		cells.push(bold(scene.valueHeader), ...scene.columns.map((c) => bold(solid(c))));
-		for (const row of scene.rows) cells.push(bold(row.header), ...row.cells.map(cell));
+		for (const row of scene.rows) {
+			cells.push(bold(row.header), ...row.cells.map((c, i) => (row.hidden[i] ? HOLE : cell(c))));
+		}
 	} else {
 		cells.push(bold(scene.valueHeader), ...scene.rows.map((row) => bold(row.header)));
 		scene.columns.forEach((column, i) => {
-			cells.push(bold(solid(column)), ...scene.rows.map((row) => cell(row.cells[i])));
+			cells.push(
+				bold(solid(column)),
+				...scene.rows.map((row) => (row.hidden[i] ? HOLE : cell(row.cells[i])))
+			);
 		});
 	}
 	const count = scene.vertical ? scene.rows.length + 1 : scene.columns.length + 1;

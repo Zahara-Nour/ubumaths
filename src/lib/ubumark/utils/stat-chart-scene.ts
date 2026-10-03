@@ -295,8 +295,10 @@ export interface FrequencyTableScene extends SceneCommon {
 	valueHeader: string;
 	/** Les valeurs (ou classes), puis « Total » si la colonne est là */
 	columns: string[];
-	/** Une ligne par grandeur ; une case vide pour le total d'un cumul */
-	rows: { header: string; cells: string[] }[];
+	/** Une ligne par grandeur ; une case vide pour le total d'un cumul ; `hidden` : à compléter */
+	rows: { header: string; cells: string[]; hidden: boolean[] }[];
+	/** Ce qu'annonce une case à compléter (`masquer:`, Q130) */
+	hiddenLabel: string;
 	vertical: boolean;
 	/** Ce que lit le lecteur d'écran dans une case vide (« sans objet ») */
 	emptyLabel: string;
@@ -1438,9 +1440,16 @@ function buildFrequencyTableScene(spec: StatChartSpec, locale: ContentLocale): F
 					return frequency(cumulated[i]);
 			}
 		});
+		const all = table.showTotals ? [...cells, totalCell(row)] : cells;
+		const hidden = all.map((_, i) =>
+			table.masked.some(
+				(m) => m.row === row && (m.column === 'total' ? i === counts.length : m.column === i)
+			)
+		);
 		return {
 			header: text.frequencyTable.row(row, table.direction),
-			cells: table.showTotals ? [...cells, totalCell(row)] : cells
+			cells: all.map((cell, i) => (hidden[i] ? '' : cell)),
+			hidden
 		};
 	});
 
@@ -1452,7 +1461,14 @@ function buildFrequencyTableScene(spec: StatChartSpec, locale: ContentLocale): F
 		accessibleTitle: text.frequencyTable.title,
 		description: spec.description ?? text.frequencyTable.title,
 		pixelSize: { width: 0, height: 0 },
-		indicators: [],
+		// Q131 : la ligne sous le tableau, comme les barres ou l'histogramme
+		indicators:
+			spec.indicators.length === 0
+				? []
+				: table.classes
+					? classIndicators(spec, classSummaryOf(spec), locale)
+					: barIndicators(spec, locale),
+		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
 		caption: spec.title ?? text.frequencyTable.title,
 		valueHeader: table.classes ? text.frequencyTable.classes : text.frequencyTable.value,
 		columns,

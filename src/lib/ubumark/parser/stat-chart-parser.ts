@@ -116,6 +116,8 @@ interface Options {
 	/** Bloc ```effectifs : `lignes:` (Q128) et `fréquences: décimales` */
 	tableRows: FrequencyTableRow[] | null;
 	decimalFrequencies: boolean | null;
+	/** `masquer:` d'un tableau d'effectifs, tel qu'écrit */
+	tableMasked: string | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -211,12 +213,12 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	legende: ['histogramme'],
 	sens: ['frequences-cumulees', 'effectifs'],
 	lecture: ['frequences-cumulees'],
-	indicateurs: ['barres', 'histogramme', 'frequences-cumulees', 'loi'],
+	indicateurs: ['barres', 'histogramme', 'frequences-cumulees', 'loi', 'effectifs'],
 	lignes: ['tableau-croise', 'effectifs'],
 	colonnes: ['tableau-croise'],
 	totaux: ['tableau-croise', 'effectifs'],
 	afficher: ['tableau-croise', 'barres', 'histogramme'],
-	masquer: ['tableau-croise', 'loi'],
+	masquer: ['tableau-croise', 'loi', 'effectifs'],
 	coin: ['tableau-croise'],
 	mode: ['simulation'],
 	tirages: ['simulation'],
@@ -606,6 +608,11 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			);
 			return;
 		case 'masquer':
+			// Tableau d'effectifs (Q130) : résolu une fois les valeurs connues
+			if (kind === 'effectifs') {
+				options.tableMasked = value;
+				return;
+			}
 			if (kind === 'loi') {
 				options.lawMasked = value
 					.split(';')
@@ -963,15 +970,87 @@ function checkFrequencyTable(
 	if (options.decimalFrequencies !== null && !rows.some((row) => row.startsWith('fréquences'))) {
 		return at(optionLines.frequences ?? 0, 'fréquences : seulement avec une ligne de fréquences');
 	}
+	const masked =
+		options.tableMasked === null
+			? []
+			: resolveTableMasks(options.tableMasked, rows, data, options.showTotals);
+	if (typeof masked === 'string') return at(optionLines.masquer ?? 0, masked);
 	return {
 		table: {
 			rows,
 			decimals: options.decimalFrequencies === true,
 			showTotals: options.showTotals,
 			direction: options.direction,
-			classes
+			classes,
+			masked
 		}
 	};
+}
+
+/**
+ * `masquer:` d'un tableau d'effectifs (Q130) : des lignes entières
+ * (`fréquences`) ou des cases (`12/effectifs`, `Total/fréquences`,
+ * `[0 ; 10[/effectifs`). Rend les cases, ou le message d'erreur.
+ */
+function resolveTableMasks(
+	written: string,
+	rows: readonly FrequencyTableRow[],
+	data: readonly StatChartDatum[],
+	showTotals: boolean
+): { row: FrequencyTableRow; column: number | 'total' }[] | string {
+	// Une classe contient un « ; » : `[0 ; 10[/effectifs` se recoud
+	const pieces: string[] = [];
+	for (const piece of written.split(';')) {
+		const last = pieces.at(-1);
+		if (last !== undefined && last.trim().startsWith('[') && !last.includes('/')) {
+			pieces[pieces.length - 1] = `${last};${piece}`;
+		} else pieces.push(piece);
+	}
+	const rowOf = (name: string): FrequencyTableRow | string => {
+		const row = FREQUENCY_TABLE_ROWS.find((r) => normalizeKey(r) === normalizeKey(name.trim()));
+		if (row === undefined || !rows.includes(row)) {
+			return `masquer : la ligne « ${name.trim()} » n’est pas dans le tableau`;
+		}
+		return row;
+	};
+	const squash = (text: string) => text.replace(/\s+/g, '').replaceAll('−', '-');
+	const masked: { row: FrequencyTableRow; column: number | 'total' }[] = [];
+	for (const piece of pieces.map((p) => p.trim()).filter((p) => p !== '')) {
+		const slash = piece.lastIndexOf('/');
+		if (slash === -1) {
+			const row = rowOf(piece);
+			if (!FREQUENCY_TABLE_ROWS.includes(row as FrequencyTableRow)) return row;
+			const columns: (number | 'total')[] = data.map((_, i) => i);
+			const cumulative = row.endsWith('cumulés') || row.endsWith('cumulées');
+			if (showTotals && !cumulative) columns.push('total');
+			for (const column of columns) masked.push({ row: row as FrequencyTableRow, column });
+			continue;
+		}
+		const value = piece.slice(0, slash).trim();
+		const rowName = piece.slice(slash + 1).trim();
+		if (value === '' || rowName === '') {
+			return 'masquer : écrire valeur/ligne, par exemple 12/effectifs';
+		}
+		const row = rowOf(rowName);
+		if (!FREQUENCY_TABLE_ROWS.includes(row as FrequencyTableRow)) return row;
+		const cumulative = row.endsWith('cumulés') || row.endsWith('cumulées');
+		if (normalizeKey(value) === 'total') {
+			if (!showTotals) return 'masquer : pas de colonne Total (« totaux: non »)';
+			if (cumulative) return 'masquer : pas de total pour un cumul';
+			masked.push({ row: row as FrequencyTableRow, column: 'total' });
+			continue;
+		}
+		// Une valeur telle qu'écrite, aux espaces près ; un nombre, à l'écriture près
+		const number = rawNumber(value);
+		const column = data.findIndex(
+			(d) =>
+				squash(d.label) === squash(value) ||
+				(number !== null && d.interval === null && rawNumber(d.label) === number)
+		);
+		if (column === -1) return `masquer : la valeur « ${value} » n’est pas dans le tableau`;
+		masked.push({ row: row as FrequencyTableRow, column });
+	}
+	return masked;
 }
 
 function tallyRawData(
@@ -1415,9 +1494,9 @@ function checkIndicators(
 	kind: StatChartKind,
 	indicators: readonly StatChartIndicator[],
 	data: readonly StatChartDatum[],
-	unit: StatChartUnit
+	unit: StatChartUnit,
+	isClasses = CLASS_CHART_KINDS.includes(kind)
 ): string | null {
-	const isClasses = CLASS_CHART_KINDS.includes(kind);
 	for (const indicator of indicators) {
 		const name = INDICATOR_NAME[indicator];
 		if (isClasses && !CLASS_INDICATORS.includes(indicator)) {
@@ -1485,7 +1564,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		seriesMode: null,
 		barDisplay: null,
 		tableRows: null,
-		decimalFrequencies: null
+		decimalFrequencies: null,
+		tableMasked: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1555,10 +1635,6 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				if (data.length > 0) throw new LineError(RAW_AND_COUNTS);
 				raw.push(...parseRawEntries(kv[2]).map((text) => ({ text, line })));
 				return;
-			}
-			// Lot PR (b) du tableau d'effectifs (Q130-Q131)
-			if (kv && kind === 'effectifs' && (key === 'masquer' || key === 'indicateurs')) {
-				throw new LineError(`${key} : arrive bientôt`);
 			}
 			if (kv && key !== null && isOptionKey(key)) {
 				if (seenOptions.has(key)) throw new LineError(`option « ${kv[1]} » déjà donnée`);
@@ -1832,7 +1908,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		else frequencyTable = checked.table;
 	}
 	if (errors.length === 0 && options.indicators.length > 0) {
-		const problem = checkIndicators(kind, options.indicators, data, dataUnit);
+		const problem = checkIndicators(kind, options.indicators, data, dataUnit, classMode);
 		if (problem) {
 			errors.push({ message: `Ligne ${indicatorsLine} : ${problem}`, line: indicatorsLine });
 		}

@@ -471,6 +471,16 @@ describe('StatChart — tableau d’effectifs (Q125-Q129)', () => {
 		).toEqual(['1', '2', '1', '4']);
 	});
 
+	it('une case masquée : vide, assez large, annoncée « case à compléter »', async () => {
+		const node = parseStatChartContent('effectifs', 'données: 1 ; 2 ; 2\nmasquer: 2/effectifs');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const cell = screen.container.querySelector<HTMLTableCellElement>('td.stat-case-vide')!;
+
+		expect(cell.textContent?.trim()).toBe('case à compléter');
+		expect(cell.getBoundingClientRect().width).toBeGreaterThanOrEqual(50);
+		expect(screen.container.querySelectorAll('td.stat-case-vide')).toHaveLength(1);
+	});
+
 	it('la case Total d’un cumul : vide, annoncée « sans objet »', async () => {
 		const node = parseStatChartContent('effectifs', 'données: 1 ; 2\nlignes: effectifs cumulés');
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

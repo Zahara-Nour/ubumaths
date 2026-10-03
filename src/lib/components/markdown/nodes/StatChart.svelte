@@ -231,8 +231,9 @@
 								<tr>
 									<th scope="row">{column}</th>
 									{#each frequencyTable.rows as row, j (j)}
-										<td
-											>{#if row.cells[i] === ''}<span class="sr-only"
+										<td class:stat-case-vide={row.hidden[i]}
+											>{#if row.hidden[i]}<span class="sr-only">{frequencyTable.hiddenLabel}</span
+												>{:else if row.cells[i] === ''}<span class="sr-only"
 													>{frequencyTable.emptyLabel}</span
 												>{:else}{row.cells[i]}{/if}</td
 										>
@@ -252,8 +253,10 @@
 								<tr>
 									<th scope="row">{row.header}</th>
 									{#each row.cells as cell, j (j)}
-										<td
-											>{#if cell === ''}<span class="sr-only">{frequencyTable.emptyLabel}</span
+										<td class:stat-case-vide={row.hidden[j]}
+											>{#if row.hidden[j]}<span class="sr-only">{frequencyTable.hiddenLabel}</span
+												>{:else if cell === ''}<span class="sr-only"
+													>{frequencyTable.emptyLabel}</span
 												>{:else}{cell}{/if}</td
 										>
 									{/each}
