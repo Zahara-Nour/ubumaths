@@ -62,3 +62,9 @@ titres sans `e^(…)` brut ; specs `\exp`, `\exponentialE`, `\mathrm{e}` ajouté
   `acceptDecimal`** (3,5 juste pour 7/2 ; valeur arrondie refusée). Pas d'équivalent dans TinyMath :
   son `result-type: decimal` DEMANDAIT le décimal, il ne le tolérait pas.
 - Peu de tirages distincts : A-01, B-06, C-01, C-02 (variations figées).
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- B-03 v0 : a de 1 à 5. B-04 : c de 1 à 9 (ou −9 à −1) ; c ≠ 0 gardé (sens de variation).

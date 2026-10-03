@@ -13,7 +13,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?",
 			"variables": [
 				{
 					"name": "b",
@@ -28,19 +28,19 @@
 					"expression": "0..3"
 				}
 			],
-			"conditions": ["abs(b) >= 2"],
+			"conditions": [],
 			"choices": [
 				{
-					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
 				},
 				{
-					"content": "Pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					"content": "Pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
 				},
 				{
-					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$."
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$."
 				},
 				{
-					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|<}}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
 				}
 			],
 			"correctChoiceIndex": ["0"],
@@ -49,12 +49,12 @@
 					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
 					"« Pour tout réel $x$ » devient « il existe un réel $x$ tel que ».",
 					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
-					"La négation est donc : « il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+					"La négation est donc : « il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
 				]
 			}
 		},
 		{
-			"statement": "Quelle est la négation de la proposition « il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+			"statement": "Quelle est la négation de la proposition « il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?",
 			"variables": [
 				{
 					"name": "m",
@@ -73,19 +73,19 @@
 					"expression": "0..3"
 				}
 			],
-			"conditions": ["abs(m) >= 2", "p != 0", "p != c"],
+			"conditions": ["m != 0", "p != c"],
 			"choices": [
 				{
-					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
 				},
 				{
-					"content": "Il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					"content": "Il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
 				},
 				{
-					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$."
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$."
 				},
 				{
-					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|<}}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
 				}
 			],
 			"correctChoiceIndex": ["0"],
@@ -94,12 +94,12 @@
 					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
 					"« Il existe un réel $x$ tel que » devient « pour tout réel $x$ ».",
 					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
-					"La négation est donc : « pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+					"La négation est donc : « pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
 				]
 			}
 		},
 		{
-			"statement": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$ » ?",
+			"statement": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|< }}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|< }}{{if:r2=3|\\leqslant}}{{b}}$ » ?",
 			"variables": [
 				{
 					"name": "a",
@@ -136,16 +136,16 @@
 			],
 			"choices": [
 				{
-					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
 				},
 				{
-					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
 				},
 				{
-					"content": "$x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$"
+					"content": "$x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|< }}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|< }}{{if:r2=3|\\leqslant}}{{b}}$"
 				},
 				{
-					"content": "$x{{if:r1=0|<}}{{if:r1=1|\\leqslant}}{{if:r1=2|>}}{{if:r1=3|\\geqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|<}}{{if:r2=1|\\leqslant}}{{if:r2=2|>}}{{if:r2=3|\\geqslant}}{{b}}$"
+					"content": "$x{{if:r1=0|< }}{{if:r1=1|\\leqslant}}{{if:r1=2|>}}{{if:r1=3|\\geqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|< }}{{if:r2=1|\\leqslant}}{{if:r2=2|>}}{{if:r2=3|\\geqslant}}{{b}}$"
 				}
 			],
 			"correctChoiceIndex": ["0"],
@@ -153,8 +153,8 @@
 				"steps": [
 					"La négation de « $A$ et $B$ » est « non $A$ ou non $B$ » ; la négation de « $A$ ou $B$ » est « non $A$ et non $B$ » : on nie chaque morceau **et** on change le connecteur.",
 					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
-					"La négation de « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ » est « $x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ » et celle de « $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$ » est « $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ ».",
-					"La négation est donc : « $x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ »."
+					"La négation de « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|< }}{{if:r1=3|\\leqslant}}{{a}}$ » est « $x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ » et celle de « $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|< }}{{if:r2=3|\\leqslant}}{{b}}$ » est « $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ ».",
+					"La négation est donc : « $x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ »."
 				]
 			}
 		},
@@ -358,6 +358,55 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "pour tout x²+x > 2 (b = 1) : bonne réponse",
+			"variationIndex": 0,
+			"variables": { "b": "1", "c": "2", "r": "0" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "pour tout x²+x > 2 (b = 1) : autre choix refusé",
+			"variationIndex": 0,
+			"variables": { "b": "1", "c": "2", "r": "0" },
+			"selectedChoices": [2],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "pour tout x² < -4 (b = 0) : bonne réponse",
+			"variationIndex": 0,
+			"variables": { "b": "0", "c": "-4", "r": "2" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "pour tout x² < -4 (b = 0) : autre choix refusé",
+			"variationIndex": 0,
+			"variables": { "b": "0", "c": "-4", "r": "2" },
+			"selectedChoices": [3],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "il existe -x+3 < -2 (m = -1) : bonne réponse",
+			"variationIndex": 1,
+			"variables": { "m": "-1", "p": "3", "c": "-2", "r": "2" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "il existe -x+3 < -2 (m = -1) : autre choix refusé",
+			"variationIndex": 1,
+			"variables": { "m": "-1", "p": "3", "c": "-2", "r": "2" },
+			"selectedChoices": [1],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "il existe 3x ≤ 5 (p = 0) : bonne réponse",
+			"variationIndex": 1,
+			"variables": { "m": "3", "p": "0", "c": "5", "r": "3" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
 		}
 	],
 	"options": {

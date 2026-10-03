@@ -8,6 +8,9 @@
 	"subdomain": "Nombre dérivé",
 	"level": 1,
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
@@ -43,14 +46,14 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..6;±"
+					"expression": "1..6;±"
 				},
 				{
 					"name": "a",
 					"expression": "1..4;±"
 				}
 			],
-			"conditions": ["2*a+b != 0", "abs(2*a+b) != 1", "a+b != 0"],
+			"conditions": ["2*a+b != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:2*a+b}}+h"
@@ -61,7 +64,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$f({{a}}+h)=({{a}}+h)^2{{b;+}}({{a}}+h)={{eval:a^2+a*b}}{{eval:2*a+b;+}}h+h^2$ et $f({{a}})={{eval:a^2+a*b}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a+b}}h+h^2$.",
+					"$f({{a}}+h)=({{a}}+h)^2{{b;+}}({{a}}+h)$, soit $f({{a}}+h)={{eval:a^2+a*b}}{{eval:2*a+b;+}}h+h^2$ et $f({{a}})={{eval:a^2+a*b}}$, donc $f({{a}}+h)-f({{a}})={{eval:2*a+b}}h+h^2$.",
 					"Pour $h\\neq0$, on simplifie par $h$ : $$\\dfrac{f({{a}}+h)-f({{a}})}{h}=\\dfrac{h({{eval:2*a+b}}+h)}{h}={{eval:2*a+b}}+h$$",
 					"Quand $h$ tend vers $0$, ${{eval:2*a+b}}+h$ tend vers ${{eval:2*a+b}}$.",
 					"Conclusion : le taux de variation vaut ${{eval:2*a+b}}+h$ et $f'({{a}})={{eval:2*a+b}}$."
@@ -174,6 +177,55 @@
 			"variables": { "b": "-5", "a": "-1" },
 			"answers": ["-3+h", "-3"],
 			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : x²−3x, a=2 : f′(2)=1 → 1+h et 1 (coefficient 1)",
+			"variationIndex": 1,
+			"variables": { "b": "-3", "a": "2" },
+			"answers": ["1+h", "1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−3x, a=2 : h+1",
+			"variationIndex": 1,
+			"variables": { "b": "-3", "a": "2" },
+			"answers": ["h+1", "1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−5x, a=2 : f′(2)=−1 → −1+h et −1",
+			"variationIndex": 1,
+			"variables": { "b": "-5", "a": "2" },
+			"answers": ["-1+h", "-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−5x, a=2 : signe perdu (1+h)",
+			"variationIndex": 1,
+			"variables": { "b": "-5", "a": "2" },
+			"answers": ["1+h", "1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 : x²+x (b=1), a=2 : 5+h et 5",
+			"variationIndex": 1,
+			"variables": { "b": "1", "a": "2" },
+			"answers": ["5+h", "5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−x (b=−1), a=−3 : −7+h et −7",
+			"variationIndex": 1,
+			"variables": { "b": "-1", "a": "-3" },
+			"answers": ["-7+h", "-7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 : x²−2x, a=2 (f(2)=0) : 2+h et 2",
+			"variationIndex": 1,
+			"variables": { "b": "-2", "a": "2" },
+			"answers": ["2+h", "2"],
+			"expected": { "status": "correct" }
 		}
 	]
 }

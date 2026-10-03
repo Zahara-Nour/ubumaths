@@ -8,6 +8,9 @@
 	"subdomain": "Formes",
 	"level": 1,
 	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Détermine la forme canonique du polynôme $P(x)={{eval:ax^2+bx+c}}$.\n\n$P(x)=?$",
@@ -64,7 +67,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..3;±"
+					"expression": "-3..3!0"
 				},
 				{
 					"name": "h",

@@ -8,6 +8,9 @@
 	"subdomain": "Tangente",
 	"level": 2,
 	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^2+n*x+c}}$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f({{a}})$ et $f'({{a}})$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$f({{a}})=?$\n\n$f'({{a}})=?$\n\n$y=?$",
@@ -41,7 +44,7 @@
 					"expression": "eval:2*m*a+n"
 				}
 			],
-			"conditions": ["fa != 0", "fpa != 0", "abs(fpa) != 1", "fpa != fa"],
+			"conditions": ["fpa != 0", "fpa != fa"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{fa}}"
@@ -57,7 +60,7 @@
 				"steps": [
 					"$f({{a}})={{eval:m*a^2}}{{eval:n*a;+}}{{c;+}}={{fa}}$.",
 					"$f'(x)={{eval:2*m*x+n}}$, donc $f'({{a}})={{eval:2*m*a}}{{n;+}}={{fpa}}$.",
-					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}={{eval:fpa*x+fa-fpa*a}}$$",
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}$$ $$y={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}$$ {{if:fa!=0|$$y={{eval:fpa*x+fa-fpa*a}}$$}}",
 					"Conclusion : $f({{a}})={{fa}}$, $f'({{a}})={{fpa}}$ et $T$ a pour équation $y={{eval:fpa*x+fa-fpa*a}}$."
 				]
 			}
@@ -94,7 +97,7 @@
 					"expression": "eval:3*m*a^2+q"
 				}
 			],
-			"conditions": ["fa != 0", "fpa != 0", "abs(fpa) != 1", "fpa != fa"],
+			"conditions": ["fpa != 0", "fpa != fa"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{fa}}"
@@ -110,7 +113,7 @@
 				"steps": [
 					"$f({{a}})={{eval:m*a^3}}{{eval:q*a;+}}{{c;+}}={{fa}}$.",
 					"$f'(x)={{eval:3*m*x^2+q}}$, donc $f'({{a}})={{eval:3*m*a^2}}{{q;+}}={{fpa}}$.",
-					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}={{eval:fpa*x+fa-fpa*a}}$$",
+					"La tangente au point d'abscisse $a$ a pour équation $y=f'(a)(x-a)+f(a)$ : $$y={{fpa}}(x{{eval:-a;+}}){{fa;+}}$$ $$y={{eval:fpa*x}}{{eval:-fpa*a;+}}{{fa;+}}$$ {{if:fa!=0|$$y={{eval:fpa*x+fa-fpa*a}}$$}}",
 					"Conclusion : $f({{a}})={{fa}}$, $f'({{a}})={{fpa}}$ et $T$ a pour équation $y={{eval:fpa*x+fa-fpa*a}}$."
 				]
 			}
@@ -206,6 +209,34 @@
 			"variationIndex": 1,
 			"variables": { "m": "-2", "q": "3", "c": "-4", "a": "-1", "fa": "-5", "fpa": "-3" },
 			"answers": ["-5", "-3", "-3x-2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : f(x)=3x²+4x+1, a=−1 : f(−1)=0 → y=−2x−2",
+			"variationIndex": 0,
+			"variables": { "m": "3", "n": "4", "c": "1", "a": "-1" },
+			"answers": ["0", "-2", "-2x-2"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=−x²−5x+8, a=−2 : f′(−2)=−1 → y=−x+12",
+			"variationIndex": 0,
+			"variables": { "m": "-1", "n": "-5", "c": "8", "a": "-2" },
+			"answers": ["14", "-1", "-x+12"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : f(x)=2x³−5x+3, a=1 : f(1)=0, f′(1)=1 → y=x−1",
+			"variationIndex": 1,
+			"variables": { "m": "2", "q": "-5", "c": "3", "a": "1" },
+			"answers": ["0", "1", "x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : f(x)=2x³−5x+3, a=1 : tangente oubliant −a (y=x)",
+			"variationIndex": 1,
+			"variables": { "m": "2", "q": "-5", "c": "3", "a": "1" },
+			"answers": ["0", "1", "x"],
 			"expected": { "status": "incorrect" }
 		}
 	]

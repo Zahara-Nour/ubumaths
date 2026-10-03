@@ -8,6 +8,9 @@
 	"subdomain": "Dérivation",
 	"level": 3,
 	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{eval:b;+}})e^{x}$.\n\nCalcule $f'(x)$ et donne le résultat sous la forme $(mx+p)e^{x}$.\n\n$f'(x)=?$",
@@ -18,7 +21,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "b",
@@ -28,14 +31,14 @@
 			"conditions": ["a+b != 0"],
 			"blanks": [
 				{
-					"expectedAnswer": "({{a}}x{{eval:a+b;+}})e^{x}"
+					"expectedAnswer": "({{eval:a*x+a+b}})e^{x}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
 					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=e^x$ : $u'(x)={{a}}$ et $v'(x)=e^x$.",
-					"$$f'(x)={{a}}e^x+({{a}}x{{eval:b;+}})e^x=(\\textcolor{{{color:primary.0}}}{ {{a}}x{{eval:a+b;+}} })e^{x}$$",
+					"$$f'(x)={{a}}e^x+({{a}}x{{eval:b;+}})e^x$$ soit $$f'(x)=(\\textcolor{{{color:primary.0}}}{ {{eval:a*x+a+b}} })e^{x}$$",
 					"On factorise par $e^x$ : c'est la forme qui permet ensuite d'étudier le signe de $f'(x)$."
 				]
 			}
@@ -303,6 +306,41 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "a=1 : (x+3)eˣ → (x+4)eˣ juste",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "3" },
+			"answers": ["(x+4)e^{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "a=1 : (1x+4)eˣ écrit avec le 1 : facteur 1 signalé",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "3" },
+			"answers": ["(1x+4)e^{x}"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["factorOne"] }
+		},
+		{
+			"description": "a=−1 : (−x+3)eˣ → (−x+2)eˣ juste",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "3" },
+			"answers": ["(-x+2)e^{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "a=−1 : u′ oublié (−x+3)eˣ",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "3" },
+			"answers": ["(-x+3)e^{x}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "a=−1 : (2−x)eˣ ordre changé",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "3" },
+			"answers": ["(2-x)e^{x}"],
+			"expected": { "status": "correct" }
 		}
 	]
 }

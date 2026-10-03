@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 60,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true
 		}
@@ -66,7 +67,7 @@
 					"expression": "2..15"
 				}
 			],
-			"conditions": ["mod(R2,4) != 0", "mod(R2,9) != 0", "a^2+b^2 != R2"],
+			"conditions": ["mod(R2,4) != 0", "mod(R2,9) != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{eval:R2}}",

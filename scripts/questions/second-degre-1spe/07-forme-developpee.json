@@ -8,6 +8,9 @@
 	"subdomain": "Formes",
 	"level": 2,
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Développe et réduis $P(x)={{eval:a*(x-h)^2}}{{eval:k;+}}$.\n\n$P(x)=?$",
@@ -18,7 +21,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..3;±"
+					"expression": "-3..3!0,1"
 				},
 				{
 					"name": "h",
@@ -46,7 +49,7 @@
 			"correction": {
 				"steps": [
 					"On développe le carré avec $(x-\\alpha)^2=x^2-2\\alpha x+\\alpha^2$, puis on multiplie par ${{a}}$.",
-					"$$\\begin{align}P(x) &= {{a}}\\left(x^2{{eval:-2*h;+}}x{{eval:h^2;+}}\\right){{eval:k;+}} \\\\ &= {{eval:ax^2+bx}}{{eval:a*h^2;+}}{{eval:k;+}} \\\\ &= {{eval:ax^2+bx+c}}\\end{align}$$"
+					"$$P(x)={{a}}(x^2{{eval:-2*h;+}}x{{eval:h^2;+}}){{eval:k;+}}$$\n\n$$P(x)={{eval:ax^2+bx}}{{eval:a*h^2;+}}{{eval:k;+}}$$\n\n$$P(x)={{eval:ax^2+bx+c}}$$"
 				]
 			}
 		},
@@ -100,7 +103,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..3;±"
+					"expression": "-3..3!0,1"
 				},
 				{
 					"name": "r",
@@ -128,7 +131,7 @@
 			"correction": {
 				"steps": [
 					"On développe d'abord le produit des deux parenthèses, puis on multiplie par ${{a}}$.",
-					"$$\\begin{align}P(x) &= {{a}}\\left(x^2{{eval:-sx;+}}{{eval:-rx;+}}{{eval:r*s;+}}\\right) \\\\ &= {{a}}\\left(x^2{{eval:-(r+s)x;+}}{{eval:r*s;+}}\\right) \\\\ &= {{eval:ax^2+bx+c}}\\end{align}$$"
+					"$$P(x)={{a}}(x^2{{eval:-sx;+}}{{eval:-rx;+}}{{eval:r*s;+}})$$\n\n$$P(x)={{a}}(x^2{{eval:-(r+s)x;+}}{{eval:r*s;+}})$$\n\n$$P(x)={{eval:ax^2+bx+c}}$$"
 				]
 			}
 		}

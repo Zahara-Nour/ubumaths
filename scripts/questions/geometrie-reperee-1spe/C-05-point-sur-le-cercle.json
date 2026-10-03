@@ -8,6 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "Le plan est muni d'un repère orthonormé. On considère le cercle $\\mathcal{C}$ d'équation $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.\n\nLe point $M({{xm}}\\,;{{ym}})$ appartient-il au cercle $\\mathcal{C}$ ?",
@@ -119,7 +122,7 @@
 					"expression": "{{eval:a^2+b^2-R2}}"
 				}
 			],
-			"conditions": ["R2 > 0", "c != 0", "xm != 0", "ym != 0"],
+			"conditions": ["R2 > 0", "xm != 0", "ym != 0"],
 			"choices": [
 				{
 					"content": "Oui, $M$ appartient à $\\mathcal{C}$."
@@ -132,7 +135,7 @@
 			"correction": {
 				"steps": [
 					"$M$ appartient à $\\mathcal{C}$ si et seulement si ses coordonnées vérifient l'équation de $\\mathcal{C}$.",
-					"On remplace $x$ et $y$ par les coordonnées de $M$ dans le premier membre :\n\n$$\\begin{align*}&{{xm;()}}^2+{{ym;()}}^2{{eval:-2*a;+}}\\times{{xm;()}}{{eval:-2*b;+}}\\times{{ym;()}}{{c;+}}\\\\={}&{{eval:xm^2+ym^2}}{{eval:-2*a*xm;+}}{{eval:-2*b*ym;+}}{{c;+}}={{eval:D-R2}}\\end{align*}$$",
+					"On remplace $x$ et $y$ par les coordonnées de $M$ dans le premier membre :\n\n$$\\begin{align*}&{{xm;()}}^2+{{ym;()}}^2{{eval:-2*a;+}}\\times{{xm;()}}{{eval:-2*b;+}}\\times{{ym;()}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}\\\\={}&{{eval:xm^2+ym^2}}{{eval:-2*a*xm;+}}{{eval:-2*b*ym;+}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}={{eval:D-R2}}\\end{align*}$$",
 					"{{if:t=1|On trouve $0$ : l'égalité est vraie. **Oui, $M$ appartient à $\\mathcal{C}$.**}}{{if:t=0|On ne trouve pas $0$ : l'égalité est fausse. **Non, $M$ n'appartient pas à $\\mathcal{C}$.**}}"
 				]
 			}

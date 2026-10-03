@@ -8,6 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 45,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -15,15 +18,15 @@
 	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie et dérivable sur $]0\\,;+\\infty[$ par $f(x)={{c}}x^2+{{a}}\\sqrt{x}-\\frac{ {{b}} }{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie et dérivable sur $]0\\,;+\\infty[$ par $f(x)={{c}}x^2+{{a}}sqrt(x)-{ {{b}} }/{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
 			"variables": [
 				{
 					"name": "c",
-					"expression": "2..6;±"
+					"expression": "1..6;±"
 				},
 				{
 					"name": "a",
-					"expression": "3|5|7"
+					"expression": "1|3|5|7"
 				},
 				{
 					"name": "b",
@@ -157,6 +160,27 @@
 			"variables": { "b": "3", "a": "2", "c": "1" },
 			"answers": ["-\\frac{3}{x^2}-\\frac{1}{\\sqrt{x}}"],
 			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=−x²+7√x−8/x (c=−1) → −2x+7/(2√x)+8/x²",
+			"variationIndex": 0,
+			"variables": { "c": "-1", "a": "7", "b": "8" },
+			"answers": ["-2x+\\frac{7}{2\\sqrt{x}}+\\frac{8}{x^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=x²+√x−4/x (c=1, a=1) → 2x+1/(2√x)+4/x²",
+			"variationIndex": 0,
+			"variables": { "c": "1", "a": "1", "b": "4" },
+			"answers": ["2x+\\frac{1}{2\\sqrt{x}}+\\frac{4}{x^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=x²+√x−4/x : signe de (1/x)′ perdu",
+			"variationIndex": 0,
+			"variables": { "c": "1", "a": "1", "b": "4" },
+			"answers": ["2x+\\frac{1}{2\\sqrt{x}}-\\frac{4}{x^2}"],
+			"expected": { "status": "incorrect" }
 		}
 	]
 }

@@ -147,7 +147,7 @@
 					"expression": "{{eval:r+1}}"
 				}
 			],
-			"conditions": ["p != 0", "abs(q) >= 2"],
+			"conditions": ["q != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:r+1}}",
@@ -164,7 +164,7 @@
 			"correction": {
 				"steps": [
 					"Un seul contre-exemple suffit : une valeur de $x$ pour laquelle l'inégalité est fausse.",
-					"L'inégalité s'écrit $x^2{{eval:-q;+}}x{{p;+}}\\geqslant0$, soit $(x{{eval:-r;+}})(x{{eval:-s;+}})\\geqslant0$. Ce produit est strictement négatif pour $x$ strictement compris entre ${{r}}$ et ${{s}}$.",
+					"L'inégalité s'écrit $x^2{{eval:-q;+}}x{{p;+}}\\geqslant0$, soit ${{if:p!=0|(x{{eval:-r;+}})(x{{eval:-s;+}})}}{{if:r==0|x(x{{eval:-s;+}})}}{{if:s==0|x(x{{eval:-r;+}})}}\\geqslant0$. Ce produit est strictement négatif pour $x$ strictement compris entre ${{r}}$ et ${{s}}$.",
 					"Pour $x={{c}}$ : $x^2{{p;+}}={{eval:c^2+p}}$ et ${{q}}x={{eval:q*c}}$. Or ${{eval:c^2+p}}<{{eval:q*c}}$ : l'inégalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$ est un contre-exemple (tout réel de $]{{r}};{{s}}[$ convient)."
 				]
 			}
@@ -648,6 +648,69 @@
 				"status": "unoptimal_form",
 				"constraintViolations": ["reducedFractions"]
 			}
+		},
+		{
+			"description": "x²≥3x (p = 0, r=0, k=3) : 1",
+			"variationIndex": 3,
+			"variables": { "r": "0", "k": "3" },
+			"answers": ["1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "x²≥3x (p = 0) : 2,5",
+			"variationIndex": 3,
+			"variables": { "r": "0", "k": "3" },
+			"answers": ["2{,}5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "x²≥3x (p = 0) : 0 (racine)",
+			"variationIndex": 3,
+			"variables": { "r": "0", "k": "3" },
+			"answers": ["0"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "x²≥3x (p = 0) : 4",
+			"variationIndex": 3,
+			"variables": { "r": "0", "k": "3" },
+			"answers": ["4"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "x²-2≥x (q = 1, r=-1, k=3) : 0",
+			"variationIndex": 3,
+			"variables": { "r": "-1", "k": "3" },
+			"answers": ["0"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "x²-2≥x (q = 1) : 1",
+			"variationIndex": 3,
+			"variables": { "r": "-1", "k": "3" },
+			"answers": ["1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "x²-2≥x (q = 1) : 2 (racine)",
+			"variationIndex": 3,
+			"variables": { "r": "-1", "k": "3" },
+			"answers": ["2"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "x²-2≥-x (q = -1, r=-2, k=3) : 0",
+			"variationIndex": 3,
+			"variables": { "r": "-2", "k": "3" },
+			"answers": ["0"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "x²-2≥-x (q = -1) : -3",
+			"variationIndex": 3,
+			"variables": { "r": "-2", "k": "3" },
+			"answers": ["-3"],
+			"expected": { "status": "incorrect" }
 		}
 	],
 	"options": {

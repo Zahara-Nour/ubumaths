@@ -42,3 +42,23 @@ programme ?) ; B-07 v1 (x de f(x) « variable », f_k « paramètre ») ; B-05 v
 CS » artificielle) ; message de B-02 : l'élève voit « faux » sans la description de la règle.
 Ajouté après le lot 0 (#706), le 2026-10-03 : B-02 v4 « pour tout x > 0, 1/x ≤ a » (a de 2 à 20 ; tout x de ]0 ; 1/a[ accepté, fraction ou décimal ; 0, négatifs et 1/a refusés).
 Non faisable : « n² + n + p premier » (pas de test de primalité dans une règle custom).
+
+## cleanCoefficients activé (2026-10-03)
+
+Option déjà présente sur B-02 et B-06 ; exclusions d'affichage levées.
+
+- **B-02 v3** (`x² + p ⩾ qx`) : `p != 0` levé, `abs(q) >= 2` → `q != 0`. 81 tirages sur 300 ont
+  p = 0 ou q = ±1. Corrigé : la factorisation s'écrit `x(x − s)` quand une racine est nulle
+  (`{{if:…}}`, sinon « (x)(x − 3) »). Gardé : q ≠ 0 (le corrigé écrirait « 0x = 0 », chaîne que
+  l'option ne touche pas, garde de tautologie). v0 `abs(a) >= 2` GARDÉ : pour a = ±1 le
+  contre-exemple attendu sign(a) n'en est plus un (1² < 1 faux). v1 a ≠ 0 : maths (a = 0 rend
+  l'égalité vraie).
+- **B-06 v0** : `abs(b) >= 2` levé (b de −5 à 5, 0 et ±1 compris : `x² + x`, `x² > 7`) ; **v1** :
+  `abs(m) >= 2` → `m != 0` (m = 0 : plus de x), `p != 0` levé. 82 + 75 tirages sur 300 à coef ±1/0.
+  ⚠️ Défaut moteur : `x^2+1x<-4` est ILLISIBLE pour le parseur (`<-` lu comme un seul jeton, comme
+  la condition `a<-1`) → formule non nettoyée. Contourné : `{{if:r=2|< }}` (espace après `<`).
+- **Sans objet** : B-07 et B-08 (a sert à la fois de coefficient, de diviseur et de valeur dans des
+  chaînes `a = b = c` ; a = 1 rendrait l'identité k = 5 vraie et le contre-exemple x = 1 faux),
+  B-03 / B-05 (« multiple de 1 » trivial), A-xx (ensembles, aucun coefficient).
+- Vérifs : 300 tirages/variation, 0 motif interdit ; recalcul Python 0 écart (B-02 : contre-exemple
+  vérifié ; B-06 : bon choix = négation recalculée) ; 16 specs ajoutées, vertes ; PDF regardé.

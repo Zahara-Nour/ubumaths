@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 90,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true
 		}
@@ -193,9 +194,12 @@
 				{
 					"name": "R2",
 					"expression": "{{eval:p^2+q^2}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:a^2+b^2-R2}}"
 				}
 			],
-			"conditions": ["a^2+b^2 != R2"],
 			"blanks": [
 				{
 					"expectedAnswer": "x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{eval:a^2+b^2-R2;+}}=0",
@@ -208,7 +212,7 @@
 					"Le rayon de $\\mathcal{C}$ est $r=\\Omega A$, donc :\n\n$$\\begin{align*}r^2=\\Omega A^2&=(x_A-x_\\Omega)^2+(y_A-y_\\Omega)^2\\\\&=({{xa}}-{{a;()}})^2+({{ya}}-{{b;()}})^2\\\\&={{p;()}}^2+{{q;()}}^2={{R2}}\\end{align*}$$\n\nInutile de calculer $r$ : l'équation n'utilise que $r^2$.",
 					"Un point $M(x\\,;y)$ appartient à $\\mathcal{C}$ si et seulement si $\\Omega M^2=r^2$, soit $(x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2={{R2}}$.",
 					"On développe : $x^2{{eval:-2*a;+}}x+{{eval:a^2}}+y^2{{eval:-2*b;+}}y+{{eval:b^2}}={{R2}}$.",
-					"Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{eval:a^2+b^2-R2;+}}=0 }$."
+					"Une équation de $\\mathcal{C}$ est donc $\\textcolor{{{color:primary.0}}}{ x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{if:g>0|+{{eval:g}}}}{{if:g< 0|{{eval:g}}}}=0 }$."
 				]
 			}
 		}

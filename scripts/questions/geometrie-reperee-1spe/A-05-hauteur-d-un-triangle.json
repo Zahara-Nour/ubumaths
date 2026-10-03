@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 120,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true,
 			"answerKind": "equation"
@@ -36,11 +37,11 @@
 				},
 				{
 					"name": "dx",
-					"expression": "2..4;±"
+					"expression": "1..4;±"
 				},
 				{
 					"name": "dy",
-					"expression": "2..4;±"
+					"expression": "1..4;±"
 				},
 				{
 					"name": "xC",
@@ -71,7 +72,7 @@
 					"expression": "eval:(yA+yB+yC)/3"
 				}
 			],
-			"conditions": ["abs(xC) <= 5", "abs(yC) <= 5", "c != 0", "abs((xB-xA)*dy-(yB-yA)*dx) >= 8"],
+			"conditions": ["abs(xC) <= 5", "abs(yC) <= 5", "abs((xB-xA)*dy-(yB-yA)*dx) >= 8"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
@@ -100,7 +101,7 @@
 				},
 				{
 					"name": "dx",
-					"expression": "2..4;±"
+					"expression": "1..4;±"
 				},
 				{
 					"name": "dy",
@@ -145,9 +146,13 @@
 				{
 					"name": "q",
 					"expression": "eval:-c/dy"
+				},
+				{
+					"name": "s",
+					"expression": "eval:-dx/dy"
 				}
 			],
-			"conditions": ["abs(xB) <= 5", "abs(yB) <= 5", "c != 0", "abs((xC-xA)*dy-(yC-yA)*dx) >= 6"],
+			"conditions": ["abs(xB) <= 5", "abs(yB) <= 5", "abs((xC-xA)*dy-(yC-yA)*dx) >= 6"],
 			"blanks": [
 				{
 					"expectedAnswer": "y={{eval:-dx/dy}}x{{q;+}}",
@@ -161,7 +166,7 @@
 					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{CM}\\cdot\\overrightarrow{AB}=0$, avec $\\overrightarrow{CM}\\begin{pmatrix}x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}}\\\\y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}}\\end{pmatrix}$.",
 					"$\\overrightarrow{CM}\\cdot\\overrightarrow{AB}={{if:dx==1|(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx==-1|-(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mx>0|+{{eval:mx}}}}{{if:mx< 0|{{eval:mx}}}})}}{{if:dy==1|+(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy==-1|-(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:my>0|+{{eval:my}}}}{{if:my< 0|{{eval:my}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
 					"Une équation de la hauteur est ${{eval:dx}}x{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$, soit ${{if:dy==1|y}}{{if:dy==-1|-y}}{{if:dy>1|{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}={{if:mdx==1|x}}{{if:mdx==-1|-x}}{{if:mdx>1|{{eval:mdx}}x}}{{if:mdx< -1|{{eval:mdx}}x}}{{if:mc>0|+{{eval:mc}}}}{{if:mc< 0|{{eval:mc}}}}$.",
-					"On divise par ${{eval:dy}}$ : $\\textcolor{{{color:primary.0}}}{ y={{eval:-dx/dy}}x{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$."
+					"On divise par ${{eval:dy}}$ : $\\textcolor{{{color:primary.0}}}{ y={{if:s==1|x}}{{if:s==-1|-x}}{{if:s>1|{{eval:s}}x}}{{if:s< -1|{{eval:s}}x}}{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$."
 				]
 			}
 		},
@@ -178,11 +183,11 @@
 				},
 				{
 					"name": "dx",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "dy",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "xC",
@@ -213,7 +218,7 @@
 					"expression": "eval:-yB"
 				}
 			],
-			"conditions": ["abs(xC) <= 6", "abs(yC) <= 6", "c != 0", "abs((xB-xA)*dy-(yB-yA)*dx) >= 6"],
+			"conditions": ["abs(xC) <= 6", "abs(yC) <= 6", "abs((xB-xA)*dy-(yB-yA)*dx) >= 6"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
@@ -391,6 +396,167 @@
 			"answers": ["-2x+3y+11=0"],
 			"expected": {
 				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : BC(1 ; −2) : x − 2y + 3 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "-2",
+				"yB": "-1",
+				"dx": "1",
+				"dy": "-2"
+			},
+			"answers": ["x-2y+3=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : BC(1 ; −2) : coefficient 1 écrit (1x − 2y + 3 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "-2",
+				"yB": "-1",
+				"dx": "1",
+				"dy": "-2"
+			},
+			"answers": ["1x-2y+3=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : BC(1 ; −2) : réduite y = ½x + 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "-2",
+				"yB": "-1",
+				"dx": "1",
+				"dy": "-2"
+			},
+			"answers": ["y=\\frac{1}{2}x+\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : BC(1 ; −2) : vecteur directeur pris pour normal (2x + y − 4 = 0)",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "1",
+				"yA": "2",
+				"xB": "-2",
+				"yB": "-1",
+				"dx": "1",
+				"dy": "-2"
+			},
+			"answers": ["2x+y-4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : c = 0 : x + 2y = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xA": "2",
+				"yA": "-1",
+				"xB": "-3",
+				"yB": "0",
+				"dx": "1",
+				"dy": "2"
+			},
+			"answers": ["x+2y=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : AB(1 ; −1), C(3 ; 3) : y = x",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "0",
+				"yA": "0",
+				"dx": "1",
+				"dy": "-1",
+				"xC": "3",
+				"yC": "3"
+			},
+			"answers": ["y=x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : y = 1x (coefficient 1 écrit)",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "0",
+				"yA": "0",
+				"dx": "1",
+				"dy": "-1",
+				"xC": "3",
+				"yC": "3"
+			},
+			"answers": ["y=1x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : cartésienne x − y = 0",
+			"variationIndex": 1,
+			"variables": {
+				"xA": "0",
+				"yA": "0",
+				"dx": "1",
+				"dy": "-1",
+				"xC": "3",
+				"yC": "3"
+			},
+			"answers": ["x-y=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v2 : AC(−1 ; 1), c = 0 : −x + y = 0",
+			"variationIndex": 2,
+			"variables": {
+				"xA": "0",
+				"yA": "0",
+				"dx": "-1",
+				"dy": "1",
+				"xB": "3",
+				"yB": "3"
+			},
+			"answers": ["-x+y=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AC(−1 ; 1), c = 0 : y = x",
+			"variationIndex": 2,
+			"variables": {
+				"xA": "0",
+				"yA": "0",
+				"dx": "-1",
+				"dy": "1",
+				"xB": "3",
+				"yB": "3"
+			},
+			"answers": ["y=x"],
+			"expected": {
+				"status": "correct"
 			}
 		}
 	],

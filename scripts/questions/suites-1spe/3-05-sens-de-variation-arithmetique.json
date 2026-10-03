@@ -9,6 +9,7 @@
 	"level": 1,
 	"delay": 20,
 	"shared": {
+		"cleanCoefficients": true,
 		"choices": [
 			{
 				"content": "croissante"
@@ -106,7 +107,7 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..9"
+					"expression": "1..9"
 				},
 				{
 					"name": "b",
@@ -116,7 +117,7 @@
 			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
-					"$u_{n+1}-u_n={{b}}-{{a}}(n+1)-\\left({{b}}-{{a}}n\\right)=\\textcolor{{{color:primary.0}}}{-{{a}}}$ : la suite est arithmétique de raison $r=-{{a}}$.",
+					"$u_{n+1}-u_n={{b}}-{{a}}(n+1)-({{b}}-{{a}}n)$, soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{-{{a}}}$ : la suite est arithmétique de raison $r=-{{a}}$.",
 					"Comme $r<0$, la suite est **décroissante**."
 				]
 			}
@@ -130,7 +131,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..9"
+					"expression": "1..9"
 				},
 				{
 					"name": "b",
@@ -140,7 +141,7 @@
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-\\left({{eval:a*n+b}}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$ : la suite est arithmétique de raison $r={{a}}$.",
+					"$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-({{eval:a*n+b}})$, soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{a}}}$ : la suite est arithmétique de raison $r={{a}}$.",
 					"Comme $r>0$, la suite est **croissante**, même si ses premiers termes sont négatifs."
 				]
 			}

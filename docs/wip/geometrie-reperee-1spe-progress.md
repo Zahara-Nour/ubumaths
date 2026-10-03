@@ -45,3 +45,11 @@ Limites et points à relire :
 - Moteur : coefficients « 1x » dans un `expectedAnswer` à variables (pas de modificateur
   « coefficient ») ; `Ω` refusé comme nom de point ; `\iff\ &` casse le PDF ; « n⃗ » en texte de
   figure illisible au PDF.
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- A-02 à A-05 : coefficients et écarts dès 1 ; retirées `c != 0` / `cp != 0` (droite par l'origine possible) ; A-03 v1 : `abs(m) == 1 || q != 0`.
+- C-01 v1, C-02 v3 : cercle passant par l'origine permis (terme constant nul). C-03, C-04, C-05 : `c != 0` retirée ; C-03 v3 : `abs(al) > 1`, `g != 0` retirées.
+- Gardé : vecteur normal non nul, triangle non dégénéré.

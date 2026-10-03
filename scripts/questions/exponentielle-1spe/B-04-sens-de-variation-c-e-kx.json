@@ -9,6 +9,7 @@
 	"level": 1,
 	"delay": 30,
 	"shared": {
+		"cleanCoefficients": true,
 		"choices": [
 			{
 				"content": "croissante"
@@ -34,7 +35,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "2..9"
+					"expression": "1..9"
 				},
 				{
 					"name": "k",
@@ -44,7 +45,7 @@
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
 			}
@@ -58,7 +59,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "2..9"
+					"expression": "1..9"
 				},
 				{
 					"name": "k",
@@ -68,7 +69,7 @@
 			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
-					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
 			}
@@ -82,7 +83,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "-9..-2"
+					"expression": "-9..-1"
 				},
 				{
 					"name": "k",
@@ -92,7 +93,7 @@
 			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
-					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement négatif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{décroissante}}$ sur $\\mathbb{R}$."
 				]
 			}
@@ -106,7 +107,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "-9..-2"
+					"expression": "-9..-1"
 				},
 				{
 					"name": "k",
@@ -116,7 +117,7 @@
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
+					"$f$ est de la forme $c\\,e^{kx}$ avec $c={{c}}$ et $k={{k}}$, donc $f'(x)={{c}}\\times{{eval:k;()}}\\,e^{ {{eval:k*x}} }$, soit $f'(x)={{eval:c*k}}e^{ {{eval:k*x}} }$. Une exponentielle est **toujours strictement positive** : $f'(x)$ a le signe de $c\\times k={{eval:c*k}}$.",
 					"Ici $f'(x)$ est **strictement positif** sur $\\mathbb{R}$, donc $f$ est $\\textcolor{{{color:primary.0}}}{\\text{croissante}}$ sur $\\mathbb{R}$."
 				]
 			}
@@ -126,7 +127,7 @@
 			"variables": [
 				{
 					"name": "c",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "k",
@@ -322,6 +323,48 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "c=1, k=2 (eˣ sans coefficient) : croissante",
+			"variationIndex": 0,
+			"variables": { "c": "1", "k": "2" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "c=1, k=−3 : décroissante",
+			"variationIndex": 1,
+			"variables": { "c": "1", "k": "-3" },
+			"selectedChoices": [1],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "c=−1, k=2 : décroissante",
+			"variationIndex": 2,
+			"variables": { "c": "-1", "k": "2" },
+			"selectedChoices": [1],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "c=−1, k=−1 : croissante",
+			"variationIndex": 3,
+			"variables": { "c": "-1", "k": "-1" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "c=−1, k=−1 : décroissante refusé",
+			"variationIndex": 3,
+			"variables": { "c": "-1", "k": "-1" },
+			"selectedChoices": [1],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "constante, c=−1 : constante",
+			"variationIndex": 4,
+			"variables": { "c": "-1", "k": "3" },
+			"selectedChoices": [2],
+			"expected": { "status": "correct" }
 		}
 	]
 }

@@ -55,3 +55,13 @@ réduite), C-01 à C-04.
 - B-04 v2 (quotient, signe à étudier) : `warn` ; « sous forme factorisée » + `strict` possible.
 - B-06, a < 0 : `12(3x-2)^3` pour `-12(-3x+2)^3` est « non optimal » (écriture juste).
 - A-01 en `strict` : `(6h+h^2)/h` (non simplifié) est « mauvaise forme ».
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- A-01 v1 : b de 1 à 6 (et non 2) ; retirées `abs(2a+b) != 1`, `a+b != 0`.
+- A-04 : m de 1 à 6. A-05 : retirées `fa != 0`, `abs(fpa) != 1` (tangente horizontale ou par l'origine possible).
+- B-01 à B-04, B-06 : coefficients dès 1 (et non 2). B-02 v0 a ∈ {1, 3, 5, 7}.
+- B-05, B-06 : variable `x` déclarée lettre tirée (`x|x`) pour que `{{eval:a*x+b}}` écrive `x+3` et non `1x+3` (calcul littéral).
+- Gardé : dénominateur non nul, a ≠ 0 quand le degré en dépend.

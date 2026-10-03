@@ -8,6 +8,9 @@
 	"level": 5,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -15,11 +18,15 @@
 	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)=\\frac{1}{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)={1}/{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
 			"variables": [
 				{
+					"name": "x",
+					"expression": "x|x"
+				},
+				{
 					"name": "a",
-					"expression": "2..6"
+					"expression": "1..6"
 				},
 				{
 					"name": "b",
@@ -29,27 +36,31 @@
 			"conditions": ["gcd(a,b) = 1"],
 			"blanks": [
 				{
-					"expectedAnswer": "-\\frac{ {{a}} }{({{a}}x{{eval:b;+}})^2}"
+					"expectedAnswer": "-\\frac{ {{a}} }{({{eval:a*x+b}})^2}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$f=\\frac{1}{v}$ : $\\left(\\frac{1}{v}\\right)'=-\\frac{v'}{v^2}$.",
 					"Avec $v(x)={{a}}x{{eval:b;+}}$ : $v'(x)={{a}}$.",
-					"$$f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{a}} }{({{a}}x{{eval:b;+}})^2} }$$"
+					"$$f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{a}} }{({{eval:a*x+b}})^2} }$$"
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)=\\frac{ {{k}} }{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)={ {{k}} }/{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
 			"variables": [
+				{
+					"name": "x",
+					"expression": "x|x"
+				},
 				{
 					"name": "k",
 					"expression": "2..9"
 				},
 				{
 					"name": "a",
-					"expression": "2..5"
+					"expression": "1..5"
 				},
 				{
 					"name": "b",
@@ -59,14 +70,14 @@
 			"conditions": ["gcd(a,b) = 1"],
 			"blanks": [
 				{
-					"expectedAnswer": "-\\frac{ {{eval:k*a}} }{({{a}}x{{eval:b;+}})^2}"
+					"expectedAnswer": "-\\frac{ {{eval:k*a}} }{({{eval:a*x+b}})^2}"
 				}
 			],
 			"correction": {
 				"steps": [
 					"$f=k\\times\\frac{1}{v}$ avec $k={{k}}$ : $\\left(\\frac{k}{v}\\right)'=-\\frac{kv'}{v^2}$.",
 					"Avec $v(x)={{a}}x{{eval:b;+}}$ : $v'(x)={{a}}$.",
-					"$$f'(x)=-\\frac{ {{k}}\\times{{a}} }{({{a}}x{{eval:b;+}})^2}=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:k*a}} }{({{a}}x{{eval:b;+}})^2} }$$"
+					"$$f'(x)=-{ {{k}}*{{a}} }/{({{a}}x{{eval:b;+}})^2}$$ $$f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:k*a}} }{({{eval:a*x+b}})^2} }$$"
 				]
 			}
 		},
@@ -194,6 +205,41 @@
 			"variables": { "k": "2", "c": "1" },
 			"answers": ["-\\frac{4x}{(x^2+1)^2}"],
 			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : 1/(x−4) (a=1) → −1/(x−4)²",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-4" },
+			"answers": ["-\\frac{1}{(x-4)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : 1/(x−4) : signe oublié (1/(x−4)²)",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-4" },
+			"answers": ["\\frac{1}{(x-4)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : 1/(2x−7) → −2/(2x−7)² (attendu en syntaxe maison)",
+			"variationIndex": 0,
+			"variables": { "a": "2", "b": "-7" },
+			"answers": ["-\\frac{2}{(2x-7)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : 5/(x+3) (a=1) → −5/(x+3)²",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "1", "b": "3" },
+			"answers": ["-\\frac{5}{(x+3)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : 5/(x+3) : (k/v)′ = k/v′ (5)",
+			"variationIndex": 1,
+			"variables": { "k": "5", "a": "1", "b": "3" },
+			"answers": ["5"],
+			"expected": { "status": "incorrect" }
 		}
 	]
 }

@@ -8,6 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 30,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -19,11 +22,11 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "1..9;±"
+					"expression": "-9..9"
 				},
 				{
 					"name": "r",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				}
 			],
 			"blanks": [
@@ -148,6 +151,55 @@
 				"status": "unoptimal_form",
 				"constraintViolations": ["products"]
 			}
+		},
+		{
+			"description": "u_0=−7, r=1 (coefficient 1 nettoyé) : −7+n",
+			"variationIndex": 0,
+			"variables": { "a": "-7", "r": "1" },
+			"answers": ["-7+n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "u_0=−7, r=1 : n−7",
+			"variationIndex": 0,
+			"variables": { "a": "-7", "r": "1" },
+			"answers": ["n-7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "u_0=−7, r=1 : −7+1n non nettoyé",
+			"variationIndex": 0,
+			"variables": { "a": "-7", "r": "1" },
+			"answers": ["-7+1n"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["factorOne"] }
+		},
+		{
+			"description": "u_0=0, r=7 : 7n",
+			"variationIndex": 0,
+			"variables": { "a": "0", "r": "7" },
+			"answers": ["7n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "u_0=0, r=7 : 0+7n non réduit",
+			"variationIndex": 0,
+			"variables": { "a": "0", "r": "7" },
+			"answers": ["0+7n"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["nullTerms"] }
+		},
+		{
+			"description": "u_0=−1, r=−1 : −1−n",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "r": "-1" },
+			"answers": ["-1-n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "u_0=−1, r=−1 : −1+n (signe de r perdu)",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "r": "-1" },
+			"answers": ["-1+n"],
+			"expected": { "status": "incorrect" }
 		}
 	]
 }

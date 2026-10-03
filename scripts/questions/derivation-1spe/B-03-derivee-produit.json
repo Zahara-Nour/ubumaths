@@ -8,6 +8,9 @@
 	"level": 3,
 	"status": "draft",
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -19,7 +22,7 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "b",
@@ -39,17 +42,17 @@
 				"steps": [
 					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
 					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=x^2{{eval:c;+}}$ : $u'(x)={{a}}$ et $v'(x)=2x$.",
-					"$$f'(x)={{a}}(x^2{{eval:c;+}})+({{a}}x{{eval:b;+}})\\times2x$$",
-					"$$f'(x)={{a}}x^2{{eval:a*c;+}}{{eval:2*a;+}}x^2{{eval:2*b;+}}x=\\textcolor{{{color:primary.0}}}{ {{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:a*c;+}} }$$"
+					"$$f'(x)={{a}}(x^2{{eval:c;+}})+({{a}}x{{eval:b;+}})*2x$$",
+					"$$f'(x)={{a}}x^2{{eval:a*c;+}}{{eval:2*a;+}}x^2{{eval:2*b;+}}x$$ $$f'(x)=\\textcolor{{{color:primary.0}}}{ {{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:a*c;+}} }$$"
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}x\\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}xsqrt(x)$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				}
 			],
 			"blanks": [
@@ -61,17 +64,17 @@
 				"steps": [
 					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
 					"Avec $u(x)={{a}}x$ et $v(x)=\\sqrt{x}$ : $u'(x)={{a}}$ et $v'(x)=\\frac{1}{2\\sqrt{x}}$.",
-					"$$f'(x)={{a}}\\sqrt{x}{{eval:a;+}}x\\times\\frac{1}{2\\sqrt{x}}={{a}}\\sqrt{x}{{eval:a/2;+}}\\sqrt{x}$$",
+					"$$f'(x)={{a}}sqrt(x){{eval:a;+}}x*{1}/{2sqrt(x)}$$ $$f'(x)={{a}}sqrt(x){{eval:a/2;+}}sqrt(x)$$",
 					"car $\\frac{x}{\\sqrt{x}}=\\sqrt{x}$. Donc $f'(x)=\\textcolor{{{color:primary.0}}}{ {{eval:3*a/2}}\\sqrt{x} }$."
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)=({{a}}x{{eval:b;+}})\\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)=({{a}}x{{eval:b;+}})sqrt(x)$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..4;±"
+					"expression": "1..4;±"
 				},
 				{
 					"name": "b",
@@ -87,8 +90,8 @@
 				"steps": [
 					"$f$ est un produit $u\\times v$ : $(uv)'=u'v+uv'$.",
 					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)=\\sqrt{x}$ : $u'(x)={{a}}$ et $v'(x)=\\frac{1}{2\\sqrt{x}}$.",
-					"$$f'(x)={{a}}\\sqrt{x}+\\frac{ {{a}}x{{eval:b;+}} }{2\\sqrt{x}}$$",
-					"Au même dénominateur, avec $\\sqrt{x}\\times2\\sqrt{x}=2x$ : $$f'(x)=\\frac{ {{eval:2*a}}x{{eval:a;+}}x{{eval:b;+}} }{2\\sqrt{x}}=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:3*a}}x{{eval:b;+}} }{2\\sqrt{x}} }$$"
+					"$$f'(x)={{a}}sqrt(x)+{ {{a}}x{{eval:b;+}} }/{2sqrt(x)}$$",
+					"Au même dénominateur, avec $\\sqrt{x}\\times2\\sqrt{x}=2x$ : $$f'(x)={ {{eval:2*a}}x{{eval:a;+}}x{{eval:b;+}} }/{2sqrt(x)}$$ $$f'(x)=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:3*a}}x{{eval:b;+}} }{2\\sqrt{x}} }$$"
 				]
 			}
 		}
@@ -218,6 +221,69 @@
 			"variationIndex": 2,
 			"variables": { "a": "-2", "b": "5" },
 			"answers": ["\\frac{5-6x}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (x+2)(x²+6) (a=1) → 3x²+4x+6",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "2", "c": "6" },
+			"answers": ["3x^2+4x+6"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (−x+5)(x²+5) (a=−1) → −3x²+10x−5",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "5", "c": "5" },
+			"answers": ["-3x^2+10x-5"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (−x+5)(x²+5) : u′v seul (−x²−5)",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "5", "c": "5" },
+			"answers": ["-x^2-5"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : x√x (a=1) → (3/2)√x",
+			"variationIndex": 1,
+			"variables": { "a": "1" },
+			"answers": ["\\frac{3}{2}\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : −x√x (a=−1) → −(3/2)√x",
+			"variationIndex": 1,
+			"variables": { "a": "-1" },
+			"answers": ["-\\frac{3}{2}\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : x√x : u′v′ (1/(2√x))",
+			"variationIndex": 1,
+			"variables": { "a": "1" },
+			"answers": ["\\frac{1}{2\\sqrt{x}}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : 2x√x (a/2=1) → 3√x",
+			"variationIndex": 1,
+			"variables": { "a": "2" },
+			"answers": ["3\\sqrt{x}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : (x+7)√x (a=1) → (3x+7)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "1", "b": "7" },
+			"answers": ["\\frac{3x+7}{2\\sqrt{x}}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : (−x+5)√x (a=−1) → (−3x+5)/(2√x)",
+			"variationIndex": 2,
+			"variables": { "a": "-1", "b": "5" },
+			"answers": ["\\frac{-3x+5}{2\\sqrt{x}}"],
 			"expected": { "status": "correct" }
 		}
 	]

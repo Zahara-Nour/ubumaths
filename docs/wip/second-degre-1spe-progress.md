@@ -68,3 +68,9 @@ compilation non faite.
   `updated_at`, `created_by`) sur TOUT modèle relu en base, publié compris : défaut de l'outil, specs
   et tirages verts.
 ```
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- 06 v1 : a ∈ [−3 ; 3] privé de 0. 07 v0, v2 : a ∈ [−3 ; 3] privé de 0 et 1. a ≠ 0 gardé (degré 2).
