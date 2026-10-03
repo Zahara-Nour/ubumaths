@@ -205,3 +205,10 @@ Deux gardes valent plus que les correctifs qu'elles remplacent :
   (`.delete()` ne lève pas, il REND `{ error }`).
 
 La leçon générale : **ce qui n'a pas de signal ne se corrige jamais tout seul.**
+
+## Nouvelle fonction SECURITY DEFINER : le garde-fou Q145
+
+Une fonction SECURITY DEFINER ignore la RLS : si un élève peut l'appeler, seule une garde dans son corps protège le compte des autres. `tests/integration/garde-fonctions-security-definer.test.ts` échoue donc dès qu'une fonction de `public` exécutable par `authenticated`/`anon` manque à `tests/integration/fixtures/fonctions-definer-verifiees.ts`, qu'une entrée de cette liste est périmée, ou qu'un `search_path` ne finit pas par `pg_temp`.
+**Que faire :** lire le corps ; s'il ne contrôle pas l'appelant (`auth.uid() = p_user_id`, `is_teacher_or_admin()`, `assert_*`, jeton…), ajouter la garde ou révoquer EXECUTE — jamais l'inverse. S'il le contrôle, ajouter l'entrée avec une justification VRAIE d'une ligne (et `anon: true` seulement pour une page publique).
+Entrée périmée → la retirer. `search_path` → `SET search_path = public, pg_temp`.
+Les fonctions laissées hors liste exprès (en attente de décision) sont nommées en tête du fichier de liste.
