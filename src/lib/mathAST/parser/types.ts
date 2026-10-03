@@ -100,6 +100,10 @@ export interface Token {
  * Example:
  * - Without genericFunctions: f(x) = f * (x)
  * - With genericFunctions: { names: ['f'] }: f(x) = FunctionNode(f, [x])
+ *
+ * `f\left( x \right)` (forme produite par MathLive) donne exactement le même
+ * nœud que `f(x)`, dérivées et réciproque comprises. Seule la parenthèse ronde
+ * ouvre un appel : `f\left[ x \right]` et `f\left| x \right|` restent des produits.
  */
 export interface GenericFunctionConfig {
 	/** Function names to recognize (typically single letters like 'f', 'g', 'h') */
