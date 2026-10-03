@@ -2,16 +2,18 @@
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import type { GeoElement } from '$lib/geometry-core/types/elements';
 	import { isPointElement, isLineLike, isCircle } from '$lib/geometry-core/types/elements';
+	import { colorForPrint, resolveNamedColor, type NamedColor } from '$lib/theme/named-colors';
 
-	const COLOR_PALETTE = [
-		'#1e40af',
-		'#dc2626',
-		'#16a34a',
-		'#9333ea',
-		'#ea580c',
-		'#0891b2',
-		'#4b5563',
-		'#000000'
+	/** Noms de la palette commune des figures : la figure garde le NOM, qui suit le thème */
+	const COLOR_PALETTE: readonly NamedColor[] = [
+		'bleu',
+		'rouge',
+		'vert',
+		'violet',
+		'orange',
+		'cyan',
+		'gris',
+		'noir'
 	];
 
 	interface Props {
@@ -30,7 +32,12 @@
 	const initialElement = element;
 
 	let label = $state(initialElement.label ?? '');
-	let selectedColor = $state(initialElement.style?.color ?? initialElement.color);
+	// Nom canonique (`red` → `rouge`) pour reconnaître la pastille courante
+	let selectedColor = $state(
+		resolveNamedColor(initialElement.style?.color ?? initialElement.color ?? '') ??
+			initialElement.style?.color ??
+			initialElement.color
+	);
 
 	function updateColor(color: string) {
 		selectedColor = color;
@@ -108,7 +115,7 @@
 				<button
 					class="color-swatch"
 					class:selected={selectedColor === color}
-					style="background-color: {color};"
+					style:background-color={colorForPrint(color)}
 					onclick={() => updateColor(color)}
 					aria-label="Couleur {color}"
 				></button>

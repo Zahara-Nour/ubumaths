@@ -18,6 +18,7 @@
  * @module ubumark/utils/figure-scene
  */
 
+import { HEX_COLOR, resolveNamedColor } from '$lib/theme/named-colors';
 import type {
 	FigureIssue,
 	FigureNode,
@@ -376,45 +377,16 @@ function toIssue(node: FigureNode, error: unknown): FigureIssue {
 // ============================================================================
 
 /**
- * Seule forme de couleur admise en sortie : hexadécimale à 3, 4, 6 ou 8
- * chiffres (ce que `rgb("…")` de Typst accepte). Tout le reste — `red`, `"`,
- * `red;mask-image:url(…)` — ferait échouer TOUTE la fiche PDF, ou injecterait
- * du CSS à l'écran (chat élève).
+ * Couleur sûre, ou null si inconnue. Formes admises en sortie : un NOM de la
+ * palette (canonique : `red` → `rouge`), traduit au rendu (variable du thème à
+ * l'écran, variante claire au PDF), ou un hexadécimal à 3, 4, 6 ou 8 chiffres,
+ * tel quel. Tout le reste — `"`, `red;mask-image:url(…)` — ferait échouer TOUTE
+ * la fiche PDF, ou injecterait du CSS à l'écran (chat élève).
  */
-export const FIGURE_HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-
-/** Noms courants, anglais et français (les noms français du DSL sont déjà résolus en amont). */
-const COLOR_NAMES: Readonly<Record<string, string>> = {
-	rouge: '#dc2626',
-	red: '#dc2626',
-	bleu: '#1e40af',
-	blue: '#1e40af',
-	vert: '#16a34a',
-	green: '#16a34a',
-	orange: '#ea580c',
-	violet: '#9333ea',
-	purple: '#9333ea',
-	noir: '#000000',
-	black: '#000000',
-	gris: '#4b5563',
-	gray: '#4b5563',
-	grey: '#4b5563',
-	jaune: '#f59e0b',
-	yellow: '#f59e0b',
-	cyan: '#0891b2',
-	blanc: '#ffffff',
-	white: '#ffffff',
-	marron: '#92400e',
-	brown: '#92400e',
-	rose: '#db2777',
-	pink: '#db2777'
-};
-
-/** Couleur sûre (hexadécimale) ou null si inconnue. */
 export function normalizeFigureColor(raw: string): string | null {
 	const value = raw.trim();
-	if (FIGURE_HEX_COLOR.test(value)) return value;
-	return COLOR_NAMES[value.toLowerCase()] ?? null;
+	if (HEX_COLOR.test(value)) return value;
+	return resolveNamedColor(value);
 }
 
 /** Au-delà, les nombres s'écrivent en notation exponentielle : refusés. */
@@ -475,7 +447,7 @@ function hasFiniteGeometry(figure: Figure, el: GeoElement): boolean {
 
 /**
  * Valider (et normaliser) couleurs et nombres des objets visibles. Les noms de
- * couleur connus sont remplacés par leur valeur hexadécimale dans la figure.
+ * couleur connus sont ramenés à leur nom canonique dans la figure.
  */
 function validateDrawing(
 	node: FigureNode,
@@ -496,8 +468,8 @@ function validateDrawing(
 			['fillColor', rawFill]
 		] as const) {
 			if (raw === undefined) continue;
-			const hex = normalizeFigureColor(raw);
-			if (hex === null) {
+			const safe = normalizeFigureColor(raw);
+			if (safe === null) {
 				const what = key === 'color' ? 'couleur' : 'couleur de remplissage';
 				return located(
 					el,
@@ -505,7 +477,7 @@ function validateDrawing(
 					raw
 				);
 			}
-			if (hex !== raw) fixes[key] = hex;
+			if (safe !== raw) fixes[key] = safe;
 		}
 		if (fixes.color !== undefined || fixes.fillColor !== undefined)
 			figure.updateStyle(el.id, fixes);

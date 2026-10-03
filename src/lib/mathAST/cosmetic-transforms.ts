@@ -1046,6 +1046,32 @@ export function isSimpleNumberLatex(latex: string): boolean {
 }
 
 /**
+ * Un nombre écrit simplement OU en fraction de nombres (`\\frac{1}{2}`,
+ * `-\\frac{3}{4}`), signe compris — y compris sur le numérateur ou le
+ * dénominateur (`\\frac{-3}{4}`) : c'est une écriture de nombre, que les
+ * contraintes cosmétiques jugent ensuite (`reducedFractions`), comme en case
+ * positionnelle. Un calcul non effectué (`1-1`, `\\frac{1}{2}+0`) est refusé.
+ * Sert aux cases « la règle suffit » (décision de David, 2026-10-03).
+ */
+export function isNumberOrNumberFractionLatex(latex: string): boolean {
+	if (isSimpleNumberLatex(latex)) return true;
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+
+	const node = withoutSign(parsed.ast);
+	return (
+		node.type === 'division' &&
+		withoutSign(node.numerator).type === 'number' &&
+		withoutSign(node.denominator).type === 'number'
+	);
+}
+
+/** Nœud débarrassé d'un signe unique en tête (`-x` / `+x`) */
+function withoutSign(node: MathNode): MathNode {
+	return node.type === 'opposite' || node.type === 'positive' ? node.operand : node;
+}
+
+/**
  * La valeur d'une grandeur (partie numérique d'un blanc à unité) : un nombre
  * simple, une fraction de nombres (`\frac{1}{3}`) ou une notation scientifique
  * (`2{,}5\times10^{3}`), signe compris. Une fraction est parfois la SEULE

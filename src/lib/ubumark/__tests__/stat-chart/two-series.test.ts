@@ -238,12 +238,9 @@ describe('deux séries — erreurs situées', () => {
 		);
 	});
 
-	it('diagramme circulaire, histogramme, polygone', () => {
+	it('diagramme circulaire (histogramme et polygone : `two-series-classes.test.ts`)', () => {
 		expect(errorOf('données A: 1\ndonnées B: 2', 'circulaire')).toBe(
 			'Ligne 1 : une seule série par diagramme circulaire'
-		);
-		expect(errorOf('classes: 0 ; 5\ndonnées A: 1\ndonnées B: 2', 'histogramme')).toBe(
-			'Ligne 2 : deux séries : arrive bientôt pour les séries en classes'
 		);
 	});
 

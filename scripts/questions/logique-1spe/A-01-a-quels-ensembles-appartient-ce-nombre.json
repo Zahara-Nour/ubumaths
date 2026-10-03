@@ -1,0 +1,458 @@
+{
+	"title": "À quels ensembles de nombres appartient ce nombre ?",
+	"description": "Reconnaître l'appartenance d'une fraction, d'une racine carrée ou d'un décimal à ℕ, ℤ, 𝔻, ℚ et ℝ (plusieurs bonnes réponses)",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Appartenance et inclusion",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"multipleAnswers": true,
+	"variations": [
+		{
+			"statement": "On considère le nombre $x={{if:p<0|-}}\\dfrac{ {{eval:abs(p)}} }{ {{q}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "2|3|4|5|6|7|8|10|12|15|20|25"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "m",
+					"expression": "1..40;±"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:(1-sign(t))*q*k+sign(t)*m}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:q/gcd(abs(p),q)}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:1-sign(r-1)}}"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:1-sign(mod(10000,r))}}"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:z*(1+sign(p))/2}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\mathbb{N}$"
+				},
+				{
+					"content": "$\\mathbb{Z}$"
+				},
+				{
+					"content": "$𝔻$"
+				},
+				{
+					"content": "$\\mathbb{Q}$"
+				},
+				{
+					"content": "$\\mathbb{R}$"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:4-4*u}}", "{{eval:4-3*z}}", "{{eval:4-2*w}}", "3", "4"],
+			"correction": {
+				"steps": [
+					"On simplifie la fraction : $x={{if:p<0|-}}\\dfrac{ {{eval:abs(p)}} }{ {{q}} }={{eval:p/q}}$.",
+					"{{if:u=1|$x$ est un entier naturel : $x\\in\\mathbb{N}$ et $x\\in\\mathbb{Z}$.}}{{if:z=1 && u=0|$x$ est un entier négatif : $x\\in\\mathbb{Z}$ mais $x\\notin\\mathbb{N}$.}}{{if:z=0|$x$ n'est pas entier : $x\\notin\\mathbb{Z}$ et $x\\notin\\mathbb{N}$.}}",
+					"{{if:w=1|Le dénominateur de la fraction irréductible, ${{r}}$, ne contient que les facteurs premiers $2$ et $5$ : $x={{eval:p/q;d}}$ est décimal, $x\\in 𝔻$.}}{{if:w=0|Le dénominateur de la fraction irréductible, ${{r}}$, a un facteur premier autre que $2$ et $5$ : l'écriture décimale de $x$ est illimitée, $x\\notin 𝔻$.}}",
+					"$x$ est le quotient de deux entiers : $x\\in\\mathbb{Q}$, et donc $x\\in\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère le nombre $x={{if:s<0|-}}\\sqrt{ {{n}} }$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:2*k}}"
+				},
+				{
+					"name": "j",
+					"expression": "1..{{h}}"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:k^2+t*j}}"
+				},
+				{
+					"name": "s",
+					"expression": "1|-1"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:1-t}}"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:z*(1+s)/2}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\mathbb{N}$"
+				},
+				{
+					"content": "$\\mathbb{Z}$"
+				},
+				{
+					"content": "$𝔻$"
+				},
+				{
+					"content": "$\\mathbb{Q}$"
+				},
+				{
+					"content": "$\\mathbb{R}$"
+				}
+			],
+			"correctChoiceIndex": [
+				"{{eval:4-4*u}}",
+				"{{eval:4-3*z}}",
+				"{{eval:4-2*z}}",
+				"{{eval:4-z}}",
+				"4"
+			],
+			"correction": {
+				"steps": [
+					"{{if:z=1|${{n}}={{k}}^2$ est un carré parfait : $x={{if:s<0|-}}\\sqrt{ {{n}} }={{eval:s*k}}$ est un entier relatif, donc $x\\in\\mathbb{Z}$, $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$.}}{{if:u=1| Il est positif : $x\\in\\mathbb{N}$.}}{{if:z=1 && u=0| Il est négatif : $x\\notin\\mathbb{N}$.}}{{if:z=0|${{eval:k^2}}<{{n}}<{{eval:(k+1)^2}}$ : ${{n}}$ n'est pas un carré parfait, donc $\\sqrt{ {{n}} }$ est irrationnel (comme $\\sqrt{2}$).}}",
+					"{{if:z=0|$x$ n'est donc ni rationnel, ni décimal, ni entier : $x\\notin\\mathbb{Q}$, $x\\notin 𝔻$, $x\\notin\\mathbb{Z}$, $x\\notin\\mathbb{N}$. Seulement $x\\in\\mathbb{R}$.}}{{if:z=1|Rappel : $\\mathbb{N} \\subset\\mathbb{Z} \\subset 𝔻 \\subset\\mathbb{Q} \\subset\\mathbb{R}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "On considère le nombre $x={{eval:m/100;d}}$.\n\nÀ quels ensembles le nombre $x$ appartient-il ?",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "k",
+					"expression": "1..30;±"
+				},
+				{
+					"name": "v",
+					"expression": "1..999;±"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:(1-sign(t))*100*k+sign(t)*v}}"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:1-sign(t)}}"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:z*(1+sign(m))/2}}"
+				}
+			],
+			"conditions": ["mod(abs(v), 100) != 0"],
+			"choices": [
+				{
+					"content": "$\\mathbb{N}$"
+				},
+				{
+					"content": "$\\mathbb{Z}$"
+				},
+				{
+					"content": "$𝔻$"
+				},
+				{
+					"content": "$\\mathbb{Q}$"
+				},
+				{
+					"content": "$\\mathbb{R}$"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:4-4*u}}", "{{eval:4-3*z}}", "2", "3", "4"],
+			"correction": {
+				"steps": [
+					"{{if:u=1|$x={{eval:m/100}}$ est un entier naturel : $x\\in\\mathbb{N}$ et $x\\in\\mathbb{Z}$.}}{{if:z=1 && u=0|$x={{eval:m/100}}$ est un entier négatif : $x\\in\\mathbb{Z}$ mais $x\\notin\\mathbb{N}$.}}{{if:z=0|$x$ n'est pas entier : $x\\notin\\mathbb{Z}$ et $x\\notin\\mathbb{N}$.}}",
+					"$x=\\dfrac{ {{m}} }{100}$ : c'est un nombre décimal, donc $x\\in 𝔻$, $x\\in\\mathbb{Q}$ et $x\\in\\mathbb{R}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 −21/12 = −7/4 : 𝔻, ℚ, ℝ",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"t": "1",
+				"k": "1",
+				"m": "-21"
+			},
+			"selectedChoices": [2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 −7/4 : ordre de coche différent",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"t": "1",
+				"k": "1",
+				"m": "-21"
+			},
+			"selectedChoices": [4, 2, 3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 −7/4 : ℤ coché à tort",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"t": "1",
+				"k": "1",
+				"m": "-21"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 −7/4 : 𝔻 oublié (½)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "12",
+				"t": "1",
+				"k": "1",
+				"m": "-21"
+			},
+			"selectedChoices": [3, 4],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "v0 38/3 : ℚ, ℝ",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"t": "1",
+				"k": "1",
+				"m": "38"
+			},
+			"selectedChoices": [3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 38/3 : 𝔻 coché à tort",
+			"variationIndex": 0,
+			"variables": {
+				"q": "3",
+				"t": "1",
+				"k": "1",
+				"m": "38"
+			},
+			"selectedChoices": [2, 3, 4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 −12/4 = −3 : ℤ, 𝔻, ℚ, ℝ",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "0",
+				"k": "-3",
+				"m": "5"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 −3 : ℕ coché à tort",
+			"variationIndex": 0,
+			"variables": {
+				"q": "4",
+				"t": "0",
+				"k": "-3",
+				"m": "5"
+			},
+			"selectedChoices": [0, 1, 2, 3, 4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 30/6 = 5 : les cinq",
+			"variationIndex": 0,
+			"variables": {
+				"q": "6",
+				"t": "0",
+				"k": "5",
+				"m": "5"
+			},
+			"selectedChoices": [0, 1, 2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 30/6 = 5 : seulement ℚ et ℝ (½)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "6",
+				"t": "0",
+				"k": "5",
+				"m": "5"
+			},
+			"selectedChoices": [3, 4],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		},
+		{
+			"description": "v1 −√64 = −8 : ℤ, 𝔻, ℚ, ℝ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "8",
+				"t": "0",
+				"j": "3",
+				"s": "-1"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 √49 = 7 : les cinq",
+			"variationIndex": 1,
+			"variables": {
+				"k": "7",
+				"t": "0",
+				"j": "3",
+				"s": "1"
+			},
+			"selectedChoices": [0, 1, 2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 √43 : ℝ seul",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"t": "1",
+				"j": "7",
+				"s": "1"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 √43 : ℚ coché à tort",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"t": "1",
+				"j": "7",
+				"s": "1"
+			},
+			"selectedChoices": [3, 4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 3,93 : 𝔻, ℚ, ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"k": "6",
+				"v": "393"
+			},
+			"selectedChoices": [2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 3,93 : ℤ coché à tort",
+			"variationIndex": 2,
+			"variables": {
+				"t": "1",
+				"k": "6",
+				"v": "393"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 −29 : ℤ, 𝔻, ℚ, ℝ",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"k": "-29",
+				"v": "375"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 27 : ℕ oublié (½)",
+			"variationIndex": 2,
+			"variables": {
+				"t": "0",
+				"k": "27",
+				"v": "375"
+			},
+			"selectedChoices": [1, 2, 3, 4],
+			"expected": {
+				"status": "unoptimal_form"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

@@ -68,6 +68,7 @@ import {
 	type StatChartUnit
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
+import { resolveNamedColor } from '$lib/theme/named-colors';
 import { summarizeClasses } from '$lib/statistics/classes';
 import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
@@ -208,7 +209,7 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	lignes: ['tableau-croise'],
 	colonnes: ['tableau-croise'],
 	totaux: ['tableau-croise'],
-	afficher: ['tableau-croise', 'barres'],
+	afficher: ['tableau-croise', 'barres', 'histogramme'],
 	masquer: ['tableau-croise', 'loi'],
 	coin: ['tableau-croise'],
 	mode: ['simulation'],
@@ -506,7 +507,8 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			);
 			return;
 		case 'couleur':
-			options.color = oneOf(value, COURBE_COLORS, 'couleur');
+			// Synonymes anglais (`pink` → `rose`) ramenés au nom de la palette
+			options.color = oneOf(resolveNamedColor(value) ?? value, COURBE_COLORS, 'couleur');
 			return;
 		case 'etiquettes':
 			options.labels = oneOf(value, STAT_CHART_LABELS, 'étiquette');
@@ -548,7 +550,7 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			options.columns = parseNames(value, 'colonnes');
 			return;
 		case 'afficher': {
-			if (kind === 'barres') {
+			if (kind === 'barres' || kind === 'histogramme') {
 				const shown = (['effectifs', 'fréquences'] as const).find(
 					(d) => normalizeKey(d) === normalizeKey(value.trim())
 				);
@@ -832,6 +834,66 @@ function tallyTwoSeries(
 			display:
 				forced ?? (first.entries.length === second.entries.length ? 'effectifs' : 'fréquences'),
 			values: numeric ? [values(first), values(second)] : null
+		}
+	};
+}
+
+/**
+ * Deux séries nommées dans un histogramme ou un polygone (lot 5 PR c) : chacune
+ * rangée dans les MÊMES classes. Pas de mode carreaux (Q120) : ni `légende:`,
+ * ni classes d'amplitudes différentes — une échelle commune n'aurait plus de sens.
+ */
+function tallyTwoSeriesInClasses(
+	kind: StatChartKind,
+	first: NamedSeries,
+	second: NamedSeries,
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+):
+	| { data: StatChartDatum[]; twoSeries: NonNullable<StatChartSpec['twoSeries']> }
+	| { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	if (options.areaLegend !== null) {
+		return at(optionLines.legende ?? 0, 'une seule série en mode carreaux');
+	}
+	const ranged: { data: StatChartDatum[]; values: number[] }[] = [];
+	for (const series of [first, second]) {
+		const outcome = tallyIntoClasses(
+			kind,
+			series.entries,
+			options.classBounds,
+			optionLines.classes ?? 0
+		);
+		if ('error' in outcome) {
+			// La série en cause est nommée, sauf pour une faute de `classes:`
+			const { message, line } = outcome.error;
+			const named =
+				line === (optionLines.classes ?? -1) || options.classBounds === null
+					? message
+					: message.replace(/^Ligne (\d+) : /, `Ligne $1 : ${series.name} : `);
+			return { error: { message: named, line } };
+		}
+		ranged.push(outcome);
+	}
+	const widths = ranged[0].data.map((d) => (d.interval ? d.interval.upper - d.interval.lower : 0));
+	if (widths.some((w) => Math.abs(w - widths[0]) > 1e-9 * Math.max(1, Math.abs(widths[0])))) {
+		return at(
+			optionLines.classes ?? 0,
+			'deux séries : des classes de même amplitude (pas de mode carreaux)'
+		);
+	}
+	const [a, b] = ranged;
+	return {
+		data: a.data,
+		twoSeries: {
+			names: [first.name, second.name],
+			counts: [a.data.map((d) => d.value), b.data.map((d) => d.value)],
+			display:
+				options.barDisplay ??
+				(first.entries.length === second.entries.length ? 'effectifs' : 'fréquences'),
+			values: [a.values, b.values]
 		}
 	};
 }
@@ -1349,10 +1411,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			const series = NAMED_SERIES_REGEX.exec(content);
 			if (series) {
 				if (kind === 'circulaire') throw new LineError('une seule série par diagramme circulaire');
-				if (CLASS_CHART_KINDS.includes(kind)) {
-					throw new LineError('deux séries : arrive bientôt pour les séries en classes');
-				}
-				if (kind !== 'barres') {
+				if (kind !== 'barres' && !CLASS_CHART_KINDS.includes(kind)) {
 					throw new LineError(
 						`l'option « données » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ')})`
 					);
@@ -1524,6 +1583,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				message: `Ligne ${line} : écrire deux séries nommées : données A: … et données B: …`,
 				line
 			});
+		} else if (isClasses) {
+			const ranged = tallyTwoSeriesInClasses(kind, named[0], named[1], options, optionLines);
+			if ('error' in ranged) errors.push(ranged.error);
+			else {
+				data.push(...ranged.data);
+				twoSeries = ranged.twoSeries;
+			}
 		} else {
 			const tallied = tallyTwoSeries(named[0], named[1], options.barDisplay);
 			if ('error' in tallied) errors.push(tallied.error);
@@ -1539,7 +1605,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	}
 
 	let rawValues: number[] | null = null;
-	if (errors.length === 0 && isClasses && options.classBounds !== null && raw.length === 0) {
+	if (
+		errors.length === 0 &&
+		isClasses &&
+		options.classBounds !== null &&
+		raw.length === 0 &&
+		named.length === 0
+	) {
 		const line = optionLines.classes ?? 0;
 		errors.push({
 			message: `Ligne ${line} : classes : seulement avec données: (sinon écrire [0 ; 5[ = effectif)`,

@@ -6,6 +6,7 @@
  * cannot be resolved.
  */
 
+import { colorForPrint } from '$lib/theme/named-colors';
 import type { Figure, FigureDefaults } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
 import { geoToNumber } from '../compute/to-number';
@@ -105,6 +106,29 @@ export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults)
 		roughBowing: element.style?.roughBowing ?? 1,
 		roughFillStyle: element.style?.roughFillStyle ?? 'hachure',
 		roughPreserveVertices: element.style?.roughPreserveVertices ?? false
+	};
+}
+
+/**
+ * Le style à IMPRIMER (exports Typst / SVG / TikZ) : une couleur nommée prend
+ * sa variante claire (`rouge` → `#dc2626`). Un hexadécimal passe tel quel, et
+ * une couleur inconnue de la palette (nom CSS) aussi, comme avant.
+ *
+ * Les figures interactives l'utilisent aussi en attendant d'être thémables
+ * (lot 2 : docs/wip/palette-figures-progress.md).
+ */
+export function resolvePrintStyle(
+	element: GeoElementBase,
+	defaults?: FigureDefaults
+): GeoStyleResolved {
+	const style = resolveStyle(element, defaults);
+	return {
+		...style,
+		color: colorForPrint(style.color) ?? style.color,
+		fillColor:
+			style.fillColor === undefined
+				? undefined
+				: (colorForPrint(style.fillColor) ?? style.fillColor)
 	};
 }
 

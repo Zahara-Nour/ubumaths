@@ -1,0 +1,308 @@
+{
+	"title": "« Et », « ou » et intervalles",
+	"description": "Traduire une proposition composée avec « et » ou « ou » par un intervalle ou une réunion d'intervalles",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Connecteurs et contre-exemples",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"blankDefaults": {
+			"answerKind": "intervalles"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x>{{a}}$ et $x\\leqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "]{{a}};{{b}}]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x>{{a}}$ » correspond à $]{{a}};+\\infty[$ (${{a}}$ exclu) et « $x\\leqslant{{b}}$ » à $]-\\infty;{{b}}]$ (${{b}}$ inclus).",
+					"Le connecteur « et » demande que les **deux** conditions soient vraies : on prend l'**intersection** des deux ensembles.",
+					"$S=]{{a}};+\\infty[\\cap]-\\infty;{{b}}]=\\textcolor{{{color:primary.0}}}{]{{a}};{{b}}]}$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<{{a}}$ ou $x\\geqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..6"
+				},
+				{
+					"name": "d",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{a}}[\\cup[{{b}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x<{{a}}$ » correspond à $]-\\infty;{{a}}[$ (${{a}}$ exclu) et « $x\\geqslant{{b}}$ » à $[{{b}};+\\infty[$ (${{b}}$ inclus).",
+					"Le connecteur « ou » demande qu'**au moins une** des deux conditions soit vraie : on prend la **réunion** des deux ensembles.",
+					"$S=\\textcolor{{{color:primary.0}}}{]-\\infty;{{a}}[\\cup[{{b}};+\\infty[}$ : les réels compris entre ${{a}}$ (inclus) et ${{b}}$ (exclu) sont les seuls à ne pas convenir."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant{{a}}$ et $x\\geqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:max(a,b)}}"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:min(a,b)}}"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "[{{m}};+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x\\geqslant{{a}}$ » correspond à $[{{a}};+\\infty[$ et « $x\\geqslant{{b}}$ » à $[{{b}};+\\infty[$.",
+					"Avec « et », les **deux** conditions doivent être vraies : on prend l'**intersection**. Un réel supérieur ou égal à ${{m}}$ est aussi supérieur ou égal à ${{n}}$, mais pas l'inverse.",
+					"$S=[{{a}};+\\infty[\\cap[{{b}};+\\infty[=\\textcolor{{{color:primary.0}}}{[{{m}};+\\infty[}$"
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<{{a}}$ ou $x<{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "m",
+					"expression": "{{eval:max(a,b)}}"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:min(a,b)}}"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "]-\\infty;{{m}}["
+				}
+			],
+			"correction": {
+				"steps": [
+					"« $x<{{a}}$ » correspond à $]-\\infty;{{a}}[$ et « $x<{{b}}$ » à $]-\\infty;{{b}}[$.",
+					"Avec « ou », il suffit qu'**une** des deux conditions soit vraie : on prend la **réunion**. Un réel strictement inférieur à ${{n}}$ est aussi strictement inférieur à ${{m}}$.",
+					"$S=]-\\infty;{{a}}[\\cup]-\\infty;{{b}}[=\\textcolor{{{color:primary.0}}}{]-\\infty;{{m}}[}$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "et : ]2;5]",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3"
+			},
+			"answers": ["]2;5]"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : crochet de 2 faux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3"
+			},
+			"answers": ["[2;5]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : 5 oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3"
+			},
+			"answers": ["]2;5["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : réunion au lieu d'intersection",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "3"
+			},
+			"answers": ["]-\\infty;5]\\cup]2;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : réunion",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "4"
+			},
+			"answers": ["]-\\infty;-1[\\cup[3;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : réunion dans l'autre ordre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "4"
+			},
+			"answers": ["[3;+\\infty[\\cup]-\\infty;-1["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : complémentaire",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "4"
+			},
+			"answers": ["[-1;3["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : -1 inclus à tort",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "4"
+			},
+			"answers": ["]-\\infty;-1]\\cup[3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et même sens : max",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["[4;+\\infty["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et même sens : min (réunion)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["[-3;+\\infty["],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et même sens : intervalle entre",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-3",
+				"b": "4"
+			},
+			"answers": ["[-3;4]"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou même sens : max",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"answers": ["]-\\infty;5["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou même sens : min (intersection)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "-2"
+			},
+			"answers": ["]-\\infty;-2["],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

@@ -16,8 +16,9 @@
 	@module components/markdown/nodes/StatChart
 -->
 <script lang="ts">
-	import type { CourbeColor } from '$lib/ubumark/types/courbe';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
+	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
+	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
+	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import {
 		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
@@ -65,27 +66,11 @@
 	/** Les repères extérieurs sont à 1,2 rayon du centre : marge en part du rayon, plus le repère */
 	const PIE_PAD_RATIO = 0.22;
 
-	/** Couleur des barres : tokens du thème ; vert et violet n'en ont pas, voir le style */
-	const COLOR_VAR: Record<CourbeColor, string> = {
-		bleu: 'var(--color-info)',
-		rouge: 'var(--color-destructive)',
-		vert: 'var(--stat-vert)',
-		orange: 'var(--stat-orange)',
-		violet: 'var(--stat-violet)',
-		noir: 'var(--color-foreground)',
-		gris: 'var(--color-muted-foreground)'
-	};
+	/** Couleur des barres : palette commune des figures (app.css), claire ou sombre */
+	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
-	/** Palette des secteurs (même ordre que `stat-chart-typst.ts`) */
-	const PIE_COLORS = [
-		'var(--color-info)',
-		'var(--stat-orange)',
-		'var(--stat-vert)',
-		'var(--color-destructive)',
-		'var(--stat-violet)',
-		'var(--stat-sarcelle)',
-		'var(--color-muted-foreground)'
-	];
+	/** Couleurs des secteurs : même ordre que le PDF (`PIE_COLOR_SEQUENCE`) */
+	const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorScreen);
 
 	const uid = $props.id();
 	/** Motif des hachures de la seconde série (Q117) */
@@ -488,6 +473,10 @@
 				<StatChart scene={bars.indicatorTable} />
 			{/if}
 		{:else if classChart}
+			{#if histogram?.seriesName}
+				<!-- Deux séries (lot 5 PR c) : le nom au-dessus de chaque histogramme -->
+				<p class="stat-nom-serie">{histogram.seriesName}</p>
+			{/if}
 			<svg
 				role="img"
 				aria-labelledby={titleId}
@@ -500,6 +489,28 @@
 			>
 				<title id={titleId}>{scene.accessibleTitle}</title>
 				<desc id={descId}>{scene.description}</desc>
+
+				{#if histogram?.hatched}
+					<!-- Seconde série : hachures diagonales (Q117), lisibles sans la couleur -->
+					<defs>
+						<pattern
+							id={hatchId}
+							width="6"
+							height="6"
+							patternUnits="userSpaceOnUse"
+							patternTransform="rotate(45)"
+						>
+							<line
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="6"
+								stroke-width="2.5"
+								style:stroke={COLOR_VAR[histogram.hatchColor ?? 'orange']}
+							/>
+						</pattern>
+					</defs>
+				{/if}
 
 				<!-- Graduations verticales, ou quadrillage d'un histogramme à carreaux -->
 				<g class="stat-graduations" aria-hidden="true">
@@ -537,9 +548,15 @@
 							width={cx(rect.upper) - cx(rect.lower)}
 							height={cy(0) - cy(rect.height)}
 							class:stat-rectangle-hors={rect.highlighted === false}
-							style:fill={rect.highlighted === false
-								? 'var(--color-muted-foreground)'
-								: COLOR_VAR[histogram.color]}
+							class:stat-rectangle-hachure={histogram.hatched === true}
+							style:fill={histogram.hatched
+								? `url(#${hatchId})`
+								: rect.highlighted === false
+									? 'var(--color-muted-foreground)'
+									: COLOR_VAR[histogram.color]}
+							style:stroke={histogram.hatched
+								? COLOR_VAR[histogram.hatchColor ?? 'orange']
+								: undefined}
 						/>
 						<!-- Au-dessus, pas dedans : un rectangle bas ou nul le cachait, et le
 						     texte clair sur rouge ou bleu sombre manquait de contraste (audit a11y) -->
@@ -584,6 +601,42 @@
 					{/each}
 					<!-- Étiquette au début du pointillé, du côté libre : au-dessus si le
 					     polygone croît (il passe dessous à gauche), en dessous s'il décroît -->
+					{#if cumulative.second}
+						{@const second = cumulative.second}
+						<!-- Second polygone (lot 5 PR c) : pointillés, autre teinte -->
+						<polyline
+							class="stat-polygone stat-polygone-second"
+							points={second.points
+								.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`)
+								.join(' ')}
+							style:stroke={COLOR_VAR[second.color]}
+						/>
+						{#each second.points as p, i (i)}
+							<circle
+								class="stat-sommet"
+								cx={cx(p.x)}
+								cy={cy(p.y)}
+								r="2.5"
+								style:fill={COLOR_VAR[second.color]}
+							/>
+						{/each}
+						<!-- Ses lectures, étiquetées de l'autre côté du trait -->
+						{#each second.readings as reading, i (i)}
+							<g class="stat-lecture">
+								<polyline
+									points="{cx(cumulative.xMin)},{cy(reading.percent)} {cx(reading.x)},{cy(
+										reading.percent
+									)} {cx(reading.x)},{cy(0)}"
+									style:stroke={COLOR_VAR[second.color]}
+								/>
+								<text
+									x={cx(reading.x) + 4}
+									y={cy(reading.percent) + (cumulative.direction === 'croissantes' ? 12 : -4)}
+									style:fill={COLOR_VAR[second.color]}>{reading.text}</text
+								>
+							</g>
+						{/each}
+					{/if}
 					{#each cumulative.readings as reading, i (i)}
 						<g class="stat-lecture">
 							<polyline
@@ -663,6 +716,34 @@
 				<p class="stat-legende-aire">
 					<span class="stat-carreau" aria-hidden="true"></span>{histogram.carreau.legend}
 				</p>
+			{/if}
+			{#if cumulative?.legend && cumulative.second}
+				<!-- Légende des deux polygones : trait plein, puis pointillés -->
+				<ul class="stat-legende-series">
+					{#each cumulative.legend as name, i (i)}
+						<li>
+							<svg width="18" height="8" aria-hidden="true">
+								<line
+									x1="0"
+									y1="4"
+									x2="18"
+									y2="4"
+									stroke-width="2"
+									stroke-dasharray={i === 0 ? undefined : '4 3'}
+									style:stroke={COLOR_VAR[i === 0 ? cumulative.color : cumulative.second.color]}
+								/>
+							</svg>
+							{name}
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			{#if histogram?.second}
+				<!-- Le second histogramme : mêmes classes, même échelle (lot 5 PR c) -->
+				<StatChart scene={histogram.second} />
+			{/if}
+			{#if histogram?.indicatorTable || cumulative?.indicatorTable}
+				<StatChart scene={(histogram?.indicatorTable ?? cumulative?.indicatorTable)!} />
 			{/if}
 		{:else if pie}
 			<div class="stat-circulaire">
@@ -760,12 +841,6 @@
 <style>
 	.stat-figure {
 		overflow-x: auto;
-		/* Pas de token de thème pour ces teintes : définies ici, claires / sombres */
-		--stat-vert: light-dark(#15803d, #4ade80);
-		--stat-violet: light-dark(#7c3aed, #a78bfa);
-		--stat-sarcelle: light-dark(#0d9488, #2dd4bf);
-		/* `--color-warning` ne fait que 3:1 sur le fond clair (audit a11y) */
-		--stat-orange: light-dark(#b45309, #f59e0b);
 		margin: 0.5rem 0;
 	}
 
@@ -946,6 +1021,17 @@
 	/* Deux barres par bande : des valeurs plus petites, comme dans le PDF (revue) */
 	.stat-svg .stat-valeur-serree {
 		font-size: 8px;
+	}
+
+	.stat-nom-serie {
+		text-align: center;
+		font-weight: 600;
+		font-size: 0.875rem;
+		margin: 0.5rem 0 0;
+	}
+
+	.stat-polygone-second {
+		stroke-dasharray: 6 4;
 	}
 
 	.stat-legende-series {

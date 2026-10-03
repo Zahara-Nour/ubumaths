@@ -1,0 +1,514 @@
+{
+	"title": "Donner un contre-exemple",
+	"description": "Prouver qu'une proposition universelle est fausse en donnant un contre-exemple ; tout contre-exemple valable est accepté",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Connecteurs et contre-exemples",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant{{a}}x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant{{a}}x$ est faux.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "u",
+					"expression": "{{eval:sign(a)}}"
+				}
+			],
+			"conditions": ["abs(a) >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sign(a)}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer^2 < ({{a}})*answer",
+							"description": "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour montrer qu'une proposition « pour tout réel $x$, … » est fausse, **un seul** contre-exemple suffit : une valeur de $x$ pour laquelle l'inégalité est fausse.",
+					"Pour $x={{u}}$ : $x^2={{eval:u^2}}$ et ${{a}}x={{eval:a*u}}$. Or ${{eval:u^2}}<{{eval:a*u}}$ : l'inégalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{ {{u}} }$ est un contre-exemple.",
+					"Plus généralement, $x^2<{{a}}x\\iff x(x{{eval:-a;+}})<0$ : tout réel $x$ strictement compris entre $0$ et ${{a}}$ est un contre-exemple."
+				]
+			}
+		},
+		{
+			"statement": "Un élève affirme : « pour tout réel $x$, $(x{{a;+}})^2=x^2+{{eval:a^2}}$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-12..12!0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer != 0",
+							"description": "Pour ce nombre, l'égalité est vraie : ce n'est pas un contre-exemple."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un seul contre-exemple suffit pour prouver qu'une proposition « pour tout réel $x$, … » est fausse.",
+					"Pour $x=1$ : $(1{{a;+}})^2={{eval:(1+a)^2}}$ alors que $1^2+{{eval:a^2}}={{eval:1+a^2}}$. L'égalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{1}$ est un contre-exemple.",
+					"En effet $(x{{a;+}})^2=x^2{{eval:2*a;+}}x+{{eval:a^2}}$ : l'égalité proposée n'est vraie que si ${{eval:2*a}}x=0$, c'est-à-dire pour $x=0$. **Tout réel non nul** est un contre-exemple."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition : « tout entier naturel multiple de ${{a}}$ est un multiple de ${{b}}$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de ${{a}}$ qui n'est pas un multiple de ${{b}}$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..15"
+				},
+				{
+					"name": "b",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["a % b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "1",
+							"max": "1000000000",
+							"inclusive": true
+						},
+						{
+							"type": "multiple",
+							"base": "{{a}}"
+						},
+						{
+							"type": "custom",
+							"expression": "answer % {{b}} != 0",
+							"description": "Ce nombre ne convient pas : ce n'est pas un contre-exemple."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un contre-exemple est un entier qui vérifie l'hypothèse (multiple de ${{a}}$) **sans** vérifier la conclusion (multiple de ${{b}}$).",
+					"${{a}}$ est un multiple de ${{a}}$ (${{a}}={{a}}\\times1$), mais ${{b}}$ ne divise pas ${{a}}$ : la division de ${{a}}$ par ${{b}}$ a pour reste ${{eval:mod(a,b)}}$. Donc $n=\\textcolor{{{color:primary.0}}}{ {{a}} }$ est un contre-exemple.",
+					"D'autres multiples de ${{a}}$ conviennent, par exemple ${{eval:a*(b+1)}}$ ; mais pas ${{eval:a*b}}$, qui est aussi un multiple de ${{b}}$. Le nombre $0$ ne convient pas non plus : il est multiple de tous les entiers."
+				]
+			}
+		},
+		{
+			"statement": "On considère la proposition : « pour tout réel $x$, $x^2{{p;+}}\\geqslant{{q}}x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2{{p;+}}\\geqslant{{q}}x$ est faux.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "-5..4"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "s",
+					"expression": "{{eval:r+k}}"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:r*s}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:r+s}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:r+1}}"
+				}
+			],
+			"conditions": ["p != 0", "abs(q) >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer^2 + ({{p}}) < ({{q}})*answer",
+							"description": "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un seul contre-exemple suffit : une valeur de $x$ pour laquelle l'inégalité est fausse.",
+					"L'inégalité s'écrit $x^2{{eval:-q;+}}x{{p;+}}\\geqslant0$, soit $(x{{eval:-r;+}})(x{{eval:-s;+}})\\geqslant0$. Ce produit est strictement négatif pour $x$ strictement compris entre ${{r}}$ et ${{s}}$.",
+					"Pour $x={{c}}$ : $x^2{{p;+}}={{eval:c^2+p}}$ et ${{q}}x={{eval:q*c}}$. Or ${{eval:c^2+p}}<{{eval:q*c}}$ : l'inégalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$ est un contre-exemple (tout réel de $]{{r}};{{s}}[$ convient)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x²≥5x : 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²≥5x : 4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²≥5x : 2,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²≥5x : 5 (égalité, pas contre-exemple)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²≥5x : 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²≥5x : -1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²≥-3x : -1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²≥-3x : -2,5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²≥-3x : 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²≥-3x : -3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-3"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x+3)² : 1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x+3)² : -7",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["-7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x+3)² : 0,5",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "(x+3)² : 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "(x-4)² : 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 18",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["18"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 12 (multiple de 4)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 9 (pas multiple de 6)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : -6 (pas naturel)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 6 → 4 : 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "6",
+				"b": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²-3≥2x : 0",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²-3≥2x : 2,5",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["2{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²-3≥2x : -0,5",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["-0{,}5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x²-3≥2x : 3 (racine)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²-3≥2x : -1 (racine)",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²-3≥2x : 5",
+			"variationIndex": 3,
+			"variables": {
+				"r": "-1",
+				"k": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x²+10≥7x : 3",
+			"variationIndex": 3,
+			"variables": {
+				"r": "2",
+				"k": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

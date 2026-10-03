@@ -206,6 +206,15 @@ export interface HistogramScene extends SceneCommon {
 	axisTitles: { x: string | null; y: string | null };
 	color: CourbeColor;
 	showValues: boolean;
+	/** Deux séries (lot 5 PR c) : le nom écrit au-dessus de cet histogramme */
+	seriesName?: string;
+	/** Seconde série : rectangles hachurés (Q117), dans `hatchColor` */
+	hatched?: boolean;
+	hatchColor?: CourbeColor;
+	/** Le second histogramme, même classes, même échelle, dessiné dessous */
+	second?: HistogramScene;
+	/** `indicateurs:` à deux séries (Q118) : le tableau, une colonne par série */
+	indicatorTable?: ComparisonScene | null;
 }
 
 export interface SceneReading {
@@ -231,6 +240,11 @@ export interface CumulativeScene extends SceneCommon {
 	direction: StatChartDirection;
 	axisTitles: { x: string | null; y: string };
 	color: CourbeColor;
+	/** Deux séries (lot 5 PR c) : leurs noms, pour la légende */
+	legend?: string[];
+	/** Le second polygone, sur les mêmes axes, en pointillés */
+	second?: { points: ScenePoint[]; readings: SceneReading[]; color: CourbeColor };
+	indicatorTable?: ComparisonScene | null;
 }
 
 export interface SceneCell {
@@ -986,6 +1000,134 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 	};
 }
 
+// ============================================================================
+// DEUX SÉRIES EN CLASSES (lot 5 PR c)
+// ============================================================================
+
+/** Couleur de la seconde série : une autre teinte que celle du bloc (Q117) */
+function secondColorOf(color: CourbeColor): CourbeColor {
+	return color === 'orange' ? 'bleu' : 'orange';
+}
+
+/**
+ * La spec d'UNE des deux séries : ses effectifs (ou fréquences en % au dixième,
+ * Q116) dans les classes communes, sans titre, sans indicateurs.
+ */
+function seriesSpec(
+	spec: StatChartSpec,
+	series: 0 | 1,
+	frequencies = spec.twoSeries!.display === 'fréquences'
+): StatChartSpec {
+	const two = spec.twoSeries!;
+	const counts = two.counts[series];
+	const total = counts.reduce((a, b) => a + b, 0);
+	return {
+		...spec,
+		data: spec.data.map((d, i) => ({
+			...d,
+			value: frequencies
+				? total === 0
+					? 0
+					: Math.round((1000 * counts[i]) / total) / 10
+				: counts[i]
+		})),
+		unit: frequencies ? 'pourcentages' : 'effectifs',
+		title: null,
+		description: null,
+		indicators: [],
+		twoSeries: null,
+		rawValues: two.values?.[series] ?? null,
+		series: null
+	};
+}
+
+/**
+ * Tableau d'indicateurs de deux séries en classes (Q118) : ceux de `.comparer`
+ * (moyenne, médiane EXACTES), et la classe médiane — celle qui contient la
+ * médiane (Q109) — dans l'ordre de l'auteur.
+ */
+function classIndicatorTable(spec: StatChartSpec, locale: ContentLocale): ComparisonScene | null {
+	const two = spec.twoSeries!;
+	if (spec.indicators.length === 0 || two.values === null) return null;
+	const summaries = two.values.map((values) => describeList(values));
+	if (summaries.some((s) => s === null)) return null;
+	const named = summaries.map((summary, i) => ({ name: two.names[i], summary: summary! }));
+	const table = buildComparisonScene(
+		named,
+		locale,
+		spec.indicators.flatMap((indicator) => INDICATOR_ROWS[indicator])
+	);
+	const medianClass = named.map(({ summary }) => {
+		const found = spec.data.find(
+			(d) =>
+				d.interval !== null &&
+				summary.median >= d.interval.lower &&
+				summary.median < d.interval.upper
+		);
+		return found ? shownLabel(found.label, locale) : '';
+	});
+	const rows = spec.indicators.flatMap((indicator) =>
+		indicator === 'classe-mediane'
+			? [{ header: 'Classe médiane', cells: medianClass, groupStart: false }]
+			: table.rows.filter((row) => INDICATOR_ROWS[indicator].includes(row.header))
+	);
+	return { ...table, rows };
+}
+
+/** Deux histogrammes l'un au-dessus de l'autre : mêmes classes, même échelle */
+function buildTwoHistograms(spec: StatChartSpec, locale: ContentLocale): HistogramScene {
+	const two = spec.twoSeries!;
+	const [a, b] = ([0, 1] as const).map((s) => buildHistogramScene(seriesSpec(spec, s), locale));
+	// Même échelle verticale : celle du plus haut des deux
+	const top = a.yMax >= b.yMax ? a : b;
+	const scale = { yMax: top.yMax, ticks: top.ticks, grid: top.grid };
+	// Chaque histogramme nomme et décrit SA série (revue a11y : B était lu deux
+	// fois, la seconde sans son nom)
+	const named = (scene: HistogramScene, name: string) => ({
+		accessibleTitle: `${KIND_TITLE.histogramme} — ${name}`,
+		description: `${scene.description.replace(/\.$/, '')} (${name}).`
+	});
+	return {
+		...a,
+		...scale,
+		...named(a, two.names[0]),
+		...(spec.description !== null && { description: spec.description }),
+		title: spec.title,
+		seriesName: two.names[0],
+		second: {
+			...b,
+			...scale,
+			...named(b, two.names[1]),
+			seriesName: two.names[1],
+			hatched: true,
+			hatchColor: secondColorOf(spec.color)
+		},
+		indicatorTable: classIndicatorTable(spec, locale),
+		indicators: []
+	};
+}
+
+/** Deux polygones sur les mêmes axes, le second en pointillés */
+function buildTwoPolygons(spec: StatChartSpec, locale: ContentLocale): CumulativeScene {
+	const two = spec.twoSeries!;
+	// Effectifs bruts : le polygone normalise lui-même ; des fréquences arrondies
+	// au dixième déplaçaient les lectures selon la série voisine (revue)
+	const [a, b] = ([0, 1] as const).map((s) =>
+		buildCumulativeScene(seriesSpec(spec, s, false), locale)
+	);
+	return {
+		...a,
+		title: spec.title,
+		description:
+			spec.description ??
+			`${a.description.replace(/\.$/, '')} (${two.names[0]}) ; ${b.description.replace(/\.$/, '')} (${two.names[1]}).`,
+		legend: [...two.names],
+		second: { points: b.points, readings: b.readings, color: secondColorOf(spec.color) },
+		indicatorTable: classIndicatorTable(spec, locale),
+		indicators: []
+	};
+}
+
 function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): CumulativeScene {
 	const width = COURBE_PIXEL_WIDTH[spec.size];
 	const height = width * STAT_CHART_ASPECT_RATIO;
@@ -1420,9 +1562,13 @@ function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartSc
 		case 'circulaire':
 			return buildPieScene(spec, locale);
 		case 'histogramme':
-			return buildHistogramScene(spec, locale);
+			return spec.twoSeries === null
+				? buildHistogramScene(spec, locale)
+				: buildTwoHistograms(spec, locale);
 		case 'frequences-cumulees':
-			return buildCumulativeScene(spec, locale);
+			return spec.twoSeries === null
+				? buildCumulativeScene(spec, locale)
+				: buildTwoPolygons(spec, locale);
 		case 'tableau-croise':
 			return buildCrossTableScene(spec, locale);
 		case 'loi':

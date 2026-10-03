@@ -192,3 +192,13 @@ PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'
 - **Lot 5 (b) livrée #702** (2026-10-03) : barres à deux séries (`données Nom:`), seconde hachurée,
   tableau d'indicateurs. Connu : en-têtes / titres d'axe en français dans un document anglais
   (comme tous les indicateurs). Suivant : (c) deux histogrammes.
+
+120. (2026-10-03) Deux séries en classes : **pas de mode carreaux** — `légende:` refusé, et des
+     classes de même amplitude exigées (des amplitudes différentes imposent les carreaux).
+
+- **Lot 5 (c) livrée #707** (2026-10-03) : deux histogrammes (même échelle, second hachuré), deux
+  polygones superposés (second en pointillés), tableau d'indicateurs.
+  **Lot 5 (comparer deux séries) TERMINÉ** (#698, #702, #707). **v2 TERMINÉE** (lots 1-5, Q67).
+
+Reste connu, hors v2 : en-têtes des tableaux, titres d'axe et indicateurs en français dans un
+document anglais (tous les blocs) ; candidat : bloc ```effectifs (Q107).

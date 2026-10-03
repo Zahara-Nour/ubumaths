@@ -277,6 +277,18 @@ Toujours vrai :
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
+- **PDF, ensembles** (relevé sur la logique, 2026-10-03) : `\mathbb{D}` sort « mathbbD » (seuls
+  R, N, Z, Q, C sont convertis) → caractère `𝔻` ; mais une formule réduite à `$𝔻$` est coupée en
+  deux moitiés UTF-16 (caractères cassés) → toujours derrière une commande (`x\in 𝔻`) ; une
+  commande collée `\mathbb{N}\subset` fait échouer TOUTE la fiche → espace (`\mathbb{N} \subset`) ;
+  `\not\subset`, `\nsubseteq`, `\operatorname{Card}` sortent en texte brut → `\mathrm{Card}`.
+- **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
+  (`+ -3`) → écrire `({{p}})`.
+- **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
+  (`x^2+1x\leqslant2` reste tel quel ; `x^2-x>7` est nettoyé).
+- **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
+  vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
+  réponse.
 
 Règles d'écriture qui évitent un défaut :
 
@@ -286,6 +298,12 @@ Règles d'écriture qui évitent un défaut :
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
   TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+- Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
+  `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`). Un
+  nombre simple OU une fraction (`\frac{1}{2}`, `-\frac{3}{4}`) y est accepté, valeur exacte jugée
+  par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
+  (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
+  `precision`, seul un nombre simple reste admis.
 - Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
@@ -361,6 +379,14 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
+- **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart ` : écrire un **nom** de la
+  palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose, gris, noir,
+  blanc). Le nom suit le mode clair / sombre à l'écran et s'imprime dans sa variante claire. Un
+  code `#1e40af` reste figé dans les deux modes : à éviter. `noir` et `blanc` suivent le texte et
+  le fond de la page.
+- **Daltonisme** (décision D4, 2026-10-03) : **4 couleurs au plus** par figure ; au-delà,
+  distinguer aussi par le trait (`pointillé`) ou par une étiquette, jamais par la couleur seule.
+  Éviter d'opposer rouge et vert, ou bleu et violet, sans autre indice.
 
 ---
 

@@ -1,0 +1,587 @@
+{
+	"title": "Condition nécessaire, condition suffisante",
+	"description": "Décider si une condition est nécessaire, suffisante, nécessaire et suffisante, ou ni l'une ni l'autre",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Implication et équivalence",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"variations": [
+		{
+			"statement": "Soit $x$ un nombre réel. On note $P$ la condition « $x{{if:dp=1|<|>}}{{a}}$ » et $Q$ la condition « $x{{if:dq=1|<|>}}{{b}}$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "b",
+					"expression": "-9..9"
+				},
+				{
+					"name": "dq",
+					"expression": "0..1"
+				},
+				{
+					"name": "o3",
+					"expression": "0..2"
+				},
+				{
+					"name": "o",
+					"expression": "{{eval:o3*(o3-1)/2}}"
+				},
+				{
+					"name": "dp",
+					"expression": "{{eval:dq+o*(1-2*dq)}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{eval:(1+sign((a-b)*(1-2*dq)))/2}}"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:(1-o)*g+3*o}}"
+				},
+				{
+					"name": "M",
+					"expression": "{{eval:max(a,b)+1}}"
+				},
+				{
+					"name": "N",
+					"expression": "{{eval:min(a,b)-1}}"
+				},
+				{
+					"name": "h",
+					"expression": "{{eval:(a+b)/2}}"
+				}
+			],
+			"conditions": ["a != b"],
+			"choices": [
+				{
+					"content": "Nécessaire, mais pas suffisante."
+				},
+				{
+					"content": "Suffisante, mais pas nécessaire."
+				},
+				{
+					"content": "Nécessaire et suffisante."
+				},
+				{
+					"content": "Ni nécessaire, ni suffisante."
+				}
+			],
+			"correctChoiceIndex": ["{{w}}"],
+			"correction": {
+				"steps": [
+					"La condition $P$ est **suffisante** pour $Q$ si « $P\\Rightarrow Q$ » est vraie ($P$ suffit à garantir $Q$) ; elle est **nécessaire** si « $Q\\Rightarrow P$ » est vraie (on ne peut pas avoir $Q$ sans $P$).",
+					"$P$ correspond à l'intervalle ${{if:dp=1|]-\\infty;{{a}}[|]{{a}};+\\infty[}}$ et $Q$ à l'intervalle ${{if:dq=1|]-\\infty;{{b}}[|]{{b}};+\\infty[}}$.",
+					"{{if:w=1|${{if:dp=1|]-\\infty;{{a}}[|]{{a}};+\\infty[}}\\subset{{if:dq=1|]-\\infty;{{b}}[|]{{b}};+\\infty[}}$ : tout réel qui vérifie $P$ vérifie $Q$, donc $P$ est **suffisante**. Mais $x={{eval:(a+b)/2;d}}$ vérifie $Q$ sans vérifier $P$ : $P$ n'est **pas nécessaire**.}}{{if:w=0|${{if:dq=1|]-\\infty;{{b}}[|]{{b}};+\\infty[}}\\subset{{if:dp=1|]-\\infty;{{a}}[|]{{a}};+\\infty[}}$ : tout réel qui vérifie $Q$ vérifie $P$, donc $P$ est **nécessaire**. Mais $x={{eval:(a+b)/2;d}}$ vérifie $P$ sans vérifier $Q$ : $P$ n'est **pas suffisante**.}}{{if:w=3|Aucun des deux intervalles n'est inclus dans l'autre. $x={{if:dp=1|{{N}}|{{M}}}}$ vérifie $P$ mais pas $Q$ : $P$ n'est pas suffisante ; $x={{if:dp=1|{{M}}|{{N}}}}$ vérifie $Q$ mais pas $P$ : $P$ n'est pas nécessaire.}}",
+					"{{if:w=1|$P$ est une condition **suffisante, mais pas nécessaire** pour $Q$.}}{{if:w=0|$P$ est une condition **nécessaire, mais pas suffisante** pour $Q$.}}{{if:w=3|$P$ n'est **ni nécessaire, ni suffisante** pour $Q$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. On note $P$ la condition « {{if:k=0|$x^2={{eval:a^2}}$}}{{if:k=1|$x={{a}}$}}{{if:k=2|$x^2={{eval:a^2}}$}}{{if:k=3|$x>0$}}{{if:k=4|$x^2>{{eval:a^2}}$}}{{if:k=5|$x>{{a}}$}}{{if:k=6|$x^2\\leqslant{{eval:a^2}}$}} » et $Q$ la condition « {{if:k=0|$x={{a}}$}}{{if:k=1|$x^2={{eval:a^2}}$}}{{if:k=2|$x={{a}}$ ou $x=-{{a}}$}}{{if:k=3|$x^2>{{eval:a^2}}$}}{{if:k=4|$x>{{a}}$}}{{if:k=5|$x^2>{{eval:a^2}}$}}{{if:k=6|$-{{a}}\\leqslant x\\leqslant{{a}}$}} ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..6"
+				},
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "Nécessaire, mais pas suffisante."
+				},
+				{
+					"content": "Suffisante, mais pas nécessaire."
+				},
+				{
+					"content": "Nécessaire et suffisante."
+				},
+				{
+					"content": "Ni nécessaire, ni suffisante."
+				}
+			],
+			"correctChoiceIndex": ["{{eval:mod(k,4)}}"],
+			"correction": {
+				"steps": [
+					"La condition $P$ est **suffisante** pour $Q$ si « $P\\Rightarrow Q$ » est vraie ($P$ suffit à garantir $Q$) ; elle est **nécessaire** si « $Q\\Rightarrow P$ » est vraie (on ne peut pas avoir $Q$ sans $P$).",
+					"{{if:k=0|$Q\\Rightarrow P$ est vraie : si $x={{a}}$, alors $x^2={{eval:a^2}}$. Mais $P\\Rightarrow Q$ est fausse : $x=-{{a}}$ vérifie $x^2={{eval:a^2}}$ sans vérifier $x={{a}}$. $P$ est **nécessaire, mais pas suffisante**.}}{{if:k=1|$P\\Rightarrow Q$ est vraie : si $x={{a}}$, alors $x^2={{eval:a^2}}$. Mais $Q\\Rightarrow P$ est fausse : $x=-{{a}}$ vérifie $x^2={{eval:a^2}}$ sans vérifier $x={{a}}$. $P$ est **suffisante, mais pas nécessaire**.}}{{if:k=2|$x^2={{eval:a^2}}\\iff x^2-{{eval:a^2}}=0\\iff(x-{{a}})(x+{{a}})=0\\iff x={{a}}$ ou $x=-{{a}}$. Les deux implications sont vraies : $P$ est **nécessaire et suffisante**.}}{{if:k=3|$P\\Rightarrow Q$ est fausse : $x=\\dfrac{1}{2}$ vérifie $x>0$ mais $x^2=\\dfrac{1}{4}\\leqslant{{eval:a^2}}$. $Q\\Rightarrow P$ est fausse : $x=-{{eval:a+1}}$ vérifie $x^2={{eval:(a+1)^2}}>{{eval:a^2}}$ mais pas $x>0$. $P$ n'est **ni nécessaire, ni suffisante**.}}{{if:k=4|$Q\\Rightarrow P$ est vraie : si $x>{{a}}$, alors $x>0$ et, la fonction carré étant croissante sur $[0;+\\infty[$, $x^2>{{eval:a^2}}$. Mais $P\\Rightarrow Q$ est fausse : $x=-{{eval:a+1}}$ vérifie $x^2>{{eval:a^2}}$ sans vérifier $x>{{a}}$. $P$ est **nécessaire, mais pas suffisante**.}}{{if:k=5|$P\\Rightarrow Q$ est vraie : si $x>{{a}}$, alors $x>0$ et, la fonction carré étant croissante sur $[0;+\\infty[$, $x^2>{{eval:a^2}}$. Mais $Q\\Rightarrow P$ est fausse : $x=-{{eval:a+1}}$ vérifie $x^2>{{eval:a^2}}$ sans vérifier $x>{{a}}$. $P$ est **suffisante, mais pas nécessaire**.}}{{if:k=6|$x^2\\leqslant{{eval:a^2}}\\iff(x-{{a}})(x+{{a}})\\leqslant0\\iff-{{a}}\\leqslant x\\leqslant{{a}}$ (un produit est négatif entre les racines). Les deux implications sont vraies : $P$ est **nécessaire et suffisante**.}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel. On note $P$ la condition « {{if:j=0|$n$ est un multiple de ${{m}}$}}{{if:j=1|$n$ est un multiple de ${{eval:m*c}}$}}{{if:j=2|$n$ est à la fois un multiple de ${{p}}$ et de ${{q}}$}}{{if:j=3|$n$ est un multiple de ${{m}}$}} » et $Q$ la condition « {{if:j=0|$n$ est un multiple de ${{eval:m*c}}$}}{{if:j=1|$n$ est un multiple de ${{m}}$}}{{if:j=2|$n$ est un multiple de ${{eval:p*q}}$}}{{if:j=3|$n$ est un multiple de ${{u}}$}} ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "u",
+					"expression": "2..12"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "q",
+					"expression": "3..7"
+				}
+			],
+			"conditions": ["u % m != 0", "m % u != 0", "gcd(p, q) = 1", "p < q"],
+			"choices": [
+				{
+					"content": "Nécessaire, mais pas suffisante."
+				},
+				{
+					"content": "Suffisante, mais pas nécessaire."
+				},
+				{
+					"content": "Nécessaire et suffisante."
+				},
+				{
+					"content": "Ni nécessaire, ni suffisante."
+				}
+			],
+			"correctChoiceIndex": ["{{j}}"],
+			"correction": {
+				"steps": [
+					"La condition $P$ est **suffisante** pour $Q$ si « $P\\Rightarrow Q$ » est vraie ($P$ suffit à garantir $Q$) ; elle est **nécessaire** si « $Q\\Rightarrow P$ » est vraie (on ne peut pas avoir $Q$ sans $P$).",
+					"{{if:j=0|$Q\\Rightarrow P$ est vraie : si $n={{eval:m*c}}k$, alors $n={{m}}\\times({{c}}k)$. Mais $P\\Rightarrow Q$ est fausse : $n={{m}}$ est un multiple de ${{m}}$, pas de ${{eval:m*c}}$. $P$ est **nécessaire, mais pas suffisante**.}}{{if:j=1|$P\\Rightarrow Q$ est vraie : si $n={{eval:m*c}}k$, alors $n={{m}}\\times({{c}}k)$. Mais $Q\\Rightarrow P$ est fausse : $n={{m}}$ est un multiple de ${{m}}$, pas de ${{eval:m*c}}$. $P$ est **suffisante, mais pas nécessaire**.}}{{if:j=2|$Q\\Rightarrow P$ est vraie : ${{eval:p*q}}={{p}}\\times{{q}}$. $P\\Rightarrow Q$ est vraie aussi : ${{p}}$ et ${{q}}$ n'ont pas d'autre diviseur commun que $1$, donc un multiple de ${{p}}$ et de ${{q}}$ est un multiple de ${{p}}\\times{{q}}$. $P$ est **nécessaire et suffisante**.}}{{if:j=3|$P\\Rightarrow Q$ est fausse : $n={{m}}$ est un multiple de ${{m}}$, mais pas de ${{u}}$. $Q\\Rightarrow P$ est fausse : $n={{u}}$ est un multiple de ${{u}}$, mais pas de ${{m}}$. $P$ n'est **ni nécessaire, ni suffisante**.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x>5 pour x>2 : suffisante : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"dq": "0",
+				"o3": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x>5 pour x>2 : suffisante : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"dq": "0",
+				"o3": "0"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x>1 pour x>2 : nécessaire : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "0",
+				"o3": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x>1 pour x>2 : nécessaire : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "0",
+				"o3": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x<1 pour x<2 : suffisante : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "1",
+				"o3": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x<1 pour x<2 : suffisante : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "1",
+				"o3": "0"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x<1 pour x>2 : ni : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "0",
+				"o3": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x<1 pour x>2 : ni : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"dq": "0",
+				"o3": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 0 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 0 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 1 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 1 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 2 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 2 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 3 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 3 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 4 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 4 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 5 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"a": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 5 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "famille 6 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"a": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "famille 6 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "6",
+				"a": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers cas 0 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers cas 0 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers cas 1 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers cas 1 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers cas 2 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers cas 2 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers cas 3 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "3",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers cas 3 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "3",
+				"m": "3",
+				"c": "2",
+				"u": "4",
+				"p": "2",
+				"q": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

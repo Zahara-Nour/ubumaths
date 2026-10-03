@@ -1,0 +1,400 @@
+{
+	"title": "Identité, équation, statut des lettres",
+	"description": "Reconnaître une identité (égalité vraie pour tout x) et le statut d'une lettre : variable, inconnue ou paramètre",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On considère l'égalité ${{if:k=0|(x+{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}}}{{if:k=1|(x+{{a}})^2=x^2+{{eval:a^2}}}}{{if:k=2|(x-{{a}})(x+{{a}})=x^2-{{eval:a^2}}}}{{if:k=3|(x-{{a}})^2=x^2-{{eval:a^2}}}}{{if:k=4|{{a}}(x+{{b}})={{a}}x+{{eval:a*b}}}}{{if:k=5|{{a}}(x+{{b}})={{a}}x+{{b}}}}$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "Oui : elle est vraie pour tout réel $x$, c'est une identité."
+				},
+				{
+					"content": "Non : elle n'est pas vraie pour tout réel $x$."
+				}
+			],
+			"correctChoiceIndex": ["{{eval:mod(k,2)}}"],
+			"correction": {
+				"steps": [
+					"Une **identité** est une égalité vraie pour **toutes** les valeurs de la variable. Pour montrer qu'une égalité n'en est pas une, une seule valeur de $x$ qui la rend fausse suffit (un contre-exemple).",
+					"{{if:k=0|En développant, $(x+{{a}})^2=x^2+2\\times{{a}}\\times x+{{a}}^2=x^2+{{eval:2*a}}x+{{eval:a^2}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=1|En développant, $(x+{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}$. L'égalité équivaut donc à ${{eval:2*a}}x=0$, c'est-à-dire $x=0$ : elle n'est vraie **que pour $x=0$**. Par exemple, pour $x=1$ : $(1+{{a}})^2={{eval:(1+a)^2}}$ mais $1+{{eval:a^2}}={{eval:1+a^2}}$. **Ce n'est pas une identité.**}}{{if:k=2|En développant, $(x-{{a}})(x+{{a}})=x^2+{{a}}x-{{a}}x-{{eval:a^2}}=x^2-{{eval:a^2}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=3|En développant, $(x-{{a}})^2=x^2-{{eval:2*a}}x+{{eval:a^2}}$. L'égalité équivaut donc à ${{eval:2*a^2}}={{eval:2*a}}x$, c'est-à-dire $x={{a}}$ : elle n'est vraie **que pour $x={{a}}$**. Par exemple, pour $x=0$ : $(0-{{a}})^2={{eval:a^2}}$ mais $0^2-{{eval:a^2}}=-{{eval:a^2}}$. **Ce n'est pas une identité.**}}{{if:k=4|En développant, ${{a}}(x+{{b}})={{a}}x+{{a}}\\times{{b}}={{a}}x+{{eval:a*b}}$ pour tout réel $x$ : **c'est une identité**.}}{{if:k=5|En développant, ${{a}}(x+{{b}})={{a}}x+{{eval:a*b}}$. L'égalité équivaut donc à ${{eval:a*b}}={{b}}$, ce qui est faux : elle n'est vraie **pour aucun réel $x$**. **Ce n'est pas une identité.**}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:k=0|On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=1|On cherche tous les réels $x$ tels que $x^2-{{a}}x+{{b}}=0$.\n\nQuel est le statut de la lettre $x$ ?}}{{if:k=2|Soit $m$ un nombre réel. On considère l'équation $x^2+mx+{{b}}=0$, d'inconnue $x$.\n\nQuel est le statut de la lettre $m$ ?}}{{if:k=3|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=4|Résous dans $\\mathbb{R}$ l'équation ${{a}}t-{{b}}=0$.\n\nQuel est le statut de la lettre $t$ ?}}{{if:k=5|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $k$ ?}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..5"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"choices": [
+				{
+					"content": "Une variable."
+				},
+				{
+					"content": "Une inconnue."
+				},
+				{
+					"content": "Un paramètre."
+				}
+			],
+			"correctChoiceIndex": ["{{eval:mod(k,3)}}"],
+			"correction": {
+				"steps": [
+					"Une **inconnue** est un nombre que l'on cherche (dans une équation). Une **variable** peut prendre toutes les valeurs d'un ensemble (comme $x$ dans $f(x)$). Un **paramètre** est un nombre fixé mais quelconque, dont dépend l'objet étudié.",
+					"{{if:k=0|$x$ désigne un réel **quelconque** de l'ensemble de définition : la formule donne $f(x)$ pour toutes les valeurs de $x$ à la fois. $x$ est une **variable**.}}{{if:k=1|On cherche les valeurs de $x$ qui rendent l'égalité vraie : $x$ est une **inconnue** de l'équation.}}{{if:k=2|$m$ est un nombre fixé, mais quelconque, dont dépend l'équation ; l'inconnue est $x$. $m$ est un **paramètre**.}}{{if:k=3|$x$ parcourt $\\mathbb{R}$ : c'est la **variable** de la fonction $f_k$ (la lettre $k$, elle, est un paramètre).}}{{if:k=4|On cherche la valeur de $t$ qui rend l'égalité vraie : $t$ est une **inconnue** (ici $t=\\dfrac{ {{b}} }{ {{a}} }$).}}{{if:k=5|$k$ est un nombre fixé, mais quelconque : chaque valeur de $k$ donne une fonction $f_k$ différente. $k$ est un **paramètre** (la variable est $x$).}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "égalité 0 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 0 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité 1 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 1 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité 2 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 2 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité 3 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 3 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité 4 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 4 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "égalité 5 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "égalité 5 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 0 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 0 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 1 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 1 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 2 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 2 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 3 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 3 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 4 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 4 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "lettre 5 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "lettre 5 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "5",
+				"a": "3",
+				"b": "4"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

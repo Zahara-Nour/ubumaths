@@ -1,0 +1,596 @@
+{
+	"title": "Implication, réciproque, contraposée",
+	"description": "Dire si une implication est vraie, énoncer sa réciproque ou sa contraposée, et décider si la réciproque est vraie",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Implication et équivalence",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Soit $x$ un nombre réel. On considère l'implication : « si $x{{if:s1=1|\\geqslant|>}}{{a}}$, alors $x{{if:s2=1|\\geqslant|>}}{{b}}$ ».\n\nCette implication est-elle vraie ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-8..8"
+				},
+				{
+					"name": "t",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+t}}"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "Z",
+					"expression": "{{eval:1-abs(sign(t))}}"
+				},
+				{
+					"name": "T",
+					"expression": "{{eval:(1+sign(-t-0.5))/2+Z*(1-s1*(1-s2))}}"
+				},
+				{
+					"name": "w",
+					"expression": "{{eval:T+(1-T)*(2+Z)}}"
+				}
+			],
+			"conditions": ["t != 0 or s1 != s2"],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:1-T}}"],
+			"correction": {
+				"steps": [
+					"L'implication « si $P$, alors $Q$ » est vraie quand **chaque** réel qui vérifie $P$ vérifie aussi $Q$ ; un seul réel qui vérifie $P$ sans vérifier $Q$ suffit à la rendre fausse.",
+					"{{if:w=1|Soit $x$ tel que $x{{if:s1=1|\\geqslant|>}}{{a}}$. Comme {{if:t=0|les deux bornes sont égales|${{a}}>{{b}}$}}, on obtient $x{{if:s2=1|\\geqslant|>}}{{b}}$ : **l'implication est vraie**.}}{{if:w=2|Le réel $x={{eval:(a+b)/2;d}}$ vérifie $x{{if:s1=1|\\geqslant|>}}{{a}}$, mais pas $x{{if:s2=1|\\geqslant|>}}{{b}}$ (car ${{eval:(a+b)/2;d}}<{{b}}$) : c'est un contre-exemple, **l'implication est fausse**.}}{{if:w=3|Le réel $x={{a}}$ vérifie $x\\geqslant{{a}}$, mais pas $x>{{a}}$ : c'est un contre-exemple, **l'implication est fausse**.}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:k=0|Soit $x$ un nombre réel.|Soit $n$ un entier naturel.}} On considère l'implication : « si {{if:k=0|$x={{a}}$|$n$ est un multiple de ${{A}}$}}, alors {{if:k=0|$x^2={{eval:a^2}}$|$n$ est un multiple de ${{m}}$}} ».\n\nQuelle est sa réciproque ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "A",
+					"expression": "{{eval:m*c}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:4*k+p}}"
+				}
+			],
+			"conditions": ["abs(a) >= 2"],
+			"choices": [
+				{
+					"content": "{{if:z=0|Si $x^2={{eval:a^2}}$, alors $x={{a}}$.}}{{if:z=1|$x={{a}}$ et $x^2\\neq{{eval:a^2}}$.}}{{if:z=2|Si $x\\neq{{a}}$, alors $x^2\\neq{{eval:a^2}}$.}}{{if:z=3|Si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$.}}{{if:z=4|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=5|$n$ est un multiple de ${{A}}$ et $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=6|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=7|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|Si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$.}}{{if:z=1|Si $x^2={{eval:a^2}}$, alors $x={{a}}$.}}{{if:z=2|$x={{a}}$ et $x^2\\neq{{eval:a^2}}$.}}{{if:z=3|Si $x\\neq{{a}}$, alors $x^2\\neq{{eval:a^2}}$.}}{{if:z=4|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=5|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=6|$n$ est un multiple de ${{A}}$ et $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=7|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|Si $x\\neq{{a}}$, alors $x^2\\neq{{eval:a^2}}$.}}{{if:z=1|Si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$.}}{{if:z=2|Si $x^2={{eval:a^2}}$, alors $x={{a}}$.}}{{if:z=3|$x={{a}}$ et $x^2\\neq{{eval:a^2}}$.}}{{if:z=4|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=5|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=6|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=7|$n$ est un multiple de ${{A}}$ et $n$ n'est pas un multiple de ${{m}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|$x={{a}}$ et $x^2\\neq{{eval:a^2}}$.}}{{if:z=1|Si $x\\neq{{a}}$, alors $x^2\\neq{{eval:a^2}}$.}}{{if:z=2|Si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$.}}{{if:z=3|Si $x^2={{eval:a^2}}$, alors $x={{a}}$.}}{{if:z=4|$n$ est un multiple de ${{A}}$ et $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=5|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=6|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=7|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}"
+				}
+			],
+			"correctChoiceIndex": ["{{p}}"],
+			"correction": {
+				"steps": [
+					"La **réciproque** de « si $P$, alors $Q$ » est « si $Q$, alors $P$ » : on **échange** l'hypothèse et la conclusion, sans rien nier.",
+					"Ici, la réciproque est donc : « si {{if:k=0|$x^2={{eval:a^2}}$|$n$ est un multiple de ${{m}}$}}, alors {{if:k=0|$x={{a}}$|$n$ est un multiple de ${{A}}$}} ».",
+					"Les autres propositions sont la contraposée (« si non $Q$, alors non $P$ »), la proposition « si non $P$, alors non $Q$ », et la négation de l'implication (« $P$ et non $Q$ »).",
+					"{{if:k=0|Remarque : l'implication est vraie, mais sa réciproque est fausse : $x={{eval:-a}}$ vérifie $x^2={{eval:a^2}}$ sans que $x={{a}}$.|Remarque : l'implication est vraie (${{A}}={{m}}\\times{{c}}$), mais sa réciproque est fausse : $n={{m}}$ est un multiple de ${{m}}$ mais pas de ${{A}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel. On considère l'implication : « si $n$ est un multiple de ${{a}}$, alors {{if:j=3|$n+{{D}}$ est un multiple de ${{a}}$|$n$ est un multiple de ${{b}}$}} ».\n\nQue peut-on dire de cette implication et de sa réciproque ?",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "0..3"
+				},
+				{
+					"name": "m",
+					"expression": "2..6"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "i0",
+					"expression": "{{eval:(1-j)*(2-j)*(3-j)/6}}"
+				},
+				{
+					"name": "i1",
+					"expression": "{{eval:j*(2-j)*(3-j)/2}}"
+				},
+				{
+					"name": "i2",
+					"expression": "{{eval:j*(j-1)*(3-j)/2}}"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:m*c^i0}}"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:m*c^i1+i2*c}}"
+				},
+				{
+					"name": "D",
+					"expression": "{{eval:m*c}}"
+				},
+				{
+					"name": "q",
+					"expression": "{{eval:a/m}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:b/m}}"
+				}
+			],
+			"conditions": ["i2 = 0 or (a % b != 0 and b % a != 0)"],
+			"choices": [
+				{
+					"content": "L'implication et sa réciproque sont vraies."
+				},
+				{
+					"content": "L'implication est vraie, sa réciproque est fausse."
+				},
+				{
+					"content": "L'implication est fausse, sa réciproque est vraie."
+				},
+				{
+					"content": "L'implication et sa réciproque sont fausses."
+				}
+			],
+			"correctChoiceIndex": ["{{eval:mod(j+1,4)}}"],
+			"correction": {
+				"steps": [
+					"La réciproque est : « si {{if:j=3|$n+{{D}}$ est un multiple de ${{a}}$, alors $n$ est un multiple de ${{a}}$|$n$ est un multiple de ${{b}}$, alors $n$ est un multiple de ${{a}}$}} ».",
+					"{{if:j=0|**L'implication est vraie** : si $n={{a}}k$, alors $n={{b}}\\times({{q}}k)$ car ${{a}}={{b}}\\times{{q}}$.}}{{if:j=1|**L'implication est fausse** : $n={{a}}$ est un multiple de ${{a}}$ mais pas de ${{b}}$.}}{{if:j=2|**L'implication est fausse** : $n={{a}}$ est un multiple de ${{a}}$ mais pas de ${{b}}$.}}{{if:j=3|**L'implication est vraie** : si $n={{a}}k$, alors $n+{{D}}={{a}}(k+{{c}})$.}}",
+					"{{if:j=0|**La réciproque est fausse** : $n={{b}}$ est un multiple de ${{b}}$ mais pas de ${{a}}$.}}{{if:j=1|**La réciproque est vraie** : si $n={{b}}k$, alors $n={{a}}\\times({{r}}k)$ car ${{b}}={{a}}\\times{{r}}$.}}{{if:j=2|**La réciproque est fausse** : $n={{b}}$ est un multiple de ${{b}}$ mais pas de ${{a}}$.}}{{if:j=3|**La réciproque est vraie** : si $n+{{D}}={{a}}k$, alors $n={{a}}k-{{D}}={{a}}(k-{{c}})$.}}",
+					"Une implication et sa réciproque sont deux propositions différentes : l'une peut être vraie et l'autre fausse. Quand les deux sont vraies, on dit que les propositions sont **équivalentes**."
+				]
+			}
+		},
+		{
+			"statement": "{{if:k=0|Soit $x$ un nombre réel.|Soit $n$ un entier naturel.}} On considère l'implication : « si {{if:k=0|$x>{{a}}$|$n$ est un multiple de ${{A}}$}}, alors {{if:k=0|$x^2>{{eval:a^2}}$|$n$ est un multiple de ${{m}}$}} ».\n\nQuelle est sa contraposée ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "a",
+					"expression": "1..15"
+				},
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "A",
+					"expression": "{{eval:m*c}}"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "z",
+					"expression": "{{eval:4*k+p}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "{{if:z=0|Si $x^2\\leqslant{{eval:a^2}}$, alors $x\\leqslant{{a}}$.}}{{if:z=1|Si $x^2<{{eval:a^2}}$, alors $x<{{a}}$.}}{{if:z=2|Si $x\\leqslant{{a}}$, alors $x^2\\leqslant{{eval:a^2}}$.}}{{if:z=3|Si $x^2>{{eval:a^2}}$, alors $x>{{a}}$.}}{{if:z=4|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=5|Si $n$ est un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=6|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=7|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|Si $x^2>{{eval:a^2}}$, alors $x>{{a}}$.}}{{if:z=1|Si $x^2\\leqslant{{eval:a^2}}$, alors $x\\leqslant{{a}}$.}}{{if:z=2|Si $x^2<{{eval:a^2}}$, alors $x<{{a}}$.}}{{if:z=3|Si $x\\leqslant{{a}}$, alors $x^2\\leqslant{{eval:a^2}}$.}}{{if:z=4|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=5|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=6|Si $n$ est un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=7|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|Si $x\\leqslant{{a}}$, alors $x^2\\leqslant{{eval:a^2}}$.}}{{if:z=1|Si $x^2>{{eval:a^2}}$, alors $x>{{a}}$.}}{{if:z=2|Si $x^2\\leqslant{{eval:a^2}}$, alors $x\\leqslant{{a}}$.}}{{if:z=3|Si $x^2<{{eval:a^2}}$, alors $x<{{a}}$.}}{{if:z=4|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=5|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=6|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=7|Si $n$ est un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}"
+				},
+				{
+					"content": "{{if:z=0|Si $x^2<{{eval:a^2}}$, alors $x<{{a}}$.}}{{if:z=1|Si $x\\leqslant{{a}}$, alors $x^2\\leqslant{{eval:a^2}}$.}}{{if:z=2|Si $x^2>{{eval:a^2}}$, alors $x>{{a}}$.}}{{if:z=3|Si $x^2\\leqslant{{eval:a^2}}$, alors $x\\leqslant{{a}}$.}}{{if:z=4|Si $n$ est un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}{{if:z=5|Si $n$ n'est pas un multiple de ${{A}}$, alors $n$ n'est pas un multiple de ${{m}}$.}}{{if:z=6|Si $n$ est un multiple de ${{m}}$, alors $n$ est un multiple de ${{A}}$.}}{{if:z=7|Si $n$ n'est pas un multiple de ${{m}}$, alors $n$ n'est pas un multiple de ${{A}}$.}}"
+				}
+			],
+			"correctChoiceIndex": ["{{p}}"],
+			"correction": {
+				"steps": [
+					"La **contraposée** de « si $P$, alors $Q$ » est « si non $Q$, alors non $P$ » : on échange hypothèse et conclusion **et** on les nie toutes les deux.",
+					"{{if:k=0|La négation de $x^2>{{eval:a^2}}$ est $x^2\\leqslant{{eval:a^2}}$, et celle de $x>{{a}}$ est $x\\leqslant{{a}}$ (la négation de « $>$ » est « $\\leqslant$ », pas « $<$ »).|La négation de « $n$ est un multiple de ${{m}}$ » est « $n$ n'est pas un multiple de ${{m}}$ », et de même pour ${{A}}$.}}",
+					"La contraposée est donc : « si {{if:k=0|$x^2\\leqslant{{eval:a^2}}$|$n$ n'est pas un multiple de ${{m}}$}}, alors {{if:k=0|$x\\leqslant{{a}}$|$n$ n'est pas un multiple de ${{A}}$}} ».",
+					"Une implication et sa contraposée sont toujours **toutes les deux vraies ou toutes les deux fausses** : ici l'implication est vraie, sa contraposée aussi. (La proposition « si {{if:k=0|$x^2>{{eval:a^2}}$|$n$ est un multiple de ${{m}}$}}, alors {{if:k=0|$x>{{a}}$|$n$ est un multiple de ${{A}}$}} » est la réciproque.)"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "x>3 ⇒ x>1 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "-2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x>3 ⇒ x>1 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "-2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x>3 ⇒ x>5 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x>3 ⇒ x>5 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x≥3 ⇒ x>3 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x≥3 ⇒ x>3 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "x>3 ⇒ x≥3 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "x>3 ⇒ x≥3 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"t": "0",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "réciproque x=3 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"m": "2",
+				"c": "2",
+				"p": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "réciproque x=3 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"m": "2",
+				"c": "2",
+				"p": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "réciproque multiples : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"m": "2",
+				"c": "3",
+				"p": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "réciproque multiples : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"m": "2",
+				"c": "3",
+				"p": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 6 ⇒ mult 3 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"m": "3",
+				"c": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 6 ⇒ mult 3 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "0",
+				"m": "3",
+				"c": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 3 ⇒ mult 6 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"m": "3",
+				"c": "2"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 3 ⇒ mult 6 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "1",
+				"m": "3",
+				"c": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 4 ⇒ mult 6 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"m": "4",
+				"c": "2"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 4 ⇒ mult 6 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "2",
+				"m": "4",
+				"c": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "mult 4 ⇒ n+8 mult 4 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"j": "3",
+				"m": "4",
+				"c": "2"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "mult 4 ⇒ n+8 mult 4 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"j": "3",
+				"m": "4",
+				"c": "2"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contraposée x>3 : bonne réponse",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"m": "2",
+				"c": "2",
+				"p": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "contraposée x>3 : autre choix refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"m": "2",
+				"c": "2",
+				"p": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "contraposée multiples : bonne réponse",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"m": "2",
+				"c": "3",
+				"p": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "contraposée multiples : autre choix refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"m": "2",
+				"c": "3",
+				"p": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}
