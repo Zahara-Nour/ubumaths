@@ -15,6 +15,7 @@
 	@see ParagraphNode.svelte for similar inline rendering
 -->
 <script lang="ts">
+	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import type { InlineNode } from '$lib/ubumark';
 	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
@@ -108,7 +109,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"
@@ -177,7 +178,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"
@@ -246,7 +247,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"
@@ -315,7 +316,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"
@@ -384,7 +385,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"
@@ -453,7 +454,7 @@
 					/>{/key}
 			{:else if child.type === 'link'}
 				<a
-					href={child.url}
+					href={sanitizeUrl(child.url)}
 					title={child.title}
 					class="text-primary underline hover:text-primary/80"
 					target="_blank"

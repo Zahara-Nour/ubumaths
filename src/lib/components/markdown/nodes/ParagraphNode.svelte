@@ -21,6 +21,7 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
+	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import type { InlineNode, InputState, InternalLinkReferenceType } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseHint } from '$lib/exercises/types';
@@ -251,7 +252,7 @@
 			{/if}
 		{:else if child.type === 'link'}
 			<a
-				href={child.url}
+				href={sanitizeUrl(child.url)}
 				title={child.title}
 				class="text-primary underline hover:text-primary/80"
 				target="_blank"
