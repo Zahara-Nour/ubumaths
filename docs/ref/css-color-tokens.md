@@ -144,6 +144,23 @@ teinte vit dans `src/app.css` (`--color-curve-N`, en `light-dark()`), et
   dans le fichier — un SVG exporté ne connaît pas `app.css`.
 - Décisions et mesures : `docs/wip/grapheur-couleurs-theme-progress.md`.
 
+## Couleurs nommées des figures (`couleur: rouge`)
+
+Les auteurs écrivent des **noms** dans `figure`, `courbe`, `stat-chart` et le DSL de géométrie.
+Une seule palette de 12 noms (`src/lib/theme/named-colors.ts`), tokens `--color-fig-<nom>`
+dans le bloc `@theme static` de `src/app.css` :
+
+- **écran** : `colorForScreen()` / `namedColorScreen()` → `var(--color-fig-<nom>)` ; `noir` et
+  `blanc` → `--color-foreground` / `--color-background` ;
+- **PDF et exports** : `colorForPrint()` / `namedColorTypst()` → variante claire
+  (`NAMED_COLOR_PRINT`, vérifiée égale à `app.css` par test) ;
+- **synonymes** anglais (`red`, `grey`…) acceptés pour toujours : le vocabulaire est un contrat
+  avec le contenu en base ;
+- un **hexadécimal** d'auteur passe tel quel, figé dans les deux modes.
+
+geometry-core conserve le **nom canonique** jusqu'au rendu (`resolveStyle().color === 'rouge'`) ;
+`resolvePrintStyle()` le traduit pour les exports. Décisions : `docs/wip/palette-figures-progress.md`.
+
 ## La garde CI
 
 `scripts/check-css-tokens.sh`, appelée par le job **Lint** de

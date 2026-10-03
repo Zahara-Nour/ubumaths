@@ -68,8 +68,22 @@ Contraste ≥ 4,5 sur page et carte (`#ffffff`/`#fafafa`, `#262624`/`#2f2f2f`). 
 
 ## Avancement
 
-- [ ] Étape 1 — module + tokens `app.css` (`@theme static`)
-- [ ] Étape 2 — geometry-core : nom conservé, exports traduits
-- [ ] Étape 3 — bloc `figure`
-- [ ] Étape 4 — `courbe`, `stat-chart`, camemberts, générateurs PDF
-- [ ] Étape 5 — navigateur 4 combinaisons + vrai PDF · `code-reviewer` · PR
+- [x] Étape 1 — module `src/lib/theme/named-colors.ts` + tokens `--color-fig-*` (`@theme static`)
+- [x] Étape 2 — geometry-core conserve le nom ; exports Typst/SVG/TikZ et figures interactives via
+      `resolvePrintStyle` (8 anciens tests qui assertaient le hex adaptés au nom)
+- [x] Étape 3 — bloc `figure` : nom gardé dans la scène, `colorForScreen` au rendu
+- [x] Étape 4 — `courbe`, `stat-chart`, camemberts (`PIE_COLOR_SEQUENCE`), générateurs PDF ;
+      variables locales `--courbe-*` / `--stat-*` supprimées
+- [x] Étape 5 — tests navigateur (couleur rendue, deux modes) pour figure, courbe, camembert ;
+      PDF compilés avec typst.ts 0.6.1-rc5 (figure, courbe, camembert) et regardés ; contrôle
+      négatif (`rgb("bleu")` échoue bien)
+- [ ] `code-reviewer` · `check:incremental` · PR
+
+## Trouvé en route (hors lot)
+
+- **Export Typst des figures : l'opacité de remplissage n'est appliquée qu'aux secteurs
+  d'angle**, pas aux polygones (`export-typst.ts:517`). `remplissage="vert", opacite_fond=0.2`
+  donne un triangle vert OPAQUE au PDF. Préexistant (inchangé par ce lot).
+- `rgb("bleu")` fait échouer la compilation : c'est le défaut de la droite graduée (lot 3).
+- Les figures interactives changent légèrement de bleu : `bleu` était `#1e40af` dans le DSL,
+  il devient le bleu de la palette `#2563eb` (même valeur qu'au PDF des fiches).
