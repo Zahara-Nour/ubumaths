@@ -15,8 +15,10 @@ import type {
 	MathInlineNode,
 	MathBlockNode,
 	ParagraphNode,
+	TableNode,
 	InputState
 } from '$lib/ubumark';
+import { parseMarkdown } from '$lib/ubumark';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import { hasPrompts } from '$lib/components/markdown/utils/math-utils';
 import { toFrenchDecimal } from '$lib/utils/french-math';
@@ -153,4 +155,44 @@ export function applyValidationToInputStates(
 		...state,
 		isCorrect: i < validationResults.length ? validationResults[i] : null
 	}));
+}
+
+// ============================================================================
+// TROUS DANS UNE CELLULE DE TABLEAU
+// ============================================================================
+
+/** Vrai si un des éléments en ligne est un trou (texte ou case MathLive) */
+export function inlineNodesHaveBlanks(children: InlineNode[]): boolean {
+	return children.some(
+		(child) =>
+			child.type === 'blank' ||
+			(child.type === 'math-inline' && hasPrompts(child.expression, child.syntax))
+	);
+}
+
+/**
+ * Éléments en ligne d'une cellule de tableau.
+ *
+ * Le parseur garde la cellule en chaîne (`TableCellNode.content`) ; la relire
+ * comme un paragraphe donne les mêmes nœuds que dans le texte de l'énoncé
+ * (`\placeholder[N]{}` → math-inline, `{{blank:N}}` → blank), donc les mêmes
+ * composants de saisie. Une cellule qui ne se lit pas comme un paragraphe
+ * (cas dégénéré) ne rend aucun nœud.
+ */
+export function tableCellInlineNodes(content: string): InlineNode[] {
+	const [first] = parseMarkdown(content).children;
+	return first?.type === 'paragraph' ? first.children : [];
+}
+
+/** Vrai si la cellule contient au moins un trou */
+export function cellHasBlanks(content: string): boolean {
+	// Filtre rapide : sans `\placeholder`, `{{blank:` ni `?` (trou d'une formule `~…~`),
+	// pas de trou — évite de relire chaque cellule de chaque tableau
+	if (!/placeholder|\{\{blank:|\?/.test(content)) return false;
+	return inlineNodesHaveBlanks(tableCellInlineNodes(content));
+}
+
+/** Vrai si une cellule du tableau (en-tête compris) contient un trou */
+export function tableHasBlanks(node: TableNode): boolean {
+	return [node.header, ...node.rows].some((row) => row.some((cell) => cellHasBlanks(cell.content)));
 }

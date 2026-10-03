@@ -10,6 +10,8 @@
 	- XSS protection via HTML escaping
 	- Responsive overflow handling
 	- Inline math rendering via <math-span>
+	- Rendu de cellule personnalisable (`customCell`) : l'énoncé d'une question à
+	  trous y place ses champs de saisie ; sans lui, rendu inchangé
 
 	Transposed tables (:table-h directive):
 	- Table is written normally in markdown (headers in first row)
@@ -20,6 +22,7 @@
 	@see ExerciseDisplay.svelte for original renderTable() implementation
 -->
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import type { TableCellNode } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { escapeHtml } from '../utils';
@@ -33,6 +36,11 @@
 		cross?: boolean;
 		genericFunctions?: GenericFunctionConfig | null;
 		class?: string;
+		/**
+		 * Rendu d'une cellule, à la place du rendu par défaut. Reçoit la cellule et le
+		 * rendu par défaut (texte + formules), à appeler pour les cellules ordinaires.
+		 */
+		customCell?: Snippet<[TableCellNode, Snippet<[string]>]>;
 	}
 
 	let {
@@ -42,7 +50,8 @@
 		transpose = false,
 		cross = false,
 		genericFunctions,
-		class: className = ''
+		class: className = '',
+		customCell
 	}: Props = $props();
 
 	/**
@@ -132,6 +141,14 @@
 	{/each}
 {/snippet}
 
+{#snippet renderCell(cell: TableCellNode)}
+	{#if customCell}
+		{@render customCell(cell, cellContent)}
+	{:else}
+		{@render cellContent(cell.content)}
+	{/if}
+{/snippet}
+
 <div class="my-6 overflow-x-auto {className}">
 	<table class="min-w-full border-collapse border border-border">
 		{#if transpose && transposedRows}
@@ -145,11 +162,11 @@
 								<th
 									class="border-r-2 border-border bg-muted/50 px-4 py-2 text-center font-semibold text-foreground"
 								>
-									{@render cellContent(cell.content)}
+									{@render renderCell(cell)}
 								</th>
 							{:else}
 								<td class="px-4 py-2 text-center text-foreground">
-									{@render cellContent(cell.content)}
+									{@render renderCell(cell)}
 								</td>
 							{/if}
 						{/each}
@@ -172,7 +189,7 @@
 								alignments[index] || 'center'
 							)} {index === 0 ? (cell.content.trim() ? 'bg-muted/50' : '') : 'bg-muted/50'}"
 						>
-							{@render cellContent(cell.content)}
+							{@render renderCell(cell)}
 						</th>
 					{/each}
 				</tr>
@@ -188,7 +205,7 @@
 										alignments[cellIndex] || 'center'
 									)}"
 								>
-									{@render cellContent(cell.content)}
+									{@render renderCell(cell)}
 								</th>
 							{:else}
 								<td
@@ -196,7 +213,7 @@
 										alignments[cellIndex] || 'center'
 									)}"
 								>
-									{@render cellContent(cell.content)}
+									{@render renderCell(cell)}
 								</td>
 							{/if}
 						{/each}
@@ -218,7 +235,7 @@
 								alignments[index] || 'left'
 							)}"
 						>
-							{@render cellContent(cell.content)}
+							{@render renderCell(cell)}
 						</th>
 					{/each}
 				</tr>
@@ -232,7 +249,7 @@
 									alignments[cellIndex] || 'left'
 								)}"
 							>
-								{@render cellContent(cell.content)}
+								{@render renderCell(cell)}
 							</td>
 						{/each}
 					</tr>

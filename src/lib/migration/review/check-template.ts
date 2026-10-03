@@ -8,6 +8,9 @@
  *   sauf carte de cours : aucune spec, mais recto et verso non vides à chaque tirage ;
  * - chaque variation génère une instance sur `instances` tirages (0 échec).
  *
+ * Les avertissements (`warnings`) ne changent jamais le verdict : variable qui peut
+ * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts.
+ *
  * « 0 problème » n'est une preuve que si on sait combien d'éléments ont été
  * analysés : le rapport compte les specs et les tirages.
  */
@@ -17,6 +20,10 @@ import { validateTemplate } from '$lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '$lib/questions/template-schema';
 import { runAllTestSpecs, type TestSpecResult } from '$lib/questions/test-spec-runner';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
+import {
+	findUnparenthesizedNegatives,
+	type VariableDraw
+} from '$lib/questions/validators/negative-substitution';
 import {
 	courseCardFront,
 	hasCourseCardBackContent,
@@ -45,6 +52,8 @@ export interface TemplateCheckReport {
 	passed: boolean;
 	/** Raisons de l'échec, en français (vide si `passed`) */
 	reasons: string[];
+	/** Avertissements, en français : à relire, sans effet sur `passed` */
+	warnings: string[];
 }
 
 // ============================================================================
@@ -67,8 +76,9 @@ function withoutId(template: QuestionTemplate): Omit<QuestionTemplate, 'id'> {
 function checkGeneration(
 	template: QuestionTemplate,
 	instances: number
-): TemplateCheckReport['generation'] {
+): TemplateCheckReport['generation'] & { draws: VariableDraw[] } {
 	const failures: GenerationFailure[] = [];
+	const draws: VariableDraw[] = [];
 	let attempts = 0;
 
 	template.variations.forEach((variation, variationIndex) => {
@@ -78,7 +88,11 @@ function checkGeneration(
 			const result = generateInstance(single, seed);
 			if (!result.success) {
 				failures.push({ variationIndex, seed, errors: result.errors });
-			} else if (isCourseCard(template)) {
+				continue;
+			}
+			// Valeurs réellement tirées : de quoi dire si une variable peut être négative
+			draws.push({ variationIndex, seed, variables: result.instance.resolvedVariables ?? [] });
+			if (isCourseCard(template)) {
 				// Carte de cours : recto et verso doivent être non vides APRÈS résolution
 				const errors: string[] = [];
 				if (courseCardFront(result.instance).trim() === '') errors.push('recto vide');
@@ -88,7 +102,7 @@ function checkGeneration(
 		}
 	});
 
-	return { attempts, failures };
+	return { attempts, failures, draws };
 }
 
 export function checkTemplate(
@@ -105,7 +119,8 @@ export function checkTemplate(
 		? []
 		: schema.error.issues.map((issue) => `${issue.path.join('.')} : ${issue.message}`);
 	const specs = runAllTestSpecs(template);
-	const generation = checkGeneration(template, instances);
+	const { draws, ...generation } = checkGeneration(template, instances);
+	const warnings = findUnparenthesizedNegatives(template, draws);
 
 	const reasons: string[] = [];
 	// Contrainte `question_templates_level_positive` ; les niveaux TinyMath commencent à 0
@@ -144,7 +159,8 @@ export function checkTemplate(
 		specs,
 		generation,
 		passed: reasons.length === 0,
-		reasons
+		reasons,
+		warnings
 	};
 }
 
@@ -170,6 +186,7 @@ export function formatCheckReport(report: TemplateCheckReport): string {
 	if (failures.length > 5) lines.push(`  … et ${failures.length - 5} autre(s)`);
 	for (const error of report.templateErrors) lines.push(`Structure : ${error}`);
 	for (const error of report.schemaErrors) lines.push(`Schéma : ${error}`);
+	for (const warning of report.warnings) lines.push(`Avertissement : ${warning}`);
 	lines.push(
 		report.passed
 			? 'VERDICT : importable'

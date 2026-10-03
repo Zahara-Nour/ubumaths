@@ -167,15 +167,13 @@ async function main() {
 			templateId: cleDe(i.ref),
 			seed: i.seed
 		}));
-		const { statement, solution, genericFunctions } = buildSerie(modeles, items);
+		const { statement, solution } = buildSerie(modeles, items);
 		const donnees = {
 			title: serie.title,
 			topic: TOPIC,
 			category: 'automatisme' as const,
 			grades: ['1_SPE'],
 			is_public: false,
-			// Fonctions déclarées par les modèles (`P`, `C`) : l'exercice figé les lit aussi
-			...(genericFunctions && { generic_functions: genericFunctions }),
 			variations: [{ label: 'guided', statement_md: statement, solution_md: solution, hints: [] }]
 		};
 		const v = createExerciseSchema.safeParse(donnees);
