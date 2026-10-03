@@ -250,6 +250,8 @@ export const STAT_CHART_LIMITS = {
 	simulationSamples: 1000,
 	/** Tirages en tout du mode `échantillons` (N × n) */
 	simulationSampleDraws: 100_000,
+	/** Valeurs d'une série brute (`données:`, Q101) */
+	rawValues: 500,
 	/** Caractères d'un nom de catégorie */
 	labelLength: 40,
 	/** Caractères d'un titre ou d'une description */

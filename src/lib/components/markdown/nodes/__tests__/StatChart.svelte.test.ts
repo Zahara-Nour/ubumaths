@@ -261,6 +261,17 @@ describe('StatChart — loi d’une variable aléatoire (lot 6)', () => {
 	});
 });
 
+describe('StatChart — série brute (`données:`, v2 lot 4)', () => {
+	it('le bloc dépouille la série : une barre par valeur, dans l’ordre croissant', async () => {
+		const node = parseStatChartContent('barres', 'données: 12 ; 15 ; 12 ; 8\nvaleurs: oui');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const values = [...screen.container.querySelectorAll('.stat-valeur')].map((t) => t.textContent);
+
+		expect(screen.container.querySelectorAll('rect.stat-barre')).toHaveLength(3);
+		expect(values).toEqual(['1', '2', '1']);
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 
