@@ -1,0 +1,369 @@
+{
+	"title": "Nier une proposition",
+	"description": "Choisir la négation d'une proposition quantifiée (« pour tout », « il existe ») ou d'une proposition avec « et », « ou »",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Quantificateurs et négation",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["abs(b) >= 2"],
+			"choices": [
+				{
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+				},
+				{
+					"content": "Pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+				},
+				{
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$."
+				},
+				{
+					"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|<}}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
+					"« Pour tout réel $x$ » devient « il existe un réel $x$ tel que ».",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
+					"La négation est donc : « il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la négation de la proposition « il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "-6..6"
+				},
+				{
+					"name": "p",
+					"expression": "-9..9"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "r",
+					"expression": "0..3"
+				}
+			],
+			"conditions": ["abs(m) >= 2", "p != 0", "p != c"],
+			"choices": [
+				{
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+				},
+				{
+					"content": "Il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+				},
+				{
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|<}}{{if:r=3|\\leqslant}}{{c}}$."
+				},
+				{
+					"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|<}}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Pour nier une proposition quantifiée, on **change le quantificateur** (« pour tout » devient « il existe », et inversement) **et** on **nie la propriété**.",
+					"« Il existe un réel $x$ tel que » devient « pour tout réel $x$ ».",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
+					"La négation est donc : « pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|<}}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$ »."
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$ » ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..8"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+d}}"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "r1",
+					"expression": "{{eval:s1+2*k}}"
+				},
+				{
+					"name": "r2",
+					"expression": "{{eval:s2+2-2*k}}"
+				}
+			],
+			"choices": [
+				{
+					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+				},
+				{
+					"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+				},
+				{
+					"content": "$x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$"
+				},
+				{
+					"content": "$x{{if:r1=0|<}}{{if:r1=1|\\leqslant}}{{if:r1=2|>}}{{if:r1=3|\\geqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|<}}{{if:r2=1|\\leqslant}}{{if:r2=2|>}}{{if:r2=3|\\geqslant}}{{b}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La négation de « $A$ et $B$ » est « non $A$ ou non $B$ » ; la négation de « $A$ ou $B$ » est « non $A$ et non $B$ » : on nie chaque morceau **et** on change le connecteur.",
+					"La négation de « $>$ » est « $\\leqslant$ », celle de « $\\geqslant$ » est « $<$ » (et inversement) : une seule des deux relations est vraie pour chaque réel.",
+					"La négation de « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|<}}{{if:r1=3|\\leqslant}}{{a}}$ » est « $x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ » et celle de « $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|<}}{{if:r2=3|\\leqslant}}{{b}}$ » est « $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ ».",
+					"La négation est donc : « $x{{if:r1=0|\\leqslant}}{{if:r1=1|<}}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|<}}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$ »."
+				]
+			}
+		},
+		{
+			"statement": "Quelle est la négation de la proposition « pour tout réel $x$, si $x>{{a}}$, alors $x^2>{{c}}$ » ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "c",
+					"expression": "0..40"
+				}
+			],
+			"choices": [
+				{
+					"content": "Il existe un réel $x$ tel que $x>{{a}}$ et $x^2\\leqslant{{c}}$."
+				},
+				{
+					"content": "Il existe un réel $x$ tel que, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$."
+				},
+				{
+					"content": "Pour tout réel $x$, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$."
+				},
+				{
+					"content": "Il existe un réel $x$ tel que $x\\leqslant{{a}}$ et $x^2\\leqslant{{c}}$."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La proposition affirme que **tout** réel $x$ qui vérifie $x>{{a}}$ vérifie aussi $x^2>{{c}}$.",
+					"Elle est fausse s'il existe **au moins un** réel $x$ qui vérifie l'hypothèse $x>{{a}}$ **sans** vérifier la conclusion, c'est-à-dire avec $x^2\\leqslant{{c}}$.",
+					"La négation est donc : « il existe un réel $x$ tel que $x>{{a}}$ et $x^2\\leqslant{{c}}$ ». La négation de « si $P$, alors $Q$ » est « $P$ et non $Q$ » : ce n'est pas une implication."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "pour tout > : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"c": "3",
+				"r": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "pour tout > : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"c": "3",
+				"r": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "pour tout ≤ : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"b": "-1",
+				"c": "-4",
+				"r": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "pour tout ≤ : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"b": "-1",
+				"c": "-4",
+				"r": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "il existe ≥ : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "5",
+				"r": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "il existe ≥ : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"c": "5",
+				"r": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"k": "0",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"k": "0",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"k": "1",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"d": "3",
+				"k": "1",
+				"s1": "0",
+				"s2": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "implication : bonne réponse",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "9"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "implication : autre choix refusé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"c": "9"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}

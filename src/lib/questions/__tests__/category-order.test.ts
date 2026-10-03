@@ -211,6 +211,43 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it("Logique : ensembles puis logique et raisonnement, sous-domaines dans l'ordre", () => {
+		const domains = ['Logique et raisonnement', 'Ensembles'].map((domain) => ({
+			theme: 'Logique',
+			domain,
+			subdomain: ''
+		}));
+		expect(sortItems(domains).map((item) => item.domain)).toEqual([
+			'Ensembles',
+			'Logique et raisonnement'
+		]);
+		const subdomains = [
+			'Raisonnements',
+			'Quantificateurs et négation',
+			'Implication et équivalence',
+			'Connecteurs et contre-exemples'
+		].map((subdomain) => ({ theme: 'Logique', domain: 'Logique et raisonnement', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Connecteurs et contre-exemples',
+			'Implication et équivalence',
+			'Quantificateurs et négation',
+			'Raisonnements'
+		]);
+		// Ordre pédagogique, pas alphabétique (Cardinal viendrait avant Intervalles)
+		const ensembles = [
+			'Cardinal et produit cartésien',
+			'Intervalles',
+			'Opérations sur les ensembles',
+			'Appartenance et inclusion'
+		].map((subdomain) => ({ theme: 'Logique', domain: 'Ensembles', subdomain }));
+		expect(sortItems(ensembles).map((item) => item.subdomain)).toEqual([
+			'Appartenance et inclusion',
+			'Opérations sur les ensembles',
+			'Intervalles',
+			'Cardinal et produit cartésien'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',

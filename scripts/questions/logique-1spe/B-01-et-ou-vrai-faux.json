@@ -1,0 +1,530 @@
+{
+	"title": "« Et » et « ou » : vrai ou faux ?",
+	"description": "Décider si une proposition composée avec « et » ou « ou » est vraie pour une valeur donnée de la variable",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Connecteurs et contre-exemples",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\geqslant|>}}{{a}}$ et $x{{if:s2=1|\\leqslant|<}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+d}}"
+				},
+				{
+					"name": "t",
+					"expression": "-2..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+t}}"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "T1",
+					"expression": "{{eval:(1+sign(c-a+s1-0.5))/2}}"
+				},
+				{
+					"name": "T2",
+					"expression": "{{eval:(1+sign(b-c+s2-0.5))/2}}"
+				},
+				{
+					"name": "u1",
+					"expression": "{{eval:2*T1+s1}}"
+				},
+				{
+					"name": "u2",
+					"expression": "{{eval:2*T2+s2}}"
+				}
+			],
+			"conditions": ["t <= d+2"],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:1-T1*T2}}"],
+			"correction": {
+				"steps": [
+					"On teste chacune des deux propositions pour $x={{c}}$.",
+					"« $x{{if:s1=1|\\geqslant|>}}{{a}}$ » est {{if:u1=3|**vraie** car ${{c}}\\geqslant{{a}}$.}}{{if:u1=2|**vraie** car ${{c}}>{{a}}$.}}{{if:u1=1|**fausse** car ${{c}}<{{a}}$.}}{{if:u1=0|**fausse** car ${{c}}\\leqslant{{a}}$.}}",
+					"« $x{{if:s2=1|\\leqslant|<}}{{b}}$ » est {{if:u2=3|**vraie** car ${{c}}\\leqslant{{b}}$.}}{{if:u2=2|**vraie** car ${{c}}<{{b}}$.}}{{if:u2=1|**fausse** car ${{c}}>{{b}}$.}}{{if:u2=0|**fausse** car ${{c}}\\geqslant{{b}}$.}}",
+					"Une proposition « $A$ et $B$ » est vraie seulement quand $A$ et $B$ sont **toutes les deux** vraies.",
+					"{{if:T1*T2=1|Ici les deux sont vraies : **$P$ est vraie** pour $x={{c}}$.|Ici au moins l'une des deux est fausse : **$P$ est fausse** pour $x={{c}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\leqslant|<}}{{a}}$ ou $x{{if:s2=1|\\geqslant|>}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-6..6"
+				},
+				{
+					"name": "d",
+					"expression": "2..6"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+d}}"
+				},
+				{
+					"name": "t",
+					"expression": "-2..8"
+				},
+				{
+					"name": "c",
+					"expression": "{{eval:a+t}}"
+				},
+				{
+					"name": "s1",
+					"expression": "0..1"
+				},
+				{
+					"name": "s2",
+					"expression": "0..1"
+				},
+				{
+					"name": "T1",
+					"expression": "{{eval:(1+sign(a-c+s1-0.5))/2}}"
+				},
+				{
+					"name": "T2",
+					"expression": "{{eval:(1+sign(c-b+s2-0.5))/2}}"
+				},
+				{
+					"name": "u1",
+					"expression": "{{eval:2*T1+s1}}"
+				},
+				{
+					"name": "u2",
+					"expression": "{{eval:2*T2+s2}}"
+				}
+			],
+			"conditions": ["t <= d+2"],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:(1-T1)*(1-T2)}}"],
+			"correction": {
+				"steps": [
+					"On teste chacune des deux propositions pour $x={{c}}$.",
+					"« $x{{if:s1=1|\\leqslant|<}}{{a}}$ » est {{if:u1=3|**vraie** car ${{c}}\\leqslant{{a}}$.}}{{if:u1=2|**vraie** car ${{c}}<{{a}}$.}}{{if:u1=1|**fausse** car ${{c}}>{{a}}$.}}{{if:u1=0|**fausse** car ${{c}}\\geqslant{{a}}$.}}",
+					"« $x{{if:s2=1|\\geqslant|>}}{{b}}$ » est {{if:u2=3|**vraie** car ${{c}}\\geqslant{{b}}$.}}{{if:u2=2|**vraie** car ${{c}}>{{b}}$.}}{{if:u2=1|**fausse** car ${{c}}<{{b}}$.}}{{if:u2=0|**fausse** car ${{c}}\\leqslant{{b}}$.}}",
+					"Une proposition « $A$ ou $B$ » est vraie dès que **l'une au moins** des deux est vraie (le « ou » mathématique n'est pas exclusif).",
+					"{{if:T1+T2=0|Ici les deux sont fausses : **$P$ est fausse** pour $x={{c}}$.|Ici au moins l'une des deux est vraie : **$P$ est vraie** pour $x={{c}}$.}}"
+				]
+			}
+		},
+		{
+			"statement": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de ${{m}}$ {{if:k=1|ou|et}} $n>{{a}}$ ».\n\nPour $n={{n}}$, la proposition $P$ est-elle vraie ou fausse ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..5"
+				},
+				{
+					"name": "a",
+					"expression": "3..20"
+				},
+				{
+					"name": "n",
+					"expression": "0..30"
+				},
+				{
+					"name": "k",
+					"expression": "0..1"
+				},
+				{
+					"name": "T1",
+					"expression": "{{eval:1-sign(mod(n,m))}}"
+				},
+				{
+					"name": "T2",
+					"expression": "{{eval:(1+sign(n-a-0.5))/2}}"
+				},
+				{
+					"name": "T",
+					"expression": "{{eval:T1*T2+k*(T1+T2-2*T1*T2)}}"
+				}
+			],
+			"conditions": ["abs(n-a) <= 8"],
+			"choices": [
+				{
+					"content": "Vrai"
+				},
+				{
+					"content": "Faux"
+				}
+			],
+			"correctChoiceIndex": ["{{eval:1-T}}"],
+			"correction": {
+				"steps": [
+					"« $n$ est un multiple de ${{m}}$ » est {{if:T1=1|**vraie** : ${{n}}={{m}}\\times{{eval:n/m}}$.|**fausse** : la division de ${{n}}$ par ${{m}}$ a pour reste ${{eval:mod(n,m)}}$.}}",
+					"« $n>{{a}}$ » est {{if:T2=1|**vraie** car ${{n}}>{{a}}$.|**fausse** car ${{n}}\\leqslant{{a}}$.}}",
+					"{{if:k=1|Une proposition « $A$ ou $B$ » est vraie dès que l'une au moins des deux est vraie.|Une proposition « $A$ et $B$ » est vraie seulement quand les deux sont vraies.}}",
+					"{{if:T=1|Donc **$P$ est vraie** pour $n={{n}}$.|Donc **$P$ est fausse** pour $n={{n}}$.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "et : 5 dans ]2;6[ : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "3",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : 5 dans ]2;6[ : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "3",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : x=a avec inégalité stricte : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "0",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : x=a avec inégalité stricte : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "0",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : x=a avec ≥ : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : x=a avec ≥ : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "et : x=b avec < : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "4",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "et : x=b avec < : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"t": "4",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : entre les deux : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : entre les deux : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "2",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : au-delà de b : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "7",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : au-delà de b : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "7",
+				"s1": "0",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "ou : x=a avec ≤ : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "ou : x=a avec ≤ : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"d": "5",
+				"t": "0",
+				"s1": "1",
+				"s2": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers et : 12 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "12",
+				"k": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers et : 12 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "12",
+				"k": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers et : 9 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "9",
+				"k": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers et : 9 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "9",
+				"k": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers ou : 9 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "9",
+				"k": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers ou : 9 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"m": "3",
+				"a": "10",
+				"n": "9",
+				"k": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "entiers ou : 7 : bonne réponse",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "10",
+				"n": "7",
+				"k": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "entiers ou : 7 : autre choix refusé",
+			"variationIndex": 2,
+			"variables": {
+				"m": "4",
+				"a": "10",
+				"n": "7",
+				"k": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}

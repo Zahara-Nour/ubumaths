@@ -1,0 +1,425 @@
+{
+	"title": "Reconnaître un type de raisonnement",
+	"description": "Reconnaître le type de raisonnement d'une courte démonstration : direct, par l'absurde, par contraposée, par disjonction des cas, contre-exemple",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Logique et raisonnement",
+	"subdomain": "Raisonnements",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Voici une démonstration.\n\n{{if:k=0|On veut montrer que, pour tout réel $x$, $(x+{{a}})^2-(x-{{a}})^2={{eval:4*a}}x$. On développe : $(x+{{a}})^2-(x-{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}-(x^2-{{eval:2*a}}x+{{eval:a^2}})={{eval:4*a}}x$.}}{{if:k=1|On veut montrer qu'il n'existe aucun entier naturel $n$ tel que $n^2={{p}}$. Supposons qu'un tel entier $n$ existe. Comme ${{q}}^2={{eval:q^2}}<{{p}}<{{eval:(q+1)^2}}={{eval:q+1}}^2$, on aurait ${{q}}<n<{{eval:q+1}}$, ce qui est impossible pour un entier. Donc un tel entier n'existe pas.}}{{if:k=2|On veut montrer que, pour tout entier naturel $n$, si $n^2+{{c}}$ est pair, alors $n$ est impair. Montrons que si $n$ est pair, alors $n^2+{{c}}$ est impair : si $n=2k$, alors $n^2+{{c}}=4k^2+{{eval:c-1}}+1=2(2k^2+{{eval:(c-1)/2}})+1$, qui est impair.}}{{if:k=3|On veut montrer que, pour tout entier naturel $n$, $n(n+1)+{{eval:2*c}}$ est pair. Si $n$ est pair, $n=2k$ et $n(n+1)=2k(2k+1)$ est pair. Si $n$ est impair, $n=2k+1$ et $n(n+1)=(2k+1)(2k+2)=2(2k+1)(k+1)$ est pair. Dans tous les cas, $n(n+1)$ est pair, donc $n(n+1)+{{eval:2*c}}$ aussi.}}{{if:k=4|On veut montrer que la proposition « pour tout réel $x$, $x^2\\geqslant{{a}}x$ » est fausse. Pour $x=1$ : $x^2=1$ et ${{a}}x={{a}}$, or $1<{{a}}$.}}\n\nQuel type de raisonnement utilise-t-elle ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a",
+					"expression": "2..9"
+				},
+				{
+					"name": "q",
+					"expression": "2..9"
+				},
+				{
+					"name": "t",
+					"expression": "1..8"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:q^2+t}}"
+				},
+				{
+					"name": "c",
+					"expression": "1..15"
+				}
+			],
+			"conditions": ["t <= 2*q", "c % 2 = 1"],
+			"choices": [
+				{
+					"content": "Un raisonnement direct."
+				},
+				{
+					"content": "Un raisonnement par l'absurde."
+				},
+				{
+					"content": "Un raisonnement par contraposée."
+				},
+				{
+					"content": "Un raisonnement par disjonction des cas."
+				},
+				{
+					"content": "Un contre-exemple."
+				}
+			],
+			"correctChoiceIndex": ["{{k}}"],
+			"correction": {
+				"steps": [
+					"{{if:k=0|Ici, on développe et on simplifie directement l'expression jusqu'au résultat : c'est un **raisonnement direct**.}}{{if:k=1|Ici, on suppose qu'un tel entier existe et on aboutit à une impossibilité : c'est un **raisonnement par l'absurde**.}}{{if:k=2|Ici, au lieu de « si $n^2+{{c}}$ est pair, alors $n$ est impair », on démontre « si $n$ est pair, alors $n^2+{{c}}$ est impair » : c'est un **raisonnement par contraposée**.}}{{if:k=3|Ici, on traite séparément le cas « $n$ pair » et le cas « $n$ impair » : c'est un **raisonnement par disjonction des cas**.}}{{if:k=4|Ici, la seule valeur $x=1$ montre que la proposition est fausse : c'est un **contre-exemple**.}}",
+					"{{if:k=0|Raisonnement **direct** : on part des hypothèses (ou de l'expression) et on enchaîne des égalités ou des déductions jusqu'à la conclusion.}}{{if:k=1|Raisonnement **par l'absurde** : on suppose le contraire de ce qu'on veut démontrer et on aboutit à une contradiction (« ce qui est impossible »).}}{{if:k=2|Raisonnement **par contraposée** : pour démontrer « si $P$, alors $Q$ », on démontre « si non $Q$, alors non $P$ », qui lui est équivalente.}}{{if:k=3|Raisonnement **par disjonction des cas** : on sépare en plusieurs cas qui couvrent toutes les possibilités (pair / impair…) et on conclut dans chacun.}}{{if:k=4|**Contre-exemple** : pour montrer qu'une proposition « pour tout … » est fausse, on exhibe **un** cas où elle est fausse.}}"
+				]
+			}
+		},
+		{
+			"statement": "Voici une démonstration.\n\n{{if:k=0|On veut montrer que, pour tout entier naturel $n$, si $n$ est un multiple de ${{a}}$, alors $n^2$ est un multiple de ${{eval:a^2}}$. Si $n={{a}}k$ avec $k$ entier, alors $n^2={{eval:a^2}}k^2$, qui est un multiple de ${{eval:a^2}}$.}}{{if:k=1|On veut montrer que l'équation $x^2+{{p}}=0$ n'a pas de solution réelle. Supposons qu'il existe un réel $x$ tel que $x^2+{{p}}=0$. Alors $x^2=-{{p}}<0$, ce qui est impossible car un carré est positif ou nul. Donc l'équation n'a pas de solution réelle.}}{{if:k=2|On veut montrer que, pour tout réel $x$, si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$. Il suffit de montrer que si $x={{a}}$, alors $x^2={{eval:a^2}}$, ce qui est évident.}}{{if:k=3|On veut montrer que, pour tout entier naturel $n$, $n^2+n+{{eval:2*c+1}}$ est impair. Si $n$ est pair, $n=2k$ et $n^2+n=2(2k^2+k)$ est pair. Si $n$ est impair, $n=2k+1$ et $n^2+n=(2k+1)(2k+2)=2(2k+1)(k+1)$ est pair. Dans tous les cas $n^2+n$ est pair, donc $n^2+n+{{eval:2*c+1}}$ est impair.}}{{if:k=4|On veut montrer que la proposition « tout entier naturel multiple de ${{a}}$ est un multiple de ${{b}}$ » est fausse. L'entier ${{a}}$ est un multiple de ${{a}}$, mais il n'est pas un multiple de ${{b}}$.}}\n\nQuel type de raisonnement utilise-t-elle ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "0..4"
+				},
+				{
+					"name": "a",
+					"expression": "2..12"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "p",
+					"expression": "1..20"
+				},
+				{
+					"name": "c",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a % b != 0"],
+			"choices": [
+				{
+					"content": "Un raisonnement direct."
+				},
+				{
+					"content": "Un raisonnement par l'absurde."
+				},
+				{
+					"content": "Un raisonnement par contraposée."
+				},
+				{
+					"content": "Un raisonnement par disjonction des cas."
+				},
+				{
+					"content": "Un contre-exemple."
+				}
+			],
+			"correctChoiceIndex": ["{{k}}"],
+			"correction": {
+				"steps": [
+					"{{if:k=0|Ici, on part de l'hypothèse $n={{a}}k$ et on en déduit directement la conclusion : c'est un **raisonnement direct**.}}{{if:k=1|Ici, on suppose qu'une solution existe et on aboutit à une impossibilité ($x^2<0$) : c'est un **raisonnement par l'absurde**.}}{{if:k=2|Ici, au lieu de « si $x^2\\neq{{eval:a^2}}$, alors $x\\neq{{a}}$ », on démontre « si $x={{a}}$, alors $x^2={{eval:a^2}}$ » : c'est un **raisonnement par contraposée**.}}{{if:k=3|Ici, on traite séparément le cas « $n$ pair » et le cas « $n$ impair » : c'est un **raisonnement par disjonction des cas**.}}{{if:k=4|Ici, le seul entier ${{a}}$ montre que la proposition est fausse : c'est un **contre-exemple**.}}",
+					"{{if:k=0|Raisonnement **direct** : on part des hypothèses (ou de l'expression) et on enchaîne des égalités ou des déductions jusqu'à la conclusion.}}{{if:k=1|Raisonnement **par l'absurde** : on suppose le contraire de ce qu'on veut démontrer et on aboutit à une contradiction (« ce qui est impossible »).}}{{if:k=2|Raisonnement **par contraposée** : pour démontrer « si $P$, alors $Q$ », on démontre « si non $Q$, alors non $P$ », qui lui est équivalente.}}{{if:k=3|Raisonnement **par disjonction des cas** : on sépare en plusieurs cas qui couvrent toutes les possibilités (pair / impair…) et on conclut dans chacun.}}{{if:k=4|**Contre-exemple** : pour montrer qu'une proposition « pour tout … » est fausse, on exhibe **un** cas où elle est fausse.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "démo A type 0 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo A type 0 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "0",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo A type 1 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo A type 1 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo A type 2 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo A type 2 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo A type 3 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo A type 3 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo A type 4 : bonne réponse",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo A type 4 : autre choix refusé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4",
+				"a": "3",
+				"q": "3",
+				"t": "2",
+				"c": "5"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo B type 0 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo B type 0 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "0",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo B type 1 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo B type 1 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo B type 2 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo B type 2 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo B type 3 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo B type 3 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "démo B type 4 : bonne réponse",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [4],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "démo B type 4 : autre choix refusé",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"a": "6",
+				"b": "4",
+				"p": "5",
+				"c": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": false
+	}
+}
