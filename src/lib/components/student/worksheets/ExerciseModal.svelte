@@ -17,6 +17,7 @@
 		Loader2
 	} from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
 	import TutorChat from '$lib/components/tutor/TutorChat.svelte';
 	import TutorFAB from './TutorFAB.svelte';
@@ -60,6 +61,9 @@
 	}: Props = $props();
 
 	let exercise = $derived(exercises[currentIndex] ?? null);
+
+	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
+	let exerciseFunctions = $derived(genericFunctionsConfig(exercise?.generic_functions));
 	let hasCorrection = $derived(exercise?.correction_visible && exercise?.correction !== null);
 	let pointsLabel = $derived(
 		exercise?.points !== null ? `${exercise.points} point${exercise.points !== 1 ? 's' : ''}` : null
@@ -194,20 +198,29 @@
 								</Tabs.List>
 								<Tabs.Content value="statement" class="mt-4">
 									<div class="prose prose-sm max-w-none dark:prose-invert">
-										<MarkdownRenderer content={exercise.statement} />
+										<MarkdownRenderer
+											content={exercise.statement}
+											genericFunctions={exerciseFunctions}
+										/>
 									</div>
 								</Tabs.Content>
 								<Tabs.Content value="correction" class="mt-4">
 									<div
 										class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 									>
-										<MarkdownRenderer content={exercise.correction ?? ''} />
+										<MarkdownRenderer
+											content={exercise.correction ?? ''}
+											genericFunctions={exerciseFunctions}
+										/>
 									</div>
 								</Tabs.Content>
 							</Tabs.Root>
 						{:else}
 							<div class="prose prose-sm max-w-none dark:prose-invert">
-								<MarkdownRenderer content={exercise.statement} />
+								<MarkdownRenderer
+									content={exercise.statement}
+									genericFunctions={exerciseFunctions}
+								/>
 							</div>
 						{/if}
 					{:else}
@@ -371,20 +384,26 @@
 							</Tabs.List>
 							<Tabs.Content value="statement" class="mt-4">
 								<div class="prose prose-sm max-w-none dark:prose-invert">
-									<MarkdownRenderer content={exercise.statement} />
+									<MarkdownRenderer
+										content={exercise.statement}
+										genericFunctions={exerciseFunctions}
+									/>
 								</div>
 							</Tabs.Content>
 							<Tabs.Content value="correction" class="mt-4">
 								<div
 									class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 								>
-									<MarkdownRenderer content={exercise.correction ?? ''} />
+									<MarkdownRenderer
+										content={exercise.correction ?? ''}
+										genericFunctions={exerciseFunctions}
+									/>
 								</div>
 							</Tabs.Content>
 						</Tabs.Root>
 					{:else}
 						<div class="prose prose-sm max-w-none dark:prose-invert">
-							<MarkdownRenderer content={exercise.statement} />
+							<MarkdownRenderer content={exercise.statement} genericFunctions={exerciseFunctions} />
 						</div>
 					{/if}
 				{:else}

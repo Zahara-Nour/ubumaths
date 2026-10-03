@@ -16,6 +16,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { CheckCircle, ChevronDown, ChevronUp, Info } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 
 	interface Props {
@@ -24,6 +25,9 @@
 	}
 
 	let { exercise, index }: Props = $props();
+
+	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
+	let exerciseFunctions = $derived(genericFunctionsConfig(exercise.generic_functions));
 
 	// Track if correction is expanded
 	let correctionOpen = $state(false);
@@ -75,7 +79,7 @@
 	<Card.Content class="space-y-4">
 		<!-- Statement -->
 		<div class="prose prose-sm max-w-none dark:prose-invert">
-			<MarkdownRenderer content={exercise.statement} />
+			<MarkdownRenderer content={exercise.statement} genericFunctions={exerciseFunctions} />
 		</div>
 
 		<!-- Correction (collapsible) -->
@@ -103,7 +107,10 @@
 						<div
 							class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 						>
-							<MarkdownRenderer content={exercise.correction ?? ''} />
+							<MarkdownRenderer
+								content={exercise.correction ?? ''}
+								genericFunctions={exerciseFunctions}
+							/>
 						</div>
 					</div>
 				{/if}
