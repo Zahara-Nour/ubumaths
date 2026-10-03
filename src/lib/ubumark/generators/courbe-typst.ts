@@ -16,7 +16,14 @@
  * @module ubumark/generators/courbe-typst
  */
 
-import type { CourbeColor, CourbeLabel, CourbeNode, CourbeSize } from '../types/courbe';
+import {
+	COURBE_COLORS,
+	type CourbeColor,
+	type CourbeLabel,
+	type CourbeNode,
+	type CourbeSize
+} from '../types/courbe';
+import { namedColorTypst } from '$lib/theme/named-colors';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 
 // ============================================================================
@@ -37,16 +44,10 @@ export const WIDTH_CM: Record<CourbeSize, number> = {
 
 const ASPECT_RATIO = 3 / 4;
 
-/** Teintes du thème clair de l'écran (tokens `--color-*`) */
-const TYPST_COLORS: Record<CourbeColor, string> = {
-	bleu: 'rgb("#2563eb")',
-	rouge: 'rgb("#dc2626")',
-	vert: 'rgb("#15803d")',
-	orange: 'rgb("#d97706")',
-	violet: 'rgb("#7c3aed")',
-	noir: 'black',
-	gris: 'rgb("#6b7280")'
-};
+/** Variante claire de la palette commune des figures : celle de l'écran en mode clair */
+const TYPST_COLORS = Object.fromEntries(
+	COURBE_COLORS.map((color) => [color, namedColorTypst(color)])
+) as Record<CourbeColor, string>;
 
 const UNAVAILABLE =
 	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';

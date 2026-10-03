@@ -122,6 +122,24 @@ describe('StatChart — circulaire', () => {
 	});
 });
 
+describe('StatChart — palette commune des figures', () => {
+	it('les secteurs puisent dans la palette, dans un ordre fixe : bleu, orange, vert', async () => {
+		const node = parseStatChartContent('circulaire', PIE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const root = document.documentElement;
+		try {
+			root.style.colorScheme = 'light';
+			const fills = [...screen.container.querySelectorAll('.stat-secteur')].map(
+				(s) => getComputedStyle(s).fill
+			);
+			// #2563eb, #b65a00, #018639
+			expect(fills).toEqual(['rgb(37, 99, 235)', 'rgb(182, 90, 0)', 'rgb(1, 134, 57)']);
+		} finally {
+			root.style.colorScheme = '';
+		}
+	});
+});
+
 describe('StatChart — histogramme et polygone (lot 3)', () => {
 	const TRAJETS = '[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10';
 

@@ -94,11 +94,23 @@ export function resolveNamedColor(raw: string): NamedColor | null {
  */
 export function colorForScreen(raw: string): string | null {
 	const named = resolveNamedColor(raw);
-	if (named === 'noir') return 'var(--color-foreground)';
-	if (named === 'blanc') return 'var(--color-background)';
-	if (named !== null) return `var(--color-fig-${named})`;
+	if (named !== null) return namedColorScreen(named);
 	const value = raw.trim();
 	return HEX_COLOR.test(value) ? value : null;
+}
+
+/** La valeur écran d'un nom de la palette : variable du thème (noir / blanc suivent la page) */
+export function namedColorScreen(named: NamedColor): string {
+	if (named === 'noir') return 'var(--color-foreground)';
+	if (named === 'blanc') return 'var(--color-background)';
+	return `var(--color-fig-${named})`;
+}
+
+/** La forme Typst d'un nom de la palette : sa variante claire */
+export function namedColorTypst(named: NamedColor): string {
+	if (named === 'noir') return 'black';
+	if (named === 'blanc') return 'white';
+	return `rgb("${NAMED_COLOR_PRINT[named]}")`;
 }
 
 /** Ce qu'on imprime (PDF, exports) : la variante claire d'un nom, l'hex tel quel, ou null */

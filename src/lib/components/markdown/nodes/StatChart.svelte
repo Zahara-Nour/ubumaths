@@ -16,8 +16,9 @@
 	@module components/markdown/nodes/StatChart
 -->
 <script lang="ts">
-	import type { CourbeColor } from '$lib/ubumark/types/courbe';
-	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
+	import { COURBE_COLORS, type CourbeColor } from '$lib/ubumark/types/courbe';
+	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
+	import { namedColorScreen } from '$lib/theme/named-colors';
 	import {
 		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
@@ -64,27 +65,13 @@
 	/** Les repères extérieurs sont à 1,2 rayon du centre : marge en part du rayon, plus le repère */
 	const PIE_PAD_RATIO = 0.22;
 
-	/** Couleur des barres : tokens du thème ; vert et violet n'en ont pas, voir le style */
-	const COLOR_VAR: Record<CourbeColor, string> = {
-		bleu: 'var(--color-info)',
-		rouge: 'var(--color-destructive)',
-		vert: 'var(--stat-vert)',
-		orange: 'var(--stat-orange)',
-		violet: 'var(--stat-violet)',
-		noir: 'var(--color-foreground)',
-		gris: 'var(--color-muted-foreground)'
-	};
+	/** Couleur des barres : palette commune des figures (app.css), claire ou sombre */
+	const COLOR_VAR = Object.fromEntries(
+		COURBE_COLORS.map((color) => [color, namedColorScreen(color)])
+	) as Record<CourbeColor, string>;
 
-	/** Palette des secteurs (même ordre que `stat-chart-typst.ts`) */
-	const PIE_COLORS = [
-		'var(--color-info)',
-		'var(--stat-orange)',
-		'var(--stat-vert)',
-		'var(--color-destructive)',
-		'var(--stat-violet)',
-		'var(--stat-sarcelle)',
-		'var(--color-muted-foreground)'
-	];
+	/** Couleurs des secteurs : même ordre que le PDF (`PIE_COLOR_SEQUENCE`) */
+	const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorScreen);
 
 	const uid = $props.id();
 	const titleId = `${uid}-titre`;
@@ -706,12 +693,6 @@
 <style>
 	.stat-figure {
 		overflow-x: auto;
-		/* Pas de token de thème pour ces teintes : définies ici, claires / sombres */
-		--stat-vert: light-dark(#15803d, #4ade80);
-		--stat-violet: light-dark(#7c3aed, #a78bfa);
-		--stat-sarcelle: light-dark(#0d9488, #2dd4bf);
-		/* `--color-warning` ne fait que 3:1 sur le fond clair (audit a11y) */
-		--stat-orange: light-dark(#b45309, #f59e0b);
 		margin: 0.5rem 0;
 	}
 

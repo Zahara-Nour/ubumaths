@@ -16,6 +16,7 @@
 
 import type { BaseNode } from './ast';
 import type { CourbeColor, CourbeSize } from './courbe';
+import type { NamedColor } from '$lib/theme/named-colors';
 import type { LawIndicator } from '$lib/statistics/format';
 
 // ============================================================================
@@ -275,3 +276,18 @@ export const STAT_CHART_LIMITS = {
 	/** Écart toléré entre la somme des pourcentages et 100 (Q22) */
 	percentTolerance: 0.5
 } as const;
+
+/**
+ * Couleurs des secteurs d'un diagramme circulaire, dans l'ordre, puisées dans la
+ * palette commune des figures. Partagé par l'écran (`StatChart.svelte`) et le
+ * PDF (`stat-chart-typst.ts`) : un seul ordre, une seule source.
+ */
+export const PIE_COLOR_SEQUENCE: readonly NamedColor[] = [
+	'bleu',
+	'orange',
+	'vert',
+	'rouge',
+	'violet',
+	'cyan',
+	'gris'
+];

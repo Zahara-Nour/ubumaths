@@ -81,6 +81,23 @@ describe('Courbe — figure', () => {
 		expect(open).not.toBeNull();
 	});
 
+	// Palette commune des figures (docs/wip/palette-figures-progress.md) : la
+	// couleur RENDUE, lue dans les deux modes ; le PDF imprime la claire.
+	it('les couleurs suivent la palette commune, en clair comme en sombre', async () => {
+		const node = parseCourbeContent(SOURCE);
+		const screen = await render(Courbe, { target: mainElement(), props: { node } });
+		const dashed = screen.container.querySelector('.courbe-trace.pointille') as SVGElement; // g, rouge
+		const root = document.documentElement;
+		try {
+			root.style.colorScheme = 'light';
+			expect(getComputedStyle(dashed).stroke).toBe('rgb(220, 38, 38)'); // #dc2626
+			root.style.colorScheme = 'dark';
+			expect(getComputedStyle(dashed).stroke).toBe('rgb(255, 98, 87)'); // #ff6257
+		} finally {
+			root.style.colorScheme = '';
+		}
+	});
+
 	it('graduations à la française et nom de courbe', async () => {
 		const node = parseCourbeContent('x: -1 ; 1\ny: -1 ; 1\ngrille: 0.5 ; 0.5\nf(x) = x  nom=C_f');
 		const screen = await render(Courbe, { target: mainElement(), props: { node } });
