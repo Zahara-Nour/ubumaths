@@ -84,6 +84,13 @@ interface SceneCommon {
 	 * visible : pas répétée dans `description`, sinon lue deux fois.
 	 */
 	indicators: string[];
+	/**
+	 * `série:` (Q106) : la série brute écrite au-dessus de la figure, prête à
+	 * afficher ; absente ou null sans `série:` (et dans les scènes de l'atelier)
+	 */
+	series?: string | null;
+	/** `série: seule` : la série sans la figure ni les indicateurs */
+	seriesOnly?: boolean;
 }
 
 export interface SceneBar {
@@ -1262,11 +1269,36 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 // SCÈNE
 // ============================================================================
 
+/**
+ * `série:` (Q106) : « Série : 12 ; −3 ; 12,5 », les nombres écrits selon la
+ * langue (vrai signe moins, séparateur décimal), les mots tels quels.
+ */
+function seriesText(spec: StatChartSpec, locale: ContentLocale): string | null {
+	if (spec.series === null) return null;
+	const values = spec.series.values.map((v) =>
+		v.numeric ? asWritten(v.text.replaceAll('−', '-'), locale) : v.text
+	);
+	// Espace insécable avant « ; » (et « : ») : une ligne ne commence jamais par « ; »
+	return `${locale === 'en' ? 'Data: ' : 'Série\u00a0: '}${values.join('\u00a0; ')}`;
+}
+
 export function buildStatChartScene(
 	spec: StatChartSpec,
 	options: StatChartSceneOptions = {}
 ): StatChartScene {
 	const locale = options.locale ?? 'fr';
+	const scene = buildKindScene(spec, locale);
+	// `série: seule` : l'énoncé — la série, ni figure ni indicateurs
+	const seriesOnly = spec.series?.mode === 'seule';
+	return {
+		...scene,
+		series: seriesText(spec, locale),
+		seriesOnly,
+		indicators: seriesOnly ? [] : scene.indicators
+	};
+}
+
+function buildKindScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
 	switch (spec.kind) {
 		case 'barres':
 			return buildBarScene(spec, locale);
