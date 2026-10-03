@@ -12,8 +12,10 @@
  * chaque cible :
  *  - le modèle est relu en base ; le fichier doit porter le même `id` ;
  *  - seuls `variations`, `options`, `test_specs`, `title`, `description`, `level` sont écrits ;
- *    tout autre champ du fichier (`shared`, thème, domaine, sous-domaine, classes…) doit être
+ *    tout autre champ du fichier (thème, domaine, sous-domaine, classes…) doit être
  *    IDENTIQUE à la base, sinon arrêt ; `status` n'est jamais écrit ;
+ *  - `shared` : seul l'AJOUT de `cleanCoefficients: true` s'écrit (valeur = `shared` de la
+ *    base + l'option, `relecture/shared-clean-coefficients.ts`) ; tout autre écart = arrêt ;
  *  - `checkTemplate` doit passer sur le modèle tel qu'il sera en base ;
  *  - la simulation affiche le diff ancien/nouveau par champ ;
  *  - après écriture, la ligne est relue et comparée champ par champ.
@@ -41,6 +43,7 @@ import { toQuestionTemplate } from '$lib/types/question-template';
 import { toJson } from '$lib/types/database-helpers';
 import type { TablesUpdate } from '$lib/types/database';
 import { argValue, createScriptClient, hasFlag } from './relecture/common';
+import { canonique, sharedAEcrire } from './relecture/shared-clean-coefficients';
 
 // ============================================================================
 // CIBLES — ids explicites, rien d'autre n'est touché
@@ -94,6 +97,7 @@ const LOTS: Record<string, Lot> = {
 
 /** Champs écrits ; tout le reste doit être identique entre le fichier et la base */
 const CHAMPS_ECRITS = [
+	'shared', // seulement pour l'ajout de `cleanCoefficients: true` (voir `sharedAEcrire`)
 	'variations',
 	'options',
 	'testSpecs',
@@ -105,7 +109,6 @@ type ChampEcrit = (typeof CHAMPS_ECRITS)[number];
 
 /** Champs comparés sans être écrits (un écart = arrêt) */
 const CHAMPS_FIGES = [
-	'shared',
 	'theme',
 	'domain',
 	'subdomain',
@@ -122,19 +125,6 @@ const NIVEAU_TEMPORAIRE = 900;
 // ============================================================================
 // FONCTIONS
 // ============================================================================
-
-/** Sérialisation à clés triées (`jsonb` réordonne les clés) ; `null` ≡ absent ≡ `''` */
-function canonique(valeur: unknown): string {
-	if (valeur === undefined || valeur === null || valeur === '') return 'null';
-	return JSON.stringify(
-		valeur,
-		(_cle, v: unknown) =>
-			v && typeof v === 'object' && !Array.isArray(v)
-				? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
-				: v,
-		2
-	);
-}
 
 function colonne(champ: ChampEcrit): keyof TablesUpdate<'question_templates'> {
 	return champ === 'testSpecs' ? 'test_specs' : champ;
@@ -202,8 +192,19 @@ async function main(): Promise<number> {
 				);
 			}
 		}
+		const shared = sharedAEcrire(base.shared, brut.shared);
+		if (typeof shared === 'object' && 'refus' in shared) {
+			throw new Error(
+				`${fichier} : « shared » — ${shared.refus}\n${diff(canonique(base.shared), canonique(brut.shared))}`
+			);
+		}
 		const cible: QuestionTemplate = { ...base };
-		for (const champ of CHAMPS_ECRITS) Object.assign(cible, { [champ]: brut[champ] });
+		for (const champ of CHAMPS_ECRITS) {
+			if (champ === 'shared') continue;
+			Object.assign(cible, { [champ]: brut[champ] });
+		}
+		// Valeur reconstruite depuis la base (jamais copiée du fichier)
+		if (shared !== 'identique') cible.shared = shared.valeur as QuestionTemplate['shared'];
 		// Champs d'audit hors du schéma strict de l'éditeur (erreur `created_at` de `question:specs`)
 		const { created_at: _c, updated_at: _u, created_by: _b, ...verifiable } = cible;
 		const rapport = checkTemplate(verifiable, { instances: 100 });
