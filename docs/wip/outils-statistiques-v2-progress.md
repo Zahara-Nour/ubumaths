@@ -202,3 +202,16 @@ PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'
 
 Reste connu, hors v2 : en-têtes des tableaux, titres d'axe et indicateurs en français dans un
 document anglais (tous les blocs) ; candidat : bloc ```effectifs (Q107).
+
+Manche 9 (2026-10-03), blocs dans une fiche en anglais — recommandations suivies :
+
+121. Tout texte PRODUIT par un bloc suit la langue de la fiche (visible et lu) ; textes d'auteur,
+     messages d'erreur et atelier inchangés.
+122. Vocabulaire scolaire anglais : _frequency_ = effectif, _relative frequency_ = fréquence
+     (« Count » → « Frequency », « Observed relative frequency », « Cumulative relative frequency
+     polygon », « Two-way table ») ; typographie anglaise (« : », « % » sans espace).
+123. Atelier inchangé (interface en français).
+124. Filet : `english-texts.test.ts` (15 genres de blocs, scène + Typst, aucun mot français).
+
+- **Livrée #710** (2026-10-03) : dictionnaire `ubumark/utils/stat-chart-text.ts`.
+  Reste candidat : bloc ```effectifs (Q107).
