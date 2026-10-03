@@ -45,6 +45,8 @@ import {
 	type LawIndicator,
 	SERIES_MODES,
 	type SeriesMode,
+	FREQUENCY_TABLE_ROWS,
+	type FrequencyTableRow,
 	SIMULATION_MODES,
 	type SimulationData,
 	type SimulationMode,
@@ -111,6 +113,9 @@ interface Options {
 	seriesMode: SeriesMode | null;
 	/** `afficher:` d'un diagramme en barres à deux séries (Q116) */
 	barDisplay: 'effectifs' | 'fréquences' | null;
+	/** Bloc ```effectifs : `lignes:` (Q128) et `fréquences: décimales` */
+	tableRows: FrequencyTableRow[] | null;
+	decimalFrequencies: boolean | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -137,7 +142,7 @@ interface TableRow {
 // ============================================================================
 
 const BLOCK_START_REGEX =
-	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation)\s*$/;
+	/^```(barres|circulaire|histogramme|frequences-cumulees|tableau-croise|loi|simulation|effectifs)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
@@ -180,7 +185,8 @@ const OPTION_KEYS = [
 	'graine',
 	'echantillons',
 	'classes',
-	'serie'
+	'serie',
+	'frequences'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -203,12 +209,12 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	couleur: ['barres', 'histogramme', 'frequences-cumulees'],
 	etiquettes: ['circulaire'],
 	legende: ['histogramme'],
-	sens: ['frequences-cumulees'],
+	sens: ['frequences-cumulees', 'effectifs'],
 	lecture: ['frequences-cumulees'],
 	indicateurs: ['barres', 'histogramme', 'frequences-cumulees', 'loi'],
-	lignes: ['tableau-croise'],
+	lignes: ['tableau-croise', 'effectifs'],
 	colonnes: ['tableau-croise'],
-	totaux: ['tableau-croise'],
+	totaux: ['tableau-croise', 'effectifs'],
 	afficher: ['tableau-croise', 'barres', 'histogramme'],
 	masquer: ['tableau-croise', 'loi'],
 	coin: ['tableau-croise'],
@@ -216,7 +222,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	tirages: ['simulation'],
 	graine: ['simulation'],
 	echantillons: ['simulation'],
-	classes: ['histogramme', 'frequences-cumulees'],
+	classes: ['histogramme', 'frequences-cumulees', 'effectifs'],
+	frequences: ['effectifs'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
@@ -225,7 +232,8 @@ const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	etiquettes: 'étiquettes',
 	legende: 'légende',
 	echantillons: 'échantillons',
-	serie: 'série'
+	serie: 'série',
+	frequences: 'fréquences'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -235,7 +243,8 @@ const KIND_NAME: Record<StatChartKind, string> = {
 	'frequences-cumulees': 'polygones des fréquences cumulées',
 	'tableau-croise': 'tableaux croisés',
 	loi: 'lois de variables aléatoires',
-	simulation: 'simulations'
+	simulation: 'simulations',
+	effectifs: 'tableaux d’effectifs'
 };
 
 /** Indicateurs d'une loi, tels que l'auteur les écrit */
@@ -250,7 +259,8 @@ const RAW_DATA_KINDS: readonly StatChartKind[] = [
 	'barres',
 	'circulaire',
 	'histogramme',
-	'frequences-cumulees'
+	'frequences-cumulees',
+	'effectifs'
 ];
 
 /** `données Garçons: 12 ; 15` : une série nommée (le nom, puis les valeurs) */
@@ -544,8 +554,20 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			options.showTotals = yesNo(value, 'totaux');
 			return;
 		case 'lignes':
+			if (kind === 'effectifs') {
+				options.tableRows = parseTableRows(value);
+				return;
+			}
 			options.rows = parseNames(value, 'lignes');
 			return;
+		case 'frequences': {
+			const written = normalizeKey(value.trim());
+			if (written !== 'decimales' && written !== 'pourcentages') {
+				throw new LineError('fréquences : décimales ou pourcentages');
+			}
+			options.decimalFrequencies = written === 'decimales';
+			return;
+		}
 		case 'colonnes':
 			options.columns = parseNames(value, 'colonnes');
 			return;
@@ -898,6 +920,46 @@ function tallyTwoSeriesInClasses(
 	};
 }
 
+/**
+ * Lignes et options d'un tableau d'effectifs, une fois tout lu (Q128) : les
+ * cumuls demandent des nombres ou des classes ; `sens:` une ligne cumulée ;
+ * `fréquences:` une ligne de fréquences.
+ */
+function checkFrequencyTable(
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>,
+	seen: ReadonlySet<OptionKey>,
+	data: readonly StatChartDatum[],
+	classes: boolean
+): { table: NonNullable<StatChartSpec['frequencyTable']> } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const rows = options.tableRows ?? ['effectifs'];
+	const cumulative = rows.find((row) => row.endsWith('cumulés') || row.endsWith('cumulées'));
+	const numeric = data.every(
+		(d) => PLAIN_NUMBER_REGEX.test(d.label) || /^-?\d+\/\d+$/.test(d.label)
+	);
+	if (cumulative !== undefined && !classes && !numeric) {
+		return at(optionLines.lignes ?? 0, `${cumulative} : seulement pour des nombres ou des classes`);
+	}
+	if (seen.has('sens') && cumulative === undefined) {
+		return at(optionLines.sens ?? 0, 'sens : seulement avec une ligne cumulée');
+	}
+	if (options.decimalFrequencies !== null && !rows.some((row) => row.startsWith('fréquences'))) {
+		return at(optionLines.frequences ?? 0, 'fréquences : seulement avec une ligne de fréquences');
+	}
+	return {
+		table: {
+			rows,
+			decimals: options.decimalFrequencies === true,
+			showTotals: options.showTotals,
+			direction: options.direction,
+			classes
+		}
+	};
+}
+
 function tallyRawData(
 	kind: StatChartKind,
 	raw: readonly { text: string; line: number }[],
@@ -1017,7 +1079,12 @@ function tallyIntoClasses(
 	const last = classes[classes.length - 1];
 	const counts = classes.map(() => 0);
 	const values: number[] = [];
-	const chart = kind === 'histogramme' ? 'un histogramme' : 'un polygone';
+	const chart =
+		kind === 'histogramme'
+			? 'un histogramme'
+			: kind === 'effectifs'
+				? 'un tableau en classes'
+				: 'un polygone';
 	for (const { text, line } of raw) {
 		const value = rawNumber(text);
 		if (value === null) {
@@ -1047,6 +1114,26 @@ function tallyIntoClasses(
 		})),
 		values
 	};
+}
+
+/** `lignes: effectifs ; fréquences` d'un tableau d'effectifs (Q128), dans l'ordre écrit */
+function parseTableRows(value: string): FrequencyTableRow[] {
+	const rows: FrequencyTableRow[] = [];
+	for (const written of value
+		.split(';')
+		.map((v) => v.trim())
+		.filter((v) => v !== '')) {
+		const row = FREQUENCY_TABLE_ROWS.find((r) => normalizeKey(r) === normalizeKey(written));
+		if (row === undefined) {
+			throw new LineError(
+				`lignes : « ${written} » inconnue (choisir : ${FREQUENCY_TABLE_ROWS.join(', ')})`
+			);
+		}
+		if (rows.includes(row)) throw new LineError(`lignes : « ${written} » donnée deux fois`);
+		rows.push(row);
+	}
+	if (rows.length === 0) throw new LineError('lignes : aucune ligne donnée');
+	return rows;
 }
 
 function parseLawIndicators(raw: string): LawIndicator[] {
@@ -1272,12 +1359,13 @@ function checkWhole(
 	kind: StatChartKind,
 	data: readonly StatChartDatum[],
 	unit: StatChartUnit,
-	areaLegend: { value: number } | null
+	areaLegend: { value: number } | null,
+	classes = CLASS_CHART_KINDS.includes(kind)
 ): StatChartIssue | null {
 	if (data.length === 0) {
 		return { message: 'Aucune donnée : écrire au moins une ligne « catégorie = effectif »' };
 	}
-	if (kind === 'barres') return null;
+	if (kind === 'barres' || (kind === 'effectifs' && !classes)) return null;
 
 	const total = data.reduce((sum, datum) => sum + datum.value, 0);
 	// Circulaire et séries en classes : des pourcentages forment un tout (Q22 ;
@@ -1287,18 +1375,18 @@ function checkWhole(
 		return { message: `La somme des pourcentages fait ${formatForMessage(rounded)} %, pas 100 %` };
 	}
 
-	if (CLASS_CHART_KINDS.includes(kind)) {
-		const classes = data.map((d) => ({
+	if (classes) {
+		const intervals = data.map((d) => ({
 			lower: d.interval?.lower ?? 0,
 			upper: d.interval?.upper ?? 0,
 			count: d.value
 		}));
 		// Classes contiguës, total non nul : la règle du module statistique
-		const outcome = summarizeClasses(classes);
+		const outcome = summarizeClasses(intervals);
 		if (outcome !== null && !outcome.ok) return { message: outcome.message };
 		// Quadrillage borné : la règle partagée avec la scène
-		if (kind === 'histogramme' && usesCarreaux(classes, areaLegend !== null)) {
-			const grid = carreauGrid(classes, areaLegend?.value ?? null);
+		if (kind === 'histogramme' && usesCarreaux(intervals, areaLegend !== null)) {
+			const grid = carreauGrid(intervals, areaLegend?.value ?? null);
 			if (!grid.ok) return { message: `Histogramme : ${grid.message}` };
 		}
 		return null;
@@ -1381,7 +1469,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		sampleSize: 100,
 		classBounds: null,
 		seriesMode: null,
-		barDisplay: null
+		barDisplay: null,
+		tableRows: null,
+		decimalFrequencies: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1397,9 +1487,11 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
 	const maxCategories = isClasses
 		? STAT_CHART_LIMITS.classes
-		: kind === 'barres'
+		: kind === 'barres' || kind === 'effectifs'
 			? STAT_CHART_LIMITS.barCategories
 			: STAT_CHART_LIMITS.pieSectors;
+	// Tableau d'effectifs (Q126) : en classes si ses lignes s'écrivent [a ; b[
+	let tableClasses: boolean | null = null;
 
 	source.split('\n').forEach((rawLine, index) => {
 		const line = index + 1;
@@ -1411,6 +1503,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			const series = NAMED_SERIES_REGEX.exec(content);
 			if (series) {
 				if (kind === 'circulaire') throw new LineError('une seule série par diagramme circulaire');
+				if (kind === 'effectifs') throw new LineError('une seule série par tableau d’effectifs');
 				if (kind !== 'barres' && !CLASS_CHART_KINDS.includes(kind)) {
 					throw new LineError(
 						`l'option « données » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ')})`
@@ -1448,6 +1541,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				if (data.length > 0) throw new LineError(RAW_AND_COUNTS);
 				raw.push(...parseRawEntries(kv[2]).map((text) => ({ text, line })));
 				return;
+			}
+			// Lot PR (b) du tableau d'effectifs (Q130-Q131)
+			if (kv && kind === 'effectifs' && (key === 'masquer' || key === 'indicateurs')) {
+				throw new LineError(`${key} : arrive bientôt`);
 			}
 			if (kv && key !== null && isOptionKey(key)) {
 				if (seenOptions.has(key)) throw new LineError(`option « ${kv[1]} » déjà donnée`);
@@ -1545,7 +1642,14 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				return;
 			}
 			if (raw.length > 0 || named.length > 0) throw new LineError(RAW_AND_COUNTS);
-			const { label, interval } = isClasses
+			const classLine = isClasses || (kind === 'effectifs' && written.startsWith('['));
+			if (kind === 'effectifs') {
+				tableClasses ??= classLine;
+				if (tableClasses !== classLine) {
+					throw new LineError('écrire toutes les lignes en classes [a ; b[, ou aucune');
+				}
+			}
+			const { label, interval } = classLine
 				? parseClass(written)
 				: { label: written, interval: null };
 			if (label.length > STAT_CHART_LIMITS.labelLength) {
@@ -1556,9 +1660,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			if (data.some((datum) => datum.label === label)) {
 				throw new LineError(`catégorie « ${label} » déjà donnée`);
 			}
-			if (data.length >= maxCategories) {
-				const what = isClasses ? 'classes' : 'catégories';
-				throw new LineError(`au plus ${maxCategories} ${what} dans les ${KIND_NAME[kind]}`);
+			const limit = classLine ? STAT_CHART_LIMITS.classes : maxCategories;
+			if (data.length >= limit) {
+				const what = classLine ? 'classes' : 'catégories';
+				throw new LineError(`au plus ${limit} ${what} dans les ${KIND_NAME[kind]}`);
 			}
 
 			const parsed = parseValue(content.slice(separator + 1));
@@ -1604,10 +1709,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		errors.push({ message: `Ligne ${line} : afficher : seulement avec deux séries`, line });
 	}
 
+	// Classes : selon le genre, ou, pour un tableau d'effectifs, selon ses données
+	const classMode =
+		isClasses || (kind === 'effectifs' && (tableClasses === true || options.classBounds !== null));
 	let rawValues: number[] | null = null;
 	if (
 		errors.length === 0 &&
-		isClasses &&
+		classMode &&
 		options.classBounds !== null &&
 		raw.length === 0 &&
 		named.length === 0
@@ -1617,7 +1725,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			message: `Ligne ${line} : classes : seulement avec données: (sinon écrire [0 ; 5[ = effectif)`,
 			line
 		});
-	} else if (errors.length === 0 && raw.length > 0 && isClasses) {
+	} else if (errors.length === 0 && raw.length > 0 && classMode) {
 		const ranged = tallyIntoClasses(kind, raw, options.classBounds, optionLines.classes ?? 0);
 		if ('error' in ranged) errors.push(ranged.error);
 		else {
@@ -1690,8 +1798,22 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		if ('errors' in checked) errors.push(...checked.errors);
 		else table = checked.table;
 	} else if (errors.length === 0) {
-		const whole = checkWhole(kind, data, dataUnit, options.areaLegend);
-		if (whole) errors.push(whole);
+		// Un tableau d'effectifs a besoin des effectifs (Q126)
+		if (kind === 'effectifs' && unit?.value === 'pourcentages') {
+			errors.push({
+				message: `Ligne ${unit.line} : écrire des effectifs, pas des pourcentages`,
+				line: unit.line
+			});
+		} else {
+			const whole = checkWhole(kind, data, dataUnit, options.areaLegend, classMode);
+			if (whole) errors.push(whole);
+		}
+	}
+	let frequencyTable: StatChartSpec['frequencyTable'] = null;
+	if (errors.length === 0 && kind === 'effectifs') {
+		const checked = checkFrequencyTable(options, optionLines, seenOptions, data, classMode);
+		if ('error' in checked) errors.push(checked.error);
+		else frequencyTable = checked.table;
 	}
 	if (errors.length === 0 && options.indicators.length > 0) {
 		const problem = checkIndicators(kind, options.indicators, data, dataUnit);
@@ -1721,6 +1843,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					law,
 					simulation,
 					rawValues,
+					frequencyTable,
 					series,
 					twoSeries
 				}

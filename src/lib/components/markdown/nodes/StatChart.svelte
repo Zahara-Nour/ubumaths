@@ -123,6 +123,7 @@
 	let law = $derived(scene?.kind === 'loi' ? scene : null);
 	let simulation = $derived(scene?.kind === 'simulation' ? scene : null);
 	let comparison = $derived(scene?.kind === 'comparaison' ? scene : null);
+	let frequencyTable = $derived(scene?.kind === 'effectifs' ? scene : null);
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	/** Histogramme, polygone ou moyenne selon n : abscisses continues, axe vertical gradué */
 	let classChart = $derived(histogram ?? cumulative ?? mean);
@@ -196,7 +197,7 @@
 {#if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
-		{#if scene.title && !crossTable && !law && !simulation && !comparison}
+		{#if scene.title && !crossTable && !law && !simulation && !comparison && !frequencyTable}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
@@ -207,6 +208,54 @@
 
 		{#if scene.seriesOnly}
 			<!-- `série: seule` : l'énoncé, sans la figure -->
+		{:else if frequencyTable}
+			<!-- Tableau d'effectifs (Q125-Q129) : à l'horizontale, une ligne des valeurs
+			     puis une par grandeur ; à la verticale au-delà de 12 valeurs -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+				<table class="stat-tableau">
+					<caption id={captionId} class:stat-titre={frequencyTable.title !== null}
+						>{frequencyTable.caption}</caption
+					>
+					{#if frequencyTable.vertical}
+						<thead>
+							<tr>
+								<th scope="col">{frequencyTable.valueHeader}</th>
+								{#each frequencyTable.rows as row, i (i)}
+									<th scope="col">{row.header}</th>
+								{/each}
+							</tr>
+						</thead>
+						<tbody>
+							{#each frequencyTable.columns as column, i (i)}
+								<tr>
+									<th scope="row">{column}</th>
+									{#each frequencyTable.rows as row, j (j)}
+										<td>{row.cells[i]}</td>
+									{/each}
+								</tr>
+							{/each}
+						</tbody>
+					{:else}
+						<tbody>
+							<tr>
+								<th scope="row">{frequencyTable.valueHeader}</th>
+								{#each frequencyTable.columns as column, i (i)}
+									<th scope="col">{column}</th>
+								{/each}
+							</tr>
+							{#each frequencyTable.rows as row, i (i)}
+								<tr>
+									<th scope="row">{row.header}</th>
+									{#each row.cells as cell, j (j)}
+										<td>{cell}</td>
+									{/each}
+								</tr>
+							{/each}
+						</tbody>
+					{/if}
+				</table>
+			</div>
 		{:else if comparison}
 			<!-- `.comparer` (v2 lot 5, Q112) : une ligne par indicateur, une colonne
 			     par série ; un trait plus marqué ouvre chaque groupe -->

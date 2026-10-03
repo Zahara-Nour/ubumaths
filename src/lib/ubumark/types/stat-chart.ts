@@ -31,7 +31,8 @@ export const STAT_CHART_KINDS = [
 	'frequences-cumulees',
 	'tableau-croise',
 	'loi',
-	'simulation'
+	'simulation',
+	'effectifs'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -86,6 +87,15 @@ export interface LawData {
 	masked: number[];
 	indicators: LawIndicator[];
 }
+
+/** Lignes d'un tableau d'effectifs (Q128), dans l'ordre de l'auteur */
+export const FREQUENCY_TABLE_ROWS = [
+	'effectifs',
+	'fréquences',
+	'effectifs cumulés',
+	'fréquences cumulées'
+] as const;
+export type FrequencyTableRow = (typeof FREQUENCY_TABLE_ROWS)[number];
 
 /** Ce que simule un bloc ```simulation (v2, lot 3) */
 export const SIMULATION_MODES = ['tirages', 'moyenne', 'échantillons'] as const;
@@ -193,6 +203,16 @@ export interface StatChartSpec {
 	 * pour une moyenne et une médiane EXACTES (Q105) ; sinon null.
 	 */
 	rawValues: number[] | null;
+	/** Bloc ```effectifs (Q125-Q129) : ses lignes et leur écriture ; `data` porte les valeurs */
+	frequencyTable: {
+		rows: FrequencyTableRow[];
+		/** `fréquences: décimales` : au centième ; sinon en % au dixième */
+		decimals: boolean;
+		showTotals: boolean;
+		direction: StatChartDirection;
+		/** Des classes [a ; b[ (première ligne « Classe ») */
+		classes: boolean;
+	} | null;
 	/** `série:` (lot 4 PR c, Q106) : la série brute écrite dans la fiche, sinon null */
 	series: {
 		mode: SeriesMode;
