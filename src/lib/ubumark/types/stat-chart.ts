@@ -110,6 +110,13 @@ export interface SimulationData {
 	seed: number;
 }
 
+/**
+ * `série:` (Q106) : la série brute écrite au-dessus de la figure, triée, ou
+ * seule (l'énoncé, sans la figure ni les indicateurs)
+ */
+export const SERIES_MODES = ['affichée', 'triée', 'seule'] as const;
+export type SeriesMode = (typeof SERIES_MODES)[number];
+
 /** Indicateurs affichables sous la figure (Q28) */
 export const STAT_CHART_INDICATORS = [
 	'effectif',
@@ -185,6 +192,8 @@ export interface StatChartSpec {
 	 * pour une moyenne et une médiane EXACTES (Q105) ; sinon null.
 	 */
 	rawValues: number[] | null;
+	/** `série:` (lot 4 PR c, Q106) : la série brute écrite dans la fiche, sinon null */
+	series: { mode: SeriesMode; values: { text: string; numeric: boolean }[] } | null;
 }
 
 // ============================================================================

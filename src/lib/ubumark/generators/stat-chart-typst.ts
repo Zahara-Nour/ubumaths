@@ -473,7 +473,11 @@ export function generateStatChartTypst(
 		const scene = buildStatChartScene(node.spec, {
 			locale: options.language === 'en' ? 'en' : 'fr'
 		});
-		return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
+		if (!scene.series) return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
+		// `série:` (Q106) : sous le titre, avant la figure — ou seule (l'énoncé)
+		const head = `${titleBlock(scene.title)}#block(text(size: 9pt)${textContent(scene.series)})\n`;
+		if (scene.seriesOnly) return head;
+		return head + figureTypst({ ...scene, title: null }, node.spec.size) + indicatorsBlock(scene);
 	} catch {
 		return UNAVAILABLE;
 	}

@@ -32,3 +32,14 @@ une lecture ; pas d'autres indicateurs ouverts.
 - [ ] PR, CI, merge
 
 ## PR (c) — `série:` (Q106)
+
+Spec validée le 2026-10-03 : `affichée` / `triée` / `seule` (l'énoncé, sans figure ni indicateurs).
+
+- [x] `spec.series` (parseur) → `scene.series` / `scene.seriesOnly` posés par `buildStatChartScene`
+      pour tous les genres ; écran (`.stat-serie`) et Typst (`#block`) affichent le même texte
+- [x] Erreurs : sans `données:`, valeur inconnue, `triée` sur des mots ; message « ne s'applique
+      pas » écrit avec l'orthographe de l'auteur (`série`, `étiquettes`)
+- [x] Tests `raw-data-series.test.ts` (12) + navigateur (2) ; fiche énoncé / corrigé FR + EN compilée
+- ⚠️ Vu sur le corrigé anglais : les étiquettes des barres venues de `données:` restent « 9,5 » et
+  « -3 » (hérité de la PR a, nom canonique) → à proposer à David (affichage selon la langue)
+- [ ] Revue, PR, CI, merge
