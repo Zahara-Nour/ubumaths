@@ -175,7 +175,8 @@ describe('courbe — erreurs situées (comportements 6 et 7, Q48)', () => {
 	});
 
 	it('option inconnue après l’expression', () => {
-		const e = errorOf('x: -4 ; 6\ny: -8 ; 12\nf(x) = x jaune');
+		// `jaune` est devenu une couleur (palette commune, 2026-10-03) : un mot inconnu
+		const e = errorOf('x: -4 ; 6\ny: -8 ; 12\nf(x) = x magenta');
 		expect(e.line).toBe(3);
 	});
 });
