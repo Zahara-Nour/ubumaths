@@ -26,4 +26,19 @@ Fonctions › Polynôme du second degré (le sous-domaine « Propriétés » se 
 14 modèles publiés du thème, mais seuls les 9 CORRIGÉS ont été mis dans `SUITES`. Tous publiés, identiques
 à la base (après les sous-domaines accentués) → ajoutés au lot `suites`, simulation « identique ».
 
-## 1. `\bold{…}` → « bold1 » dans le PDF — en cours
+## 1. `\bold{…}` → « bold1 » dans le PDF — fait
+
+- **Cause** : `convertLatexToTypstMath` ne connaissait que `\mathbf` ; `\bold`, `\boldsymbol`, `\bm`
+  tombaient dans le filet des commandes inconnues (nom en texte : `"bold"#text(…)[$-3$]`).
+  `\textbf{…}` entourant une commande (`\textbf{\textcolor{…}{1}}`) : même défaut.
+- **Correction** : les quatre convertis en `bold(…)` (accolades équilibrées, comme `\mathbf`).
+- **Écran** : MathLive (`convertLatexToMarkup`) connaît `\bold`, `\boldsymbol`, `\bm` (classe
+  `ML__mathbf`, aucune erreur de `validateLatex`) : rien à changer dans les modèles.
+- **Preuves** : test rouge (7 cas) puis vert (`typst-authoring-defects.test.ts`, point 12) ; corrigé
+  de 1acb6d47 compilé par le compilateur de prod, avant « bold − 3 », après −3 en gras orange ;
+  fiche des 54 modèles publiés (108 tirages) compilée OK, 0 « bold » dans le texte du PDF.
+- **Mesure prod** (lecture seule) : `\bold` dans 54 modèles PUBLIÉS, `\mathbf` dans 13 brouillons
+  et 2 exercices, `\boldsymbol` / `\bm` / `\textbf` : 0. Empreinte Typst de 67 modèles × 30
+  tirages (4020 textes) : 1584 changent, tous dans les 54 modèles à `\bold`, chaque ligne changée
+  portait « "bold" » avant, 0 après ; brouillons à `\mathbf` inchangés. Exercices
+  (`empreinte-typst.ts`, 1298 textes) : 0 changement (aucun `\bold`).
