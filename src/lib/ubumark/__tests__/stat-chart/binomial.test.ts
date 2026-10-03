@@ -88,8 +88,25 @@ describe('X ~ B(n ; p) — le tableau de la loi', () => {
 	it('`indicateurs:` : E = np, V = np(1 − p), σ', () => {
 		const scene = lawOf(`${B}\nindicateurs: espérance ; variance ; écart type`);
 		expect(scene.indicators[0]).toBe('E(X) = 3');
-		expect(scene.indicators[1]).toMatch(/^V\(X\) = 21\/10 = 2,1$/);
+		// p écrit en décimal : E et V en décimal exact
+		expect(scene.indicators[1]).toBe('V(X) = 2,1');
 		expect(scene.indicators[2]).toMatch(/^σ\(X\) ≈ 1,45$/);
+	});
+
+	it('p en fraction : E et V en fraction ; p très décimal : pas de fraction géante', () => {
+		expect(lawOf('X ~ B(10 ; 1/3)\nindicateurs: espérance ; variance').indicators).toEqual([
+			'E(X) = 10/3 ≈ 3,33',
+			'V(X) = 20/9 ≈ 2,22'
+		]);
+		expect(lawOf('X ~ B(1000 ; 0,12345678901234)\nindicateurs: espérance').indicators[0]).toBe(
+			'E(X) = 123,45678901234'
+		);
+	});
+
+	it('p = 0 et p = 1 ; notation anglaise B(10, 0.3)', () => {
+		expect(lawOf('X ~ B(3 ; 0)').probabilities.map((p) => p.text)).toEqual(['1', '0', '0', '0']);
+		expect(lawOf('X ~ B(3 ; 1)').probabilities.map((p) => p.text)).toEqual(['0', '0', '0', '1']);
+		expect(lawOf('X ~ B(10, 0.3)').probabilities[3].text).toBe('0,267');
 	});
 
 	it('`masquer:` comme une loi écrite à la main', () => {
@@ -150,7 +167,7 @@ describe('X ~ B(n ; p) — au-delà de 30 valeurs', () => {
 
 	it('n = 1 000 se calcule', () => {
 		expect(lawOf('X ~ B(1000 ; 0,5)\nprobabilités: P(X ⩽ 500)').indicators[0]).toMatch(
-			/^P\(X ⩽ 500\) ≈ 0,51\d$/
+			/^P\(X ⩽ 500\) ≈ 0,513$/
 		);
 	});
 });
@@ -168,6 +185,11 @@ describe('X ~ B(n ; p) — Typst', () => {
 
 		for (const p of scene.probabilities) expect(typst).toContain(`[#"${p.text}"]`);
 		expect(typst).toContain('P(X ⩽ 4) ≈ 0,850');
+	});
+
+	it('vertical : deux colonnes ; horizontal : une colonne par valeur', () => {
+		expect(generateStatChartTypst(nodeOf(B))).toContain('columns: (auto,) * 2');
+		expect(generateStatChartTypst(nodeOf('X ~ B(5 ; 0,5)'))).toContain('columns: (auto,) * 7');
 	});
 
 	it('au-delà de 30 valeurs : pas de tableau dans le PDF non plus', () => {
@@ -193,6 +215,32 @@ describe('X ~ B(n ; p) — erreurs situées', () => {
 		expect(errorOf('X ~ B(10 ; 1,2)')).toBe(p);
 		expect(errorOf('X ~ B(10 ; -0,1)')).toBe(p);
 		expect(errorOf('X ~ B(10 ; beaucoup)')).toBe(p);
+	});
+
+	it('p : division par zéro, écriture scientifique, trop de chiffres', () => {
+		const p = 'Ligne 1 : B(n ; p) : p est un nombre entre 0 et 1';
+		expect(errorOf('X ~ B(10 ; 1/0)')).toBe(p);
+		expect(errorOf('X ~ B(1e3 ; 0,5)')).toBe('Ligne 1 : B(n ; p) : n est un entier de 1 à 1 000');
+		expect(errorOf('X ~ B(10 ; 0,1234567890123456)')).toBe(
+			'Ligne 1 : B(n ; p) : p a au plus 15 chiffres'
+		);
+	});
+
+	it('des bornes : décimales, hors de [0 ; n], dans le désordre', () => {
+		expect(lawOf(`${B}\nprobabilités: P(X < 2,5) ; P(X > 15) ; P(1 < X < 3)`).indicators).toEqual([
+			'P(X < 2,5) ≈ 0,383',
+			'P(X > 15) = 0',
+			'P(1 < X < 3) ≈ 0,233'
+		]);
+		expect(errorOf(`${B}\nprobabilités: P(5 ⩽ X ⩽ 2)`)).toBe(
+			'Ligne 2 : probabilités : « P(5 ⩽ X ⩽ 2) » : les bornes dans l’ordre (la plus petite d’abord)'
+		);
+	});
+
+	it('`masquer:` sans tableau (plus de 30 valeurs)', () => {
+		expect(errorOf('X ~ B(100 ; 0,5)\nmasquer: 3')).toBe(
+			'Ligne 2 : masquer : pas de tableau au-delà de 30 valeurs'
+		);
 	});
 
 	it('une probabilité mal écrite, ou d’une autre variable', () => {

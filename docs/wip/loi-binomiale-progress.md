@@ -14,7 +14,8 @@ seuil (surréservation). Spec PR (a) validée le 2026-10-03.
       vertical quand la ligne serait trop large (estimation valeurs × caractères, mesurée sur la
       fiche), pas de tableau au-delà de 30 valeurs ; écran et Typst ; filet anglais
 - [x] Fiche compilée et vérifiée à la main (B(10 ; 0,3), B(5 ; 1/2), B(100 ; 0,5))
-- [ ] Revue, PR, CI, merge
+- [x] Revue : aucune erreur mathématique ; E et V en décimal exact si p est décimal ; notation anglaise B(10, 0.3) ; messages (p à plus de 15 chiffres, bornes inversées, `masquer:` sans tableau) ; pas d’arrondi des cases quand le tableau est caché ; tests (0,513 exact, horizontal, p = 0 / 1, 1/0, 1e3, bornes)
+- [ ] PR, CI, merge
 
 ## PR (b) — `diagramme:`, `intervalle:`, `seuil:`, simulation
 

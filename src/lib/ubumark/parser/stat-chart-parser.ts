@@ -278,7 +278,8 @@ const RAW_DATA_KINDS: readonly StatChartKind[] = [
 const NAMED_SERIES_REGEX = /^donn[ée]es\s+([^:]+?)\s*:\s*(.*)$/i;
 
 /** `X ~ B(10 ; 0,3)` ou `X suit B(10 ; 0,3)` : la variable, n, p */
-const BINOMIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*B\s*\(\s*(.+?)\s*;\s*(.+?)\s*\)$/;
+// Séparateur « ; », ou « , » suivi d'une espace : la notation anglaise B(10, 0.3) (revue)
+const BINOMIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*B\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
 
 const BINOMIAL_ALONE = 'une loi binomiale se donne seule : pas de ligne « X = » ni « P = »';
 
@@ -1332,8 +1333,23 @@ function checkBinomial(
 		return at(binomial.line, 'B(n ; p) : n est un entier de 1 à 1 000');
 	}
 	const p = Fraction.parse(binomial.p);
+	// Un nombre bien écrit mais trop long : le dire, plutôt que « pas un nombre » (revue)
+	if (
+		p === null &&
+		/^[\d\s.,/%]+$/.test(binomial.p) &&
+		/\d{16}/.test(binomial.p.replace(/[\s.,]/g, ''))
+	) {
+		return at(binomial.line, 'B(n ; p) : p a au plus 15 chiffres');
+	}
 	if (p === null || p.isNegative() || p.greaterThan(Fraction.ONE)) {
 		return at(binomial.line, 'B(n ; p) : p est un nombre entre 0 et 1');
+	}
+	// `masquer:` sans tableau à masquer (au-delà de 30 valeurs, revue)
+	if (options.lawMasked.length > 0 && n + 1 > STAT_CHART_LIMITS.binomialTableValues) {
+		return at(
+			optionLines.masquer ?? 0,
+			`masquer : pas de tableau au-delà de ${STAT_CHART_LIMITS.binomialTableValues} valeurs`
+		);
 	}
 
 	const masked: number[] = [];
@@ -1386,6 +1402,12 @@ function checkBinomial(
 			const b = bound(two![5]);
 			low = left === '⩽' ? Math.ceil(a) : Math.floor(a) + 1;
 			high = right === '⩽' ? Math.floor(b) : Math.ceil(b) - 1;
+			if (a > b) {
+				return at(
+					queriesLine,
+					`probabilités : « ${text} » : les bornes dans l’ordre (la plus petite d’abord)`
+				);
+			}
 			display = `P(${two![1]} ${left} ${variable} ${right} ${two![5]})`;
 		}
 		queries.push({ display, low, high });

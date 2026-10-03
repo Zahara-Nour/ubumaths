@@ -528,6 +528,22 @@ describe('StatChart — loi binomiale (manche 11)', () => {
 		);
 	});
 
+	it('horizontal : une ligne des valeurs, une ligne des probabilités', async () => {
+		const node = parseStatChartContent('loi', 'X ~ B(5 ; 0,5)');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rows = screen.container.querySelectorAll('tbody tr');
+
+		expect(rows).toHaveLength(2);
+		expect([...rows[1].querySelectorAll('td')].map((td) => td.textContent)).toEqual([
+			'0,031',
+			'0,156',
+			'0,313',
+			'0,313',
+			'0,156',
+			'0,031'
+		]);
+	});
+
 	it('trop large : vertical ; plus de 30 valeurs : pas de tableau', async () => {
 		const vertical = parseStatChartContent('loi', 'X ~ B(20 ; 0,5)');
 		const v = await render(StatChart, { target: mainElement(), props: { node: vertical } });
