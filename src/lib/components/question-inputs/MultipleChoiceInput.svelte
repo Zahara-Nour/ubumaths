@@ -9,7 +9,7 @@
 	- choices: Array of choices with content (ResolvedMarkdown) and correctness
 	- selectedIndexes: Array of selected choice indexes (bindable)
 	- multipleAnswers: Whether multiple selections are allowed (affiche la consigne
-	  « Coche toutes les bonnes réponses. »)
+	  « Coche la ou les bonnes réponses. »)
 	- disabled: Whether inputs are disabled
 	- showValidation: Whether to show correct/incorrect indicators
 	- onSubmit: Callback when a choice is clicked (in single-answer mode)

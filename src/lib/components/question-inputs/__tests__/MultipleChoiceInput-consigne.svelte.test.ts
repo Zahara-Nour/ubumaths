@@ -1,7 +1,8 @@
 /**
  * MultipleChoiceInput — consigne d'un QCM à plusieurs réponses (V2, chantier 2)
  *
- * « Coche toutes les bonnes réponses. » (Q107 b) s'affiche au-dessus des choix,
+ * « Coche la ou les bonnes réponses. » (Q107 b, texte revu : vraie aussi
+ * quand le tirage n'a qu'une bonne réponse, sans en révéler le nombre) s'affiche au-dessus des choix,
  * donc juste sous l'énoncé, partout où le composant sert : entraînement
  * (QuestionCard), flash-cards et en classe (FlashCard, même non interactive),
  * et après correction. Une réponse unique n'en a pas.
@@ -13,7 +14,7 @@ import { render } from 'vitest-browser-svelte';
 import MultipleChoiceInput from '../MultipleChoiceInput.svelte';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
-const CONSIGNE = 'Coche toutes les bonnes réponses.';
+const CONSIGNE = 'Coche la ou les bonnes réponses.';
 const choices = ['2', '3', '4'].map((content, originalIndex) => ({
 	content: content as ResolvedMarkdown,
 	originalIndex
