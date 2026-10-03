@@ -6,9 +6,8 @@
  * - (a) le décocher (ou appliquer « Vrai / Faux ») dans l'éditeur d'une variation
  *   normalise aussi les AUTRES variations (on garde leur première bonne réponse) ;
  *   sinon l'enregistrement était refusé pour une variation que l'auteur ne voit pas.
- *   Vérifié dans l'UI de la variation 2 (et non dans le modèle enregistré : à
- *   l'ouverture, l'éditeur « Réponse partagée », monté même replié, remplit les
- *   choix partagés de deux choix vides, qui priment ensuite sur ceux des variations).
+ *   Vérifié dans l'UI de la variation 2 ET dans le modèle enregistré (les choix
+ *   restent ceux des variations : aucun choix partagé vide n'est inventé).
  * - (b) un enregistrement silencieux (depuis l'éditeur de tests) refusé pour un
  *   nombre de bonnes réponses incohérent le DIT (toast), au lieu de ne rien faire.
  */
@@ -57,6 +56,21 @@ async function renderForm(template: QuestionTemplate) {
 	return onSave;
 }
 
+/** Enregistre le brouillon et rend le modèle envoyé à `onSave` */
+async function saveDraft(onSave: ReturnType<typeof vi.fn>): Promise<SavedTemplate> {
+	await page.getByRole('button', { name: 'Enregistrer brouillon' }).click();
+	await expect.poll(() => onSave.mock.calls.length).toBe(1);
+	return onSave.mock.calls[0][0] as SavedTemplate;
+}
+
+/** Variation 2 attendue : B seule bonne réponse, choix conservés */
+function expectSecondVariationSingleB(saved: SavedTemplate) {
+	expect(saved.shared?.choices).toBeUndefined();
+	expect(saved.multipleAnswers).toBe(false);
+	expect(saved.variations[1].correctChoiceIndex).toBe('1');
+	expect(saved.variations[1].choices?.map((c) => c.isCorrect)).toEqual([false, true, false]);
+}
+
 /** Bonne réponse affichée (bouton radio) dans l'éditeur de la variation visible */
 function radio(letter: string) {
 	return page.getByRole('radio', { name: `Choix ${letter} : bonne réponse` });
@@ -68,7 +82,7 @@ afterEach(() => {
 
 describe('QuestionTemplateForm — QCM, une seule bonne réponse', () => {
 	it('(a) décocher « plusieurs réponses » normalise aussi l’autre variation', async () => {
-		await renderForm(qcmTemplate());
+		const onSave = await renderForm(qcmTemplate());
 
 		// Éditeur de la variation 1 (affichée) ; la case de l'éditeur partagé est masquée
 		await page.getByRole('checkbox', { name: 'Autoriser plusieurs réponses correctes' }).click();
@@ -77,10 +91,11 @@ describe('QuestionTemplateForm — QCM, une seule bonne réponse', () => {
 		// Variation 2 : B et C étaient bonnes → on garde la première (B)
 		await expect.element(radio('B')).toBeChecked();
 		await expect.element(radio('C')).not.toBeChecked();
+		expectSecondVariationSingleB(await saveDraft(onSave));
 	});
 
 	it('(a) « Vrai / Faux » dans une variation normalise aussi l’autre', async () => {
-		await renderForm(qcmTemplate());
+		const onSave = await renderForm(qcmTemplate());
 
 		await page.getByRole('button', { name: 'Vrai / Faux' }).click();
 		// Choix déjà écrits : confirmation
@@ -89,6 +104,7 @@ describe('QuestionTemplateForm — QCM, une seule bonne réponse', () => {
 
 		await expect.element(radio('B')).toBeChecked();
 		await expect.element(radio('C')).not.toBeChecked();
+		expectSecondVariationSingleB(await saveDraft(onSave));
 	});
 
 	it('(b) sauvegarde silencieuse refusée (nombre de bonnes réponses) : un toast le dit', async () => {
