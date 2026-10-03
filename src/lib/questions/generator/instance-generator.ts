@@ -41,7 +41,11 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
-import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import {
+	applyRemoveSpaces,
+	AuthorExpressionError
+} from '$lib/ubumark/parameterization/resolver/variable-resolver';
+import { resolveVariableConditionals } from './variable-conditionals';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
 import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
@@ -259,6 +263,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			try {
 				candidate = resolveVariables(resolvedVariation.variables || [], random);
 			} catch (error) {
+				// Faute d'écriture du modèle : la même à chaque tirage, inutile de relancer
+				if (error instanceof AuthorExpressionError) {
+					return { success: false, errors: [error.message] };
+				}
 				lastVariableError = error instanceof Error ? error.message : String(error);
 				continue;
 			}
@@ -379,7 +387,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				//   normalizeExpression converts "eval:a+b" → "{{eval:a+b}}", etc.
 				// - Text blanks: only resolve if already contains {{...}}.
 				//   Bare words like "pair", "entier" are literal text, not variable refs.
-				const rawExpected = blank.expectedAnswer;
+				// `{{if:…}}` tranché d'abord : sinon son `|` est lu comme une liste de tirage
+				const rawExpected = resolveVariableConditionals(blank.expectedAnswer, resolvedVariables, {
+					strict: true
+				});
 				// `;hms` écrit une juxtaposition, lue comme un PRODUIT : jamais une réponse attendue
 				if (/;[^{}]*\bhms\b/.test(rawExpected)) {
 					throw new Error(
@@ -631,7 +642,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// was declared. Strict early-return inside when absent, so this is a
 		// no-op for the vast majority of templates. Coupling with
 		// `correction-generator.ts` is intentional and unidirectional.
-		const finalInstance = generateCorrection(instance);
+		const finalInstance = generateCorrection(instance, { cleanCoefficients });
 
 		return {
 			success: true,

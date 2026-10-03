@@ -67,20 +67,25 @@ function substituteLongNames(condition: string, resolvedVariables: ResolvedVaria
  * Erreur d'une condition ILLISIBLE (faute de l'auteur) : elle remonte au lieu d'être
  * lue comme « faux », sinon le tirage épuise ses 100 essais sans dire pourquoi.
  */
-class ConditionSyntaxError extends Error {}
+export class ConditionSyntaxError extends Error {}
 
 /**
  * Ramène les opérateurs qu'un auteur écrit naturellement (à la manière d'un langage de
  * programmation) à la notation du parseur : `==`, `===` → `=` ; `!==`, `<>`, `≠` → `!=`.
  * `<=`, `>=` et `!=` ne sont pas touchés. Sans cela, `gcd(c,d) == 1` était une erreur de
- * syntaxe, avalée en « faux » : la condition n'était jamais satisfaite.
+ * syntaxe, avalée en « faux » : la condition n'était jamais satisfaite. `a<-1` = `a < -1`
+ * (sans cela, « Unexpected token: <- » : il fallait écrire `a< -1`).
  */
 function normalizeConditionOperators(condition: string): string {
-	return condition
-		.replace(/!==(?!=)/g, '!=')
-		.replace(/(?<![<>!=])={2,3}(?!=)/g, '=')
-		.replace(/<>/g, '!=')
-		.replace(/≠/g, '!=');
+	return (
+		condition
+			.replace(/!==(?!=)/g, '!=')
+			.replace(/(?<![<>!=])={2,3}(?!=)/g, '=')
+			.replace(/<>/g, '!=')
+			.replace(/≠/g, '!=')
+			// `a<-1` : « < » puis un nombre négatif, pas la flèche `<-` du parseur (affectation)
+			.replace(/<-/g, '< -')
+	);
 }
 
 /** Mots logiques écrits à la manière de Python (`and`, `or`, `not`), en minuscules ou en majuscules */
