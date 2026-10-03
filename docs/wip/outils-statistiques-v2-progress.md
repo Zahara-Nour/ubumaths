@@ -236,3 +236,5 @@ PR prévues : (a) bloc, données, lignes, totaux, sens, langue (Q125-Q129, Q133)
 `indicateurs:` (Q130-Q131).
 
 - **Bloc effectifs, PR (a) livrée #718** (2026-10-03). Reste : PR (b) `masquer:` + `indicateurs:` (Q130-Q131), spec à proposer.
+
+- **Bloc effectifs, PR (b) livrée #722** (2026-10-03) : `masquer:` (cases à compléter) et `indicateurs:`. **Bloc effectifs TERMINÉ** (#718, #722).
