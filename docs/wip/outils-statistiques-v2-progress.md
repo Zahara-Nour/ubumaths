@@ -266,3 +266,10 @@ PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ;
 (c) atelier `.binomiale`. À part : référentiel de Terminale ; autres lois (maths compl.).
 
 - **Loi binomiale, PR (b) livrée #736** (2026-10-03) : `diagramme:`, `intervalle:`, `seuil:`, simulation de B(n ; p). Reste : (c) atelier `.binomiale` ; à part : référentiel de Terminale, lois de maths complémentaires.
+
+142. (2026-10-03) `.binomiale` dans l'atelier AFFICHE la loi (scène du bloc), sans créer de
+     liste : des listes décimales perdraient l'exactitude (« Loi » refuserait B(20 ; 0,3)).
+
+- **Loi binomiale, PR (c) livrée #740** (2026-10-03) : `.binomiale X 10 0,3 [options]`.
+  **Loi binomiale TERMINÉE** (#730, #736, #740). Reste à part : référentiel de Terminale ;
+  lois de maths complémentaires (uniforme, Bernoulli, géométrique ; densité uniforme, exponentielle).
