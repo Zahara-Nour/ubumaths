@@ -45,12 +45,12 @@ lus comme des PRODUITS, et `P'(2)`, `C'(x)` ne se lisent pas du tout.
   `MarkdownRenderer`), question publique d'évaluation.
 - Éditeur : champ « Fonctions » du formulaire de modèle.
 
-## Point ouvert (hors périmètre autorisé)
+## Contrôle de forme (levé le 2026-10-03)
 
-`checkForm` (`mathAST/cosmetic-transforms.ts`, interdit dans ce chantier) relit la réponse
-et l'attendu avec les défauts : une réponse `P'(2)` juste en valeur y échoue (« Parse
-error ») → mauvaise forme. Correctif additif : `CheckFormOptions.genericFunctions` passé à
-ses `parseLatexSafe`. Test `it.fails` posé pour le signaler.
+Après le merge de #692 (parseur : `f\left(…\right)` lu comme `f(…)`), `checkForm`
+(`cosmetic-transforms.ts`) reçoit `CheckFormOptions.genericFunctions`, passé par
+`answer-validator` depuis l'instance : `P'(2)` et `P'\left(2\right)` sont justes avec la forme
+contrôlée.
 
 ## Journal
 
@@ -68,11 +68,15 @@ ses `parseLatexSafe`. Test `it.fails` posé pour le signaler.
   n'utilise encore l'option : cette mesure prouve la non-régression, pas la fonctionnalité).
 - `check:incremental` 0 erreur, `lint:fast` propre.
 
+- Lot 2 (après #692) : merge de `origin/main`, `checkForm` branché, les deux `it.fails`
+  remplacés par des tests verts (rouges prouvés sans le changement de `cosmetic-transforms.ts`).
+  Non-régression rejouée : suites questions/utils/math/mathAST/worksheets/server/api vertes
+  (sauf `simplify/abort.test.ts`, test de chronométrage instable aussi sur main), specs des 195
+  JSON identiques à main, production 801 modèles / 7075 specs identiques.
+
 ## Restes
 
-- `checkForm` (cf. point ouvert) — `it.fails` dans `generic-functions-template.test.ts`.
-- Relire en LaTeX `P\left( x \right)` comme une fonction dépend du chantier parallèle du
-  parseur (`f\left(1\right)`) : la saisie MathLive `P'\left(2\right)` est aujourd'hui lue
-  comme un produit (comme `f'\left(2\right)`) → second `it.fails`, à retirer après ce correctif.
 - Non branchés (pas de cas réel) : `required-form-validator` (formes product/sum…),
-  `{{eval:…}}` et conditions (une fonction déclarée n'y a pas de valeur), `evaluateExpression`.
+  `{{eval:…}}` et conditions (une fonction déclarée n'y a pas de valeur), `evaluateExpression`,
+  `forgotPercentSign` / `isSimpleNumberLatex` (une fonction n'est jamais un nombre : verdict
+  identique avec ou sans la liste).

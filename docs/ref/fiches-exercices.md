@@ -173,13 +173,9 @@ Vaut pour tout le modèle : énoncé, choix, réponses attendues, correction (y 
 générées), réponse de l'élève, barème serveur, `testSpecs`, et l'exercice figé d'une série
 (`buildSerie` lui donne `generic_functions` = défauts ∪ fonctions déclarées).
 
-Limites connues (2026-10-03) : le **contrôle de forme** (`checkForm`) relit encore la réponse
-avec les seuls défauts — une réponse `P'(2)` juste en valeur y est « mauvaise forme » tant qu'il
-n'est pas branché ; en attendant, une case qui attend une écriture en `P'(…)` doit porter
-`options.constraints.form: "off"`. De plus, la saisie MathLive (`P'\left(2\right)`) n'est lue comme une
-fonction qu'une fois le correctif du parseur `f\left(1\right)` livré (vrai aussi pour f). Une
-réponse attendue **numérique** (le cas courant : « calculer P'(2) », attendu `12`) n'est
-concernée par aucune de ces limites.
+Le contrôle de forme relit aussi la réponse avec ces fonctions : `P'(2)` tapé (ou saisi
+`P'\left(2\right)` par MathLive) est juste sans `form: "off"` ; `P'(1+1)` a la bonne valeur
+mais pas la forme attendue, comme pour toute autre réponse.
 
 ### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
 
