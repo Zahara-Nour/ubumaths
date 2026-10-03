@@ -13,7 +13,12 @@ import { generateInstance } from '../generator/instance-generator';
 import { questionTemplateSchema } from '../template-schema';
 import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
 import { validateAnswer } from '$lib/utils/answer-validator';
-import { cleanCoefficientsAst, cleanCoefficientsCustom } from '../clean-coefficients';
+import {
+	cleanCoefficientsAst,
+	cleanCoefficientsCustom,
+	keepsValue,
+	latexRelationsToCustom
+} from '../clean-coefficients';
 import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
 import { templateGenericFunctions } from '../generic-functions';
@@ -324,5 +329,124 @@ describe('generateInstance avec cleanCoefficients', () => {
 			template('$?$', '{{a}}x{{b;+}}y{{c;+}}=0', LINE_VARIABLES, { cleanCoefficients: true })
 		);
 		expect(instance.blanks?.[0].expectedAnswer).not.toBe('x=0');
+	});
+});
+
+// ============================================================================
+// INÉGALITÉS ÉCRITES EN LATEX (`\leqslant`, `\geq`, `\neq`…)
+// ============================================================================
+
+describe('latexRelationsToCustom', () => {
+	it.each([
+		['x\\leqslant2', 'x<=2'],
+		['x\\leq 2', 'x<= 2'],
+		['x\\le2', 'x<=2'],
+		['x\\geqslant2', 'x>=2'],
+		['x\\geq2', 'x>=2'],
+		['x\\ge 2', 'x>= 2'],
+		['x\\neq2', 'x!=2'],
+		['x\\ne2', 'x!=2'],
+		['x\\lt2', 'x<2'],
+		['x\\gt2', 'x>2']
+	])('%s → %s', (source, expected) => {
+		expect(latexRelationsToCustom(source)).toBe(expected);
+	});
+
+	it.each(['\\left(x\\right)', '\\neg x', '\\geometry', 'x<=2'])('%s intact', (source) => {
+		expect(latexRelationsToCustom(source)).toBe(source);
+	});
+});
+
+describe('keepsValue — garde de valeur d’une relation, membre à membre', () => {
+	const parse = (source: string) => {
+		const parsed = parseCustomSafe(source);
+		if (!parsed.ast) throw new Error(`formule illisible : ${source}`);
+		return parsed.ast;
+	};
+
+	it.each([
+		['x^2+1x<=2', 'x^2+x<=2'],
+		['0x+y>=-(-3)', 'y>=3'],
+		['1x-1y+0=0', 'x-y=0']
+	])('%s → %s : valeur conservée', (before, after) => {
+		expect(keepsValue(parse(before), parse(after))).toBe(true);
+	});
+
+	it.each([
+		['x^2+x<=2', 'x^2+x<=3'],
+		['x^2+x<=2', '2x^2+2x<=4'],
+		['x^2+x<=2', 'x^2+x>=2'],
+		['x^2+x<2', '2<x^2+x'],
+		['x-y=0', 'y-x=0']
+	])('%s → %s : refusé (un membre ou la relation change)', (before, after) => {
+		expect(keepsValue(parse(before), parse(after))).toBe(false);
+	});
+});
+
+describe('generateInstance avec cleanCoefficients — inégalités', () => {
+	const variables = (a: string) => [
+		{ name: 'a', expression: a },
+		{ name: 'b', expression: '2' }
+	];
+	const statementOf = (relation: string, a: string, shared?: SharedVariationDefaults) =>
+		String(
+			generate(template(`$x^2+{{a}}x${relation}{{b}}$ : $?$`, '1', variables(a), shared)).statement
+		);
+
+	describe.each([
+		['\\leqslant', '\\leqslant'],
+		['\\geqslant', '\\geqslant'],
+		['\\leq', '\\leqslant'],
+		['\\geq', '\\geqslant'],
+		['\\le', '\\leqslant'],
+		['\\ge', '\\geqslant'],
+		['\\neq', '\\neq'],
+		['<', '<'],
+		['>', '>']
+	])('%s', (relation, rendered) => {
+		it.each([
+			['1', `$x^2 + x ${rendered} 2$`],
+			['-1', `$x^2 - x ${rendered} 2$`],
+			['0', `$x^2 ${rendered} 2$`]
+		])('a = %s → %s', (a, expected) => {
+			expect(statementOf(relation, a, { cleanCoefficients: true })).toContain(expected);
+		});
+	});
+
+	it('option absente : \\leqslant laissé tel quel', () => {
+		expect(statementOf('\\leqslant', '1')).toContain('$x^2+1x\\leqslant2$');
+	});
+
+	it('rien à nettoyer : le texte d’auteur reste à l’octet près', () => {
+		expect(statementOf('\\leqslant', '3', { cleanCoefficients: true })).toContain(
+			'$x^2+3x\\leqslant2$'
+		);
+	});
+
+	it('chaîne a \\leqslant b \\leqslant c : laissée telle quelle (comme a = b = c)', () => {
+		const instance = generate(
+			template('$0\\leqslant {{a}}x\\leqslant 2$ : $?$', '1', variables('1'), {
+				cleanCoefficients: true
+			})
+		);
+		expect(String(instance.statement)).toContain('$0\\leqslant 1x\\leqslant 2$');
+	});
+
+	it('relation qui deviendrait triviale : intacte', () => {
+		const instance = generate(
+			template('$x-({{a}})\\leqslant x+3$ : $?$', '1', variables('-3'), {
+				cleanCoefficients: true
+			})
+		);
+		expect(String(instance.statement)).toContain('$x-(-3)\\leqslant x+3$');
+	});
+
+	it('LaTeX non lisible autour (\\in, \\mathbb) : intact', () => {
+		const instance = generate(
+			template('$1x\\leqslant 2, x\\in\\mathbb{R}$ : $?$', '1', variables('1'), {
+				cleanCoefficients: true
+			})
+		);
+		expect(String(instance.statement)).toContain('$1x\\leqslant 2, x\\in\\mathbb{R}$');
 	});
 });
