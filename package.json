@@ -34,6 +34,7 @@
 		"test:client": "vitest run --project=client",
 		"test:changed": "vitest run --changed --passWithNoTests",
 		"test:integration": "bash scripts/with-db-lock.sh vitest run --config vitest.integration.config.ts",
+		"test:definer-guard": "bash scripts/with-db-lock.sh vitest run --config vitest.definer-guard.config.ts",
 		"test:integration:watch": "bash scripts/with-db-lock.sh vitest --config vitest.integration.config.ts",
 		"test:lint-rules": "node eslint-rules/require-zod-validation.test.js",
 		"test": "npm run test:changed",
