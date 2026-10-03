@@ -342,6 +342,46 @@ describe('StatChart — comparaison de deux séries (`.comparer`, v2 lot 5)', ()
 	});
 });
 
+describe('StatChart — barres à deux séries (v2 lot 5, Q115-Q118)', () => {
+	const SOURCE =
+		'données Garçons: 12 ; 15 ; 12 ; 9\ndonnées Filles: 14 ; 12 ; 15\nindicateurs: moyenne';
+
+	it('barres groupées, la seconde hachurée, une étiquette par valeur, une légende', async () => {
+		const node = parseStatChartContent('barres', SOURCE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const rects = [...screen.container.querySelectorAll('rect.stat-barre')];
+		const hatched = rects.filter((r) => r.classList.contains('stat-barre-hachuree'));
+		const pattern = screen.container.querySelector('pattern');
+
+		expect(rects).toHaveLength(8);
+		expect(hatched).toHaveLength(4);
+		expect(pattern).not.toBeNull();
+		expect(getComputedStyle(hatched[0]).fill).toContain(pattern!.id);
+		expect(
+			[...screen.container.querySelectorAll('.stat-categories text')].map((t) => t.textContent)
+		).toEqual(['9', '12', '14', '15']);
+		expect(
+			[...screen.container.querySelectorAll('.stat-legende-series li')].map((li) =>
+				li.textContent?.trim()
+			)
+		).toEqual(['Garçons', 'Filles']);
+	});
+
+	it('le tableau d’indicateurs sous la figure, une colonne par série', async () => {
+		const node = parseStatChartContent('barres', SOURCE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const tables = screen.container.querySelectorAll('table');
+
+		expect(tables).toHaveLength(1);
+		expect([...tables[0].querySelectorAll('th[scope="col"]')].map((th) => th.textContent)).toEqual([
+			'Garçons',
+			'Filles'
+		]);
+		expect(tables[0].querySelector('tbody th')?.textContent).toBe('Moyenne');
+		expect(screen.container.querySelector('.stat-indicateurs')).toBeNull();
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

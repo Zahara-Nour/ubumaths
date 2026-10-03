@@ -18,4 +18,18 @@ validée le 2026-10-03.
 
 ## PR (b) — barres à deux séries + tableau d'indicateurs
 
+Spec validée le 2026-10-03.
+
+- [x] Parseur : `données Nom: …` (NAMED_SERIES_REGEX), exactement deux, plusieurs lignes par série,
+      homonymes de casse refusés ; `groupRaw` partagé avec une série ; `afficher:` pour les barres
+- [x] Scène : `labels` (une par catégorie), `bars[].series`, `legend`, `secondColor`,
+      `indicatorTable` (scène de `.comparer`, lignes demandées) ; fréquences au dixième si effectifs
+      différents ; `série:` une ligne par série
+- [x] Écran : motif SVG de hachures, légende, tableau (StatChart imbriqué) ; Typst : `tiling`
+      (vérifié avec le compilateur de prod), légende, tableau, valeurs en 5 pt
+- [x] Tests `two-series.test.ts` (19) + navigateur (2) ; fiche FR / EN compilée et vérifiée à la main
+- ⚠️ Connu, hors périmètre : en-têtes du tableau et titres d'axe en français dans un document anglais
+  (comme les indicateurs de tous les blocs aujourd'hui)
+- [ ] Revue, PR, CI, merge
+
 ## PR (c) — deux histogrammes

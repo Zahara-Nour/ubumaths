@@ -22,6 +22,7 @@ import type {
 	StatChartDirection,
 	StatChartLabels,
 	SimulationData,
+	StatChartIndicator,
 	StatChartSpec,
 	StatChartUnit
 } from '../types/stat-chart';
@@ -50,6 +51,7 @@ import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/stati
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
+import { buildComparisonScene } from './comparison-scene';
 import { createRandomSource } from '$lib/utils/random';
 
 // ============================================================================
@@ -95,6 +97,8 @@ interface SceneCommon {
 
 export interface SceneBar {
 	label: string;
+	/** Deux séries (Q115) : 1 pour la seconde, hachurée ; absente sinon */
+	series?: 0 | 1;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -116,6 +120,14 @@ export interface BarScene extends SceneCommon {
 	rotateLabels: boolean;
 	/** Caractères du nom le plus long : place à réserver sous l'axe s'il est incliné */
 	longestLabel: number;
+	/** Une étiquette par catégorie, au centre de sa bande (une ou deux barres) */
+	labels: { text: string; center: number }[];
+	/** Deux séries (Q115) : leurs noms, pour la légende ; null sinon */
+	legend: string[] | null;
+	/** Couleur de la seconde série, hachurée (Q117) ; null avec une seule série */
+	secondColor: CourbeColor | null;
+	/** Deux séries + `indicateurs:` (Q118) : le tableau, une colonne par série */
+	indicatorTable: ComparisonScene | null;
 }
 
 export interface SceneSector {
@@ -438,49 +450,106 @@ function formatValue(value: number, unit: StatChartUnit, locale: ContentLocale):
 // BARRES
 // ============================================================================
 
+/** Lignes du tableau d'indicateurs d'un bloc à deux séries, dans l'ordre de l'auteur */
+const INDICATOR_ROWS: Record<StatChartIndicator, string[]> = {
+	effectif: ['Effectif'],
+	moyenne: ['Moyenne'],
+	mediane: ['Médiane'],
+	quartiles: ['Q1', 'Q3'],
+	'ecart-interquartile': ['Écart interquartile'],
+	etendue: ['Étendue'],
+	'ecart-type': ['Écart type'],
+	'classe-mediane': []
+};
+
 function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const width = COURBE_PIXEL_WIDTH[spec.size];
 	const height = width * STAT_CHART_ASPECT_RATIO;
-	const values = spec.data.map((d) => d.value);
+	const two = spec.twoSeries;
+	const count = spec.data.length;
+
+	// Deux séries (Q116) : effectifs, ou fréquences en % au dixième
+	const unit: StatChartUnit = two?.display === 'fréquences' ? 'pourcentages' : spec.unit;
+	const shown = (series: 0 | 1, i: number): number => {
+		if (two === null) return spec.data[i].value;
+		const c = two.counts[series][i];
+		if (two.display === 'effectifs') return c;
+		const total = two.counts[series].reduce((a, b) => a + b, 0);
+		return total === 0 ? 0 : Math.round((1000 * c) / total) / 10;
+	};
+	const seriesList: (0 | 1)[] = two === null ? [0] : [0, 1];
+	const values = seriesList.flatMap((s) => spec.data.map((_, i) => shown(s, i)));
 	const maxValue = Math.max(...values) || 1;
 
-	const { yMax, ticks } = valueAxis(maxValue, height, spec.unit, locale);
+	const { yMax, ticks } = valueAxis(maxValue, height, unit, locale);
 
 	const margin = (1 - BAR_WIDTH) / 2;
-	const bars = spec.data.map((d, i) => ({
-		label: shownLabel(d.label, locale),
-		value: d.value,
-		valueLabel: formatValue(d.value, spec.unit, locale),
-		left: i + margin,
-		right: i + 1 - margin
-	}));
-
-	const bandPx = width / spec.data.length;
-	const longest = Math.max(...spec.data.map((d) => d.label.length));
-	const rotateLabels = spec.data.length > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
-
-	const listed = spec.data.map(
-		(d) => `${shownLabel(d.label, locale)} ${formatValue(d.value, spec.unit, locale)}`
+	const barWidth = BAR_WIDTH / seriesList.length;
+	const bars: SceneBar[] = spec.data.flatMap((d, i) =>
+		seriesList.map((s) => {
+			const left = i + margin + s * barWidth;
+			const value = shown(s, i);
+			return {
+				label: shownLabel(d.label, locale),
+				...(two !== null && { series: s }),
+				value,
+				valueLabel: formatValue(value, unit, locale),
+				left,
+				right: left + barWidth
+			};
+		})
 	);
+	const labels = spec.data.map((d, i) => ({ text: shownLabel(d.label, locale), center: i + 0.5 }));
+
+	const bandPx = width / count;
+	const longest = Math.max(...spec.data.map((d) => d.label.length));
+	const rotateLabels = count > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
+
+	const listed = spec.data.map((d, i) =>
+		two === null
+			? `${shownLabel(d.label, locale)} ${formatValue(d.value, spec.unit, locale)}`
+			: `${shownLabel(d.label, locale)} — ${two.names[0]} ${formatValue(shown(0, i), unit, locale)}, ${two.names[1]} ${formatValue(shown(1, i), unit, locale)}`
+	);
+
+	let indicatorTable: ComparisonScene | null = null;
+	if (two !== null && two.values !== null && spec.indicators.length > 0) {
+		const summaries = two.values.map((v, s) => ({
+			name: two.names[s],
+			summary: describeList(v)
+		}));
+		if (summaries.every((s) => s.summary !== null)) {
+			indicatorTable = buildComparisonScene(
+				summaries.map((s) => ({ name: s.name, summary: s.summary! })),
+				locale,
+				spec.indicators.flatMap((indicator) => INDICATOR_ROWS[indicator])
+			);
+		}
+	}
 
 	return {
 		kind: 'barres',
 		title: spec.title,
 		accessibleTitle: KIND_TITLE.barres,
-		description: spec.description ?? `${KIND_TITLE.barres} : ${listed.join(', ')}.`,
+		description:
+			spec.description ?? `${KIND_TITLE.barres} : ${listed.join(two === null ? ', ' : ' ; ')}.`,
 		pixelSize: { width, height },
 		bars,
 		yMax,
 		ticks,
 		axisTitles: {
 			x: spec.axes.x,
-			y: spec.axes.y ?? (spec.unit === 'pourcentages' ? 'Fréquence (%)' : 'Effectif')
+			y: spec.axes.y ?? (unit === 'pourcentages' ? 'Fréquence (%)' : 'Effectif')
 		},
 		color: spec.color,
 		showValues: spec.showValues,
 		rotateLabels,
 		longestLabel: longest,
-		indicators: barIndicators(spec, locale)
+		labels,
+		legend: two === null ? null : [...two.names],
+		// La seconde série dans une autre teinte, hachurée (Q117)
+		secondColor: two === null ? null : spec.color === 'orange' ? 'bleu' : 'orange',
+		indicatorTable,
+		indicators: two === null ? barIndicators(spec, locale) : []
 	};
 }
 
@@ -1315,11 +1384,17 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
  */
 function seriesText(spec: StatChartSpec, locale: ContentLocale): string | null {
 	if (spec.series === null) return null;
-	const values = spec.series.values.map((v) =>
-		v.numeric ? asWritten(v.text.replaceAll('−', '-'), locale) : v.text
-	);
-	// Espace insécable avant « ; » (et « : ») : une ligne ne commence jamais par « ; »
-	return `${locale === 'en' ? 'Data: ' : 'Série\u00a0: '}${values.join('\u00a0; ')}`;
+	// Une ligne par série (deux séries, Q118) ; espace insécable avant « ; » (et
+	// « : ») : une ligne ne commence jamais par « ; »
+	return spec.series.lines
+		.map((line) => {
+			const values = line.values.map((v) =>
+				v.numeric ? asWritten(v.text.replaceAll('−', '-'), locale) : v.text
+			);
+			const name = line.name ?? (locale === 'en' ? 'Data' : 'Série');
+			return `${name}${locale === 'en' ? ': ' : '\u00a0: '}${values.join('\u00a0; ')}`;
+		})
+		.join('\n');
 }
 
 export function buildStatChartScene(
