@@ -7,6 +7,10 @@ export const REQUIRED_FORM_OPTIONS = [
 	{ value: 'additionOnly', label: 'Somme sans soustraction' },
 	{ value: 'fraction', label: 'Fraction' },
 	{ value: 'power', label: 'Puissance' },
+	// Formes d'une équation (case « équation » : droite, cercle)
+	{ value: 'reduite', label: 'Équation réduite (y = mx + p)' },
+	{ value: 'cartesienne', label: 'Équation cartésienne (ax + by + c = 0)' },
+	{ value: 'centre-rayon', label: 'Équation centre-rayon ((x − a)² + (y − b)² = r²)' },
 	{ value: 'custom', label: 'Pattern personnalisé' }
 ] as const;
 

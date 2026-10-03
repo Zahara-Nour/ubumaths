@@ -231,6 +231,27 @@ Règles d'écriture qui évitent un défaut :
 « mauvaise forme », **décision de David du 2026-10-02** (on attend l'équation réduite `y = mx + p`).
 Une valeur recopiée derrière « x = » (`x=\frac32`) est jugée sur la valeur (#624).
 
+**Case « équation » (droite, cercle — 2026-10-03).** Sans marquage, une équation est comparée comme
+une ÉCRITURE : pour `2x-y+1=0`, `y=2x+1` ou `4x-2y+2=0` sont « faux ». Pour juger l'ensemble de
+points, marquer la case `answerKind: "equation"` (ou `blankDefaults`, case « Réponse : équation »
+de l'éditeur) :
+
+```json
+{ "expectedAnswer": "{{a}}x-y+{{b}}=0", "answerKind": "equation" }
+{ "expectedAnswer": "(x-{{a}})^2+(y-{{b}})^2={{r2}}", "answerKind": "equation", "requiredForm": "centre-rayon" }
+```
+
+- droite : toute équation proportionnelle est juste (`y=2x+1`, `-2x+y-1=0`, `x-4=0` et `2x=8`
+  pour `x=4`, fractions comprises) ;
+- cercle (degré 2) : forme développée ou centre-rayon (`3^2` ou `9`) justes ; un multiple
+  (`2x^2+2y^2…`, et même `9=(x-1)^2+…`, membres échangés = coefficient −1) vaut ½ avec « Simplifie
+  l'équation : le coefficient de x² doit valoir 1. » → écrire l'attendue avec le coefficient 1 ;
+- forme exigée (`requiredForm`) : `reduite` (y = mx + p, ou x = c ; `x+1=y` refusée),
+  `cartesienne` (ax + by + c = 0, membre droit 0), `centre-rayon` ; juste mais autre forme →
+  `bad_form` (spec : `constraintViolations: ["form"]`, comme pour un cercle à simplifier) ;
+- une attendue qui n'est pas une équation polynomiale en x et y fait échouer les specs du modèle.
+  Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « équation »).
+
 Corrigés dans le moteur (ne plus contourner) : notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code

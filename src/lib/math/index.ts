@@ -38,7 +38,10 @@ export * as intervals from './intervals';
  *   décimale ; `separator` : virgules nues intactes, sauf dans une écriture à
  *   point-virgule (`(1,5;2)`) — cf. mathAST/decimal-comma
  */
-function stripLatexSpacing(latex: string, commas: 'decimal' | 'separator' = 'decimal'): string {
+export function stripLatexSpacing(
+	latex: string,
+	commas: 'decimal' | 'separator' = 'decimal'
+): string {
 	const stripped = latex
 		// LaTeX spacing commands: \, \; \: \! and \ (backslash-space)
 		.replace(/\\[,;:!]\s?/g, '')

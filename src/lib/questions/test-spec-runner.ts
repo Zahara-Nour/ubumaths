@@ -14,6 +14,7 @@ import { generateInstanceWithFixedVariables } from './generator/test-instance-bu
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { getQuestionType, isCourseCard } from './types';
 import { readExpectedIntervals } from './intervals/interval-answer';
+import { readExpectedEquation } from './equations/equation-answer';
 
 export interface TestSpecResult {
 	spec: TestSpec;
@@ -55,11 +56,14 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 	const instance = genResult.instance;
 	const questionType = getQuestionType(instance);
 
-	// Case « intervalles » : une réponse attendue illisible est une erreur du MODÈLE
+	// Case « intervalles » ou « équation » : une réponse attendue illisible est une erreur du MODÈLE
 	// (côté élève, elle rendrait toute réponse fausse sans le dire)
 	for (const [index, blank] of (instance.blanks ?? []).entries()) {
-		if (blank.answerKind !== 'intervalles') continue;
-		const expected = readExpectedIntervals(blank.expectedAnswer);
+		if (blank.answerKind === undefined) continue;
+		const expected =
+			blank.answerKind === 'intervalles'
+				? readExpectedIntervals(blank.expectedAnswer)
+				: readExpectedEquation(blank.expectedAnswer);
 		if (!expected.ok) {
 			return makeError(
 				`Réponse attendue illisible (case ${index + 1}) : ${blank.expectedAnswer} — ${expected.error}`

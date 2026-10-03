@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS } from './types';
+import { ANSWER_KINDS, EQUATION_FORMS } from './types';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -27,7 +27,7 @@ import { ANSWER_KINDS } from './types';
 export const constraintModeSchema = z.enum(['strict', 'warn', 'off']);
 
 export const requiredFormSchema = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
+	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() })
 ]);
 
@@ -347,7 +347,7 @@ export const optionsSchema = z.object({
 // ============================================================================
 
 const requiredFormStrictZ = z.union([
-	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power']),
+	z.enum(['product', 'sum', 'additionOnly', 'fraction', 'power', ...EQUATION_FORMS]),
 	z.object({ pattern: z.string(), acceptable: z.string().optional() }).strict()
 ]);
 

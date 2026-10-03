@@ -56,6 +56,7 @@ import {
 	judgeIntervalAnswer,
 	DEFAULT_INTERVAL_FORM_MODE
 } from '$lib/questions/intervals/interval-answer';
+import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
@@ -781,6 +782,13 @@ function validateBlankValue(
 	// Réponse hostile ou démesurée : fausse, sans être lue (garde Q58)
 	if (isAnswerTooComplex(userAnswer)) return false;
 
+	// Équation (droite, cercle) : jugée sur l'ensemble de points, une écriture à
+	// simplifier ou une forme exigée non respectée garde une valeur juste
+	if (blank.answerKind === 'equation') {
+		const { status } = judgeEquationAnswer(userAnswer, blank.expectedAnswer);
+		return status === 'correct' || status === 'unoptimal_form';
+	}
+
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -893,6 +901,41 @@ function intervalBlankResult(
 	}
 }
 
+/**
+ * Case « équation » : verdict de `judgeEquationAnswer` dans la forme de
+ * `validateSingleBlank`. Forme exigée non respectée (`bad_form`) et équation de
+ * cercle à simplifier (`unoptimal_form`) portent la contrainte `form`.
+ */
+function equationBlankResult(
+	answer: string,
+	blank: InstanceBlank
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeEquationAnswer(
+		answer,
+		blank.expectedAnswer,
+		blank.requiredForm
+	);
+	switch (status) {
+		case 'correct':
+			return { isCorrect: true, status: 'correct' };
+		case 'empty':
+			return { isCorrect: false, status: 'empty' };
+		case 'unoptimal_form':
+		case 'bad_form': {
+			const severity = status === 'bad_form' ? 'error' : 'warning';
+			const message = feedback ?? REQUIRED_FORM_FEEDBACK.pattern;
+			return {
+				isCorrect: status === 'unoptimal_form',
+				status,
+				feedback: message,
+				constraintViolations: [{ constraint: 'form', severity, feedback: message }]
+			};
+		}
+		default:
+			return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+	}
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -926,6 +969,11 @@ function validateSingleBlank(
 	// answer-complexity.ts). Le LaTeX sert aussi à juger la forme : il est mesuré.
 	if (isBlankAnswerTooComplex(userAnswer, userAnswerLatex)) {
 		return { isCorrect: false, feedback: ANSWER_TOO_COMPLEX_FEEDBACK };
+	}
+
+	// Équation de droite ou de cercle : chaîne à part, cf. equations/equation-answer.ts
+	if (blank.answerKind === 'equation') {
+		return equationBlankResult(userAnswerLatex || userAnswer, blank);
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1163,9 +1211,7 @@ function roundingBadForm(feedback: string): {
 /** Une case où un « x = » recopié devant la valeur est ignoré (cf. answer-variable-prefix) */
 function acceptsVariablePrefix(blank: InstanceBlank): boolean {
 	return (
-		blank.type !== 'text' &&
-		blank.answerKind !== 'intervalles' &&
-		expectsValue(blank.expectedAnswer)
+		blank.type !== 'text' && blank.answerKind === undefined && expectsValue(blank.expectedAnswer)
 	);
 }
 
@@ -1430,6 +1476,11 @@ function matchedAnswerForm(
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
 	if (blank.answerKind === 'intervalles') {
 		const result = intervalBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « équation » appariée : même jugement que seule (forme exigée, cercle à simplifier)
+	if (blank.answerKind === 'equation') {
+		const result = equationBlankResult(blankLatex || userAnswer, blank);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 
