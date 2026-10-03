@@ -77,6 +77,34 @@ background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 En pratique, une classe Tailwind (`bg-card`, `text-muted-foreground`, `border`)
 est souvent préférable à une règle CSS écrite à la main.
 
+## Clair / sombre : un seul signal, le choix de l'utilisateur
+
+`<ModeWatcher defaultMode="system" />` (`src/routes/+layout.svelte`) pose sur `<html>`
+la classe `.dark` **et** `style.colorScheme`, d'après le choix de l'utilisateur (qui
+vaut le réglage de l'OS tant qu'il n'a rien choisi). Trois mécanismes en dépendent :
+
+| Mécanisme                           | Lit            |
+| ----------------------------------- | -------------- |
+| tokens `--color-*` (`light-dark()`) | `color-scheme` |
+| classes Tailwind `dark:`            | `.dark` ¹      |
+| CSS à la main `:global(.dark) …`    | `.dark`        |
+
+¹ Grâce à `@custom-variant dark (&:where(.dark, .dark *));` en tête de `src/app.css`
+(#684). **Sans cette ligne, Tailwind 4 branche `dark:` sur `prefers-color-scheme`**,
+c'est-à-dire l'OS : les tokens basculaient au choix de l'utilisateur, les 1 105
+classes `dark:` non → pastilles claires sur fond sombre dès que choix ≠ OS. Invisible
+tant que les deux coïncident, ce qui est le cas par défaut.
+
+Règles :
+
+- **Ne jamais écrire `@media (prefers-color-scheme: dark)`** dans un composant : il
+  suit l'OS, pas le bouton. Écrire `:global(.dark) .x` (ou `.dark .x` dans un
+  `<style>` global, p. ex. sous `<svelte:head>`, cf. `/api-docs`, #686).
+- Ne pas réécrire `style.colorScheme` à la main : mode-watcher le fait déjà, au
+  chargement (script anti-FOUC) comme à chaque bascule.
+- Pour tester : les **deux cas mixtes** (OS clair + choix sombre, et l'inverse).
+  Playwright : `newContext({ colorScheme: os })` + `localStorage['mode-watcher-mode'] = choix`.
+
 ## La garde CI
 
 `scripts/check-css-tokens.sh`, appelée par le job **Lint** de
