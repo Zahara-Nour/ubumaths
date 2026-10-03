@@ -778,7 +778,10 @@ export const FIGURE_DEFAULT_COLOR = '#000000';
 const FIGURE_DEFAULTS = {
 	defaultColor: FIGURE_DEFAULT_COLOR,
 	defaultStrokeWidth: 1.5,
-	defaultPointSize: 3
+	defaultPointSize: 3,
+	// Remplissage sans `opacite_fond` : translucide, on voit les traits dessous.
+	// Le même à l'écran et au PDF (avant : 25 % à l'écran, opaque au PDF).
+	defaultFillOpacity: 0.25
 } as const;
 
 export function buildFigureScene(

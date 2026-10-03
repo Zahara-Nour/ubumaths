@@ -91,6 +91,17 @@ function hexToTypstColor(hex: string): string {
 }
 
 /**
+ * Remplissage Typst d'un style : aucun, plein, ou translucide (`opacite_fond`,
+ * ou l'opacité par défaut de la figure). Le même calcul que l'écran.
+ */
+function fillExpr(sty: { fillColor?: string; fillOpacity: number }): string {
+	if (!sty.fillColor || sty.fillOpacity <= 0) return 'none';
+	const color = hexToTypstColor(sty.fillColor);
+	if (sty.fillOpacity >= 1) return color;
+	return `${color}.transparentize(${Math.round((1 - sty.fillOpacity) * 100)}%)`;
+}
+
+/**
  * Ligne qui contient un nombre non fini HORS chaîne : `NaN`, `Infinity`
  * écrits dans une coordonnée font échouer tout le document.
  */
@@ -363,7 +374,7 @@ export function exportToTypst(
 		const verts = el.dependsOn.map((id) => figure.getPosition(id));
 		if (verts.some((p) => !p)) continue;
 		const pts = verts.map((p) => c(geoToNumber(p!.x), geoToNumber(p!.y)));
-		const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
+		const fillPart = `, fill: ${fillExpr(sty)}`;
 		tag(el.id);
 		lines.push(`  line(${pts.join(', ')}, close: true, stroke: ${stroke}${fillPart})`);
 	}
@@ -423,7 +434,7 @@ export function exportToTypst(
 				result.closed && result.discontinuityIndices.length === 0 && isLastSeg(i)
 					? ', closed: true'
 					: '';
-			const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
+			const fillPart = `, fill: ${fillExpr(sty)}`;
 			lines.push(`  line(${coords.join(', ')}, stroke: ${stroke}${fillPart}${closedPart})`);
 		}
 	}

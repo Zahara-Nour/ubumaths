@@ -68,6 +68,7 @@ export type FigureShape =
 			width: number;
 			dash: string;
 			fill: string | null;
+			fillOpacity: number;
 	  })
 	| (ShapeBase & { kind: 'path'; d: string; width: number; dash: string; fill: string | null })
 	| (ShapeBase & {
@@ -76,6 +77,7 @@ export type FigureShape =
 			width: number;
 			dash: string;
 			fill: string | null;
+			fillOpacity: number;
 	  })
 	| (ShapeBase & { kind: 'arrowhead'; points: string })
 	| (ShapeBase & { kind: 'dot'; cx: number; cy: number; r: number })
@@ -277,7 +279,14 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 		) {
 			const svg = circleToSVG(el.id, figure, transformer);
 			if (svg)
-				shapes.push({ ...base, ...stroke, kind: 'circle', ...svg, fill: fillOf(sty.fillColor) });
+				shapes.push({
+					...base,
+					...stroke,
+					kind: 'circle',
+					...svg,
+					fill: fillOf(sty.fillColor),
+					fillOpacity: sty.fillOpacity
+				});
 		} else if (el.type === 'arcByAngles' || el.type === 'arcByPoints') {
 			const svg = arcToSVG(el.id, figure, transformer);
 			if (svg) shapes.push({ ...base, ...stroke, kind: 'path', d: svg.path, fill: null });
@@ -290,7 +299,14 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 					return `${sv.x.toFixed(2)},${sv.y.toFixed(2)}`;
 				})
 				.join(' ');
-			shapes.push({ ...base, ...stroke, kind: 'polygon', points, fill: fillOf(sty.fillColor) });
+			shapes.push({
+				...base,
+				...stroke,
+				kind: 'polygon',
+				points,
+				fill: fillOf(sty.fillColor),
+				fillOpacity: sty.fillOpacity
+			});
 		}
 	}
 
