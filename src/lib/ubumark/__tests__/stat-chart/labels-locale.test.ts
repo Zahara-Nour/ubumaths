@@ -45,13 +45,13 @@ describe('Q110 — catégories numériques selon la langue', () => {
 			'histogramme',
 			'en'
 		);
-		expect(scene.indicators).toEqual(['Classe médiane : [−5 ; 2.5[']);
+		expect(scene.indicators).toEqual(['Median class: [−5 ; 2.5[']);
 		expect(scene.description).toContain('[2.5 ; 10[');
 	});
 
 	it('indicateurs inchangés : calculés sur les données, pas sur l’affichage', () => {
 		expect(sceneOf('données: 9,5 ; −3\nindicateurs: moyenne', 'barres', 'en').indicators).toEqual([
-			'Moyenne = 3.25'
+			'Mean = 3.25'
 		]);
 	});
 

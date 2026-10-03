@@ -32,6 +32,7 @@ import {
 	type CheckFormOptions,
 	cosmeticViolations,
 	isSimpleNumberLatex,
+	isNumberOrNumberFractionLatex,
 	isQuantityValueLatex,
 	forgotPercentSign,
 	type ConstraintSeverity
@@ -737,18 +738,28 @@ function requiredFormCosmetics(
  * Contrôle de forme d'une réponse qui doit être un nombre simple (éventuellement
  * négatif) : cases à précision, et cases `rulesSuffice` — dont `expectedAnswer`
  * n'est qu'un exemple et ne peut pas servir de modèle de forme.
+ *
+ * `allowFraction` : une fraction de nombres est aussi une écriture de nombre
+ * (cases `rulesSuffice`, décision de David du 2026-10-03) ; une fraction à
+ * simplifier y est jugée par les contraintes cosmétiques (`reducedFractions`),
+ * comme en case positionnelle. Les cases à précision (arrondis) n'en profitent
+ * pas : un arrondi s'écrit en nombre décimal.
  */
 function checkSimpleNumberForm(
 	latex: string,
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	allowFraction = false
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const severities = buildConstraintSeverities(constraints);
 	const formOptions = formOptionsOf(constraints, genericFunctions);
 	const raw = cosmeticViolations(latex, severities, formOptions);
 	const { status, violations } = mapCosmeticViolations(raw, false);
 
-	if (!isSimpleNumberLatex(latex)) {
+	const isNumberWriting = allowFraction
+		? isNumberOrNumberFractionLatex(latex)
+		: isSimpleNumberLatex(latex);
+	if (!isNumberWriting) {
 		const feedback = CONSTRAINT_FEEDBACK['form'].single;
 		return {
 			status: 'bad_form',
@@ -757,6 +768,15 @@ function checkSimpleNumberForm(
 	}
 
 	return { status, violations };
+}
+
+/**
+ * Case `rulesSuffice` sans précision : un nombre en fraction (`\\frac{1}{2}`) y
+ * est une réponse au même titre qu'un nombre simple (décision de David du
+ * 2026-10-03). Avec une précision, l'exigence d'un nombre simple (arrondi) reste.
+ */
+function allowsNumberFraction(blank: InstanceBlank): boolean {
+	return rulesDecide(blank) && !blank.precision;
 }
 
 /**
@@ -1204,11 +1224,13 @@ function validateSingleBlank(
 	// rulesSuffice : même exigence — `expectedAnswer` n'est qu'un exemple, il
 	// ne peut pas servir de modèle au contrôle « exact » ci-dessous, qui exige
 	// l'identité (3 contre 2 y serait jugé de mauvaise forme).
+	// Fraction admise en rulesSuffice seulement (cf. allowsNumberFraction).
 	if (blank.precision || rulesDecide(blank)) {
 		const { status, violations } = checkSimpleNumberForm(
 			effectiveLatex,
 			constraints,
-			genericFunctions
+			genericFunctions,
+			allowsNumberFraction(blank)
 		);
 		return {
 			isCorrect: status !== 'bad_form',
@@ -1638,7 +1660,12 @@ function matchedAnswerForm(
 		const { status, violations } = blank.requiredForm
 			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {}, genericFunctions)
 			: blank.precision || rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
-				? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {}, genericFunctions)
+				? checkSimpleNumberForm(
+						blankLatex,
+						instance.options?.constraints ?? {},
+						genericFunctions,
+						allowsNumberFraction(blank)
+					)
 				: applyConstraints(
 						[userAnswer],
 						[blankLatex],

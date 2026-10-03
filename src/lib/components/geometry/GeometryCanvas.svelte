@@ -25,6 +25,7 @@
 		angleToSVG,
 		segmentMarkToSVG,
 		textToSVG,
+		resolvePrintStyle,
 		resolveStyle,
 		functionToSVG,
 		integralAreaToSVG,
@@ -722,7 +723,7 @@
 		const el = figure.getElementById(elementId);
 		if (!el) return;
 
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const currentDx = el.labelOffset?.dx ?? sty.pointSize + 4;
 		const currentDy = el.labelOffset?.dy ?? -(sty.pointSize + 2);
 
@@ -834,7 +835,7 @@
 			{#each elements as el (`${el.id}_bgimg_${version}`)}
 				{#if el.type === 'image' && el.layer === 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						{@const imgCx = svg.x + svg.width / 2}
@@ -877,7 +878,7 @@
 			{/each}
 
 			{#each elements as el (`${el.id}_${version}`)}
-				{@const sty = resolveStyle(el, figure.defaults)}
+				{@const sty = resolvePrintStyle(el, figure.defaults)}
 				{#if el.type === 'segment'}
 					{@const svg = segmentToSVG(el.id, figure, transformer)}
 					{#if svg}
@@ -1690,7 +1691,7 @@
 			{#each elements as el (`${el.id}_arc_${version}`)}
 				{#if el.type === 'arcByAngles' || el.type === 'arcByPoints'}
 					{@const svg = arcToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							<path
@@ -1726,7 +1727,7 @@
 			{#each elements as el (`${el.id}_ang_${version}`)}
 				{#if el.type === 'angle'}
 					{@const svg = angleToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc && svg.paths.length > 0}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1787,7 +1788,7 @@
 			{#each elements as el (`${el.id}_${version}`)}
 				{#if isPointElement(el)}
 					{@const svg = pointToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{#if svg}
 						{#if sty.pointShape === 'dot'}
 							<circle
@@ -1878,7 +1879,7 @@
 			{#each elements as el (`${el.id}_segm_${version}`)}
 				{#if el.type === 'segmentMark'}
 					{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1930,7 +1931,7 @@
 			{#each elements as el (`${el.id}_txt_${version}`)}
 				{#if el.type === 'text'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -2059,7 +2060,7 @@
 			{#each elements as el (`${el.id}_img_${version}`)}
 				{#if el.type === 'image' && el.layer !== 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
-					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const sty = resolvePrintStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						{@const imgCx2 = svg.x + svg.width / 2}

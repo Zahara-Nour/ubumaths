@@ -17,9 +17,11 @@
  * @module ubumark/generators/stat-chart-typst
  */
 
-import type { CourbeColor, CourbeSize } from '../types/courbe';
-import type { StatChartNode } from '../types/stat-chart';
+import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
+import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
+import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { WIDTH_CM } from './courbe-typst';
+import { STAT_TEXT } from '../utils/stat-chart-text';
 import {
 	PIE_MARKER_CM,
 	STAT_CHART_ASPECT_RATIO,
@@ -51,30 +53,17 @@ export interface StatChartTypstOptions {
 // CONSTANTES
 // ============================================================================
 
-/** Teintes du thème clair de l'écran, comme ```courbe */
-const TYPST_COLORS: Record<CourbeColor, string> = {
-	bleu: 'rgb("#2563eb")',
-	rouge: 'rgb("#dc2626")',
-	vert: 'rgb("#15803d")',
-	orange: 'rgb("#d97706")',
-	violet: 'rgb("#7c3aed")',
-	noir: 'black',
-	gris: 'rgb("#6b7280")'
-};
+/** Variante claire de la palette commune des figures, comme ```courbe */
+const TYPST_COLORS = namedColorTable(COURBE_COLORS, namedColorTypst);
 
-/** Palette des secteurs (même ordre que `StatChart.svelte`) */
-const PIE_COLORS = [
-	'rgb("#2563eb")',
-	'rgb("#d97706")',
-	'rgb("#15803d")',
-	'rgb("#dc2626")',
-	'rgb("#7c3aed")',
-	'rgb("#0d9488")',
-	'rgb("#6b7280")'
-];
+/** Couleurs des secteurs : même ordre que l'écran (`PIE_COLOR_SEQUENCE`) */
+const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorTypst);
 
-const UNAVAILABLE =
-	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';
+/** Cadre neutre d'un bloc qui ne se dessine pas, dans la langue du document */
+function unavailable(language: string | undefined): string {
+	const text = STAT_TEXT[language === 'en' ? 'en' : 'fr'].unavailable;
+	return `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[${text}]`;
+}
 
 /** Classes hors de μ ± 2σ/√n (moyennes d'échantillons) : grises, comme à l'écran */
 const OUTSIDE_COLOR = 'luma(150)';
@@ -280,6 +269,8 @@ function axes(W: number, H: number, title: string | null, xTitle: string | null)
 function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 	const { W, H, X, Y } = frame(size, scene.xMin, scene.xMax, scene.yMax);
 	const color = TYPST_COLORS[scene.color];
+	// Seconde série (Q117) : hachures diagonales, cadre de la même teinte
+	const hatch = scene.hatched === true ? TYPST_COLORS[scene.hatchColor ?? 'orange'] : null;
 	const lines: string[] = ['  import cetz.draw: *'];
 
 	if (scene.mode === 'axe') lines.push('  // graduations', ...valueTicks(scene.ticks, W, Y));
@@ -288,7 +279,9 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 		lines.push('  // rectangle');
 		// Bordure blanche : sépare deux classes voisines de même couleur
 		lines.push(
-			`  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${rect.highlighted === false ? OUTSIDE_COLOR : color}, stroke: 0.8pt + white)`
+			hatch !== null
+				? `  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: hachures, stroke: 0.6pt + ${hatch})`
+				: `  rect((${X(rect.lower)}, 0), (${X(rect.upper)}, ${Y(rect.height)}), fill: ${rect.highlighted === false ? OUTSIDE_COLOR : color}, stroke: 0.8pt + white)`
 		);
 		// Au-dessus du rectangle, comme à l'écran : un rectangle bas ou nul le cachait
 		if (scene.showValues) {
@@ -318,7 +311,21 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 		scene.carreau === null
 			? ''
 			: `\n// légende d'aire\n#align(center, text(size: 7.5pt)[#box(width: 6pt, height: 6pt, stroke: 0.5pt) #h(3pt) #${typstString(scene.carreau.legend)}])`;
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}`;
+	// Deux séries (lot 5 PR c) : le nom au-dessus de chaque histogramme, le second
+	// dessous, puis le tableau d'indicateurs
+	const hatchDef =
+		hatch === null
+			? ''
+			: `#let hachures = tiling(size: (4pt, 4pt))[#place(line(start: (0pt, 4pt), end: (4pt, 0pt), stroke: 0.8pt + ${hatch}))]\n`;
+	const name =
+		scene.seriesName === undefined
+			? ''
+			: `#align(center, text(size: 8pt, weight: "bold")${textContent(scene.seriesName)})\n`;
+	const second = scene.second === undefined ? '' : `\n${histogramTypst(scene.second, size)}`;
+	const table = scene.indicatorTable
+		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
+		: '';
+	return `${CETZ_IMPORT}\n${hatchDef}\n${titleBlock(scene.title)}${name}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${second}${table}`;
 }
 
 function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
@@ -351,11 +358,45 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 		);
 	}
 
+	// Deux séries (lot 5 PR c) : le second polygone en pointillés, ses lectures
+	// étiquetées de l'autre côté du trait (sinon les deux « Me » se superposent)
+	const second = scene.second;
+	if (second !== undefined) {
+		const paint = TYPST_COLORS[second.color];
+		const path2 = second.points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+		lines.push('  // second polygone');
+		lines.push(
+			`  line(${path2}, stroke: (paint: ${paint}, thickness: 1.1pt, dash: "dashed", join: "round"))`
+		);
+		for (const p of second.points) {
+			lines.push(`  circle((${X(p.x)}, ${Y(p.y)}), radius: 0.05, fill: ${paint}, stroke: none)`);
+		}
+		for (const reading of second.readings) {
+			const x = X(reading.x);
+			const y = Y(reading.percent);
+			lines.push('  // lecture');
+			lines.push(
+				`  line((0, ${y}), (${x}, ${y}), (${x}, 0), stroke: (paint: ${paint}, thickness: 0.5pt, dash: "dotted"))`
+			);
+			const below = scene.direction === 'croissantes';
+			lines.push(
+				`  content((${fmt(Number(x) + 0.06)}, ${fmt(Number(y) + (below ? -0.04 : 0.04))}), anchor: "${below ? 'north-west' : 'south-west'}", text(size: 6.5pt, fill: ${paint})${textContent(reading.text)})`
+			);
+		}
+	}
+
 	lines.push(
 		...boundLabels(scene.xTicks, X),
 		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
 	);
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+	const legend =
+		scene.legend === undefined || second === undefined
+			? ''
+			: `\n// légende des séries\n#align(center, text(size: 7.5pt)[#box(width: 14pt, height: 6pt, align(horizon, line(length: 14pt, stroke: 1.1pt + ${color}))) #h(3pt) #${typstString(scene.legend[0])} #h(10pt) #box(width: 14pt, height: 6pt, align(horizon, line(length: 14pt, stroke: (paint: ${TYPST_COLORS[second.color]}, thickness: 1.1pt, dash: "dashed")))) #h(3pt) #${typstString(scene.legend[1])}])`;
+	const table = scene.indicatorTable
+		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
+		: '';
+	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${table}`;
 }
 
 /**
@@ -505,7 +546,7 @@ export function generateStatChartTypst(
 	node: StatChartNode,
 	options: StatChartTypstOptions = {}
 ): string {
-	if (!node.spec) return UNAVAILABLE;
+	if (!node.spec) return unavailable(options.language);
 
 	// Une exception ici ferait échouer TOUTE la fiche : le cadre neutre vaut mieux
 	try {
@@ -520,6 +561,6 @@ export function generateStatChartTypst(
 		if (scene.seriesOnly) return head;
 		return head + figureTypst({ ...scene, title: null }, node.spec.size) + indicatorsBlock(scene);
 	} catch {
-		return UNAVAILABLE;
+		return unavailable(options.language);
 	}
 }

@@ -122,6 +122,24 @@ describe('StatChart — circulaire', () => {
 	});
 });
 
+describe('StatChart — palette commune des figures', () => {
+	it('les secteurs puisent dans la palette, dans un ordre fixe : bleu, orange, vert', async () => {
+		const node = parseStatChartContent('circulaire', PIE);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const root = document.documentElement;
+		try {
+			root.style.colorScheme = 'light';
+			const fills = [...screen.container.querySelectorAll('.stat-secteur')].map(
+				(s) => getComputedStyle(s).fill
+			);
+			// #2563eb, #b65a00, #018639
+			expect(fills).toEqual(['rgb(37, 99, 235)', 'rgb(182, 90, 0)', 'rgb(1, 134, 57)']);
+		} finally {
+			root.style.colorScheme = '';
+		}
+	});
+});
+
 describe('StatChart — histogramme et polygone (lot 3)', () => {
 	const TRAJETS = '[0 ; 10[ = 12\n[10 ; 20[ = 18\n[20 ; 40[ = 10';
 
@@ -389,6 +407,41 @@ describe('StatChart — barres à deux séries (v2 lot 5, Q115-Q118)', () => {
 		]);
 		expect(tables[0].querySelector('tbody th')?.textContent).toBe('Moyenne');
 		expect(screen.container.querySelector('.stat-indicateurs')).toBeNull();
+	});
+});
+
+describe('StatChart — deux séries en classes (v2 lot 5 PR c)', () => {
+	const BLOCK =
+		'classes: 0 ; 5 ; 10 ; 15 ; 20\ndonnées 2de A: 12 ; 3 ; 17 ; 5\ndonnées 2de B: 9 ; 14 ; 11\nindicateurs: moyenne';
+
+	it('deux histogrammes, nommés, le second hachuré, puis le tableau', async () => {
+		const node = parseStatChartContent('histogramme', BLOCK);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svgs = screen.container.querySelectorAll('svg.stat-svg');
+		const hatched = screen.container.querySelectorAll('rect.stat-rectangle-hachure');
+
+		expect(svgs).toHaveLength(2);
+		expect(
+			[...screen.container.querySelectorAll('.stat-nom-serie')].map((p) => p.textContent)
+		).toEqual(['2de A', '2de B']);
+		expect(hatched).toHaveLength(4);
+		expect(svgs[1].contains(hatched[0])).toBe(true);
+		expect(getComputedStyle(hatched[0]).fill).toContain(svgs[1].querySelector('pattern')!.id);
+		expect(screen.container.querySelectorAll('table')).toHaveLength(1);
+	});
+
+	it('deux polygones sur les mêmes axes, le second en pointillés, une légende', async () => {
+		const node = parseStatChartContent('frequences-cumulees', BLOCK);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const second = screen.container.querySelector<SVGElement>('polyline.stat-polygone-second')!;
+
+		expect(screen.container.querySelectorAll('svg.stat-svg')).toHaveLength(1);
+		expect(getComputedStyle(second).strokeDasharray).not.toBe('none');
+		expect(
+			[...screen.container.querySelectorAll('.stat-legende-series li')].map((li) =>
+				li.textContent?.trim()
+			)
+		).toEqual(['2de A', '2de B']);
 	});
 });
 

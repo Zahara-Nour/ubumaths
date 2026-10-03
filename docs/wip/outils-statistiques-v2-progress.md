@@ -192,3 +192,45 @@ PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'
 - **Lot 5 (b) livrée #702** (2026-10-03) : barres à deux séries (`données Nom:`), seconde hachurée,
   tableau d'indicateurs. Connu : en-têtes / titres d'axe en français dans un document anglais
   (comme tous les indicateurs). Suivant : (c) deux histogrammes.
+
+120. (2026-10-03) Deux séries en classes : **pas de mode carreaux** — `légende:` refusé, et des
+     classes de même amplitude exigées (des amplitudes différentes imposent les carreaux).
+
+- **Lot 5 (c) livrée #707** (2026-10-03) : deux histogrammes (même échelle, second hachuré), deux
+  polygones superposés (second en pointillés), tableau d'indicateurs.
+  **Lot 5 (comparer deux séries) TERMINÉ** (#698, #702, #707). **v2 TERMINÉE** (lots 1-5, Q67).
+
+Reste connu, hors v2 : en-têtes des tableaux, titres d'axe et indicateurs en français dans un
+document anglais (tous les blocs) ; candidat : bloc ```effectifs (Q107).
+
+Manche 9 (2026-10-03), blocs dans une fiche en anglais — recommandations suivies :
+
+121. Tout texte PRODUIT par un bloc suit la langue de la fiche (visible et lu) ; textes d'auteur,
+     messages d'erreur et atelier inchangés.
+122. Vocabulaire scolaire anglais : _frequency_ = effectif, _relative frequency_ = fréquence
+     (« Count » → « Frequency », « Observed relative frequency », « Cumulative relative frequency
+     polygon », « Two-way table ») ; typographie anglaise (« : », « % » sans espace).
+123. Atelier inchangé (interface en français).
+124. Filet : `english-texts.test.ts` (15 genres de blocs, scène + Typst, aucun mot français).
+
+- **Livrée #710** (2026-10-03) : dictionnaire `ubumark/utils/stat-chart-text.ts`.
+  Reste candidat : bloc ```effectifs (Q107).
+
+Manche 10 (2026-10-03), bloc ```effectifs (tableau de dépouillement, Q107) — recommandations suivies :
+
+125. Nouveau bloc ```effectifs : un tableau (comme `tableau-croise`, `loi`), énoncé et correction.
+126. Données comme les autres blocs : « valeur = effectif », `données:`, classes (`[a ; b[ = n` ou
+     `classes:` + `données:`) ; nombres ou mots ; cumuls seulement pour des nombres ou des classes.
+127. Horizontal (ligne « Valeur » puis une ligne par grandeur) ; vertical au-delà de 12 valeurs.
+128. `lignes: effectifs ; fréquences ; effectifs cumulés ; fréquences cumulées` (ordre de
+     l'auteur ; défaut : effectifs) ; fréquences en % au dixième, `fréquences: décimales` au
+     centième ; cumuls croissants, `sens: décroissantes`.
+129. Colonne Total par défaut (effectif total, 100 % ou 1 ; rien pour les cumuls) ; `totaux: non`.
+130. `masquer:` une ligne (`fréquences`) ou des cases (`12/effectifs ; Total/fréquences`) ; case
+     vide, assez large, annoncée « case à compléter ».
+131. `indicateurs:` : la ligne sous le tableau, comme les barres.
+132. Pas de deux séries.
+133. Langue de la fiche (Value, Frequency, Relative frequency, Cumulative frequency).
+
+PR prévues : (a) bloc, données, lignes, totaux, sens, langue (Q125-Q129, Q133) ; (b) `masquer:`,
+`indicateurs:` (Q130-Q131).

@@ -325,3 +325,13 @@ describe('resolveMarkdownContent — tableau markdown à cellules variables', ()
 		expect(out).toBe('x = 5');
 	});
 });
+
+describe('formule réduite à un caractère hors BMP (𝔻, logique 1re SPE)', () => {
+	it.each(['𝔻', 'ℝ', 'ℕ'])('$%s$ reste entier', (symbol) => {
+		const result = resolveMarkdownContent(
+			templateMarkdown(`On note $${symbol}$ cet ensemble.`),
+			[]
+		);
+		expect(String(result)).toBe(`On note $${symbol}$ cet ensemble.`);
+	});
+});

@@ -16,7 +16,13 @@
 	@module components/markdown/nodes/Courbe
 -->
 <script lang="ts">
-	import type { CourbeColor, CourbeLabel, CourbeNode } from '$lib/ubumark/types/courbe';
+	import {
+		COURBE_COLORS,
+		type CourbeColor,
+		type CourbeLabel,
+		type CourbeNode
+	} from '$lib/ubumark/types/courbe';
+	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import { buildCourbeScene, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -37,16 +43,8 @@
 	/** Décalage des rangs u_k de l'escalier sous l'axe, en px (sous les graduations) */
 	const RANK_OFFSET = 26;
 
-	/** Couleurs : tokens du thème ; vert et violet n'en ont pas, voir le style */
-	const COLOR_VAR: Record<CourbeColor, string> = {
-		bleu: 'var(--color-info)',
-		rouge: 'var(--color-destructive)',
-		vert: 'var(--courbe-vert)',
-		orange: 'var(--color-warning)',
-		violet: 'var(--courbe-violet)',
-		noir: 'var(--color-foreground)',
-		gris: 'var(--color-muted-foreground)'
-	};
+	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
+	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
 	/** Lettres calligraphiques Unicode (`\mathcal{C}` → 𝒞), trous du bloc compris */
 	const SCRIPT_HOLES: Record<string, string> = {
@@ -344,9 +342,6 @@
 
 <style>
 	.courbe-figure {
-		/* Pas de token de thème pour ces deux teintes : définies ici, claires / sombres */
-		--courbe-vert: light-dark(#15803d, #4ade80);
-		--courbe-violet: light-dark(#7c3aed, #a78bfa);
 		margin: 0.5rem 0;
 	}
 

@@ -187,7 +187,7 @@
 			}
 		},
 		{
-			"description": "non unitaire : l'autre racine 3/2 (non évidente) jugée bad_form — limite connue, forme stricte",
+			"description": "non unitaire : l'autre racine 3/2 est une racine, fraction acceptée (rulesSuffice, décision 2026-10-03)",
 			"variationIndex": 1,
 			"variables": {
 				"r": "1",
@@ -198,8 +198,7 @@
 			},
 			"answers": ["\\frac{3}{2}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			}
 		},
 		{

@@ -12,7 +12,7 @@ import type { GeoElement, ConicParams } from '../types/elements';
 import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
-import { resolveStyle } from './svg-primitives';
+import { resolvePrintStyle, resolveStyle } from './svg-primitives';
 import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 
@@ -46,7 +46,7 @@ function hexToTikZColor(hex: string): { name: string; def: string } {
 }
 
 function styleOptions(el: GeoElement, defaults?: Parameters<typeof resolveStyle>[1]): string {
-	const sty = resolveStyle(el, defaults);
+	const sty = resolvePrintStyle(el, defaults);
 	const opts: string[] = [];
 
 	const { name } = hexToTikZColor(sty.color);
@@ -83,7 +83,7 @@ export function exportToTikZ(
 	// Collect all colors used
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const { def } = hexToTikZColor(sty.color);
 		colorDefs.add(def);
 	}
@@ -283,7 +283,7 @@ export function exportToTikZ(
 		const verts = el.dependsOn.map((id) => figure.getPosition(id));
 		if (verts.some((p) => !p)) continue;
 		const pts = verts.map((p) => coord(geoToNumber(p!.x), geoToNumber(p!.y)));
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const fillPart = sty.fillColor
 			? `, fill=${hexToTikZColor(sty.fillColor).name}, fill opacity=${sty.fillOpacity}`
 			: '';
@@ -401,7 +401,7 @@ export function exportToTikZ(
 		if (!geom) continue;
 
 		const { vertexX: vx, vertexY: vy, marque } = geom;
-		const { name } = hexToTikZColor(resolveStyle(el, figure.defaults).color);
+		const { name } = hexToTikZColor(resolvePrintStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
 			// Label-only — handled below.
@@ -419,7 +419,7 @@ export function exportToTikZ(
 
 			// Optional sector fill (rendered before strokes). Uses OUTER radius
 			// so the fill covers the full visible arc extent.
-			const sty = resolveStyle(el, figure.defaults);
+			const sty = resolvePrintStyle(el, figure.defaults);
 			if (sty.fillColor) {
 				const { name: fillName } = hexToTikZColor(sty.fillColor);
 				const outerR = geom.outerRadius;
@@ -467,7 +467,7 @@ export function exportToTikZ(
 		const px = -uy;
 		const py = ux;
 
-		const { name } = hexToTikZColor(resolveStyle(el, figure.defaults).color);
+		const { name } = hexToTikZColor(resolvePrintStyle(el, figure.defaults).color);
 		const totalWidth = (el.markCount - 1) * TICK_SPACING;
 		const startOffset = -totalWidth / 2;
 
@@ -490,7 +490,7 @@ export function exportToTikZ(
 
 		const x = geoToNumber(pos.x);
 		const y = geoToNumber(pos.y);
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const { name } = hexToTikZColor(sty.color);
 		const c = coord(x, y);
 
@@ -522,7 +522,7 @@ export function exportToTikZ(
 			const text = figure.resolveTemplate(el.id);
 			if (text === undefined) continue;
 
-			const { name } = hexToTikZColor(resolveStyle(el, figure.defaults).color);
+			const { name } = hexToTikZColor(resolvePrintStyle(el, figure.defaults).color);
 			let mx: number | undefined;
 			let my: number | undefined;
 
@@ -629,7 +629,7 @@ function imageToTikZ(el: GeoImage, figure: Figure): string | null {
 		return null;
 	}
 
-	const sty = resolveStyle(el, figure.defaults);
+	const sty = resolvePrintStyle(el, figure.defaults);
 	const opacityOpt = (sty.opacity ?? 1) < 1 ? `, opacity=${sty.opacity}` : '';
 	const heightOpt = h !== undefined ? `, height=${Math.round(h * 1000) / 1000}cm` : '';
 	const rotDeg = ((el.rotation ?? 0) * 180) / Math.PI;

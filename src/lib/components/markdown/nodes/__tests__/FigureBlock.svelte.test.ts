@@ -245,3 +245,36 @@ texte(2, 4, "centre")`;
 		expect(Math.abs(tb.x + tb.width / 2 - dotA.cx.baseVal.value)).toBeLessThan(1);
 	});
 });
+
+// Palette commune des figures (docs/wip/palette-figures-progress.md) : la
+// couleur RENDUE dans les deux modes ; un hexadécimal d'auteur reste fixe.
+describe('FigureBlock — couleurs et thème', () => {
+	const COLORED = `fenetre: -1 ; 8 ; -1 ; 6
+---
+A = point(0, 0)
+B = point(5, 0)
+C = point(0, 4)
+s = segment(A, B, couleur="rouge")
+t = segment(A, C, couleur="#1e40af")`;
+
+	it('une couleur nommée suit le mode, un hexadécimal d’auteur reste fixe', async () => {
+		const node = parseFigureContent(COLORED);
+		const scene = buildFigureScene(node).scene!;
+		const idOf = (label: string) => scene.elements.find((e) => e.label === label)!.id;
+		const screen = await render(FigureBlock, { target: mainElement(), props: { node } });
+		const svg = await svgOf(screen.container);
+		const strokeOf = (label: string) =>
+			getComputedStyle(svg.querySelector(`[data-element="${idOf(label)}"]`) as SVGElement).stroke;
+		const root = document.documentElement;
+		try {
+			root.style.colorScheme = 'light';
+			expect(strokeOf('s')).toBe('rgb(220, 38, 38)'); // #dc2626
+			expect(strokeOf('t')).toBe('rgb(30, 64, 175)'); // #1e40af
+			root.style.colorScheme = 'dark';
+			expect(strokeOf('s')).toBe('rgb(255, 98, 87)'); // #ff6257
+			expect(strokeOf('t')).toBe('rgb(30, 64, 175)');
+		} finally {
+			root.style.colorScheme = '';
+		}
+	});
+});

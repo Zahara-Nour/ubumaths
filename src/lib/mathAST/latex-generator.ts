@@ -314,7 +314,7 @@ export class LatexGenerator {
 				break;
 
 			case 'variable':
-				if (node.name.length === 1) {
+				if ([...node.name].length === 1) {
 					this.emit(node.name, node.metadata);
 				} else {
 					this.emit(`\\mathit{${node.name}}`, node.metadata);
@@ -913,7 +913,7 @@ export class LatexGenerator {
 				this.emit(node.value, effectiveMeta);
 				break;
 			case 'variable':
-				if (node.name.length === 1) {
+				if ([...node.name].length === 1) {
 					this.emit(node.name, effectiveMeta);
 				} else {
 					this.emit(`\\mathit{${node.name}}`, effectiveMeta);
@@ -1066,7 +1066,7 @@ export class LatexGenerator {
 
 	private generateVariable(node: VariableNode): string {
 		// Single character: render as-is
-		if (node.name.length === 1) {
+		if ([...node.name].length === 1) {
 			return node.name;
 		}
 		// Multi-character: use \mathit{}

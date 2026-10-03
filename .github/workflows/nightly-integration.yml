@@ -54,6 +54,7 @@ on:
       - 'src/lib/server/**'
       - 'src/lib/srs/**'
       - 'src/lib/statistics/**'
+      - 'src/lib/theme/**'
       - 'src/lib/ubumark/**'
       # Bloc ```figure : les producteurs de PDF importent l'interpréteur du DSL
       - 'src/lib/geometry-core/**'
@@ -87,6 +88,7 @@ on:
       - 'src/routes/*/presques-evaluations/*page.server.ts'
       - 'src/routes/api/evaluations/assignments/*/start/*server.ts'
       - 'src/routes/api/games/2048/scores/*server.ts'
+      - 'src/routes/api/games/minesweeper/multiplayer/queue/*server.ts'
       - 'src/routes/api/marketplace/listings/*/proposals/*server.ts'
       - 'src/routes/api/marketplace/proposals/*/*server.ts'
       - 'src/routes/api/vip-cards/choose/*server.ts'

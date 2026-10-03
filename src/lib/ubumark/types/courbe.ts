@@ -13,6 +13,7 @@
  * @module ubumark/types/courbe
  */
 
+import { NAMED_COLORS, type NamedColor } from '$lib/theme/named-colors';
 import type { BaseNode } from './ast';
 import type { MathNode } from '$lib/mathAST/types';
 
@@ -20,9 +21,13 @@ import type { MathNode } from '$lib/mathAST/types';
 // VALEURS
 // ============================================================================
 
-/** Couleurs proposées à l'auteur (mots français, une par courbe). */
-export const COURBE_COLORS = ['bleu', 'rouge', 'vert', 'orange', 'violet', 'noir', 'gris'] as const;
-export type CourbeColor = (typeof COURBE_COLORS)[number];
+/**
+ * Couleurs proposées à l'auteur : les 12 noms de la palette commune des figures
+ * (src/lib/theme/named-colors.ts). Les synonymes anglais (`red`, `grey`…) sont
+ * ramenés au nom français par les parseurs.
+ */
+export const COURBE_COLORS = NAMED_COLORS;
+export type CourbeColor = NamedColor;
 
 export const COURBE_SIZES = ['petite', 'moyenne', 'grande'] as const;
 export type CourbeSize = (typeof COURBE_SIZES)[number];

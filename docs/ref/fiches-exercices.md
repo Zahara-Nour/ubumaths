@@ -223,6 +223,14 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/rendu-ensembles`), ne plus contourner :
+dans le PDF, une commande collée à la suivante (`\mathbb{N}\subset\mathbb{Z}`, `𝔻\subset`,
+`x\in𝔻`, `a\cdot{b}`, `\alpha2`) ne fait plus échouer la fiche ; `\mathbb{X}` pour toute lettre
+(`\mathbb{D}` = 𝔻) ; `\not\subset`, `\nsubset`, `\not\subseteq`, `\nsubseteq`, `\not\supset`,
+`\not\in`, `\ni`, `\not=`, `\neg` / `\lnot`, `\wedge` / `\land`, `\vee` / `\lor`,
+`\complement`, `\operatorname{Card}` ; à l'écran comme au PDF, une formule réduite à `$𝔻$`
+(caractère hors du plan de base) n'est plus coupée en deux caractères cassés.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -277,6 +285,13 @@ Toujours vrai :
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
+- **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
+  (`+ -3`) → écrire `({{p}})`.
+- **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
+  (`x^2+1x\leqslant2` reste tel quel ; `x^2-x>7` est nettoyé).
+- **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
+  vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
+  réponse.
 
 Règles d'écriture qui évitent un défaut :
 
@@ -286,6 +301,12 @@ Règles d'écriture qui évitent un défaut :
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
   TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+- Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
+  `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`). Un
+  nombre simple OU une fraction (`\frac{1}{2}`, `-\frac{3}{4}`) y est accepté, valeur exacte jugée
+  par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
+  (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
+  `precision`, seul un nombre simple reste admis.
 - Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
@@ -361,6 +382,14 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
+- **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart ` : écrire un **nom** de la
+  palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose, gris, noir,
+  blanc). Le nom suit le mode clair / sombre à l'écran et s'imprime dans sa variante claire. Un
+  code `#1e40af` reste figé dans les deux modes : à éviter. `noir` et `blanc` suivent le texte et
+  le fond de la page.
+- **Daltonisme** (décision D4, 2026-10-03) : **4 couleurs au plus** par figure ; au-delà,
+  distinguer aussi par le trait (`pointillé`) ou par une étiquette, jamais par la couleur seule.
+  Éviter d'opposer rouge et vert, ou bleu et violet, sans autre indice.
 
 ---
 
