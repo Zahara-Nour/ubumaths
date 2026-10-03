@@ -39,7 +39,8 @@
 				"expression": "1..5;±"
 			}
 		],
-		"conditions": ["abs(a) != abs(b) && abs(a) != abs(c)"]
+		"conditions": ["abs(a) != abs(b) && abs(a) != abs(c)"],
+		"cleanCoefficients": true
 	},
 	"options": {
 		"shuffleChoices": false
@@ -48,6 +49,10 @@
 		{
 			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression1}}$$",
 			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
 				{
 					"name": "x",
 					"expression": "x|x"
@@ -72,6 +77,10 @@
 			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression2}}$$",
 			"variables": [
 				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
 					"name": "expression2",
 					"expression": "{{a}}(x{{eval:b;+}})(x{{eval:c;+}})"
 				}
@@ -90,6 +99,10 @@
 		{
 			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression3}}$$",
 			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
 				{
 					"name": "expression3",
 					"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
@@ -132,6 +145,10 @@
 		{
 			"statement": "Quelle est la nature de l'extremum de cette expression du second degré ?\n\n$${{expression5}}$$",
 			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
 				{
 					"name": "x",
 					"expression": "x|x"
@@ -436,6 +453,81 @@
 				"f": "3"
 			},
 			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 a=1 (coefficient 1 nettoyé) : minimum",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-3",
+				"d": "2",
+				"f": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 a=1 : maximum refusé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"c": "-3",
+				"d": "2",
+				"f": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 a=-1 (−(x−2)²+3) : maximum",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"b": "-2",
+				"c": "3",
+				"d": "2",
+				"f": "3"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 a=-1 : minimum refusé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "-1",
+				"b": "-2",
+				"c": "3",
+				"d": "2",
+				"f": "3"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 a=-1, d=-1, f=5 (produit 5 > 0) : minimum",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-1",
+				"b": "3",
+				"c": "-5",
+				"d": "-1",
+				"f": "5"
+			},
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}

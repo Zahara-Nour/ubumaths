@@ -74,3 +74,27 @@ compilation non faite.
 `shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
 
 - 06 v1 : a ∈ [−3 ; 3] privé de 0. 07 v0, v2 : a ∈ [−3 ; 3] privé de 0 et 1. a ≠ 0 gardé (degré 2).
+
+## cleanCoefficients activé (modèles publiés, 2026-10-03)
+
+Modèles PUBLIÉS de `scripts/questions/second-degre-existants/`, écrits en base par
+`scripts/update-published-questions.ts`, qui accepte désormais l'AJOUT de
+`shared.cleanCoefficients: true` et lui seul (`scripts/relecture/shared-clean-coefficients.ts`).
+Rien n'est écrit en base : écriture par David après relecture.
+
+- **1acb6d47** (nature de l'extremum) : a ∈ [−5 ; 5] privé de 0 en v0, v1, v2, v4 (surcharge par
+  variation : `shared.variables` n'est pas écrit) → `(x − 2)(x − 3)`, `−(x − 5)² + 2`. Gardés :
+  b, c ≠ 0 (`(x+0)` deviendrait `(x)`), `abs(a) != abs(b) && abs(a) != abs(c)`.
+- **2871990c** (reconnaître un polynôme) : v3, v4 a dès 1 ; v4 c ∈ [−5 ; 5] (`(x + 2)²`).
+  Gardés : b, c ≠ 0 dans les parenthèses.
+- **b48d72dd** (signe) : v2, v3, v4 a dès 1 (`−(x − 4)²`). Gardé : v0, v1 a ≠ ±1 (corrigé en
+  chaîne `a(x+b)² + c ⩾ c > 0`, que l'option ne nettoie pas : « 1(x+3)² »).
+- Sans objet (formules déjà écrites par `{{eval:…}}` en calcul littéral, ou exclusion
+  mathématique) : 18e26873, 1b1a6d7b (forme NON complètement factorisée : a = 1 la rendrait
+  factorisée), 2dd2b712, 44b58fce, 56b1803f, 87140df3 (u, v ≠ 0 : forme imposée
+  `u(x+v)²+w`), 9f00da01, a0089728, d1648508, eae2ff6a. f8ccc8b6 non touché (sous-domaine
+  renommé en base, le script s'arrête).
+- Vérifs : 300 tirages/variation, 0 échec, aucun `1x`, `0x`, `+-`, `--`, `x^1` ; restent des
+  produits numériques voulus (« −1 × (−1) × 5 = 5 » pour le coefficient de degré 2) ; recalcul
+  Python (sympy, rationnels) 0 écart ; 14 specs ajoutées, vertes ; PDF regardé. Préexistant : le
+  PDF écrit « bold1 » pour `\bold{…}` (1acb6d47, toutes valeurs de a).
