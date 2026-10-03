@@ -94,6 +94,12 @@ const BLOCKS: [string, StatChartKind, string][] = [
 	],
 	['loi', 'loi', 'X = 1 ; 2\nP = 1/2 ; ?'],
 	['simulation, tirages', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 20'],
+	[
+		'tableau d’effectifs',
+		'effectifs',
+		'données: 1 ; 2 ; 2 ; 5\nlignes: effectifs ; fréquences ; effectifs cumulés ; fréquences cumulées\nsens: décroissantes'
+	],
+	['tableau d’effectifs en classes', 'effectifs', '[0 ; 10[ = 4\n[10 ; 20[ = 6'],
 	['simulation, moyenne', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\nmode: moyenne'],
 	[
 		'simulation, échantillons',
