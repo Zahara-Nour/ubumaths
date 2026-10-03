@@ -146,6 +146,25 @@ function createMockChannel(name: string): MockRealtimeChannel {
 	return channel;
 }
 
+/**
+ * Relecture d'un message par id : `from('messages').select().eq('id', x).single()`.
+ * `row === null` → zéro ligne (PGRST116, comme un refus RLS). `eqMock` garde
+ * les ids relus, pour prouver que la relecture a eu lieu.
+ */
+function refetchMock(row: Record<string, unknown> | null) {
+	const eqMock = vi.fn((_col: string, _id: string) => ({
+		single: vi.fn(() =>
+			Promise.resolve(
+				row
+					? { data: row, error: null }
+					: { data: null, error: { code: 'PGRST116', message: 'JSON object requested, 0 rows' } }
+			)
+		)
+	}));
+	const fromMock = vi.fn(() => ({ select: vi.fn(() => ({ eq: eqMock })) }));
+	return { fromMock, eqMock };
+}
+
 // Mock browser environment
 vi.mock('$app/environment', () => ({
 	browser: true,
@@ -381,7 +400,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		expect(messages[0].is_broadcast).toBeUndefined();
 	});
 
-	it('CRITICAL: should deduplicate by created_at timestamp when IDs differ', async () => {
+	it('CRITICAL: a DB row with the same created_at but another id does not replace a displayed message', async () => {
 		const mockChannel = createMockChannel(`chat-${conversationId}`);
 		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
 		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
@@ -390,111 +409,83 @@ describe('CRITICAL: Message Deduplication', () => {
 
 		const timestamp = new Date().toISOString();
 
-		// Entrée provisoire (id temporaire) déjà à l'écran
+		// Message d'un camarade déjà à l'écran
 		chatStore['messages'].set(conversationId, [
 			{
 				id: TEST_BROADCAST_MESSAGE_ID,
 				conversation_id: conversationId,
 				sender_id: TEST_REMOTE_USER_ID,
-				content: { text: 'Message' },
-				plain_text: 'Message',
+				content: { text: 'Message du camarade' },
+				plain_text: 'Message du camarade',
 				created_at: timestamp,
 				edited_at: null,
 				deleted_at: null,
 				is_flagged: false,
-				flag_reason: null,
-				is_optimistic: true
+				flag_reason: null
 			}
 		]);
 
-		let messages = chatStore.getMessages(conversationId);
-		expect(messages).toHaveLength(1);
-
-		// Mock the DB SELECT query for postgres_changes handler
-		const fromMock = vi.fn(() => ({
-			select: vi.fn(() => ({
-				eq: vi.fn(() => ({
-					single: vi.fn(() =>
-						Promise.resolve({
-							data: {
-								id: TEST_DB_MESSAGE_ID,
-								conversation_id: conversationId,
-								sender_id: TEST_REMOTE_USER_ID,
-								content: { text: 'Message' },
-								plain_text: 'Message',
-								created_at: timestamp,
-								edited_at: null,
-								deleted_at: null,
-								is_flagged: false,
-								flag_reason: null,
-								sender: {
-									id: TEST_REMOTE_USER_ID,
-									full_name: 'User 2',
-									avatar_url: null
-								}
-							},
-							error: null
-						})
-					)
-				}))
-			}))
-		}));
+		// Un autre message, même horodatage (copié pour masquer le premier)
+		const { fromMock, eqMock } = refetchMock({
+			id: TEST_DB_MESSAGE_ID,
+			conversation_id: conversationId,
+			sender_id: TEST_USER_ID,
+			content: { text: 'Message qui masquerait' },
+			plain_text: 'Message qui masquerait',
+			created_at: timestamp,
+			edited_at: null,
+			deleted_at: null,
+			is_flagged: false,
+			flag_reason: null,
+			sender: null
+		});
 		supabase.from = fromMock as unknown as typeof supabase.from;
 
-		// Simulate postgres_changes with different ID but same timestamp
 		mockChannel.simulatePostgresChanges({
-			new: {
-				id: TEST_DB_MESSAGE_ID,
-				conversation_id: conversationId,
-				sender_id: TEST_REMOTE_USER_ID,
-				content: { text: 'Message' },
-				plain_text: 'Message',
-				created_at: timestamp // Same timestamp!
-			}
+			new: { id: TEST_DB_MESSAGE_ID, conversation_id: conversationId, created_at: timestamp }
 		});
 
-		await vi.waitFor(() => {
-			messages = chatStore.getMessages(conversationId);
-			expect(messages).toHaveLength(1);
-		});
-
-		// Should deduplicate based on timestamp
-		messages = chatStore.getMessages(conversationId);
-		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe(TEST_DB_MESSAGE_ID);
+		await vi.waitFor(() => expect(chatStore.getMessages(conversationId)).toHaveLength(2));
+		expect(eqMock).toHaveBeenCalledWith('id', TEST_DB_MESSAGE_ID);
+		expect(chatStore.getMessages(conversationId).map((m) => m.id)).toEqual(
+			expect.arrayContaining([TEST_BROADCAST_MESSAGE_ID, TEST_DB_MESSAGE_ID])
+		);
 	});
 
-	it('CRITICAL: a signal after sending does not duplicate the message (row of another conversation ignored)', async () => {
+	it('CRITICAL: a signal whose DB row belongs to another conversation is ignored', async () => {
 		const mockChannel = createMockChannel(`chat-${conversationId}`);
 		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
 		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+		const { fromMock, eqMock } = refetchMock({
+			id: TEST_MESSAGE_ID,
+			conversation_id: '99999999-9999-4999-a999-999999999999',
+			sender_id: TEST_REMOTE_USER_ID,
+			content: { text: 'Ailleurs' },
+			plain_text: 'Ailleurs',
+			created_at: new Date().toISOString(),
+			edited_at: null,
+			deleted_at: null,
+			is_flagged: false,
+			flag_reason: null,
+			sender: null
+		});
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await chatStore.subscribeToConversation(conversationId);
 
-		// Send message
-		await chatStore.sendMessage(conversationId, 'My message');
-
-		const messagesBefore = chatStore.getMessages(conversationId);
-		expect(messagesBefore).toHaveLength(1);
-
-		// Simulate receiving our own broadcast (shouldn't happen in reality, but guard)
 		mockChannel.simulateBroadcast('new_message', {
 			type: 'new_message',
-			message: {
-				id: TEST_MESSAGE_ID,
-				conversation_id: conversationId,
-				sender_id: userId, // Same as current user
-				content: { text: 'My message' },
-				plain_text: 'My message',
-				created_at: new Date().toISOString(),
-				sender: currentUser
-			}
+			message: { id: TEST_MESSAGE_ID }
 		});
 
-		// Should still have only 1 message (ignored self-broadcast)
-		const messagesAfter = chatStore.getMessages(conversationId);
-		expect(messagesAfter).toHaveLength(1);
+		// La relecture a bien eu lieu…
+		await vi.waitFor(() => expect(eqMock).toHaveBeenCalledWith('id', TEST_MESSAGE_ID));
+		await Promise.resolve();
+		await new Promise((r) => setTimeout(r, 0));
+		// …et la ligne d'une autre conversation n'est affichée nulle part.
+		expect(chatStore.getMessages(conversationId)).toEqual([]);
+		expect(chatStore.getMessages('99999999-9999-4999-a999-999999999999')).toEqual([]);
 	});
 
 	it('CRITICAL: should append new message from postgres_changes if not found', async () => {
@@ -739,25 +730,27 @@ describe('Broadcast Channel Integration', () => {
 		await chatStore.sendMessage(conversationId, 'Hello');
 
 		// Signal seulement : l'identifiant, ni contenu ni expéditeur
-		const [envoi] = vi.mocked(mockChannel.send).mock.calls[0] as unknown as [
+		const [sentPayload] = vi.mocked(mockChannel.send).mock.calls[0] as unknown as [
 			{ type: string; event: string; payload: { type: string; message: { id: string } } }
 		];
-		expect(envoi).toEqual({
+		expect(sentPayload).toEqual({
 			type: 'broadcast',
 			event: 'new_message',
 			payload: { type: 'new_message', message: { id: expect.any(String) } }
 		});
 	});
 
-	it('should display nothing from the payload when the DB row belongs to another conversation', async () => {
+	it('should display nothing when the DB returns no row for the signalled id', async () => {
 		const mockChannel = createMockChannel(`chat-${conversationId}`);
 		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
 		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 
+		const { fromMock, eqMock } = refetchMock(null);
+		supabase.from = fromMock as unknown as typeof supabase.from;
+
 		await chatStore.subscribeToConversation(conversationId);
 
-		// Payload complet (ancien format) : seul l'id compte, et la base (mock par
-		// défaut) rend une ligne d'une AUTRE conversation → rien d'affiché.
+		// Payload complet (ancien format) : seul l'id compte ; la base ne rend rien.
 		mockChannel.simulateBroadcast('new_message', {
 			type: 'new_message',
 			message: {
@@ -771,8 +764,9 @@ describe('Broadcast Channel Integration', () => {
 			}
 		});
 
-		await new Promise((r) => setTimeout(r, 20));
-		expect(chatStore.getMessages(conversationId)).toHaveLength(0);
+		await vi.waitFor(() => expect(eqMock).toHaveBeenCalledWith('id', TEST_BROADCAST_MESSAGE_ID));
+		await new Promise((r) => setTimeout(r, 0));
+		expect(chatStore.getMessages(conversationId)).toEqual([]);
 	});
 
 	it('should still complete message send even if broadcast fails', async () => {

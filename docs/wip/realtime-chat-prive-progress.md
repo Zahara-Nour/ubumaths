@@ -275,3 +275,21 @@ polrelid = 'realtime.messages'::regclass`.
 - Vérification manuelle en preview/prod (deux comptes, échange, refus d'un tiers).
 - `security-auditor` + `code-reviewer` sur cette PR.
 - `trade:<id>` : même classe de faille, chantier séparé.
+
+### Suites de revue / audit (2026-10-03, 2ᵉ commit)
+
+- Identifiants en anglais : `refetchAndDisplayMessage`, `aggregateReactions`,
+  `expectedConversationId`, `rows`, `sentPayload`.
+- Anti-saturation des signaux `new_message` : id déjà affiché → ignoré ; `Set` des
+  relectures en cours ; plafond de 20 relectures / 10 s / conversation (au-delà :
+  ignoré, `postgres_changes` reste le filet). Le chat n'écoute pas d'UPDATE
+  `postgres_changes` (INSERT seulement) : rien à exempter.
+- Réactions : signaux regroupés par message (debounce 300 ms), relecture dans un
+  try/catch (`reloadReactions`).
+- Rapprochement d'un message relu : par `id` SEULEMENT (le repli sur `created_at`
+  permettait de masquer le message d'un autre en copiant son horodatage).
+- Signal envoyé après l'insertion des pièces jointes.
+- Preuves : 8 mutations (contrôle de conversation retiré, affichage malgré zéro
+  ligne, repli `created_at` remis, « déjà affiché » retiré, `Set` retiré, plafond
+  retiré, debounce retiré, try/catch retiré) → chacune rougit le test visé ;
+  fichier restauré depuis une copie. Stores 442/442, intégration 4/4.

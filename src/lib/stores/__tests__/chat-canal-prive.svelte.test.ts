@@ -189,6 +189,11 @@ function reinitialiser(client: SupabaseClient<Database>) {
 	chatStore['currentUser'] = null;
 	chatStore.init(client, MOI, { full_name: 'Moi', avatar_url: null });
 	chatStore['messages'].clear();
+	// Anti-saturation : état propre à chaque test
+	chatStore['signalRefetchTimes'].clear();
+	chatStore['refetchesInFlight'].clear();
+	chatStore['reactionTimers'].forEach((t) => clearTimeout(t));
+	chatStore['reactionTimers'].clear();
 }
 
 // ============================================================================
@@ -328,5 +333,98 @@ describe('Chat : canal privé, le broadcast ne sert que de signal', () => {
 			payload: { type: 'new_message', message: { id: envoye!.id } }
 		});
 		expect(ligneDejaEnBase).toBe(true);
+	});
+
+	// ==========================================================================
+	// Anti-saturation : un participant qui diffuse en rafale
+	// ==========================================================================
+
+	it('un signal pour un message déjà affiché ne déclenche aucune relecture', async () => {
+		const { client, from } = clientSimule(new Map([[MSG, ligneEnBase(MSG)]]));
+		reinitialiser(client);
+		await chatStore.subscribeToConversation(CONV);
+		sim.diffuser('new_message', { type: 'new_message', message: { id: MSG } });
+		await vi.waitFor(() => expect(chatStore.getMessages(CONV)).toHaveLength(1));
+		const relectures = () => from.mock.calls.filter(([t]) => t === 'messages').length;
+		expect(relectures()).toBe(1);
+
+		for (let i = 0; i < 5; i++) {
+			sim.diffuser('new_message', { type: 'new_message', message: { id: MSG } });
+		}
+		await new Promise((r) => setTimeout(r, 20));
+		expect(relectures()).toBe(1);
+	});
+
+	it('des signaux simultanés pour le même id ne déclenchent qu’une relecture', async () => {
+		const { client, from } = clientSimule(new Map([[MSG, ligneEnBase(MSG)]]));
+		reinitialiser(client);
+		await chatStore.subscribeToConversation(CONV);
+
+		// Trois signaux avant que la première relecture ne revienne.
+		for (let i = 0; i < 3; i++) {
+			sim.diffuser('new_message', { type: 'new_message', message: { id: MSG } });
+		}
+		await vi.waitFor(() => expect(chatStore.getMessages(CONV)).toHaveLength(1));
+		await new Promise((r) => setTimeout(r, 20));
+		expect(from.mock.calls.filter(([t]) => t === 'messages')).toHaveLength(1);
+	});
+
+	it('au-delà de 20 relectures en 10 s sur une conversation, les signaux sont ignorés', async () => {
+		const { client, from } = clientSimule(new Map());
+		reinitialiser(client);
+		await chatStore.subscribeToConversation(CONV);
+
+		for (let i = 0; i < 30; i++) {
+			sim.diffuser('new_message', { type: 'new_message', message: { id: crypto.randomUUID() } });
+			await new Promise((r) => setTimeout(r, 0));
+		}
+		await new Promise((r) => setTimeout(r, 20));
+		expect(from.mock.calls.filter(([t]) => t === 'messages')).toHaveLength(20);
+	});
+
+	it('une rafale de signaux de réaction pour un message ne déclenche qu’une relecture', async () => {
+		const { client, from } = clientSimule(new Map([[MSG, ligneEnBase(MSG)]]), [
+			{
+				id: 'r1',
+				message_id: MSG,
+				user_id: CAMARADE,
+				emoji: '👍',
+				created_at: '2026-10-03T10:01:00Z'
+			}
+		]);
+		reinitialiser(client);
+		await chatStore.subscribeToConversation(CONV);
+		sim.diffuser('new_message', { type: 'new_message', message: { id: MSG } });
+		await vi.waitFor(() => expect(chatStore.getMessages(CONV)).toHaveLength(1));
+
+		for (let i = 0; i < 10; i++) {
+			sim.diffuser('message_reaction', { type: 'message_reaction', messageId: MSG });
+		}
+		const lecturesReactions = () => from.mock.calls.filter(([t]) => t === 'message_reactions');
+		expect(lecturesReactions()).toHaveLength(0);
+
+		await vi.waitFor(() =>
+			expect(chatStore.getMessages(CONV)[0].reactions?.map((r) => r.emoji)).toEqual(['👍'])
+		);
+		await new Promise((r) => setTimeout(r, 350));
+		expect(lecturesReactions()).toHaveLength(1);
+	});
+
+	it('une relecture de réactions qui lève une exception n’est pas un rejet non géré', async () => {
+		const { client, from } = clientSimule(new Map([[MSG, ligneEnBase(MSG)]]));
+		reinitialiser(client);
+		await chatStore.subscribeToConversation(CONV);
+		sim.diffuser('new_message', { type: 'new_message', message: { id: MSG } });
+		await vi.waitFor(() => expect(chatStore.getMessages(CONV)).toHaveLength(1));
+
+		const original = from.getMockImplementation()!;
+		from.mockImplementation(((table: string) => {
+			if (table === 'message_reactions') throw new Error('réseau coupé');
+			return original(table);
+		}) as typeof original);
+
+		sim.diffuser('message_reaction', { type: 'message_reaction', messageId: MSG });
+		await new Promise((r) => setTimeout(r, 400));
+		await expect(chatStore['reloadReactions'](MSG) as Promise<void>).resolves.toBeUndefined();
 	});
 });

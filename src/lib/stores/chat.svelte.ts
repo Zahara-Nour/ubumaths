@@ -232,6 +232,27 @@ class ChatStore {
 	 */
 	private reconnectTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+	// ANTI-SATURATION DES SIGNAUX (un participant peut diffuser en rafale ;
+	// chaque signal coûte une relecture en base chez chaque destinataire)
+
+	/** Relectures autorisées par conversation et par fenêtre glissante. */
+	private readonly SIGNAL_REFETCH_LIMIT = 20;
+
+	/** Durée de la fenêtre glissante (ms). */
+	private readonly SIGNAL_REFETCH_WINDOW_MS = 10_000;
+
+	/** Regroupement des signaux de réaction d'un même message (ms). */
+	private readonly REACTION_DEBOUNCE_MS = 300;
+
+	/** Ids de messages dont la relecture (signal) est en cours. */
+	private refetchesInFlight = new Set<string>();
+
+	/** Horodatages des relectures récentes, par conversation. */
+	private signalRefetchTimes = new Map<string, number[]>();
+
+	/** Relectures de réactions en attente, par message. */
+	private reactionTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
 	/**
 	 * Flag to prevent concurrent reconnection attempts per conversation
 	 */
@@ -400,7 +421,7 @@ class ChatStore {
 					logger.warn('Invalid reaction payload:', validation.error.issues);
 					return;
 				}
-				void this.handleReaction(validation.data);
+				this.handleReaction(validation.data);
 			});
 
 			channel.on('broadcast', { event: 'message_read' }, ({ payload }) => {
@@ -564,7 +585,7 @@ class ChatStore {
 	 * @param reactions - Lignes lues en base
 	 * @returns Réactions agrégées, par identifiant de message
 	 */
-	private agregerReactions(
+	private aggregateReactions(
 		reactions: Array<
 			Pick<MessageReaction, 'id' | 'message_id' | 'user_id' | 'emoji' | 'created_at'>
 		>
@@ -627,7 +648,7 @@ class ChatStore {
 			}
 
 			if (reactions && reactions.length > 0) {
-				const reactionsByMessage = this.agregerReactions(reactions);
+				const reactionsByMessage = this.aggregateReactions(reactions);
 
 				// Create NEW message objects with reactions (for Svelte 5 reactivity)
 				const messagesWithReactions = messages.map((message) => ({
@@ -870,24 +891,7 @@ class ChatStore {
 				return null;
 			}
 
-			// 4. Signal aux autres participants (canal privé) : l'identifiant
-			// seulement, APRÈS l'écriture — le destinataire relit la ligne en base,
-			// qui doit donc déjà exister.
-			const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-			if (channel) {
-				channel
-					.send({
-						type: 'broadcast',
-						event: 'new_message',
-						payload: {
-							type: 'new_message',
-							message: { id: optimisticId }
-						} satisfies BroadcastMessagePayload
-					})
-					.catch((err) => logger.error('Failed to broadcast message:', err));
-			}
-
-			// 5. Insert attachments if provided
+			// 4. Insert attachments if provided
 			if (attachments && attachments.length > 0) {
 				const attachmentRecords = attachments.map((att) => ({
 					message_id: optimisticId,
@@ -906,6 +910,23 @@ class ChatStore {
 				if (attachError) {
 					logger.error('Failed to insert attachments:', attachError);
 				}
+			}
+
+			// 5. Signal aux autres participants (canal privé) : l'identifiant
+			// seulement, APRÈS l'écriture du message et de ses pièces jointes — le destinataire relit la ligne en base,
+			// qui doit donc déjà exister.
+			const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+			if (channel) {
+				channel
+					.send({
+						type: 'broadcast',
+						event: 'new_message',
+						payload: {
+							type: 'new_message',
+							message: { id: optimisticId }
+						} satisfies BroadcastMessagePayload
+					})
+					.catch((err) => logger.error('Failed to broadcast message:', err));
 			}
 
 			// 6. Update optimistic message with DB data
@@ -972,7 +993,47 @@ class ChatStore {
 		conversationId: string,
 		payload: BroadcastMessagePayload
 	): Promise<void> {
-		await this.relireEtAfficherMessage(payload.message.id, conversationId);
+		const messageId = payload.message.id;
+
+		// Déjà affiché : la ligne a déjà été lue en base (ou c'est notre envoi).
+		if ((this.messages.get(conversationId) ?? []).some((msg) => msg.id === messageId)) return;
+
+		// Relecture déjà en cours pour cet id.
+		if (this.refetchesInFlight.has(messageId)) return;
+
+		// Plafond par conversation : au-delà, on ignore ; postgres_changes reste
+		// le filet pour les vrais messages.
+		if (!this.acquireSignalRefetchSlot(conversationId)) {
+			logger.warn('Trop de signaux sur la conversation, ignoré :', conversationId);
+			return;
+		}
+
+		this.refetchesInFlight.add(messageId);
+		try {
+			await this.refetchAndDisplayMessage(messageId, conversationId);
+		} finally {
+			this.refetchesInFlight.delete(messageId);
+		}
+	}
+
+	/**
+	 * Réserve une relecture dans la fenêtre glissante de la conversation.
+	 *
+	 * @param conversationId - La conversation du canal
+	 * @returns false si le plafond est atteint
+	 */
+	private acquireSignalRefetchSlot(conversationId: string): boolean {
+		const now = Date.now();
+		const recent = (this.signalRefetchTimes.get(conversationId) ?? []).filter(
+			(t) => now - t < this.SIGNAL_REFETCH_WINDOW_MS
+		);
+		if (recent.length >= this.SIGNAL_REFETCH_LIMIT) {
+			this.signalRefetchTimes.set(conversationId, recent);
+			return false;
+		}
+		recent.push(now);
+		this.signalRefetchTimes.set(conversationId, recent);
+		return true;
 	}
 
 	/**
@@ -1015,7 +1076,7 @@ class ChatStore {
 	private async handlePostgresMessage(
 		newMessage: Database['public']['Tables']['messages']['Row']
 	): Promise<void> {
-		await this.relireEtAfficherMessage(newMessage.id);
+		await this.refetchAndDisplayMessage(newMessage.id);
 	}
 
 	/**
@@ -1023,12 +1084,12 @@ class ChatStore {
 	 * source de ce qui est affiché en temps réel.
 	 *
 	 * @param messageId - Identifiant du message à relire
-	 * @param conversationAttendue - Si fourni (signal broadcast), une ligne d'une
+	 * @param expectedConversationId - Si fourni (signal broadcast), une ligne d'une
 	 *   autre conversation est ignorée
 	 */
-	private async relireEtAfficherMessage(
+	private async refetchAndDisplayMessage(
 		messageId: string,
-		conversationAttendue?: string
+		expectedConversationId?: string
 	): Promise<void> {
 		if (!this.supabase) {
 			logger.warn('Cannot handle message: not initialized');
@@ -1058,7 +1119,7 @@ class ChatStore {
 				throw error;
 			}
 
-			if (conversationAttendue && data.conversation_id !== conversationAttendue) {
+			if (expectedConversationId && data.conversation_id !== expectedConversationId) {
 				logger.warn('Signal reçu pour un message d’une autre conversation :', messageId);
 				return;
 			}
@@ -1104,12 +1165,10 @@ class ChatStore {
 
 			const existingMessages = this.messages.get(data.conversation_id) || [];
 
-			// Find existing message to replace
-			// Match by ID first (if already updated from optimistic -> DB ID)
-			// OR by created_at timestamp (for broadcast messages or pre-update optimistic messages)
-			const existingIndex = existingMessages.findIndex(
-				(msg) => msg.id === data.id || msg.created_at === data.created_at
-			);
+			// Rapprochement par identifiant SEULEMENT (l'envoi optimiste réutilise
+			// l'id inséré en base). Pas de repli sur `created_at` : un participant
+			// pourrait masquer le message d'un autre en copiant son horodatage.
+			const existingIndex = existingMessages.findIndex((msg) => msg.id === data.id);
 
 			if (existingIndex !== -1) {
 				// Replace existing message with full DB version (with JOINs)
@@ -1132,36 +1191,67 @@ class ChatStore {
 	/**
 	 * Signal `message_reaction` : relit en base les réactions du message et les
 	 * remplace. Rien du payload (auteur, emoji, ajout/retrait) n'est appliqué.
-	 * Un message absent de l'écran (donc jamais relu en base) est ignoré.
+	 * Un message absent de l'écran (donc jamais relu en base) est ignoré. Les
+	 * signaux d'un même message sont regroupés (une relecture par rafale), ce
+	 * qui évite aussi des lectures revenant dans le désordre.
 	 *
 	 * @param payload - Signal validé par Zod (identifiant du message seulement)
 	 */
-	private async handleReaction(payload: BroadcastReactionPayload): Promise<void> {
+	private handleReaction(payload: BroadcastReactionPayload): void {
+		const { messageId } = payload;
+		const displayed = [...this.messages.values()].some((msgs) =>
+			msgs.some((msg) => msg.id === messageId)
+		);
+		if (!displayed) return;
+
+		const pending = this.reactionTimers.get(messageId);
+		if (pending) clearTimeout(pending);
+
+		this.reactionTimers.set(
+			messageId,
+			setTimeout(() => {
+				this.reactionTimers.delete(messageId);
+				void this.reloadReactions(messageId);
+			}, this.REACTION_DEBOUNCE_MS)
+		);
+	}
+
+	/**
+	 * Relit en base les réactions d'un message affiché et les remplace.
+	 *
+	 * @param messageId - Message dont les réactions ont changé
+	 */
+	private async reloadReactions(messageId: string): Promise<void> {
 		if (!this.supabase) return;
 
-		const conversationId = [...this.messages.entries()].find(([, msgs]) =>
-			msgs.some((msg) => msg.id === payload.messageId)
-		)?.[0];
-		if (!conversationId) return;
+		try {
+			const { data: rows, error } = await this.supabase
+				.from('message_reactions')
+				.select('id, message_id, user_id, emoji, created_at')
+				.eq('message_id', messageId);
 
-		const { data: lignes, error } = await this.supabase
-			.from('message_reactions')
-			.select('id, message_id, user_id, emoji, created_at')
-			.eq('message_id', payload.messageId);
+			if (error) {
+				logger.error('Failed to reload reactions:', error);
+				return;
+			}
 
-		if (error) {
+			// La conversation est recherchée APRÈS la lecture : l'écran a pu changer.
+			const conversationId = [...this.messages.entries()].find(([, msgs]) =>
+				msgs.some((msg) => msg.id === messageId)
+			)?.[0];
+			if (!conversationId) return;
+
+			const reactions = this.aggregateReactions(rows ?? []).get(messageId) ?? [];
+			const messages = this.messages.get(conversationId) ?? [];
+			this.messages.set(
+				conversationId,
+				messages.map((msg) => (msg.id === messageId ? { ...msg, reactions } : msg))
+			);
+
+			logger.info('Reactions reloaded from DB:', messageId);
+		} catch (error) {
 			logger.error('Failed to reload reactions:', error);
-			return;
 		}
-
-		const reactions = this.agregerReactions(lignes ?? []).get(payload.messageId) ?? [];
-		const messages = this.messages.get(conversationId) ?? [];
-		this.messages.set(
-			conversationId,
-			messages.map((msg) => (msg.id === payload.messageId ? { ...msg, reactions } : msg))
-		);
-
-		logger.info('Reactions reloaded from DB:', payload.messageId);
 	}
 
 	/**
@@ -1779,6 +1869,13 @@ class ChatStore {
 			clearTimeout(timer);
 		}
 		this.reconnectTimers.clear();
+
+		for (const timer of this.reactionTimers.values()) {
+			clearTimeout(timer);
+		}
+		this.reactionTimers.clear();
+		this.refetchesInFlight.clear();
+		this.signalRefetchTimes.clear();
 		this.reconnectAttempts.clear();
 		this.isReconnecting.clear();
 
