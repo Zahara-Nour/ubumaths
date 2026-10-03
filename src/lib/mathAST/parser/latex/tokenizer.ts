@@ -20,6 +20,9 @@
 
 import type { Token, TokenType } from '../types';
 
+/** Caractères de relation tapés tels quels → commande LaTeX équivalente */
+const UNICODE_RELATIONS: Readonly<Record<string, string>> = { '≤': 'leq', '≥': 'geq', '≠': 'neq' };
+
 // =============================================================================
 // Tokenizer Class
 // =============================================================================
@@ -326,6 +329,10 @@ export class Tokenizer {
 		// jamais une variable nommée « % » multipliée en silence
 		if (char === '%') return this.makeToken('COMMAND', '%', startPos, 1);
 
+		// `≤`, `≥`, `≠` tapés tels quels : les relations `\leq`, `\geq`, `\neq`
+		const relation = UNICODE_RELATIONS[char];
+		if (relation) return this.makeToken('COMMAND', relation, startPos, char.length);
+
 		const type = this.charToTokenType(char);
 		return this.makeToken(type, char, startPos);
 	}
@@ -537,9 +544,12 @@ export function isRelationToken(token: Token): boolean {
 		const relationCommands = [
 			'leq',
 			'leqslant',
+			'le',
 			'geq',
 			'geqslant',
+			'ge',
 			'neq',
+			'ne',
 			'equiv',
 			'approx',
 			'simeq',
