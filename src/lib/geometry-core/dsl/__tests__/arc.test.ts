@@ -96,7 +96,7 @@ describe('DSL — arc builtin', () => {
 			const script = `O = point(0, 0)\na = arc(O, rayon=3, debut=0, fin=90)\nstyle(a, couleur="rouge")`;
 			const { figure, symbols } = runDsl(script);
 			const el = figure.getElementById(symbols.get('a')!.figureId!);
-			expect(el!.style?.color).toBe('#dc2626');
+			expect(el!.style?.color).toBe('rouge');
 		});
 	});
 });

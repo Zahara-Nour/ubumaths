@@ -490,14 +490,14 @@ describe('tangente — parametric (G. edge cases)', () => {
 		const v = figure.getElementById(symbols.get('v')!.figureId!);
 		expect(d).toBeDefined();
 		expect(v).toBeDefined();
-		// Both elements should carry the same red color (resolved from "rouge" name).
+		// Both elements should carry the same red color (the canonical name "rouge",
+		// translated at render time: theme variable on screen, light hex in print).
 		const dColor = (d as { style?: { color?: string } }).style?.color;
 		const vColor = (v as { style?: { color?: string } }).style?.color;
 		expect(dColor).toBeDefined();
 		expect(vColor).toBeDefined();
 		expect(dColor).toBe(vColor);
-		// Reddish hex (red component dominant in #RRGGBB).
-		expect(dColor).toMatch(/^#[a-f0-9]{6}$/i);
+		expect(dColor).toBe('rouge');
 	});
 
 	it('G4. non-default parameter name (custom param=) — tangente respects curve.parameter', () => {

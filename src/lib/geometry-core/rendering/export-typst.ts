@@ -11,7 +11,7 @@ import type { ConicParams } from '../types/elements';
 import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
-import { resolveStyle } from './svg-primitives';
+import { resolvePrintStyle } from './svg-primitives';
 import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 import {
@@ -179,7 +179,7 @@ export function exportToTypst(
 	// Pass 1: segments, lines, rays
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -250,7 +250,7 @@ export function exportToTypst(
 	// Pass 2: circles
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -308,7 +308,7 @@ export function exportToTypst(
 	for (const el of elements) {
 		if (!el.visible) continue;
 		if (el.type !== 'arcByAngles' && el.type !== 'arcByPoints') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -354,7 +354,7 @@ export function exportToTypst(
 	// Pass 2b: polygons
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'polygon') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -371,7 +371,7 @@ export function exportToTypst(
 	// Pass 2c: quadratic curves (conics)
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'quadraticCurve') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -390,7 +390,7 @@ export function exportToTypst(
 	// Pass 2e: parametric curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'parametricCurve') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -431,7 +431,7 @@ export function exportToTypst(
 	// Pass 2d: tangents to quadratic curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -492,7 +492,7 @@ export function exportToTypst(
 		tag(el.id);
 
 		const { vertexX: vx, vertexY: vy, marque } = geom;
-		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+		const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
 			// Label-only.
@@ -509,7 +509,7 @@ export function exportToTypst(
 
 			// Optional sector fill (rendered before arc strokes). Uses OUTER
 			// radius so the fill covers the full visible arc extent.
-			const sty = resolveStyle(el, figure.defaults);
+			const sty = resolvePrintStyle(el, figure.defaults);
 			if (sty.fillColor) {
 				const fillCol = hexToTypstColor(sty.fillColor);
 				const outerR = geom.outerRadius;
@@ -554,7 +554,7 @@ export function exportToTypst(
 		const px = -uy;
 		const py = ux;
 
-		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+		const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 		const totalWidth = (el.markCount - 1) * tickSpacing;
 		const startOffset = -totalWidth / 2;
 
@@ -577,7 +577,7 @@ export function exportToTypst(
 
 		const x = geoToNumber(pos.x);
 		const y = geoToNumber(pos.y);
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const color = hexToTypstColor(sty.color);
 
 		tag(el.id);
@@ -616,7 +616,7 @@ export function exportToTypst(
 			const text = figure.resolveTemplate(el.id);
 			if (text === undefined) continue;
 
-			const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+			const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 			let mx: number | undefined;
 			let my: number | undefined;
 

@@ -11,6 +11,7 @@ import { createTransformer } from '../viewport/viewport';
 import { isPointElement, isVector } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import {
+	resolvePrintStyle,
 	resolveStyle,
 	pointToSVG,
 	segmentToSVG,
@@ -156,7 +157,7 @@ export function exportToSVG(
 		if (!el.visible || el.type !== 'image' || el.layer !== 'fond') continue;
 		const svg = imageToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
 		lines.push(
 			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet"${imageTransformAttr(svg)} />`
@@ -166,7 +167,7 @@ export function exportToSVG(
 	// Pass 1: segments, lines, rays
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 
 		if (el.type === 'segment') {
 			const svg = segmentToSVG(el.id, figure, transformer);
@@ -230,7 +231,7 @@ export function exportToSVG(
 			el.type !== 'osculatingCircle'
 		)
 			continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg =
 			el.type === 'osculatingCircle'
 				? osculatingCircleToSVG(el.id, figure, transformer)
@@ -254,7 +255,7 @@ export function exportToSVG(
 	for (const el of elements) {
 		if (!el.visible) continue;
 		if (el.type !== 'arcByAngles' && el.type !== 'arcByPoints') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg = arcToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		if (useRough(sty, el.type)) {
@@ -271,7 +272,7 @@ export function exportToSVG(
 	// Pass 2b: polygons
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'polygon') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const verts = el.dependsOn.map((id) => figure.getPosition(id));
 		if (verts.some((p) => !p)) continue;
 		if (useRough(sty, el.type)) {
@@ -302,7 +303,7 @@ export function exportToSVG(
 	for (const el of elements) {
 		if (!el.visible) continue;
 		if (el.type !== 'sectorByPoints' && el.type !== 'sectorByAngles') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg = sectorToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
@@ -316,7 +317,7 @@ export function exportToSVG(
 	// Pass 2d: annuli
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'annulus') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg = annulusToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
@@ -330,7 +331,7 @@ export function exportToSVG(
 	// Pass 3: angles (first-class GeoAngle)
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'angle') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg = angleToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		if (useRough(sty, el.type)) {
@@ -361,7 +362,7 @@ export function exportToSVG(
 	// Pass 4: segment marks
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'segmentMark') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const svg = segmentMarkToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		if (useRough(sty, el.type)) {
@@ -380,7 +381,7 @@ export function exportToSVG(
 		if (!el.visible || !isPointElement(el)) continue;
 		const svg = pointToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
 
 		if (sty.pointShape === 'dot') {
@@ -422,7 +423,7 @@ export function exportToSVG(
 				continue;
 			const svg = textToSVG(el.id, figure, transformer);
 			if (!svg) continue;
-			const sty = resolveStyle(el, figure.defaults);
+			const sty = resolvePrintStyle(el, figure.defaults);
 			lines.push(
 				`  <rect x="${r(svg.x - 4)}" y="${r(svg.y - 12)}" width="${svg.text.length * 8 + 8}" height="16" rx="3" fill="white" fill-opacity="0.85" />`
 			);
@@ -437,7 +438,7 @@ export function exportToSVG(
 		if (!el.visible || el.type !== 'image' || el.layer === 'fond') continue;
 		const svg = imageToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
 		lines.push(
 			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet"${imageTransformAttr(svg)} />`
