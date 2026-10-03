@@ -311,25 +311,31 @@ describe('mémoire de révision écrite par le serveur seul (Q171)', () => {
 	// Témoins : les révisions faites par les écrans écrivent toujours
 	// ------------------------------------------------------------------------
 
-	// ⚠️ Statut HTTP non asserté : la route répond 500 APRÈS avoir écrit la fiche,
-	// sur un bug antérieur et indépendant (elle lit `srs_review_sessions.created_at`,
-	// colonne absente en local comme en prod). Seule l'écriture de la mémoire est
-	// l'objet de ce témoin.
-	it('POST /api/srs/review/submit écrit la fiche (carte libre)', async () => {
-		await reviewSubmitRoute({
+	// La route répondait 500 après avoir écrit la fiche (elle filtrait la séance sur
+	// `srs_review_sessions.created_at`, colonne inexistante : c'est `started_at`).
+	it('POST /api/srs/review/submit écrit la fiche (carte libre) et répond 200', async () => {
+		const response = await reviewSubmitRoute({
 			locals: buildLocals(student),
 			request: postRequest({ cardId: customCardId, deckId: studentDeckId, grade: 3 })
 		} as never);
+		expect(response.status).toBe(200);
 		const row = await memory('custom', customCardId);
 		expect(row?.total_reviews).toBe(1);
 	});
 
-	it('POST /api/srs/review/submit fait avancer une fiche existante', async () => {
-		await reviewSubmitRoute({
+	it('POST /api/srs/review/submit fait avancer une fiche existante et compte la séance', async () => {
+		const response = await reviewSubmitRoute({
 			locals: buildLocals(student),
 			request: postRequest({ cardId: customCardId, deckId: studentDeckId, grade: 1 })
 		} as never);
+		expect(response.status).toBe(200);
 		expect((await memory('custom', customCardId))?.total_reviews).toBe(2);
+		const { data: sessions } = await service
+			.from('srs_review_sessions')
+			.select('cards_reviewed')
+			.eq('user_id', student.id)
+			.eq('deck_id', studentDeckId);
+		expect(sessions).toEqual([{ cards_reviewed: 2 }]);
 	});
 
 	it('POST /api/skill-attempts écrit la fiche', async () => {
