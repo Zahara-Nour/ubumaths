@@ -488,26 +488,20 @@
 		const newTitle = prompt('Titre du nouveau template:', `${template.title} (copie)`);
 		if (!newTitle) return;
 
-		if (!formClassId && classes.length === 0) {
-			toaster.error(
-				`Vous devez avoir au moins un ${lore.entities.class} pour dupliquer un template`
-			);
-			return;
-		}
-
 		isLoading = true;
 		try {
 			const response = await fetch(`/api/messages/templates/${template.id}/duplicate`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					new_title: newTitle,
-					class_id: formClassId || classes[0]?.id
-				})
+				// La copie est un modèle personnel, sans classe (Q154) : on la
+				// rattache à une classe en la modifiant.
+				body: JSON.stringify({ new_title: newTitle })
 			});
 
 			if (response.ok) {
-				toaster.success('Template dupliqué avec succès');
+				toaster.success(
+					`Template dupliqué : modèle personnel, à rattacher à un ${lore.entities.class} en le modifiant`
+				);
 				await loadTemplates();
 			} else {
 				toaster.error('Erreur lors de la duplication');
@@ -752,7 +746,9 @@
 										<span
 											class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
 										>
-											{template.class_name || `Mon ${lore.entities.class}`}
+											{template.class_id
+												? template.class_name || `Mon ${lore.entities.class}`
+												: 'Personnel'}
 										</span>
 									{/if}
 
