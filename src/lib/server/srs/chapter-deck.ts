@@ -25,8 +25,8 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
-import { templatesOfCategory } from '$lib/questions/series-items';
+import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
+import { categoryKeyOf, templatesOfCategory } from '$lib/questions/series-items';
 import { seriesCategoriesSchema } from '$lib/validation/series';
 
 // Types
@@ -84,6 +84,13 @@ export class ChapterDeckError extends Error {
 /** Nouvelles questions au plus par séance (Q166). */
 export const CHAPTER_SESSION_NEW_LIMIT = 10;
 
+/**
+ * Modèles lus au plus en une requête (plafond de lignes de PostgREST). Une seule
+ * question publiée par catégorie (index unique partiel) : l'atteindre voudrait
+ * dire des centaines de catégories — on le dit plutôt que de tronquer.
+ */
+export const MAX_DECK_TEMPLATES = 1000;
+
 // Functions
 
 /**
@@ -133,6 +140,28 @@ export function selectChapterSession(
 	const fresh = deckTemplateIds.filter((id) => !nextReviewById.has(id)).slice(0, newLimit);
 
 	return { due, fresh };
+}
+
+/** Valeur PostgREST entre guillemets : `"` et `\` échappés. */
+function quoted(value: string): string {
+	return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * Filtre `or` PostgREST : une condition EXACTE par catégorie (thème, domaine,
+ * sous-domaine, niveau), doublons fusionnés — pas de produit croisé thèmes ×
+ * domaines. Sous-domaine absent : `null` ou `''`, comme `templatesOfCategory`.
+ */
+export function categoriesFilter(categories: readonly QuestionCategory[]): string {
+	const unique = new Map(categories.map((c) => [categoryKeyOf(c), c]));
+	return [...unique.values()]
+		.map((c) => {
+			const subdomain = c.subdomain
+				? `subdomain.eq.${quoted(c.subdomain)}`
+				: 'or(subdomain.is.null,subdomain.eq."")';
+			return `and(theme.eq.${quoted(c.theme)},domain.eq.${quoted(c.domain)},${subdomain},level.eq.${Number(c.level)})`;
+		})
+		.join(',');
 }
 
 /** Composition lisible d'une série, ou `null` (tracé) */
@@ -186,22 +215,25 @@ export async function loadChapterDecks(
 		}
 	}
 
-	// Les modèles des thèmes concernés seulement : la résolution fine (domaine,
-	// sous-domaine, niveau) reste celle des séries.
-	const allCategories = [...categoriesBySeries.values()].flat();
+	// Les modèles des catégories exactes : la base pré-filtre, la résolution
+	// (`templatesOfCategory`) reste celle des séries.
+	const allCategories = [...categoriesBySeries.values()].flat().map((item) => item.category);
 	let templates: DeckTemplateRow[] = [];
 	if (allCategories.length > 0) {
-		const themes = [...new Set(allCategories.map((c) => c.category.theme))];
-		const domains = [...new Set(allCategories.map((c) => c.category.domain))];
 		const { data, error: templatesError } = await supabase
 			.from('question_templates')
 			.select('id, theme, domain, subdomain, level, status')
 			.eq('status', 'published')
-			.in('theme', themes)
-			.in('domain', domains)
-			.order('created_at');
+			.or(categoriesFilter(allCategories))
+			.order('created_at')
+			.limit(MAX_DECK_TEMPLATES);
 		if (templatesError) throw new ChapterDeckError(templatesError.message);
 		templates = data ?? [];
+		if (templates.length >= MAX_DECK_TEMPLATES) {
+			throw new ChapterDeckError(
+				`Paquet de chapitre : plafond de ${MAX_DECK_TEMPLATES} modèles atteint, lecture incomplète`
+			);
+		}
 	}
 
 	return chapters.map((chapter) => {

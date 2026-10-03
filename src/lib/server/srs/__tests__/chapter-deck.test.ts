@@ -16,6 +16,8 @@ import type { Database } from '$lib/types/database';
 import type { CartItem } from '$lib/stores/questionCart.svelte';
 import {
 	CHAPTER_SESSION_NEW_LIMIT,
+	MAX_DECK_TEMPLATES,
+	categoriesFilter,
 	loadChapterDecks,
 	resolveDeckTemplateIds,
 	selectChapterSession,
@@ -52,7 +54,7 @@ function fakeClient(tables: Record<string, unknown[]>, calls: Call[]) {
 	return {
 		from(table: string) {
 			const builder: Record<string, unknown> = {};
-			for (const method of ['select', 'eq', 'in', 'not', 'lte', 'order', 'is']) {
+			for (const method of ['select', 'eq', 'in', 'not', 'lte', 'order', 'is', 'or', 'limit']) {
 				builder[method] = (...args: unknown[]) => {
 					calls.push({ table, method, args });
 					return builder;
@@ -225,5 +227,54 @@ describe('loadChapterDecks — lecture aux droits de l’élève', () => {
 		const decks = await loadChapterDecks(fakeClient({ class_chapters: [] }, calls), { now: NOW });
 		expect(decks).toEqual([]);
 		expect(calls.every((c) => c.table === 'class_chapters')).toBe(true);
+	});
+});
+
+describe('categoriesFilter — une condition EXACTE par catégorie', () => {
+	it('thème, domaine, sous-domaine et niveau ensemble, valeurs entre guillemets', () => {
+		expect(categoriesFilter([catA])).toBe(
+			'and(theme.eq."Fonctions",domain.eq."Étude",subdomain.eq."Méthode",level.eq.1)'
+		);
+	});
+
+	it('sous-domaine absent : null ou chaîne vide (même règle que la série)', () => {
+		expect(categoriesFilter([catB])).toBe(
+			'and(theme.eq."Fonctions",domain.eq."Dérivation",or(subdomain.is.null,subdomain.eq.""),level.eq.2)'
+		);
+	});
+
+	it('pas de produit croisé : deux catégories → deux conditions, doublons fusionnés', () => {
+		const filter = categoriesFilter([catA, catB, { ...catA }]);
+		expect(filter.match(/and\(/g)).toHaveLength(2);
+	});
+
+	it('guillemets et barres obliques inverses échappés', () => {
+		expect(categoriesFilter([{ ...catB, theme: 'A "B" \\ C' }])).toContain(
+			'theme.eq."A \\"B\\" \\\\ C"'
+		);
+	});
+});
+
+describe('loadChapterDecks — filtre et plafond', () => {
+	const decor = (templates: unknown[]) => ({
+		class_chapters: [{ id: 'c1', title: 'Fonctions' }],
+		chapter_series: [{ chapter_id: 'c1', series_id: 's1' }],
+		series: [{ id: 's1', categories: [item(catA)] }],
+		question_templates: templates
+	});
+
+	it('filtre les modèles par catégorie exacte (or), sans in(theme) × in(domain)', async () => {
+		const calls: Call[] = [];
+		await loadChapterDecks(fakeClient(decor([template('a1', catA)]), calls), { now: NOW });
+		const templateCalls = calls.filter((c) => c.table === 'question_templates');
+		expect(templateCalls.some((c) => c.method === 'or')).toBe(true);
+		expect(templateCalls.some((c) => c.method === 'in')).toBe(false);
+	});
+
+	it('plafond atteint → erreur explicite, jamais une troncature silencieuse', async () => {
+		const many = Array.from({ length: MAX_DECK_TEMPLATES }, (_, i) => template(`t${i}`, catA));
+		await expect(loadChapterDecks(fakeClient(decor(many), []), { now: NOW })).rejects.toThrow(
+			/plafond/
+		);
 	});
 });
