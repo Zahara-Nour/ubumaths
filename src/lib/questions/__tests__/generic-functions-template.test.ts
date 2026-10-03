@@ -195,7 +195,7 @@ describe('Génération — énoncé et réponse attendue', () => {
 // ============================================================================
 
 describe('Validation de la réponse de l’élève', () => {
-	// `form: 'off'` : la VALEUR seule (le contrôle de forme, `checkForm`, est hors périmètre)
+	// `form: 'off'` : la VALEUR seule ; la forme est contrôlée plus bas
 	const formOff = { form: 'off' as const };
 
 	it("avec ['P'] : P'(1+1) a la valeur de P'(2)", () => {
@@ -214,22 +214,41 @@ describe('Validation de la réponse de l’élève', () => {
 		expect(validateAnswer(["P'(1+1)"], instance, ["P'\\left(1+1\\right)"]).isCorrect).toBe(false);
 	});
 
-	// Point ouvert : `checkForm` (cosmetic-transforms.ts, hors périmètre) relit avec les
-	// défauts → « Parse error on answer » → mauvaise forme. Ce test basculera (et
-	// échouera) le jour où `checkForm` recevra la configuration : retirer `.fails`.
-	it.fails("contrôle de forme par défaut : P'(2) tapé tel quel est juste", () => {
+	// Contrôle de forme par défaut (`form` strict) : `checkForm` relit la réponse et
+	// l'attendu avec les fonctions déclarées
+	it.each([
+		["P'(2)", "P'(2)"],
+		["P'\\left(2\\right)", 'saisie MathLive'],
+		["P'\\left( 2 \\right)", 'saisie MathLive espacée']
+	])('forme contrôlée : %s (%s) est juste', (latex) => {
 		const instance = instanceOf(polynomialTemplate(['P']));
-		const result = validateAnswer(["P'(2)"], instance, ["P'\\left(2\\right)"]);
+		const result = validateAnswer([latex], instance, [latex]);
+		expect(result.isCorrect).toBe(true);
 		expect(result.status).toBe('correct');
 	});
 
-	// Saisie MathLive (`\\left(…\\right)`) : le parseur LaTeX lit `P'\\left(2\\right)` comme
-	// un produit, même pour f (chantier parallèle `f\\left(1\\right)`). Retirer `.fails`
-	// quand il sera livré.
-	it.fails("saisie MathLive P'\\left(1+1\\right) : juste (dépend du parseur)", () => {
+	it("forme contrôlée : P'(1+1) a la bonne valeur mais pas la forme attendue", () => {
+		const instance = instanceOf(polynomialTemplate(['P']));
+		const latex = "P'\\left(1+1\\right)";
+		const result = validateAnswer([latex], instance, [latex]);
+		expect(result.status).toBe('bad_form');
+	});
+
+	it("sans l'option, forme contrôlée : P'(2) n'est pas compris (inchangé)", () => {
+		const instance = instanceOf(polynomialTemplate());
+		const latex = "P'\\left(2\\right)";
+		expect(validateAnswer([latex], instance, [latex]).status).not.toBe('correct');
+	});
+
+	it("saisie MathLive P'\\left(1+1\\right) : valeur juste", () => {
 		const instance = instanceOf(polynomialTemplate(['P'], formOff));
 		const latex = "P'\\left(1+1\\right)";
 		expect(validateAnswer([latex], instance, [latex]).isCorrect).toBe(true);
+	});
+
+	it("barème serveur, forme contrôlée : P'(2) tapé vaut 1 point", () => {
+		const instance = instanceOf(polynomialTemplate(['P']));
+		expect(gradeQuestion(instance, { values: ["P'\\left(2\\right)"] }).points).toBe(1);
 	});
 
 	it('barème serveur : même verdict que validateAnswer', () => {

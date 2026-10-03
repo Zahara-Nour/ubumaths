@@ -44,7 +44,7 @@ import {
 	unflattenSum,
 	unflattenProduct
 } from './flatten';
-import { parseLatexSafe } from './parser';
+import { parseLatexSafe, type GenericFunctionConfig } from './parser';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
@@ -832,6 +832,11 @@ export interface CheckFormOptions {
 	 * Maps to `ConstraintOptions.allowBracketsInFirstNegativeTerm`.
 	 */
 	allowFirstNegative?: boolean;
+	/**
+	 * Fonctions génériques à reconnaître en relisant la réponse et l'attendu (`P'(2)`
+	 * déclaré par un modèle de question). Absent : défauts du parseur, rien ne change.
+	 */
+	genericFunctions?: GenericFunctionConfig;
 }
 
 /**
@@ -1098,7 +1103,7 @@ export function cosmeticViolations(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr);
+	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse → no cosmetic verdict to give.
 		return violations;
@@ -1176,7 +1181,7 @@ export function checkForm(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr);
+	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse, can't check form — treat as bad_form
 		return {
@@ -1207,7 +1212,9 @@ export function checkForm(
 
 	// === Same pipeline for expected ===
 	const expectedStr = normalizeDecimalComma(removeSpaces(removeZeros(expectedLatex)));
-	const expectedParse = parseLatexSafe(expectedStr);
+	const expectedParse = parseLatexSafe(expectedStr, {
+		genericFunctions: options.genericFunctions
+	});
 	if (!expectedParse.ast || expectedParse.errors.length > 0) {
 		return {
 			valid: false,
