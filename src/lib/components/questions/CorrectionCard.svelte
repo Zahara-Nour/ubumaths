@@ -17,7 +17,8 @@
 
 	Props:
 	- answerResult: TestAnswerResult - Complete answer data
-	- verdict?: DetailedVerdict - verdict détaillé du serveur (évaluation)
+	- verdict?: CorrectedDetail - verdict détaillé du serveur (évaluation) ; indisponible
+	  (Q173) : statut de la question et solution seuls, mention « Détail indisponible »
 	- questionNumber: number (optional) - Question number for display
 	- size: 'sm' | 'md' | 'lg' - Card size variant
 -->
@@ -38,6 +39,7 @@
 		trainingStatus
 	} from '$lib/questions/correction-card-verdict';
 	import { validateAnswerDetailed, type DetailedVerdict } from '$lib/utils/answer-validator';
+	import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import * as Card from '$lib/components/ui/card';
@@ -52,7 +54,7 @@
 	interface Props {
 		answerResult: TestAnswerResult;
 		/** Verdict détaillé du serveur (évaluation notée) : jamais recalculé ici */
-		verdict?: DetailedVerdict;
+		verdict?: CorrectedDetail;
 		questionNumber?: number;
 		size?: 'sm' | 'md' | 'lg';
 	}
@@ -94,18 +96,27 @@
 	const studentAnswer = $derived(studentAnswerFromAnswerData(instance, answerResult.userAnswer));
 	// Verdict du serveur, sinon recalculé (entraînement : statut global du barème
 	// de l'évaluation, Q105) ; carte de cours : auto-évaluation
+	// Détail indisponible (Q173, budget du serveur épuisé) : aucun statut par case
+	const detailUnavailable = $derived(verdict !== undefined && 'unavailable' in verdict);
 	const detailedVerdict = $derived.by((): DetailedVerdict | undefined => {
-		if (verdict) return verdict;
+		if (verdict) return 'unavailable' in verdict ? undefined : verdict;
 		if (isCourseCard) return undefined;
 		return {
 			...validateAnswerDetailed(instance, studentAnswer),
 			status: trainingStatus(instance, studentAnswer)
 		};
 	});
+	// Indisponible : la solution seule (sans la réponse, rien n'est coloré ni recalculé)
 	const expected = $derived(
-		isCourseCard ? null : buildExpectedResult(instance, studentAnswer, detailedVerdict)
+		isCourseCard
+			? null
+			: detailUnavailable
+				? buildExpectedResult(instance)
+				: buildExpectedResult(instance, studentAnswer, detailedVerdict)
 	);
-	const globalVerdict = $derived(detailedVerdict ? globalVerdictOf(detailedVerdict.status) : null);
+	// Statut de la question : toujours celui du serveur quand il est fourni
+	const globalStatus = $derived(verdict?.status ?? detailedVerdict?.status);
+	const globalVerdict = $derived(globalStatus ? globalVerdictOf(globalStatus) : null);
 
 	// Comparaison R1 (Q104) : la consigne seule, sans la formule à case vide
 	const isComparison = $derived(
@@ -282,6 +293,12 @@
 							</p>
 						{:else if expected}
 							<ExpectedResultView result={expected} />
+						{/if}
+
+						{#if detailUnavailable}
+							<p class="text-xs text-muted-foreground italic" data-testid="detail-unavailable">
+								Détail indisponible : seul le résultat de la question est affiché.
+							</p>
 						{/if}
 
 						<!-- Stats -->
