@@ -380,7 +380,8 @@
 			},
 			"answers": ["4,51"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{

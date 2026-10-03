@@ -13,6 +13,7 @@ import type {
 	InstanceBlank,
 	PrecisionType,
 	ValidationStatus,
+	ConfigurableConstraintId,
 	ConstraintId,
 	ConstraintMode,
 	ConstraintOptions,
@@ -72,7 +73,7 @@ function buildConstraintSeverities(
 ): Record<string, ConstraintSeverity> {
 	const severities: Record<string, ConstraintSeverity> = {};
 
-	const constraintIds: ConstraintId[] = [
+	const constraintIds: ConfigurableConstraintId[] = [
 		'spaces',
 		'products',
 		'brackets',
@@ -524,20 +525,26 @@ export function validateNumerical(
 /**
  * Verdict numérique, avec l'indication qu'un ARRONDI est en cause (trop de
  * décimales ou de chiffres significatifs) : son message est alors destiné à
- * l'élève (« Arrondis au centième. »).
+ * l'élève (« Arrondis au centième. »). `onlyRoundingMissing` : la réponse,
+ * arrondie, redonne l'attendu → mauvaise forme (cf. questions/rounding).
  */
 function numericalVerdict(
 	userAnswer: string | number,
 	correctAnswer: string,
 	precision?: PrecisionType,
 	studentLatex?: string
-): { result: ValidationResult; roundingAtFault: boolean } {
-	const result = numericalResult(userAnswer, correctAnswer, precision, studentLatex);
+): { result: ValidationResult; roundingAtFault: boolean; onlyRoundingMissing: boolean } {
+	const { onlyRoundingMissing = false, ...result } = numericalResult(
+		userAnswer,
+		correctAnswer,
+		precision,
+		studentLatex
+	);
 	const roundingAtFault =
 		!result.isCorrect &&
 		(precision?.type === 'decimal' || precision?.type === 'significant') &&
 		result.feedback === roundingFeedback(precision);
-	return { result, roundingAtFault };
+	return { result, roundingAtFault, onlyRoundingMissing };
 }
 
 function numericalResult(
@@ -545,7 +552,7 @@ function numericalResult(
 	correctAnswer: string,
 	precision?: PrecisionType,
 	studentLatex?: string
-): ValidationResult {
+): ValidationResult & { onlyRoundingMissing?: boolean } {
 	// Convert to string if number
 	const userStr = typeof userAnswer === 'number' ? String(userAnswer) : userAnswer;
 
@@ -585,7 +592,12 @@ function numericalResult(
 		const verdict = judgeRounding(studentLatex ?? userStr, userNum, correctNum, precision);
 		if (verdict.feedback) {
 			// Trop de chiffres : message destiné à l'élève (cf. numericalVerdict)
-			return { isCorrect: false, message: 'Incorrect', feedback: verdict.feedback };
+			return {
+				isCorrect: false,
+				message: 'Incorrect',
+				feedback: verdict.feedback,
+				...(verdict.onlyRoundingMissing ? { onlyRoundingMissing: true } : {})
+			};
 		}
 		const correctRounded = roundToPrecision(correctNum, precision);
 		return {
@@ -948,6 +960,10 @@ function validateSingleBlank(
 		// L'unité, l'écriture d'une durée composée ou l'arrondi est en cause :
 		// l'élève doit lire pourquoi (message figé, cf. units/feedback,
 		// units/composite-duration et questions/rounding)
+		// Trop de chiffres mais bon arrondi : mauvaise forme (cf. questions/rounding)
+		if (!result.isCorrect && result.onlyRoundingMissing && result.feedback) {
+			return roundingBadForm(result.feedback);
+		}
 		if (
 			!result.isCorrect &&
 			(result.unitAtFault || result.durationWritingAtFault || result.roundingAtFault) &&
@@ -958,12 +974,16 @@ function validateSingleBlank(
 		isCorrect = result.isCorrect;
 		durationFormIssue = result.durationFormIssue;
 	} else if (blank.precision) {
-		const { result, roundingAtFault } = numericalVerdict(
+		const { result, roundingAtFault, onlyRoundingMissing } = numericalVerdict(
 			userAnswer,
 			blank.expectedAnswer,
 			blank.precision,
 			userAnswerLatex || userAnswer
 		);
+		// Trop de chiffres mais bon arrondi : mauvaise forme (cf. questions/rounding)
+		if (onlyRoundingMissing && result.feedback) {
+			return roundingBadForm(result.feedback);
+		}
 		// Trop de décimales / de chiffres significatifs : l'élève doit lire pourquoi
 		if (roundingAtFault && result.feedback) {
 			return { isCorrect: false, feedback: result.feedback };
@@ -1119,6 +1139,24 @@ function validateSingleBlank(
 		status,
 		feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
 		constraintViolations: violations
+	};
+}
+
+/**
+ * Arrondi demandé non fait, réponse arrondie juste (1,136 pour « au centième »
+ * de 1,136) : mauvaise forme, violation `rounding` (décision de David, 2026-10-03).
+ */
+function roundingBadForm(feedback: string): {
+	isCorrect: false;
+	status: 'bad_form';
+	feedback: string;
+	constraintViolations: NonNullable<ValidationResult['constraintViolations']>;
+} {
+	return {
+		isCorrect: false,
+		status: 'bad_form',
+		feedback,
+		constraintViolations: [{ constraint: 'rounding', severity: 'error', feedback }]
 	};
 }
 

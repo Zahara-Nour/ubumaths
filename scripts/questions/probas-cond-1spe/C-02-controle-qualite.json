@@ -235,7 +235,8 @@
 			},
 			"answers": ["\\frac{19}{500}", "0{,}474"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -471,7 +472,8 @@
 			},
 			"answers": ["\\frac{49}{1\\,000}", "0{,}551"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -588,7 +590,8 @@
 			},
 			"answers": ["\\frac{19}{500}", "0{,}605\\,0"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{

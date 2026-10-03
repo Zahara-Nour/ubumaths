@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateAnswer } from '../answer-validator';
+import { blankStatuses, validateAnswer } from '../answer-validator';
 import { roundToPrecision } from '$lib/questions/rounding';
 import type { InstanceBlank, PrecisionType, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
@@ -27,6 +27,22 @@ function check(answer: string, expectedAnswer: string, precision: PrecisionType)
 		generatedAt: new Date().toISOString()
 	};
 	return validateAnswer([answer], instance, [answer]);
+}
+
+/** Statut de la case, celui que lit le barème (grading.ts) */
+function statusOf(answer: string, expectedAnswer: string, precision: PrecisionType) {
+	const blank: InstanceBlank = { expectedAnswer, type: 'math', precision };
+	const instance: QuestionInstance = {
+		templateId: 'test-rounding',
+		statement: 'Test' as ResolvedMarkdown,
+		blanks: [blank],
+		grades: ['6'],
+		theme: 'Test',
+		domain: 'Test',
+		level: 1,
+		generatedAt: new Date().toISOString()
+	};
+	return blankStatuses([answer], instance, [answer])[0];
 }
 
 const HUNDREDTH: PrecisionType = { type: 'decimal', digits: 2 };
@@ -134,5 +150,81 @@ describe('Arrondi : moitiés exactes malgré le flottant', () => {
 
 	it('valeur calculée bruitée (268 − 273,15 = −5,1499…) au dixième → −5,2', () => {
 		expect(roundToPrecision(268 - 273.15, { type: 'decimal', digits: 1 })).toBe(-5.2);
+	});
+});
+
+// Décision de David (2026-10-03) : trop de chiffres, mais l'arrondi de la
+// réponse (même règle que le moteur) redonne l'attendu → mauvaise forme, avec
+// la violation `rounding` ; sinon (troncature, calcul faux) → faux comme avant.
+describe('Trop de chiffres : mauvaise forme si l’arrondi de la réponse redonne l’attendu', () => {
+	it('décimal : 1,136 pour 1,136 au centième → bad_form, violation rounding, message', () => {
+		const result = check('1{,}136', '1.136', HUNDREDTH);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe('Arrondis au centième.');
+		expect(result.constraintViolations).toEqual([
+			{ constraint: 'rounding', severity: 'error', feedback: 'Arrondis au centième.' }
+		]);
+	});
+
+	it('décimal : 3,140 pour 3,14159 au centième → bad_form', () => {
+		const result = check('3{,}140', '3.14159', HUNDREDTH);
+		expect(result.status).toBe('bad_form');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);
+	});
+
+	it('décimal : troncature fausse 1,13 pour 1,136 → incorrect (pas de violation)', () => {
+		const result = check('1{,}13', '1.136', HUNDREDTH);
+		expect(result.isCorrect).toBe(false);
+		expect(statusOf('1{,}13', '1.136', HUNDREDTH)).toBe('incorrect');
+		expect(result.constraintViolations ?? []).toEqual([]);
+	});
+
+	it('décimal : trop de chiffres ET faux (1,131 pour 1,136) → incorrect, message conservé', () => {
+		const result = check('1{,}131', '1.136', HUNDREDTH);
+		expect(result.isCorrect).toBe(false);
+		expect(statusOf('1{,}131', '1.136', HUNDREDTH)).toBe('incorrect');
+		expect(result.feedback).toBe('Arrondis au centième.');
+		expect(result.constraintViolations ?? []).toEqual([]);
+	});
+
+	it('décimal : nombre de chiffres exact (1,14) → correct, inchangé', () => {
+		const result = check('1{,}14', '1.136', HUNDREDTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.status).toBe('correct');
+	});
+
+	it('décimal : moins de chiffres (3,1 pour 3,10) → correct, inchangé', () => {
+		const result = check('3{,}1', '3.1', HUNDREDTH);
+		expect(result.isCorrect).toBe(true);
+		expect(result.status).toBe('correct');
+	});
+
+	const THREE: PrecisionType = { type: 'significant', digits: 3 };
+
+	it('significatif : 0,01234 pour 0,0123456 à 3 c.s. → bad_form, violation rounding', () => {
+		expect(statusOf('0{,}01234', '0.0123456', THREE)).toBe('bad_form');
+		const result = check('0{,}01234', '0.0123456', THREE);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);
+	});
+
+	// Double arrondi : 0,01235 (4 c.s. justes) s'arrondit en 0,0124 ≠ 0,0123
+	it('significatif : 0,01235 pour 0,0123456 à 3 c.s. → incorrect (double arrondi)', () => {
+		expect(statusOf('0{,}01235', '0.0123456', THREE)).toBe('incorrect');
+	});
+
+	it('significatif : 0,01239 pour 0,0123456 à 3 c.s. → incorrect, message conservé', () => {
+		const result = check('0{,}01239', '0.0123456', THREE);
+		expect(result.isCorrect).toBe(false);
+		expect(statusOf('0{,}01239', '0.0123456', THREE)).toBe('incorrect');
+		expect(result.feedback).toBe('Donne 3 chiffres significatifs.');
+	});
+
+	it('significatif : nombre exact (1,23) → correct ; moins (1,2 pour 1,20) → correct', () => {
+		expect(check('1{,}23', '1.23456', THREE).status).toBe('correct');
+		expect(check('1{,}2', '1.2', THREE).status).toBe('correct');
 	});
 });

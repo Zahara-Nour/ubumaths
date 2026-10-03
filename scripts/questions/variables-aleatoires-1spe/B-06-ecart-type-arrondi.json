@@ -314,7 +314,8 @@
 			},
 			"answers": ["1,136"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{

@@ -2,11 +2,16 @@
  * Arrondis demandés à l'élève (`precision` decimal / significant)
  * ===============================================================
  *
- * La réponse de l'élève n'est PAS arrondie avant comparaison (sinon 3,14159
+ * La réponse de l'élève n'est PAS arrondie pour être jugée juste (sinon 3,14159
  * passait pour « arrondis au centième ») :
  *
- * - plus de décimales (resp. de chiffres significatifs) que demandé → faux,
- *   avec un message qui dit quoi faire (« Arrondis au centième. ») ;
+ * - plus de décimales (resp. de chiffres significatifs) que demandé, mais la
+ *   réponse, arrondie à la précision demandée (même règle que l'attendu),
+ *   redonne l'attendu (1,136 pour « au centième » de 1,136) → MAUVAISE FORME
+ *   (`bad_form`, violation `rounding`, 0 point), avec un message qui dit quoi
+ *   faire (« Arrondis au centième. ») — décision de David, 2026-10-03 ;
+ * - plus de chiffres que demandé, et une valeur qui ne s'arrondit pas en
+ *   l'attendu (troncature, calcul faux) → faux, avec le même message ;
  * - moins de décimales → accepté si la valeur est EXACTEMENT l'arrondi de la
  *   valeur attendue (3,1 pour 3,10).
  *
@@ -33,6 +38,11 @@ interface DecimalWriting {
 export interface RoundingVerdict {
 	isCorrect: boolean;
 	feedback?: string;
+	/**
+	 * Trop de chiffres, mais la réponse arrondie redonne l'attendu : seul
+	 * l'arrondi manque → mauvaise forme (violation `rounding`), pas faux
+	 */
+	onlyRoundingMissing?: boolean;
 }
 
 // ============================================================================
@@ -135,17 +145,29 @@ export function judgeRounding(
 	expectedValue: number,
 	precision: RoundingPrecision
 ): RoundingVerdict {
+	const rounded = roundToPrecision(expectedValue, precision);
+
 	const writing = readDecimalWriting(studentLatex);
 	if (writing) {
 		const typed = precision.type === 'decimal' ? writing.decimals : writing.significant;
 		if (typed > precision.digits) {
-			return { isCorrect: false, feedback: roundingFeedback(precision) };
+			const onlyRoundingMissing = sameRoundedValue(
+				roundToPrecision(studentValue, precision),
+				rounded
+			);
+			return {
+				isCorrect: false,
+				feedback: roundingFeedback(precision),
+				...(onlyRoundingMissing ? { onlyRoundingMissing } : {})
+			};
 		}
 	}
 
-	const rounded = roundToPrecision(expectedValue, precision);
-	const scale = Math.max(Math.abs(rounded), Math.abs(studentValue));
-	const isCorrect =
-		studentValue === rounded || Math.abs(studentValue - rounded) <= SAME_ROUNDED_VALUE * scale;
-	return { isCorrect };
+	return { isCorrect: sameRoundedValue(studentValue, rounded) };
+}
+
+/** Deux arrondis égaux, au bruit du flottant près */
+export function sameRoundedValue(a: number, b: number): boolean {
+	const scale = Math.max(Math.abs(a), Math.abs(b));
+	return a === b || Math.abs(a - b) <= SAME_ROUNDED_VALUE * scale;
 }

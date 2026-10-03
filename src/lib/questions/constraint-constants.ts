@@ -1,7 +1,8 @@
-import type { ConstraintId } from './types';
+import type { ConfigurableConstraintId, ConstraintId } from './types';
 import { DEFAULT_CONSTRAINT_MODE, DEFAULT_FORM_CONSTRAINT_MODE } from './types';
 
-export const CONSTRAINT_IDS: ConstraintId[] = [
+/** Contraintes réglables par modèle (`rounding`, toujours exigée, n'en est pas) */
+export const CONSTRAINT_IDS: ConfigurableConstraintId[] = [
 	'spaces',
 	'products',
 	'brackets',
@@ -30,7 +31,8 @@ export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
 	reducedFractions: 'Fractions irréductibles',
 	percent: 'Pourcentage',
 	unit: 'Unité',
-	intervalForm: 'Écriture d’un ensemble (intervalles)'
+	intervalForm: 'Écriture d’un ensemble (intervalles)',
+	rounding: 'Arrondi demandé'
 };
 
 export const CONSTRAINT_MODE_OPTIONS = [

@@ -25,7 +25,12 @@ import { compareQuantities, type Tolerance } from './ce-integration';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
 import { convertAffine } from '$lib/mathAST/units/conversion';
-import { judgeRounding, roundToPrecision, roundingFeedback } from '$lib/questions/rounding';
+import {
+	judgeRounding,
+	roundToPrecision,
+	roundingFeedback,
+	type RoundingVerdict
+} from '$lib/questions/rounding';
 
 // ============================================================================
 // TYPES
@@ -55,6 +60,11 @@ export interface ValidationResult {
 	 * (« Arrondis au centième. »).
 	 */
 	roundingAtFault?: boolean;
+	/**
+	 * Arrondi en cause ET réponse qui, arrondie, redonne l'attendu : seul
+	 * l'arrondi manque → mauvaise forme (violation `rounding`, cf. questions/rounding)
+	 */
+	onlyRoundingMissing?: boolean;
 	/**
 	 * Durée composée lue (« 2 h 15 min ») : défaut de FORME à signaler si la
 	 * valeur est juste (perfectible ou mauvaise forme, cf. `./composite-duration`).
@@ -121,7 +131,7 @@ function judgeRoundedQuantity(
 	expectedValue: number,
 	precision: Extract<PrecisionType, { type: 'decimal' | 'significant' | 'magnitude' }>,
 	numericLatex: string | null
-): { isCorrect: boolean; feedback?: string } {
+): RoundingVerdict {
 	if (precision.type === 'magnitude') {
 		const scale = 10 ** precision.digits;
 		const user = Math.round(userValueInExpectedUnit / scale) * scale;
@@ -143,7 +153,7 @@ function judgeRoundedQuantity(
 	const roundedExpected = roundToPrecision(expectedValue, precision);
 	const scale = Math.max(Math.abs(roundedUser), Math.abs(roundedExpected));
 	if (Math.abs(roundedUser - roundedExpected) <= SAME_ROUNDED_VALUE * scale) {
-		return { isCorrect: false, feedback: roundingFeedback(precision) };
+		return { isCorrect: false, feedback: roundingFeedback(precision), onlyRoundingMissing: true };
 	}
 	return verdict;
 }
@@ -162,7 +172,7 @@ function isPureOffsetConversion(
 
 /** Résultat d'une grandeur arrondie, à partir du verdict d'arrondi */
 function roundedQuantityResult(
-	verdict: { isCorrect: boolean; feedback?: string },
+	verdict: RoundingVerdict,
 	parsed: NonNullable<ValidationResult['parsed']>,
 	expected: NonNullable<ValidationResult['expected']>,
 	duration: ReturnType<typeof readCompositeDuration> | null
@@ -173,6 +183,7 @@ function roundedQuantityResult(
 			feedback: verdict.feedback,
 			errorType: 'wrong_value',
 			roundingAtFault: true,
+			...(verdict.onlyRoundingMissing ? { onlyRoundingMissing: true } : {}),
 			parsed,
 			expected
 		};

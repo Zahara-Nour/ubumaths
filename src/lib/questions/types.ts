@@ -895,8 +895,15 @@ export type ValidationStatus = 'correct' | 'unoptimal_form' | 'bad_form' | 'inco
 
 /**
  * Constraint types that can be checked on answers
+ *
+ * `rounding` : arrondi demandé (`precision`) non fait, alors que la réponse
+ * arrondie redonne l'attendu (cf. questions/rounding). Toujours `bad_form` :
+ * il n'a pas de réglage par modèle (absent de `ConstraintOptions`).
  */
-export type ConstraintId =
+export type ConstraintId = ConfigurableConstraintId | 'rounding';
+
+/** Contraintes réglables par modèle (`options.constraints`) */
+export type ConfigurableConstraintId =
 	| 'spaces'
 	| 'products'
 	| 'brackets'

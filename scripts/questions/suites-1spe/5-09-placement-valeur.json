@@ -271,7 +271,8 @@
 			},
 			"answers": ["1\\,159{,}274"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -349,7 +350,8 @@
 			},
 			"answers": ["6\\,094{,}97"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{

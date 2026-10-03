@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { validateQuantityAnswer } from '../validator';
-import { validateAnswer } from '$lib/utils/answer-validator';
+import { blankStatuses, validateAnswer } from '$lib/utils/answer-validator';
 import type { PrecisionType, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -213,5 +213,38 @@ describe('Température décalée : bruit flottant sur les moitiés', () => {
 		const bad = validateQuantityAnswer(`${wrong}\\unit{°C}`, expected, TENTH);
 		expect(bad.isCorrect).toBe(false);
 		expect(bad.feedback).toBe('Valeur incorrecte.');
+	});
+});
+
+// Décision de David (2026-10-03) : trop de chiffres mais bon arrondi → mauvaise forme
+describe('Case à unité, trop de chiffres : mauvaise forme si l’arrondi redonne l’attendu', () => {
+	function unitInstance(expectedAnswer: string): QuestionInstance {
+		return {
+			templateId: 'test-unit-rounding-bad-form',
+			statement: 'Test' as ResolvedMarkdown,
+			blanks: [{ expectedAnswer, type: 'math', unit: { expected: true }, precision: HUNDREDTH }],
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			generatedAt: new Date().toISOString()
+		};
+	}
+
+	it('3,14159 m pour 3,14159 m au centième → bad_form, violation rounding', () => {
+		const answer = '3{,}14159\\unit{m}';
+		const result = validateAnswer([answer], unitInstance('3.14159\\unit{m}'), [answer]);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe('Arrondis au centième.');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);
+	});
+
+	it('3,131 m pour 3,14159 m au centième → incorrect, message conservé', () => {
+		const answer = '3{,}131\\unit{m}';
+		const instance = unitInstance('3.14159\\unit{m}');
+		const result = validateAnswer([answer], instance, [answer]);
+		expect(result.isCorrect).toBe(false);
+		expect(blankStatuses([answer], instance, [answer])[0]).toBe('incorrect');
+		expect(result.feedback).toBe('Arrondis au centième.');
 	});
 });

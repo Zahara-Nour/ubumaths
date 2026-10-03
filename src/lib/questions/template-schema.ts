@@ -115,7 +115,8 @@ export const constraintIdSchema = z.enum([
 	'reducedFractions',
 	'percent',
 	'unit',
-	'intervalForm'
+	'intervalForm',
+	'rounding'
 ]);
 
 export const testSpecExpectedSchema = z.object({

@@ -69,7 +69,8 @@
 		{ value: 'factorZero', label: 'factorZero' },
 		{ value: 'reducedFractions', label: 'reducedFractions' },
 		{ value: 'unit', label: 'unit' },
-		{ value: 'intervalForm', label: 'intervalForm' }
+		{ value: 'intervalForm', label: 'intervalForm' },
+		{ value: 'rounding', label: 'rounding' }
 	];
 
 	function makeEmptySpec(): TestSpec {
