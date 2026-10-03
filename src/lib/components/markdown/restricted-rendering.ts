@@ -57,7 +57,8 @@ export function readRestrictedRendering(): FlagGetter {
  * `padding`, `shadow` ; `\bbox`). Et les définitions de macros, qui
  * permettraient de les cacher.
  */
-const UNSAFE_MATH_COMMANDS = [
+export const UNSAFE_MATH_COMMANDS = [
+	// Style, classes, attributs, liens : posés tels quels dans le DOM
 	'htmlStyle',
 	'style',
 	'class',
@@ -69,6 +70,30 @@ const UNSAFE_MATH_COMMANDS = [
 	'url',
 	'enclose',
 	'bbox',
+	// Couleurs : une couleur non reconnue est recopiée TELLE QUELLE dans `style=`
+	// (`\colorbox{zz;background-image:url(…)}` — audit du 2026-10-03)
+	'color',
+	'textcolor',
+	'colorbox',
+	'fcolorbox',
+	// Polices : la valeur devient `font-family` / `font-weight` / `font-style`
+	'fontfamily',
+	'fontseries',
+	'fontshape',
+	// Dimensions et déplacements : une valeur libre finit en marge / position
+	'raise',
+	'lower',
+	'raisebox',
+	'rule',
+	'hskip',
+	'hspace',
+	'hspace*',
+	'kern',
+	'mkern',
+	'mskip',
+	'mspace',
+	'the',
+	// Définitions de macros : contourneraient toute liste
 	'def',
 	'gdef',
 	'edef',
@@ -81,8 +106,33 @@ const UNSAFE_MATH_COMMANDS = [
 	'csname'
 ] as const;
 
+/**
+ * Commandes MathLive à argument libre EXAMINÉES et sûres : l'argument n'atteint
+ * jamais un style ni un attribut. Accents (un caractère), code de caractère,
+ * option d'alignement (`\cfrac[l]`, `\smash[t]`).
+ * Garde : `mathlive-commandes-a-valeur.test.ts` échoue si MathLive ajoute une
+ * commande à argument libre absente des deux listes.
+ */
+export const REVIEWED_SAFE_MATH_COMMANDS = [
+	"'",
+	'.',
+	'=',
+	'^',
+	'`',
+	'~',
+	'c',
+	'char',
+	'unicode',
+	'cfrac',
+	'smash'
+] as const;
+
 // `\nom` suivi d'autre chose qu'une lettre (`\displaystyle` ≠ `\style`)
-const UNSAFE_MATH_REGEX = new RegExp(`\\\\(?:${UNSAFE_MATH_COMMANDS.join('|')})(?![A-Za-z])`);
+// Les noms peuvent contenir `*` (`hspace*`) : échappés pour la regex
+const escapeRegex = (name: string): string => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const UNSAFE_MATH_REGEX = new RegExp(
+	`\\\\(?:${UNSAFE_MATH_COMMANDS.map(escapeRegex).join('|')})(?![A-Za-z])`
+);
 
 /** La formule contient-elle une commande interdite en mode restreint ? */
 export function hasUnsafeMathCommand(latex: string): boolean {

@@ -162,6 +162,13 @@ describe('Chat — mode restreint (S1)', () => {
 		['\\htmlData', '\\htmlData{a=b}{x}'],
 		['\\style', `\\style{background:url(https://${HOTE}/p.png)}{x}`],
 		['\\enclose', `\\enclose{box}[mathbackground="url(https://${HOTE}/p.png)"]{x}`],
+		// Audit S1 (2026-10-03) : MathLive recopie une couleur non reconnue telle
+		// quelle dans `style=` — même fuite que \htmlStyle.
+		['\\color', `\\color{zz;background-image:url(https://${HOTE}/c.png)}x`],
+		['\\textcolor', `\\textcolor{zz;background-image:url(https://${HOTE}/c.png)}{x}`],
+		['\\colorbox', `\\colorbox{zz;background-image:url(https://${HOTE}/c.png)}{x}`],
+		['\\fcolorbox', `\\fcolorbox{zz}{zz;background-image:url(https://${HOTE}/c.png)}{x}`],
+		['\\fontfamily', `\\fontfamily{x;background-image:url(https://${HOTE}/f.png)}x`],
 		// Avec une case à remplir : rendu par MathPrompt (<math-field>), pas MathInline
 		[
 			'\\placeholder + \\htmlStyle',

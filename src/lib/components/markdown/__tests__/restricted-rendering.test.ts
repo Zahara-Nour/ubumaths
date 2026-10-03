@@ -33,7 +33,11 @@ describe('hasUnsafeMathCommand', () => {
 		'\\bbox[red]{x}',
 		'\\def\\a{b}',
 		'\\newcommand{\\a}{b}',
-		'x+\\htmlStyle {a}{b}'
+		'x+\\htmlStyle {a}{b}',
+		'\\color{red}x',
+		'\\colorbox{zz;background-image:url(https://a.b/c.png)}{x}',
+		'\\fontfamily{x}y',
+		'\\hspace*{1cm}'
 	])('refuse %s', (latex) => {
 		expect(hasUnsafeMathCommand(latex)).toBe(true);
 	});
@@ -43,7 +47,8 @@ describe('hasUnsafeMathCommand', () => {
 		'\\frac{1}{2}',
 		'\\displaystyle\\sum_i i',
 		'\\textstyle x',
-		'\\color{red}x',
+		// \color n'est plus admis : une couleur non reconnue est recopiée telle
+		// quelle dans `style=` (audit du 2026-10-03) — testé avec les refusées
 		'\\boxed{x}',
 		'\\hrefx'
 	])('admet %s', (latex) => {
