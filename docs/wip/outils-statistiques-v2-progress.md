@@ -234,3 +234,5 @@ Manche 10 (2026-10-03), bloc ```effectifs (tableau de dépouillement, Q107) — 
 
 PR prévues : (a) bloc, données, lignes, totaux, sens, langue (Q125-Q129, Q133) ; (b) `masquer:`,
 `indicateurs:` (Q130-Q131).
+
+- **Bloc effectifs, PR (a) livrée #718** (2026-10-03). Reste : PR (b) `masquer:` + `indicateurs:` (Q130-Q131), spec à proposer.
