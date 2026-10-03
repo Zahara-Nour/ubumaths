@@ -14,6 +14,7 @@
  */
 
 import type { FigureSize } from '../types/figure';
+import { FIGURE_AXES_MARGIN_PX, FIGURE_LABEL_FONT_PX, FIGURE_PIXEL_WIDTH } from '../types/figure';
 import { FIGURE_DEFAULT_COLOR, FIGURE_HEX_COLOR, type FigureScene } from './figure-scene';
 import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import {
@@ -90,35 +91,127 @@ export type FigureShape =
 			italic: boolean;
 	  });
 
+/** Trait du repère, en px de la fenêtre (origine en haut à gauche de la fenêtre) */
+export interface FrameSegment {
+	x1: number;
+	y1: number;
+	x2: number;
+	y2: number;
+}
+
+/**
+ * Repère à l'écran (mêmes mesures que ```courbe), en px de la FENÊTRE : les
+ * flèches et les étiquettes peuvent sortir de [0 ; width] × [0 ; height], dans
+ * la marge.
+ */
+export interface FigureFrameSvg {
+	gridLines: FrameSegment[];
+	axisLines: FrameSegment[];
+	/** Pointes de flèche (attribut `points` d'un polygone) */
+	arrowheads: string[];
+	tickLines: FrameSegment[];
+	/** Étiquettes de graduation et « O » ; `middle` sous l'axe des abscisses, `end` à gauche */
+	tickLabels: { x: number; y: number; text: string; anchor: 'middle' | 'end' }[];
+}
+
 export interface FigureSvg {
+	/** Taille de la fenêtre, en px */
 	width: number;
 	height: number;
 	shapes: FigureShape[];
+	/** Marge autour de la fenêtre (axes) ; absente sans repère */
+	margin?: number;
+	/** Axes et grille ; absent sans repère (rendu historique inchangé) */
+	frame?: FigureFrameSvg;
 }
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
-/** Largeur à l'écran par taille, en px (comme ```courbe) ; la hauteur suit (isotrope). */
-export const FIGURE_PIXEL_WIDTH: Record<FigureSize, number> = {
-	petite: 280,
-	moyenne: 400,
-	grande: 560
-};
-
-/**
- * Taille des noms et textes à l'écran, en px : DOIT valoir le `font-size` de
- * `.figure-etiquette` (`FigureBlockView.svelte`) — le placement en dépend.
- */
-export const FIGURE_LABEL_FONT_PX = 13;
+export { FIGURE_LABEL_FONT_PX, FIGURE_PIXEL_WIDTH };
 
 /** Couleur par défaut des objets (noire au PDF) : couleur du texte à l'écran, claire ou sombre. */
 const SCREEN_DEFAULT_COLOR = 'var(--color-foreground)';
 
+/** Mesures du repère à l'écran, en px : celles de `Courbe.svelte` */
+const AXIS_OVERSHOOT_PX = 8;
+const ARROW_TIP_PX = 12;
+const ARROW_BASE_PX = 5;
+const ARROW_HALF_WIDTH_PX = 3.5;
+const TICK_HALF_PX = 3;
+const X_TICK_LABEL_DY_PX = 13;
+const Y_TICK_LABEL_DX_PX = 5;
+const Y_TICK_LABEL_DY_PX = 3.5;
+
 // ============================================================================
 // FORMES
 // ============================================================================
+
+/** Repère (grille, axes, graduations) en px de la fenêtre. */
+function frameToSvg(
+	frame: NonNullable<FigureScene['frame']>,
+	toPx: (x: number, y: number) => { x: number; y: number },
+	width: number,
+	height: number
+): FigureFrameSvg {
+	const out: FigureFrameSvg = {
+		gridLines: [],
+		axisLines: [],
+		arrowheads: [],
+		tickLines: [],
+		tickLabels: []
+	};
+	const r = (n: number) => Math.round(n * 100) / 100;
+	if (frame.grid) {
+		for (const x of frame.grid.xs) {
+			const px = r(toPx(x, 0).x);
+			out.gridLines.push({ x1: px, y1: 0, x2: px, y2: height });
+		}
+		for (const y of frame.grid.ys) {
+			const py = r(toPx(0, y).y);
+			out.gridLines.push({ x1: 0, y1: py, x2: width, y2: py });
+		}
+	}
+	const axes = frame.axes;
+	if (!axes) return out;
+	const ax = r(toPx(0, axes.xAxisY).y);
+	const ay = r(toPx(axes.yAxisX, 0).x);
+	out.axisLines.push({ x1: 0, y1: ax, x2: width + AXIS_OVERSHOOT_PX, y2: ax });
+	out.axisLines.push({ x1: ay, y1: height, x2: ay, y2: -AXIS_OVERSHOOT_PX });
+	out.arrowheads.push(
+		`${width + ARROW_TIP_PX},${ax} ${width + ARROW_BASE_PX},${ax - ARROW_HALF_WIDTH_PX} ${width + ARROW_BASE_PX},${ax + ARROW_HALF_WIDTH_PX}`,
+		`${ay},${-ARROW_TIP_PX} ${ay - ARROW_HALF_WIDTH_PX},${-ARROW_BASE_PX} ${ay + ARROW_HALF_WIDTH_PX},${-ARROW_BASE_PX}`
+	);
+	for (const t of axes.ticks.x) {
+		const x = r(toPx(t.value, 0).x);
+		out.tickLines.push({ x1: x, y1: ax - TICK_HALF_PX, x2: x, y2: ax + TICK_HALF_PX });
+		if (t.label !== null) {
+			out.tickLabels.push({ x, y: ax + X_TICK_LABEL_DY_PX, text: t.label, anchor: 'middle' });
+		}
+	}
+	for (const t of axes.ticks.y) {
+		const y = r(toPx(0, t.value).y);
+		out.tickLines.push({ x1: ay - TICK_HALF_PX, y1: y, x2: ay + TICK_HALF_PX, y2: y });
+		if (t.label !== null) {
+			out.tickLabels.push({
+				x: ay - Y_TICK_LABEL_DX_PX,
+				y: y + Y_TICK_LABEL_DY_PX,
+				text: t.label,
+				anchor: 'end'
+			});
+		}
+	}
+	if (axes.originLabel) {
+		out.tickLabels.push({
+			x: ay - Y_TICK_LABEL_DX_PX,
+			y: ax + X_TICK_LABEL_DY_PX,
+			text: 'O',
+			anchor: 'end'
+		});
+	}
+	return out;
+}
 
 /**
  * Couleur posée dans `style:` : Svelte la concatène dans `cssText` SANS
@@ -298,5 +391,12 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 		});
 	}
 
-	return { width, height, shapes };
+	if (!scene.frame) return { width, height, shapes };
+	return {
+		width,
+		height,
+		shapes,
+		margin: scene.frame.axes ? FIGURE_AXES_MARGIN_PX : 0,
+		frame: frameToSvg(scene.frame, (x, y) => transformer.mathToSvg(x, y), width, height)
+	};
 }

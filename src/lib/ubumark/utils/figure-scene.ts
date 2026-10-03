@@ -18,8 +18,28 @@
  * @module ubumark/utils/figure-scene
  */
 
-import type { FigureIssue, FigureNode } from '../types/figure';
-import { FIGURE_LIMITS } from '../types/figure';
+import type {
+	FigureIssue,
+	FigureNode,
+	FigureSize,
+	FigureStep,
+	FigureWindow
+} from '../types/figure';
+import {
+	FIGURE_LABEL_FONT_PX,
+	FIGURE_LIMITS,
+	FIGURE_PIXEL_WIDTH,
+	FIGURE_WIDTH_CM
+} from '../types/figure';
+import {
+	CAP_HEIGHT_EM,
+	labelDirection,
+	labelOffset,
+	type Direction
+} from '$lib/geometry-core/rendering/label-placement';
+import { resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
+import type { ContentLocale } from '$lib/types/locale';
+import { formatTick, multiples } from './courbe-scene';
 import { parse } from '$lib/geometry-core/dsl/parser';
 import { interpret } from '$lib/geometry-core/dsl/interpreter';
 import { DslParseError, DslRuntimeError } from '$lib/geometry-core/dsl/errors';
@@ -42,8 +62,38 @@ import type { Viewport } from '$lib/geometry-core/viewport/types';
 // TYPES
 // ============================================================================
 
+/** Graduation d'un axe ; `label` null : tracée sans étiquette (graduations serrées) */
+export interface FigureTick {
+	value: number;
+	label: string | null;
+}
+
+/** Repère de la figure (`axes:`, `grille:` de l'en-tête), en coordonnées mathématiques */
+export interface FigureFrame {
+	/** Abscisses et ordonnées des lignes de grille ; null sans `grille:` */
+	grid: { xs: number[]; ys: number[] } | null;
+	/** null sans `axes: oui` */
+	axes: {
+		/** Position des axes : 0 s'il est dans la fenêtre, sinon le bord le plus proche (```courbe) */
+		xAxisY: number;
+		yAxisX: number;
+		/** Origine visible : le 0 n'est pas écrit */
+		originVisible: boolean;
+		/** Étiquette « O » écrite : origine visible et aucun point nommé dessus (`O = point(0, 0)`) */
+		originLabel: boolean;
+		ticks: { x: FigureTick[]; y: FigureTick[] };
+	} | null;
+}
+
+export interface FigureSceneOptions {
+	/** Séparateur décimal des graduations : virgule en français (défaut), point en anglais */
+	locale?: ContentLocale;
+}
+
 export interface FigureScene {
 	figure: Figure;
+	/** Axes et grille ; null sans `axes:` ni `grille:` (rendu historique) */
+	frame: FigureFrame | null;
 	viewport: Viewport;
 	/** Éléments VISIBLES, dans l'ordre de création (tous dans la liste blanche) */
 	elements: GeoElement[];
@@ -486,7 +536,7 @@ const TYPE_WORDS: Record<string, [string, string]> = {
 	angle: ['angle', 'angles']
 };
 
-function autoAriaLabel(elements: GeoElement[]): string {
+function autoAriaLabel(elements: GeoElement[], inFrame: boolean): string {
 	const pointNames = elements.filter((e) => isPointElement(e) && e.label).map((e) => e.label);
 	const counts = new Map<string, [string, string, number]>();
 	for (const el of elements) {
@@ -506,7 +556,212 @@ function autoAriaLabel(elements: GeoElement[]): string {
 	for (const [singular, plural, n] of counts.values()) {
 		parts.push(`${n} ${n > 1 ? plural : singular}`);
 	}
-	return parts.length > 0 ? `Figure géométrique : ${parts.join(', ')}` : 'Figure géométrique';
+	const title = inFrame ? 'Figure géométrique dans un repère' : 'Figure géométrique';
+	return parts.length > 0 ? `${title} : ${parts.join(', ')}` : title;
+}
+
+// ============================================================================
+// REPÈRE
+// ============================================================================
+
+const EPSILON = 1e-9;
+
+/**
+ * Écart minimal entre deux étiquettes de graduation : la largeur de « −10 »
+ * et un peu plus (abscisses), deux hauteurs de chiffre (ordonnées). Plus
+ * serrées — à l'écran OU au PDF —, une graduation sur 2 (sur 3…) reçoit son étiquette.
+ */
+const MIN_TICK_LABEL_GAP = { xChars: 3.7, yHeights: 2 } as const;
+
+/** Nom de point dessiné : de quoi calculer sa boîte à l'écran et au PDF */
+export interface NamedPoint {
+	x: number;
+	y: number;
+	label: string;
+	dir: Direction;
+	/** Rayon du point à l'écran, en px (l'écart du nom en dépend) */
+	pointSize: number;
+}
+
+/** Boîte en coordonnées mathématiques (y vers le haut) */
+interface Box {
+	x1: number;
+	y1: number;
+	x2: number;
+	y2: number;
+}
+
+function overlaps(a: Box, b: Box): boolean {
+	return a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
+}
+
+/**
+ * Mesures des étiquettes sur un support, dans l'unité du support (px à
+ * l'écran, cm au PDF). L'écran : `figure-svg.ts` + `FigureBlockView.svelte`
+ * (graduations 10 px, noms 13 px) ; le PDF : `figure-typst.ts` + `exportToTypst`
+ * (graduations 6,5 pt, noms dans la police du document, 11 pt). Les tailles
+ * de texte RELATIVES à la figure ne sont pas les mêmes (≈ × 1,5 au PDF) : une
+ * étiquette de graduation est omise si elle chevauche un nom sur l'UN des deux.
+ */
+interface LabelMetrics {
+	/** Longueur d'une unité du repère */
+	perUnit: number;
+	nameGap: (pointSize: number) => { gap: number; diagonal: number };
+	nameCharWidth: number;
+	nameHeight: number;
+	tickCharWidth: number;
+	tickHeight: number;
+	/** Distance axe des abscisses → haut de l'étiquette */
+	xTickGap: number;
+	/** Distance axe des ordonnées → bord droit de l'étiquette */
+	yTickGap: number;
+	/** Espace gardé entre une étiquette de graduation et un nom */
+	pad: number;
+}
+
+const CM_PER_PT = 2.54 / 72;
+
+function screenMetrics(size: FigureSize, w: FigureWindow): LabelMetrics {
+	return {
+		perUnit: FIGURE_PIXEL_WIDTH[size] / (w.xMax - w.xMin),
+		nameGap: (pointSize) => ({ gap: pointSize + 3, diagonal: pointSize + 2 }),
+		nameCharWidth: 8,
+		nameHeight: CAP_HEIGHT_EM * FIGURE_LABEL_FONT_PX,
+		tickCharWidth: 6,
+		tickHeight: CAP_HEIGHT_EM * 10,
+		// Ligne de base à 13 px sous l'axe ; étiquettes à 5 px à gauche (`figure-svg.ts`)
+		xTickGap: 13 - CAP_HEIGHT_EM * 10,
+		yTickGap: 5,
+		pad: 2
+	};
+}
+
+function pdfMetrics(size: FigureSize, w: FigureWindow): LabelMetrics {
+	return {
+		perUnit: FIGURE_WIDTH_CM[size] / (w.xMax - w.xMin),
+		// `LABEL_GAP` / `LABEL_GAP_DIAGONAL_Y` d'`exportToTypst`, en cm sur la page
+		nameGap: () => ({ gap: 0.15, diagonal: 0.125 }),
+		nameCharWidth: 0.55 * 11 * CM_PER_PT,
+		nameHeight: CAP_HEIGHT_EM * 11 * CM_PER_PT,
+		tickCharWidth: 0.55 * 6.5 * CM_PER_PT,
+		tickHeight: CAP_HEIGHT_EM * 6.5 * CM_PER_PT,
+		xTickGap: 0.1,
+		yTickGap: 0.1,
+		pad: 0.05
+	};
+}
+
+/** Boîte d'un texte écrit dans la direction `dir` depuis (x, y), comme `svgTextPlacement` / `cetzAnchor` */
+function textBox(x: number, y: number, dir: Direction, width: number, height: number): Box {
+	const x1 = dir.ux > 0 ? x : dir.ux < 0 ? x - width : x - width / 2;
+	const y1 = dir.uy > 0 ? y : dir.uy < 0 ? y - height : y - height / 2;
+	return { x1, y1, x2: x1 + width, y2: y1 + height };
+}
+
+function nameBox(p: NamedPoint, m: LabelMetrics): Box {
+	const { gap, diagonal } = m.nameGap(p.pointSize);
+	const off = labelOffset(p.dir, gap / m.perUnit, diagonal / m.perUnit);
+	return textBox(
+		p.x + off.dx,
+		p.y + off.dy,
+		p.dir,
+		(p.label.length * m.nameCharWidth) / m.perUnit,
+		m.nameHeight / m.perUnit
+	);
+}
+
+function tickBox(
+	axis: 'x' | 'y',
+	value: number,
+	text: string,
+	axisAt: number,
+	m: LabelMetrics
+): Box {
+	const width = (text.length * m.tickCharWidth) / m.perUnit;
+	const height = m.tickHeight / m.perUnit;
+	const box =
+		axis === 'x'
+			? textBox(value, axisAt - m.xTickGap / m.perUnit, { ux: 0, uy: -1 }, width, height)
+			: textBox(axisAt - m.yTickGap / m.perUnit, value, { ux: -1, uy: 0 }, width, height);
+	const pad = m.pad / m.perUnit;
+	return { x1: box.x1 - pad, y1: box.y1 - pad, x2: box.x2 + pad, y2: box.y2 + pad };
+}
+
+/** Noms de points visibles (même table de placement que l'écran et le PDF) */
+function namedPoints(
+	figure: Figure,
+	elements: GeoElement[],
+	positions: Map<string, { x: number; y: number }>
+): NamedPoint[] {
+	const named: NamedPoint[] = [];
+	for (const el of elements) {
+		if (!isPointElement(el) || !el.label || el.labelHidden) continue;
+		const pos = positions.get(el.id);
+		if (!pos) continue;
+		named.push({
+			...pos,
+			label: el.label,
+			dir: labelDirection(el.labelPosition),
+			pointSize: resolveStyle(el, figure.defaults).pointSize
+		});
+	}
+	return named;
+}
+
+/** Repère de l'en-tête, ou null sans axes ni grille. */
+export function buildFigureFrame(
+	header: { axes: boolean; grid: FigureStep | null; ticks: FigureStep | false | null },
+	w: FigureWindow,
+	size: FigureSize,
+	locale: ContentLocale = 'fr',
+	/** Noms de points : une étiquette de graduation qui en chevauche un est omise */
+	names: NamedPoint[] = []
+): FigureFrame | null {
+	if (!header.axes && header.grid === null) return null;
+	const grid = header.grid
+		? { xs: multiples(header.grid.x, w.xMin, w.xMax), ys: multiples(header.grid.y, w.yMin, w.yMax) }
+		: null;
+	if (!header.axes) return { grid, axes: null };
+
+	const xAxisY = w.yMin <= 0 && 0 <= w.yMax ? 0 : w.yMin > 0 ? w.yMin : w.yMax;
+	const yAxisX = w.xMin <= 0 && 0 <= w.xMax ? 0 : w.xMin > 0 ? w.xMin : w.xMax;
+	const originVisible = xAxisY === 0 && yAxisX === 0;
+
+	const media = [screenMetrics(size, w), pdfMetrics(size, w)];
+	const hiddenByName = (axis: 'x' | 'y', value: number, text: string): boolean =>
+		media.some((m) => {
+			const box = tickBox(axis, value, text, axis === 'x' ? xAxisY : yAxisX, m);
+			return names.some((p) => overlaps(nameBox(p, m), box));
+		});
+	const ticksFor = (axis: 'x' | 'y', step: number, min: number, max: number): FigureTick[] => {
+		const stride = Math.max(
+			1,
+			...media.map((m) => {
+				const gap =
+					axis === 'x'
+						? MIN_TICK_LABEL_GAP.xChars * m.tickCharWidth
+						: MIN_TICK_LABEL_GAP.yHeights * m.tickHeight;
+				return Math.ceil(gap / (step * m.perUnit));
+			})
+		);
+		return multiples(step, min, max)
+			.filter((v) => !originVisible || Math.abs(v) > EPSILON)
+			.map((value) => {
+				if (Math.round(value / step) % stride !== 0) return { value, label: null };
+				const text = formatTick(value, locale);
+				return { value, label: hiddenByName(axis, value, text) ? null : text };
+			});
+	};
+	const step = header.ticks === null ? (header.grid ?? { x: 1, y: 1 }) : header.ticks;
+	const ticks = step
+		? {
+				x: ticksFor('x', step.x, w.xMin, w.xMax),
+				y: ticksFor('y', step.y, w.yMin, w.yMax)
+			}
+		: { x: [], y: [] };
+	const originLabel =
+		originVisible && !names.some((p) => Math.abs(p.x) < EPSILON && Math.abs(p.y) < EPSILON);
+	return { grid, axes: { xAxisY, yAxisX, originVisible, originLabel, ticks } };
 }
 
 // ============================================================================
@@ -526,7 +781,10 @@ const FIGURE_DEFAULTS = {
 	defaultPointSize: 3
 } as const;
 
-export function buildFigureScene(node: FigureNode): FigureSceneResult {
+export function buildFigureScene(
+	node: FigureNode,
+	options: FigureSceneOptions = {}
+): FigureSceneResult {
 	const warnings: FigureIssue[] = [];
 	if (node.errors.length > 0 || node.header.window === null) {
 		return { scene: null, errors: node.errors, warnings };
@@ -623,10 +881,17 @@ export function buildFigureScene(node: FigureNode): FigureSceneResult {
 	return {
 		scene: {
 			figure,
+			frame: buildFigureFrame(
+				node.header,
+				window,
+				node.header.size,
+				options.locale,
+				node.header.axes ? namedPoints(figure, elements, positions) : []
+			),
 			viewport: { ...window },
 			elements,
 			positions,
-			ariaLabel: node.header.description ?? autoAriaLabel(elements)
+			ariaLabel: node.header.description ?? autoAriaLabel(elements, node.header.axes)
 		},
 		errors: [],
 		warnings

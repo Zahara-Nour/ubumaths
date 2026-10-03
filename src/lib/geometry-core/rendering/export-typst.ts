@@ -40,6 +40,11 @@ export interface TypstExportOptions {
 	 * leur garde leur taille sur la page.
 	 */
 	markScale?: number;
+	/**
+	 * Lignes cetz dessinées SOUS les objets (après le cadre de la fenêtre), en
+	 * unités du repère : repère et grille d'un bloc ```figure. Vide par défaut.
+	 */
+	underlay?: readonly string[];
 }
 
 const MARK_RADIUS = 0.4;
@@ -144,6 +149,8 @@ export function exportToTypst(
 			`  rect(${c(viewport.xMin, viewport.yMin)}, ${c(viewport.xMax, viewport.yMax)}, stroke: none)`
 		);
 	}
+
+	if (options?.underlay) lines.push(...options.underlay);
 
 	// Grid
 	if (showGrid) {

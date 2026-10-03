@@ -22,7 +22,12 @@ import type { FigureNode } from '../types/figure';
 export const FIGURE_TYPST_UNAVAILABLE =
 	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';
 
-type FigureTypstRenderer = (node: FigureNode) => string;
+export interface FigureTypstOptions {
+	/** Langue du document : séparateur décimal des graduations */
+	language?: string;
+}
+
+type FigureTypstRenderer = (node: FigureNode, options?: FigureTypstOptions) => string;
 
 let renderer: FigureTypstRenderer | null = null;
 
@@ -32,6 +37,6 @@ export function registerFigureTypstRenderer(fn: FigureTypstRenderer): void {
 }
 
 /** Typst d'un bloc ```figure ; cadre neutre si aucun rendu n'est inscrit. */
-export function renderFigureTypst(node: FigureNode): string {
-	return renderer ? renderer(node) : FIGURE_TYPST_UNAVAILABLE;
+export function renderFigureTypst(node: FigureNode, options: FigureTypstOptions = {}): string {
+	return renderer ? renderer(node, options) : FIGURE_TYPST_UNAVAILABLE;
 }
