@@ -138,7 +138,8 @@ describe('exportToTikZ — edge cases', () => {
 		f.createFreePoint(pt(0, 0));
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('\\definecolor');
-		expect(result).toContain('c1e40af');
+		// Lot 2 (L2-a) : défaut = bleu de la palette, imprimé en variante claire
+		expect(result).toContain('c2563eb');
 	});
 
 	// ─── Lines clipping ───────────────────────────────────────

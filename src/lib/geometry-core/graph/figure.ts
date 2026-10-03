@@ -156,7 +156,8 @@ import { sampleParametric2D, type ParametricSampleResult } from '../viewport/sam
 import { findClosestParameterOnCurve } from './parametric-newton';
 import { computeOsculatingCircle } from './parametric-calculus';
 
-const DEFAULT_COLOR = '#1e40af';
+// Couleur des objets sans couleur : le bleu de la palette, qui suit le thème (décision L2-a)
+const DEFAULT_COLOR = 'bleu';
 
 export interface FigureDefaults {
 	readonly defaultColor?: string;

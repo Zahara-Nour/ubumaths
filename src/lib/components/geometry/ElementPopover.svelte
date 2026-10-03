@@ -2,7 +2,7 @@
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import type { GeoElement } from '$lib/geometry-core/types/elements';
 	import { isPointElement, isLineLike, isCircle } from '$lib/geometry-core/types/elements';
-	import { colorForPrint, resolveNamedColor, type NamedColor } from '$lib/theme/named-colors';
+	import { colorForScreen, resolveNamedColor, type NamedColor } from '$lib/theme/named-colors';
 
 	/** Noms de la palette commune des figures : la figure garde le NOM, qui suit le thème */
 	const COLOR_PALETTE: readonly NamedColor[] = [
@@ -115,7 +115,7 @@
 				<button
 					class="color-swatch"
 					class:selected={selectedColor === color}
-					style:background-color={colorForPrint(color)}
+					style:background-color={colorForScreen(color)}
 					onclick={() => updateColor(color)}
 					aria-label="Couleur {color}"
 				></button>
@@ -192,8 +192,9 @@
 	.element-popover {
 		position: absolute;
 		z-index: 100;
-		background: white;
-		border: 1px solid #d1d5db;
+		background: var(--color-popover);
+		color: var(--color-popover-foreground);
+		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		padding: 12px;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -211,13 +212,15 @@
 
 	.popover-label {
 		font-size: 12px;
-		color: #6b7280;
+		color: var(--color-muted-foreground);
 		min-width: 55px;
 	}
 
 	.popover-input {
 		flex: 1;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--color-border);
+		background: var(--color-background);
+		color: var(--color-foreground);
 		border-radius: 4px;
 		padding: 2px 6px;
 		font-size: 13px;
@@ -225,7 +228,7 @@
 	}
 
 	.popover-input:focus {
-		border-color: #3b82f6;
+		border-color: var(--color-fig-bleu);
 	}
 
 	.color-palette {
@@ -243,8 +246,8 @@
 	}
 
 	.color-swatch.selected {
-		border-color: #000;
-		box-shadow: 0 0 0 1px white inset;
+		border-color: var(--color-foreground);
+		box-shadow: 0 0 0 1px var(--color-popover) inset;
 	}
 
 	.shape-buttons {
@@ -254,17 +257,18 @@
 
 	.shape-btn {
 		padding: 2px 8px;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--color-border);
 		border-radius: 4px;
-		background: white;
+		background: var(--color-popover);
+		color: var(--color-popover-foreground);
 		cursor: pointer;
 		font-size: 13px;
 	}
 
 	.shape-btn.selected {
-		background: #eff6ff;
-		border-color: #3b82f6;
-		color: #1e40af;
+		background: var(--color-muted);
+		border-color: var(--color-fig-bleu);
+		color: var(--color-fig-bleu);
 	}
 
 	.popover-range {

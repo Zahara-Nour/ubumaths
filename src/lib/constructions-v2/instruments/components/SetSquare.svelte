@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * SetSquare - SVG set square (equerre) instrument for geometric constructions
 	 *
@@ -98,7 +100,13 @@
 {#if visible}
 	<g transform={mainTransform} class="set-square-instrument">
 		<!-- Main body with cutout -->
-		<path d={outerPath} stroke="black" stroke-width="0.75" fill="#c6cbe8" fill-opacity="0.5" />
+		<path
+			d={outerPath}
+			style="stroke: var(--color-foreground)"
+			stroke-width="0.75"
+			fill="#c6cbe8"
+			fill-opacity="0.5"
+		/>
 
 		<!-- Inner lighter area (double layer for transparency effect) -->
 		<path d={innerPath} stroke-width="0" fill="#c6cbe8" fill-opacity="0.5" />

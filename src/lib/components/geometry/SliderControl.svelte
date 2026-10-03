@@ -39,6 +39,7 @@
 </div>
 
 <style>
+	/* Panneau des curseurs : tokens du thème (lot 2, figures interactives) */
 	.slider-row {
 		display: flex;
 		align-items: center;
@@ -51,14 +52,14 @@
 	.slider-label {
 		min-width: 2rem;
 		font-weight: 500;
-		color: #374151;
+		color: var(--color-foreground);
 	}
 
 	input[type='range'] {
 		flex: 1;
 		height: 4px;
 		appearance: none;
-		background: #d1d5db;
+		background: var(--color-border);
 		border-radius: 2px;
 		outline: none;
 		cursor: pointer;
@@ -69,20 +70,20 @@
 		width: 14px;
 		height: 14px;
 		border-radius: 50%;
-		background: #1e40af;
+		background: var(--color-fig-bleu);
 		cursor: grab;
 	}
 
 	input[type='range']::-webkit-slider-thumb:active {
 		cursor: grabbing;
-		background: #1d4ed8;
+		background: var(--color-fig-bleu);
 	}
 
 	input[type='range']::-moz-range-thumb {
 		width: 14px;
 		height: 14px;
 		border-radius: 50%;
-		background: #1e40af;
+		background: var(--color-fig-bleu);
 		border: none;
 		cursor: grab;
 	}
@@ -90,7 +91,7 @@
 	.slider-value {
 		min-width: 2.5rem;
 		text-align: right;
-		color: #6b7280;
+		color: var(--color-muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}
 </style>

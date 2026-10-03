@@ -11,6 +11,8 @@ function pt(x: number, y: number) {
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -8, yMax: 8 };
 
+// Lot 2 (L2-a) : la couleur par défaut imprimée est le bleu de la palette #2563eb
+// (elle était #1e40af) ; les assertions qui la cherchent ont suivi.
 describe('exportToSVG — edge cases', () => {
 	// ─── Empty / minimal ──────────────────────────────────────
 
@@ -78,7 +80,7 @@ describe('exportToSVG — edge cases', () => {
 		f.createSegment(a, b);
 		const result = exportToSVG(f, viewport);
 		// Find the segment line (not grid lines)
-		const segLines = result.split('\n').filter((l) => l.includes('stroke="#1e40af"'));
+		const segLines = result.split('\n').filter((l) => l.includes('stroke="#2563eb"'));
 		expect(segLines.length).toBeGreaterThan(0);
 		for (const line of segLines) {
 			if (line.includes('<line') && !line.includes('class=')) {
@@ -104,7 +106,7 @@ describe('exportToSVG — edge cases', () => {
 		const result = exportToSVG(f, viewport);
 		const segLines = result
 			.split('\n')
-			.filter((l) => l.includes('stroke="#1e40af"') && l.includes('<line'));
+			.filter((l) => l.includes('stroke="#2563eb"') && l.includes('<line'));
 		expect(segLines.length).toBeGreaterThan(0);
 		for (const line of segLines) {
 			expect(line).not.toContain('opacity=');
@@ -136,7 +138,7 @@ describe('exportToSVG — edge cases', () => {
 		const pointCircles = result
 			.split('\n')
 			.filter(
-				(l) => l.includes('<circle') && l.includes('fill="none"') && l.includes('stroke="#1e40af"')
+				(l) => l.includes('<circle') && l.includes('fill="none"') && l.includes('stroke="#2563eb"')
 			);
 		expect(pointCircles.length).toBeGreaterThanOrEqual(1);
 	});
@@ -147,7 +149,7 @@ describe('exportToSVG — edge cases', () => {
 		const result = exportToSVG(f, viewport);
 		const crossLines = result
 			.split('\n')
-			.filter((l) => l.includes('<line') && l.includes('#1e40af'));
+			.filter((l) => l.includes('<line') && l.includes('#2563eb'));
 		expect(crossLines.length).toBe(2);
 	});
 
@@ -156,7 +158,7 @@ describe('exportToSVG — edge cases', () => {
 		f.createFreePoint(pt(0, 0), { style: { pointShape: 'square' } });
 		const result = exportToSVG(f, viewport);
 		expect(result).toContain('<rect');
-		expect(result).toContain('fill="#1e40af"');
+		expect(result).toContain('fill="#2563eb"');
 	});
 
 	// ─── Labels ───────────────────────────────────────────────

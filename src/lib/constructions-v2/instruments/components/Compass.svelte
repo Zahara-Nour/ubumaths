@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * Compass - SVG compass instrument for geometric constructions
 	 *
@@ -116,15 +118,28 @@
 		<!-- Left branch (with tip) -->
 		<g transform={leftBranchTransform}>
 			<!-- Metal tip line -->
-			<line x1="0" y1="0" x2="0" y2={-LONG_POINTE} stroke="black" stroke-width="1.5" />
+			<line
+				x1="0"
+				y1="0"
+				x2="0"
+				y2={-LONG_POINTE}
+				style="stroke: var(--color-foreground)"
+				stroke-width="1.5"
+			/>
 			<!-- Branch body -->
-			<path d={leftBranchPath} stroke="black" stroke-width="0.75" fill="silver" fill-opacity="1" />
+			<path
+				d={leftBranchPath}
+				style="stroke: var(--color-foreground)"
+				stroke-width="0.75"
+				fill="silver"
+				fill-opacity="1"
+			/>
 			<!-- Left button (circle with inner circle) -->
 			<circle
 				cx={-EP / 2}
 				cy={-LONG_POINTE - RET_B}
 				r={RAY_B}
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="0.75"
 				fill="silver"
 				fill-opacity="1"
@@ -133,7 +148,7 @@
 				cx={-EP / 2}
 				cy={-LONG_POINTE - RET_B}
 				r="2"
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="1"
 				fill="silver"
 				fill-opacity="1"
@@ -143,23 +158,62 @@
 		<!-- Right branch (with pencil lead) -->
 		<g transform={rightBranchTransform}>
 			<!-- Pencil lead (black tip) -->
-			<path d={minePath} stroke="black" stroke-width="0.75" fill="black" fill-opacity="1" />
+			<path
+				d={minePath}
+				style="stroke: var(--color-foreground)"
+				stroke-width="0.75"
+				fill="black"
+				fill-opacity="1"
+			/>
 			<!-- Branch body -->
-			<path d={rightBranchPath} stroke="black" stroke-width="0.75" fill="silver" fill-opacity="1" />
+			<path
+				d={rightBranchPath}
+				style="stroke: var(--color-foreground)"
+				stroke-width="0.75"
+				fill="silver"
+				fill-opacity="1"
+			/>
 			<!-- Small button part on right -->
-			<path d={rightButtonPath} stroke="black" stroke-width="1" fill="silver" fill-opacity="1" />
+			<path
+				d={rightButtonPath}
+				style="stroke: var(--color-foreground)"
+				stroke-width="1"
+				fill="silver"
+				fill-opacity="1"
+			/>
 			<!-- Diagonal line on right branch -->
-			<line x1="0" y1="-100" x2={EP} y2={-100 + EP} stroke="black" stroke-width="1" />
+			<line
+				x1="0"
+				y1="-100"
+				x2={EP}
+				y2={-100 + EP}
+				style="stroke: var(--color-foreground)"
+				stroke-width="1"
+			/>
 			<!-- Other lines on right branch -->
-			<line x1="0" y1="-50" x2={EP} y2="-50" stroke="black" stroke-width="1" />
-			<line x1={EP / 2} y1="-50" x2={EP / 2} y2="-73" stroke="black" stroke-width="1" />
+			<line
+				x1="0"
+				y1="-50"
+				x2={EP}
+				y2="-50"
+				style="stroke: var(--color-foreground)"
+				stroke-width="1"
+			/>
+			<line
+				x1={EP / 2}
+				y1="-50"
+				x2={EP / 2}
+				y2="-73"
+				style="stroke: var(--color-foreground)"
+				stroke-width="1"
+			/>
 			<!-- Side button (rectangle) -->
 			<rect
 				x={EP}
 				y="-68"
 				width="4"
 				height="12"
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="0.75"
 				fill="silver"
 				fill-opacity="1"
@@ -169,9 +223,22 @@
 		<!-- Top fixed part (handle) -->
 		<g transform={topPartTransform}>
 			<!-- Main body -->
-			<path d={topPath} stroke="black" stroke-width="0.75" fill="#666666" fill-opacity="1" />
+			<path
+				d={topPath}
+				style="stroke: var(--color-foreground)"
+				stroke-width="0.75"
+				fill="#666666"
+				fill-opacity="1"
+			/>
 			<!-- Horizontal line -->
-			<line x1={DL_H} y1={-YL_H} x2={-DL_H} y2={-YL_H} stroke="black" stroke-width="1" />
+			<line
+				x1={DL_H}
+				y1={-YL_H}
+				x2={-DL_H}
+				y2={-YL_H}
+				style="stroke: var(--color-foreground)"
+				stroke-width="1"
+			/>
 			<!-- Sesamath logo text -->
 			<text
 				pointer-events="none"
@@ -187,7 +254,7 @@
 				cx={-EP + 1}
 				cy={-DEC_BH}
 				r="3"
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="1"
 				fill="white"
 				fill-opacity="1"
@@ -197,7 +264,7 @@
 				cx={EP - 1}
 				cy={-DEC_BH}
 				r="3"
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="1"
 				fill="white"
 				fill-opacity="1"

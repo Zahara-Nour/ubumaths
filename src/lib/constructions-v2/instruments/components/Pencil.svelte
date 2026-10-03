@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * Pencil - SVG pencil instrument for geometric constructions
 	 *
@@ -95,19 +97,25 @@
 		<!-- Sharpened tip (wood part) -->
 		<path
 			d={tipPath}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 			fill="url(#{tipGradientId})"
 			fill-opacity="1"
 		/>
 
 		<!-- Black lead tip -->
-		<path d={leadPath} stroke="black" stroke-width="0.5" fill="black" fill-opacity="1" />
+		<path
+			d={leadPath}
+			style="stroke: var(--color-foreground)"
+			stroke-width="0.5"
+			fill="black"
+			fill-opacity="1"
+		/>
 
 		<!-- Main body -->
 		<path
 			d={bodyPath}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 			fill="url(#{bodyGradientId})"
 			fill-opacity="1"

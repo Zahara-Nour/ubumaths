@@ -22,8 +22,9 @@ import {
 	type GeoCircleByRadius,
 	type GeoCircleByPoint
 } from '$lib/geometry-core/types/elements';
+// Style ÉCRAN : les couleurs nommées suivent le thème (lot 2, figures interactives)
 import {
-	resolvePrintStyle,
+	resolveScreenStyle,
 	type GeoStyleResolved
 } from '$lib/geometry-core/rendering/svg-primitives';
 import { partialSegment, type Point2D } from './animator';
@@ -73,7 +74,7 @@ export function partialSegmentSVG(
 	const sv1 = transformer.mathToSvg(geoToNumber(p1.x), geoToNumber(p1.y));
 	const sv2 = transformer.mathToSvg(geoToNumber(p2.x), geoToNumber(p2.y));
 	const tip = partialSegment(sv1, sv2, progress);
-	const style = resolvePrintStyle(el, figure.defaults);
+	const style = resolveScreenStyle(el, figure.defaults);
 
 	return { x1: sv1.x, y1: sv1.y, x2: tip.x, y2: tip.y, style };
 }
@@ -107,7 +108,7 @@ export function partialArcSVGPath(
 		const partialEnd = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
 		const path = buildArcPath(cx, cy, r, startAngle, partialEnd, transformer);
 		if (!path) return null;
-		return { path, style: resolvePrintStyle(el, figure.defaults) };
+		return { path, style: resolveScreenStyle(el, figure.defaults) };
 	}
 
 	if (isArcByPoints(el)) {
@@ -127,7 +128,7 @@ export function partialArcSVGPath(
 		const partialEnd = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
 		const path = buildArcPath(cx, cy, r, startAngle, partialEnd, transformer);
 		if (!path) return null;
-		return { path, style: resolvePrintStyle(el, figure.defaults) };
+		return { path, style: resolveScreenStyle(el, figure.defaults) };
 	}
 
 	return null;
@@ -175,7 +176,7 @@ export function partialCircleSVGPath(
 	if (sweep < 1e-6) return null;
 	const path = buildArcPath(cx, cy, r, startAngle, startAngle + sweep, transformer);
 	if (!path) return null;
-	return { path, style: resolvePrintStyle(el, figure.defaults) };
+	return { path, style: resolveScreenStyle(el, figure.defaults) };
 }
 
 // =============================================================================

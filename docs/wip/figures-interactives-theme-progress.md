@@ -49,7 +49,49 @@ background:rgba(255,255,255,.92)`) et ~17 halos `stroke="white"` **en dur**. En 
 
 ## Avancement
 
-- [ ] Inventaire précis des sites de `GeometryCanvas` / `ConstructionCanvas` / instruments
-- [ ] Tests navigateur (couleur rendue, deux modes) d'abord
-- [ ] Implémentation
+- [x] Inventaire des sites (2026-10-03, voir ci-dessous)
+- [x] Tests navigateur d'abord, vus rouges (9/10 en échec avant le code ; le 10ᵉ, hex fixe,
+      est un garde-fou) : `src/lib/components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts`
+      (11 tests) + `geometry-core/rendering/__tests__/resolve-screen-style.test.ts` (10 tests,
+      dont exports SVG / Typst / TikZ toujours clairs)
+- [x] Implémentation (non commitée par l'agent : commit refusé par le système de permissions)
 - [ ] Captures 4 combinaisons + instruments en sombre · `code-reviewer` · PR
+
+### Sites traités
+
+- `svg-primitives.ts` : `resolveScreenStyle` (nom palette → `var()`, hex, nom CSS validé par
+  `isValidColor`, sinon défaut) ; repli de `resolveStyle` = `'bleu'`.
+- `figure.ts` : `DEFAULT_COLOR = 'bleu'` (L2-a). `FIGURE_DEFAULTS` du bloc ```figure
+(`#000000`) intact. Exports : `#2563eb`.
+- `GeometryCanvas.svelte` : 31 `stroke=` + 31 `fill=` d'auteur → `style:` ; 15 halos
+  `stroke="white"` → `.label, .angle-label { stroke: var(--color-card) }` ; extrémité ouverte
+  et fond des textes → `--color-card` ; info-bulles mathText/richText → `.geo-html-label`
+  (popover) ; info-bulle paramétrique → popover ; fond `--color-card`, bordure, grille
+  `--color-border`, axes et graduations `--color-muted-foreground`, panneau `--color-muted`,
+  survol `--color-warning`.
+- rough.js : `paintInStyle` (rough-geometry.ts) déplace `stroke`/`fill` dans `style` avant
+  sérialisation (tous les `*HTML`, y compris `roughVectorHTML` utilisé par l'export SVG :
+  sortie équivalente, en `style=`).
+- `SliderControl.svelte`, `ElementPopover.svelte` (pastilles `colorForScreen`, panneau sur
+  tokens).
+- `ConstructionCanvas.svelte` + `render-helpers.ts` : `resolveScreenStyle`, `style:` ;
+  projections `#3b82f6`/`#1e40af` → `--color-fig-bleu` ; halos → `--color-card`.
+- Instruments v2 (L2-b) : `stroke="black"` et `stroke="#333333"` → `stroke:
+var(--color-foreground)` (Compass 15, CompassRaised 13, Pencil 3, Protractor 3, Ruler 1,
+  SetSquare 1). Remplissages inchangés (mines noires, chiffres de la règle et du rapporteur
+  en `fill: black`). Instruments v1 (`src/lib/constructions/`) non touchés.
+- Aucun nouveau token : tous existaient.
+
+### Règles CSS d'état (stroke / fill)
+
+- `.point.draggable:hover`, `.point.hovered`, `.point.dragging` posent `stroke` : la couleur
+  d'un point « cercle » est un contour inline → ces trois règles passent en `!important`
+  (test : point `forme="cercle"` survolé ; contrôle négatif sans `!important` → rouge).
+- Survol des lignes / courbes / marques : `filter` et `stroke-width` seulement (l'épaisseur
+  reste un attribut de présentation, la règle CSS gagne toujours) → inchangé.
+
+### Reste / incertain
+
+- Chiffres noirs de la règle et du rapporteur, mine du crayon : restés noirs (ce sont des
+  remplissages, pas des traits) — à regarder en capture sombre.
+- Firefox non vérifié (sandbox) ; les couleurs d'auteur sont en `style`, donc sûres.

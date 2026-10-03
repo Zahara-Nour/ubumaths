@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * CompassRaised - SVG raised compass (top view) for geometric constructions
 	 *
@@ -77,7 +79,7 @@
 				height={EP}
 				rx="1"
 				ry="1"
-				stroke="black"
+				style="stroke: var(--color-foreground)"
 				stroke-width="0.5"
 				fill="silver"
 				fill-opacity="1"
@@ -85,7 +87,13 @@
 		{/if}
 
 		<!-- Metal tip (left - needle) -->
-		<path d={tipPath} stroke="black" stroke-width="0.5" fill="black" fill-opacity="1" />
+		<path
+			d={tipPath}
+			style="stroke: var(--color-foreground)"
+			stroke-width="0.5"
+			fill="black"
+			fill-opacity="1"
+		/>
 
 		<!-- Left tip line -->
 		<line
@@ -93,12 +101,18 @@
 			y1="0"
 			x2={LONG_POINTE + d / 8}
 			y2="0"
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 
 		<!-- Pencil tip (right) -->
-		<path d={pencilPath} stroke="black" stroke-width="0.5" fill="black" fill-opacity="1" />
+		<path
+			d={pencilPath}
+			style="stroke: var(--color-foreground)"
+			stroke-width="0.5"
+			fill="black"
+			fill-opacity="1"
+		/>
 
 		<!-- Right tip line -->
 		<line
@@ -106,7 +120,7 @@
 			y1="0"
 			x2={opening - LONG_POINTE - d / 8}
 			y2="0"
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 
@@ -116,7 +130,7 @@
 			y1={-EP / 2}
 			x2={opening - LONG_POINTE - d / 8 - 2}
 			y2={EP / 2}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 		<line
@@ -124,7 +138,7 @@
 			y1={-EP / 2}
 			x2={opening - LONG_POINTE - d / 3 - 2}
 			y2={EP / 2}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 
@@ -134,7 +148,7 @@
 			y={-EP}
 			width="7"
 			height="3"
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.75"
 			fill="silver"
 			fill-opacity="1"
@@ -146,14 +160,20 @@
 			y={-EP}
 			width="7"
 			height="3"
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.75"
 			fill="silver"
 			fill-opacity="1"
 		/>
 
 		<!-- Central handle -->
-		<path d={handlePath} stroke="black" stroke-width="0.75" fill="#666666" fill-opacity="1" />
+		<path
+			d={handlePath}
+			style="stroke: var(--color-foreground)"
+			stroke-width="0.75"
+			fill="#666666"
+			fill-opacity="1"
+		/>
 
 		<!-- Cross lines on handle -->
 		<line
@@ -161,7 +181,7 @@
 			y1={-EP / 2}
 			x2={opening / 2 - dl}
 			y2={EP / 2}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 		<line
@@ -169,7 +189,7 @@
 			y1={-EP / 2}
 			x2={opening / 2 + dl}
 			y2={EP / 2}
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.5"
 		/>
 
@@ -178,7 +198,7 @@
 			cx={opening / 2}
 			cy="0"
 			r="5"
-			stroke="black"
+			style="stroke: var(--color-foreground)"
 			stroke-width="0.75"
 			fill="#666666"
 			fill-opacity="1"

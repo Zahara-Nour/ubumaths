@@ -22,7 +22,7 @@
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import {
 		pointToSVG,
-		resolvePrintStyle,
+		resolveScreenStyle,
 		lineToSVG,
 		rayToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
@@ -340,7 +340,7 @@
 							y1={seg.y1}
 							x2={seg.x2}
 							y2={seg.y2}
-							stroke={seg.style.color}
+							style:stroke={seg.style.color}
 							stroke-width={seg.style.strokeWidth}
 							stroke-dasharray={seg.style.dashArray}
 							stroke-linecap="round"
@@ -352,7 +352,7 @@
 					{#if arc}
 						<path
 							d={arc.path}
-							stroke={arc.style.color}
+							style:stroke={arc.style.color}
 							stroke-width={arc.style.strokeWidth}
 							stroke-dasharray={arc.style.dashArray}
 							stroke-linecap="round"
@@ -364,7 +364,7 @@
 					{#if circle}
 						<path
 							d={circle.path}
-							stroke={circle.style.color}
+							style:stroke={circle.style.color}
 							stroke-width={circle.style.strokeWidth}
 							stroke-dasharray={circle.style.dashArray}
 							stroke-linecap="round"
@@ -388,7 +388,7 @@
 			{#each animatingPointIdArray as id (id)}
 				{@const pt = pointToSVG(id, figure, transformer)}
 				{@const el = figure.getElementById(id)}
-				{@const sty = el ? resolvePrintStyle(el, figure.defaults) : null}
+				{@const sty = el ? resolveScreenStyle(el, figure.defaults) : null}
 				{#if pt && sty}
 					{@const s = pointScale}
 					{@const op = pointAnimProgress}
@@ -405,7 +405,7 @@
 								y1={pt.cy}
 								x2={pt.cx}
 								y2={origin.y}
-								stroke="#3b82f6"
+								class="projection-line"
 								stroke-width="1.5"
 								stroke-dasharray="6 4"
 								opacity={op}
@@ -413,8 +413,7 @@
 							<text
 								x={pt.cx}
 								y={origin.y + (yMath > 0 ? 16 : -6)}
-								fill="#1e40af"
-								stroke="white"
+								class="projection-label"
 								stroke-width="3"
 								paint-order="stroke"
 								font-size="13"
@@ -430,7 +429,7 @@
 								y1={pt.cy}
 								x2={origin.x}
 								y2={pt.cy}
-								stroke="#3b82f6"
+								class="projection-line"
 								stroke-width="1.5"
 								stroke-dasharray="6 4"
 								opacity={op}
@@ -438,8 +437,7 @@
 							<text
 								x={origin.x + (xMath > 0 ? -8 : 8)}
 								y={pt.cy + 4}
-								fill="#1e40af"
-								stroke="white"
+								class="projection-label"
 								stroke-width="3"
 								paint-order="stroke"
 								font-size="13"
@@ -452,12 +450,12 @@
 					{/if}
 					<g transform="translate({pt.cx}, {pt.cy}) scale({s})" opacity={op}>
 						{#if sty.pointShape === 'dot'}
-							<circle r={sty.pointSize} fill={sty.color} />
+							<circle r={sty.pointSize} style:fill={sty.color} />
 						{:else if sty.pointShape === 'circle'}
 							<circle
 								r={sty.pointSize}
 								fill="none"
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 							/>
 						{:else if sty.pointShape === 'cross'}
@@ -466,7 +464,7 @@
 								y1={-sty.pointSize}
 								x2={sty.pointSize}
 								y2={sty.pointSize}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 							/>
 							<line
@@ -474,7 +472,7 @@
 								y1={-sty.pointSize}
 								x2={-sty.pointSize}
 								y2={sty.pointSize}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 							/>
 						{:else if sty.pointShape === 'square'}
@@ -483,15 +481,15 @@
 								y={-sty.pointSize}
 								width={sty.pointSize * 2}
 								height={sty.pointSize * 2}
-								fill={sty.color}
+								style:fill={sty.color}
 							/>
 						{/if}
 						{#if el && el.label}
 							<text
 								x={el.labelOffset?.dx ?? sty.pointSize + 4}
 								y={el.labelOffset?.dy ?? -(sty.pointSize + 2)}
-								fill={sty.color}
-								stroke="white"
+								class="halo"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke"
 								font-size="14"
@@ -516,7 +514,7 @@
 		>
 			{#each animatingLineIdArray as id (id)}
 				{@const el = figure.getElementById(id)}
-				{@const sty = el ? resolvePrintStyle(el, figure.defaults) : null}
+				{@const sty = el ? resolveScreenStyle(el, figure.defaults) : null}
 				{@const seg =
 					el?.type === 'line'
 						? lineToSVG(id, figure, transformer, { width, height })
@@ -529,7 +527,7 @@
 						y1={seg.y1}
 						x2={seg.x2}
 						y2={seg.y2}
-						stroke={sty.color}
+						style:stroke={sty.color}
 						stroke-width={sty.strokeWidth * lineStrokeWidthMultiplier}
 						stroke-dasharray={sty.dash === 'dashed'
 							? '8 4'
@@ -555,8 +553,8 @@
 							<text
 								x={0}
 								y={0}
-								fill={sty.color}
-								stroke="white"
+								class="halo"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke"
 								opacity={lineFadeOpacity}>{el.label}</text
@@ -674,5 +672,22 @@
 <style>
 	.construction-canvas {
 		overflow: hidden;
+	}
+
+	/*
+	 * Calques d'animation sur les tokens du thème (lot 2) : projections dans le
+	 * bleu de la palette, halos des étiquettes de la couleur du fond de la figure.
+	 */
+	.projection-line {
+		stroke: var(--color-fig-bleu);
+	}
+
+	.projection-label {
+		fill: var(--color-fig-bleu);
+	}
+
+	.projection-label,
+	.halo {
+		stroke: var(--color-card);
 	}
 </style>
