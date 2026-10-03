@@ -88,15 +88,14 @@
 			margin: 0 auto;
 		}
 
-		/* Dark mode support */
-		@media (prefers-color-scheme: dark) {
-			.swagger-ui {
-				filter: invert(0.9) hue-rotate(180deg);
-			}
+		/* Mode sombre : suit le choix de l'utilisateur (classe .dark de mode-watcher),
+		   pas prefers-color-scheme. Style global (dans svelte:head), donc pas de :global. */
+		.dark .swagger-ui {
+			filter: invert(0.9) hue-rotate(180deg);
+		}
 
-			.swagger-ui img {
-				filter: invert(1) hue-rotate(180deg);
-			}
+		.dark .swagger-ui img {
+			filter: invert(1) hue-rotate(180deg);
 		}
 
 		/* Loading spinner */
