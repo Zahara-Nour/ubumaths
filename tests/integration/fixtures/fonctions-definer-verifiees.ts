@@ -236,7 +236,7 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 			justification: 'garde auth.uid() = p_user_id ou is_admin'
 		},
 	'get_user_sent_messages(p_user_id uuid, p_limit integer, p_offset integer)': {
-		categorie: 'compte-appelant-ou-prof',
+		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id ou is_admin'
 	},
 	'get_user_status(user_id uuid)': {

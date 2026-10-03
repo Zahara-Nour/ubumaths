@@ -186,6 +186,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, "Le marketplace n'est pas activé pour votre classe");
 	}
 
+	// Amitié vérifiée AVANT toute lecture sur le partenaire : les fonctions qui
+	// le concernent n'acceptent que soi, un ami ou le prof (lot 5).
+	const areFriends = await verifyFriendship(supabase, userId, partner_id);
+	if (!areFriends) {
+		throw error(403, 'Vous devez être amis pour échanger');
+	}
+
 	// Check if marketplace is enabled for partner
 	const partnerMarketplaceEnabled = await isMarketplaceEnabled(supabase, partner_id);
 	if (!partnerMarketplaceEnabled) {
@@ -244,12 +251,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			429,
 			`Votre ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayez demain.`
 		);
-	}
-
-	// Verify friendship exists
-	const areFriends = await verifyFriendship(supabase, userId, partner_id);
-	if (!areFriends) {
-		throw error(403, 'Vous devez être amis pour échanger');
 	}
 
 	// Check for existing active trade between these users
