@@ -150,3 +150,10 @@ PR prévues : (a) barres / circulaire (Q100-Q103, Q105) ; (b) histogramme / poly
 - **Lot 4 (a) livrée #682** (2026-10-03) : `données:` dans barres / circulaire. Lecture des nombres
   PARTAGÉE avec l'atelier (`statistics/read-value.ts`, Q92). Détail : `blocs-donnees-progress.md`.
   Suivant : (b) histogramme / polygone + `classes:` (Q104) ; (c) `série:` (Q106).
+
+109. (2026-10-03) Série brute en classes : la **classe médiane** est celle qui CONTIENT la médiane
+     exacte (sinon « Médiane = 5 » à côté de « Classe médiane : [0 ; 5[ ») ; sans série brute,
+     règle des 50 % inchangée.
+
+- **Lot 4 (b) livrée #685** (2026-10-03) : `classes:` + `données:` dans histogramme / polygone ;
+  moyenne et médiane exactes ; Q109. Suivant : (c) `série:` (Q106).
