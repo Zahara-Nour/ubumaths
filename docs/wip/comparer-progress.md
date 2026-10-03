@@ -33,4 +33,16 @@ Spec validée le 2026-10-03.
 - [x] Revue : nom de série vide refusé ; valeurs plus petites à l’écran avec deux séries (test navigateur) ; test `couleur: orange` ; test Typst des hauteurs proportionnelles. PDF déjà compilé avec le compilateur de prod (`tiling` OK)
 - [ ] PR, CI, merge
 
-## PR (c) — deux histogrammes
+## PR (c) — deux séries dans l'histogramme et le polygone
+
+Spec validée le 2026-10-03 (polygones superposés, pas de mode carreaux).
+
+- [x] Parseur : `tallyTwoSeriesInClasses` (mêmes classes ; erreur hors classes nommant la série) ;
+      pas de mode carreaux : `légende:` refusé, classes d'amplitudes différentes refusées (elles
+      imposent le mode carreaux) ; `afficher:` pour l'histogramme
+- [x] Scène : `seriesSpec` (une série, effectifs ou fréquences au dixième) ; deux histogrammes
+      (`second`, même `yMax` / graduations, hachuré) ; deux polygones (`second` en pointillés,
+      `legend`) ; tableau d'indicateurs avec la classe médiane (Q109)
+- [x] Écran (nom au-dessus, motif, StatChart imbriqué pour le second et le tableau) et Typst
+- [x] Tests `two-series-classes.test.ts` (15) + navigateur (2) ; fiche compilée et vérifiée à la main
+- [ ] Revue, PR, CI, merge
