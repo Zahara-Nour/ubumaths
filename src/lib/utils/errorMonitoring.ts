@@ -194,11 +194,17 @@ function incrementErrorCount(): void {
 // =====================================================
 
 /**
- * Generate hash for error deduplication
+ * Identité d'une erreur pour écarter les doublons (5 minutes) : la clé
+ * COMPLÈTE, telle quelle.
+ *
+ * Avant : `btoa(clé).substring(0, 32)`. `btoa` lève une exception sur tout
+ * caractère hors Latin-1 (`’`, `—`, `…`, `œ`, fréquents dans nos messages) :
+ * l'erreur n'était jamais envoyée. Et 32 caractères de base64 ne gardent que
+ * les 24 premiers de la clé : une erreur commençant comme une erreur déjà
+ * envoyée passait pour un doublon.
  */
 function generateErrorHash(error: ClientErrorData): string {
-	const key = `${error.error_type}:${error.message}:${error.file_path || ''}:${error.line_number || ''}`;
-	return btoa(key).substring(0, 32);
+	return `${error.error_type}:${error.message}:${error.file_path || ''}:${error.line_number || ''}`;
 }
 
 /**
