@@ -177,6 +177,32 @@ Le contrôle de forme relit aussi la réponse avec ces fonctions : `P'(2)` tapé
 `P'\left(2\right)` par MathLive) est juste sans `form: "off"` ; `P'(1+1)` a la bonne valeur
 mais pas la forme attendue, comme pour toute autre réponse.
 
+### Nettoyer les coefficients tirés (`shared.cleanCoefficients`)
+
+Un modèle à coefficients tirés (`{{a}}x+({{b}})y+{{c}}=0`) affiche « 1x », « (-1)y », « +0 »
+selon le tirage. Plutôt que d'exclure ±1 et 0 des tirages :
+
+```json
+"shared": { "cleanCoefficients": true }
+```
+
+(éditeur : case **Nettoyer les coefficients (1x → x, +0)**). Après le tirage, chaque formule
+`$…$` / `$$…$$` en syntaxe maison de l'énoncé, de la correction (étapes, feedback), des choix de
+QCM, et la réponse attendue des cases mathématiques (sans unité ni intervalles) passent par 4
+étapes du contrôle de forme : 0·x → 0, x + 0 → x, signes (`(-1)y` → `-y`, `- (-3)` → `+ 3`),
+1·x → x. `1x+(-1)y+0=0` s'affiche `x - y = 0`, et la réponse attendue devient `x-y=0` (la
+réponse juste de l'élève le reste ; aucun verdict ne change).
+
+Jamais touchés : une fonction (`f(1)`, `P'(-3)`), une parenthèse ou un nombre qui suit une lettre
+ou un × (`C(1)`, `x×(-7)`, `97,6×1` : seul le nombre écrit DEVANT un terme est un coefficient), le
+signe d'un numérateur (`\dfrac{-10}{10}`), un + écrit (`+\infty`), une chaîne de calcul
+(`r = -1 - (-4) = 3`), une relation qui deviendrait `x + 3 = x + 3`, une formule LaTeX d'auteur
+illisible en syntaxe maison (`\begin{…}`, `f\left(1\right)`) et le DSL des blocs `courbe / `figure.
+Absente ou `false` : rien ne change. Les étapes générées (`generatedSteps`) ne sont pas nettoyées.
+
+⚠️ `{{c;+}}` avec c = 0 écrit `0` sans `+` (« 1y0 », lu comme un produit) : l'option ne le
+répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
+
 ### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
 
 Corrigés dans le moteur le 2026-10-02 (#616 et la PR `fix/pieges-generation`), ne plus
@@ -245,7 +271,8 @@ Toujours vrai :
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
 - **Condition `a<-1`** est mal lue : écrire `a< -1` (espace).
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
-  c = 0 ; tirer |coefficients| ≥ 2 et c ≠ 0 dans `expectedAnswer`, `{{if:a==1|x}}…` dans le texte.
+  c = 0 → `shared.cleanCoefficients: true` (ci-dessus) et `+{{c}}` au lieu de `{{c;+}}` (le `;+`
+  d'un 0 n'écrit pas de `+`). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
 - **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur

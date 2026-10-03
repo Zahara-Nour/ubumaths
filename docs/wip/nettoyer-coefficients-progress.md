@@ -31,6 +31,11 @@ cosmétiques EXISTANTES de mathAST.
   suivant qui est un nombre, une parenthèse, une fonction ou un signe est protégé
   (`C(1)`, `C(-3)`, `x×(−7)`, `97,6×1` intacts) ; le contenu d'une parenthèse protégée
   est nettoyé pour lui-même.
+- Fractions : numérateur et dénominateur nettoyés pour eux-mêmes, leur signe ne sort pas
+  (`\dfrac{-10}{10}` intact ; mesuré en simulation).
+- Signe + écrit : gardé (`+\infty`, `+1` ; `+1x` → `+x`).
+- Chaîne de calcul (≥ 2 relations, `r = -1 - (-4) = 3`) : intacte ; relation qui
+  deviendrait `x + 3 = x + 3` : intacte (mesuré en simulation).
 - Valeur : `areEquivalent(avant, après)` ; faux ou exception → formule d'origine.
 - Cases : le nombre de `?` doit rester le même ; sinon formule d'origine.
 - Formule qui ne se lit pas en syntaxe maison (LaTeX d'auteur, DSL) → intacte.
@@ -38,9 +43,22 @@ cosmétiques EXISTANTES de mathAST.
 
 ## Avancement
 
-- [ ] Tests rouges
-- [ ] Sélection exposée dans `cosmetic-transforms.ts`
-- [ ] Module `clean-coefficients.ts` + câblage générateur
-- [ ] Schéma, type, route, éditeur
-- [ ] Doc `fiches-exercices.md`
-- [ ] Non-régression (suites, question:specs, prod, simulation)
+- [x] Tests rouges (15 rouges sur 33 avec des bouchons identité), puis verts (43)
+- [x] Sélection exposée : `coefficientCleanupSteps()` filtre `buildASTPipeline()`
+- [x] Module `src/lib/questions/clean-coefficients.ts` + câblage générateur
+- [x] Schéma strict, type, route serveur (refine), éditeur (`MyCheckbox`)
+- [x] Doc `docs/ref/fiches-exercices.md`
+- [x] Non-régression : suites questions/utils/mathAST/ubumark 610 fichiers verts ;
+      `question:specs` 195 JSON, sortie identique à main ; prod 801 modèles / 7075 specs,
+      verdicts identiques (0 modèle avec l'option) ; simulation 195 modèles × 30 tirages
+      avec l'option en mémoire : 0 échec, 0 verdict de spec changé.
+- [x] `check:incremental` 0 erreur, `lint:fast` propre
+
+## Points ouverts (décision de David)
+
+- `{{c;+}}` avec c = 0 écrit `0` sans `+` (`evaluate-with-modifiers.ts` : `numValue > 0`). « 1y0 » n'est pas réparé par
+  l'option (laissé intact, jamais réduit en `x = 0`). Correctif possible : `;+` sur 0 → `+0`
+  (change l'affichage des modèles existants qui tirent 0 : à mesurer).
+- Restent nettoyés (conformes à la spec, à valider) : `\dfrac{0 - 6}{2}` → `\dfrac{-6}{2}`
+  (dérivation C-02), `x - (-x) + 2 = 0` → `x + x + 2 = 0` (géométrie B-01).
+- `generatedSteps` (mode B) non nettoyées.
