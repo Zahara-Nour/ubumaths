@@ -149,6 +149,15 @@ function screenColor(raw: string): string | null {
 }
 
 /**
+ * Un remplissage à peindre : `none` reste « pas de remplissage » (sinon les
+ * secteurs et anneaux, qui retombent sur la couleur du trait, se rempliraient).
+ */
+function screenFill(raw: string): string | undefined {
+	if (raw.trim().toLowerCase() === 'none') return 'none';
+	return screenColor(raw) ?? undefined;
+}
+
+/**
  * Le style à AFFICHER dans les figures interactives (GeometryCanvas,
  * constructions) : les noms de la palette suivent le thème clair / sombre
  * (`rouge` → `var(--color-fig-rouge)`), un hex d'auteur reste fixe (D2a).
@@ -166,8 +175,7 @@ export function resolveScreenStyle(
 	return {
 		...style,
 		color: screenColor(style.color) ?? fallback,
-		fillColor:
-			style.fillColor === undefined ? undefined : (screenColor(style.fillColor) ?? undefined)
+		fillColor: style.fillColor === undefined ? undefined : screenFill(style.fillColor)
 	};
 }
 

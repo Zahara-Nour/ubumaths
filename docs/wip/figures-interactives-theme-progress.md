@@ -95,3 +95,13 @@ var(--color-foreground)` (Compass 15, CompassRaised 13, Pencil 3, Protractor 3, 
 - Chiffres noirs de la règle et du rapporteur, mine du crayon : restés noirs (ce sont des
   remplissages, pas des traits) — à regarder en capture sombre.
 - Firefox non vérifié (sandbox) ; les couleurs d'auteur sont en `style`, donc sûres.
+
+## Revue (`code-reviewer`, 2026-10-03) : 0 bloquant, 0 important
+
+- Corrigé : `remplissage="none"` remplissait secteurs et anneaux (repli sur la couleur du trait) →
+  `screenFill` garde `none` (test).
+- Corrigé : commentaire `!important` (le point en croix n'est pas surligné, comme avant).
+- Laissé : `exportToSVG` en mode rough écrit les vecteurs en `style="stroke: rgb(…)"` et le reste
+  en attribut — cohérence seulement, `exportToSVG` n'a aucun appelant en production.
+- Laissé (décision L2-b) : graduations claires, chiffres de la règle et du rapporteur noirs en
+  sombre — lisibles en capture, contraste réduit.

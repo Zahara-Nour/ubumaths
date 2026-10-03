@@ -2234,8 +2234,10 @@
 
 	/*
 	 * États : la couleur d'auteur est peinte en `style:` (inline). `!important`
-	 * fait gagner le surlignage sur ce style inline (point en forme de cercle,
-	 * dont la couleur est justement un contour).
+	 * fait gagner le surlignage sur ce style inline — pour les points dont
+	 * l'élément `.point` porte lui-même le contour (cercle, point plein). Un point
+	 * en croix n'est PAS surligné : `.point` est sur le <g>, ses <line> ont leur
+	 * propre couleur, qui l'emporte sur l'héritage (comme avant le lot 2).
 	 */
 	.point.draggable:hover,
 	.point.hovered {

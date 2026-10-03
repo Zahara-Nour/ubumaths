@@ -85,3 +85,13 @@ t = segment(A, C)`;
 		expect(hasBlue).toBe(true);
 	});
 });
+
+// Revue du lot 2 : `remplissage="none"` doit rester « pas de remplissage ».
+// Sans ce cas, le remplissage invalide était ignoré et les secteurs / anneaux,
+// qui retombent sur la couleur du trait, se remplissaient à 30 %.
+describe('resolveScreenStyle — remplissage « none »', () => {
+	it('garde none comme absence de remplissage', () => {
+		expect(resolveScreenStyle(el('rouge', 'none')).fillColor).toBe('none');
+		expect(resolveScreenStyle(el('rouge', ' None ')).fillColor).toBe('none');
+	});
+});
