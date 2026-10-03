@@ -254,3 +254,13 @@ Manche 11 (2026-10-03), loi binomiale (Terminale) — recommandations suivies :
 
 PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ; (b) `diagramme:`,
 `intervalle:`, simulation ; (c) atelier. À part : référentiel de Terminale.
+
+140. (2026-10-03) Programme vérifié (Éduscol) : l'intervalle I n'a PAS de méthode imposée.
+     `intervalle: 0,95` = plus petit [a ; b] avec P(X < a) ⩽ α/2 et P(X > b) ⩽ α/2, la règle
+     écrite sous le résultat ; `seuil: P(X > k) ⩽ 0,05` = plus petit k (surréservation). PR (b).
+141. (2026-10-03) Probabilité minuscule non nulle : la case affiche « 0,000 » (comme la
+     calculatrice) ; `arrondi:` pour plus de décimales.
+
+- **Loi binomiale, PR (a) livrée #730** (2026-10-03) : `X ~ B(n ; p)` dans ```loi, calcul exact
+(`statistics/binomial.ts`). Suivant : (b) `diagramme:`, `intervalle:`, `seuil:`, simulation ;
+(c) atelier `.binomiale`. À part : référentiel de Terminale ; autres lois (maths compl.).
