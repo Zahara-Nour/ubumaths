@@ -10,4 +10,5 @@ textes en anglais ; textes d'auteur et messages d'erreur inchangés ; atelier in
 - [x] Tableau de comparaison : lignes par identifiant (`IndicatorRowId`), nom selon la langue
 - [x] Filet (Q124) : `english-texts.test.ts`, 15 genres de blocs, scène + Typst sans mot français
 - [x] Fiche anglaise compilée (`compile-prod.mjs`) et regardée
-- [ ] Revue, PR, CI, merge
+- [x] Revue : filet `FRENCH` réparé (drapeau `u` : `\b` ignorait les lettres accentuées) + test du filet ; « Cumulative relative frequency polygon », titre « Increasing … » ; « Two-way table » d’une seule source ; typographie anglaise (« : », « % » sans espace), français inchangé
+- [ ] PR, CI, merge

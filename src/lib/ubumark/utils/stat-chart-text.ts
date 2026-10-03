@@ -53,13 +53,18 @@ interface StatText {
 	lessThan: (value: string) => string;
 	/** Description d'un sommet du polygone : « 25 % en 10 » */
 	vertex: (percent: string, x: string) => string;
-	direction: Record<StatChartDirection, string>;
 	/** Nom d'une lecture graphique, tel qu'écrit à côté du pointillé */
 	reading: { Q1: string; Me: string; Q3: string };
 	/** Ce que lit le lecteur d'écran pour « Me » (prononcé « mé ») */
 	medianSpoken: string;
 	comparison: (names: readonly string[]) => string;
 	unavailable: string;
+	/** Titre d'un polygone selon son sens (« Increasing … » : l'adjectif d'abord en anglais) */
+	polygonTitle: (direction: StatChartDirection) => string;
+	/** Typographie : deux-points (` : ` en français, `: ` en anglais) */
+	colon: string;
+	/** Typographie : signe pour cent (` %` en français, `%` en anglais) */
+	percent: string;
 }
 
 export const STAT_TEXT: Record<ContentLocale, StatText> = {
@@ -96,18 +101,22 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			`${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`,
 		lessThan: (value) => `moins de ${value}`,
 		vertex: (percent, x) => `${percent} % en ${x}`,
-		direction: { croissantes: 'croissantes', décroissantes: 'décroissantes' },
 		reading: { Q1: 'Q1', Me: 'Me', Q3: 'Q3' },
 		medianSpoken: 'Médiane',
 		comparison: (names) => `Comparaison de ${names.join(' et ')}`,
-		unavailable: 'Figure indisponible'
+		unavailable: 'Figure indisponible',
+		polygonTitle: (direction) => `Polygone des fréquences cumulées ${direction}`,
+		// Espaces ordinaires : le français reste tel qu'il était
+		colon: ' : ',
+		percent: ' %'
 	},
 	en: {
 		kind: {
 			barres: 'Bar chart',
 			circulaire: 'Pie chart',
 			histogramme: 'Histogram',
-			'frequences-cumulees': 'Cumulative frequency polygon',
+			// Q122 : le polygone trace des FRÉQUENCES, pas des effectifs cumulés (revue)
+			'frequences-cumulees': 'Cumulative relative frequency polygon',
 			'tableau-croise': 'Two-way table'
 		},
 		axis: {
@@ -134,10 +143,13 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 		squareSize: (across, tall) => `${across} square${across > 1 ? 's' : ''} wide, ${tall} high`,
 		lessThan: (value) => `less than ${value}`,
 		vertex: (percent, x) => `${percent}% at ${x}`,
-		direction: { croissantes: 'increasing', décroissantes: 'decreasing' },
 		reading: { Q1: 'Q1', Me: 'Median', Q3: 'Q3' },
 		medianSpoken: 'Median',
 		comparison: (names) => `Comparison of ${names.join(' and ')}`,
-		unavailable: 'Figure unavailable'
+		unavailable: 'Figure unavailable',
+		polygonTitle: (direction) =>
+			`${direction === 'croissantes' ? 'Increasing' : 'Decreasing'} cumulative relative frequency polygon`,
+		colon: ': ',
+		percent: '%'
 	}
 };

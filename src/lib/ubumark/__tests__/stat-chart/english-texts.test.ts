@@ -20,8 +20,10 @@ import type { StatChartKind } from '../../types/stat-chart';
 // =============================================================================
 
 /** Mots français qui ne doivent apparaître dans aucun texte produit en anglais */
+// `\p{L}` et le drapeau `u` : sans eux, `\b` ignore les lettres accentuées et
+// « Écart », « Étendue », « Probabilité » passaient inaperçus (revue)
 const FRENCH =
-	/\b(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre)\b/i;
+	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre)(?!\p{L})/iu;
 
 /** Valeurs internes, jamais affichées : le genre, le sens, les couleurs, le mode */
 const INTERNAL_KEYS = new Set(['kind', 'direction', 'mode', 'color', 'secondColor', 'hatchColor']);
@@ -119,6 +121,41 @@ describe('Q124 — un document anglais ne reçoit aucun texte français', () => 
 		expect(
 			generateStatChartTypst(parseStatChartContent('barres', 'x'), { language: 'en' })
 		).toContain('Figure unavailable');
+	});
+});
+
+describe('le filet lui-même', () => {
+	it('repère les mots qui commencent ou finissent par une lettre accentuée', () => {
+		for (const text of ['Écart type = 3', 'Étendue = 2', 'Probabilité', '10 échantillons sur 20']) {
+			expect(FRENCH.test(text), text).toBe(true);
+		}
+		expect(FRENCH.test('Standard deviation = 3')).toBe(false);
+	});
+});
+
+describe('typographie anglaise', () => {
+	it('pas d’espace avant « : » ni avant « % » ; titre du polygone dans l’ordre anglais', () => {
+		const pie = buildStatChartScene(
+			parseStatChartContent('circulaire', 'Bus = 3\nBike = 5').spec!,
+			{
+				locale: 'en'
+			}
+		);
+		const polygon = buildStatChartScene(
+			parseStatChartContent('frequences-cumulees', '[0 ; 10[ = 4\n[10 ; 20[ = 6').spec!,
+			{ locale: 'en' }
+		);
+
+		expect(pie.description).toMatch(/^Pie chart: /);
+		expect(pie.description).toContain('37.5%');
+		expect(pie.description).not.toContain(' %');
+		expect(polygon.description).toMatch(/^Increasing cumulative relative frequency polygon: /);
+	});
+
+	it('le français garde « : » et « % » avec espace', () => {
+		const pie = buildStatChartScene(parseStatChartContent('circulaire', 'Bus = 3\nVélo = 5').spec!);
+		expect(pie.description).toMatch(/^Diagramme circulaire : /);
+		expect(pie.description).toContain('37,5 %');
 	});
 });
 

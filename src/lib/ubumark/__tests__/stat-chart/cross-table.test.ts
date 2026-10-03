@@ -226,7 +226,7 @@ describe('tableau croisé — scène', () => {
 	});
 
 	it('anglais : point décimal', () => {
-		expect(texts(sceneOf(`${BASE}\nafficher: fréquences`, 'en'))[0][1]).toBe('13.8 %');
+		expect(texts(sceneOf(`${BASE}\nafficher: fréquences`, 'en'))[0][1]).toBe('13.8%');
 	});
 
 	it('masquer: cases vides et marquées, totaux exacts', () => {
@@ -267,7 +267,7 @@ describe('tableau croisé — scène', () => {
 	it('textes accessibles selon la langue du document', () => {
 		expect(sceneOf(BASE).hiddenLabel).toBe('case à compléter');
 		expect(sceneOf(BASE, 'en').hiddenLabel).toBe('blank cell');
-		expect(sceneOf(BASE, 'en').accessibleTitle).toBe('Contingency table');
+		expect(sceneOf(BASE, 'en').accessibleTitle).toBe('Two-way table');
 	});
 
 	it('fréquence non définie : « — » à l’écran, « non définie » au lecteur d’écran', () => {

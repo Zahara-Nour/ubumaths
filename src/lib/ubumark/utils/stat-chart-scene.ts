@@ -426,7 +426,8 @@ const CROSS_TABLE_SPOKEN: Record<
 		columns: 'colonnes'
 	},
 	en: {
-		title: 'Contingency table',
+		// Q122 : « Two-way table », le nom du dictionnaire
+		title: STAT_TEXT.en.kind['tableau-croise'],
 		hidden: 'blank cell',
 		undefined: 'undefined',
 		rows: 'rows',
@@ -452,7 +453,7 @@ function formatIndicatorValue(value: number, locale: ContentLocale): string {
 /** Valeur telle qu'écrite par l'auteur : effectif, ou pourcentage. */
 function formatValue(value: number, unit: StatChartUnit, locale: ContentLocale): string {
 	const text = formatTick(value, locale);
-	return unit === 'pourcentages' ? `${text} %` : text;
+	return unit === 'pourcentages' ? `${text}${STAT_TEXT[locale].percent}` : text;
 }
 
 // ============================================================================
@@ -541,7 +542,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 		accessibleTitle: STAT_TEXT[locale].kind.barres,
 		description:
 			spec.description ??
-			`${STAT_TEXT[locale].kind.barres} : ${listed.join(two === null ? ', ' : ' ; ')}.`,
+			`${STAT_TEXT[locale].kind.barres}${STAT_TEXT[locale].colon}${listed.join(two === null ? ', ' : ' ; ')}.`,
 		pixelSize: { width, height },
 		bars,
 		yMax,
@@ -778,7 +779,9 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 
 		const value = formatValue(d.value, spec.unit, locale);
 		const percent =
-			spec.unit === 'pourcentages' ? value : `${formatRounded(frequencies[i] * 100, 1, locale)} %`;
+			spec.unit === 'pourcentages'
+				? value
+				: `${formatRounded(frequencies[i] * 100, 1, locale)}${STAT_TEXT[locale].percent}`;
 		const angle = `${formatRounded(sweep, 0, locale)}°`;
 
 		if (d.value > 0) {
@@ -825,7 +828,9 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 		kind: 'circulaire',
 		title: spec.title,
 		accessibleTitle: STAT_TEXT[locale].kind.circulaire,
-		description: spec.description ?? `${STAT_TEXT[locale].kind.circulaire} : ${listed.join(', ')}.`,
+		description:
+			spec.description ??
+			`${STAT_TEXT[locale].kind.circulaire}${STAT_TEXT[locale].colon}${listed.join(', ')}.`,
 		pixelSize: { width, height: width },
 		sectors,
 		legend,
@@ -932,7 +937,8 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		return {
 			...common,
 			description:
-				spec.description ?? `${STAT_TEXT[locale].kind.histogramme} : ${listed.join(', ')}.`,
+				spec.description ??
+				`${STAT_TEXT[locale].kind.histogramme}${STAT_TEXT[locale].colon}${listed.join(', ')}.`,
 			rects: summary.classes.map((c, i) => ({
 				label: shownLabel(spec.data[i].label, locale),
 				lower: c.lower,
@@ -975,8 +981,8 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 				: formatRounded(heights[i], 2, locale);
 		const size = STAT_TEXT[locale].squareSize(across, tall);
 		return spec.showValues
-			? `${shownLabel(spec.data[i].label, locale)} : ${valueLabel(c.count)}, ${size}`
-			: `${shownLabel(spec.data[i].label, locale)} : ${size}`;
+			? `${shownLabel(spec.data[i].label, locale)}${STAT_TEXT[locale].colon}${valueLabel(c.count)}, ${size}`
+			: `${shownLabel(spec.data[i].label, locale)}${STAT_TEXT[locale].colon}${size}`;
 	});
 
 	return {
@@ -984,7 +990,7 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		// Q30 : les dimensions visibles, pas les effectifs (sauf `valeurs: oui`)
 		description:
 			spec.description ??
-			`${STAT_TEXT[locale].kind.histogramme} : ${described.join(' ; ')} ; ${legend}.`,
+			`${STAT_TEXT[locale].kind.histogramme}${STAT_TEXT[locale].colon}${described.join(' ; ')} ; ${legend}.`,
 		rects: summary.classes.map((c, i) => ({
 			label: shownLabel(spec.data[i].label, locale),
 			lower: c.lower,
@@ -1190,13 +1196,14 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 		r.name === 'Me' ? r.text.replace(/^\S+/, STAT_TEXT[locale].medianSpoken) : r.text
 	);
 	const read = spoken.length > 0 ? ` ${spoken.join(', ')}.` : '';
-	const title = `${STAT_TEXT[locale].kind['frequences-cumulees']} ${STAT_TEXT[locale].direction[spec.direction]}`;
+	const title = STAT_TEXT[locale].polygonTitle(spec.direction);
 
 	return {
 		kind: 'frequences-cumulees',
 		title: spec.title,
 		accessibleTitle: STAT_TEXT[locale].kind['frequences-cumulees'],
-		description: spec.description ?? `${title} : ${listed.join(', ')}.${read}`,
+		description:
+			spec.description ?? `${title}${STAT_TEXT[locale].colon}${listed.join(', ')}.${read}`,
 		pixelSize: { width, height },
 		xMin,
 		xMax,
@@ -1250,7 +1257,7 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 		const text =
 			display === 'effectifs'
 				? formatValue(value, spec.unit, locale)
-				: `${formatRounded(value * 100, 1, locale)} %`;
+				: `${formatRounded(value * 100, 1, locale)}${STAT_TEXT[locale].percent}`;
 		return { text, hidden: false, srText: null };
 	};
 	// `Sexe \ Régime` : le « \ » serait lu « barre oblique inversée »
@@ -1259,7 +1266,7 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 		table.corner === null
 			? null
 			: cornerParts.length === 2 && cornerParts.every((part) => part !== '')
-				? `${spoken.rows} : ${cornerParts[0]}, ${spoken.columns} : ${cornerParts[1]}`
+				? `${spoken.rows}${STAT_TEXT[locale].colon}${cornerParts[0]}, ${spoken.columns}${STAT_TEXT[locale].colon}${cornerParts[1]}`
 				: table.corner;
 
 	const bodyRows = rows.map((name, i) => {

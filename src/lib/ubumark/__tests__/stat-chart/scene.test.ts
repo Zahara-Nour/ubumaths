@@ -239,7 +239,7 @@ describe('diagramme circulaire', () => {
 	});
 
 	it('légende anglaise : point décimal', () => {
-		expect(pie(TRANSPORT, 'en').legend[0].text).toBe('Bus — 46.7 %');
+		expect(pie(TRANSPORT, 'en').legend[0].text).toBe('Bus — 46.7%');
 	});
 
 	it('pourcentages saisis : la légende les rend tels quels', () => {
