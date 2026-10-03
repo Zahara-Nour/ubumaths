@@ -293,3 +293,21 @@ polrelid = 'realtime.messages'::regclass`.
   ligne, repli `created_at` remis, « déjà affiché » retiré, `Set` retiré, plafond
   retiré, debounce retiré, try/catch retiré) → chacune rougit le test visé ;
   fichier restauré depuis une copie. Stores 442/442, intégration 4/4.
+
+### CI rouge du 2026-10-03 (run 37152839565) : test fragile, pas un défaut
+
+- `postgres_changes muet sur le canal privé` : la ligne était insérée ~50 ms
+  après `SUBSCRIBED`, mais le serveur n'a annoncé `Subscribed to PostgreSQL`
+  (événement `system`, `ok`) que 2,5 s plus tard → ligne écrite avant
+  l'armement, jamais livrée. Dans le même run, `postgres_changes` livre ensuite
+  normalement sur le canal privé (« Replaced … with DB version » chez A et B au
+  test 4).
+- Le `Failed to subscribe … CHANNEL_ERROR` du log est celui de O, le
+  non-participant du test 4 : refus attendu.
+- Mesuré en local, Realtime redémarré à froid : un des deux canaux armé 5 ms
+  après `SUBSCRIBED`, l'autre 2,9 s après.
+- Correction : le test pose une écoute `system` avant la jonction et attend
+  `Subscribed to PostgreSQL` sur le canal de B (20 s max) avant d'écrire.
+- Fenêtre identique avec un canal public (comportement de Realtime, pas du
+  canal privé). En prod, le signal broadcast envoyé après l'insertion couvre un
+  message écrit dans cette fenêtre.

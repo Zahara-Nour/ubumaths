@@ -12,7 +12,9 @@
  *   2. Signal forgé par un participant (expéditeur « prof », contenu inventé) :
  *      B affiche la ligne de la base, jamais le payload ; un id inconnu → rien.
  *   3. postgres_changes marche sur le canal privé : une ligne insérée sans
- *      broadcast arrive chez B.
+ *      broadcast arrive chez B. On écrit APRÈS l'annonce « Subscribed to
+ *      PostgreSQL » du serveur : `SUBSCRIBED` arrive avant que l'écoute soit
+ *      armée (2,5 s plus tard en CI, run 37152839565).
  *   4. O (authentifié, non participant) : abonnement REFUSÉ, rien reçu. C'est
  *      le test qui échoue si le store repasse en canal public.
  *
@@ -40,6 +42,13 @@ interface Session {
 	client: Client;
 	store: ModuleChat['chatStore'];
 	realtime: ModuleRealtime['supabaseRealtimeManager'];
+	/**
+	 * Canaux dont le serveur a annoncé `Subscribed to PostgreSQL` (événement
+	 * `system`, statut `ok`). `SUBSCRIBED` ne dit que « jonction acceptée » :
+	 * l'écoute postgres_changes est armée APRÈS, de façon asynchrone (2,5 s en CI
+	 * à froid). Une ligne écrite entre les deux n'est jamais livrée.
+	 */
+	postgresPrets: Set<string>;
 }
 
 // ============================================================================
@@ -52,6 +61,9 @@ const service = createServiceRoleClient();
 
 /** Délai d'attente d'un message : au-delà, on conclut qu'il n'arrivera pas. */
 const ATTENTE_MS = 4_000;
+
+/** Délai d'armement de postgres_changes côté serveur (démarrage à froid inclus). */
+const ARMEMENT_POSTGRES_MS = 20_000;
 
 // ============================================================================
 // HELPERS
@@ -68,7 +80,32 @@ async function ouvrirSession(email: string, userId: string): Promise<Session> {
 	const { supabaseRealtimeManager } = await import('$lib/stores/supabaseRealtime.svelte');
 	supabaseRealtimeManager.init(client, userId);
 	chatStore.init(client, userId, { full_name: null, avatar_url: null });
-	return { client, store: chatStore, realtime: supabaseRealtimeManager };
+
+	// Écoute posée AVANT la jonction (dans createChannel) : l'événement
+	// « Subscribed to PostgreSQL » ne peut pas passer avant nous.
+	const postgresPrets = new Set<string>();
+	const createChannel = supabaseRealtimeManager.createChannel.bind(supabaseRealtimeManager);
+	vi.spyOn(supabaseRealtimeManager, 'createChannel').mockImplementation((name, options) => {
+		const channel = createChannel(name, options);
+		channel.on('system', {} as never, (payload: { status?: string; message?: string }) => {
+			if (payload?.status === 'ok' && payload.message?.includes('PostgreSQL')) {
+				postgresPrets.add(name);
+			}
+		});
+		return channel;
+	});
+
+	return { client, store: chatStore, realtime: supabaseRealtimeManager, postgresPrets };
+}
+
+/** Attend que le serveur ait armé postgres_changes sur `canal` ; faux si jamais. */
+async function attendrePostgresPret(session: Session, canal: string): Promise<boolean> {
+	const fin = Date.now() + ARMEMENT_POSTGRES_MS;
+	while (Date.now() < fin) {
+		if (session.postgresPrets.has(canal)) return true;
+		await attendre(50);
+	}
+	return false;
 }
 
 async function attendre(ms: number): Promise<void> {
@@ -215,6 +252,12 @@ describe('Chat : le store client sur le canal privé', { timeout: 120_000 }, () 
 	});
 
 	it('postgres_changes marche sur le canal privé : une ligne écrite sans broadcast arrive chez B', async () => {
+		// État prêt, pas un délai : on écrit une fois l'écoute armée par le serveur.
+		expect(
+			await attendrePostgresPret(sessionB, `chat-${conv}`),
+			'postgres_changes jamais armé sur le canal privé de B'
+		).toBe(true);
+
 		const id = await insererMessage(conv, a.id, 'écrit sans broadcast');
 		const recu = await attendreMessage(sessionB, conv, (m) => m.id === id);
 		expect(recu, 'postgres_changes muet sur le canal privé').toBeDefined();
