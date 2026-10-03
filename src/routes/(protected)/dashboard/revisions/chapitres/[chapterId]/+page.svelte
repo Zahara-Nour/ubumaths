@@ -18,9 +18,9 @@
 	let { data }: { data: PageData } = $props();
 
 	function handleBack() {
-		goto(resolve('/dashboard/student/cours/[chapterId]', { chapterId: data.chapter.id })).then(
-			() => {}
-		);
+		goto(
+			resolve('/(protected)/dashboard/student/cours/[chapterId]', { chapterId: data.chapter.id })
+		).then(() => {});
 	}
 </script>
 
