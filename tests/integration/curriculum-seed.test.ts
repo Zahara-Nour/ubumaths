@@ -5,7 +5,7 @@
  *   - 6ᵉ      → `20260621160000_seed_curriculum_6e.sql`
  *   - 1ʳᵉ spé → `20260830090000_seed_curriculum_1re_spe.sql`
  *   - 2de     → `20260903090000_seed_curriculum_2de.sql`
- *   - Tˡᵉ spé → `20261004090000_seed_curriculum_terminale_spe.sql`
+ *   - Tˡᵉ spé → `20261004100000_seed_curriculum_terminale_spe.sql`
  *     (tous générés par `scripts/generate-curriculum-seed.ts`)
  *
  * Ces tests ne re-valident pas le contenu pédagogique (c'est la relecture du
@@ -272,7 +272,7 @@ describe('Seed du programme — terminale spécialité', () => {
 	it('sort sans rien faire si le niveau existe déjà', () => {
 		const seed = readFileSync(
 			new URL(
-				'../../supabase/migrations/20261004090000_seed_curriculum_terminale_spe.sql',
+				'../../supabase/migrations/20261004100000_seed_curriculum_terminale_spe.sql',
 				import.meta.url
 			),
 			'utf8'
