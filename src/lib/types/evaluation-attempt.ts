@@ -42,6 +42,20 @@ export interface CorrectedAnswer {
 	choiceIndexes?: number[];
 }
 
+/**
+ * Détail INDISPONIBLE (Q173) : budget de recalcul épuisé, question non corrigée
+ * faute de budget, ou validateur en échec. Aucun statut par case : un statut
+ * deviné peut être faux ; seul le statut ENREGISTRÉ de la question est sûr.
+ */
+export interface UnavailableDetail {
+	unavailable: true;
+	/** Statut enregistré (celui de la note) */
+	status: ValidationStatus;
+}
+
+/** Détail d'une question corrigée : recalculé case par case, ou indisponible */
+export type CorrectedDetail = DetailedVerdict | UnavailableDetail;
+
 /** Une question corrigée par le serveur, renvoyée APRÈS l'envoi */
 export interface CorrectedQuestion {
 	position: number;
@@ -56,10 +70,10 @@ export interface CorrectedQuestion {
 	feedback?: string;
 	/**
 	 * Statut de chaque case (QCM : de chaque choix), RECALCULÉ par le serveur à
-	 * l'affichage (Q102 a, jamais stocké) ; statut global = `status`. Absent :
-	 * l'affichage n'en recalcule pas (repli sur le statut global).
+	 * l'affichage (Q102 a, jamais stocké) ; statut global = `status`.
+	 * Indisponible (Q173) : statut de la question seul, aucun statut par case.
 	 */
-	detail?: DetailedVerdict;
+	detail?: CorrectedDetail;
 }
 
 /** Réponse de `POST /api/evaluations/attempts/[id]/submit` */

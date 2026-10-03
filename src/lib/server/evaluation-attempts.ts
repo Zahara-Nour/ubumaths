@@ -47,7 +47,7 @@ import {
 	type SubmittedAnswer
 } from '$lib/questions/grading';
 import { gradeWithinBudget, type GradingBudget } from '$lib/server/grading-budget';
-import { detailsWithinBudget } from '$lib/server/corrected-detail';
+import { detailsWithinBudget, submittedCopyDetails } from '$lib/server/corrected-detail';
 import type { ValidationStatus } from '$lib/questions/types';
 import type { SeriesReview } from '$lib/server/srs/record-series-reviews';
 import { toQuestionTemplate, type QuestionTemplateRow } from '$lib/types/question-template';
@@ -550,6 +550,18 @@ function withDetails(
 	return questions.map((question, index) => ({ ...question, detail: details[index] }));
 }
 
+/** Statuts par case d'une copie déjà notée relue : budget réduit (Q173) */
+function withSubmittedCopyDetails(
+	questions: readonly CorrectedQuestion[],
+	budget: GradingBudget | undefined
+): CorrectedQuestion[] {
+	const details = submittedCopyDetails(questions, {
+		budgetMs: budget?.budgetMs,
+		clock: budget?.clock
+	});
+	return questions.map((question, index) => ({ ...question, detail: details[index] }));
+}
+
 /**
  * Envoyer une tentative : corriger, noter, enregistrer.
  *
@@ -807,7 +819,8 @@ export async function readSubmittedCopy(
 			pointsEarned: Number(session.points_earned ?? 0),
 			totalQuestions: questions.length,
 			correctCount: corrected.filter((q) => q.isCorrect).length,
-			questions: withDetails(corrected, actors.gradingBudget)
+			// Relecture seule (renvoi → 409) : budget réduit (Q173)
+			questions: withSubmittedCopyDetails(corrected, actors.gradingBudget)
 		};
 	} catch (e) {
 		console.error('[evaluation-attempts] Copie notée non reconstruite :', e);

@@ -37,6 +37,13 @@ export interface GradingBudget {
 
 // Constantes
 export const SUBMISSION_GRADING_BUDGET_MS = 5_000;
+/**
+ * Budget du recalcul des statuts par case d'une copie DÉJÀ notée relue (renvoi
+ * → 409, Q173). Mesure : une copie normale se recalcule en 0,1-0,3 ms, une
+ * copie hostile en ~2 s. 1 s laisse plus de 3 000 fois la marge d'une copie
+ * normale et coupe une copie hostile de moitié ; au-delà, détail indisponible.
+ */
+export const SUBMITTED_COPY_DETAIL_BUDGET_MS = 1_000;
 export const GRADING_BUDGET_EXCEEDED_FEEDBACK =
 	'Réponse trop complexe pour être corrigée : simplifie ton écriture.';
 

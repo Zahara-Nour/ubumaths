@@ -560,11 +560,17 @@ describe('évaluation notée, corrigée par le serveur (chantier 5)', () => {
 			// Statut servi = statut enregistré (celui de la note)
 			expect(questions.map((q) => q.detail?.status)).toEqual(['correct', 'incorrect', 'correct']);
 			// Les cases recalculées redonnent ce statut (non-régression)
-			for (const q of questions.filter((x) => (x.instance.blanks?.length ?? 0) > 0)) {
-				expect(statusFromBlankStatuses(q.detail!.blanks.map((b) => b.status))).toBe(q.status);
-			}
+			// (copie normale : jamais « détail indisponible », Q173)
+			const details = questions.map((q) => {
+				if (!q.detail || 'unavailable' in q.detail) throw new Error('détail indisponible');
+				return q.detail;
+			});
+			questions.forEach((q, i) => {
+				if ((q.instance.blanks?.length ?? 0) === 0) return;
+				expect(statusFromBlankStatuses(details[i].blanks.map((b) => b.status))).toBe(q.status);
+			});
 			// QCM : les choix cochés (indices d'origine) avec leur issue
-			expect(questions[2].detail?.choices?.filter((c) => c.checked).length).toBeGreaterThan(0);
+			expect(details[2].choices?.filter((c) => c.checked).length).toBeGreaterThan(0);
 			expect(allKeys(JSON.parse(JSON.stringify(copy))).has('seed')).toBe(false);
 		});
 

@@ -130,4 +130,48 @@ describe('EvaluationResults', () => {
 		expect(first.textContent).toContain('Écris-le autrement.');
 		expect(first.querySelector('code')).toBeNull();
 	});
+
+	it('Q173 : détail indisponible → statut de la question, aucun statut par case', async () => {
+		// Deux cases : 1 juste + 1 fausse, mais le budget de recalcul était épuisé
+		const result = response();
+		result.questions[0] = {
+			...result.questions[0],
+			instance: {
+				...instance('7'),
+				statement: `$\\placeholder[0]{}$ et $\\placeholder[1]{}$` as ResolvedMarkdown,
+				blanks: [
+					{ expectedAnswer: '7', type: 'math' },
+					{ expectedAnswer: '8', type: 'math' }
+				]
+			},
+			answer: { values: ['7', '9'] },
+			status: 'incorrect',
+			points: 0,
+			isCorrect: false,
+			detail: { unavailable: true, status: 'incorrect' }
+		};
+		const { container } = await renderInMain(result);
+		const first = container.querySelectorAll('.flip-front')[0];
+		expect(first.querySelector('[data-testid="global-verdict"]')?.getAttribute('data-kind')).toBe(
+			'incorrect'
+		);
+		expect(first.querySelector('[data-testid="detail-unavailable"]')?.textContent).toContain(
+			'Détail indisponible'
+		);
+		// Aucun verdict par case : ni « Ta réponse » colorée, ni comparaison, ni étiquette
+		expect(first.querySelector('[data-kind="your-answer"]')).toBeNull();
+		expect(first.querySelector('[data-kind="comparison"]')).toBeNull();
+		expect(first.querySelector('[data-fill-statuses]')).toBeNull();
+		expect(first.querySelector('[data-status-label]')).toBeNull();
+		expect(
+			first.querySelector(
+				'[data-status="correct"], [data-status="incorrect"], [data-status="unoptimal"]'
+			)
+		).toBeNull();
+	});
+
+	it('Q173 : détail disponible → pas de mention « Détail indisponible »', async () => {
+		const { container } = await renderInMain(response());
+		expect(container.querySelector('[data-testid="detail-unavailable"]')).toBeNull();
+	});
 });
