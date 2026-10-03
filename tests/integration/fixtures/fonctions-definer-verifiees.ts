@@ -21,33 +21,11 @@
  * corps. Si elle ne contrôle pas l'appelant : la corriger (garde
  * `auth.uid()`, cf. migrations `rpc_lot*`) ou révoquer EXECUTE.
  *
- * ── En attente de décision (absentes EXPRÈS : le test échoue sur elles) ──
+ * ── Lot 5 (migration 20261003230000_rpc_lot5_gardes_restantes) ──────────
  *
- * Ces fonctions sont appelables par un élève et ne contrôlent pas l'appelant
- * (relevé du 2026-10-03, rapport du garde-fou Q145) :
- *   - award_achievement_manual : la « garde » vérifie que l'ÉLÈVE CIBLE est
- *     inscrit dans une classe, pas que l'appelant est prof → un élève s'attribue
- *     (ou attribue à un autre) les succès « event_based » (points, gidouilles).
- *   - record_listing_view : vue d'annonce enregistrée au nom de p_user_id
- *     quelconque, compteur de vues gonflé (sa sœur _batch est gardée, lot 4).
- *   - check_and_unlock_achievements, update_student_observable_state : écrivent
- *     sur le compte d'un autre (recalcul, valeurs non choisies par l'appelant).
- *   - get_students_in_class : identifiants des élèves actifs de n'importe
- *     quelle classe.
- *   - validate_1on1_chat_creation : dit si deux autres comptes sont amis et
- *     ont déjà une conversation.
- *   - get_teacher_classes_for_messaging : nom et effectif de toutes les
- *     classes actives, aucune garde prof malgré son nom.
- *   - lecture d'un fait sur le compte d'un autre, par identifiant :
- *     calculate_daily_challenge_gidouilles, calculate_minesweeper_gidouilles
- *     (×2), check_achievement_prerequisites, check_daily_trade_limit,
- *     check_marketplace_enabled, get_next_riddle_attempt_number,
- *     get_user_frequent_templates, is_conversation_participant,
- *     is_kanban_board_member, is_riddle_assigned_to_student,
- *     student_has_exercise_access(p_exercise_id, p_student_id),
- *     can_participate_in_tournament, can_moderate_message,
- *     validate_attachment_upload, validate_class_message_recipients,
- *     validate_message_recipients.
+ * Les 24 fonctions relevées au premier passage du garde-fou (2026-10-03) ont
+ * été gardées (8, entrées « lot 5 » ci-dessous) ou rendues au seul client
+ * service (16, REVOKE authenticated : absentes de la liste).
  */
 
 // ============================================================================
@@ -178,6 +156,32 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'upsert_user_presence(p_user_id uuid, p_status text)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id'
+	},
+
+	// ── Lot 5 : soi, ou prof / admin ──────────────────────────────────────────
+	'can_moderate_message(moderator_uuid uuid, message_uuid uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde moderator_uuid = auth.uid() ou is_teacher_or_admin (lot 5)'
+	},
+	'is_conversation_participant(p_conversation_id uuid, p_user_id uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde p_user_id = auth.uid() ou is_teacher_or_admin (lot 5)'
+	},
+	'is_riddle_assigned_to_student(p_riddle_id uuid, p_student_id uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde p_student_id = auth.uid() ou is_teacher_or_admin (lot 5)'
+	},
+	'student_has_exercise_access(p_exercise_id uuid, p_student_id uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde p_student_id = auth.uid() ou is_teacher_or_admin (lot 5)'
+	},
+	'check_daily_trade_limit(p_user_id uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'
+	},
+	'check_marketplace_enabled(p_student_id uuid)': {
+		categorie: 'compte-appelant-ou-prof',
+		justification: 'garde soi, ami (is_friend, partenaire d’échange) ou prof/admin (lot 5)'
 	},
 
 	// ── Comptes : soi-même, ou prof / admin ───────────────────────────────────
@@ -411,6 +415,14 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'add_student_gidouilles(p_student_id uuid, p_amount integer)': {
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin, puis élève inscrit'
+	},
+	'award_achievement_manual(p_student_id uuid, p_achievement_id text, p_reason text)': {
+		categorie: 'prof',
+		justification: 'is_teacher_or_admin (lot 5), puis élève inscrit dans une classe'
+	},
+	'get_teacher_classes_for_messaging()': {
+		categorie: 'prof',
+		justification: 'is_teacher_or_admin, refus 42501 (lot 5)'
 	},
 	'add_warning(p_student_id uuid, p_class_id uuid, p_academic_period_id uuid, p_warning_type text)':
 		{
