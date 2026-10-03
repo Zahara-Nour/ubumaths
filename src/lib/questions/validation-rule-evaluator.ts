@@ -511,9 +511,26 @@ function resolveExpression(expr: string, variables: Record<string, number | stri
 }
 
 /**
+ * Valeur substituée telle quelle : nombre positif ou nul, décimal à point ou à
+ * virgule (`2,5`, qu'une parenthèse transformerait en couple), ou nom seul.
+ */
+const ATOMIC_VALUE_REGEX = /^\s*(\d+([.,]\d+)?|[A-Za-z]+)\s*$/;
+
+/**
+ * Texte substitué à `{{name}}` : une valeur négative ou une expression est mise
+ * entre parenthèses, comme `answer` dans `substituteVariable`. Sans elles, p = −3
+ * donnait `answer^2 + -3` (illisible) et `{{p}}^2` valait −9.
+ */
+function substitutedValue(value: number | string): string {
+	const text = String(value);
+	return ATOMIC_VALUE_REGEX.test(text) ? text : `(${text})`;
+}
+
+/**
  * Resolve variable references in an expression string
  *
- * Replaces {{varName}} with the corresponding variable value
+ * Replaces {{varName}} with the corresponding variable value (parenthesized
+ * when negative or compound, cf. `substitutedValue`)
  */
 function resolveVariablesInExpression(
 	expr: string,
@@ -524,7 +541,8 @@ function resolveVariablesInExpression(
 	// Replace {{varName}} patterns
 	for (const [name, value] of Object.entries(variables)) {
 		const pattern = new RegExp(`\\{\\{${name}\\}\\}`, 'g');
-		resolved = resolved.replace(pattern, String(value));
+		// Fonction de remplacement : un `$` de la valeur n'est pas un motif de `replace`
+		resolved = resolved.replace(pattern, () => substitutedValue(value));
 	}
 
 	return resolved;
