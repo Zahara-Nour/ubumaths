@@ -43,7 +43,9 @@ export interface AtelierCommand {
 	readonly unavailable?: string;
 	/**
 	 * Les listes que cite l'exemple (`.simuler L M 100`) : il se joue dans un
-	 * atelier qui les contient, sur le chemin réel de l'élève (Q79).
+	 * atelier qui les contient, sur le chemin réel de l'élève (Q79). Un décor
+	 * VIDE (`.binomiale`) déclare une commande qui montre un tableau ou un
+	 * graphique sans citer de liste.
 	 */
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 }
@@ -69,7 +71,7 @@ interface Translation {
  * ferment la marche. Une liste alphabétique mettrait `.ast` en tête et
  * `.variations` en queue — l'inverse de ce dont un élève a besoin.
  */
-const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
+const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translation>([
 	[
 		'simplify',
 		{
@@ -95,6 +97,17 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 			example: '.simuler L M 100',
 			// L'exemple cite deux listes : il se joue dans cet atelier (Q79)
 			exampleSetup: { L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6' }
+		}
+	],
+	[
+		'binomial',
+		{
+			french: 'binomiale',
+			description: 'Loi binomiale B(n ; p) : tableau, E, V, σ, probabilités, intervalle, seuil',
+			example: '.binomiale X 10 0,3',
+			// Aucune liste à citer : un décor VIDE, déclaré pour que le tableau
+			// dessiné compte comme ce que montre l'exemple (Q79, Q80)
+			exampleSetup: {}
 		}
 	],
 	[
@@ -306,7 +319,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'samples',
 	'cross',
 	'filter',
-	'compare'
+	'compare',
+	'binomial'
 ]);
 
 /**

@@ -25,6 +25,7 @@ import { renderResult } from './render';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
+import { binomialCommand } from './binomial';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
@@ -253,7 +254,9 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Filtre (Q90) : lit des NOMS de listes, pas de hasard
 	filter: (atelier, argument) => filterCommand(atelier, argument),
 	// Comparer deux séries (Q112) : lit des NOMS de listes, pas de hasard
-	compare: (atelier, argument) => compareCommand(atelier, argument)
+	compare: (atelier, argument) => compareCommand(atelier, argument),
+	// Loi binomiale (Q142) : la scène du bloc ```loi, sans liste créée
+	binomial: (atelier, argument) => binomialCommand(atelier, argument)
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */
