@@ -325,35 +325,69 @@
 				</table>
 			</div>
 		{:else if law}
-			<!-- Loi d'une variable aléatoire (lot 6) : même tableau accessible que
-			     le tableau croisé, deux lignes `gᵢ` / `P(G = gᵢ)` -->
-			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
-				<table class="stat-tableau">
-					<caption id={captionId} class:stat-titre={law.title !== null}
-						>{law.title ?? law.accessibleTitle}</caption
-					>
-					<tbody>
-						<tr>
-							<th scope="row"><i>{law.variable.toLowerCase()}</i><sub>i</sub></th>
-							{#each law.values as value, i (i)}
-								<td>{value}</td>
-							{/each}
-						</tr>
-						<tr>
-							<th scope="row"
-								>P({law.variable} = <i>{law.variable.toLowerCase()}</i><sub>i</sub>)</th
-							>
-							{#each law.probabilities as cell, i (i)}
-								<td class:stat-case-vide={cell.hidden}
-									>{#if cell.hidden}<span class="sr-only">{law.hiddenLabel}</span
-										>{:else}{cell.text}{/if}</td
+			{#if law.tableHidden}
+				<!-- Loi binomiale de plus de 30 valeurs (Q138) : le nom de la loi, puis les lignes -->
+				<p class="stat-titre">{law.title ?? law.accessibleTitle}</p>
+			{:else if law.vertical}
+				<!-- Loi binomiale trop large pour une ligne : une ligne par valeur k -->
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+					<table class="stat-tableau">
+						<caption id={captionId} class:stat-titre={law.title !== null}
+							>{law.title ?? law.accessibleTitle}</caption
+						>
+						<thead>
+							<tr>
+								<th scope="col"><i>{law.variable.toLowerCase()}</i><sub>i</sub></th>
+								<th scope="col"
+									>P({law.variable} = <i>{law.variable.toLowerCase()}</i><sub>i</sub>)</th
 								>
+							</tr>
+						</thead>
+						<tbody>
+							{#each law.values as value, i (i)}
+								<tr>
+									<th scope="row">{value}</th>
+									<td class:stat-case-vide={law.probabilities[i].hidden}
+										>{#if law.probabilities[i].hidden}<span class="sr-only">{law.hiddenLabel}</span
+											>{:else}{law.probabilities[i].text}{/if}</td
+									>
+								</tr>
 							{/each}
-						</tr>
-					</tbody>
-				</table>
-			</div>
+						</tbody>
+					</table>
+				</div>
+			{:else}
+				<!-- Loi d'une variable aléatoire (lot 6) : même tableau accessible que
+				     le tableau croisé, deux lignes `gᵢ` / `P(G = gᵢ)` -->
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+					<table class="stat-tableau">
+						<caption id={captionId} class:stat-titre={law.title !== null}
+							>{law.title ?? law.accessibleTitle}</caption
+						>
+						<tbody>
+							<tr>
+								<th scope="row"><i>{law.variable.toLowerCase()}</i><sub>i</sub></th>
+								{#each law.values as value, i (i)}
+									<td>{value}</td>
+								{/each}
+							</tr>
+							<tr>
+								<th scope="row"
+									>P({law.variable} = <i>{law.variable.toLowerCase()}</i><sub>i</sub>)</th
+								>
+								{#each law.probabilities as cell, i (i)}
+									<td class:stat-case-vide={cell.hidden}
+										>{#if cell.hidden}<span class="sr-only">{law.hiddenLabel}</span
+											>{:else}{cell.text}{/if}</td
+									>
+								{/each}
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			{/if}
 		{:else if crossTable}
 			<!-- Zone de défilement focalisable : sans élément focalisable dedans, un
 			     tableau qui déborde ne défile pas au clavier (Safari macOS ; WCAG 2.1.1,
