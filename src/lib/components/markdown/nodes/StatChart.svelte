@@ -27,6 +27,7 @@
 		type StatChartScene
 	} from '$lib/ubumark/utils/stat-chart-scene';
 	import { readContentLocale } from '../content-locale';
+	import StatChart from './StatChart.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 
@@ -72,6 +73,8 @@
 	const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorScreen);
 
 	const uid = $props.id();
+	/** Motif des hachures de la seconde série (Q117) */
+	const hatchId = `${uid}-hachures`;
 	const titleId = `${uid}-titre`;
 	const captionId = `${uid}-legende-tableau`;
 	const descId = `${uid}-description`;
@@ -145,13 +148,13 @@
 	let padLeft = $derived.by(() => {
 		if (!bars) return PAD_LEFT_MIN;
 		const ticks = 12 + Math.max(...bars.ticks.map((t) => t.label.length)) * TICK_CHAR_PX;
-		const halfBand = plotWidth / bars.bars.length / 2;
+		const halfBand = plotWidth / bars.labels.length / 2;
 		return Math.max(PAD_LEFT_MIN, ticks, rotatedExtent - halfBand + 6);
 	});
 
 	/** Abscisse d'écran d'une position en catégories */
 	function sx(x: number): number {
-		return bars ? padLeft + (x / bars.bars.length) * plotWidth : 0;
+		return bars ? padLeft + (x / bars.labels.length) * plotWidth : 0;
 	}
 
 	/** Ordonnée d'écran d'une valeur */
@@ -345,6 +348,28 @@
 				<title id={titleId}>{scene.accessibleTitle}</title>
 				<desc id={descId}>{scene.description}</desc>
 
+				{#if bars.secondColor}
+					<!-- Seconde série : hachures diagonales (Q117), lisibles sans la couleur -->
+					<defs>
+						<pattern
+							id={hatchId}
+							width="6"
+							height="6"
+							patternUnits="userSpaceOnUse"
+							patternTransform="rotate(45)"
+						>
+							<line
+								x1="0"
+								y1="0"
+								x2="0"
+								y2="6"
+								stroke-width="2.5"
+								style:stroke={COLOR_VAR[bars.secondColor]}
+							/>
+						</pattern>
+					</defs>
+				{/if}
+
 				<!-- Graduations -->
 				<g class="stat-graduations" aria-hidden="true">
 					{#each bars.ticks as tick, i (i)}
@@ -370,11 +395,16 @@
 						y={sy(bar.value)}
 						width={sx(bar.right) - sx(bar.left)}
 						height={sy(0) - sy(bar.value)}
-						style:fill={COLOR_VAR[bars.color]}
+						class:stat-barre-hachuree={bar.series === 1}
+						style:fill={bar.series === 1 ? `url(#${hatchId})` : COLOR_VAR[bars.color]}
+						style:stroke={bar.series === 1 && bars.secondColor
+							? COLOR_VAR[bars.secondColor]
+							: undefined}
 					/>
 					{#if bars.showValues}
 						<text
 							class="stat-valeur"
+							class:stat-valeur-serree={bars.legend !== null}
 							x={(sx(bar.left) + sx(bar.right)) / 2}
 							y={sy(bar.value) - 4}
 							text-anchor="middle">{bar.valueLabel}</text
@@ -384,17 +414,17 @@
 
 				<!-- Noms des catégories -->
 				<g class="stat-categories" aria-hidden="true">
-					{#each bars.bars as bar, i (i)}
-						{@const cx = (sx(bar.left) + sx(bar.right)) / 2}
+					{#each bars.labels as label, i (i)}
+						{@const cx = sx(label.center)}
 						{#if bars.rotateLabels}
 							<text
 								x={cx}
 								y={sy(0) + 10}
 								text-anchor="end"
-								transform="rotate(-45 {cx} {sy(0) + 10})">{bar.label}</text
+								transform="rotate(-45 {cx} {sy(0) + 10})">{label.text}</text
 							>
 						{:else}
-							<text x={cx} y={sy(0) + 16} text-anchor="middle">{bar.label}</text>
+							<text x={cx} y={sy(0) + 16} text-anchor="middle">{label.text}</text>
 						{/if}
 					{/each}
 				</g>
@@ -418,6 +448,30 @@
 					{/if}
 				</g>
 			</svg>
+			{#if bars.legend && bars.secondColor}
+				<!-- Légende des deux séries (Q117) : la couleur, puis les hachures -->
+				<ul class="stat-legende-series">
+					{#each bars.legend as name, i (i)}
+						<li>
+							<svg width="12" height="12" aria-hidden="true">
+								<rect
+									x="0.5"
+									y="0.5"
+									width="11"
+									height="11"
+									style:fill={i === 0 ? COLOR_VAR[bars.color] : `url(#${hatchId})`}
+									style:stroke={i === 0 ? 'none' : COLOR_VAR[bars.secondColor]}
+								/>
+							</svg>
+							{name}
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			{#if bars.indicatorTable}
+				<!-- Indicateurs des deux séries (Q118) : le tableau de `.comparer` -->
+				<StatChart scene={bars.indicatorTable} />
+			{/if}
 		{:else if classChart}
 			<svg
 				role="img"
@@ -868,9 +922,33 @@
 		border-top-width: 3px;
 	}
 
+	/* Deux barres par bande : des valeurs plus petites, comme dans le PDF (revue) */
+	.stat-svg .stat-valeur-serree {
+		font-size: 8px;
+	}
+
+	.stat-legende-series {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+		margin: 0.25rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.875rem;
+	}
+
+	.stat-legende-series li {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
 	.stat-serie {
 		margin-bottom: 0.5rem;
 		overflow-wrap: anywhere;
+		/* Deux séries : une ligne chacune */
+		white-space: pre-line;
 	}
 
 	.stat-legende-aire,

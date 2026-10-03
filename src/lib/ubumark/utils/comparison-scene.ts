@@ -47,9 +47,14 @@ function cellText(header: string, value: number, locale: ContentLocale): string 
 	return formatApproxValue(value, locale).replace(/^= /, '');
 }
 
+/**
+ * @param only les lignes voulues, dans cet ordre (`indicateurs:` d'un bloc à
+ *   deux séries, Q118) ; toutes, groupées, par défaut (`.comparer`)
+ */
 export function buildComparisonScene(
 	series: readonly { name: string; summary: Summary }[],
-	locale: ContentLocale = 'fr'
+	locale: ContentLocale = 'fr',
+	only?: readonly string[]
 ): ComparisonScene {
 	const names = series.map((s) => s.name);
 	const title = `Comparaison de ${names.join(' et ')}`;
@@ -61,10 +66,14 @@ export function buildComparisonScene(
 		pixelSize: { width: 0, height: 0 },
 		indicators: [],
 		columns: names,
-		rows: ROWS.map((row) => ({
+		rows: (only === undefined
+			? ROWS
+			: only.flatMap((header) => ROWS.filter((row) => row.header === header))
+		).map((row) => ({
 			header: row.header,
 			cells: series.map((s) => cellText(row.header, row.value(s.summary), locale)),
-			groupStart: row.group === true
+			// Groupes marqués seulement pour le tableau complet
+			groupStart: only === undefined && row.group === true
 		}))
 	};
 }

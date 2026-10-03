@@ -194,7 +194,24 @@ export interface StatChartSpec {
 	 */
 	rawValues: number[] | null;
 	/** `série:` (lot 4 PR c, Q106) : la série brute écrite dans la fiche, sinon null */
-	series: { mode: SeriesMode; values: { text: string; numeric: boolean }[] } | null;
+	series: {
+		mode: SeriesMode;
+		/** Une ligne par série ; `name` null pour la série unique d'un `données:` */
+		lines: { name: string | null; values: { text: string; numeric: boolean }[] }[];
+	} | null;
+	/**
+	 * Deux séries nommées (`données Garçons: …`, lot 5 PR b, Q115) : barres
+	 * groupées. `data` porte les catégories (valeurs réunies), sinon null.
+	 */
+	twoSeries: {
+		names: [string, string];
+		/** Effectif de chaque catégorie de `data`, série par série */
+		counts: [number[], number[]];
+		/** Q116 : fréquences si les effectifs totaux diffèrent, sinon effectifs ; `afficher:` force */
+		display: 'effectifs' | 'fréquences';
+		/** Valeurs brutes, pour les indicateurs (null pour des mots) */
+		values: [number[], number[]] | null;
+	} | null;
 }
 
 // ============================================================================
@@ -265,6 +282,8 @@ export const STAT_CHART_LIMITS = {
 	simulationSamples: 1000,
 	/** Tirages en tout du mode `échantillons` (N × n) */
 	simulationSampleDraws: 100_000,
+	/** Valeurs différentes de deux séries : deux barres chacune (30 barres, Q115) */
+	twoSeriesCategories: 15,
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
 	/** Caractères d'un nom de catégorie */

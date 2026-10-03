@@ -19,14 +19,15 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { deleteAllResolvedErrors } from '$lib/server/errorMonitoring';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 export const POST: RequestHandler = async ({ locals }) => {
 	// SECURITY: Require admin role
 	await requireRole(locals, 'admin');
 
 	try {
-		// Execute deletion
-		const result = await deleteAllResolvedErrors(locals.supabase);
+		// Rôle admin vérifié ci-dessus ; la fonction est réservée au serveur (Q143).
+		const result = await deleteAllResolvedErrors(createServiceRoleClient());
 
 		if (!result.success) {
 			throw error(500, result.error || 'Failed to delete resolved errors');

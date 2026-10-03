@@ -172,7 +172,8 @@ export function buildSampleMeansScene(
 		law: null,
 		simulation: null,
 		rawValues: null,
-		series: null
+		series: null,
+		twoSeries: null
 	};
 	const scene = buildStatChartScene(spec, { locale }) as HistogramScene;
 
