@@ -14,6 +14,9 @@
  *   --instances N   tirages par variation (défaut : 50)
  *   --apercu N      affiche N instances générées (énoncé, réponses attendues, correction)
  *
+ * Avertissements (« Avertissement : … ») : à relire, sans effet sur le verdict ni sur
+ * le code de sortie — ex. variable qui peut être négative citée sans parenthèses.
+ *
  * Code de sortie : 0 si tout est importable, 1 sinon (aucune spec = échec).
  */
 
@@ -125,9 +128,13 @@ async function main(): Promise<number> {
 			if (!report.passed) failures++;
 			const specs = `${report.specs.filter((s) => s.passed).length}/${report.specs.length} specs`;
 			const draws = `${report.generation.attempts - report.generation.failures.length}/${report.generation.attempts} tirages`;
+			const warnings = report.warnings.length
+				? ` — ⚠️ ${report.warnings.length} avertissement(s)`
+				: '';
 			console.log(
-				`#${review.globalIndex} ${review.verdict} — ${specs}, ${draws} — ${report.passed ? '✅' : `❌ ${report.reasons.join(', ')}`}`
+				`#${review.globalIndex} ${review.verdict} — ${specs}, ${draws} — ${report.passed ? '✅' : `❌ ${report.reasons.join(', ')}`}${warnings}`
 			);
+			for (const warning of report.warnings) console.log(`    ⚠️  ${warning}`);
 		}
 		console.log(`\n${reviews.length} verdict(s) analysé(s), ${failures} non importable(s).`);
 		return failures === 0 && reviews.length > 0 ? 0 : 1;

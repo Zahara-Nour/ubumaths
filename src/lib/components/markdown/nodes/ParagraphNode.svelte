@@ -45,6 +45,8 @@
 	interface Props {
 		children: InlineNode[];
 		class?: string;
+		/** Élément englobant : `span` dans une cellule de tableau (ni marge ni style de paragraphe) */
+		element?: 'p' | 'span';
 		/** Unified input states for both text blanks and math prompts */
 		inputs?: InputState[];
 		/** Callback when any input value changes (text or math) */
@@ -84,6 +86,7 @@
 	let {
 		children,
 		class: className = '',
+		element = 'p',
 		inputs = [],
 		onInputChange,
 		onInputSubmit,
@@ -154,7 +157,7 @@
 	}
 </script>
 
-<p class="mb-4 text-foreground {className}">
+<svelte:element this={element} class="{element === 'p' ? 'mb-4' : ''} text-foreground {className}">
 	{#each children as child, index (index)}
 		{#if child.type === 'text'}
 			{@const prevIsInlineBlock = isInlineBlockNode(children[index - 1])}
@@ -308,7 +311,7 @@
 			{#if child.hard}<br />{/if}
 		{/if}
 	{/each}
-</p>
+</svelte:element>
 
 <style>
 	.flash-blank {
