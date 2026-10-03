@@ -131,7 +131,8 @@ describe('14 — barème serveur = verdict du navigateur', () => {
 	it.each([
 		['y=2x+1', LINE, 'correct', 1],
 		['x^2+y^2-2x+4y-4=0', CIRCLE, 'correct', 1],
-		['-x^2-y^2+2x-4y+4=0', CIRCLE, 'unoptimal_form', 0.5],
+		['-x^2-y^2+2x-4y+4=0', CIRCLE, 'correct', 1],
+		['-2x^2-2y^2+4x-8y+8=0', CIRCLE, 'unoptimal_form', 0.5],
 		['2x-y+2=0', LINE, 'incorrect', 0],
 		['', LINE, 'empty', 0]
 	])('%s (attendu %s) → %s', (answer, expected, status, points) => {

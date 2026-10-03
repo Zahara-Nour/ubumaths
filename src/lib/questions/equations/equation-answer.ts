@@ -12,8 +12,11 @@
  * - la réponse est juste si P_rép = k·P_att, k constante non nulle
  *   (proportionnalité vérifiée par produits en croix, exacts) ;
  * - degré 1 (droite) : tout k → `correct` (`y = 2x + 1`, `4x − 2y + 2 = 0`…) ;
- * - degré ≥ 2 (cercle) : k = 1 → `correct` (forme centre-rayon ou développée,
- *   `3^2` ou `9`) ; k ≠ 1, y compris −1 → `unoptimal_form` (½), à simplifier ;
+ * - degré ≥ 2 (cercle) : l'équation ramenée au coefficient 1 du terme de
+ *   référence (x², sinon y², sinon le premier terme de plus haut degré dans
+ *   l'ordre canonique de mathAST) ; réponse de coefficient ±1 → `correct` (forme
+ *   centre-rayon ou développée, `3^2` ou `9`, membres échangés) ; |k| ≠ 1 →
+ *   `unoptimal_form` (½), à simplifier (décision du 2026-10-03) ;
  * - forme exigée (`requiredForm` : `reduite`, `cartesienne`, `centre-rayon`) non
  *   respectée par une équation juste → `bad_form` ;
  * - pas une équation, non polynomiale, autres variables, illisible → `incorrect`,
@@ -27,7 +30,7 @@ import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { AlgebraicCoefficient, NormalTerm } from '$lib/mathAST/normal/types';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { normalize } from '$lib/mathAST/normal';
-import { algebraicEquals, mulAlgebraic } from '$lib/mathAST/normal/algebraic';
+import { algebraicEquals, mulAlgebraic, negAlgebraic } from '$lib/mathAST/normal/algebraic';
 import { getMonomialSignature } from '$lib/mathAST/normal/term';
 import { subtract, variable } from '$lib/mathAST/factory';
 import { flattenSumShallow } from '$lib/mathAST/flatten';
@@ -53,6 +56,11 @@ interface EquationPolynomial {
 	degree: number;
 	/** P contient un terme en x² */
 	hasXSquared: boolean;
+	/**
+	 * Terme de référence du coefficient 1 (degré ≥ 2) : x², sinon y², sinon le
+	 * premier terme de plus haut degré dans l'ordre canonique de mathAST
+	 */
+	referenceIndex: number;
 }
 
 type ReadEquation =
@@ -150,8 +158,10 @@ function polynomialOf(relation: RelationNode): EquationPolynomial | null {
 	}
 
 	let degree = 0;
-	let hasXSquared = false;
-	for (const term of form.numerator) {
+	let xSquaredIndex = -1;
+	let ySquaredIndex = -1;
+	let topIndex = -1;
+	for (const [index, term] of form.numerator.entries()) {
 		if (!isRealCoefficient(term.coefficient)) return null;
 		let termDegree = 0;
 		for (const factor of term.monomial) {
@@ -159,11 +169,15 @@ function polynomialOf(relation: RelationNode): EquationPolynomial | null {
 			if (base.type !== 'variable' || !PLANE_VARIABLES.has(base.name)) return null;
 			if (exponent.d !== 1n || exponent.n < 1n) return null;
 			termDegree += Number(exponent.n);
-			if (base.name === 'x' && exponent.n === 2n && term.monomial.length === 1) {
-				hasXSquared = true;
+			if (exponent.n === 2n && term.monomial.length === 1) {
+				if (base.name === 'x') xSquaredIndex = index;
+				else ySquaredIndex = index;
 			}
 		}
-		degree = Math.max(degree, termDegree);
+		if (termDegree > degree) {
+			degree = termDegree;
+			topIndex = index;
+		}
 	}
 	// Constante (`1 = 2`, `0 = 0`) : pas l'équation d'une courbe
 	if (degree === 0) return null;
@@ -172,7 +186,9 @@ function polynomialOf(relation: RelationNode): EquationPolynomial | null {
 		terms: form.numerator,
 		denominator: denominatorTerm.coefficient,
 		degree,
-		hasXSquared
+		hasXSquared: xSquaredIndex !== -1,
+		referenceIndex:
+			xSquaredIndex !== -1 ? xSquaredIndex : ySquaredIndex !== -1 ? ySquaredIndex : topIndex
 	};
 }
 
@@ -209,31 +225,37 @@ export function readExpectedEquation(text: string): { ok: true } | { ok: false; 
 }
 
 /**
- * Rapport k tel que P_rép = k·P_att, comparé exactement par produits en croix
- * (num_rép[i]·num_att[0] = num_att[i]·num_rép[0]). `null` : non proportionnels ;
- * sinon `unit` dit si k = 1.
+ * P_rép = k·P_att pour une constante k non nulle ? Comparé exactement par produits
+ * en croix (num_rép[i]·num_att[0] = num_att[i]·num_rép[0]).
  */
-function proportionality(
-	answer: EquationPolynomial,
-	expected: EquationPolynomial
-): { unit: boolean } | null {
+function isProportional(answer: EquationPolynomial, expected: EquationPolynomial): boolean {
 	const a = answer.terms;
 	const e = expected.terms;
-	if (a.length !== e.length || a.length === 0) return null;
+	if (a.length !== e.length || a.length === 0) return false;
 	for (let i = 0; i < a.length; i++) {
-		if (getMonomialSignature(a[i]) !== getMonomialSignature(e[i])) return null;
+		if (getMonomialSignature(a[i]) !== getMonomialSignature(e[i])) return false;
 	}
 	for (let i = 1; i < a.length; i++) {
 		const left = mulAlgebraic(a[i].coefficient, e[0].coefficient);
 		const right = mulAlgebraic(e[i].coefficient, a[0].coefficient);
-		if (!algebraicEquals(left, right)) return null;
+		if (!algebraicEquals(left, right)) return false;
 	}
-	// k = (a0 / dénRép) / (e0 / dénAtt) = 1  ⇔  a0·dénAtt = e0·dénRép
-	const unit = algebraicEquals(
-		mulAlgebraic(a[0].coefficient, expected.denominator),
-		mulAlgebraic(e[0].coefficient, answer.denominator)
+	return true;
+}
+
+/**
+ * Coefficient du terme de référence (x², sinon y², sinon premier terme de plus
+ * haut degré) égal à ±1 dans la réponse : coefficient / dénRép = ±1. L'attendue
+ * est ainsi ramenée au coefficient 1 avant de mesurer k : une attendue
+ * `2x^2+2y^2=8` n'impose pas son écriture, et le signe (membres échangés) est libre.
+ */
+function hasUnitReferenceCoefficient(answer: EquationPolynomial, referenceIndex: number): boolean {
+	const coefficient = answer.terms[referenceIndex]?.coefficient;
+	if (!coefficient) return false;
+	return (
+		algebraicEquals(coefficient, answer.denominator) ||
+		algebraicEquals(coefficient, negAlgebraic(answer.denominator))
 	);
-	return { unit };
 }
 
 // --- Formes exigées -----------------------------------------------------------
@@ -385,15 +407,17 @@ export function judgeEquationAnswer(
 			: { status: 'incorrect', feedback: EQUATION_FEEDBACK.notEquation };
 	}
 
-	const ratio = proportionality(answerRead.polynomial, expectedRead.polynomial);
-	if (!ratio) return { status: 'incorrect' };
+	if (!isProportional(answerRead.polynomial, expectedRead.polynomial)) {
+		return { status: 'incorrect' };
+	}
 
 	if (isEquationForm(requiredForm) && !matchesEquationForm(answerRead.relation, requiredForm)) {
 		return { status: 'bad_form', feedback: EQUATION_FEEDBACK.forms[requiredForm] };
 	}
 
-	// Cercle (degré ≥ 2) : l'équation se donne avec le coefficient 1 de l'attendue
-	if (expectedRead.polynomial.degree >= 2 && !ratio.unit) {
+	// Cercle (degré ≥ 2) : coefficient ±1 pour x² (sinon y², sinon le terme de référence)
+	const { degree, referenceIndex } = expectedRead.polynomial;
+	if (degree >= 2 && !hasUnitReferenceCoefficient(answerRead.polynomial, referenceIndex)) {
 		const feedback = expectedRead.polynomial.hasXSquared
 			? EQUATION_FEEDBACK.scaledSquare
 			: EQUATION_FEEDBACK.scaled;

@@ -65,7 +65,30 @@ describe('5-7 — cercle : coefficient 1 exigé', () => {
 		}
 	);
 
-	it.each(['2x^2+2y^2-4x+8y-8=0', '-x^2-y^2+2x-4y+4=0', '9=(x-1)^2+(y+2)^2'])(
+	it.each(['-x^2-y^2+2x-4y+4=0', '9=(x-1)^2+(y+2)^2', '-(x-1)^2-(y+2)^2=-9'])(
+		'%s : signe changé (|k| = 1) → juste',
+		(answer) => {
+			expect(statusOf(answer, CIRCLE)).toBe('correct');
+		}
+	);
+
+	it('attendue écrite avec un multiple : ramenée au coefficient 1 de x²', () => {
+		expect(statusOf('x^2+y^2=4', '2x^2+2y^2=8')).toBe('correct');
+		expect(statusOf('x^2+y^2-4=0', '-3x^2-3y^2+12=0')).toBe('correct');
+		const verdict = judgeEquationAnswer('2x^2+2y^2=8', '2x^2+2y^2=8');
+		expect(verdict.status).toBe('unoptimal_form');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.scaledSquare);
+	});
+
+	it('sans x² : référence y², puis premier terme de plus haut degré', () => {
+		expect(statusOf('y^2=x', '2y^2-2x=0')).toBe('correct');
+		expect(statusOf('2y^2=2x', 'y^2=x')).toBe('unoptimal_form');
+		expect(statusOf('xy=1', '2xy=2')).toBe('correct');
+		expect(statusOf('-xy=-1', 'xy=1')).toBe('correct');
+		expect(statusOf('3xy=3', 'xy=1')).toBe('unoptimal_form');
+	});
+
+	it.each(['2x^2+2y^2-4x+8y-8=0', '-2x^2-2y^2+4x-8y+8=0', '\\frac12x^2+\\frac12y^2-x+2y-2=0'])(
 		'%s : multiple → ½ avec message',
 		(answer) => {
 			const verdict = judgeEquationAnswer(answer, CIRCLE);

@@ -20,8 +20,11 @@ Sans marquage, une équation attendue est comparée comme une écriture :
   rationnels exacts, radicaux exacts). Réponse juste si P_rep = k·P_att, k constante non nulle
   (calcul exact, aucun flottant).
 - Degré 1 (droite) : tout k → `correct`.
-- Degré ≥ 2 (cercle) : k = 1 → `correct` ; k ≠ 1 (y compris −1) → `unoptimal_form`, violation
-  `form` (avertissement) « Simplifie l'équation : le coefficient de x² doit valoir 1. ».
+- Degré ≥ 2 (cercle) : |k| = 1 → `correct` ; |k| ≠ 1 → `unoptimal_form`, violation `form`
+  (avertissement) « Simplifie l'équation : le coefficient de x² doit valoir 1. ». k est mesuré
+  après avoir ramené l'attendue au coefficient 1 du terme de référence : x², sinon y², sinon le
+  premier terme de plus haut degré (ordre canonique de mathAST). Points ouverts 1 et 2 tranchés par
+  le coordinateur le 2026-10-03.
 - Formes exigeables (`requiredForm` de la case, comme les autres formes) : `reduite` (y = mx + p,
   ou x = c), `cartesienne` (ax + by + c = 0, membre droit 0), `centre-rayon`
   ((x − a)² + (y − b)² = r²). Juste mais pas sous la forme exigée → `bad_form` + message.
@@ -30,24 +33,24 @@ Sans marquage, une équation attendue est comparée comme une écriture :
 
 ## Comportements à tester
 
-| n°  | Cas                                                                                                                                             | Attendu                                         |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 1   | attendu `2x-y+1=0` : `2x-y+1=0`, `-2x+y-1=0`, `4x-2y+2=0`, `y=2x+1`, `2x-y=-1`, `y=1+2x`                                                        | correct                                         |
-| 2   | attendu `x=4` : `x-4=0`, `2x=8`, `4=x`                                                                                                          | correct                                         |
-| 3   | attendu `y=3` : `y-3=0`, `2y=6`                                                                                                                 | correct ; `x=3` incorrect                       |
-| 4   | fractions : attendu `2x-y+1=0`, réponse `x-\frac12y+\frac12=0`, `y=\frac{4x+2}{2}`                                                              | correct                                         |
-| 5   | attendu `(x-1)^2+(y+2)^2=9` : `x^2+y^2-2x+4y-4=0`, `(x-1)^2+(y+2)^2=3^2`, `9=(x-1)^2+(y+2)^2`                                                   | correct, correct, ½ (k = −1, lecture littérale) |
-| 6   | cercle multiplié : `2x^2+2y^2-4x+8y-8=0`, `-x^2-y^2+2x-4y+4=0`                                                                                  | unoptimal_form + message                        |
-| 7   | cercle centré à l'origine `x^2+y^2=4` : `x^2+y^2-4=0` correct, `x^2+y^2=2^2` correct, `x^2+y^2=2` incorrect                                     | —                                               |
-| 8   | forme `reduite` : `y=2x+1`, `y=1+2x` correct ; `x+1=y`, `2x-y+1=0`, `y=2(x+1)-1` → bad_form ; `x=4` pour une verticale correct, `2x=8` bad_form | —                                               |
-| 9   | forme `cartesienne` : `2x-y+1=0`, `-2x+y-1=0` correct ; `y=2x+1`, `2x-y=-1` → bad_form                                                          | —                                               |
-| 10  | forme `centre-rayon` : `(x-1)^2+(y+2)^2=9`, `=3^2` correct ; développée → bad_form ; `x^2+(y-1)^2=4` correct                                    | —                                               |
-| 11  | non-équations : `2x-y+1`, `x<3`, `x=\sqrt{y}`, `a+b=0`, `\frac{1}{x}=y`, `)(`, vide                                                             | incorrect (vide : empty), jamais d'exception    |
-| 12  | équation fausse : `2x-y+2=0`, `0=0`, `1=2`                                                                                                      | incorrect                                       |
-| 13  | `orderIndependent` : deux équations dans le désordre                                                                                            | correct                                         |
-| 14  | barème serveur (`gradeQuestion`) = même statut que le validateur                                                                                | —                                               |
-| 15  | réponse attendue du modèle illisible / pas une équation                                                                                         | échec du test du modèle                         |
-| 16  | sans `answerKind` : constat inchangé                                                                                                            | inchangé                                        |
+| n°  | Cas                                                                                                                                             | Attendu                                      |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1   | attendu `2x-y+1=0` : `2x-y+1=0`, `-2x+y-1=0`, `4x-2y+2=0`, `y=2x+1`, `2x-y=-1`, `y=1+2x`                                                        | correct                                      |
+| 2   | attendu `x=4` : `x-4=0`, `2x=8`, `4=x`                                                                                                          | correct                                      |
+| 3   | attendu `y=3` : `y-3=0`, `2y=6`                                                                                                                 | correct ; `x=3` incorrect                    |
+| 4   | fractions : attendu `2x-y+1=0`, réponse `x-\frac12y+\frac12=0`, `y=\frac{4x+2}{2}`                                                              | correct                                      |
+| 5   | attendu `(x-1)^2+(y+2)^2=9` : `x^2+y^2-2x+4y-4=0`, `(x-1)^2+(y+2)^2=3^2`, `9=(x-1)^2+(y+2)^2`                                                   | correct, correct, correct (\|k\| = 1)        |
+| 6   | cercle multiplié : `2x^2+2y^2-4x+8y-8=0`, `-x^2-y^2+2x-4y+4=0`                                                                                  | unoptimal_form + message                     |
+| 7   | cercle centré à l'origine `x^2+y^2=4` : `x^2+y^2-4=0` correct, `x^2+y^2=2^2` correct, `x^2+y^2=2` incorrect                                     | —                                            |
+| 8   | forme `reduite` : `y=2x+1`, `y=1+2x` correct ; `x+1=y`, `2x-y+1=0`, `y=2(x+1)-1` → bad_form ; `x=4` pour une verticale correct, `2x=8` bad_form | —                                            |
+| 9   | forme `cartesienne` : `2x-y+1=0`, `-2x+y-1=0` correct ; `y=2x+1`, `2x-y=-1` → bad_form                                                          | —                                            |
+| 10  | forme `centre-rayon` : `(x-1)^2+(y+2)^2=9`, `=3^2` correct ; développée → bad_form ; `x^2+(y-1)^2=4` correct                                    | —                                            |
+| 11  | non-équations : `2x-y+1`, `x<3`, `x=\sqrt{y}`, `a+b=0`, `\frac{1}{x}=y`, `)(`, vide                                                             | incorrect (vide : empty), jamais d'exception |
+| 12  | équation fausse : `2x-y+2=0`, `0=0`, `1=2`                                                                                                      | incorrect                                    |
+| 13  | `orderIndependent` : deux équations dans le désordre                                                                                            | correct                                      |
+| 14  | barème serveur (`gradeQuestion`) = même statut que le validateur                                                                                | —                                            |
+| 15  | réponse attendue du modèle illisible / pas une équation                                                                                         | échec du test du modèle                      |
+| 16  | sans `answerKind` : constat inchangé                                                                                                            | inchangé                                     |
 
 ## Lots
 
@@ -70,11 +73,11 @@ Sans marquage, une équation attendue est comparée comme une écriture :
       (183 importables) ; specs de la PROD (lecture seule, 789 modèles, 6 905 specs) : verdicts
       identiques avant/après, aucun modèle n'utilise `equation`.
 
-## Points ouverts (choix hors spécification, à trancher par David)
+- [x] 5 — points ouverts 1 et 2 tranchés (2026-10-03) : |k| = 1 juste pour un cercle, attendue
+      ramenée au coefficient 1 avant de mesurer k. Preuve rouge : 6 tests rouges / 113 sur le
+      commit précédent (membres échangés, signes changés, attendue `2x^2+2y^2=8`, référence y² et
+      `xy`) ; 113 verts après.
 
-- Cercle écrit membres échangés (`9=(x-1)^2+(y+2)^2`) : P = droite − gauche donne k = −1, donc ½
-  en lecture littérale de la spécification. Option : ne compter que le signe venu de l'échange
-  des membres (k = −1 juste si le membre droit porte les carrés).
-- k est mesuré par rapport à l'attendue écrite : une attendue `2x^2+2y^2=8` exigerait cette
-  écriture. Option : comparer à l'attendue ramenée au coefficient 1 de x².
+## Points ouverts (laissés tels quels)
+
 - Pas de réglage par modèle (comme `intervalForm`) pour le ½ du cercle multiplié.

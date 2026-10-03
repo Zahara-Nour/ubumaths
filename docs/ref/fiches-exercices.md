@@ -243,9 +243,11 @@ de l'éditeur) :
 
 - droite : toute équation proportionnelle est juste (`y=2x+1`, `-2x+y-1=0`, `x-4=0` et `2x=8`
   pour `x=4`, fractions comprises) ;
-- cercle (degré 2) : forme développée ou centre-rayon (`3^2` ou `9`) justes ; un multiple
-  (`2x^2+2y^2…`, et même `9=(x-1)^2+…`, membres échangés = coefficient −1) vaut ½ avec « Simplifie
-  l'équation : le coefficient de x² doit valoir 1. » → écrire l'attendue avec le coefficient 1 ;
+- cercle (degré 2) : forme développée ou centre-rayon (`3^2` ou `9`), membres échangés ou signes
+  changés, sont justes (coefficient de x² égal à ±1) ; un multiple (`2x^2+2y^2…`) vaut ½ avec
+  « Simplifie l'équation : le coefficient de x² doit valoir 1. ». L'attendue peut être écrite avec
+  n'importe quel multiple, elle est ramenée au coefficient 1 (x², sinon y², sinon le premier terme
+  de plus haut degré) ;
 - forme exigée (`requiredForm`) : `reduite` (y = mx + p, ou x = c ; `x+1=y` refusée),
   `cartesienne` (ax + by + c = 0, membre droit 0), `centre-rayon` ; juste mais autre forme →
   `bad_form` (spec : `constraintViolations: ["form"]`, comme pour un cercle à simplifier) ;
