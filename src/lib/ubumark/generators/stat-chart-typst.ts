@@ -129,7 +129,7 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		lines.push(
 			bar.series === 1 && second !== null
 				? `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: hachures, stroke: 0.6pt + ${second})`
-				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${color}, stroke: none)`
+				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${bar.highlighted === false ? OUTSIDE_COLOR : color}, stroke: none)`
 		);
 		const center = X((bar.left + bar.right) / 2);
 		if (scene.showValues) {
@@ -482,8 +482,8 @@ function lawTypst(scene: LawScene): string {
 function binomialTypst(scene: LawScene, letter: string): string {
 	const hole = '[#box(width: 0.8cm)]';
 	const cell = (p: (typeof scene.probabilities)[number]) => (p.hidden ? hole : textContent(p.text));
-	// `box` : l'en-tête « P(X = xᵢ) » ne se coupe pas en deux lignes
-	const head = [`[#box($${letter}_i$)]`, `[#box($P(${scene.variable} = ${letter}_i)$)]`];
+	// Mathématiques EN BLOC (`$ … $`) : jamais coupées ; `box` laissait « P(X = xᵢ » / « ) »
+	const head = [`[$ ${letter}_i $]`, `[$ P(${scene.variable} = ${letter}_i) $]`];
 	const cells = scene.vertical
 		? [...head, ...scene.values.flatMap((v, i) => [textContent(v), cell(scene.probabilities[i])])]
 		: [head[0], ...scene.values.map(textContent), head[1], ...scene.probabilities.map(cell)];
@@ -588,7 +588,10 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 		case 'tableau-croise':
 			return crossTableTypst(scene);
 		case 'loi':
-			return lawTypst(scene);
+			// `diagramme: oui` (loi binomiale) : les bâtons sous le tableau
+			return scene.chart === undefined
+				? lawTypst(scene)
+				: `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}`;
 		case 'simulation':
 			return simulationTypst(scene);
 		case 'comparaison':

@@ -528,6 +528,24 @@ describe('StatChart — loi binomiale (manche 11)', () => {
 		);
 	});
 
+	it('diagramme et intervalle : les bâtons hors de I en gris', async () => {
+		const node = parseStatChartContent('loi', 'X ~ B(10 ; 0,3)\ndiagramme: oui\nintervalle: 0,95');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const bars = screen.container.querySelectorAll('rect.stat-barre');
+
+		expect(bars).toHaveLength(11);
+		expect(screen.container.querySelectorAll('rect.stat-rectangle-hors')).toHaveLength(4);
+		// Le gris est bien PEINT, pas seulement une classe (revue)
+		const grey = screen.container.querySelector<SVGRectElement>('rect.stat-rectangle-hors')!;
+		const blue = screen.container.querySelector<SVGRectElement>(
+			'rect.stat-barre:not(.stat-rectangle-hors)'
+		)!;
+		expect(getComputedStyle(grey).fill).not.toBe(getComputedStyle(blue).fill);
+		expect([...screen.container.querySelectorAll('.stat-indicateurs li')][0].textContent).toBe(
+			'I = [0 ; 6] : P(X ∈ I) ≈ 0,989 ⩾ 0,95'
+		);
+	});
+
 	it('horizontal : une ligne des valeurs, une ligne des probabilités', async () => {
 		const node = parseStatChartContent('loi', 'X ~ B(5 ; 0,5)');
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

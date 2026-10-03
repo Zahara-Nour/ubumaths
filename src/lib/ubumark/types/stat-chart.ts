@@ -98,6 +98,17 @@ export interface LawData {
 		places: number;
 		/** `probabilités:` : P(low ⩽ X ⩽ high), et leur écriture normalisée */
 		queries: { display: string; low: number; high: number }[];
+		/** `diagramme: oui` : les bâtons de la loi */
+		chart: boolean;
+		/** `intervalle:` : le niveau 1 − α en fraction (`19/20`), sinon null (Q140) */
+		interval: string | null;
+		/** `seuil: P(X > k) ⩽ 0,05` (Q140), sinon null */
+		threshold: {
+			event: '>' | '⩾' | '<' | '⩽';
+			comparison: '⩽' | '⩾';
+			/** α tel qu'écrit */
+			alpha: string;
+		} | null;
 	} | null;
 }
 
@@ -127,6 +138,8 @@ export interface SimulationData {
 	mode: SimulationMode;
 	/** Nombre de tirages (modes `tirages` et `moyenne`) */
 	draws: number;
+	/** Loi binomiale (`X ~ B(n ; p)`) : valeurs et probabilités calculées, sinon null */
+	binomial: { n: number; p: string } | null;
 	/** Mode `échantillons` : N échantillons… */
 	samples: number;
 	/** … de taille n */

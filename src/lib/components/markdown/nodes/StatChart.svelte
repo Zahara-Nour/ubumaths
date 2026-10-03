@@ -388,6 +388,10 @@
 					</table>
 				</div>
 			{/if}
+			{#if law.chart}
+				<!-- `diagramme: oui` (loi binomiale) : les bâtons de la loi -->
+				<StatChart scene={law.chart} />
+			{/if}
 		{:else if crossTable}
 			<!-- Zone de défilement focalisable : sans élément focalisable dedans, un
 			     tableau qui déborde ne défile pas au clavier (Safari macOS ; WCAG 2.1.1,
@@ -490,7 +494,12 @@
 						width={sx(bar.right) - sx(bar.left)}
 						height={sy(0) - sy(bar.value)}
 						class:stat-barre-hachuree={bar.series === 1}
-						style:fill={bar.series === 1 ? `url(#${hatchId})` : COLOR_VAR[bars.color]}
+						class:stat-rectangle-hors={bar.highlighted === false}
+						style:fill={bar.series === 1
+							? `url(#${hatchId})`
+							: bar.highlighted === false
+								? 'var(--color-muted-foreground)'
+								: COLOR_VAR[bars.color]}
 						style:stroke={bar.series === 1 && bars.secondColor
 							? COLOR_VAR[bars.secondColor]
 							: undefined}

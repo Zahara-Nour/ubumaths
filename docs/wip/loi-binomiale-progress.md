@@ -19,4 +19,18 @@ seuil (surréservation). Spec PR (a) validée le 2026-10-03.
 
 ## PR (b) — `diagramme:`, `intervalle:`, `seuil:`, simulation
 
+Spec validée le 2026-10-03. ⚠️ Les exemples de la spec ([1 ; 6], k = 6) étaient faux : les
+valeurs exactes (Python) pour B(10 ; 0,3) sont I = [0 ; 6] et k = 5.
+
+- [x] `binomialInterval` (α/2 de chaque côté, exact) et `binomialThreshold` (plus petit ou plus
+      grand k selon le sens de variation) dans `statistics/binomial.ts`
+- [x] Parseur : `intervalle: 0,95 | 95 % | α = 0,05`, `seuil: P(X > k) ⩽ 0,05`, `diagramme: oui` ;
+      simulation de B(n ; p) (n ⩽ 30), probabilités exactes passées sans texte
+- [x] Scène : lignes intervalle + règle, seuil (ou « aucun k ») ; diagramme en bâtons, I en couleur,
+      hors de I en gris ; axe en probabilités (l'axe des barres montait à 1 : vu sur la fiche),
+      numéros à plat ; écran, Typst, anglais
+- [x] Fiche compilée et regardée
+- [x] Revue : aucune erreur mathématique ; niveau décimal exigé ; P(X ∈ I) avec au moins les décimales du niveau ; α du seuil dans ]0 ; 1[ ; avertissement qui cite le diagramme ; simulation n ⩽ 29 ; description « P(X = 3) ≈ 0,267 » ; en-tête Typst en maths en bloc ; tests des 8 combinaisons de seuil, d’autres niveaux, du gris peint
+- [ ] PR, CI, merge
+
 ## PR (c) — atelier `.binomiale`
