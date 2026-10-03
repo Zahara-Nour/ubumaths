@@ -156,6 +156,29 @@ toute la classe.
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
+### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
+
+Par défaut, seules f, g, h, u, v, w, F, G, H sont des fonctions : dans un modèle, `P(x)` ou
+`C(q)` sont lus comme des **produits** et `P'(2)`, `C'(x)` ne se lisent pas du tout (erreur
+rouge dans `~…~`, réponse de l'élève jamais comprise). Déclarer les lettres utilisées :
+
+```json
+"shared": { "genericFunctions": ["P", "C"] }
+```
+
+(éditeur : champ **Fonctions**, `P, C`). La liste **complète** les défauts (f reste une
+fonction ; différence avec `generic_functions` d'un exercice, qui les remplace) ; dérivées
+(`P'`, `P''`) et réciproque (`P^{-1}`) comprises. Une lettre par nom, ni `e` ni `i`, au plus 10.
+Vaut pour tout le modèle : énoncé, choix, réponses attendues, correction (y compris les étapes
+générées), réponse de l'élève, barème serveur, `testSpecs`, et l'exercice figé d'une série
+(`buildSerie` lui donne `generic_functions` = défauts ∪ fonctions déclarées).
+
+Limites connues (2026-10-03) : le **contrôle de forme** (`checkForm`) relit encore la réponse
+avec les seuls défauts — une réponse `P'(2)` juste en valeur y est « mauvaise forme » tant qu'il
+n'est pas branché ; en attendant, une case qui attend une écriture en `P'(…)` doit porter
+`options.constraints.form: "off"`. Une réponse attendue **numérique** (le cas courant : « calculer
+P'(2) », attendu `12`) n'est pas concernée.
+
 ### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
 
 Corrigés dans le moteur le 2026-10-02 (#616 et la PR `fix/pieges-generation`), ne plus
@@ -299,7 +322,8 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   (`$\overrightarrow{AB}$`, `$\vec{n}\begin{pmatrix}a\\b\end{pmatrix}$`), points
   (`$A(2\,;-1)$`), ensembles, intervalles, primes sur une autre lettre que f, g, h.
 - `~…~` refuse : grec **sans** antislash (`~alpha~` = a·l·p·h·a), grec majuscule (`\Delta`,
-  `\Omega`), `\neq`, `\geq`, `\mapsto`, les primes hors f/g/h, `k<-3` (écrire `k< -3`).
+  `\Omega`), `\neq`, `\geq`, `\mapsto`, les primes hors f/g/h (sauf fonctions déclarées : §
+  2 bis, `genericFunctions`), `k<-3` (écrire `k< -3`).
 - **Décimaux : toujours avec un point** (`~0.3~`, `$0.3$`), dans les deux langues. Jamais `0{,}3`
   (resterait une virgule en anglais).
 - Jamais de crochet `[` `]` dans le texte brut (segment : `$[AB]$`, et pas dans un titre).
