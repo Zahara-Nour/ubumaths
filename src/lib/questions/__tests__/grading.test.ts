@@ -202,6 +202,21 @@ describe('gradeQuestion : corrige une vraie instance', () => {
 		expect(verdict).toMatchObject({ status: 'bad_form', points: 0 });
 	});
 
+	it('sans ordre, arrondi non fait mais juste (1,136 pour 1,14) → bad_form, 0', () => {
+		const hundredth = { type: 'decimal', digits: 2 } as const;
+		const verdict = gradeQuestion(
+			blanksInstance(
+				[
+					{ expectedAnswer: '2.5', type: 'math', precision: hundredth },
+					{ expectedAnswer: '1.136', type: 'math', precision: hundredth }
+				],
+				{ orderIndependent: true }
+			),
+			{ values: ['1{,}136', '2{,}5'], latex: ['1{,}136', '2{,}5'] }
+		);
+		expect(verdict).toMatchObject({ status: 'bad_form', points: 0, isCorrect: false });
+	});
+
 	it('forme non optimale (form: warn) → ½', () => {
 		const verdict = gradeQuestion(
 			blanksInstance([math('480')], { constraints: { form: 'warn' } }),

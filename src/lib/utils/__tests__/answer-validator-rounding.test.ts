@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { blankStatuses, validateAnswer } from '../answer-validator';
+import { blankStatuses, validateAnswer, validateAnswerDetailed } from '../answer-validator';
 import { roundToPrecision } from '$lib/questions/rounding';
 import type { InstanceBlank, PrecisionType, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
@@ -226,5 +226,93 @@ describe('Trop de chiffres : mauvaise forme si l’arrondi de la réponse redonn
 	it('significatif : nombre exact (1,23) → correct ; moins (1,2 pour 1,20) → correct', () => {
 		expect(check('1{,}23', '1.23456', THREE).status).toBe('correct');
 		expect(check('1{,}2', '1.2', THREE).status).toBe('correct');
+	});
+});
+
+// Même décision en `orderIndependent` : une réponse trop précise mais juste est
+// appariée à sa case (après les réponses exactes), puis jugée de mauvaise forme.
+describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise forme', () => {
+	/** Deux cases sans ordre, au centième : 2,50 et 1,14 */
+	function unordered(): QuestionInstance {
+		return {
+			templateId: 'test-rounding-unordered',
+			statement: 'Test' as ResolvedMarkdown,
+			blanks: [
+				{ expectedAnswer: '2.5', type: 'math', precision: HUNDREDTH },
+				{ expectedAnswer: '1.136', type: 'math', precision: HUNDREDTH }
+			],
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			generatedAt: new Date().toISOString(),
+			options: { orderIndependent: true }
+		};
+	}
+
+	it('1,136 et 2,5 dans l’autre ordre → bad_form, violation rounding, message', () => {
+		const answers = ['1{,}136', '2{,}5'];
+		const result = validateAnswer(answers, unordered(), answers);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status).toBe('bad_form');
+		expect(result.feedback).toBe('Arrondis au centième.');
+		expect(result.constraintViolations).toEqual([
+			{ constraint: 'rounding', severity: 'error', feedback: 'Arrondis au centième.' }
+		]);
+		// Statut par réponse (rang de saisie), celui que lit le barème
+		expect(blankStatuses(answers, unordered(), answers)).toEqual(['bad_form', 'correct']);
+		const detailed = validateAnswerDetailed(unordered(), { values: answers, latex: answers });
+		expect(detailed.status).toBe('bad_form');
+		expect(detailed.blanks.map((b) => b.remarks)).toEqual([['Arrondis au centième.'], []]);
+	});
+
+	it('troncature 1,13 (et 2,5) → incorrect', () => {
+		const answers = ['1{,}13', '2{,}5'];
+		const result = validateAnswer(answers, unordered(), answers);
+		expect(result.isCorrect).toBe(false);
+		expect(result.status ?? 'incorrect').toBe('incorrect');
+		expect(blankStatuses(answers, unordered(), answers)).toEqual(['incorrect', 'correct']);
+	});
+
+	it('réponses exactes dans le désordre (1,14 et 2,5) → correct (forme : un nombre simple, pas l’écriture de l’attendu 1,136)', () => {
+		const answers = ['1{,}14', '2{,}5'];
+		const result = validateAnswer(answers, unordered(), answers);
+		expect(result.isCorrect).toBe(true);
+		expect(blankStatuses(answers, unordered(), answers)).toEqual(['correct', 'correct']);
+	});
+
+	it('grandeurs : 1,136 m et 2,5 m dans l’autre ordre → bad_form, violation rounding', () => {
+		const instance = unordered();
+		instance.blanks = [
+			{
+				expectedAnswer: '2.5\\unit{m}',
+				type: 'math',
+				precision: HUNDREDTH,
+				unit: { expected: true }
+			},
+			{
+				expectedAnswer: '1.136\\unit{m}',
+				type: 'math',
+				precision: HUNDREDTH,
+				unit: { expected: true }
+			}
+		];
+		const answers = ['1{,}136\\unit{m}', '2{,}5\\unit{m}'];
+		const result = validateAnswer(answers, instance, answers);
+		expect(result.status).toBe('bad_form');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toContain('rounding');
+		// Seule la réponse appariée à l'arrondi près est jugée ici (la forme d'une
+		// grandeur appariée relève d'un autre contrôle)
+		expect(blankStatuses(answers, instance, answers)[0]).toBe('bad_form');
+		const detailed = validateAnswerDetailed(instance, { values: answers, latex: answers });
+		expect(detailed.blanks[0].remarks).toEqual(['Arrondis au centième.']);
+	});
+
+	it('une réponse exacte passe AVANT une trop précise pour la même case', () => {
+		// 1,136 et 1,14 visent la même case : 1,14 (exacte) l'obtient, 1,136 reste sans case
+		const answers = ['1{,}136', '1{,}14'];
+		const result = validateAnswer(answers, unordered(), answers);
+		expect(result.isCorrect).toBe(false);
+		expect(blankStatuses(answers, unordered(), answers)).toEqual(['incorrect', 'correct']);
 	});
 });
