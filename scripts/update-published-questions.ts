@@ -81,7 +81,14 @@ const SUITES: readonly string[] = [
 	'0af4bf32-b97e-493d-bea4-917b6bbdf6f2', // Apprivoiser › deviner 1 — liste à partir de u₁
 	'fc921674-ee4f-488c-9fe4-5598795c0508', // Apprivoiser › deviner 2 — liste à partir de u₁
 	'95c38330-063f-4ade-b1ae-152b84bce20f', // Apprivoiser › deviner 3 — liste à partir de u₁
-	'158ecaa4-7fa7-4313-a6be-bf60fc538ab6' // Apprivoiser › écriture des termes 1 — description
+	'158ecaa4-7fa7-4313-a6be-bf60fc538ab6', // Apprivoiser › écriture des termes 1 — description
+	// Instantanés du lot 1 laissés tels quels (rien à corriger le 2026-10-01), ajoutés le
+	// 2026-10-03 pour que leurs corrections futures passent par ce script
+	'7247dbb0-eeb4-49f0-9c54-4b6ce26f2db8', // Arithmétiques › calculer un terme 1
+	'337d31c3-5d6b-4bd0-b9da-f025ddb26145', // Arithmétiques › calculer un terme 2
+	'1315d326-1a4b-4abc-af93-f8ab9aeecc66', // Arithmétiques › déterminer la raison 1
+	'c23840b6-f01c-4d33-ac40-4c5f9c2b6eab', // Arithmétiques › déterminer la raison 2
+	'849aabbc-4576-4644-a5c6-5b840b4dbbb9' // Limites › déterminer une limite 1
 ];
 
 /** Dérivation 1re SPE (branche feat/derivation-1spe) */

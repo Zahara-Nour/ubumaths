@@ -5,7 +5,7 @@
 	"grades": ["1_SPE"],
 	"theme": "Suites",
 	"domain": "Limites",
-	"subdomain": "Determiner une limite",
+	"subdomain": "Déterminer une limite",
 	"level": 1,
 	"delay": 30,
 	"status": "published",

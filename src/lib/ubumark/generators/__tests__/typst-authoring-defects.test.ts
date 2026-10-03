@@ -126,3 +126,31 @@ describe('11. commandes de géométrie de 1re', () => {
 		expect(convertLatexToTypstMath(latex)).toBe(typst);
 	});
 });
+
+// Relevé sur le corrigé du modèle publié 1acb6d47 (2026-10-03) : `\bold{…}` sortait
+// « bold1 » dans le PDF (commande inconnue → texte), alors que MathLive l'affiche en
+// gras à l'écran. 50 modèles publiés l'emploient. `\boldsymbol`, `\bm` : même défaut.
+describe('12. gras en formule', () => {
+	it.each([
+		['\\bold{1}', 'bold(1)'],
+		['a=\\bold{-2}<0', 'a=bold(-2)<0'],
+		['\\boldsymbol{x}', 'bold(x)'],
+		['\\boldsymbol{\\alpha}', 'bold(alpha)'],
+		['\\bm{u}', 'bold(u)'],
+		// Forme du corrigé de 1acb6d47 : couleur dans le gras
+		['\\bold{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$])'],
+		// \textbf autour d'une commande : gras mathématique, plus « textbf » en texte
+		['\\textbf{\\textcolor{#FF5722}{1}}', 'bold(#text(fill: rgb("#FF5722"))[$1$])']
+	])('%s → %s', (latex, typst) => {
+		expect(convertLatexToTypstMath(latex)).toBe(typst);
+	});
+
+	it('formes existantes inchangées', () => {
+		expect(convertLatexToTypstMath('\\mathbf{x}')).toBe('bold(x)');
+		expect(convertLatexToTypstMath('\\mathbf{\\textcolor{#FF5722}{1}}')).toBe(
+			'bold(#text(fill: rgb("#FF5722"))[$1$])'
+		);
+		expect(convertLatexToTypstMath('\\textbf{Vrai}')).toBe('bold("Vrai")');
+		expect(convertLatexToTypstMath('x \\textbf{ si } y')).toBe('x bold(" si ") y');
+	});
+});

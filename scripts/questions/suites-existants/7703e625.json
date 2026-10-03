@@ -9,6 +9,9 @@
 	"level": 1,
 	"delay": 30,
 	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"blanks": [
@@ -24,16 +27,16 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "c",
-					"expression": "2..9;±"
+					"expression": "-9..9"
 				}
 			],
 			"correction": {
 				"steps": [
-					"Avec $u_n={{b}}n{{eval:c;+}}$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}} {{eval:c;+}}={{solution}}$"
+					"Avec $u_n={{b}}n{{eval:c;+}}$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}={{if:abs(b)!=1 or c!=0|{{if:b==1|\\textcolor{{{color:primary.0}}}{{{a}}}|{{if:b==-1|-\\textcolor{{{color:primary.0}}}{{{a}}}|{{b}} \\times \\textcolor{{{color:primary.0}}}{{{a}}}}}}}{{if:c!=0|{{eval:c;+}}}}=}}{{solution}}$"
 				]
 			}
 		},
@@ -93,12 +96,12 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..9!a"
+					"expression": "1..9!a"
 				}
 			],
 			"correction": {
 				"steps": [
-					"Avec $u_n=n^2-{{b}}n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{a}}}^2-{{b}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}={{solution}}$"
+					"Avec $u_n=n^2-{{b}}n$, $u_\\textcolor{{{color:primary.0}}}{{{a}}}=\\textcolor{{{color:primary.0}}}{{{a}}}^2-{{if:b==1|\\textcolor{{{color:primary.0}}}{{{a}}}|{{b}}\\times\\textcolor{{{color:primary.0}}}{{{a}}}}}={{solution}}$"
 				]
 			}
 		},
@@ -278,6 +281,109 @@
 			},
 			"description": "(-1)^n seul",
 			"variationIndex": 4
+		},
+		{
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "1",
+				"c": "0"
+			},
+			"description": "u_n=n (coefficient 1, terme constant nul) : u_5=5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "0"
+			},
+			"description": "u_n=-n : u_5=-5",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "3"
+			},
+			"description": "u_n=-n+3 : u_5=-5+3=-2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "5",
+				"b": "-1",
+				"c": "3"
+			},
+			"description": "u_n=-n+3 : signe de -n oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "1",
+				"c": "-4"
+			},
+			"description": "u_n=n-4 : u_6=2",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["21"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "7",
+				"c": "0"
+			},
+			"description": "u_n=7n (terme constant nul) : u_3=21",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["30"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "1"
+			},
+			"description": "u_n=n^2-n : 36-6=30",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["36-6"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "6",
+				"b": "1"
+			},
+			"description": "u_n=n^2-n : calcul non effectué",
+			"variationIndex": 3
 		}
 	]
 }

@@ -204,11 +204,34 @@ Rien n'est écrit en base : écriture par David après relecture.
 
 - **0af4bf32** (deviner, suite arithmétique) : u₀ ∈ [−9 ; 9], raison dès 1 (comme 2-09) →
   `−7 + n`, `−n`, `7n`. 9 specs ajoutées (`−7+1n` → factorOne, `0+7n` → nullTerms).
-- Gardés, corrigé en chaîne que l'option ne nettoie pas (il faudrait le réécrire) : 7703e625
-  (`u_3 = 1 × 3 + 0`), 79d69593 et 1239554b (`u_1 = −1u_0 + 2 = …`, `u_0² + 0`, et
-  `\dfrac{u_n}{2}+0` illisible). Option sans effet sur `1\times2^n` (fc921674, déjà tiré
-  aujourd'hui, forme u₀ × qⁿ) et 95c38330 : non activée. Raison r ∉ {−1, 0, 1} gardée
-  (8ed02829, a8b51d16 : aucun coefficient devant une lettre ; fc921674 : q ≠ ±1, liste ambiguë).
+- Gardés dans #725 (corrigé en chaîne, `1\times2^n`), repris ensuite (branche
+  `feat/restes-publies-modeles`) : 7703e625, 79d69593, 1239554b, fc921674, 95c38330.
+  Raison r ∉ {−1, 0, 1} gardée pour 8ed02829, a8b51d16 (aucun coefficient devant une lettre).
 - Non touchés : 158ecaa4 (sous-domaine « Écriture » en base ≠ « Ecriture » du fichier : le
   script s'arrête) ; 337d31c3, 849aabbc, 1315d326, 7247dbb0, c23840b6 (hors du lot du script).
 - Vérifs : 300 tirages/variation, 0 échec, 0 motif interdit ; recalcul Python 0 écart.
+
+## Restes des modèles publiés : corrigés réécrits (2026-10-03)
+
+Les chaînes de calcul (`u_1 = … = … = …`) sont protégées par l'option : elles s'écrivent
+désormais proprement par `{{if:…}}` (coefficient 1 → `u_0`, −1 → `-u_0`, terme constant nul
+omis ; substitution sautée quand elle répète le résultat, `u_1 = -u_0 = -4`). Option activée.
+
+| Modèle   | Réécriture                                                                                                         | Levé                                   | Gardé                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- | ----------------------------------------------------------------------- |
+| 7703e625 | v0 `u_5 = -5 + 3`, `7 × 3`, `u_5 = 5` ; v3 `6² − 6`                                                                | v0 b dès ±1, c ∈ [−9 ; 9] ; v3 b dès 1 | b ≠ 0 (v0), b ≠ a (v3 : u_a = 0) ; v1 `2\|-2` (choix d'auteur)          |
+| 79d69593 | v0 `u_1 = -u_0 + 2 = -(-3) + 2` ; v1, v2 terme nul omis ; v2 énoncé par `{{if:}}` (`\dfrac{u_n}{2}+0` non nettoyé) | v0 b dès ±1, c ∋ 0 ; v1, v2 c ∋ 0      | b ≠ 0 ; `b != 1 or c != 0` (suite constante) ; u₀ inchangé              |
+| 1239554b | v0 les deux pas ; v1 `u_1 = u_0 + 2 × 0 = -3`                                                                      | v0 b dès ±1, c ∋ 0 ; v1 c ∋ 0          | idem 79d69593 ; v2 `2u_0 - 0` (n = 0 substitué, voulu)                  |
+| fc921674 | réponse `{{eval:a*(b)^n}}` (variable `n` = `n\|n`) : `2^n`, `-(-3)^n`, `3(-2)^n`, `-4 × 3^n`                       | (u₀ = ±1 déjà tiré)                    | q ∉ {−1, 0, 1} : suite constante, alternée ou nulle, rien à conjecturer |
+| 95c38330 | idem, `{{eval:a*(c)^n}}` : `(1/2)^n`, `7(−1/4)^n` (× implicite devant la parenthèse)                               | u₀ dès ±1                              | raison 1/b, b ∈ [2 ; 5] premier avec u₀                                 |
+
+Exception justifiée : 1239554b v0, u₁ = 0 et b = −1 → `u_2 = -u_1 + 2 = -0 + 2` (substitution
+de u₁ en couleur, 4 tirages sur 300). `1/2^n` reste « forme non optimale » (`form`), comme
+`6/5^n` avant. Vérifs : simulation « identique » avant ; specs vertes (21, 16, 15, 15, 14 ;
+150 tirages) ; 300 tirages/variation, 0 échec, aucun motif interdit hors exceptions ;
+recalcul Python (Fraction) des réponses, des termes affichés et de 4171 chaînes : 0 écart ;
+PDF de contrôle (17 tirages à ±1 / 0) relu. Simulation finale : `shared`, `variations`,
+`testSpecs`. Écriture (David) :
+`pnpm tsx scripts/update-published-questions.ts --lot suites --seulement 7703e625,79d69593,1239554b,fc921674,95c38330 --publier`.
+
+Décision de David (2026-10-03, « je te suis ») : fc921674 et 95c38330 passent à `options.constraints.form: "off"` — l'énoncé (« Conjecture l'expression de u_n ») n'impose pas la forme u_0 × qⁿ, donc `\frac{1}{2^n}`, `\frac{6}{5^n}`, `(-2)^n\times3` sont justes ; `1\times(\frac12)^n` reste non optimal (facteur 1).
