@@ -20,6 +20,7 @@ import type {
 	AchievementContext,
 	UnlockedAchievementResponse
 } from '$lib/types/achievements';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 // ============================================================================
 // TYPES
@@ -283,7 +284,6 @@ export async function getStudentProgress(
  * 4. Awards achievements if conditions are met
  * 5. Returns list of newly unlocked achievements
  *
- * @param supabase - Authenticated Supabase client
  * @param eventType - Type of event (e.g., 'minesweeper_game_completed')
  * @param studentId - UUID of the student
  * @param eventData - Event-specific data (score, time, difficulty, etc.)
@@ -294,7 +294,6 @@ export async function getStudentProgress(
  * ```typescript
  * // Process a minesweeper game completion
  * const result = await processEvent(
- *   supabase,
  *   'minesweeper_game_completed',
  *   studentId,
  *   {
@@ -313,13 +312,15 @@ export async function getStudentProgress(
  * ```
  */
 export async function processEvent(
-	supabase: TypedSupabaseClient,
 	eventType: string,
 	studentId: string,
 	eventData: Record<string, unknown>
 ): Promise<ProcessEventResult> {
 	try {
-		const { data, error } = await supabase.rpc('process_achievement_event', {
+		// Client service (lot 3, Q141) : la base refuse cette fonction aux comptes
+		// connectés — sinon un élève déclencherait des succès avec des données
+		// inventées. L'appelant vérifie AVANT qui agit pour quel élève.
+		const { data, error } = await createServiceRoleClient().rpc('process_achievement_event', {
 			p_event_type: eventType,
 			p_student_id: studentId,
 			p_event_data: eventData as Json

@@ -186,11 +186,6 @@ function buildAuthClient(): TrackerClient {
 			}
 		},
 		rpc: {
-			upsert_2048_score: () => ({
-				best_score: 60000,
-				games_played: 1,
-				is_new_best: true
-			}),
 			record_game_reward: () => ({
 				actual_reward: 0.5,
 				is_first_win: true,
@@ -210,6 +205,12 @@ function buildServiceRoleClient(): TrackerClient {
 			}
 		},
 		rpc: {
+			// Lot 3 (Q141) : la base refuse upsert_2048_score aux comptes connectés
+			upsert_2048_score: () => ({
+				best_score: 60000,
+				games_played: 1,
+				is_new_best: true
+			}),
 			update_student_gidouilles: () => null
 		}
 	});
@@ -283,5 +284,28 @@ describe('POST /api/games/2048/scores - milestone inserts use service-role clien
 			(c) => c[0] === 'update_student_gidouilles'
 		);
 		expect(serviceGidouillesRpcCalls.length).toBeGreaterThan(0);
+	});
+
+	it('enregistre le score via le client service, pour l’élève de la SESSION (lot 3, Q141)', async () => {
+		const { POST } = await import('../+server');
+
+		const request = new Request('http://localhost/api/games/2048/scores', {
+			method: 'POST',
+			body: JSON.stringify(milestoneBody),
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		const locals = {
+			supabase: authClient,
+			user: { id: TEST_IDS.student },
+			profile: studentProfile
+		};
+
+		await POST({ request, locals } as any);
+
+		expect(authClient.rpc.mock.calls.filter((c) => c[0] === 'upsert_2048_score')).toHaveLength(0);
+		const appels = serviceRoleMock.rpc.mock.calls.filter((c) => c[0] === 'upsert_2048_score');
+		expect(appels).toHaveLength(1);
+		expect((appels[0][1] as { p_user_id: string }).p_user_id).toBe(TEST_IDS.student);
 	});
 });

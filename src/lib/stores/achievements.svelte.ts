@@ -16,8 +16,8 @@
  * // Load student's unlocked achievements
  * await achievementsStore.loadStudentAchievements(studentId, 'minesweeper');
  *
- * // Process an event (e.g., after game completion)
- * const unlocked = await achievementsStore.processEvent('minesweeper_game_completed', studentId, eventData);
+ * // Les succès sont déclenchés par le SERVEUR (processEvent, client service) :
+ * // la route POST /api/achievements/events a été supprimée (Q151).
  *
  * // Access computed values
  * const list = achievementsStore.achievementsList;
@@ -31,8 +31,7 @@ import type {
 	StudentAchievement,
 	AchievementProgress,
 	AchievementContext,
-	AchievementWithProgress,
-	UnlockedAchievementResponse
+	AchievementWithProgress
 } from '$lib/types/achievements';
 
 // Toast notification type for achievement unlocks
@@ -54,13 +53,6 @@ interface AchievementsApiResponse {
 interface StudentAchievementsApiResponse {
 	success: boolean;
 	achievements: StudentAchievement[];
-	count: number;
-}
-
-interface ProcessEventApiResponse {
-	success: boolean;
-	eventId: string;
-	unlockedAchievements: UnlockedAchievementResponse[];
 	count: number;
 }
 
@@ -239,78 +231,6 @@ class AchievementsManager {
 		} catch (err) {
 			console.error('[AchievementsStore] Error loading progress:', err);
 			return null;
-		}
-	}
-
-	/**
-	 * Process an achievement event
-	 * Returns newly unlocked achievements
-	 */
-	async processEvent(
-		eventType: string,
-		studentId: string,
-		eventData: Record<string, unknown>
-	): Promise<UnlockedAchievementResponse[]> {
-		this.error = null;
-
-		try {
-			const response = await fetch('/api/achievements/events', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					eventType,
-					studentId,
-					eventData
-				})
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || `Failed to process event: ${response.status}`);
-			}
-
-			const data: ProcessEventApiResponse = await response.json();
-
-			// If achievements were unlocked, invalidate cache and show toasts
-			if (data.count > 0) {
-				this.invalidateStudentCache();
-
-				// Queue toast notifications for each unlocked achievement
-				for (const unlocked of data.unlockedAchievements) {
-					// Fetch full achievement details if not in cache
-					let achievement = this.achievementsCache.get(unlocked.achievement_id);
-					if (!achievement) {
-						// Create a minimal achievement object from the response
-						achievement = {
-							id: unlocked.achievement_id,
-							name: unlocked.name,
-							icon: unlocked.icon,
-							description: '',
-							context: 'minesweeper',
-							category: 'participation',
-							unlock_type: 'automatic',
-							is_active: true,
-							created_at: new Date().toISOString(),
-							updated_at: new Date().toISOString(),
-							metadata: {
-								points: unlocked.points,
-								gidouilles_reward: unlocked.gidouilles
-							}
-						} as Achievement;
-					}
-
-					this.queueToast(achievement, unlocked.points, unlocked.gidouilles);
-				}
-			}
-
-			return data.unlockedAchievements;
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to process event';
-			this.error = message;
-			console.error('[AchievementsStore] Error processing event:', err);
-			return [];
 		}
 	}
 

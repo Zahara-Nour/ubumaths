@@ -155,8 +155,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { score, reached_2048, reached_4096 } = validation.data;
 
-		// Use atomic UPSERT function to eliminate race condition
-		const { data: upsertData, error: upsertError } = await supabase
+		// Use atomic UPSERT function to eliminate race condition.
+		// Client service (lot 3, Q141) : la base refuse cette fonction aux comptes
+		// connectés — sinon un élève s'inscrirait n'importe quel score, sur
+		// n'importe quel compte. L'identité vient de la session, contrôlée plus haut.
+		const { data: upsertData, error: upsertError } = await createServiceRoleClient()
 			.rpc('upsert_2048_score', {
 				p_user_id: user.id,
 				p_score: score,

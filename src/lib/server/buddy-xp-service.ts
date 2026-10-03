@@ -64,7 +64,7 @@ export async function addBuddyXpFromExercise(
 	});
 
 	// Add base XP (subject to daily cap)
-	const xpResult = await addBuddyXp(supabase, studentId, baseXp, false);
+	const xpResult = await addBuddyXp(studentId, baseXp, false);
 
 	// Handle streak (only on first activity of the day)
 	let streakUpdated = false;
@@ -80,7 +80,7 @@ export async function addBuddyXpFromExercise(
 			const bonus = calculateStreakBonus(newStreak);
 			if (bonus.xp > 0) {
 				streakBonusXp = bonus.xp;
-				await addBuddyXp(supabase, studentId, bonus.xp, bonus.isMilestone);
+				await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ export async function addBuddyXpFromTest(
 
 	// Add all XP in one RPC call
 	if (totalBaseXp > 0) {
-		lastXpResult = await addBuddyXp(supabase, studentId, totalBaseXp, false);
+		lastXpResult = await addBuddyXp(studentId, totalBaseXp, false);
 		totalXpGained += lastXpResult.xp_gained;
 	}
 
@@ -172,7 +172,7 @@ export async function addBuddyXpFromTest(
 			const bonus = calculateStreakBonus(newStreak);
 			if (bonus.xp > 0) {
 				streakBonusXp = bonus.xp;
-				const bonusResult = await addBuddyXp(supabase, studentId, bonus.xp, bonus.isMilestone);
+				const bonusResult = await addBuddyXp(studentId, bonus.xp, bonus.isMilestone);
 				totalXpGained += bonusResult.xp_gained;
 				lastXpResult = bonusResult;
 			}
