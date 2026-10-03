@@ -42,4 +42,5 @@ Spec validée le 2026-10-03 : `affichée` / `triée` / `seule` (l'énoncé, sans
 - [x] Tests `raw-data-series.test.ts` (12) + navigateur (2) ; fiche énoncé / corrigé FR + EN compilée
 - ⚠️ Vu sur le corrigé anglais : les étiquettes des barres venues de `données:` restent « 9,5 » et
   « -3 » (hérité de la PR a, nom canonique) → à proposer à David (affichage selon la langue)
-- [ ] Revue, PR, CI, merge
+- [x] Revue : règle CSS `.stat-legende-aire` cassée par l’insertion de `.stat-serie` (légende du carreau à gauche) — corrigée + test navigateur (preuve rouge) ; espace insécable avant « ; » ; tests tri stable, refus croisé / simulation, titre unique
+- [ ] PR, CI, merge

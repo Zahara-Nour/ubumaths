@@ -854,12 +854,12 @@
 		stroke-width: 3px;
 	}
 
-	.stat-legende-aire,
 	.stat-serie {
 		margin-bottom: 0.5rem;
 		overflow-wrap: anywhere;
 	}
 
+	.stat-legende-aire,
 	.stat-indicateurs {
 		display: flex;
 		flex-wrap: wrap;

@@ -1278,7 +1278,8 @@ function seriesText(spec: StatChartSpec, locale: ContentLocale): string | null {
 	const values = spec.series.values.map((v) =>
 		v.numeric ? asWritten(v.text.replaceAll('−', '-'), locale) : v.text
 	);
-	return `${locale === 'en' ? 'Data: ' : 'Série : '}${values.join(' ; ')}`;
+	// Espace insécable avant « ; » (et « : ») : une ligne ne commence jamais par « ; »
+	return `${locale === 'en' ? 'Data: ' : 'Série\u00a0: '}${values.join('\u00a0; ')}`;
 }
 
 export function buildStatChartScene(
