@@ -5,6 +5,19 @@
 -- ROLLBACK (à exécuter tel quel ; ne touche que ce que cette migration crée) :
 --   DROP POLICY IF EXISTS "chat_realtime_participants_receive" ON realtime.messages;
 --   DROP POLICY IF EXISTS "chat_realtime_participants_send" ON realtime.messages;
+--   ⚠️ Sans risque tant que le client utilise le canal PUBLIC. APRÈS la PR 2
+--   (client en `private: true`), ce rollback COUPE le temps réel du chat : sans
+--   policy, tout canal privé est refusé. Revenir d'abord au client public.
+--
+-- LIMITE CONNUE : Realtime ne vérifie la policy qu'à la jonction du canal et au
+-- rafraîchissement du JWT. Un participant retiré de la conversation (sortie de
+-- la classe) continue de recevoir les broadcasts d'un canal déjà ouvert jusqu'à
+-- sa reconnexion ou au rafraîchissement de son jeton (~1 h). Progrès net malgré
+-- tout : aujourd'hui, le canal public est ouvert à quiconque connaît l'UUID.
+--
+-- La policy INSERT n'inspecte PAS le payload : un participant peut diffuser un
+-- `sender` ou un contenu forgé. Le client (PR 2) doit ignorer l'expéditeur et le
+-- contenu du broadcast et relire la base.
 --
 -- Décision de David (question d'accès tranchée le 2026-10-03) :
 --   « Seuls les participants d'une conversation peuvent écouter et diffuser sur

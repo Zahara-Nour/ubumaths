@@ -345,6 +345,36 @@ describe('Chat : canal temps réel privé réservé aux participants', { timeout
 	});
 
 	// ===========================================================================
+	// 5 bis. Présence : hors de la décision, refusée même aux participants
+	// ===========================================================================
+
+	it('la présence n’est pas ouverte : un participant ne voit pas le track() d’un autre', async () => {
+		// Le chat n'utilise pas la présence ; les policies ne couvrent que
+		// l'extension `broadcast`. Ce test prouve la clause `extension`.
+		const vusParB: unknown[] = [];
+		const canalB = clientB.channel(`chat-${conv1}`, {
+			config: { private: true, presence: { key: 'b' } }
+		});
+		canalB.on('presence', { event: 'sync' }, () => {
+			vusParB.push(...Object.keys(canalB.presenceState()));
+		});
+		const abonnementB = await abonner(canalB);
+		expect(abonnementB.status, `témoin B refusé : ${abonnementB.message}`).toBe('SUBSCRIBED');
+
+		const canalA = clientA.channel(`chat-${conv1}`, {
+			config: { private: true, presence: { key: 'a' } }
+		});
+		canalA.on('presence', { event: 'sync' }, () => {});
+		const abonnementA = await abonner(canalA);
+		expect(abonnementA.status, `témoin A refusé : ${abonnementA.message}`).toBe('SUBSCRIBED');
+
+		await canalA.track({ en_ligne: true }).catch(() => 'refus');
+		await attendre(ATTENTE_MS);
+		expect(vusParB).not.toContain('a');
+		expect(Object.keys(canalB.presenceState())).not.toContain('a');
+	});
+
+	// ===========================================================================
 	// 6. Non-régression : le canal PUBLIC actuel (avant la PR 2)
 	// ===========================================================================
 

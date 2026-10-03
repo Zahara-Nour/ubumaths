@@ -107,13 +107,38 @@ DROP POLICY IF EXISTS "chat_realtime_participants_send" ON realtime.messages;
 
 Exécuté tel quel en local pendant les preuves (voir ci-dessous) : sans erreur.
 
+⚠️ Sans risque tant que le client utilise le canal public. **Après la PR 2**
+(client en `private: true`), ce rollback **coupe le temps réel du chat** : sans
+policy, tout canal privé est refusé. Revenir d'abord au client public.
+
+### Limite connue : retrait d'un participant
+
+Realtime ne vérifie la policy qu'à la jonction du canal et au rafraîchissement
+du JWT. Un participant retiré de la conversation (sortie de la classe) continue
+de recevoir les broadcasts d'un canal déjà ouvert jusqu'à sa reconnexion ou au
+rafraîchissement de son jeton (~1 h). C'est un progrès net par rapport au canal
+public actuel, ouvert à quiconque connaît l'UUID.
+
 ## Preuves (local, 2026-10-03, `tests/integration/realtime-chat-prive.test.ts`)
 
 Bout en bout contre le serveur Realtime local (realtime v2.135.3), avec de vrais
 comptes connectés (JWT) — pas de simulation — plus un cas SQL (rôle
 `authenticated` simulé via `request.jwt.claims` et `realtime.topic`).
 
-**Vert avec la migration** : 7/7 (et garde SECURITY DEFINER + publication
+**Présence (ajout après audit)** : test « la présence n'est pas ouverte » —
+A et B, participants, rejoignent le canal privé ; A fait `track()` ; B ne doit
+pas le voir. Preuve que la clause `extension = 'broadcast'` sert : retirée des
+deux policies (copie du fichier, `db:reset`) →
+
+```
+× la présence n’est pas ouverte : un participant ne voit pas le track() d’un autre
+AssertionError: expected [ 'a' ] to not include 'a'
+Tests  1 failed | 7 passed (8)
+```
+
+Fichier restauré depuis la copie, `db:reset` → 8/8.
+
+**Vert avec la migration** : 8/8 (7/7 avant l'ajout du test de présence) (et garde SECURITY DEFINER + publication
 realtime : 25/25 sur les 3 fichiers).
 
 **Rouge sans la migration** (rollback appliqué, même fichier de test) :
@@ -163,6 +188,10 @@ local) :
    participant forge un payload.
 3. Même traitement pour `message_reaction` / `message_read` (payloads forgeables
    par un participant).
-4. Test d'intégration côté client + vérification manuelle en preview/prod.
-5. Ensuite seulement, envisager de couper l'accès public au Realtime
+4. La policy INSERT n'inspecte **pas** le payload : le client doit ignorer
+   `sender` et le contenu du broadcast, et relire la base.
+5. Tester aussi `postgres_changes` (table `messages`) sur un canal **privé** :
+   l'abonnement doit toujours livrer les INSERT aux participants.
+6. Test d'intégration côté client + vérification manuelle en preview/prod.
+7. Ensuite seulement, envisager de couper l'accès public au Realtime
    (réglage projet) — vérifier d'abord les 5 autres canaux de l'inventaire.
