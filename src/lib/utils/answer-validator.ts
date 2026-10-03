@@ -61,6 +61,7 @@ import {
 	DEFAULT_INTERVAL_FORM_MODE
 } from '$lib/questions/intervals/interval-answer';
 import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
+import { judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
@@ -849,6 +850,13 @@ function validateBlankValue(
 		return status === 'correct' || status === 'unoptimal_form';
 	}
 
+	// Vecteur (coordonnées, colonne) : jugé sur ses coordonnées, exactes ou colinéaires
+	if (blank.answerKind === 'vecteur') {
+		return (
+			judgeVectorAnswer(userAnswer, blank.expectedAnswer, blank.vectorMode).status === 'correct'
+		);
+	}
+
 	// Check validation rules first (pre-condition)
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
@@ -892,7 +900,12 @@ function roundingOnlyFeedback(
 	blank: InstanceBlank,
 	instance: QuestionInstance
 ): string | undefined {
-	if (!blank.precision || blank.answerKind === 'intervalles' || blank.type === 'text') {
+	if (
+		!blank.precision ||
+		blank.answerKind === 'intervalles' ||
+		blank.answerKind === 'vecteur' ||
+		blank.type === 'text'
+	) {
 		return undefined;
 	}
 	if (isAnswerTooComplex(userAnswer) || rulesDecide(blank)) return undefined;
@@ -1031,6 +1044,20 @@ function equationBlankResult(
 	}
 }
 
+/**
+ * Case « vecteur » : verdict de `judgeVectorAnswer` dans la forme de
+ * `validateSingleBlank`. Juste ou faux (valeur seule, pas de contrainte d'écriture).
+ */
+function vectorBlankResult(
+	answer: string,
+	blank: InstanceBlank
+): ReturnType<typeof validateSingleBlank> {
+	const { status, feedback } = judgeVectorAnswer(answer, blank.expectedAnswer, blank.vectorMode);
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -1069,6 +1096,11 @@ function validateSingleBlank(
 	// Équation de droite ou de cercle : chaîne à part, cf. equations/equation-answer.ts
 	if (blank.answerKind === 'equation') {
 		return equationBlankResult(userAnswerLatex || userAnswer, blank);
+	}
+
+	// Vecteur dans une case : chaîne à part, cf. vectors/vector-answer.ts
+	if (blank.answerKind === 'vecteur') {
+		return vectorBlankResult(userAnswerLatex || userAnswer, blank);
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1649,6 +1681,11 @@ function matchedAnswerForm(
 	if (blank.answerKind === 'equation') {
 		const result = equationBlankResult(blankLatex || userAnswer, blank);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+	// Case « vecteur » appariée (valeur déjà juste) : aucune contrainte d'écriture
+	if (blank.answerKind === 'vecteur') {
+		const result = vectorBlankResult(blankLatex || userAnswer, blank);
+		return { status: result.status ?? 'incorrect', violations: [] };
 	}
 
 	// Grandeur appariée (valeur déjà juste) : même jugement qu'en mode positionnel

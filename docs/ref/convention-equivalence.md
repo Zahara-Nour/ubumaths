@@ -196,3 +196,29 @@ référence avant de mesurer k : x², sinon y², sinon le premier terme de plus 
 l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coefficient vaut ±1
 (signe libre : membres échangés, tout changé de signe), ½ sinon. L'écriture de l'attendue
 (`2x^2+2y^2=8`) n'est donc jamais imposée à l'élève.
+
+## Réponse « vecteur » : coordonnées exactes, ou colinéaire (case `answerKind: "vecteur"`)
+
+`areEquivalent` ne lit pas un couple `(2;-3)`. Une case marquée `answerKind: "vecteur"`
+(spécification de David du 2026-10-03) est jugée par `questions/vectors/vector-answer.ts` :
+
+- écritures lues, dans UNE case : `(a;b)`, `\left(a;b\right)`, `(a\,;\,b)`, colonne
+  `\begin{pmatrix}a\\b\end{pmatrix}` (le `\\ ` de MathLive compris), dimension 2 ou 3 ; un
+  préfixe `\vec{u}=` / `\overrightarrow{AB}=` est ignoré ;
+- coordonnées constantes (fractions, racines, π, virgule décimale `0,5`) réduites par `normalize`
+  et comparées EXACTEMENT, aucun flottant : `\frac{2}{\sqrt2}` = `\sqrt2`, `1,414` ≠ `\sqrt2` ;
+- seule la VALEUR est jugée : `(\frac{2}{4};1)` est juste pour `(\frac12;1)`, sans ½ ni contrainte
+  d'écriture.
+
+| `vectorMode`     | Attendue  | Réponse                                                  | Verdict                 |
+| ---------------- | --------- | -------------------------------------------------------- | ----------------------- |
+| `exact` (défaut) | `(2;-3)`  | `(2;-3)`, `\begin{pmatrix}2\\-3\end{pmatrix}`            | juste                   |
+| `exact`          | `(2;-3)`  | `(-2;3)`, `(4;-6)`                                       | faux                    |
+| `colineaire`     | `(2;-3)`  | `(-2;3)`, `(4;-6)`, `(1;-\frac32)`, `(2\sqrt2;-3\sqrt2)` | juste (tout k ≠ 0)      |
+| `colineaire`     | `(2;-3)`  | `(0;0)`                                                  | faux, « vecteur nul »   |
+| les deux         | `(1;2;3)` | `(1;2)`                                                  | faux, « 3 coordonnées » |
+| les deux         | `(2;-3)`  | `(2,3)`, `(x;1)`, `)(`, matrice ligne                    | faux, sans exception    |
+
+Colinéarité : tous les déterminants 2×2 a_i·e_j − a_j·e_i nuls (calcul exact), réponse non nulle.
+Une attendue illisible, de dimension autre que 2 ou 3, ou nulle en mode `colineaire` fait échouer
+les specs du modèle. Sans `answerKind`, rien ne change.

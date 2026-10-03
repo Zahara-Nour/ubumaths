@@ -390,6 +390,10 @@
 	let sharedBlankEquation = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'equation'
 	);
+	let sharedBlankVector = $state(initialTemplate?.shared?.blankDefaults?.answerKind === 'vecteur');
+	let sharedBlankVectorCollinear = $state(
+		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
+	);
 	let sharedValidationRulesJson = $state(
 		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
@@ -781,6 +785,11 @@
 		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
 		if (sharedBlankIntervals) blankDefaults.answerKind = 'intervalles';
 		else if (sharedBlankEquation) blankDefaults.answerKind = 'equation';
+		else if (sharedBlankVector) {
+			blankDefaults.answerKind = 'vecteur';
+			// Colinéaire : tout vecteur colinéaire non nul est juste
+			if (sharedBlankVectorCollinear) blankDefaults.vectorMode = 'colineaire';
+		}
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -940,6 +949,8 @@
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
+		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
+		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 		genericFunctionsText = formatGenericFunctionNames(t.shared?.genericFunctions);
@@ -1636,6 +1647,8 @@
 			bind:sharedBlankAcceptDecimal
 			bind:sharedBlankIntervals
 			bind:sharedBlankEquation
+			bind:sharedBlankVector
+			bind:sharedBlankVectorCollinear
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
 			bind:sharedVariableHelpOpen
