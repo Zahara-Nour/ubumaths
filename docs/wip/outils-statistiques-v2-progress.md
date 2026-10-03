@@ -238,3 +238,19 @@ PR prévues : (a) bloc, données, lignes, totaux, sens, langue (Q125-Q129, Q133)
 - **Bloc effectifs, PR (a) livrée #718** (2026-10-03). Reste : PR (b) `masquer:` + `indicateurs:` (Q130-Q131), spec à proposer.
 
 - **Bloc effectifs, PR (b) livrée #722** (2026-10-03) : `masquer:` (cases à compléter) et `indicateurs:`. **Bloc effectifs TERMINÉ** (#718, #722).
+
+Manche 11 (2026-10-03), loi binomiale (Terminale) — recommandations suivies :
+
+134. Référentiel de Terminale : chantier SÉPARÉ (migration, sa propre manche) ; les outils d'abord.
+135. Binomiale seule (Terminale spécialité) d'abord. David enseigne la spécialité, maths
+     complémentaires et maths expertes : leurs autres lois dans une manche suivante.
+136. Dans le bloc ``loi : `X ~ B(10 ; 0,3)` remplace `X =` / `P =` ; tableau, indicateurs,
+`masquer:`, langue, PDF hérités ; ajouts `probabilités: P(X = 3) ; P(X ≤ 4) ; …`,
+`diagramme: oui`, `intervalle: 0,95` (méthode du programme) ; ``simulation accepte B(n ; p).
+137. Calcul exact, affichage décimal au millième ; `arrondi: 4`.
+138. n ≤ 1 000 pour les calculs ; tableau et diagramme jusqu'à 30 valeurs, au-delà seulement
+     `probabilités:` / `intervalle:` avec un message.
+139. Atelier : `.binomiale 10 0,3` crée valeurs et probabilités exactes + tableau ; `.proba` plus tard.
+
+PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ; (b) `diagramme:`,
+`intervalle:`, simulation ; (c) atelier. À part : référentiel de Terminale.
