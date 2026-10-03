@@ -67,3 +67,9 @@ recalculés en Python (0 écart), `buildFigureScene` sans erreur ni avertissemen
   deux moitiés marquées d'un même trait (points milieux masqués), donc tous les côtés égaux ET I
   milieu de [BC]. Lisible, mais inhabituel : à valider par David.
 - Hors champ, vu en passant : le rectangle de A-05 v2 n'a pas de marque d'angle droit.
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- B-03 (orthogonalité) : b et p ∈ [−6 ; 6] privés de 0 seulement (et non de −1, 0, 1).

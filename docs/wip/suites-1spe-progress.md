@@ -188,3 +188,10 @@ texte brut entre guillemets (le PDF compile). Questions 1 à 9 correctes.
   enveloppait TOUT l'énoncé dans `{{…}}`. Le contenu markdown (énoncé, corrigé) n'est plus
   normalisé (option `markdown`). Mesuré sur la production : 0 texte sur 4 928 n'était modifié par
   cette normalisation → aucun rendu existant ne change.
+
+## cleanCoefficients activé (2026-10-03)
+
+`shared.cleanCoefficients: true` (`1x` → `x`, `+0` retiré, `+-` → `-`) ; exclusions de ±1 / 0 qui ne servaient qu'à l'affichage levées. Vérifié : specs vertes (150 tirages), 300 tirages par variation sans `1x`, `0x`, `+-`, `--` dans le rendu (les `4+0`, `-1-0` restants sont des étapes de calcul voulues).
+
+- 2-07, 2-09, 2-10, 3-03, 3-05, 3-07 : coefficients et raisons dès 1, termes constants pouvant valoir 0 ; 2-10 : `c != r`, `c != p*r` retirées.
+- 3-02 : q et p ∈ [−5 ; 5] privés de 0 et 1 (suite géométrique non dégénérée). Raison r ≠ 0 gardée.
