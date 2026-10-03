@@ -269,6 +269,14 @@ inconnue est une erreur) ; au PDF, un objet qui dépasse de la `fenetre:` (cercl
 arc, polygone) est découpé au cadre comme à l'écran, le repère, les noms et les textes restant
 entiers (un nom de point hors de la fenêtre est omis).
 
+Corrigés dans le moteur le 2026-10-03 (branche `feat/trous-dans-tableau`), ne plus contourner :
+un trou dans une cellule de tableau (`| $P(X=x_k)$ | $0{,}2$ | $?$ |`, ou `{{blank:N}}` en texte)
+est saisissable comme dans un paragraphe : numéroté dans l'ordre d'écriture (cellules de gauche à
+droite, ligne après ligne, puis la suite de l'énoncé ; un tableau `:table-h` s'affiche transposé
+mais garde cette numérotation), Tab passe à la case suivante, états juste /
+faux par case, case « ? » en flash, réponse affichée en correction ; sur téléphone le tableau défile
+dans son cadre. Au PDF, la cellule montre « …… » et le corrigé la réponse en gras.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -285,8 +293,6 @@ Toujours vrai :
   (espace après, à l'écran comme dans le PDF : « 0, 1 × 0,3 ») et reste une virgule dans un document
   anglais (« 0, 1 × 0.3 »). Écrire `{{eval:1/10;d}}` (virgule ou point selon la langue) ; `0{,}1`
   s'affiche bien en français mais reste une virgule en anglais (décision du 2026-09-25).
-- **Trou dans une cellule de tableau** : affiché mais NON saisissable (le tableau est un bloc
-  statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
   forme dans l'énoncé ; une valeur arrondie demande `precision`. Une réponse avec trop de
   décimales dont l'arrondi redonne l'attendu (`1,136` pour `1,14`) est « mauvaise forme » (0 point,
