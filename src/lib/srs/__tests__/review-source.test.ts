@@ -15,10 +15,22 @@ import {
 	type ReviewSource,
 	type SessionCard
 } from '../review-source';
+import type { ChapterDueResponse, DueCardsResponse, DueReviewCardStats } from '../types';
+import type { QuestionInstance } from '$lib/questions/types';
+import { templateMarkdown } from '$lib/ubumark/types/template';
 
 const deck: ReviewSource = { kind: 'deck', deckId: 'd1', states: 'review', all: true };
 const chapter: ReviewSource = { kind: 'chapter', chapterId: 'c1' };
-const instance = { id: 'i1', statement: '1+1' };
+/** Instance factice : seule sa forme d'objet compte pour la traduction. */
+const instance = { id: 'i1', statement: '1+1' } as unknown as QuestionInstance;
+const stats: DueReviewCardStats = {
+	state: 'new',
+	difficulty: 5,
+	stability: 0,
+	totalReviews: 0,
+	lastReview: null,
+	nextReview: '2026-10-03T00:00:00Z'
+};
 
 describe('dueUrl', () => {
 	it('paquet : deck, filtre d’états et révision forcée', () => {
@@ -32,7 +44,7 @@ describe('dueUrl', () => {
 });
 
 describe('submitRequest', () => {
-	const card: SessionCard = { key: 'k1', kind: 'template', instance: instance as never };
+	const card: SessionCard = { key: 'k1', kind: 'template', instance };
 
 	it('paquet : carte et deck', () => {
 		expect(submitRequest(deck, card, 3, 12)).toEqual({
@@ -51,13 +63,20 @@ describe('submitRequest', () => {
 
 describe('toSessionPayload', () => {
 	it('paquet : cartes PLATES du serveur (modèle et carte libre)', () => {
-		const payload = toSessionPayload(deck, {
+		const response: DueCardsResponse = {
 			cards: [
-				{ cardId: 'c-t', cardType: 'template', templateId: 't', instance, stats: {} },
-				{ cardId: 'c-c', cardType: 'custom', frontContent: 'Q', backContent: 'R', stats: {} }
+				{ cardId: 'c-t', cardType: 'template', templateId: 't', instance, stats },
+				{
+					cardId: 'c-c',
+					cardType: 'custom',
+					frontContent: templateMarkdown('Q'),
+					backContent: templateMarkdown('R'),
+					stats
+				}
 			],
 			skipped: 1
-		});
+		};
+		const payload = toSessionPayload(deck, response);
 		expect(payload.skipped).toBe(1);
 		expect(payload.cards).toEqual([
 			{ key: 'c-t', kind: 'template', instance },
@@ -66,11 +85,12 @@ describe('toSessionPayload', () => {
 	});
 
 	it('chapitre : la clé est le modèle', () => {
-		const payload = toSessionPayload(chapter, {
+		const response: ChapterDueResponse = {
 			chapter: { id: 'c1', title: 'Fonctions' },
 			cards: [{ templateId: 't1', instance, isNew: true }],
 			skipped: 0
-		});
+		};
+		const payload = toSessionPayload(chapter, response);
 		expect(payload).toEqual({ cards: [{ key: 't1', kind: 'template', instance }], skipped: 0 });
 	});
 

@@ -14,7 +14,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionInstance } from '$lib/questions/types';
+import type { ChapterDueCard, ChapterDueResponse } from '$lib/srs/types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { chapterDeckParamsSchema } from '$lib/server/validation/srs';
 import {
@@ -26,15 +26,6 @@ import {
 } from '$lib/server/srs/chapter-deck';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { toQuestionTemplate } from '$lib/types/question-template';
-
-// Types
-/** Une question de la séance, prête à réviser. */
-interface ChapterReviewCard {
-	templateId: string;
-	instance: QuestionInstance;
-	/** Jamais vue : première révision */
-	isNew: boolean;
-}
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'student');
@@ -63,7 +54,11 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const fresh = new Set(session.fresh);
 
 	if (ids.length === 0) {
-		return json({ chapter: { id: deck.chapterId, title: deck.title }, cards: [], skipped: 0 });
+		return json({
+			chapter: { id: deck.chapterId, title: deck.title },
+			cards: [],
+			skipped: 0
+		} satisfies ChapterDueResponse);
 	}
 
 	const { data: rows, error: templatesError } = await supabase
@@ -77,7 +72,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	const byId = new Map((rows ?? []).map((row) => [row.id, row]));
-	const cards: ChapterReviewCard[] = [];
+	const cards: ChapterDueCard[] = [];
 	const skipped: { templateId: string; reason: string }[] = [];
 
 	for (const templateId of ids) {
@@ -111,5 +106,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		chapter: { id: deck.chapterId, title: deck.title },
 		cards,
 		skipped: skipped.length
-	});
+	} satisfies ChapterDueResponse);
 };

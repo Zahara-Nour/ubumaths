@@ -10,46 +10,13 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionInstance } from '$lib/questions/types';
-import type { CardState } from '$lib/srs/types';
-import type { TemplateMarkdown } from '$lib/ubumark';
+import type { CardState, DueCardsResponse, DueReviewCard } from '$lib/srs/types';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { asCardState } from '$lib/srs/types';
 import { templateMarkdown } from '$lib/ubumark/types/template';
 import { toQuestionTemplate } from '$lib/types/question-template';
-
-/**
- * Lightweight stats for API response (subset of CardStats)
- */
-interface ReviewCardStats {
-	state: CardState;
-	difficulty: number;
-	stability: number;
-	totalReviews: number;
-	lastReview: string | null;
-	nextReview: string;
-}
-
-/**
- * Review card for API response (simplified from $lib/srs/types)
- */
-type ReviewCard =
-	| {
-			cardId: string;
-			cardType: 'template';
-			templateId: string;
-			instance: QuestionInstance;
-			stats: ReviewCardStats;
-	  }
-	| {
-			cardId: string;
-			cardType: 'custom';
-			frontContent: TemplateMarkdown;
-			backContent: TemplateMarkdown;
-			stats: ReviewCardStats;
-	  };
 
 /**
  * GET /api/srs/review/due?deck_id=X
@@ -61,7 +28,7 @@ type ReviewCard =
  * Query params:
  * - deck_id (required): Deck ID
  *
- * @returns Array of ReviewCard objects ready for study
+ * @returns `DueCardsResponse` (cartes plates `DueReviewCard`)
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const { user } = await requireAuth(locals);
@@ -150,8 +117,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			])
 		);
 
-		// Process each card to prepare ReviewCard objects
-		const reviewCards: ReviewCard[] = [];
+		// Process each card to prepare DueReviewCard objects
+		const reviewCards: DueReviewCard[] = [];
 		// Cartes écartées de la session : tracées (log serveur détaillé + nombre
 		// rendu au client), plus jamais en silence — l'élève doit savoir que sa
 		// session est incomplète.
@@ -267,7 +234,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			console.error(`[SRS] ${skipped.length} carte(s) écartée(s) de la session :`, skipped);
 		}
 		// Au client : le seul NOMBRE de cartes écartées (le détail reste dans les logs)
-		return json({ cards: reviewCards, skipped: skipped.length });
+		return json({ cards: reviewCards, skipped: skipped.length } satisfies DueCardsResponse);
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/review/due:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

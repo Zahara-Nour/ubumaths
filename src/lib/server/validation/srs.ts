@@ -69,7 +69,8 @@ export const chapterDeckParamsSchema = z.object({
  */
 export const chapterReviewSubmitSchema = z.object({
 	templateId: z.string().uuid('Question invalide'),
-	grade: z.number().int().min(1).max(4),
+	// Littéraux : le type `Grade` (1 | 2 | 3 | 4) sort du schéma, sans transtypage
+	grade: z.literal([1, 2, 3, 4], { error: 'Note invalide (1 à 4)' }),
 	timeSpent: z.number().int().nonnegative().max(3600).optional()
 });
 

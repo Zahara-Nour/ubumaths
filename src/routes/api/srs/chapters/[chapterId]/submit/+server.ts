@@ -18,7 +18,6 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { Grade } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
@@ -72,7 +71,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			user.id,
 			'template',
 			templateId,
-			grade as Grade,
+			grade,
 			timeSpent,
 			{ bestOfDay: { now }, verifyWrite: true }
 		);
