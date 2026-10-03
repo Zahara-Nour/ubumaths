@@ -4,7 +4,9 @@
  * Les seeds sont générés depuis les markdown de `docs/wip/referentiel/` :
  *   - 6ᵉ      → `20260621160000_seed_curriculum_6e.sql`
  *   - 1ʳᵉ spé → `20260830090000_seed_curriculum_1re_spe.sql`
- *     (généré par `scripts/generate-curriculum-1re-spe-seed.ts`)
+ *   - 2de     → `20260903090000_seed_curriculum_2de.sql`
+ *   - Tˡᵉ spé → `20261004100000_seed_curriculum_terminale_spe.sql`
+ *     (tous générés par `scripts/generate-curriculum-seed.ts`)
  *
  * Ces tests ne re-valident pas le contenu pédagogique (c'est la relecture du
  * markdown qui fait ça) mais verrouillent ce qui casserait silencieusement :
@@ -13,9 +15,14 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { describe, it, expect, beforeAll } from 'vitest';
-import { createServiceRoleClient } from '../helpers/competence-referentiel.helpers';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import {
+	createServiceRoleClient,
+	createAuthenticatedClient,
+	TestData,
+	cleanupCompetenceTestData
+} from '../helpers/competence-referentiel.helpers';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../../src/lib/types/database';
 
 let service: SupabaseClient<Database>;
@@ -209,6 +216,113 @@ describe('Seed du programme — seconde', () => {
 		expect(codes).toHaveLength(185);
 		expect(new Set(codes).size).toBe(185);
 		expect(codes.every((c) => /^2-\d{3}$/.test(c!))).toBe(true);
+	});
+});
+
+describe('Seed du programme — terminale spécialité', () => {
+	it('pose 5 thèmes, 18 objectifs et 262 points', async () => {
+		const { themes, objectives, points } = await pointsOfGrade('T_SPE');
+		expect(themes).toHaveLength(5);
+		expect(objectives).toHaveLength(18);
+		expect(points).toHaveLength(262);
+	});
+
+	it('reproduit la typologie du BO', async () => {
+		const { points } = await pointsOfGrade('T_SPE');
+		const by = (k: string) => points.filter((p) => p.kind === k).length;
+		expect(by('connaissance')).toBe(101); // Contenus
+		expect(by('savoir_faire')).toBe(143); // Capacités attendues + approfondissements
+		expect(by('demonstration')).toBe(18); // Démonstrations
+		expect(points.filter((p) => p.exigence === 'approfondissement')).toHaveLength(55);
+	});
+
+	// Le BO de terminale n'a pas de partie « Automatismes » : les cinq thèmes
+	// sont ceux de son sommaire.
+	it('suit les thèmes du sommaire du BO', async () => {
+		const { themes } = await pointsOfGrade('T_SPE');
+		expect(themes.map((t) => t.name).sort()).toEqual(
+			[
+				'Algorithmique et programmation',
+				'Algèbre et géométrie',
+				'Analyse',
+				'Probabilités',
+				'Vocabulaire ensembliste et logique'
+			].sort()
+		);
+	});
+
+	it('donne un code unique à chacun des 262 points', async () => {
+		const { points } = await pointsOfGrade('T_SPE');
+		const codes = points.map((p) => p.code);
+		expect(codes).toHaveLength(262);
+		expect(new Set(codes).size).toBe(262);
+		expect(codes.every((c) => /^TSPE-\d{3}$/.test(c!))).toBe(true);
+		// Contigus : TSPE-001 à TSPE-262, sans trou.
+		const numbers = codes.map((c) => Number(c!.slice(5))).sort((a, b) => a - b);
+		expect(numbers).toEqual(Array.from({ length: 262 }, (_, i) => i + 1));
+	});
+
+	it('laisse au prof regime_acquisition et rang', async () => {
+		const { points } = await pointsOfGrade('T_SPE');
+		expect(points).toHaveLength(262);
+		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
+		expect(points.filter((p) => p.rang !== null)).toHaveLength(0);
+	});
+
+	it('sort sans rien faire si le niveau existe déjà', () => {
+		const seed = readFileSync(
+			new URL(
+				'../../supabase/migrations/20261004100000_seed_curriculum_terminale_spe.sql',
+				import.meta.url
+			),
+			'utf8'
+		);
+		expect(seed).toMatch(
+			/IF EXISTS \(SELECT 1 FROM public\.curriculum_themes WHERE grade = 'T_SPE'\) THEN/
+		);
+		expect(seed).not.toMatch(/on conflict/i);
+		expect(seed).not.toMatch(/^\s*update\s/im);
+	});
+});
+
+/**
+ * Accès au programme de terminale (Q147, tranché par David le 2026-10-03) :
+ * tout utilisateur CONNECTÉ lit le texte du programme — contenu officiel, sans
+ * donnée d'élève. Un visiteur anonyme ne lit rien.
+ */
+describe('Seed du programme — terminale spécialité, accès', () => {
+	afterAll(async () => {
+		await cleanupCompetenceTestData();
+	});
+
+	it('un élève connecté lit les 262 points', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const client = (await createAuthenticatedClient(
+			student.email
+		)) as unknown as SupabaseClient<Database>;
+
+		const { data, error } = await client
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TSPE-%');
+		expect(error).toBeNull();
+		expect(data ?? []).toHaveLength(262);
+	});
+
+	it('un visiteur anonyme ne lit aucun point', async () => {
+		// Les 262 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+		const { points } = await pointsOfGrade('T_SPE');
+		expect(points).toHaveLength(262);
+
+		const anon = createClient<Database>(
+			process.env.SUPABASE_TEST_URL || 'http://localhost:54321',
+			process.env.SUPABASE_TEST_ANON_KEY ||
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+			{ auth: { persistSession: false, autoRefreshToken: false } }
+		);
+
+		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TSPE-%');
+		expect(data ?? []).toHaveLength(0);
 	});
 });
 

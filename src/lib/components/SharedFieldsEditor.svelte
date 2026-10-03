@@ -54,6 +54,8 @@
 		sharedBlankAcceptDecimal: boolean;
 		sharedBlankIntervals: boolean;
 		sharedBlankEquation: boolean;
+		sharedBlankVector: boolean;
+		sharedBlankVectorCollinear: boolean;
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
@@ -84,6 +86,8 @@
 		sharedBlankAcceptDecimal = $bindable(),
 		sharedBlankIntervals = $bindable(),
 		sharedBlankEquation = $bindable(),
+		sharedBlankVector = $bindable(),
+		sharedBlankVectorCollinear = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
 		sharedVariableHelpOpen = $bindable()
@@ -335,6 +339,18 @@
 								bind:checked={sharedBlankEquation}
 								label="Réponse : équation (droite, cercle)"
 							/>
+							<!-- Vecteur dans une case : (2;-3) ou en colonne (clavier « Vecteur ») -->
+							<MyCheckbox
+								bind:checked={sharedBlankVector}
+								label="Réponse : vecteur (coordonnées)"
+							/>
+							{#if sharedBlankVector}
+								<!-- Vecteur normal, directeur : (-4;6) juste pour (2;-3) -->
+								<MyCheckbox
+									bind:checked={sharedBlankVectorCollinear}
+									label="Vecteur : tout vecteur colinéaire non nul est juste"
+								/>
+							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>
 

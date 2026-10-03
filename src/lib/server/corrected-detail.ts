@@ -11,13 +11,13 @@
  *   un recalcul divergent est journalisé, sans donnée d'élève.
  * - Une question que la correction n'a pas pu juger (budget épuisé, Q59) n'est
  *   pas recalculée : la recalculer coûterait autant, et contredirait ses 0 point.
- * - Le recalcul a lui-même un budget de temps : au-delà, repli sans validation.
+ * - Le recalcul a lui-même un budget de temps : au-delà (ou si le validateur
+ *   échoue), détail INDISPONIBLE (Q173) — statut de la question seul, aucun
+ *   statut par case deviné. Copie relue au renvoi (409) : budget réduit.
  */
 
 import {
 	validateAnswerDetailed,
-	type BlankVerdict,
-	type ChoiceVerdict,
 	type DetailedVerdict,
 	type StudentAnswer
 } from '$lib/utils/answer-validator';
@@ -27,8 +27,16 @@ import {
 	type ValidationStatus
 } from '$lib/questions/types';
 import { statusFromBlankStatuses } from '$lib/questions/grading';
-import type { CorrectedAnswer } from '$lib/types/evaluation-attempt';
-import { GRADING_BUDGET_EXCEEDED_FEEDBACK, SUBMISSION_GRADING_BUDGET_MS } from './grading-budget';
+import type {
+	CorrectedAnswer,
+	CorrectedDetail,
+	UnavailableDetail
+} from '$lib/types/evaluation-attempt';
+import {
+	GRADING_BUDGET_EXCEEDED_FEEDBACK,
+	SUBMISSION_GRADING_BUDGET_MS,
+	SUBMITTED_COPY_DETAIL_BUDGET_MS
+} from './grading-budget';
 
 // Types
 export interface DetailItem {
@@ -60,59 +68,20 @@ function studentAnswerOf(
 	return { values, latex: values };
 }
 
-/** Choix d'un QCM sans validation : bons choix de l'instance, cochés enregistrés */
-function choicesWithoutValidation(
-	instance: QuestionInstance,
-	checkedIndexes: readonly number[]
-): ChoiceVerdict[] {
-	const checked = new Set(checkedIndexes);
-	return (instance.choices ?? []).map((choice, originalIndex) => {
-		const isChecked = checked.has(originalIndex);
-		const isCorrect = choice.isCorrect === true;
-		return {
-			originalIndex,
-			isCorrect,
-			checked: isChecked,
-			outcome: isChecked
-				? isCorrect
-					? 'checked-correct'
-					: 'checked-wrong'
-				: isCorrect
-					? 'missed'
-					: 'unchecked'
-		};
-	});
-}
-
 /**
- * Repli SANS validation : chaque case remplie prend le statut enregistré
- * (« faux » si la question n'est pas juste), une case vide reste vide.
+ * Repli (Q173) : détail INDISPONIBLE. Aucun statut par case n'est deviné (un
+ * statut copié de la question serait faux pour une question juste + fausse, ou
+ * à ½ point) : seul le statut enregistré est servi.
  */
-function fallbackDetail(item: DetailItem): DetailedVerdict {
-	const answer = studentAnswerOf(item.instance, item.answer);
-	if (getQuestionType(item.instance) === 'multiple_choice') {
-		return {
-			status: item.status,
-			blanks: [],
-			choices: choicesWithoutValidation(item.instance, answer.choiceIndexes ?? [])
-		};
-	}
-	const filledStatus: ValidationStatus =
-		item.status === 'correct' || item.status === 'unoptimal_form' ? item.status : 'incorrect';
-	const blanks: BlankVerdict[] = (answer.values ?? []).map((value, index) => ({
-		index,
-		status: value.trim() === '' ? 'empty' : filledStatus,
-		remarks: [],
-		answer: value
-	}));
-	return { status: item.status, blanks, ...(item.feedback && { feedback: item.feedback }) };
+function unavailableDetail(item: DetailItem): UnavailableDetail {
+	return { unavailable: true, status: item.status };
 }
 
 /** Verdict détaillé recalculé ; statut global = celui enregistré */
 export function detailOfCorrected(
 	item: DetailItem,
 	validate: DetailBudget['validate'] = validateAnswerDetailed
-): DetailedVerdict {
+): CorrectedDetail {
 	try {
 		const detail = validate(item.instance, studentAnswerOf(item.instance, item.answer));
 		const isChoice = getQuestionType(item.instance) === 'multiple_choice';
@@ -128,7 +97,7 @@ export function detailOfCorrected(
 		}
 		return { ...detail, status: item.status };
 	} catch {
-		return fallbackDetail(item);
+		return unavailableDetail(item);
 	}
 }
 
@@ -139,13 +108,29 @@ export function detailOfCorrected(
 export function detailsWithinBudget(
 	items: readonly DetailItem[],
 	budget: DetailBudget = {}
-): DetailedVerdict[] {
+): CorrectedDetail[] {
 	const budgetMs = budget.budgetMs ?? SUBMISSION_GRADING_BUDGET_MS;
 	const clock = budget.clock ?? (() => performance.now());
 	const startedAt = clock();
 	return items.map((item) => {
-		if (item.feedback === GRADING_BUDGET_EXCEEDED_FEEDBACK) return fallbackDetail(item);
-		if (clock() - startedAt >= budgetMs) return fallbackDetail(item);
+		if (item.feedback === GRADING_BUDGET_EXCEEDED_FEEDBACK) return unavailableDetail(item);
+		if (clock() - startedAt >= budgetMs) return unavailableDetail(item);
 		return detailOfCorrected(item, budget.validate);
 	});
+}
+
+/**
+ * Verdicts détaillés d'une copie DÉJÀ notée relue (renvoi → 409, Q173) : budget
+ * RÉDUIT à `SUBMITTED_COPY_DETAIL_BUDGET_MS`, même si un budget plus long est
+ * fourni. Cette relecture ne note rien : elle n'a pas à occuper le serveur 5 s.
+ */
+export function submittedCopyDetails(
+	items: readonly DetailItem[],
+	budget: DetailBudget = {}
+): CorrectedDetail[] {
+	const budgetMs = Math.min(
+		budget.budgetMs ?? SUBMITTED_COPY_DETAIL_BUDGET_MS,
+		SUBMITTED_COPY_DETAIL_BUDGET_MS
+	);
+	return detailsWithinBudget(items, { ...budget, budgetMs });
 }

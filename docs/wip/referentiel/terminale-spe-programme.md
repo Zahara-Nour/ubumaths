@@ -4,7 +4,7 @@
 > ⚠️ **Ce fichier ne fait plus foi une fois le niveau amorcé** : la page **Programme** (`/dashboard/teacher/programme`) prend le relais. Le corriger ici ne produit plus rien — cf. le référentiel de 1ʳᵉ, même règle.
 > **Source** : « Programme de spécialité de mathématiques de la classe terminale de la voie générale » — PDF fourni par David le 2026-10-03.
 >
-> **Statut** : rédaction complète, **en attente de relecture David**.
+> **Statut** : relu et validé par David le 2026-10-03, **amorcé en production** (#748, #749). La page Programme fait foi désormais.
 >
 > L'ordre suit celui du sommaire du BO. Les rubriques **« Objectifs »** et **« Histoire des mathématiques »** du BO sont des textes d'intention destinés au professeur : elles ne donnent **aucun point**. Le programme de terminale ne comporte pas de partie « Automatismes ».
 

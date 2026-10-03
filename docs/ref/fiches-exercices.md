@@ -286,6 +286,13 @@ inconnue est une erreur) ; au PDF, un objet qui dépasse de la `fenetre:` (cercl
 arc, polygone) est découpé au cadre comme à l'écran, le repère, les noms et les textes restant
 entiers (un nom de point hors de la fenêtre est omis).
 
+Corrigés dans le moteur le 2026-10-03 (branche `feat/reponse-vecteur-premier`), ne plus
+contourner : **vecteur colinéaire** — une case `answerKind: "vecteur"` reçoit le vecteur entier
+(`(2;-3)` ou en colonne) et, avec `vectorMode: "colineaire"`, accepte tout vecteur colinéaire non
+nul (vecteur normal, directeur) ; ne plus imposer une coordonnée ni demander deux cases (voir
+« Case vecteur » ci-dessous) ; **`isPrime(…)`** utilisable dans une règle `custom` (voir
+« Plusieurs bonnes réponses »).
+
 Corrigés dans le moteur le 2026-10-03 (branche `feat/trous-dans-tableau`), ne plus contourner :
 un trou dans une cellule de tableau (`| $P(X=x_k)$ | $0{,}2$ | $?$ |`, ou `{{blank:N}}` en texte)
 est saisissable comme dans un paragraphe : numéroté dans l'ordre d'écriture (cellules de gauche à
@@ -334,8 +341,11 @@ Toujours vrai :
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
   c = 0 → `shared.cleanCoefficients: true` (ci-dessus ; `{{c;+}}` écrit `+0` depuis #701, que
   l'option retire). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
-- **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
-  (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
+- **`\vec` ou `\overrightarrow` dans la formule d'une case** : `$\vec{n}=?$` ou
+  `$\vec{n}\begin{pmatrix}?\\?\end{pmatrix}$` n'affiche AUCUNE case à l'élève (le parseur mathAST
+  ne connaît pas `\vec` : la formule est rendue statique — mesuré le 2026-10-03, test
+  `FillBlanksInput-vector-keyboard`). Mettre la case seule dans sa formule :
+  `un vecteur normal $\vec{n}$ : $?$`.
 - **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
   vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
   réponse.
@@ -349,7 +359,12 @@ Règles d'écriture qui évitent un défaut :
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
   TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
 - Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
-  `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`). Un
+  `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`).
+  `isPrime(expr)` y vaut 1 si expr est un entier premier, 0 sinon (non entier, < 2) : contre-exemple
+  à « n² + n + 41 est toujours premier » → `"isPrime(answer^2+answer+41) == 0"` ; seul,
+  `"isPrime(answer)"` (non nul = vrai). Au-delà de 10^12, règle non évaluable (réponse fausse,
+  « Impossible de vérifier ta réponse. »). Règles seulement : pas dans `{{eval:…}}` ni dans une
+  condition (autre évaluateur). Un
   nombre simple OU une fraction (`\frac{1}{2}`, `-\frac{3}{4}`) y est accepté, valeur exacte jugée
   par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
   (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
@@ -384,6 +399,26 @@ de l'éditeur) :
   `bad_form` (spec : `constraintViolations: ["form"]`, comme pour un cercle à simplifier) ;
 - une attendue qui n'est pas une équation polynomiale en x et y fait échouer les specs du modèle.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « équation »).
+
+**Case « vecteur » (2026-10-03).** Le vecteur dans UNE case, coordonnées exactes comparées
+exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ; éditeur : cases
+« Réponse : vecteur » et « Vecteur : tout vecteur colinéaire non nul est juste ») :
+
+```json
+{ "expectedAnswer": "({{a}};{{b}})", "answerKind": "vecteur", "vectorMode": "colineaire" }
+{ "expectedAnswer": "\\begin{pmatrix}{{eval:xb-xa}}\\\\{{eval:yb-ya}}\\end{pmatrix}", "answerKind": "vecteur" }
+```
+
+- l'élève écrit `(2;-3)` (clavier physique ; la virgule `(2,3)` est une virgule DÉCIMALE → faux,
+  avec le message « Écris un vecteur : … point-virgule ») ou utilise l'onglet « Vecteur » du clavier
+  virtuel (colonne à 2 ou 3 coordonnées, `(□;□)`, flèche droite pour passer à la coordonnée
+  suivante) ; dimension 2 ou 3 ;
+- `exact` (défaut) : mêmes coordonnées ; `colineaire` : tout multiple non nul est juste
+  (`(-4;6)` pour `(2;-3)`, sans ½), le vecteur nul est faux avec un message ;
+- seule la valeur compte (`(\frac{2}{4};1)` juste) ; pas de `requiredForm` ni de contrainte
+  d'écriture ; specs : `correct` / `incorrect` seulement ;
+- attendue illisible, de dimension ≠ 2 ou 3, ou nulle en mode `colineaire` → specs rouges.
+  Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « vecteur »).
 
 Corrigés dans le moteur (ne plus contourner) : notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à

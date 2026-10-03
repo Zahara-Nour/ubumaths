@@ -281,10 +281,18 @@ Manche 12 (2026-10-03), référentiel de Terminale — recommandations suivies :
      (17 p.), maths expertes (11 p.). Section binomiale de la spécialité identique à 2019 :
      #730/#736/#740 restent conformes.
 145. Conventions de 2de / 1re inchangées : `[C]`, `[SF]`, `[D]`, `[SF+]` ; puces coupées ;
-     LaTeX MathLive ; codes `T_SPE-001`…
+     LaTeX MathLive ; codes `TSPE-001`… (préfixe sans `_`, comme `next_curriculum_point_code`).
 146. Markdown relu par David avant amorçage ; ensuite la page Programme fait foi.
 147. ACCÈS (accordé par David) : tout utilisateur connecté lit le texte des programmes de
      Terminale, comme les autres niveaux ; contenu officiel, aucune donnée d'élève.
 148. Rien de spécial pour la binomiale.
 149. Maths complémentaires : bâti sur la partie « Contenus » (4 thèmes) ; les 9 thèmes d'étude,
      les rubriques « Objectifs » et « Histoire des mathématiques » ne sont pas des points.
+
+- **Référentiel T_SPE LIVRÉ** (2026-10-03) : markdown relu par David (5 recos suivies : ajouts
+  du thème 1 fidèles à la prose du BO, algorithmique = listes seules, coupures, suffixe
+  « (démonstration) », notation `[a, b]` du BO) ; #748 (seed, 262 points, tests 6 rouges sans
+  la migration, security-auditor sans bloquant, rollback commenté), #749 (horodatage
+  `20261004090000` déjà pris en prod par `realtime_chat_prive` → `20261004100000`) ;
+  `db:migrate` fait, prod vérifiée : 5 thèmes · 18 objectifs · 262 points TSPE-001 → 262.
+  Reste : T_COMP (sur « Contenus », Q149), puis T_EXP ; lois de maths complémentaires à part.

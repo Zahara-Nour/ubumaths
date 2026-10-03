@@ -235,10 +235,23 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
-export type AnswerKind = 'intervalles' | 'equation';
+export type AnswerKind = 'intervalles' | 'equation' | 'vecteur';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
-export const ANSWER_KINDS = ['intervalles', 'equation'] as const satisfies readonly AnswerKind[];
+export const ANSWER_KINDS = [
+	'intervalles',
+	'equation',
+	'vecteur'
+] as const satisfies readonly AnswerKind[];
+
+/**
+ * Jugement d'une case « vecteur » (voir `TemplateBlank.vectorMode`) :
+ * `'exact'` = mêmes coordonnées ; `'colineaire'` = tout vecteur colinéaire non nul.
+ */
+export type VectorMode = 'exact' | 'colineaire';
+
+/** Valeurs de `VectorMode` (schémas Zod, éditeur) */
+export const VECTOR_MODES = ['exact', 'colineaire'] as const satisfies readonly VectorMode[];
 
 /**
  * Default validation settings applied to all blanks in a question.
@@ -255,6 +268,8 @@ export interface BlankDefaults {
 	acceptDecimal?: boolean;
 	/** Voir `TemplateBlank.answerKind` */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.vectorMode` */
+	vectorMode?: VectorMode;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -305,8 +320,17 @@ export interface TemplateBlank {
 	 * proportionnel à celui de l'attendue (coefficient 1 exigé dès le degré 2,
 	 * sinon ½). Formes exigeables : `requiredForm` `reduite`, `cartesienne`,
 	 * `centre-rayon`. Jugée par `questions/equations/equation-answer.ts`.
+	 * `'vecteur'` = un vecteur dans UNE case, coordonnées `(a;b)` ou colonne
+	 * `\begin{pmatrix}a\\b\end{pmatrix}` (dimension 2 ou 3), comparées exactement ;
+	 * voir `vectorMode`. Jugée par `questions/vectors/vector-answer.ts`.
 	 */
 	answerKind?: AnswerKind;
+	/**
+	 * Case `answerKind: 'vecteur'` seulement (ignoré sinon) : `'exact'` (défaut) =
+	 * mêmes coordonnées que l'attendue ; `'colineaire'` = tout vecteur colinéaire
+	 * NON NUL à l'attendue est juste (vecteur normal, directeur), le vecteur nul est faux.
+	 */
+	vectorMode?: VectorMode;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -689,6 +713,8 @@ export interface InstanceBlank {
 	acceptDecimal?: boolean;
 	/** Voir `TemplateBlank.answerKind` (fusionné avec blankDefaults) */
 	answerKind?: AnswerKind;
+	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
+	vectorMode?: VectorMode;
 
 	/** Unit config (merged) */
 	unit?: {

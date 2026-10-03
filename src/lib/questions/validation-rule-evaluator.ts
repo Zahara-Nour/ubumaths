@@ -89,6 +89,9 @@ export interface EvaluationResult {
  */
 const EQUIVALENCE_BUDGET_MS = 500;
 
+/** Plus grand argument de `isPrime` dans une règle `custom` (division d'essai ≤ 10^6) */
+const MAX_PRIME_CHECK = 1e12;
+
 /**
  * Messages destinés à l'ÉLÈVE : la raison d'un refus devient le feedback de la
  * case (cf. `evaluateValidationRules` dans `answer-validator.ts`). En français,
@@ -454,6 +457,8 @@ function evaluatePredicateRule(rule: PredicateRule, ctx: EvaluationContext): Eva
  * - gcd(answer, n) > 1
  * - answer % n == 0
  * - Comparison operators (==, !=, <, >, <=, >=)
+ * - isPrime(expr) : 1 si expr est un entier premier, 0 sinon (`isPrime(answer)`,
+ *   `isPrime(answer^2+answer+41) == 0`) ; au-delà de 10^12, règle non évaluable
  */
 function evaluateCustomRule(rule: CustomExpressionRule, ctx: EvaluationContext): EvaluationResult {
 	// Resolve variables first
@@ -595,6 +600,10 @@ function evaluateSafeExpression(expr: string): number {
  * Supports comparison operators and common math functions
  */
 function evaluateCustomExpression(expr: string): boolean {
+	// `isPrime(…)` remplacé par sa valeur (1 ou 0) AVANT tout découpage : l'appel
+	// peut être comparé, sommé ou imbriqué
+	expr = replacePrimalityCalls(expr);
+
 	// Handle comparison operators
 	const comparisonMatch = expr.match(/^(.+?)\s*(==|!=|<=|>=|<|>)\s*(.+)$/);
 
@@ -623,6 +632,29 @@ function evaluateCustomExpression(expr: string): boolean {
 	// If result is non-zero, treat as true
 	const result = evaluateCustomSubExpression(expr);
 	return result !== 0;
+}
+
+/**
+ * Remplace chaque appel `isPrime(…)` (parenthèses équilibrées, imbrication
+ * comprise) par `1` ou `0`. Lève une erreur sur une parenthèse non fermée ou un
+ * argument hors borne (règle alors non évaluable).
+ */
+function replacePrimalityCalls(expr: string): string {
+	const call = /\bisPrime\s*\(/.exec(expr);
+	if (!call) return expr;
+	const open = call.index + call[0].length - 1;
+	let depth = 0;
+	for (let i = open; i < expr.length; i++) {
+		if (expr[i] === '(') depth++;
+		else if (expr[i] === ')') depth--;
+		if (depth === 0) {
+			const argument = replacePrimalityCalls(expr.slice(open + 1, i));
+			const value = evaluateCustomSubExpression(argument.trim());
+			const replaced = expr.slice(0, call.index) + (isPrimeBounded(value) ? '1' : '0');
+			return replaced + replacePrimalityCalls(expr.slice(i + 1));
+		}
+	}
+	throw new Error(`isPrime : parenthèse non fermée dans « ${expr} »`);
 }
 
 /**
@@ -682,6 +714,17 @@ function isPrime(n: number): boolean {
 		if (n % i === 0) return false;
 	}
 	return true;
+}
+
+/**
+ * `isPrime` d'une règle `custom` : borne de sécurité sur la taille (division
+ * d'essai jusqu'à √n, soit 10^6 au plus). Au-delà, erreur → règle non évaluable.
+ */
+function isPrimeBounded(n: number): boolean {
+	if (Math.abs(n) > MAX_PRIME_CHECK) {
+		throw new Error(`isPrime : argument hors borne (|n| > ${MAX_PRIME_CHECK})`);
+	}
+	return isPrime(n);
 }
 
 /**

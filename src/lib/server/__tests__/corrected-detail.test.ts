@@ -9,11 +9,17 @@
  * qui est servi.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { detailsWithinBudget, detailOfCorrected } from '../corrected-detail';
+import { detailsWithinBudget, detailOfCorrected, submittedCopyDetails } from '../corrected-detail';
 import { gradeQuestion, statusFromBlankStatuses } from '$lib/questions/grading';
-import { GRADING_BUDGET_EXCEEDED_FEEDBACK } from '../grading-budget';
+import {
+	GRADING_BUDGET_EXCEEDED_FEEDBACK,
+	SUBMISSION_GRADING_BUDGET_MS,
+	SUBMITTED_COPY_DETAIL_BUDGET_MS
+} from '../grading-budget';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { DetailedVerdict } from '$lib/utils/answer-validator';
+import type { CorrectedDetail } from '$lib/types/evaluation-attempt';
 
 // Fixtures
 const math = (expectedAnswer: string): InstanceBlank => ({
@@ -60,6 +66,12 @@ const qcm: QuestionInstance = {
 };
 
 const two = blanksInstance([math('7'), math('8')]);
+
+/** Détail recalculé (chemin nominal) : jamais « indisponible » */
+function available(detail: CorrectedDetail): DetailedVerdict {
+	if ('unavailable' in detail) throw new Error('détail indisponible inattendu');
+	return detail;
+}
 const warnForm = blanksInstance([math('480'), math('1')], { constraints: { form: 'warn' } });
 
 // Tests
@@ -73,7 +85,9 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 		['mauvaise forme (0)', blanksInstance([math('480'), math('1')]), ['400+80', '1']]
 	])('%s', (_name, instance, values) => {
 		const graded = gradeQuestion(instance, { values });
-		const detail = detailOfCorrected({ instance, answer: { values }, status: graded.status });
+		const detail = available(
+			detailOfCorrected({ instance, answer: { values }, status: graded.status })
+		);
 		expect(detail.status).toBe(graded.status);
 		expect(statusFromBlankStatuses(detail.blanks.map((b) => b.status))).toBe(graded.status);
 	});
@@ -82,11 +96,13 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 		// Coché c0 seulement : c2 oublié → ½
 		const graded = gradeQuestion(qcm, { choices: [1] });
 		expect(graded.status).toBe('unoptimal_form');
-		const detail = detailOfCorrected({
-			instance: qcm,
-			answer: { choiceIndexes: graded.choiceIndexes },
-			status: graded.status
-		});
+		const detail = available(
+			detailOfCorrected({
+				instance: qcm,
+				answer: { choiceIndexes: graded.choiceIndexes },
+				status: graded.status
+			})
+		);
 		expect(detail.status).toBe('unoptimal_form');
 		expect(detail.choices?.map((c) => c.outcome)).toEqual([
 			'checked-correct',
@@ -96,7 +112,7 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 	});
 
 	it('sans réponse : chaque case vide, statut enregistré', () => {
-		const detail = detailOfCorrected({ instance: two, answer: null, status: 'empty' });
+		const detail = available(detailOfCorrected({ instance: two, answer: null, status: 'empty' }));
 		expect(detail.status).toBe('empty');
 		expect(detail.blanks.map((b) => b.status)).toEqual(['empty', 'empty']);
 	});
@@ -115,8 +131,8 @@ describe('verdict détaillé recalculé = statut global enregistré (non-régres
 	});
 });
 
-describe('budget de temps (réponses hostiles)', () => {
-	it('question non corrigée faute de budget : PAS de recalcul, cases fausses', () => {
+describe('budget de temps (réponses hostiles) : détail INDISPONIBLE (Q173)', () => {
+	it('question non corrigée faute de budget : PAS de recalcul, aucun statut par case', () => {
 		const validate = vi.fn();
 		const [detail] = detailsWithinBudget(
 			[
@@ -130,14 +146,69 @@ describe('budget de temps (réponses hostiles)', () => {
 			{ validate }
 		);
 		expect(validate).not.toHaveBeenCalled();
-		expect(detail.status).toBe('incorrect');
-		expect(detail.blanks.map((b) => b.status)).toEqual(['incorrect', 'empty']);
+		expect(detail).toEqual({ unavailable: true, status: 'incorrect' });
 	});
 
-	it('budget épuisé en cours d’affichage : les questions restantes ne sont plus recalculées', () => {
+	it('budget épuisé en cours d’affichage : nominal intact, restantes indisponibles', () => {
 		let now = 0;
+		// Validateur factice : 1re case juste, 2de fausse (statut global : faux)
 		const validate = vi.fn((instance: QuestionInstance) => {
 			now += 10;
+			return {
+				status: 'incorrect' as const,
+				blanks: (instance.blanks ?? []).map((_, index) => ({
+					index,
+					status: index === 0 ? ('correct' as const) : ('incorrect' as const),
+					remarks: [],
+					answer: ''
+				}))
+			};
+		});
+		const items = [
+			{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' as const },
+			{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' as const },
+			// Juste + fausse : l'ancien repli affichait les DEUX cases « faux »
+			{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' as const },
+			// ½ point (une case vide) : l'ancien repli affichait « forme à améliorer » sur la juste
+			{ instance: two, answer: { values: ['7', ''] }, status: 'unoptimal_form' as const },
+			{ instance: qcm, answer: { choiceIndexes: [0] }, status: 'unoptimal_form' as const }
+		];
+		const details = detailsWithinBudget(items, { budgetMs: 15, clock: () => now, validate });
+		expect(validate).toHaveBeenCalledTimes(2);
+		// Chemin nominal : les VRAIS statuts par case
+		for (const detail of details.slice(0, 2)) {
+			expect('unavailable' in detail).toBe(false);
+			if (!('unavailable' in detail)) {
+				expect(detail.blanks.map((b) => b.status)).toEqual(['correct', 'incorrect']);
+			}
+		}
+		// Repli : seul le statut ENREGISTRÉ, aucun statut par case inventé
+		expect(details.slice(2)).toEqual([
+			{ unavailable: true, status: 'incorrect' },
+			{ unavailable: true, status: 'unoptimal_form' },
+			{ unavailable: true, status: 'unoptimal_form' }
+		]);
+	});
+
+	it('validateur en échec : détail indisponible, statut enregistré', () => {
+		const validate = vi.fn(() => {
+			throw new Error('boum');
+		});
+		const [detail] = detailsWithinBudget(
+			[{ instance: two, answer: { values: ['7', '9'] }, status: 'incorrect' }],
+			{ validate }
+		);
+		expect(detail).toEqual({ unavailable: true, status: 'incorrect' });
+	});
+});
+
+describe('copie déjà notée relue (renvoi, 409) : budget RÉDUIT', () => {
+	it('le recalcul s’arrête à SUBMITTED_COPY_DETAIL_BUDGET_MS, même si un budget plus long est fourni', () => {
+		expect(SUBMITTED_COPY_DETAIL_BUDGET_MS).toBeLessThan(SUBMISSION_GRADING_BUDGET_MS);
+		let now = 0;
+		// Chaque recalcul coûte 60 % du budget réduit : le 2e le dépasse
+		const validate = vi.fn((instance: QuestionInstance) => {
+			now += SUBMITTED_COPY_DETAIL_BUDGET_MS * 0.6;
 			return {
 				status: 'correct' as const,
 				blanks: (instance.blanks ?? []).map((_, index) => ({
@@ -153,10 +224,12 @@ describe('budget de temps (réponses hostiles)', () => {
 			answer: { values: ['7', '8'] },
 			status: 'correct' as const
 		}));
-		const details = detailsWithinBudget(items, { budgetMs: 15, clock: () => now, validate });
+		const details = submittedCopyDetails(items, {
+			budgetMs: SUBMISSION_GRADING_BUDGET_MS,
+			clock: () => now,
+			validate
+		});
 		expect(validate).toHaveBeenCalledTimes(2);
-		expect(details.map((d) => d.status)).toEqual(['correct', 'correct', 'correct']);
-		// Repli : statut global reporté sur les cases remplies
-		expect(details[2].blanks.map((b) => b.status)).toEqual(['correct', 'correct']);
+		expect(details[2]).toEqual({ unavailable: true, status: 'correct' });
 	});
 });
