@@ -58,9 +58,12 @@ import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 import { createRandomSource } from '$lib/utils/random';
 import {
 	binomialDistribution,
+	binomialInterval,
 	binomialMoments,
 	binomialProbability,
-	roundExact
+	binomialThreshold,
+	roundExact,
+	type BinomialDistribution
 } from '$lib/statistics/binomial';
 
 // ============================================================================
@@ -108,6 +111,8 @@ export interface SceneBar {
 	label: string;
 	/** Deux séries (Q115) : 1 pour la seconde, hachurée ; absente sinon */
 	series?: 0 | 1;
+	/** Loi binomiale avec `intervalle:` : false hors de I (gris) ; absente sinon */
+	highlighted?: boolean;
 	value: number;
 	/** Valeur écrite au-dessus de la barre (`valeurs: oui`) */
 	valueLabel: string;
@@ -293,6 +298,8 @@ export interface LawScene extends SceneCommon {
 	tableHidden?: boolean;
 	/** Loi binomiale trop large pour une ligne : tableau vertical (k, P(X = k)) */
 	vertical?: boolean;
+	/** Loi binomiale, `diagramme: oui` : les bâtons de la loi (I en couleur, Q140) */
+	chart?: BarScene;
 }
 
 /**
@@ -1392,6 +1399,128 @@ function roundedText(num: bigint, den: bigint, places: number, locale: ContentLo
 	return { text: locale === 'en' ? text : text.replace('.', ','), exact };
 }
 
+/** Le niveau d'un intervalle et α/2, en fractions */
+function intervalParts(binomial: NonNullable<LawData['binomial']>) {
+	const level = Fraction.parse(binomial.interval ?? '') ?? Fraction.ONE;
+	return { level, half: Fraction.ONE.sub(level).mul(new Fraction(1n, 2n)) };
+}
+
+/** `intervalle:` (Q140) : I et P(X ∈ I), puis la règle qui a choisi a et b */
+function intervalLines(
+	distribution: BinomialDistribution,
+	binomial: NonNullable<LawData['binomial']>,
+	variable: string,
+	locale: ContentLocale
+): string[] {
+	if (binomial.interval === null) return [];
+	const { level, half } = intervalParts(binomial);
+	const { a, b, num, den } = binomialInterval(distribution, level);
+	const { text, exact } = roundedText(num, den, binomial.places, locale);
+	const sign = exact ? '=' : '≈';
+	const shownLevel = exactDecimal(level, locale);
+	const shownHalf = exactDecimal(half, locale);
+	return locale === 'en'
+		? [
+				`I = [${a}, ${b}]: P(${variable} ∈ I) ${sign} ${text} ⩾ ${shownLevel}`,
+				`a and b chosen so that P(${variable} < a) ⩽ ${shownHalf} and P(${variable} > b) ⩽ ${shownHalf}`
+			]
+		: [
+				`I = [${a} ; ${b}] : P(${variable} ∈ I) ${sign} ${text} ⩾ ${shownLevel}`,
+				`a et b choisis pour que P(${variable} < a) ⩽ ${shownHalf} et P(${variable} > b) ⩽ ${shownHalf}`
+			];
+}
+
+/** `seuil:` (Q140, surréservation) : le plus petit (ou le plus grand) k */
+function thresholdLines(
+	distribution: BinomialDistribution,
+	binomial: NonNullable<LawData['binomial']>,
+	variable: string,
+	locale: ContentLocale
+): string[] {
+	const threshold = binomial.threshold;
+	if (threshold === null) return [];
+	const alpha = Fraction.parse(threshold.alpha) ?? Fraction.ZERO;
+	const { k, smallest, num, den } = binomialThreshold(
+		distribution,
+		threshold.event,
+		threshold.comparison,
+		alpha
+	);
+	const shownAlpha = asWritten(threshold.alpha, locale);
+	const condition = `P(${variable} ${threshold.event} k) ${threshold.comparison} ${shownAlpha}`;
+	if (k === null) {
+		return [
+			locale === 'en'
+				? `no k from 0 to ${binomial.n} satisfies ${condition}`
+				: `aucun k de 0 à ${binomial.n} ne vérifie ${condition}`
+		];
+	}
+	const { text, exact } = roundedText(num, den, binomial.places, locale);
+	const reached = `P(${variable} ${threshold.event} ${k}) ${exact ? '=' : '≈'} ${text}`;
+	return [
+		locale === 'en'
+			? `${smallest ? 'smallest' : 'largest'} k such that ${condition}: k = ${k} (${reached})`
+			: `plus ${smallest ? 'petit' : 'grand'} k tel que ${condition} : k = ${k} (${reached})`
+	];
+}
+
+/**
+ * `diagramme: oui` : les bâtons de la loi, hauteur P(X = k) ; avec
+ * `intervalle:`, ceux de I en couleur, les autres en gris (Q140)
+ */
+function binomialChart(
+	spec: StatChartSpec,
+	distribution: BinomialDistribution,
+	binomial: NonNullable<LawData['binomial']>,
+	locale: ContentLocale
+): BarScene {
+	const den = Number(distribution.denominator);
+	const chartSpec: StatChartSpec = {
+		...spec,
+		kind: 'barres',
+		data: distribution.numerators.map((num, k) => ({
+			label: String(k),
+			value: new Fraction(num, distribution.denominator).toNumber() || Number(num) / den,
+			interval: null,
+			line: 0
+		})),
+		unit: 'effectifs',
+		title: null,
+		description: null,
+		axes: { x: null, y: locale === 'en' ? 'Probability' : 'Probabilité' },
+		showValues: false,
+		indicators: [],
+		law: null,
+		twoSeries: null,
+		series: null,
+		rawValues: null
+	};
+	const built = buildBarScene(chartSpec, locale);
+	// Un axe de PROBABILITÉS : gradué en décimaux (celui des barres, fait pour des
+	// effectifs entiers, montait à 1 et écrasait les bâtons — fiche compilée)
+	const max = Math.max(...built.bars.map((bar) => bar.value)) || 1;
+	const { yMax, ticks } = valueAxis(max, built.pixelSize.height, 'pourcentages', locale);
+	// Des numéros courts tiennent à plat, même nombreux
+	const longest = String(binomial.n).length;
+	const bandPx = built.pixelSize.width / built.labels.length;
+	const shown = distribution.numerators.map(
+		(num, k) => `${k} ${roundedText(num, distribution.denominator, binomial.places, locale).text}`
+	);
+	const scene: BarScene = {
+		...built,
+		yMax,
+		ticks,
+		rotateLabels: longest * STAT_CHART_CHAR_PX > bandPx,
+		description: `${STAT_TEXT[locale].kind.barres}${STAT_TEXT[locale].colon}${shown.join(', ')}.`
+	};
+	if (binomial.interval === null) return scene;
+	const { a, b } = binomialInterval(distribution, intervalParts(binomial).level);
+	return {
+		...scene,
+		bars: scene.bars.map((bar, k) => ({ ...bar, highlighted: k >= a && k <= b }))
+	};
+}
+
 /**
  * Loi binomiale (`X ~ B(n ; p)`, manche 11) : le tableau P(X = k) arrondi,
  * E / V / σ par les formules, puis les lignes `probabilités:` — tout en
@@ -1420,6 +1549,8 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 	};
 	const indicators = [
 		...law.indicators.map(momentLine),
+		...intervalLines(distribution, binomial, law.variable, locale),
+		...thresholdLines(distribution, binomial, law.variable, locale),
 		...binomial.queries.map((query) => {
 			const { num, den } = binomialProbability(
 				distribution,
@@ -1452,6 +1583,8 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 		),
 		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
 		tableHidden,
+		...(binomial.chart &&
+			!tableHidden && { chart: binomialChart(spec, distribution, binomial, locale) }),
 		// À l'horizontale, une ligne doit tenir dans une colonne de fiche : la
 		// largeur compte, pas seulement le nombre de valeurs (« 0,0156 » × 7
 		// débordait, B(10 ; p) au millième aussi — mesuré sur la fiche compilée)
@@ -1713,9 +1846,21 @@ function buildSimulatedSamplesScene(
 function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
 	const simulation = spec.simulation;
 	if (simulation === null) throw new Error('Simulation sans données');
+	// Loi binomiale (PR b) : les probabilités exactes, sans passer par du texte
+	// (leurs dénominateurs dépassent les 15 chiffres de `Fraction.parse`)
+	const binomial =
+		simulation.binomial === null
+			? null
+			: binomialDistribution(
+					simulation.binomial.n,
+					Fraction.parse(simulation.binomial.p) ?? Fraction.ZERO
+				);
 	const law = {
 		values: simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
-		probabilities: simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO)
+		probabilities:
+			binomial === null
+				? simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO)
+				: binomial.numerators.map((num) => new Fraction(num, binomial.denominator))
 	};
 	if (simulation.mode === 'moyenne') return buildSimulatedMeanScene(spec, simulation, law, locale);
 	if (simulation.mode === 'échantillons') {
@@ -1754,7 +1899,10 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 			value: asWritten(value, locale),
 			count: groupedCount(outcome.value.counts[i], locale),
 			frequency: frequency(outcome.value.counts[i]),
-			probability: asWritten(simulation.probabilities[i], locale)
+			probability:
+				binomial === null
+					? asWritten(simulation.probabilities[i], locale)
+					: roundedText(binomial.numerators[i], binomial.denominator, 3, locale).text
 		}))
 	};
 }

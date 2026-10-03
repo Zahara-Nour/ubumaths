@@ -99,3 +99,75 @@ export function roundExact(
 	const digits = places === 0 ? text : `${text.slice(0, -places)}.${text.slice(-places)}`;
 	return { digits, exact: remainder === 0n };
 }
+
+/** num/den ⩽ value (fractions positives), en entiers */
+function atMost(num: bigint, den: bigint, value: Fraction): boolean {
+	return num * value.den <= value.num * den;
+}
+
+/** num/den ⩾ value */
+function atLeast(num: bigint, den: bigint, value: Fraction): boolean {
+	return num * value.den >= value.num * den;
+}
+
+/**
+ * Intervalle I = [a ; b] avec P(X ∈ I) ⩾ `level` (Q140) : le plus petit tel
+ * que P(X < a) ⩽ α/2 et P(X > b) ⩽ α/2, α = 1 − level. Le programme n'impose
+ * pas de méthode : celle-ci est écrite sous le résultat.
+ */
+export function binomialInterval(
+	law: BinomialDistribution,
+	level: Fraction
+): { a: number; b: number; num: bigint; den: bigint } {
+	const half = Fraction.ONE.sub(level).mul(new Fraction(1n, 2n));
+	const { numerators, denominator: den } = law;
+	// below[k] = P(X < k) · den ; above[k] = P(X > k) · den
+	const below: bigint[] = [0n];
+	for (const value of numerators) below.push(below[below.length - 1] + value);
+	const total = below[below.length - 1];
+	let a = 0;
+	for (let k = 0; k <= law.n; k++) if (atMost(below[k], den, half)) a = k;
+	let b = law.n;
+	for (let k = law.n; k >= 0; k--) if (atMost(total - below[k + 1], den, half)) b = k;
+	return { a, b, num: below[b + 1] - below[a], den };
+}
+
+export type ThresholdEvent = '>' | '⩾' | '<' | '⩽';
+
+/**
+ * Seuil (surréservation, programme) : le k de 0 à n qui vérifie
+ * « P(X `event` k) `comparison` α ». Une probabilité qui DÉCROÎT avec k
+ * (P(X > k), P(X ⩾ k)) : plus petit k pour ⩽, plus grand pour ⩾ ; qui CROÎT
+ * (P(X ⩽ k), P(X < k)) : l'inverse. Rend k et P, ou null si aucun ne convient.
+ */
+export function binomialThreshold(
+	law: BinomialDistribution,
+	event: ThresholdEvent,
+	comparison: '⩽' | '⩾',
+	alpha: Fraction
+): { k: number | null; smallest: boolean; num: bigint; den: bigint } {
+	const { numerators, denominator: den } = law;
+	const below: bigint[] = [0n];
+	for (const value of numerators) below.push(below[below.length - 1] + value);
+	const total = below[below.length - 1];
+	const probability = (k: number): bigint => {
+		switch (event) {
+			case '>':
+				return total - below[k + 1];
+			case '⩾':
+				return total - below[k];
+			case '<':
+				return below[k];
+			case '⩽':
+				return below[k + 1];
+		}
+	};
+	const decreasing = event === '>' || event === '⩾';
+	const smallest = decreasing === (comparison === '⩽');
+	const fits = (k: number) =>
+		comparison === '⩽' ? atMost(probability(k), den, alpha) : atLeast(probability(k), den, alpha);
+	const order = Array.from({ length: law.n + 1 }, (_, k) => k);
+	if (!smallest) order.reverse();
+	const k = order.find(fits) ?? null;
+	return { k, smallest, num: k === null ? 0n : probability(k), den };
+}

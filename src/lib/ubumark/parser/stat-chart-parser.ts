@@ -122,6 +122,10 @@ interface Options {
 	/** Loi binomiale : `arrondi:` (décimales) et `probabilités:` tel qu'écrit */
 	places: number | null;
 	binomialQueries: string | null;
+	/** Loi binomiale : `diagramme:`, `intervalle:` (niveau), `seuil:` tel qu'écrit */
+	binomialChart: boolean;
+	binomialLevel: Fraction | null;
+	binomialThreshold: string | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -194,7 +198,10 @@ const OPTION_KEYS = [
 	'serie',
 	'frequences',
 	'arrondi',
-	'probabilites'
+	'probabilites',
+	'diagramme',
+	'intervalle',
+	'seuil'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -234,6 +241,9 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	frequences: ['effectifs'],
 	arrondi: ['loi'],
 	probabilites: ['loi'],
+	diagramme: ['loi'],
+	intervalle: ['loi'],
+	seuil: ['loi'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
@@ -582,6 +592,15 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			return;
 		case 'probabilites':
 			options.binomialQueries = value;
+			return;
+		case 'diagramme':
+			options.binomialChart = yesNo(value, 'diagramme');
+			return;
+		case 'intervalle':
+			options.binomialLevel = parseLevel(value);
+			return;
+		case 'seuil':
+			options.binomialThreshold = value.trim();
 			return;
 		case 'frequences': {
 			const written = normalizeKey(value.trim());
@@ -1270,6 +1289,19 @@ function parseTableRows(value: string): FrequencyTableRow[] {
 	return rows;
 }
 
+/** `intervalle: 0,95`, `95 %` ou `α = 0,05` (Q140) : le niveau 1 − α, strictement dans ]0 ; 1[ */
+function parseLevel(value: string): Fraction {
+	const message = 'intervalle : un niveau strictement entre 0 et 1 (0,95, 95 % ou α = 0,05)';
+	const alpha = /^(?:α|alpha)\s*=\s*(.+)$/i.exec(value.trim());
+	const read = Fraction.parse(alpha ? alpha[1] : value.trim());
+	if (read === null) throw new LineError(message);
+	const level = alpha ? Fraction.ONE.sub(read) : read;
+	if (level.isNegative() || level.equals(Fraction.ZERO) || !Fraction.ONE.greaterThan(level)) {
+		throw new LineError(message);
+	}
+	return level;
+}
+
 function parseLawIndicators(raw: string): LawIndicator[] {
 	const names = raw
 		.split(';')
@@ -1308,6 +1340,9 @@ const QUERY_OPERATORS: Record<string, '<' | '⩽' | '>' | '⩾' | '='> = {
 	'=': '='
 };
 const OPERATOR = '(<=|>=|⩽|≤|⩾|≥|<|>|=)';
+/** `seuil: P(X > k) ⩽ 0,05` : l'événement en k, la comparaison, α */
+const THRESHOLD_REGEX =
+	/^P\(\s*([A-Za-z])\s*(<=|>=|⩽|≤|⩾|≥|<|>)\s*k\s*\)\s*(<=|>=|⩽|≤|⩾|≥)\s*(.+)$/;
 const QUERY_ONE_SIDE = new RegExp(
 	`^P\\(\\s*([A-Za-z])\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\)$`
 );
@@ -1413,6 +1448,28 @@ function checkBinomial(
 		queries.push({ display, low, high });
 	}
 
+	let threshold: NonNullable<LawData['binomial']>['threshold'] = null;
+	if (options.binomialThreshold !== null) {
+		const line = optionLines.seuil ?? 0;
+		const written = THRESHOLD_REGEX.exec(options.binomialThreshold);
+		if (!written) return at(line, `seuil : écrire P(${binomial.name} > k) ⩽ 0,05`);
+		if (written[1] !== binomial.name) {
+			return at(
+				line,
+				`seuil : « P(${written[1]} ${QUERY_OPERATORS[written[2]]} k) » parle de ${written[1]}, la variable est ${binomial.name}`
+			);
+		}
+		const alpha = Fraction.parse(written[4]);
+		if (alpha === null || alpha.isNegative() || alpha.greaterThan(Fraction.ONE)) {
+			return at(line, 'seuil : α est un nombre entre 0 et 1');
+		}
+		threshold = {
+			event: QUERY_OPERATORS[written[2]] as '>' | '⩾' | '<' | '⩽',
+			comparison: QUERY_OPERATORS[written[3]] as '⩽' | '⩾',
+			alpha: written[4].trim()
+		};
+	}
+
 	return {
 		law: {
 			variable: binomial.name,
@@ -1420,7 +1477,15 @@ function checkBinomial(
 			probabilities: [],
 			masked,
 			indicators: options.lawIndicators,
-			binomial: { n, p: binomial.p, places: options.places ?? 3, queries }
+			binomial: {
+				n,
+				p: binomial.p,
+				places: options.places ?? 3,
+				queries,
+				chart: options.binomialChart,
+				interval: options.binomialLevel === null ? null : options.binomialLevel.toString(),
+				threshold
+			}
 		}
 	};
 }
@@ -1739,7 +1804,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		decimalFrequencies: null,
 		tableMasked: null,
 		places: null,
-		binomialQueries: null
+		binomialQueries: null,
+		binomialChart: false,
+		binomialLevel: null,
+		binomialThreshold: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -1823,7 +1891,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			}
 
 			// Loi binomiale : `X ~ B(10 ; 0,3)`, `X suit B(10 ; 3/10)` (pas en simulation : PR b)
-			const binomial = isLaw && !isSimulation ? BINOMIAL_REGEX.exec(content) : null;
+			const binomial = isLaw ? BINOMIAL_REGEX.exec(content) : null;
 			if (binomial) {
 				if (lawVariable !== null || lawProbabilities !== null || lawBinomial !== null) {
 					throw new LineError(BINOMIAL_ALONE);
@@ -2057,7 +2125,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		if (problem) errors.push(problem);
 	}
 	// `arrondi:` et `probabilités:` n'ont de sens qu'avec une loi binomiale
-	for (const key of ['probabilites', 'arrondi'] as const) {
+	for (const key of ['probabilites', 'arrondi', 'diagramme', 'intervalle', 'seuil'] as const) {
 		if (errors.length === 0 && seenOptions.has(key) && lawBinomial === null) {
 			const line = optionLines[key] ?? 0;
 			errors.push({
@@ -2067,7 +2135,31 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		}
 	}
 	const warnings: StatChartIssue[] = [];
-	if (errors.length === 0 && lawBinomial !== null) {
+	if (errors.length === 0 && lawBinomial !== null && isSimulation) {
+		// Simulation de B(n ; p) : au plus 31 valeurs, comme une loi lisible (PR b)
+		const problem = checkSimulationOptions(options, optionLines);
+		const checked = checkBinomial(lawBinomial, options, optionLines);
+		if (problem) errors.push(problem);
+		else if ('error' in checked) errors.push(checked.error);
+		else if (checked.law.binomial!.n > STAT_CHART_LIMITS.binomialTableValues) {
+			errors.push({
+				message: `Ligne ${lawBinomial.line} : B(n ; p) : n au plus ${STAT_CHART_LIMITS.binomialTableValues} pour une simulation`,
+				line: lawBinomial.line
+			});
+		} else {
+			simulation = {
+				variable: checked.law.variable,
+				values: checked.law.values,
+				probabilities: [],
+				mode: options.simulationMode,
+				draws: options.draws,
+				seed: options.seed,
+				samples: options.samples,
+				sampleSize: options.sampleSize,
+				binomial: { n: checked.law.binomial!.n, p: lawBinomial.p }
+			};
+		}
+	} else if (errors.length === 0 && lawBinomial !== null) {
 		const checked = checkBinomial(lawBinomial, options, optionLines);
 		if ('error' in checked) errors.push(checked.error);
 		else {
@@ -2093,7 +2185,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				draws: options.draws,
 				seed: options.seed,
 				samples: options.samples,
-				sampleSize: options.sampleSize
+				sampleSize: options.sampleSize,
+				binomial: null
 			};
 		} else law = checked.law;
 	} else if (errors.length === 0 && isTable) {

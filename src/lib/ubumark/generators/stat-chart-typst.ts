@@ -129,7 +129,7 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		lines.push(
 			bar.series === 1 && second !== null
 				? `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: hachures, stroke: 0.6pt + ${second})`
-				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${color}, stroke: none)`
+				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${bar.highlighted === false ? OUTSIDE_COLOR : color}, stroke: none)`
 		);
 		const center = X((bar.left + bar.right) / 2);
 		if (scene.showValues) {
@@ -588,7 +588,10 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 		case 'tableau-croise':
 			return crossTableTypst(scene);
 		case 'loi':
-			return lawTypst(scene);
+			// `diagramme: oui` (loi binomiale) : les bâtons sous le tableau
+			return scene.chart === undefined
+				? lawTypst(scene)
+				: `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}`;
 		case 'simulation':
 			return simulationTypst(scene);
 		case 'comparaison':
