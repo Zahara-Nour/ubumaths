@@ -40,5 +40,5 @@ fixes) ; A-06 (consigne « Coche toutes les bonnes réponses » même s'il n'y e
 B-02 v0 (16 énoncés distincts) ; B-06 v3 (négation d'une implication quantifiée, limite du
 programme ?) ; B-07 v1 (x de f(x) « variable », f_k « paramètre ») ; B-05 v1 (famille « ni CN ni
 CS » artificielle) ; message de B-02 : l'élève voit « faux » sans la description de la règle.
-À ajouter après le lot 0 (#706) : « pour tout x > 0, 1/x ≤ a » (contre-exemple naturel en fraction).
+Ajouté après le lot 0 (#706), le 2026-10-03 : B-02 v4 « pour tout x > 0, 1/x ≤ a » (a de 2 à 20 ; tout x de ]0 ; 1/a[ accepté, fraction ou décimal ; 0, négatifs et 1/a refusés).
 Non faisable : « n² + n + p premier » (pas de test de primalité dans une règle custom).
