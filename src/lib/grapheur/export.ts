@@ -33,107 +33,101 @@ export interface ExportOptions {
 	readonly includeBackground?: boolean;
 }
 
-/**
- * Style values for export (resolved from CSS variables)
- */
-interface ExportStyles {
-	readonly background: string;
-	readonly gridMinor: string;
-	readonly gridMajor: string;
-	readonly axis: string;
-	readonly axisLabel: string;
-	readonly tickMark: string;
-}
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-/** Light mode style values */
-const LIGHT_STYLES: ExportStyles = {
-	background: '#ffffff',
-	gridMinor: '#e5e5e5',
-	gridMajor: '#d4d4d4',
-	axis: '#374151',
-	axisLabel: '#6b7280',
-	tickMark: '#9ca3af'
-};
-
-/** Dark mode style values */
-const DARK_STYLES: ExportStyles = {
-	background: '#1a1a2e',
-	gridMinor: '#2a2a3e',
-	gridMajor: '#3a3a52',
-	axis: '#9ca3af',
-	axisLabel: '#9ca3af',
-	tickMark: '#6b7280'
-};
-
-// =============================================================================
-// Style Resolution
-// =============================================================================
-
-/**
- * Get export styles based on current theme
- */
-function getExportStyles(isDark: boolean): ExportStyles {
-	return isDark ? DARK_STYLES : LIGHT_STYLES;
-}
-
-/**
- * Check if dark mode is active
- */
-export function isDarkMode(): boolean {
-	if (typeof document === 'undefined') return false;
-	return document.documentElement.classList.contains('dark');
-}
-
 // =============================================================================
 // SVG Preparation
 // =============================================================================
 
 /**
- * Clone and prepare SVG element for export
+ * Propriétés recopiées depuis le style CALCULÉ de chaque élément.
  *
- * @param svg - Original SVG element
- * @param width - Width in pixels
- * @param height - Height in pixels
- * @param isDark - Whether dark mode is active
- * @returns Prepared SVG string
+ * Un SVG exporté ne voit plus app.css : les couleurs du thème (`var(--color-…)`,
+ * `light-dark()`) et les styles des composants n'existent plus pour lui. On fige
+ * donc ce que le navigateur a réellement calculé.
  */
-export function prepareSvgForExport(
-	svg: SVGSVGElement,
-	width: number,
-	height: number,
-	isDark: boolean
-): string {
-	// Clone the SVG to avoid modifying the original
-	const clone = svg.cloneNode(true) as SVGSVGElement;
+const EXPORTED_PROPERTIES = [
+	'fill',
+	'fill-opacity',
+	'stroke',
+	'stroke-width',
+	'stroke-opacity',
+	'stroke-dasharray',
+	'stroke-linecap',
+	'stroke-linejoin',
+	'opacity',
+	'color',
+	'font-family',
+	'font-size',
+	'font-style',
+	'font-weight'
+] as const;
 
-	// Remove interactive elements and event handlers
+/**
+ * Prépare le SVG à exporter — **toujours en clair** (décision 1b), quel que soit
+ * le mode de l'élève : un graphique exporté finit dans un document ou sur papier.
+ *
+ * La copie est rendue hors écran sous `color-scheme: light` : `light-dark()`
+ * y choisit les valeurs claires, et chaque élément reçoit ses couleurs calculées.
+ * Une seule source de vérité, app.css : plus de table de couleurs recopiée ici.
+ *
+ * @param svg - Le SVG affiché (laissé intact)
+ * @param width - Largeur en pixels
+ * @param height - Hauteur en pixels
+ * @returns Le SVG sérialisé, sans aucune variable CSS
+ */
+export function prepareSvgForExport(svg: SVGSVGElement, width: number, height: number): string {
+	const clone = svg.cloneNode(true) as SVGSVGElement;
 	removeInteractiveElements(clone);
 
-	// Ensure proper SVG attributes
+	// Rendu hors écran, en clair : `visibility: hidden` garde le calcul des styles
+	const host = document.createElement('div');
+	host.style.cssText =
+		'position: fixed; left: -100000px; top: 0; visibility: hidden; pointer-events: none; color-scheme: light;';
+	host.appendChild(clone);
+	document.body.appendChild(host);
+
+	let background: string;
+	try {
+		background = resolveGraphBackground(host);
+		freezeComputedStyles(clone);
+	} finally {
+		host.remove();
+	}
+
 	clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	clone.setAttribute('width', String(width));
 	clone.setAttribute('height', String(height));
 	clone.setAttribute('viewBox', `0 0 ${width} ${height}`);
-
-	// Remove Svelte-specific attributes
 	removeSvelteAttributes(clone);
+	addBackground(clone, width, height, background);
 
-	// Get styles for current theme
-	const styles = getExportStyles(isDark);
+	return new XMLSerializer().serializeToString(clone);
+}
 
-	// Add background rectangle as first child
-	addBackground(clone, width, height, styles.background);
+/** Le fond clair du grapheur, lu dans le thème (`--color-graph-bg`) */
+function resolveGraphBackground(host: HTMLElement): string {
+	const probe = document.createElement('div');
+	probe.style.backgroundColor = 'var(--color-graph-bg)';
+	host.appendChild(probe);
+	const color = getComputedStyle(probe).backgroundColor;
+	probe.remove();
+	return color;
+}
 
-	// Inline all styles
-	inlineStyles(clone, styles);
-
-	// Serialize to string
-	const serializer = new XMLSerializer();
-	return serializer.serializeToString(clone);
+/**
+ * Remplace le style de chaque élément par ses valeurs calculées.
+ *
+ * ⚠️ Toutes les valeurs sont lues AVANT d'en écrire une seule : écrire le style
+ * d'un parent changerait ce dont ses enfants héritent pendant la lecture.
+ */
+function freezeComputedStyles(root: Element): void {
+	const elements = [root, ...root.querySelectorAll('*')];
+	const frozen = elements.map((el) => {
+		const computed = getComputedStyle(el);
+		return EXPORTED_PROPERTIES.map((prop) => `${prop}: ${computed.getPropertyValue(prop)}`).join(
+			'; '
+		);
+	});
+	elements.forEach((el, i) => el.setAttribute('style', frozen[i]));
 }
 
 /**
@@ -199,75 +193,6 @@ function addBackground(svg: SVGSVGElement, width: number, height: number, color:
 
 	// Insert as first child
 	svg.insertBefore(bg, svg.firstChild);
-}
-
-/**
- * Inline CSS styles as SVG attributes
- */
-function inlineStyles(svg: SVGSVGElement, styles: ExportStyles): void {
-	// Grid lines
-	const gridMinor = svg.querySelectorAll('.grid-line-minor, [class*="grid-line-minor"]');
-	gridMinor.forEach((el) => {
-		el.setAttribute('stroke', styles.gridMinor);
-		el.setAttribute('stroke-width', '0.5');
-	});
-
-	const gridMajor = svg.querySelectorAll('.grid-line-major, [class*="grid-line-major"]');
-	gridMajor.forEach((el) => {
-		el.setAttribute('stroke', styles.gridMajor);
-		el.setAttribute('stroke-width', '1');
-	});
-
-	// Axis lines
-	const axisLines = svg.querySelectorAll('.axis-line, [class*="axis-line"]');
-	axisLines.forEach((el) => {
-		el.setAttribute('stroke', styles.axis);
-		el.setAttribute('stroke-width', '1.5');
-	});
-
-	// Tick marks
-	const tickMarks = svg.querySelectorAll('.tick-mark, [class*="tick-mark"]');
-	tickMarks.forEach((el) => {
-		el.setAttribute('stroke', styles.tickMark);
-		el.setAttribute('stroke-width', '1');
-	});
-
-	// Axis labels
-	const axisLabels = svg.querySelectorAll('.axis-label, [class*="axis-label"]');
-	axisLabels.forEach((el) => {
-		el.setAttribute('fill', styles.axisLabel);
-		el.setAttribute('font-family', 'ui-monospace, Consolas, monospace');
-		el.setAttribute('font-size', '10');
-	});
-
-	// Axis names (x, y labels)
-	const axisNames = svg.querySelectorAll('.axis-name, [class*="axis-name"]');
-	axisNames.forEach((el) => {
-		el.setAttribute('fill', styles.axis);
-		el.setAttribute('font-family', 'Georgia, serif');
-		el.setAttribute('font-style', 'italic');
-		el.setAttribute('font-size', '14');
-	});
-
-	// Function curves - already have inline stroke from func.color
-	const curves = svg.querySelectorAll('.function-curve, [class*="function-curve"]');
-	curves.forEach((el) => {
-		if (!el.getAttribute('stroke-width')) {
-			el.setAttribute('stroke-width', '2');
-		}
-		if (!el.getAttribute('fill')) {
-			el.setAttribute('fill', 'none');
-		}
-	});
-
-	// Intersection markers
-	const markers = svg.querySelectorAll('.marker, [class*="marker"]');
-	markers.forEach((el) => {
-		if (!el.getAttribute('stroke')) {
-			el.setAttribute('stroke', 'white');
-		}
-		el.setAttribute('stroke-width', '2');
-	});
 }
 
 // =============================================================================
@@ -398,8 +323,7 @@ export function downloadFile(data: Blob | string, filename: string, mimeType?: s
  * @param height - Height in pixels
  */
 export function exportSvg(svg: SVGSVGElement, width: number, height: number): void {
-	const isDark = isDarkMode();
-	const svgString = prepareSvgForExport(svg, width, height, isDark);
+	const svgString = prepareSvgForExport(svg, width, height);
 	const filename = generateFilename('svg');
 	downloadFile(svgString, filename, 'image/svg+xml');
 }
@@ -418,8 +342,7 @@ export async function exportPng(
 	height: number,
 	scale: ExportScale = 2
 ): Promise<void> {
-	const isDark = isDarkMode();
-	const svgString = prepareSvgForExport(svg, width, height, isDark);
+	const svgString = prepareSvgForExport(svg, width, height);
 	const pngBlob = await exportAsPng(svgString, width, height, scale);
 	const filename = generateFilename('png');
 	downloadFile(pngBlob, filename);
