@@ -20,6 +20,7 @@ import type {
 	CustomExpressionRule
 } from './types';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser';
 import { numbersAreClose } from '$lib/mathAST/common/constants';
 
 // ============================================================================
@@ -38,6 +39,8 @@ export interface EvaluationContext {
 	numericAnswer?: number;
 	/** Hypothèses de l'énoncé (ADR 0012), transmises à la comparaison symbolique */
 	assumptions?: AnswerAssumptions;
+	/** Fonctions déclarées par le modèle (`P'(2)`), transmises à la comparaison symbolique */
+	genericFunctions?: GenericFunctionConfig;
 }
 
 /**
@@ -377,7 +380,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		// Fall back to symbolic equivalence check
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
-			assumptions: ctx.assumptions
+			assumptions: ctx.assumptions,
+			genericFunctions: ctx.genericFunctions
 		});
 		return {
 			valid,
@@ -388,7 +392,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		// If evaluation fails, try symbolic comparison
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
-			assumptions: ctx.assumptions
+			assumptions: ctx.assumptions,
+			genericFunctions: ctx.genericFunctions
 		});
 		return {
 			valid,

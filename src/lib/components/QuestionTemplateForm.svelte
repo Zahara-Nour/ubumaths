@@ -40,6 +40,11 @@
 	import { EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
 	import { questionTemplateSchema } from '$lib/questions/template-schema';
+	import {
+		formatGenericFunctionNames,
+		genericFunctionNamesSchema,
+		parseGenericFunctionNames
+	} from '$lib/questions/generic-functions';
 	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
 	import {
 		ACCEPTABLE_PLACEHOLDER,
@@ -390,6 +395,16 @@
 	let sharedAnswerFormatsJson = $state(
 		JSON.stringify(initialTemplate?.shared?.answerFormats || {}, null, 2)
 	);
+	// Fonctions déclarées (`P, C`) : complètent f, g, h… dans tout le modèle
+	let genericFunctionsText = $state(
+		formatGenericFunctionNames(initialTemplate?.shared?.genericFunctions)
+	);
+	let genericFunctionsError = $derived.by(() => {
+		const result = genericFunctionNamesSchema.safeParse(
+			parseGenericFunctionNames(genericFunctionsText)
+		);
+		return result.success ? null : result.error.issues[0].message;
+	});
 
 	// Valid required form values (used in buildTemplate)
 	const VALID_REQUIRED_FORMS = [
@@ -776,6 +791,9 @@
 		} catch {
 			/* ignore invalid JSON */
 		}
+		// Noms invalides transmis tels quels : la route les refuse avec leur message
+		const genericFunctionNames = parseGenericFunctionNames(genericFunctionsText);
+		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};
@@ -919,6 +937,7 @@
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
+		genericFunctionsText = formatGenericFunctionNames(t.shared?.genericFunctions);
 
 		// Variations
 		variations = t.variations?.map((v) => ({
@@ -1112,6 +1131,7 @@
 			delay,
 			questionType,
 			exerciseInstruction,
+			genericFunctionsText,
 			multipleAnswers,
 			variations: variations.map((v) => ({
 				statement: v.statement,
@@ -1518,6 +1538,26 @@
 				</button>
 			</div>
 			<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
+		</div>
+
+		<!-- Fonctions déclarées (shared.genericFunctions) -->
+		<div class="space-y-2">
+			<Label for="generic-functions">Fonctions</Label>
+			<Input
+				id="generic-functions"
+				type="text"
+				placeholder="P, C"
+				bind:value={genericFunctionsText}
+				aria-describedby="generic-functions-help"
+				aria-invalid={genericFunctionsError !== null}
+			/>
+			<p id="generic-functions-help" class="text-xs text-muted-foreground">
+				Lettres lues comme des fonctions dans tout le modèle, en plus de f, g, h, u, v, w, F, G, H :
+				avec « P », P(x) est une fonction et P'(2) sa dérivée en 2.
+			</p>
+			{#if genericFunctionsError}
+				<p class="text-xs text-destructive" role="alert">{genericFunctionsError}</p>
+			{/if}
 		</div>
 
 		<!-- Display Options -->

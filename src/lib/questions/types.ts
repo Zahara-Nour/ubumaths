@@ -457,6 +457,15 @@ export interface SharedVariationDefaults {
 	 * @see QuestionVariation.answerFormats
 	 */
 	answerFormats?: Record<string, string>;
+
+	/**
+	 * Fonctions génériques déclarées par le modèle (`["P", "C"]`) : `P(x)` est une
+	 * fonction, `P'(2)` sa dérivée en 2. COMPLÈTENT la liste par défaut (f, g, h, u,
+	 * v, w, F, G, H). Une lettre par nom, ni `e` ni `i`. Pas de surcharge par
+	 * variation : la notation vaut pour tout le modèle.
+	 * @see templateGenericFunctions (generic-functions.ts)
+	 */
+	genericFunctions?: string[];
 }
 
 // ============================================================================
@@ -737,6 +746,14 @@ export interface QuestionInstance {
 	exerciseInstruction?: string;
 
 	options?: QuestionTemplate['options'];
+
+	/**
+	 * Fonctions déclarées par le modèle (`shared.genericFunctions`), absentes sans
+	 * déclaration. Portées par l'instance jusqu'à la validation, l'affichage et le PDF
+	 * (via `templateGenericFunctions`).
+	 */
+	genericFunctions?: string[];
+
 	grades: GradeLevel[];
 	theme: string;
 	domain: string;

@@ -41,6 +41,17 @@ deux `get_*_completion_stats` sont réservées au prof/admin ; `get_student_exer
 (`get_classes_by_user_grade`, `get_students_in_class_by_grade`) : classes actives de
 `my_school()` seulement.
 
+**Marché — auto-acceptation d'une offre exacte** (`20261003160000_marche_rpc_auto_accept`) :
+`auto_accept_exact_proposal(p_proposal_id)`, `service_role` seul. Sous `FOR UPDATE NOWAIT` de la
+proposition puis de l'annonce (ligne déjà tenue → `reason:'busy'`), refait la comparaison offre /
+demande sur les lignes verrouillées (multiensemble de modèles ; une instance citée deux fois ne
+compte qu'une fois ; même école, non NULL ; cartes ni consommées ni verrouillées ailleurs), puis
+exécute l'échange via `accept_proposal_atomic`. Offre non exacte → `{success:false,
+reason:'not_exact'}`, rien ne bouge.
+Verrous des cartes d'une proposition (`20261003165000_marche_verrous_proposition`) :
+`validate_locked_entity_reference` accepte l'id d'une proposition pour `locked_for = 'listing'`,
+et `accept_proposal_atomic` lève les verrous de la proposition acceptée.
+
 **Marché verrouillé** (`20261003170000_marche_verrou`, Q140/Q147) : `accept_proposal_atomic`
 refuse un `p_user_id` différent de `auth.uid()` (sauf `service_role`) ou NULL. Par un appel
 direct, le proposant ne peut plus que retirer sa proposition en attente (policy

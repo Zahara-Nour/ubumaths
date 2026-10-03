@@ -44,6 +44,7 @@ import { normalizeExpression, detectExpressionType } from '$lib/ubumark/paramete
 import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
+import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
@@ -224,6 +225,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// 3. Merge shared defaults with variation-specific values
 		const resolvedVariation = resolveVariationWithShared(template.shared, selectedVariation);
 
+		// Fonctions déclarées par le modèle (`P`, `C`) : toutes les formules les lisent.
+		// Sans déclaration, `undefined` partout → défauts du parseur, rien ne change.
+		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
+		const genericFunctions = templateGenericFunctions(genericFunctionNames);
+
 		// 4. Detect circular dependencies in resolved variation
 		if (resolvedVariation.variables) {
 			const circularResult = detectCircularDependencies(resolvedVariation.variables);
@@ -290,7 +296,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
 			statementTemplate,
 			resolvedVariables,
-			random
+			random,
+			genericFunctions
 		);
 
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
@@ -339,7 +346,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					resolvedAnswerFormats[exprName] = resolveAnswerFormat(
 						rawFormat,
 						resolvedVariables,
-						random
+						random,
+						genericFunctions
 					);
 				}
 			}
@@ -433,7 +441,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					resolved.expectedAnswerLatex =
 						resolved.answerKind === 'intervalles'
 							? expectedIntervalsLatex(resolved.expectedAnswer)
-							: convertToLatex(resolved.expectedAnswer);
+							: convertToLatex(resolved.expectedAnswer, genericFunctions);
 				}
 				return resolved;
 			});
@@ -453,7 +461,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					}
 					expressionsArray.push({
 						name: exprName,
-						latex: convertToLatex(variable.value),
+						latex: convertToLatex(variable.value, genericFunctions),
 						displayLatex: variable.displayValue ?? undefined,
 						answerFormat: blankResult.answerFormats?.[exprName],
 						value: variable.value
@@ -482,7 +490,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			resolvedChoices = resolvedVariation.choices.map((choice, i) => {
 				const content = choice.content;
 				const resolvedContent: ResolvedMarkdown = content.includes('{{')
-					? resolveMarkdownContent(content, resolvedVariables, random)
+					? resolveMarkdownContent(content, resolvedVariables, random, genericFunctions)
 					: resolvedMarkdown(content);
 				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
 				const isCorrect =
@@ -531,7 +539,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.correct,
 						resolvedVariables,
 						correctionContext,
-						random
+						random,
+						genericFunctions
 					);
 				}
 				if (feedback.incorrect) {
@@ -539,7 +548,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.incorrect,
 						resolvedVariables,
 						correctionContext,
-						random
+						random,
+						genericFunctions
 					);
 				}
 				if (feedback.partial) {
@@ -547,14 +557,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						feedback.partial,
 						resolvedVariables,
 						correctionContext,
-						random
+						random,
+						genericFunctions
 					);
 				}
 			}
 
 			if (steps) {
 				resolvedCorrection.steps = steps.map((step) =>
-					resolveCorrectionContent(step, resolvedVariables, correctionContext, random)
+					resolveCorrectionContent(
+						step,
+						resolvedVariables,
+						correctionContext,
+						random,
+						genericFunctions
+					)
 				);
 			}
 		}
@@ -567,6 +584,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			correctChoiceIndex: resolvedCorrectChoiceIndex,
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
+			...(genericFunctionNames && { genericFunctions: genericFunctionNames }),
 			grades: template.grades,
 			theme: template.theme,
 			domain: template.domain,

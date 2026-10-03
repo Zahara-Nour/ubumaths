@@ -15,9 +15,19 @@
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
 import { detailedCorrection } from '$lib/questions/correction-detail';
+import { templateGenericFunctions } from '$lib/questions/generic-functions';
 
 export type SerieItem = { templateId: string; seed: number };
-export type Serie = { statement: string; solution: string };
+export type Serie = {
+	statement: string;
+	solution: string;
+	/**
+	 * `generic_functions` de l'exercice figé : défauts ∪ fonctions déclarées par les
+	 * modèles (`P`, `C`). La liste d'un exercice REMPLACE les défauts : elle les reprend
+	 * donc. Absente si aucun modèle n'en déclare.
+	 */
+	genericFunctions?: string[];
+};
 
 /** Ce qui remplace une case dans l'énoncé figé */
 export const BLANK_TEXT = '……';
@@ -140,8 +150,13 @@ export function buildSerie(modeles: Map<string, QuestionTemplate>, items: SerieI
 		}
 		vus.set(s.statement, i);
 	});
+	const declared = items.flatMap(
+		({ templateId }) => modeles.get(templateId)?.shared?.genericFunctions ?? []
+	);
+	const genericFunctions = templateGenericFunctions([...new Set(declared)])?.names;
 	return {
 		statement: figees.map((s, i) => item(i + 1, s.statement)).join('\n\n'),
-		solution: figees.map((s, i) => item(i + 1, s.solution)).join('\n\n')
+		solution: figees.map((s, i) => item(i + 1, s.solution)).join('\n\n'),
+		...(genericFunctions && { genericFunctions: [...genericFunctions] })
 	};
 }
