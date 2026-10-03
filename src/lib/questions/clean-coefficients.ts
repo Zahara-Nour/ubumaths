@@ -13,6 +13,12 @@
  *   est un nombre, une parenthèse, une fonction ou un signe est protégé (`C(1)`,
  *   `C(-3)` avec `C` non déclarée, `x×(−7)`, `97,6×1`), le contenu d'une parenthèse
  *   protégée étant nettoyé pour lui-même ;
+ * - le signe d'un numérateur ou d'un dénominateur reste dans la fraction
+ *   (`\\dfrac{-10}{10}` n'est pas réécrit `-\\dfrac{10}{10}` : ce n'est pas un coefficient) ;
+ * - un signe + écrit (`+\infty`, `+1`) reste écrit ;
+ * - une chaîne de calcul (`r = -1 - (-4) = 3`, deux relations ou plus) est laissée
+ *   telle quelle : chaque terme y est une étape voulue ; de même une relation dont
+ *   les deux membres deviendraient identiques (`x - (-3) = x + 3`) ;
  * - la valeur ne change pas (`areEquivalent`), aucune case `?` ne disparaît ;
  * - formule illisible, exception, ou rien à nettoyer : la formule d'origine.
  */
@@ -27,7 +33,7 @@ import {
 } from '$lib/mathAST';
 import { coefficientCleanupSteps } from '$lib/mathAST/cosmetic-transforms';
 import { mapNode, mapNodeTopDown } from '$lib/mathAST/transforms';
-import { variable } from '$lib/mathAST/factory';
+import { positive, variable } from '$lib/mathAST/factory';
 
 // Constantes
 
@@ -45,14 +51,19 @@ const NON_COEFFICIENT_FACTORS: ReadonlySet<MathNode['type']> = new Set([
 
 // Fonctions
 
-/** Nombre de cases `?` d'une formule */
-function countHoles(ast: MathNode): number {
-	let holes = 0;
+/** Nombre de nœuds d'un type dans une formule (`hole` : cases `?`) */
+function countNodes(ast: MathNode, type: MathNode['type']): number {
+	let count = 0;
 	mapNode(ast, (node) => {
-		if (node.type === 'hole') holes++;
+		if (node.type === type) count++;
 		return node;
 	});
-	return holes;
+	return count;
+}
+
+/** Relation dont les deux membres s'écrivent pareil (`x + 3 = x + 3`) */
+function isTautology(ast: MathNode): boolean {
+	return ast.type === 'relation' && toLatex(ast.left) === toLatex(ast.right);
 }
 
 /**
@@ -63,7 +74,11 @@ function protect(ast: MathNode, store: MathNode[]): MathNode {
 	const hide = (node: MathNode): MathNode => {
 		// Parenthèse protégée : son contenu est nettoyé pour lui-même (`2(1x+0)` → `2(x)`)
 		const kept =
-			node.type === 'delimiter' ? { ...node, content: cleanCoefficientsAst(node.content) } : node;
+			node.type === 'delimiter'
+				? { ...node, content: cleanCoefficientsAst(node.content) }
+				: node.type === 'positive'
+					? { ...node, operand: cleanCoefficientsAst(node.operand) }
+					: node;
 		store.push(kept);
 		return variable(`${PROTECTED_PREFIX}${store.length - 1}`);
 	};
@@ -76,9 +91,34 @@ function protect(ast: MathNode, store: MathNode[]): MathNode {
 		return !first && NON_COEFFICIENT_FACTORS.has(node.type) ? hide(node) : node;
 	};
 
+	// `+1x` est lu (+1)·x : le + porte en fait sur tout le produit, + (1·x)
+	const leadingPositive = (node: MathNode): MathNode | null => {
+		if (node.type === 'positive') return node.operand;
+		if (node.type !== 'multiplication') return null;
+		const left = leadingPositive(node.left);
+		return left === null ? null : { ...node, left };
+	};
+
+	// Numérateur et dénominateur : nettoyés pour eux-mêmes, puis protégés (leur signe,
+	// même celui d'un coefficient `-1x`, ne sort pas de la fraction)
+	const guardFractionPart = (node: MathNode): MathNode => {
+		store.push(cleanCoefficientsAst(node));
+		return variable(`${PROTECTED_PREFIX}${store.length - 1}`);
+	};
+
 	return mapNodeTopDown(ast, (node) => {
-		if (node.type === 'function') return hide(node);
-		if (node.type === 'multiplication') return guardChain(node, true);
+		if (node.type === 'function' || node.type === 'positive') return hide(node);
+		if (node.type === 'multiplication') {
+			const unsigned = leadingPositive(node);
+			return unsigned === null ? guardChain(node, true) : hide(positive(unsigned));
+		}
+		if (node.type === 'division') {
+			return {
+				...node,
+				numerator: guardFractionPart(node.numerator),
+				denominator: guardFractionPart(node.denominator)
+			};
+		}
 		return node;
 	});
 }
@@ -97,6 +137,8 @@ function restore(ast: MathNode, store: readonly MathNode[]): MathNode {
  */
 export function cleanCoefficientsAst(ast: MathNode): MathNode {
 	try {
+		// Chaîne de calcul (`a = b = c`) : chaque terme écrit est une étape voulue
+		if (countNodes(ast, 'relation') >= 2) return ast;
 		const store: MathNode[] = [];
 		let current = protect(ast, store);
 		for (const step of coefficientCleanupSteps()) current = step.transform(current);
@@ -105,7 +147,9 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 		// Rien n'a changé à l'écriture : la formule d'origine
 		if (toLatex(cleaned) === toLatex(ast)) return ast;
 		// Une case perdue (`0×?` → `0`) décalerait la numérotation des cases
-		if (countHoles(cleaned) !== countHoles(ast)) return ast;
+		if (countNodes(cleaned, 'hole') !== countNodes(ast, 'hole')) return ast;
+		// `x - (-3) = x + 3` → `x + 3 = x + 3` : le calcul montré disparaîtrait
+		if (isTautology(cleaned) && !isTautology(ast)) return ast;
 		// Garde de valeur : chaque étape est sûre, on le vérifie quand même
 		if (!areEquivalent(ast, cleaned)) return ast;
 		return cleaned;

@@ -144,6 +144,31 @@ describe('cleanCoefficientsAst — gardes', () => {
 		}
 	);
 
+	it('signe d’un numérateur ou d’un dénominateur : reste dans la fraction', () => {
+		expect(cleaned('k={{-10}/{10}}=-1')).toBe(raw('k={{-10}/{10}}=-1'));
+		expect(cleaned('{{-1x}/{2}}')).toBe(raw('{{-x}/{2}}'));
+		expect(cleaned('{{x}/{-2}}+0')).toBe(raw('{{x}/{-2}}'));
+	});
+
+	it.each(['+\\infty', '+1', '+3x'])('signe + écrit %s : reste écrit', (source) => {
+		expect(cleaned(source)).toBe(raw(source));
+	});
+
+	it('+1x : le + reste, le 1 part', () => {
+		expect(cleaned('+1x')).toBe(raw('+x'));
+	});
+
+	it.each(['r=-1-(-4)=3', 'r=0-1=-1', 'f(0)=a(0+2)^2-3=4a-3', 'V=21-0^2=21'])(
+		'chaîne de calcul %s : intacte',
+		(source) => {
+			expect(cleaned(source)).toBe(raw(source));
+		}
+	);
+
+	it('relation qui deviendrait x + 3 = x + 3 : intacte', () => {
+		expect(cleaned('x-(-3)=x+3')).toBe(raw('x-(-3)=x+3'));
+	});
+
 	it('f(-3)=9 ne devient jamais « -f 3 = 9 »', () => {
 		expect(cleaned('f(-3)=9')).toBe(raw('f(-3)=9'));
 		expect(cleaned('1C(-3)=9')).toBe(raw('C(-3)=9'));
