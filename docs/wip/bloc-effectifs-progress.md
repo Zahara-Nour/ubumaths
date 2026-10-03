@@ -15,3 +15,14 @@ Décisions Q125-Q133 (`outils-statistiques-v2-progress.md`). Spec PR (a) validé
 - [ ] PR, CI, merge
 
 ## PR (b) — `masquer:`, `indicateurs:`
+
+Spec validée le 2026-10-03.
+
+- [x] `masquer:` lignes entières ou cases (`valeur/ligne`, `Total/ligne`, classe avec son « ; ») ;
+      résolu dans `resolveTableMasks` ; le Total d'un cumul reste « sans objet »
+- [x] Case masquée : vide, annoncée « case à compléter » ; Typst : boîte de 0,8 cm (1,2 cm
+      faisait déborder six cases sur une demi-page, vu sur la fiche)
+- [x] `indicateurs:` : ligne sous le tableau (barres ou classes, exacts avec `données:`)
+- [x] Tests `frequency-table-masks.test.ts` (13) + navigateur ; fiche énoncé / corrigé compilée
+- [x] Revue : `masquer:` vide refusé ; classe sans « / » → « écrire valeur/ligne » ; valeurs à la casse près ; « Total » réservé avec la colonne des totaux ; tests verticale, écritures, nombre de cases dans le PDF
+- [ ] PR, CI, merge

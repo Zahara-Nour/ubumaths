@@ -212,6 +212,8 @@ export interface StatChartSpec {
 		direction: StatChartDirection;
 		/** Des classes [a ; b[ (première ligne « Classe ») */
 		classes: boolean;
+		/** Cases à compléter (`masquer:`, Q130) : indice de valeur, ou la colonne Total */
+		masked: { row: FrequencyTableRow; column: number | 'total' }[];
 	} | null;
 	/** `série:` (lot 4 PR c, Q106) : la série brute écrite dans la fiche, sinon null */
 	series: {

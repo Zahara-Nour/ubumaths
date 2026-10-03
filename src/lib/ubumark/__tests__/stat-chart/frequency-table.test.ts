@@ -236,13 +236,6 @@ describe('effectifs — erreurs situées', () => {
 		);
 	});
 
-	it('`masquer:` et `indicateurs:` : arrivent bientôt (PR b)', () => {
-		expect(errorOf(`${NOTES}\nmasquer: fréquences`)).toBe('Ligne 2 : masquer : arrive bientôt');
-		expect(errorOf(`${NOTES}\nindicateurs: moyenne`)).toBe(
-			'Ligne 2 : indicateurs : arrive bientôt'
-		);
-	});
-
 	it('mélange de classes et de valeurs ; deux séries', () => {
 		expect(errorOf('[0 ; 10[ = 4\n12 = 3')).toBe(
 			'Ligne 2 : écrire toutes les lignes en classes [a ; b[, ou aucune'
