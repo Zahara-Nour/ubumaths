@@ -202,7 +202,7 @@ describe('simulation — Typst : les mêmes nombres qu’à l’écran', () => {
 		});
 
 		expect(typst).toContain('Simulation of 600 draws (seed 42)');
-		expect(typst).toContain('Observed frequency');
+		expect(typst).toContain('Observed relative frequency');
 		expect(typstCells(typst)).toEqual(
 			sceneOf(source, 'en').rows.flatMap((r) => [r.value, r.count, r.frequency, r.probability])
 		);
