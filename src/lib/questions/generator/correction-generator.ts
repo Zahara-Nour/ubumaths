@@ -20,6 +20,7 @@
  */
 
 import { parseCustomSafe } from '$lib/mathAST';
+import { templateGenericFunctions } from '../generic-functions';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type {
 	PedagogicalRenderOptions,
@@ -301,7 +302,9 @@ function renderArithmeticFromBlank({
 	const expr = instance.expressions?.find((e) => e.name === expressionName);
 	if (!expr || !expr.value) return null;
 
-	const parseResult = parseCustomSafe(expr.value.trim());
+	const parseResult = parseCustomSafe(expr.value.trim(), {
+		genericFunctions: templateGenericFunctions(instance.genericFunctions)
+	});
 	const node = parseResult.ast;
 	if (!node) return null;
 	if (node.type === 'relation') return null;
@@ -810,11 +813,14 @@ function renderDomain({
 /**
  * Resolve `{{vars}}` in a template string against the instance's resolved
  * variables, then parse the result as a mathAST node. Returns `null` on parse
- * failure (caller falls back silently).
+ * failure (caller falls back silently). Fonctions déclarées par le modèle lues
+ * comme fonctions (`P(x)`), défauts du parseur sinon.
  */
 function parseExpression(template: string, instance: QuestionInstance): MathNode | null {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []);
-	const parseResult = parseCustomSafe(resolved.trim());
+	const parseResult = parseCustomSafe(resolved.trim(), {
+		genericFunctions: templateGenericFunctions(instance.genericFunctions)
+	});
 	return parseResult.ast ?? null;
 }
 

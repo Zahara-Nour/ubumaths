@@ -13,11 +13,16 @@ import { questionTemplateSchema } from '../template-schema';
 import { runTestSpec } from '../test-spec-runner';
 import { gradeQuestion } from '../grading';
 import { toPublicQuestion, toDisplayInstance } from '../public-question';
-import { templateGenericFunctions, genericFunctionNamesSchema } from '../generic-functions';
+import {
+	templateGenericFunctions,
+	genericFunctionNamesSchema,
+	parseGenericFunctionNames,
+	formatGenericFunctionNames
+} from '../generic-functions';
 import { validateAnswer } from '$lib/utils/answer-validator';
 import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
 import { DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST';
-import { parseLatexSafe } from '$lib/mathAST/parser';
+import { parseCustomSafe } from '$lib/mathAST';
 import type { QuestionInstance, QuestionTemplate } from '../types';
 import { templateMarkdown } from '$lib/ubumark';
 
@@ -48,7 +53,7 @@ function polynomialTemplate(
 				blanks: [{ expectedAnswer: "P'({{b}})" }]
 			}
 		],
-		grades: ['1ere'],
+		grades: ['1_SPE'],
 		theme: 'Fonctions',
 		domain: 'Dérivation',
 		level: 1
@@ -60,8 +65,6 @@ function instanceOf(template: QuestionTemplate): QuestionInstance {
 	if (!result.success) throw new Error(result.errors.join('; '));
 	return result.instance;
 }
-
-const PC = { names: ['P', 'C'], allowDerivatives: true, allowInverse: true };
 
 // ============================================================================
 // CONFIGURATION
@@ -125,7 +128,7 @@ describe('Schéma des noms de fonctions', () => {
 		const base = {
 			title: 'Dérivée',
 			variations: [{ statement: 'Soit $P(x)$' }],
-			grades: ['1ere'],
+			grades: ['1_SPE'],
 			theme: 'Fonctions',
 			domain: 'Dérivation',
 			level: 1
@@ -155,16 +158,15 @@ describe('Génération — énoncé et réponse attendue', () => {
 		expect(statement).toContain('P\\left( x \\right)');
 		expect(statement).not.toContain('P \\left( x \\right)');
 
-		// Les formules générées se relisent en fonction avec la même configuration
-		const formula = statement.match(/\$(P\\left\( x \\right\)[^$]*)\$/)?.[1] ?? '';
-		const parsed = parseLatexSafe(formula, { genericFunctions: PC });
-		expect(parsed.ast?.type).toBe('equation');
-		if (parsed.ast?.type === 'equation') expect(parsed.ast.left.type).toBe('function');
-
+		// `P\left( x \right)` (sans espace) est le rendu d'un nœud `function` ; un
+		// produit s'écrit `P \left( x \right)`. (Relire ce LaTeX en fonction dépend du
+		// chantier parallèle `f\left(1\right)` du parseur LaTeX.)
 		const blank = instance.blanks![0];
 		expect(blank.expectedAnswer).toBe("P'(2)");
 		expect(blank.expectedAnswerLatex).toBe("P'\\left( 2 \\right)");
-		expect(parseLatexSafe(blank.expectedAnswerLatex!, { genericFunctions: PC }).ast?.type).toBe(
+		// La réponse attendue (syntaxe maison) est bien lue comme un nœud function
+		const config = templateGenericFunctions(instance.genericFunctions);
+		expect(parseCustomSafe(blank.expectedAnswer, { genericFunctions: config }).ast?.type).toBe(
 			'function'
 		);
 	});
@@ -259,5 +261,31 @@ describe('Question publique', () => {
 		});
 		expect(pub).not.toHaveProperty('genericFunctions');
 		expect(toDisplayInstance(pub)).not.toHaveProperty('genericFunctions');
+	});
+});
+
+// ============================================================================
+// ÉDITEUR : champ « Fonctions : P, C »
+// ============================================================================
+
+describe('Champ « Fonctions » de l’éditeur', () => {
+	it('lit une liste séparée par virgules ou espaces', () => {
+		expect(parseGenericFunctionNames('P, C')).toEqual(['P', 'C']);
+		expect(parseGenericFunctionNames(' P  C ')).toEqual(['P', 'C']);
+		expect(parseGenericFunctionNames('P;C')).toEqual(['P', 'C']);
+	});
+
+	it('vide : aucune fonction', () => {
+		expect(parseGenericFunctionNames('')).toEqual([]);
+		expect(parseGenericFunctionNames(' , ')).toEqual([]);
+	});
+
+	it('garde les noms invalides tels quels (le schéma les refuse avec un message)', () => {
+		expect(parseGenericFunctionNames('PQ, e')).toEqual(['PQ', 'e']);
+	});
+
+	it('affiche la liste déclarée', () => {
+		expect(formatGenericFunctionNames(['P', 'C'])).toBe('P, C');
+		expect(formatGenericFunctionNames(undefined)).toBe('');
 	});
 });

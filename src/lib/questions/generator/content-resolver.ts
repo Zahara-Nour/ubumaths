@@ -21,7 +21,7 @@ import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import type { RandomSource } from '$lib/utils/random';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import { parseCustomSafe, toLatex, type GenericFunctionConfig } from '$lib/mathAST';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 
 // ============================================================================
@@ -65,12 +65,13 @@ function exactLatexToCustom(content: string): string {
 /**
  * Formule maison → LaTeX. Si elle ne se lit pas telle quelle, second essai après
  * réécriture des nombres exacts ; sinon `null` (formule LaTeX, laissée intacte).
+ * `genericFunctions` : fonctions déclarées par le modèle (absent : défauts du parseur).
  */
-function customToLatex(content: string): string | null {
-	const direct = parseCustomSafe(content);
+function customToLatex(content: string, genericFunctions?: GenericFunctionConfig): string | null {
+	const direct = parseCustomSafe(content, { genericFunctions });
 	if (direct.ast) return toLatex(direct.ast, { preserveHoles: true });
 	if (!content.includes('\\dfrac') && !content.includes('\\sqrt')) return null;
-	const rewritten = parseCustomSafe(exactLatexToCustom(content));
+	const rewritten = parseCustomSafe(exactLatexToCustom(content), { genericFunctions });
 	return rewritten.ast ? toLatex(rewritten.ast, { preserveHoles: true }) : null;
 }
 
@@ -91,9 +92,13 @@ function customToLatex(content: string): string | null {
  * syntax for answer comparison and other non-display purposes.
  *
  * @param content - Content with resolved variables
+ * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @returns Content with math zones converted to LaTeX
  */
-function convertMathZonesToLatex(content: string): string {
+function convertMathZonesToLatex(
+	content: string,
+	genericFunctions?: GenericFunctionConfig
+): string {
 	let result = content;
 
 	// Helper to convert a single expression, handling markers and ? preservation
@@ -108,7 +113,7 @@ function convertMathZonesToLatex(content: string): string {
 		}
 
 		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-		const latex = customToLatex(mathContent.trim());
+		const latex = customToLatex(mathContent.trim(), genericFunctions);
 		// On parse error, return original (will show error at render time)
 		return prefix + (latex ?? mathContent);
 	};
@@ -212,12 +217,14 @@ function textQuantities(text: string): string {
  * @param markdown - Template markdown containing placeholders
  * @param resolvedVariables - Already resolved variables
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
+ * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @returns Resolved markdown ready for rendering
  */
 export function resolveMarkdownContent(
 	markdown: TemplateMarkdown,
 	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
+	random: RandomSource = Math.random,
+	genericFunctions?: GenericFunctionConfig
 ): ResolvedMarkdown {
 	// Stage 0: conditions sur les variables tirées (`{{if:…}}`) → branche retenue
 	const withoutConditionals = resolveVariableConditionals(String(markdown), resolvedVariables);
@@ -238,7 +245,7 @@ export function resolveMarkdownContent(
 
 	// Stage 3: Convert math zones ($...$, $$...$$) from custom to LaTeX
 	// Note: ~...~ and ~~...~~ remain in custom syntax
-	resolvedContent = convertMathZonesToLatex(resolvedContent);
+	resolvedContent = convertMathZonesToLatex(resolvedContent, genericFunctions);
 
 	// Stage 4: grandeurs restées brutes (formule d'auteur, texte)
 	resolvedContent = displayQuantities(resolvedContent);
@@ -302,12 +309,14 @@ export function insertExpressionMarkers(content: string, expressionNames: Set<st
  * @param answerFormat - Answer format template string
  * @param resolvedVariables - Already resolved variables
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
+ * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @returns Resolved answerFormat in LaTeX with ? markers preserved
  */
 export function resolveAnswerFormat(
 	answerFormat: string,
 	resolvedVariables: ResolvedVariable[],
-	random: RandomSource = Math.random
+	random: RandomSource = Math.random,
+	genericFunctions?: GenericFunctionConfig
 ): string {
 	// Stage 1: Resolve variables and color references
 	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, random);
@@ -315,7 +324,7 @@ export function resolveAnswerFormat(
 
 	// Stage 2: Convert to LaTeX
 	// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-	const parseResult = parseCustomSafe(resolved.trim());
+	const parseResult = parseCustomSafe(resolved.trim(), { genericFunctions });
 	if (parseResult.ast) {
 		resolved = toLatex(parseResult.ast, { preserveHoles: true });
 	}
@@ -327,10 +336,14 @@ export function resolveAnswerFormat(
  * Convert a resolved expectedAnswer to LaTeX (for flash back display).
  *
  * @param expectedAnswer - Resolved expected answer string (e.g., "5", "10^5")
+ * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @returns LaTeX string, or undefined if conversion fails
  */
-export function convertToLatex(expression: string): string {
-	return customToLatex(expression.trim()) ?? expression;
+export function convertToLatex(
+	expression: string,
+	genericFunctions?: GenericFunctionConfig
+): string {
+	return customToLatex(expression.trim(), genericFunctions) ?? expression;
 }
 
 /** Fin (exclue) du marqueur `{{if:…}}` ouvert en `start` : accolades équilibrées, -1 sinon */

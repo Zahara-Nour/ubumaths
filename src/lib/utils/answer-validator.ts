@@ -43,6 +43,7 @@ import {
 	MISSING_CHOICES_FEEDBACK
 } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
+import { templateGenericFunctions } from '$lib/questions/generic-functions';
 import { choiceLetter, statusFromChoices, toDisplayedChoicePosition } from '$lib/questions/choices';
 import {
 	getRequiredFormFeedback,
@@ -286,7 +287,9 @@ function evaluateValidationRules(
 		// rendait NaN pour toute saisie MathLive non triviale.
 		numericAnswer: toNumericAnswer(userAnswer),
 		// Hypothèses de l'énoncé (ADR 0012), pour la règle `equivalent`
-		assumptions: instance.options?.answerAssumptions
+		assumptions: instance.options?.answerAssumptions,
+		// Fonctions déclarées par le modèle (`P'(2)`), pour la règle `equivalent`
+		genericFunctions: templateGenericFunctions(instance.genericFunctions)
 	};
 
 	// Evaluate each rule
@@ -818,7 +821,7 @@ function validateBlankValue(
 		return result.isCorrect;
 	}
 
-	return isAnswerMatch(userAnswer, blank.expectedAnswer, instance.options?.answerAssumptions);
+	return isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
 }
 
 /**
@@ -1073,11 +1076,7 @@ function validateSingleBlank(
 		}
 		isCorrect = result.isCorrect;
 	} else {
-		isCorrect = isAnswerMatch(
-			userAnswer,
-			blank.expectedAnswer,
-			instance.options?.answerAssumptions
-		);
+		isCorrect = isAnswerMatch(userAnswer, blank.expectedAnswer, instance);
 	}
 
 	if (!isCorrect) {
@@ -1447,16 +1446,18 @@ function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): Validati
 
 /**
  * Match a single answer against expected (algebraic equivalence or case-insensitive string).
- * `assumptions` : hypothèses de l'énoncé (ADR 0012), qui restreignent le domaine de comparaison.
+ * L'instance fournit les hypothèses de l'énoncé (ADR 0012), qui restreignent le domaine
+ * de comparaison, et les fonctions déclarées par le modèle (`P'(2)`).
  */
-function isAnswerMatch(
-	userAns: string,
-	correctAns: string,
-	assumptions: AnswerAssumptions | undefined
-): boolean {
+function isAnswerMatch(userAns: string, correctAns: string, instance: QuestionInstance): boolean {
 	// Same UI-protection rationale as validateAlgebraic: bound the equivalence
 	// check so a malicious or accidental pathological input cannot freeze the UI.
-	if (areEquivalent(userAns, correctAns, { timeoutMs: 500, assumptions })) return true;
+	const options = {
+		timeoutMs: 500,
+		assumptions: instance.options?.answerAssumptions,
+		genericFunctions: templateGenericFunctions(instance.genericFunctions)
+	};
+	if (areEquivalent(userAns, correctAns, options)) return true;
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 

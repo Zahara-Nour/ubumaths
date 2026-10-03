@@ -54,6 +54,8 @@ export interface PublicQuestion {
 	multipleAnswers?: boolean;
 	/** Réglage des espaces (clavier : espace fine insérée ou non) */
 	spaces?: ConstraintMode;
+	/** Fonctions déclarées par le modèle (`P`, `C`) : notation de l'énoncé, aucune réponse */
+	genericFunctions?: string[];
 }
 
 // Functions
@@ -91,6 +93,7 @@ export function toPublicQuestion(
 	if (instance.exerciseInstruction) question.exerciseInstruction = instance.exerciseInstruction;
 	const spaces = instance.options?.constraints?.spaces;
 	if (spaces) question.spaces = spaces;
+	if (instance.genericFunctions?.length) question.genericFunctions = [...instance.genericFunctions];
 
 	if (type === 'multiple_choice') {
 		question.choices = (instance.shuffledChoices ?? []).map((choice) => ({
@@ -127,7 +130,8 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		level: 0,
 		generatedAt: '',
 		...(question.exerciseInstruction && { exerciseInstruction: question.exerciseInstruction }),
-		...(question.spaces && { options: { constraints: { spaces: question.spaces } } })
+		...(question.spaces && { options: { constraints: { spaces: question.spaces } } }),
+		...(question.genericFunctions?.length && { genericFunctions: question.genericFunctions })
 	};
 
 	if (question.type === 'multiple_choice') {
