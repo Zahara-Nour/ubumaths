@@ -39,8 +39,11 @@
 -- (`restore_vip_card_instance`).
 --
 -- `p_action_instance_id` : la carte d'action déjà consommée. Contrôlée SOUS le
--- verrou du profil : `lock_cards` lit le même profil en FOR UPDATE, un
--- verrouillage concurrent est donc soit déjà visible, soit postérieur.
+-- verrou du profil. ⚠️ La sérialisation avec le marché n'est complète
+-- qu'avec la migration 20261003150000 (livraison B), qui fait lire le profil
+-- en FOR UPDATE par `lock_cards` ; dès lors, un verrouillage concurrent est
+-- soit déjà visible, soit postérieur. Avant elle, `lock_cards` lisait le
+-- profil sans verrou. (Commentaire seul : le corps appliqué est inchangé.)
 -- `p_award_card_ids` : un élément NULL = carte tirée au hasard (pondération
 -- de `award_vip_card_no_cost`). Rend les instances créées, dans l'ordre.
 

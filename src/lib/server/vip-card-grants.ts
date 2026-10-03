@@ -17,20 +17,13 @@
  */
 import { z } from 'zod';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import type { Json } from '$lib/types/database';
+import { rpcNullable, toJson } from '$lib/types/database-helpers';
 import type { VipCardInstance } from '$lib/types/vip-card';
 
 // ============================================================================
 // TYPES
 // ============================================================================
-
-type RpcResult = { data: unknown; error: { message: string } | null };
-
-/**
- * Les deux fonctions de Q137 (b) n'existent dans `database.ts` qu'après
- * `db:migrate` puis `db:types` (généré depuis la production) : l'appel passe
- * par une signature non typée, et le résultat est validé par Zod.
- */
-type UntypedRpc = (fn: string, args: Record<string, unknown>) => PromiseLike<RpcResult>;
 
 export type GrantedCard = { cardId: string; instanceId: string };
 
@@ -47,11 +40,6 @@ const grantResultSchema = z.object({
 // FONCTIONS
 // ============================================================================
 
-function untypedRpc(): UntypedRpc {
-	const client = createServiceRoleClient();
-	return client.rpc.bind(client) as unknown as UntypedRpc;
-}
-
 /**
  * Défausse `discardIds` puis attribue `awardCardIds` (`null` = carte tirée au
  * hasard), en une seule transaction. Rend les instances créées, dans l'ordre
@@ -64,14 +52,15 @@ export async function grantVipCardsAfterAction(params: {
 	discardIds: string[];
 	awardCardIds: Array<string | null>;
 	source: 'exchange' | 'choose';
-	discardMetadata: Record<string, unknown>;
-	awardMetadata: Record<string, unknown>;
+	discardMetadata: Json;
+	awardMetadata: Json;
 }): Promise<GrantedCard[] | null> {
-	const { data, error } = await untypedRpc()('grant_vip_cards_after_action', {
+	const { data, error } = await createServiceRoleClient().rpc('grant_vip_cards_after_action', {
 		p_student_id: params.studentId,
 		p_action_instance_id: params.actionInstanceId,
 		p_discard_ids: params.discardIds,
-		p_award_card_ids: params.awardCardIds,
+		// Un élément NULL = carte tirée au hasard ; le type généré ignore les NULL.
+		p_award_card_ids: params.awardCardIds.map((id) => rpcNullable(id)),
 		p_source: params.source,
 		p_discard_metadata: params.discardMetadata,
 		p_award_metadata: params.awardMetadata
@@ -104,11 +93,11 @@ export async function restoreActionCard(
 	snapshot: VipCardInstance,
 	expectedUsedAt: string | null
 ): Promise<boolean> {
-	const { data, error } = await untypedRpc()('restore_vip_card_instance', {
+	const { data, error } = await createServiceRoleClient().rpc('restore_vip_card_instance', {
 		p_student_id: studentId,
 		p_instance_id: instanceId,
-		p_snapshot: snapshot,
-		p_expected_used_at: expectedUsedAt
+		p_snapshot: toJson(snapshot),
+		p_expected_used_at: rpcNullable(expectedUsedAt)
 	});
 
 	if (error || data !== true) {
