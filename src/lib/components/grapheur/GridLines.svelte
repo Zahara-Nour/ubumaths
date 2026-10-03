@@ -143,21 +143,12 @@
 
 <style>
 	.grid-line-minor {
-		stroke: var(--graph-grid-minor, #e5e5e5);
+		stroke: var(--color-graph-grid-minor);
 		stroke-width: 0.5;
 	}
 
 	.grid-line-major {
-		stroke: var(--graph-grid-major, #d4d4d4);
+		stroke: var(--color-graph-grid-major);
 		stroke-width: 1;
-	}
-
-	/* Dark mode support */
-	:global(.dark) .grid-line-minor {
-		stroke: var(--graph-grid-minor-dark, #2a2a3e);
-	}
-
-	:global(.dark) .grid-line-major {
-		stroke: var(--graph-grid-major-dark, #3a3a52);
 	}
 </style>

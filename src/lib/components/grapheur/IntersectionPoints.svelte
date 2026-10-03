@@ -167,7 +167,7 @@
 
 <style>
 	.marker {
-		fill: var(--graph-intersection, #6b7280);
+		fill: var(--color-graph-intersection);
 		stroke: white;
 		stroke-width: 2;
 		transition: r 0.15s ease-out;
@@ -175,7 +175,7 @@
 	}
 
 	.marker.hovered {
-		fill: var(--graph-intersection-hover, #374151);
+		fill: var(--color-graph-intersection-hover);
 	}
 
 	.hit-area {
@@ -183,7 +183,7 @@
 	}
 
 	.tooltip-bg {
-		fill: var(--graph-tooltip-bg, #1f2937);
+		fill: var(--color-graph-tooltip-bg);
 		opacity: 0.95;
 	}
 
@@ -192,18 +192,5 @@
 		font-size: 11px;
 		fill: white;
 		user-select: none;
-	}
-
-	/* Dark mode */
-	:global(.dark) .marker {
-		fill: var(--graph-intersection-dark, #9ca3af);
-	}
-
-	:global(.dark) .marker.hovered {
-		fill: var(--graph-intersection-hover-dark, #d1d5db);
-	}
-
-	:global(.dark) .tooltip-bg {
-		fill: var(--graph-tooltip-bg-dark, #374151);
 	}
 </style>

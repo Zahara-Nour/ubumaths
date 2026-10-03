@@ -29,6 +29,7 @@
 		placeAsymptoteLabels,
 		branchBounds as branchBoundsOf
 	} from '$lib/grapheur/asymptote-labels';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	/** Nombre de segments pour dessiner une asymptote courbe. */
 	const ASYMPTOTE_CURVE_STEPS = 64;
@@ -70,7 +71,7 @@
 	 */
 	function getFunctionColor(functionId: string): string {
 		const func = grapheurStore.functions.find((f) => f.id === functionId);
-		return func?.color ?? '#888';
+		return func?.color ?? 'var(--color-muted-foreground)';
 	}
 
 	// ==========================================================================
@@ -140,7 +141,7 @@
 		{#each analysis.verticalAsymptotes as asymptote, idx (`v-${analysis.functionId}-${idx}`)}
 			<path
 				d={getVerticalPath(asymptote)}
-				stroke={color}
+				style:stroke={curveColorValue(color)}
 				stroke-width="1.5"
 				stroke-dasharray="5,5"
 				fill="none"
@@ -152,7 +153,7 @@
 		{#each analysis.horizontalAsymptotes as asymptote, idx (`h-${analysis.functionId}-${idx}`)}
 			<path
 				d={getHorizontalPath(asymptote)}
-				stroke={color}
+				style:stroke={curveColorValue(color)}
 				stroke-width="1.5"
 				stroke-dasharray="8,4"
 				fill="none"
@@ -164,7 +165,7 @@
 		{#each analysis.polynomialAsymptotes as asymptote, idx (`p-${analysis.functionId}-${idx}`)}
 			<path
 				d={polynomialPath(asymptote.coefficients, asymptote.direction)}
-				stroke={color}
+				style:stroke={curveColorValue(color)}
 				stroke-width="1.5"
 				stroke-dasharray="10,3,2,3"
 				fill="none"
@@ -176,7 +177,7 @@
 		{#each analysis.obliqueAsymptotes as asymptote, idx (`o-${analysis.functionId}-${idx}`)}
 			<path
 				d={getObliquePath(asymptote)}
-				stroke={color}
+				style:stroke={curveColorValue(color)}
 				stroke-width="1.5"
 				stroke-dasharray="10,3,2,3"
 				fill="none"

@@ -118,7 +118,7 @@ Les fichiers suivants n'ont pas de fichier `__tests__/<nom>.test.ts` corresponda
 | `graph/vector-components.ts`          | 50 L    | Faible — logique simple mais recursivement dependante                            |
 | `rendering/bezier.ts`                 | 414 L   | Moyen — Catmull-Rom, gestion NaN dans `roundCoord`                               |
 | `rendering/marching-squares.ts`       | 307 L   | Moyen — couvert partiellement via `interpreter-implicit-curve.test.ts` (4 tests) |
-| `rendering/colors.ts`                 | 349 L   | Faible — `getNextColor`, `normalizeColor` sans tests                             |
+| `rendering/colors.ts`                 | ~160 L  | Couvert — `grapheur/__tests__/curve-palette.test.ts`, `colors.test.ts`           |
 | `geometry/circumcircle.ts`            | 23 L    | Faible — mais collinearite (D ≈ 0) non testee explicitement                      |
 | `geometry/affine-transform.ts`        | ~100 L  | Moyen — transformations coniques, couvert indirectement                          |
 
@@ -305,15 +305,11 @@ Type : unitaire+propriete. La cellule `0101` (saddle) avec ambiguite est present
 - Viewport avec resolution 1 (grid_size=1) : ne pas crash
 - Courbe passant exactement par un coin de cellule : interpolation evite division par 0
 
-### 8. `rendering/colors.ts` — PRIORITE FAIBLE
+### 8. `rendering/colors.ts` — COUVERT (2026-10-03)
 
-Type : unitaire. `getNextColor`, `normalizeColor`, `isValidColor` sans tests. Cas concrets :
-
-- `normalizeColor("rouge")` → `"#dc2626"` (couleur francaise)
-- `normalizeColor("#abc")` → forme canonique
-- `getNextColor([])` → premiere couleur de la palette
-- `getNextColor(FUNCTION_COLORS)` → wrap-around sur la palette complete
-- `isValidColor("invalid-xxx")` → `false`
+Palette des courbes (identités `curve-1..4`, places, contraste lu dans `app.css`, migration
+des anciennes sauvegardes) : `src/lib/grapheur/__tests__/curve-palette.test.ts`.
+`isValidColor`, `normalizeColor` : `src/lib/grapheur/__tests__/colors.test.ts`.
 
 ### 9. `dsl/symbol-table.ts` — PRIORITE FAIBLE
 

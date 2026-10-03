@@ -1405,8 +1405,9 @@ export function derivativeCurve(
 		id: `${func.id}:derivative`,
 		ast: derivative,
 		parseError: undefined,
-		// Dashed, so the two curves stay tellable apart at a glance.
-		lineStyle: 'dashed',
+		// Pointillé fin : ni plein ni `dashed`, les deux styles des places
+		// (CURVE_SLOTS). En `dashed`, la dérivée de la 1ʳᵉ courbe imitait la 5ᵉ.
+		lineStyle: 'dotted',
 		lineWidth: Math.max(func.lineWidth - 1, 1),
 		showDerivative: false
 	};

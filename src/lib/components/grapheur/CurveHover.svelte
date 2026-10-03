@@ -52,6 +52,7 @@
 		deduplicateIntersections,
 		type IntersectionResult
 	} from '$lib/grapheur/intersections';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -230,7 +231,7 @@
 			const func = grapheurStore.functions.find(
 				(f): f is ExplicitFunction => isExplicitFunction(f) && f.id === analysis.functionId
 			);
-			const color = func?.color ?? '#888';
+			const color = func?.color ?? 'var(--color-muted-foreground)';
 
 			for (const root of analysis.roots) {
 				candidates.push({
@@ -624,7 +625,7 @@
 			cx={pinned.svg.x}
 			cy={pinned.svg.y}
 			r={6}
-			fill={pinned.candidate.color}
+			style:fill={curveColorValue(pinned.candidate.color)}
 			stroke="white"
 			stroke-width={2}
 			class="pinned-marker"
@@ -650,7 +651,7 @@
 			<!-- Special point marker (diamond, triangle) -->
 			<path
 				d={markerPath}
-				fill={hoverPoint.color}
+				style:fill={curveColorValue(hoverPoint.color)}
 				stroke="white"
 				stroke-width={2}
 				class="hover-marker"
@@ -661,7 +662,7 @@
 				cx={hoverPoint.svgX}
 				cy={hoverPoint.svgY}
 				r={6}
-				fill={hoverPoint.color}
+				style:fill={curveColorValue(hoverPoint.color)}
 				stroke="white"
 				stroke-width={2}
 				class="hover-marker"

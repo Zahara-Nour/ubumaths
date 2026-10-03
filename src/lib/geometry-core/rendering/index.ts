@@ -1,11 +1,14 @@
 // Colors
-export type { FunctionColor } from './colors';
+export type { CurveColor, CurveSlot } from './colors';
 export {
-	FUNCTION_COLORS,
-	getNextColor,
-	getColorByIndex,
+	CURVE_COLORS,
+	CURVE_COLOR_LABELS,
+	CURVE_SLOTS,
+	curveColorValue,
+	getNextSlot,
+	isCurveColor,
+	migrateLegacyColor,
 	isValidColor,
-	isPaletteColor,
 	normalizeColor
 } from './colors';
 

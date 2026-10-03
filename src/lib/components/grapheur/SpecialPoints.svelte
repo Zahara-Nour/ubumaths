@@ -22,6 +22,7 @@
 	import { analyzeAllFunctions, toAnalysisInputs } from '$lib/grapheur/analysis';
 	import { toCustom } from '$lib/mathAST/custom-generator';
 	import type { MathNode } from '$lib/mathAST/types';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -63,7 +64,7 @@
 	 */
 	function getFunctionColor(functionId: string): string {
 		const func = grapheurStore.functions.find((f) => f.id === functionId);
-		return func?.color ?? '#888';
+		return func?.color ?? 'var(--color-muted-foreground)';
 	}
 
 	// ==========================================================================
@@ -190,7 +191,7 @@
 				{@const pos = rootToSvg(root)}
 				<path
 					d={diamondPath(pos.x, pos.y)}
-					fill={color}
+					style:fill={curveColorValue(color)}
 					stroke="white"
 					stroke-width="2"
 					class="root-marker"
@@ -208,7 +209,7 @@
 					d={extremum.type === 'max'
 						? triangleUpPath(pos.x, pos.y)
 						: triangleDownPath(pos.x, pos.y)}
-					fill={color}
+					style:fill={curveColorValue(color)}
 					stroke="white"
 					stroke-width="2"
 					class="extremum-marker"
