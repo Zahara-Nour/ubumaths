@@ -2,7 +2,7 @@
  * Succès : gidouilles versées, succès rejoué ignoré, copie d'un modèle
  * ===================================================================
  *
- * Migration `20261003200000_succes_gidouilles_copie_modele.sql`.
+ * Migration `20261003220000_succes_gidouilles_copie_modele.sql`.
  *
  * Q146 (a) : les gidouilles annoncées par un succès sont VERSÉES par le
  * serveur, dans la transaction qui enregistre le succès, avec une trace
@@ -11,6 +11,13 @@
  * le succès déjà obtenu est ignoré, sans second versement.
  * Q154 (a) : `duplicate_template` crée un modèle PERSONNEL (scope 'class',
  * sans classe) au lieu d'échouer sur `message_templates_check`.
+ * Q156 : les jalons de jeux (route 2048) versent leurs gidouilles par la
+ * version à 5 arguments de `update_student_gidouilles`, une seule fois.
+ * Q157 : une défaite au démineur ne débloque pas un succès « victoire ».
+ * Audit A : une difficulté inventée ne débloque rien.
+ * Audit B : un compte connecté sans profil ne crédite pas de gidouilles.
+ * Audit C : un élève de la classe ne voit pas un modèle personnel du prof.
+ * Q158 : le prof supprime son modèle ; la trace 'deleted' existe.
  *
  * Chaque affirmation est relue AU CLIENT SERVICE (la RLS échoue en silence).
  *
@@ -33,7 +40,12 @@ vi.mock('$lib/server/serviceRoleClient', async () => {
 	return { createServiceRoleClient: helpers.createServiceRoleClient };
 });
 
+// Le consentement parental est hors sujet ici (testé ailleurs).
+vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
+
+import type { User } from '@supabase/supabase-js';
 import { processEvent } from '$lib/server/achievements/service';
+import { POST as soumettreScore2048 } from '../../src/routes/api/games/2048/scores/+server';
 
 const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
 const ANON_KEY =
@@ -238,12 +250,15 @@ describe('Succès : gidouilles versées une seule fois (Q146, Q153)', () => {
 	});
 });
 
-describe('duplicate_template : la copie est un modèle personnel (Q154)', () => {
+describe('Modèles de message : copie personnelle, visibilité, suppression (Q154, C, Q158)', () => {
 	let prof: SupabaseClient<Database>;
 	let eleve: SupabaseClient<Database>;
 	let profId: string;
 	let eleveId: string;
+	let classe: string;
 	let modele: string;
+	let modeleDeClasse: string;
+	let copie: string;
 	const modelesCrees: string[] = [];
 
 	beforeAll(async () => {
@@ -252,6 +267,16 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 		profId = p.id;
 		const e = await TestData.profile().withRole('student').create();
 		eleveId = e.id;
+
+		classe = await insert('classes', {
+			name: 'Classe modèles SG',
+			join_code: `SM${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
+			grade: '2'
+		});
+		const { error: membreError } = await service
+			.from('class_members')
+			.insert({ class_id: classe, student_id: eleveId, status: 'active' });
+		expect(membreError).toBeNull();
 
 		modele = await insert('message_templates', {
 			title: 'Modèle succès-gidouilles',
@@ -262,6 +287,16 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 			created_by: profId
 		});
 		modelesCrees.push(modele);
+		modeleDeClasse = await insert('message_templates', {
+			title: 'Modèle de classe SG',
+			subject_template: 'Sujet',
+			body_template: 'Corps',
+			trigger_type: 'general',
+			scope: 'class',
+			class_id: classe,
+			created_by: profId
+		});
+		modelesCrees.push(modeleDeClasse);
 
 		prof = await clientFor(p.email);
 		eleve = await clientFor(e.email);
@@ -273,12 +308,11 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 			.select('id')
 			.like('title', 'SG copie%');
 		for (const r of data ?? []) modelesCrees.push(r.id);
-		// ⚠️ Échoue aujourd'hui (prod comprise) : le trigger AFTER DELETE
-		// auto_log_template_changes journalise le modèle supprimé dans
-		// template_audit_log, dont la FK template_id refuse alors la ligne. Défaut
-		// hors de ce lot ; le nettoyage reprendra seul une fois corrigé.
+		// Possible depuis Q158 (avant, toute suppression de modèle échouait).
 		await service.from('message_templates').delete().in('id', modelesCrees);
 		await service.from('template_audit_log').delete().in('performed_by', [profId, eleveId]);
+		await service.from('class_members').delete().eq('class_id', classe);
+		await service.from('classes').delete().eq('id', classe);
 		await cleanupAllTestData();
 	});
 
@@ -289,7 +323,7 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 			p_new_title: 'SG copie prof'
 		});
 		expect(error).toBeNull();
-		const copie = data as string;
+		copie = data as string;
 		modelesCrees.push(copie);
 
 		const { data: ligne, error: lectureError } = await service
@@ -305,11 +339,18 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 			created_by: profId
 		});
 
-		// Le prof la voit (RLS), l'élève non.
 		const { data: vueProf } = await prof.from('message_templates').select('id').eq('id', copie);
 		expect(vueProf).toHaveLength(1);
-		const { data: vueEleve } = await eleve.from('message_templates').select('id').eq('id', copie);
-		expect(vueEleve).toHaveLength(0);
+	});
+
+	it('C : un élève de la classe ne voit pas le modèle personnel (SELECT direct)', async () => {
+		const { data, error } = await eleve
+			.from('message_templates')
+			.select('id')
+			.in('id', [copie, modeleDeClasse]);
+		expect(error).toBeNull();
+		// Témoin : le modèle de SA classe lui est visible ; la copie personnelle non.
+		expect((data ?? []).map((r) => r.id)).toEqual([modeleDeClasse]);
 	});
 
 	it("l'élève est refusé et aucun modèle n'est créé", async () => {
@@ -324,5 +365,254 @@ describe('duplicate_template : la copie est un modèle personnel (Q154)', () => 
 			.select('*', { count: 'exact', head: true })
 			.eq('title', 'SG copie élève');
 		expect(count).toBe(0);
+	});
+
+	it('Q158 : le prof supprime son modèle, et la trace « deleted » existe', async () => {
+		const { data, error } = await prof
+			.from('message_templates')
+			.delete()
+			.eq('id', modeleDeClasse)
+			.select('id');
+		expect(error).toBeNull();
+		expect(data).toEqual([{ id: modeleDeClasse }]);
+
+		const { count } = await service
+			.from('message_templates')
+			.select('*', { count: 'exact', head: true })
+			.eq('id', modeleDeClasse);
+		expect(count).toBe(0);
+
+		const { data: traces, error: traceError } = await service
+			.from('template_audit_log')
+			.select('template_id, performed_by, metadata')
+			.eq('action', 'deleted')
+			.eq('metadata->>template_id', modeleDeClasse);
+		expect(traceError).toBeNull();
+		expect(traces).toEqual([
+			{
+				template_id: null,
+				performed_by: profId,
+				metadata: { template_id: modeleDeClasse, title: 'Modèle de classe SG' }
+			}
+		]);
+	});
+});
+
+describe('Jalons de jeux : gidouilles versées par la route (Q156)', () => {
+	const JALON = '2048_first_2048';
+	const MONTANT_JALON = 5;
+	let eleve: SupabaseClient<Database>;
+	let eleveId: string;
+	let classe: string;
+	let jalonCree = false;
+
+	async function soumettre() {
+		const response = await soumettreScore2048({
+			request: new Request('http://localhost/api/games/2048/scores', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ score: 2500, reached_2048: true, reached_4096: false })
+			}),
+			locals: {
+				supabase: eleve as unknown as App.Locals['supabase'],
+				user: { id: eleveId } as User,
+				profile: { id: eleveId, role: 'student' }
+			} as unknown as App.Locals
+		} as unknown as Parameters<typeof soumettreScore2048>[0]);
+		expect(response.status).toBe(200);
+	}
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		const e = await TestData.profile().withRole('student').create();
+		eleveId = e.id;
+		await TestData.profile().withRole('teacher').create();
+		classe = await insert('classes', {
+			name: 'Classe jalons SG',
+			join_code: `SJ${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
+			grade: '2'
+		});
+		const { error: membreError } = await service
+			.from('class_members')
+			.insert({ class_id: classe, student_id: eleveId, status: 'active' });
+		expect(membreError).toBeNull();
+
+		// Le catalogue local peut être vide : on pose le jalon s'il manque.
+		const { data: existant } = await service
+			.from('achievements')
+			.select('id')
+			.eq('id', JALON)
+			.maybeSingle();
+		if (!existant) {
+			const { error } = await service.from('achievements').insert({
+				id: JALON,
+				context: '2048',
+				category: 'special',
+				name: 'Premier 2048',
+				description: 'Jalon de test',
+				icon: '🧪',
+				unlock_type: 'event_based',
+				metadata: { gidouilles_reward: MONTANT_JALON },
+				is_active: true,
+				display_order: 9999
+			});
+			expect(error).toBeNull();
+			jalonCree = true;
+		}
+
+		eleve = await clientFor(e.email);
+	}, 120_000);
+
+	afterAll(async () => {
+		await service.from('student_achievements').delete().eq('student_id', eleveId);
+		await service.from('reward_events').delete().eq('student_id', eleveId);
+		await service.from('gidouilles_activity').delete().eq('student_id', eleveId);
+		await service.from('game_2048_scores').delete().eq('user_id', eleveId);
+		if (jalonCree) await service.from('achievements').delete().eq('id', JALON);
+		await service.from('class_members').delete().eq('class_id', classe);
+		await service.from('classes').delete().eq('id', classe);
+		await cleanupAllTestData();
+	});
+
+	it('un jalon atteint crédite le profil, avec la trace des succès', async () => {
+		const { data: jalon } = await service
+			.from('achievements')
+			.select('name, metadata')
+			.eq('id', JALON)
+			.single();
+		const montant = (jalon?.metadata as { gidouilles_reward: number }).gidouilles_reward;
+		const avant = await solde(eleveId);
+
+		await soumettre();
+
+		expect(await solde(eleveId)).toBe(avant + montant);
+		expect(await activites(eleveId)).toEqual([
+			{ delta: montant, reason: `Succès : ${jalon?.name}`, class_id: classe }
+		]);
+	});
+
+	it('le même jalon, rejoué, ne verse rien de plus', async () => {
+		const avant = await solde(eleveId);
+
+		await soumettre();
+
+		expect(await solde(eleveId)).toBe(avant);
+		expect(await compteSucces(eleveId, JALON)).toBe(1);
+		expect((await activites(eleveId)).length).toBe(1);
+	});
+});
+
+describe('Démineur : victoire exigée et difficulté contrôlée (Q157, audit A)', () => {
+	const EVENEMENT = 'minesweeper_game_completed';
+	const VICTOIRE = 'sg_test_mines_victoire';
+	const PAR_DIFFICULTE = 'sg_test_mines_difficulte';
+	let eleveId: string;
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		await service.from('achievements').delete().in('id', [VICTOIRE, PAR_DIFFICULTE]);
+		eleveId = (await TestData.profile().withRole('student').create()).id;
+
+		const succes = (id: string, gidouilles: number, metadata: Record<string, unknown>) => ({
+			id,
+			context: 'minesweeper',
+			category: 'special',
+			name: id,
+			description: 'Succès de test',
+			icon: '🧪',
+			unlock_type: 'automatic',
+			metadata: {
+				unlock_conditions: { type: EVENEMENT, params: { won: true } },
+				gidouilles_reward: gidouilles,
+				...metadata
+			},
+			is_active: true,
+			display_order: 9999
+		});
+		const { error } = await service
+			.from('achievements')
+			.insert([
+				succes(VICTOIRE, 5, {}),
+				succes(PAR_DIFFICULTE, 3, { difficulty_specific: 'true' })
+			]);
+		expect(error).toBeNull();
+	}, 120_000);
+
+	afterAll(async () => {
+		await service.from('student_achievements').delete().eq('student_id', eleveId);
+		await service.from('achievement_events').delete().eq('student_id', eleveId);
+		await service.from('reward_events').delete().eq('student_id', eleveId);
+		await service.from('gidouilles_activity').delete().eq('student_id', eleveId);
+		await service.from('achievements').delete().in('id', [VICTOIRE, PAR_DIFFICULTE]);
+		await cleanupAllTestData();
+	});
+
+	it('Q157 : une défaite ne débloque rien et ne crédite rien', async () => {
+		const avant = await solde(eleveId);
+
+		const res = await processEvent(EVENEMENT, eleveId, { won: false, difficulty: 'beginner' });
+
+		expect(res.count).toBe(0);
+		expect(await compteSucces(eleveId, VICTOIRE)).toBe(0);
+		expect(await compteSucces(eleveId, PAR_DIFFICULTE)).toBe(0);
+		expect(await solde(eleveId)).toBe(avant);
+	});
+
+	it('A : une difficulté inventée ne débloque pas le succès par difficulté', async () => {
+		const avant = await solde(eleveId);
+
+		await processEvent(EVENEMENT, eleveId, { won: true, difficulty: 'impossible' });
+
+		// La victoire, elle, est légitime : +5 ; rien pour la difficulté inventée.
+		expect(await compteSucces(eleveId, VICTOIRE)).toBe(1);
+		expect(await compteSucces(eleveId, PAR_DIFFICULTE)).toBe(0);
+		expect(await solde(eleveId)).toBe(avant + 5);
+	});
+
+	it('témoin : une difficulté de la liste débloque le succès par difficulté', async () => {
+		const avant = await solde(eleveId);
+
+		await processEvent(EVENEMENT, eleveId, { won: true, difficulty: 'expert' });
+
+		expect(await compteSucces(eleveId, PAR_DIFFICULTE)).toBe(1);
+		expect(await solde(eleveId)).toBe(avant + 3);
+	});
+});
+
+describe('update_student_gidouilles : un compte sans profil est refusé (audit B)', () => {
+	let sansProfil: SupabaseClient<Database>;
+	let cibleId: string;
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		cibleId = (await TestData.profile().withRole('student').create()).id;
+		const fantome = await TestData.profile().withRole('student').create();
+		sansProfil = await clientFor(fantome.email);
+		const { error } = await service.from('profiles').delete().eq('id', fantome.id);
+		expect(error).toBeNull();
+	}, 120_000);
+
+	afterAll(async () => {
+		await service.from('gidouilles_activity').delete().eq('student_id', cibleId);
+		await service.from('reward_events').delete().eq('student_id', cibleId);
+		await cleanupAllTestData();
+	});
+
+	it('le crédit est refusé et le solde ne bouge pas', async () => {
+		const avant = await solde(cibleId);
+
+		const { error } = await rpc(sansProfil, 'update_student_gidouilles', {
+			p_student_id: cibleId,
+			p_class_id: null,
+			p_delta: 50,
+			p_reason: 'SG sans profil',
+			// Un auteur EXISTANT : sinon la FK created_by → profiles bloquerait
+			// l'écriture par hasard et masquerait la garde défaillante.
+			p_created_by: cibleId
+		});
+
+		expect(error).not.toBeNull();
+		expect(await solde(cibleId)).toBe(avant);
+		expect(await activites(cibleId)).toEqual([]);
 	});
 });

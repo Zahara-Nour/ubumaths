@@ -67,6 +67,7 @@ import { requireConsent } from '$lib/server/middleware/consent';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { calculate2048TheoreticalReward } from '$lib/server/games/reward-2048';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { creditAchievementGidouilles } from '$lib/server/achievements/credit-gidouilles';
 
 // ============================================================================
 // GET - Fetch user's current score
@@ -388,11 +389,13 @@ async function checkAndAward2048Milestones(
 		// Only credit gidouilles if the row was actually inserted
 		if (!insertResult || insertResult.length === 0) continue;
 
-		// Credit gidouilles to profile
-		const { error: gidouillesError } = await admin.rpc('update_student_gidouilles', {
-			p_student_id: userId,
-			p_delta: gidouillesReward
-		});
+		// Versement (Q156) : même fonction, libellé et trace que les succès.
+		const gidouillesError = await creditAchievementGidouilles(
+			admin,
+			userId,
+			gidouillesReward,
+			achievement.name
+		);
 
 		if (gidouillesError) {
 			console.error('[API] Error crediting milestone gidouilles:', achievement.id, gidouillesError);

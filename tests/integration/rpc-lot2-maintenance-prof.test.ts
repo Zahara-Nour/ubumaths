@@ -455,7 +455,7 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 			expect(await titres('RPC lot 2 copie forgée')).toHaveLength(0);
 		});
 
-		// Depuis 20261003200000 (Q154), la copie est un modèle personnel (scope
+		// Depuis 20261003220000 (Q154), la copie est un modèle personnel (scope
 		// 'class', sans classe) : l'appel aboutit. Détail : succes-gidouilles.test.ts.
 		it('témoin : le prof en son nom passe la garde et obtient sa copie', async () => {
 			const { data, error } = await rpc(prof, 'duplicate_template', {

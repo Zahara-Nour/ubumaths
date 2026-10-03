@@ -36,6 +36,26 @@
 --   lot 2 (p_user_id = auth.uid() ET prof/admin, ou serveur) est conservée ;
 --   le corps de la fonction est INCHANGÉ (il insérait déjà ces valeurs).
 --
+-- Q157 — `minesweeper_first_win` (condition params.won = true) ne se débloque
+--   plus sur une défaite : la condition `won` est évaluée.
+--
+-- Audit A — Succès `difficulty_specific` / `subject_specific` : la difficulté
+--   (beginner, intermediate, expert) et la matière (8 thèmes de
+--   src/lib/config/tutor-help-methods.ts) sont contrôlées sur une liste
+--   FERMÉE ; une valeur inventée ne débloque rien (sinon un succès par valeur).
+--
+-- Q158 — Supprimer un modèle de message échouait toujours (FK de
+--   template_audit_log sur le modèle effacé, journalisé par le trigger AFTER
+--   DELETE). La trace 'deleted' est écrite avec template_id NULL et l'id
+--   d'origine dans metadata. Ni FK ni trigger modifiés.
+--
+-- Audit B — update_student_gidouilles (5 args) : un compte connecté SANS
+--   profil passait la garde (rôle NULL → condition NULL → pas d'exception).
+--   COALESCE(v_caller_role, '') le refuse.
+--
+-- Qui perd quel accès : un compte connecté sans profil ne crédite plus de
+--   gidouilles (il le pouvait par défaut de garde).
+--
 -- Qui gagne quel accès : personne.
 --   * Un modèle 'class' sans classe est lu/modifié par son auteur (policies
 --     teacher_manage_class_templates / teacher_view_system_templates :
@@ -51,12 +71,21 @@
 --
 -- Corps repris de la prod (pg_get_functiondef local, md5(prosrc) local = prod
 -- vérifié le 2026-10-03) : process_achievement_event
--- 78b1ad798bb41d54cb9e2c7e084cd607. Seules les modifications ci-dessus sont
--- apportées (balisées « Q146 » / « Q153 »). Droits inchangés (CREATE OR
+-- 78b1ad798bb41d54cb9e2c7e084cd607, auto_log_template_changes
+-- 034e37d72fe626946edad5fd11f1191a, update_student_gidouilles(5 args)
+-- df540176c353b6d9010fa43abdb5ef7d. Seules les modifications ci-dessus sont
+-- apportées (balisées « Q146 », « Q153 », « Q157 », « Audit A/B », « Q158 »). Droits inchangés (CREATE OR
 -- REPLACE conserve proacl : {postgres, service_role}).
 --
--- Ordre de livraison : indépendant. Le code (écran des modèles) marche avant
--- comme après ; la migration seule suffit à réparer duplication et versement.
+-- Lot 4 (20261003210000) : search_path des fonctions SECURITY DEFINER figé à
+-- « public, pg_temp ». Les deux fonctions DEFINER recréées ici le gardent
+-- (process_achievement_event, update_student_gidouilles 5 args) ; le rollback
+-- les remet dans cet état. auto_log_template_changes (INVOKER, non touchée par
+-- le lot 4) garde son search_path de prod. Cette migration part APRÈS le lot 4.
+--
+-- Ordre de livraison : indépendant. Le code (écran des modèles ; routes 2048 et
+-- Mathémo, qui créditent par la version à 5 arguments, déjà en prod) marche
+-- avant comme après la migration.
 --
 -- Tests : tests/integration/succes-gidouilles.test.ts
 --
@@ -77,8 +106,47 @@
 --    la prod, md5 78b1ad798bb41d54cb9e2c7e084cd607), puis :
 -- REVOKE EXECUTE ON FUNCTION public.process_achievement_event(text, uuid, jsonb)
 --   FROM PUBLIC, anon, authenticated;
+-- ALTER FUNCTION public.process_achievement_event(text, uuid, jsonb)
+--   SET search_path = public, pg_temp;   -- état laissé par le lot 4
 --    (Les gidouilles déjà versées restent sur les profils, tracées dans
 --    gidouilles_activity / reward_events.)
+--
+-- 3. auto_log_template_changes (corps de prod exact, md5 034e37d72fe626946edad5fd11f1191a
+--    vérifié en rejouant ce rollback en local) :
+--
+-- CREATE OR REPLACE FUNCTION public.auto_log_template_changes()
+--  RETURNS trigger
+--  LANGUAGE plpgsql
+--  SET search_path TO 'public', 'extensions', 'pg_temp'
+-- AS $function$
+-- BEGIN
+--   IF TG_OP = 'INSERT' THEN
+--     PERFORM log_template_action(NEW.id, 'created', NEW.created_by);
+--   ELSIF TG_OP = 'UPDATE' THEN
+--     PERFORM log_template_action(
+--       NEW.id,
+--       'updated',
+--       NEW.created_by,
+--       jsonb_build_object(
+--         'old', row_to_json(OLD),
+--         'new', row_to_json(NEW)
+--       )
+--     );
+--   ELSIF TG_OP = 'DELETE' THEN
+--     PERFORM log_template_action(OLD.id, 'deleted', OLD.created_by);
+--   END IF;
+--
+--   RETURN COALESCE(NEW, OLD);
+-- END;
+-- $function$;
+--    (Les traces 'deleted' déjà écrites restent, template_id NULL.)
+--
+-- 4. update_student_gidouilles (5 args) : rejouer le CREATE OR REPLACE de la
+--    fin de ce fichier en remplaçant les deux « COALESCE(v_caller_role, '') »
+--    par « v_caller_role » et en retirant la ligne de commentaire « Audit B »
+--    (rend le corps de prod exact, md5 df540176c353b6d9010fa43abdb5ef7d,
+--    vérifié en rejouant ce rollback en local), avec
+--    SET search_path TO 'public', 'pg_temp' (état laissé par le lot 4).
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -102,7 +170,7 @@ CREATE OR REPLACE FUNCTION public.process_achievement_event(p_event_type text, p
  RETURNS jsonb
  LANGUAGE plpgsql
  SECURITY DEFINER
- SET search_path TO 'public'
+ SET search_path TO 'public', 'pg_temp'
 AS $function$
 DECLARE
   v_event_id UUID;
@@ -185,6 +253,20 @@ BEGIN
             p_event_data->>'perfect' = 'true';
         END IF;
 
+        -- Q157 : une condition « victoire » (minesweeper_first_win) exige
+        -- won = true dans l'événement ; une défaite ne débloque rien.
+        IF v_unlock_conditions->'params'->>'won' = 'true' THEN
+          v_should_unlock := v_should_unlock AND
+            COALESCE(p_event_data->>'won', '') = 'true';
+        END IF;
+
+        -- Audit A : succès par difficulté → liste FERMÉE ; une difficulté
+        -- inventée ne débloque rien (elle ouvrirait un succès par valeur).
+        IF v_achievement.metadata->>'difficulty_specific' = 'true'
+           AND COALESCE(p_event_data->>'difficulty', '') NOT IN ('beginner', 'intermediate', 'expert') THEN
+          v_should_unlock := false;
+        END IF;
+
       -- Questions/Assessments achievements
       WHEN p_event_type IN ('question_answered', 'assessment_completed') THEN
         -- Check subject-specific achievements
@@ -207,6 +289,17 @@ BEGIN
         IF v_unlock_conditions->'params'->>'min_accuracy' IS NOT NULL THEN
           v_should_unlock :=
             (p_event_data->>'accuracy')::NUMERIC >= (v_unlock_conditions->'params'->>'min_accuracy')::NUMERIC;
+        END IF;
+
+        -- Audit A : succès par matière → liste FERMÉE (thèmes de
+        -- src/lib/config/tutor-help-methods.ts) ; une matière inventée ne
+        -- débloque rien.
+        IF v_achievement.metadata->>'subject_specific' = 'true'
+           AND COALESCE(p_event_data->>'subject', '') NOT IN (
+             'arithmetic', 'algebra', 'geometry', 'functions',
+             'calculus', 'statistics', 'logic', 'proofs'
+           ) THEN
+          v_should_unlock := false;
         END IF;
 
       -- Social achievements
@@ -338,3 +431,112 @@ $function$
 
 -- Droits : inchangés par CREATE OR REPLACE ; réaffirmés (leçon d'août).
 REVOKE EXECUTE ON FUNCTION public.process_achievement_event(text, uuid, jsonb) FROM PUBLIC, anon, authenticated;
+
+-- -----------------------------------------------------------------------------
+-- Q158 : supprimer un modèle de message échouait toujours
+-- -----------------------------------------------------------------------------
+-- Le trigger AFTER DELETE journalisait le modèle supprimé avec template_id =
+-- OLD.id : la FK template_audit_log_template_id_fkey refuse une ligne qui
+-- pointe vers un modèle déjà effacé, et la suppression entière était annulée.
+-- La trace 'deleted' est gardée SANS la référence bloquante : template_id NULL,
+-- id et titre d'origine dans metadata. Auteur de la trace : celui qui supprime
+-- (auth.uid()), à défaut l'auteur du modèle (appel serveur).
+-- Aucune FK ni aucun trigger modifié : seul le corps de la fonction change.
+-- Corps repris de la prod (md5 034e37d72fe626946edad5fd11f1191a), branche
+-- DELETE seule modifiée.
+CREATE OR REPLACE FUNCTION public.auto_log_template_changes()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
+AS $function$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    PERFORM log_template_action(NEW.id, 'created', NEW.created_by);
+  ELSIF TG_OP = 'UPDATE' THEN
+    PERFORM log_template_action(
+      NEW.id,
+      'updated',
+      NEW.created_by,
+      jsonb_build_object(
+        'old', row_to_json(OLD),
+        'new', row_to_json(NEW)
+      )
+    );
+  ELSIF TG_OP = 'DELETE' THEN
+    -- Q158 : le modèle n'existe plus → template_id NULL, id dans metadata.
+    PERFORM log_template_action(
+      NULL,
+      'deleted',
+      COALESCE(auth.uid(), OLD.created_by),
+      NULL,
+      jsonb_build_object('template_id', OLD.id, 'title', OLD.title)
+    );
+  END IF;
+
+  RETURN COALESCE(NEW, OLD);
+END;
+$function$
+;
+
+-- -----------------------------------------------------------------------------
+-- Audit B : update_student_gidouilles (5 arguments), compte sans profil refusé
+-- -----------------------------------------------------------------------------
+-- Pour un appelant connecté SANS profil, v_caller_role est NULL : la garde
+-- valait NOT (NULL OR …) = NULL, et IF NULL ne lève rien → crédit accepté.
+-- COALESCE(v_caller_role, '') rend la garde fausse, donc le refus effectif.
+-- Corps repris de la prod (md5 df540176c353b6d9010fa43abdb5ef7d), garde seule
+-- modifiée. Droits inchangés (CREATE OR REPLACE conserve proacl).
+CREATE OR REPLACE FUNCTION public.update_student_gidouilles(p_student_id uuid, p_class_id uuid, p_delta integer, p_reason text DEFAULT NULL::text, p_created_by uuid DEFAULT NULL::uuid)
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$
+DECLARE
+    v_new_gidouilles INTEGER;
+    v_caller_role TEXT;
+BEGIN
+    -- SECURITY CHECK: Get caller's role to enforce authorization
+    SELECT role INTO v_caller_role
+    FROM public.profiles
+    WHERE id = auth.uid();
+
+    -- Mono-teacher: admin, teacher with an active member in this class, or system (NULL caller).
+    -- Audit B : COALESCE — un compte connecté sans profil est refusé.
+    IF auth.uid() IS NOT NULL AND NOT (
+        COALESCE(v_caller_role, '') = 'admin'
+        OR (COALESCE(v_caller_role, '') = 'teacher' AND EXISTS (
+            SELECT 1 FROM public.class_members cm
+            WHERE cm.student_id = p_student_id
+            AND cm.class_id = p_class_id
+            AND cm.status = 'active'
+        ))
+    ) THEN
+        RAISE EXCEPTION 'Non autorisé: seuls les professeurs de cet élève peuvent modifier ses gidouilles';
+    END IF;
+
+    -- Update gidouilles with floor at 0
+    UPDATE public.profiles
+    SET gidouilles = GREATEST(0, COALESCE(gidouilles, 0) + p_delta)
+    WHERE id = p_student_id
+    RETURNING gidouilles INTO v_new_gidouilles;
+
+    -- Log the change in activity table
+    INSERT INTO public.gidouilles_activity (
+        student_id,
+        class_id,
+        delta,
+        reason,
+        created_by
+    ) VALUES (
+        p_student_id,
+        p_class_id,
+        p_delta,
+        p_reason,
+        COALESCE(p_created_by, auth.uid())
+    );
+
+    RETURN v_new_gidouilles;
+END;
+$function$
+;
