@@ -2654,6 +2654,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// First: convert \mathrm{d}x → dif x (differential notation, before general \mathrm)
 	result = result.replace(/\\mathrm\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
 	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');
+	// Variantes du gras que MathLive affiche (`\bold`, `\boldsymbol`, `\bm`) : sans elles,
+	// commande inconnue → « bold1 » en texte dans le PDF (corrigé de 1acb6d47)
+	result = convertLatexOneArgCommand(result, 'boldsymbol', 'bold');
+	result = convertLatexOneArgCommand(result, 'bm', 'bold');
+	result = convertLatexOneArgCommand(result, 'bold', 'bold');
+	// `\textbf{…}` sans accolade imbriquée est déjà `bold("…")` ; il reste ceux qui
+	// entourent une commande (`\textbf{\textcolor{…}{1}}`) : gras mathématique
+	result = convertLatexOneArgCommand(result, 'textbf', 'bold');
 	result = convertLatexOneArgCommand(result, 'mathit', 'italic');
 	result = convertLatexOneArgCommand(result, 'mathrm', 'upright');
 	result = convertLatexOneArgCommand(result, 'mathcal', 'cal');

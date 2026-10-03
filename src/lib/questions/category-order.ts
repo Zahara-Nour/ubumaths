@@ -240,7 +240,7 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 			{ domain: 'Valeur absolue', subdomains: ['Apprivoiser', 'Equations'] },
 			{
 				domain: 'Polynôme du second degré',
-				subdomains: ['Apprivoiser', 'Racines', 'Vrai ou Faux']
+				subdomains: ['Apprivoiser', 'Racines', 'Propriétés']
 			},
 			{
 				domain: 'Dérivation',
