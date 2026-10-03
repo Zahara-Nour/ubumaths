@@ -58,6 +58,12 @@
 	import { provideContentLocale } from './content-locale';
 	import { provideAuthoringErrors } from './authoring-errors';
 	import { createRenderBudget, provideRenderBudget } from './render-budget';
+	import {
+		provideRestrictedRendering,
+		readRestrictedRendering,
+		restrictDocument,
+		stripFenceLanguages
+	} from './restricted-rendering';
 	import type { ContentLocale } from '$lib/types/locale';
 
 	interface Props {
@@ -110,6 +116,13 @@
 		 * (cadre neutre « Figure indisponible »). Décision Q48 du 2026-10-01.
 		 */
 		showAuthoringErrors?: boolean;
+		/**
+		 * Rendu RESTREINT (chat élève, décision S1 du 2026-10-03) : ni bloc
+		 * spécial (affiché en code), ni vidéo, images du seul stockage Supabase,
+		 * formules sans commande de style/lien. Hérité par les rendus imbriqués ;
+		 * un parent restreint l'impose. Absent : rendu complet.
+		 */
+		restricted?: boolean;
 	}
 
 	let {
@@ -129,11 +142,21 @@
 		hints = [],
 		onHintOpen,
 		locale,
-		showAuthoringErrors
+		showAuthoringErrors,
+		restricted
 	}: Props = $props();
 
 	provideContentLocale(() => locale);
 	provideAuthoringErrors(() => showAuthoringErrors);
+	provideRestrictedRendering(() => restricted);
+	const isRestricted = readRestrictedRendering();
+
+	/**
+	 * Source effectivement analysée : en mode restreint, les blocs de code
+	 * perdent leur langue (```trig → bloc de code texte). Le contenu stocké
+	 * n'est pas modifié.
+	 */
+	let source = $derived(isRestricted() && content ? stripFenceLanguages(content) : content);
 
 	/**
 	 * Parse the markdown content into an AST.
@@ -141,21 +164,24 @@
 	 * Returns null if parsing fails.
 	 */
 	let ast = $derived.by<DocumentNode | null>(() => {
-		if (!content) {
+		if (!source) {
 			return { type: 'document', children: [] };
 		}
 
+		// Mode restreint : filet sur l'AST (copie, le cache n'est pas modifié)
+		const finish = (doc: DocumentNode) => (isRestricted() ? restrictDocument(doc) : doc);
+
 		// Check cache first
-		const cached = getCachedAST(content, parseOptions);
+		const cached = getCachedAST(source, parseOptions);
 		if (cached) {
-			return cached;
+			return finish(cached);
 		}
 
 		// Parse and cache
 		try {
-			const parsed = parseMarkdown(content, parseOptions);
-			setCachedAST(content, parsed, parseOptions);
-			return parsed;
+			const parsed = parseMarkdown(source, parseOptions);
+			setCachedAST(source, parsed, parseOptions);
+			return finish(parsed);
 		} catch (error) {
 			console.error('Markdown parse error:', error);
 			return null;

@@ -20,6 +20,7 @@
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { hasUnsafeMathCommand, readRestrictedRendering } from '../restricted-rendering';
 
 	/**
 	 * MathLive math-field element interface
@@ -90,6 +91,13 @@
 		}
 		return base;
 	});
+
+	// Mode restreint (chat élève) : une commande MathLive de style, classe,
+	// identifiant, données ou lien ne part pas dans MathLive — texte (S1)
+	const isRestricted = readRestrictedRendering();
+	let unsafe = $derived(
+		isRestricted() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex))
+	);
 
 	// Extract prompt indices from the expression
 	let promptIndices = $derived(extractPromptIndices(expression, syntax));
@@ -205,7 +213,9 @@
 	});
 </script>
 
-{#if display === 'block'}
+{#if unsafe}
+	<code class="restricted-math {className}">${expression}$</code>
+{:else if display === 'block'}
 	<div class="math-prompt-block-container my-6 flex justify-center {className}">
 		<math-field
 			readonly

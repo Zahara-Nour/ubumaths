@@ -22,6 +22,7 @@
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { hasUnsafeMathCommand, readRestrictedRendering } from '../restricted-rendering';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
@@ -39,12 +40,23 @@
 
 	// Convert to LaTeX for rendering
 	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions, contentLocale()));
+
+	// Mode restreint (chat élève) : une commande MathLive de style, classe,
+	// identifiant, données ou lien ne part pas dans MathLive — texte (S1)
+	const isRestricted = readRestrictedRendering();
+	let unsafe = $derived(
+		isRestricted() && (hasUnsafeMathCommand(expression) || hasUnsafeMathCommand(latex))
+	);
 </script>
 
 <div class="math-block-container flex justify-center {className}">
-	{#key latex}
-		<math-div class="math-block-static">{latex}</math-div>
-	{/key}
+	{#if unsafe}
+		<code class="restricted-math">$${expression}$$</code>
+	{:else}
+		{#key latex}
+			<math-div class="math-block-static">{latex}</math-div>
+		{/key}
+	{/if}
 </div>
 
 <style>

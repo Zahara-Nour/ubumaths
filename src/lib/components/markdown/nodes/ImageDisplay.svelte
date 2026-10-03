@@ -24,6 +24,7 @@
 	import { escapeHtml } from '../utils';
 	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import { getQuestionImageUrl } from '$lib/questions/constants';
+	import { isProjectStorageImage, readRestrictedRendering } from '../restricted-rendering';
 
 	interface Props {
 		src: string;
@@ -55,6 +56,12 @@
 	let resolvedSrc = $derived(
 		src.includes('://') ? src : getQuestionImageUrl(PUBLIC_SUPABASE_URL, src)
 	);
+
+	// Mode restreint (chat élève) : seule une URL ABSOLUE du stockage Supabase
+	// du projet est chargée. Toute autre source — externe, `data:`, `//hôte`,
+	// chemin relatif — ne fait AUCUNE requête (fuite d'IP, S1).
+	const isRestricted = readRestrictedRendering();
+	let blocked = $derived(isRestricted() && !isProjectStorageImage(src, PUBLIC_SUPABASE_URL));
 
 	// Escaped values for safe rendering
 	let escapedSrc = $derived(escapeHtml(resolvedSrc));
@@ -144,7 +151,12 @@
 	let styleAttr = $derived(styleProperties.length > 0 ? styleProperties.join('; ') : undefined);
 </script>
 
-{#if useFigure}
+{#if blocked}
+	<!-- Texte échappé par Svelte : aucune requête réseau -->
+	<span class="restricted-media text-sm text-muted-foreground italic"
+		>[image externe non affichée{alt ? ` : ${alt}` : ''}]</span
+	>
+{:else if useFigure}
 	<figure class="exercise-figure {alignmentClass} {className}">
 		<img
 			src={escapedSrc}
