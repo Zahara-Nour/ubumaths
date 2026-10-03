@@ -162,3 +162,7 @@ PR prévues : (a) barres / circulaire (Q100-Q103, Q105) ; (b) histogramme / poly
   **Lot 4 (série brute dans les blocs) TERMINÉ** (#682, #685, #688).
   En attente : Q110 (étiquettes numériques des barres selon la langue : « 9,5 » / « -3 » dans un
   document anglais, hérité de la PR a). Suivant (Q67) : comparer deux séries.
+
+110. (2026-10-03) Catégories numériques et classes **affichées selon la langue**, dans tous les
+     blocs (écran et PDF) : séparateur décimal, vrai signe moins — comme le tableau d'une loi.
+     Les données internes (et donc les indicateurs) ne changent pas.

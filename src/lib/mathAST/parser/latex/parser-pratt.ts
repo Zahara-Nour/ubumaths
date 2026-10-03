@@ -714,11 +714,8 @@ class PrattParser {
 		// Check for arguments in parentheses
 		// Parentheses are MANDATORY for generic functions to be parsed as functions
 		// f alone without parentheses should be a variable (unless it has derivative marks or inverse)
-		if (this.check('LPAREN')) {
-			this.advance(); // consume (
-			const args = this.parseCommaList();
-			this.expect('RPAREN', "Expected ')' after function arguments");
-
+		const args = this.tryParseGenericFunctionArguments();
+		if (args) {
 			return this.applyColor(
 				MathAST.func(name, args, {
 					...(derivativeOrder > 0 && { derivativeOrder }),
@@ -740,6 +737,61 @@ class PrattParser {
 
 		// Plain letter without parentheses, derivatives, or inverse - it's a variable
 		return this.applyColor(MathAST.variable(name));
+	}
+
+	/**
+	 * Arguments d'une fonction générique : `(a, b)` ou `\left( a, b \right)`.
+	 *
+	 * `\left( … \right)` est la même parenthèse que `( … )` (MathLive la produit,
+	 * les énoncés relus sont réécrits avec) : elle donne exactement le même nœud.
+	 * Seule la parenthèse ronde compte — `\left[`, `\left|` ne sont pas des appels,
+	 * pas plus que `f[` ou `f|`. Rend `null` (sans rien consommer) sinon.
+	 */
+	private tryParseGenericFunctionArguments(): MathNode[] | null {
+		if (this.check('LPAREN')) {
+			this.advance(); // consume (
+			const args = this.parseCommaList();
+			this.expect('RPAREN', "Expected ')' after function arguments");
+			return args;
+		}
+
+		if (this.checkCommand('left') && this.isRoundParen(this.peekNextNonWhitespace(), 'open')) {
+			this.advance(); // consume \left
+			this.advance(); // consume (
+			const args = this.parseCommaList();
+			if (!this.checkCommand('right')) {
+				this.error(
+					'Expected \\right to close delimiter',
+					this.currentToken.position,
+					this.currentToken.length,
+					'MISSING_DELIMITER'
+				);
+			}
+			this.advance(); // consume \right
+			if (!this.isRoundParen(this.currentToken, 'close')) {
+				this.error(
+					`Expected ')' after \\right, got ${this.currentToken.value || this.currentToken.type}`,
+					this.currentToken.position,
+					this.currentToken.length,
+					'MISSING_DELIMITER'
+				);
+			}
+			this.advance(); // consume )
+			return args;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parenthèse ronde après `\left` / `\right` : `(` ou `\(`, `)` ou `\)` (les
+	 * mêmes formes que celles acceptées par parseLeftDelimiter).
+	 */
+	private isRoundParen(token: Token, side: 'open' | 'close'): boolean {
+		if (side === 'open') {
+			return token.type === 'LPAREN' || (token.type === 'COMMAND' && token.value === '(');
+		}
+		return token.type === 'RPAREN' || (token.type === 'COMMAND' && token.value === ')');
 	}
 
 	/**
