@@ -81,14 +81,7 @@ function fr(value: number): string {
 }
 
 /** Les actions qui exigent des listes de NOMBRES (Q88) */
-const NUMERIC_ROOTS: ReadonlySet<string> = new Set([
-	'stats',
-	'law',
-	'scatter',
-	'fit',
-	'simulate',
-	'compare'
-]);
+const NUMERIC_ROOTS: ReadonlySet<string> = new Set(['stats', 'law', 'scatter', 'fit', 'simulate']);
 
 /** Les actions que la vue Calcul sait exécuter, et leur libellé dans l'historique. */
 const PANEL_ACTIONS: Readonly<Record<string, string>> = {
@@ -459,8 +452,12 @@ export class CalcDesk {
 
 		// « Comparer avec M » (Q113) : rien à compléter, la commande s'exécute et
 		// reste lisible dans l'historique
+		// ⚠️ Le brouillon de l'élève survit au clic : `submit` le vide (revue)
 		if (root === 'compare' && partner !== undefined) {
+			const { draft, notice } = this;
 			this.submit(`.comparer ${name} ${partner}`);
+			this.draft = draft;
+			this.notice = notice;
 			return 'ok';
 		}
 		if (root === 'keep-derivative') {

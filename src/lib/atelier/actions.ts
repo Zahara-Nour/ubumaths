@@ -203,7 +203,12 @@ function partnerActions(
 			},
 			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
-		].map((action) => (words === undefined ? action : { ...action, disabledReason: words }));
+		].map((action) =>
+			// « Comparer » garde SA raison, celle que donne aussi la commande (revue)
+			words === undefined || action.id.startsWith('compare:')
+				? action
+				: { ...action, disabledReason: words }
+		);
 		// Le nom de la partenaire voyage avec l'action : la carte les regroupe dessus
 		return actions.map((action) => ({ ...action, partner: partner.name }));
 	});

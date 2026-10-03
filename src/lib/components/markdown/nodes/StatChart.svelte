@@ -224,7 +224,8 @@
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
 				<table class="stat-tableau">
-					<caption id={captionId}>{comparison.accessibleTitle}</caption>
+					<!-- La ligne d'historique le dit déjà : lu, pas répété à l'écran -->
+					<caption id={captionId} class="sr-only">{comparison.accessibleTitle}</caption>
 					<thead>
 						<tr>
 							<td></td>

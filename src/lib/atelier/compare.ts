@@ -54,8 +54,14 @@ function summaryOf(list: ListObject): { summary: Summary } | { problem: string }
 			problem: `${list.name} est une liste qualitative${because} : comparer demande des nombres.`
 		};
 	}
+	// Une liste en erreur (plus de 200 valeurs, virgules en séparateur) garde des
+	// valeurs, ou n'en a aucune : son message dit pourquoi (revue, comme `.croiser`)
+	if (list.status !== 'ok' && list.message !== undefined) return { problem: list.message };
 	const outcome = summarizeList(list.values);
 	if (outcome === null) return { problem: `« ${list.name} » n’a pas encore de valeurs.` };
+	if (list.status !== 'ok') {
+		return { problem: `« ${list.name} » ne peut pas être comparée pour le moment.` };
+	}
 	if (!outcome.ok) return { problem: outcome.message };
 	return { summary: outcome.value };
 }
@@ -76,6 +82,9 @@ export function compareCommand(atelier: Atelier, argument: string): CompareResul
 		.split(/\s+/)
 		.filter((part) => part !== '');
 	if (parts.length !== 2) return { ok: false, message: USAGE };
+	if (parts[0] === parts[1]) {
+		return { ok: false, message: 'Compare deux listes différentes : .comparer L M.' };
+	}
 
 	const lists: ListObject[] = [];
 	for (const name of parts) {
