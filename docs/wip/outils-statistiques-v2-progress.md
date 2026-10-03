@@ -188,3 +188,7 @@ PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'
 
 - **Lot 5 (a) livrée #698** (2026-10-03) : `.comparer L M` + action « Comparer avec M ».
   Suivant : (b) barres à deux séries + tableau d'indicateurs ; (c) deux histogrammes.
+
+- **Lot 5 (b) livrée #702** (2026-10-03) : barres à deux séries (`données Nom:`), seconde hachurée,
+  tableau d'indicateurs. Connu : en-têtes / titres d'axe en français dans un document anglais
+  (comme tous les indicateurs). Suivant : (c) deux histogrammes.
