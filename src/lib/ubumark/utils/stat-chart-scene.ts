@@ -435,7 +435,7 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 
 	const margin = (1 - BAR_WIDTH) / 2;
 	const bars = spec.data.map((d, i) => ({
-		label: d.label,
+		label: shownLabel(d.label, locale),
 		value: d.value,
 		valueLabel: formatValue(d.value, spec.unit, locale),
 		left: i + margin,
@@ -446,7 +446,9 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	const longest = Math.max(...spec.data.map((d) => d.label.length));
 	const rotateLabels = spec.data.length > FLAT_LABELS_MAX || longest * STAT_CHART_CHAR_PX > bandPx;
 
-	const listed = spec.data.map((d) => `${d.label} ${formatValue(d.value, spec.unit, locale)}`);
+	const listed = spec.data.map(
+		(d) => `${shownLabel(d.label, locale)} ${formatValue(d.value, spec.unit, locale)}`
+	);
 
 	return {
 		kind: 'barres',
@@ -689,7 +691,7 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 			const middle = onCircle((start + end) / 2);
 			const inside = end - start >= MARKER_INSIDE_MIN_DEGREES;
 			sectors.push({
-				label: d.label,
+				label: shownLabel(d.label, locale),
 				startAngle: start,
 				endAngle: end,
 				polygon: sectorPolygon(start, end),
@@ -705,12 +707,15 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 		// Q24 : la description dit ce que la légende affiche, jamais une valeur cachée
 		const shown = shownValue(spec.labels, value, percent, angle);
 		legend.push({
-			label: d.label,
-			text: shown === null ? d.label : `${d.label} — ${shown}`,
+			label: shownLabel(d.label, locale),
+			text:
+				shown === null ? shownLabel(d.label, locale) : `${shownLabel(d.label, locale)} — ${shown}`,
 			colorIndex,
 			marker
 		});
-		listed.push(shown === null ? d.label : `${d.label} ${shown}`);
+		listed.push(
+			shown === null ? shownLabel(d.label, locale) : `${shownLabel(d.label, locale)} ${shown}`
+		);
 	});
 
 	// Les repères extérieurs écartés ; le trait part toujours du milieu du secteur
@@ -795,7 +800,7 @@ function classIndicators(
 			case 'moyenne':
 				return [`Moyenne ${v(exact?.mean ?? summary.mean)}`];
 			case 'classe-mediane':
-				return [`Classe médiane : ${spec.data[medianClass].label}`];
+				return [`Classe médiane : ${shownLabel(spec.data[medianClass].label, locale)}`];
 			case 'mediane':
 				return [`Médiane ${v(exact?.median ?? summary.estimatedMedian)}`];
 			default:
@@ -829,12 +834,12 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 	if (mode === 'axe') {
 		const maxCount = Math.max(...summary.classes.map((c) => c.count)) || 1;
 		const { yMax, ticks } = valueAxis(maxCount, height, spec.unit, locale);
-		const listed = spec.data.map((d) => `${d.label} ${valueLabel(d.value)}`);
+		const listed = spec.data.map((d) => `${shownLabel(d.label, locale)} ${valueLabel(d.value)}`);
 		return {
 			...common,
 			description: spec.description ?? `${KIND_TITLE.histogramme} : ${listed.join(', ')}.`,
 			rects: summary.classes.map((c, i) => ({
-				label: spec.data[i].label,
+				label: shownLabel(spec.data[i].label, locale),
 				lower: c.lower,
 				upper: c.upper,
 				height: c.count,
@@ -871,8 +876,8 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 				: formatRounded(heights[i], 2, locale);
 		const size = `${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`;
 		return spec.showValues
-			? `${spec.data[i].label} : ${valueLabel(c.count)}, ${size}`
-			: `${spec.data[i].label} : ${size}`;
+			? `${shownLabel(spec.data[i].label, locale)} : ${valueLabel(c.count)}, ${size}`
+			: `${shownLabel(spec.data[i].label, locale)} : ${size}`;
 	});
 
 	return {
@@ -881,7 +886,7 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		description:
 			spec.description ?? `${KIND_TITLE.histogramme} : ${described.join(' ; ')} ; ${legend}.`,
 		rects: summary.classes.map((c, i) => ({
-			label: spec.data[i].label,
+			label: shownLabel(spec.data[i].label, locale),
 			lower: c.lower,
 			upper: c.upper,
 			height: heights[i],
@@ -1054,6 +1059,28 @@ function buildCrossTableScene(spec: StatChartSpec, locale: ContentLocale): Cross
 // ============================================================================
 // LOI D'UNE VARIABLE ALÉATOIRE
 // ============================================================================
+
+/** Un nombre seul, ou une fraction d'entiers, tel qu'une catégorie peut l'écrire */
+const NUMERIC_LABEL = /^[-−]?\d+(?:[.,]\d+)?$|^[-−]?\d+\/\d+$/;
+
+/** `[−5 ; 2,5[` : une classe, ses deux bornes */
+const CLASS_LABEL = /^\[(.+) ; (.+)\[$/;
+
+/**
+ * Nom de catégorie AFFICHÉ (Q110) : un nombre ou une classe s'écrit selon la
+ * langue du document (séparateur décimal, vrai signe moins), comme le tableau
+ * d'une loi ; un mot reste tel quel. Les données (et les indicateurs, qui
+ * relisent les noms) ne changent pas.
+ */
+function shownLabel(label: string, locale: ContentLocale): string {
+	const number = (text: string) => asWritten(text.replace('−', '-'), locale);
+	if (NUMERIC_LABEL.test(label)) return number(label);
+	const bounds = CLASS_LABEL.exec(label);
+	if (bounds && NUMERIC_LABEL.test(bounds[1]) && NUMERIC_LABEL.test(bounds[2])) {
+		return `[${number(bounds[1])} ; ${number(bounds[2])}[`;
+	}
+	return label;
+}
 
 /** Un nombre tel qu'écrit par l'auteur : vrai signe moins, séparateur selon la langue. */
 function asWritten(text: string, locale: ContentLocale): string {
