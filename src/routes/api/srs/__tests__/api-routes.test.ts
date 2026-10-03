@@ -29,6 +29,15 @@ import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import { Grade, type FSRSConfig } from '$lib/srs/types';
 
+// La mémoire de révision est écrite au client SERVICE (Q171) : l'UPSERT de
+// `srs_card_stats` ne passe plus par le client de l'élève.
+const serviceUpsert = vi.hoisted(() => vi.fn());
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({
+		from: () => ({ upsert: serviceUpsert })
+	})
+}));
+
 // Mock Supabase responses
 const mockSupabaseClient = () => {
 	const mockFrom = vi.fn();
@@ -843,6 +852,8 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		const { POST } = await import('../review/submit/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		const userUpsert = vi.fn().mockResolvedValue({ error: null });
+		serviceUpsert.mockReset().mockResolvedValue({ error: null });
 
 		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_cards') {
@@ -903,7 +914,8 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 							})
 						})
 					}),
-					upsert: vi.fn().mockResolvedValue({ error: null })
+					// Jamais appelé : l'écriture part au client service (Q171)
+					upsert: userUpsert
 				};
 			}
 			if (table === 'skill_attempts') {
@@ -959,6 +971,9 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		expect(response.status).toBe(200);
 		expect(data.success).toBe(true);
 		expect(data.stats).toBeDefined();
+		expect(serviceUpsert).toHaveBeenCalledTimes(1);
+		expect(serviceUpsert.mock.calls[0][0]).toMatchObject({ user_id: TEST_IDS.user1 });
+		expect(userUpsert).not.toHaveBeenCalled();
 	});
 
 	it('should validate grade value', async () => {

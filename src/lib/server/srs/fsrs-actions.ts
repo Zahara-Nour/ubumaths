@@ -14,12 +14,21 @@
  * Note : la table `srs_card_stats` est partagée entre tous les decks de
  * l'élève contenant le même template (UNIQUE `(user_id, card_reference_type,
  * card_reference_id)`).
+ *
+ * Mémoire de révision écrite par le SERVEUR seul (Q171, décision de David) :
+ * l'élève la lit mais ne peut plus la créer, la modifier ni la supprimer par un
+ * appel direct (migration `*_srs_memoire_serveur.sql`). L'écriture passe donc
+ * par le client service ; la LECTURE reste au client de l'appelant (RLS
+ * « own » : la décision ne la touche pas, et le service n'a aucune raison de
+ * lire plus large). Le `userId` vient TOUJOURS de la session de l'appelant —
+ * jamais du corps de la requête : c'est lui qui désigne la ligne écrite.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { FSRS } from '$lib/srs/fsrs';
 import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { reviewBestOfDay } from './best-of-day';
 
 type SB = SupabaseClient<Database>;
@@ -103,17 +112,21 @@ export interface ApplyFsrsOptions {
 }
 
 /**
- * UPSERT d'une row `srs_card_stats`. Conflict resolution via la contrainte
+ * UPSERT d'une row `srs_card_stats`, au client SERVICE (Q171 : la base refuse
+ * l'écriture aux comptes connectés). Conflict resolution via la contrainte
  * UNIQUE `(user_id, card_reference_type, card_reference_id)`.
+ *
+ * `stats.userId` doit être l'utilisateur de la session de l'appelant : le
+ * service contourne la RLS, rien d'autre ne vérifie à qui appartient la ligne.
  *
  * Throws si l'UPSERT échoue (caller décide du fail-loud ou fail-silent), ou,
  * avec `verifyWrite`, si aucune ligne n'a été écrite.
  */
 export async function upsertCardStats(
-	supabase: SB,
 	stats: CardStats,
 	options: { verifyWrite?: boolean } = {}
 ): Promise<void> {
+	const supabase = createServiceRoleClient();
 	const row = {
 		id: stats.id,
 		user_id: stats.userId,
@@ -151,6 +164,9 @@ export async function upsertCardStats(
 /**
  * Pipeline complet : load (ou init) → fsrs.reviewCard(grade, timeSpent?) →
  * upsert. Retourne la `CardStats` mise à jour.
+ *
+ * `supabase` = client de l'appelant (lecture sous RLS) ; `userId` = son
+ * identifiant de session. L'écriture part au client service (`upsertCardStats`).
  *
  * Avec `options.skipIf` : rend `null` sans rien écrire si la fiche remplit la
  * condition (garde-fou « une mise à jour par jour » des cartes de cours).
@@ -199,7 +215,7 @@ export async function applyFsrsReview(
 	if (options.bestOfDay) {
 		const best = reviewBestOfDay(fsrs, stats, grade, options.bestOfDay.now, timeSpent);
 		if (!best) return null;
-		await upsertCardStats(supabase, best, { verifyWrite: options.verifyWrite });
+		await upsertCardStats(best, { verifyWrite: options.verifyWrite });
 		return best;
 	}
 
@@ -212,6 +228,6 @@ export async function applyFsrsReview(
 		...updated
 	};
 
-	await upsertCardStats(supabase, newStats, { verifyWrite: options.verifyWrite });
+	await upsertCardStats(newStats, { verifyWrite: options.verifyWrite });
 	return newStats;
 }

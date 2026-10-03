@@ -38,6 +38,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'serviceRoleClient.ts',
 	// SRS operations
 	'srs/',
+	// Mémoire de révision (Q171) : la base refuse l'écriture de srs_card_stats aux
+	// comptes connectés ; userId de la session, lecture restée au client de l'élève
+	'lib/server/srs/fsrs-actions.ts',
 	// Test files
 	'.test.ts',
 	// Cleanup endpoints
