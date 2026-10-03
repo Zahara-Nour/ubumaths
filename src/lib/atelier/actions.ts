@@ -19,6 +19,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import { isValue, isList, isQualitative, type ListObject } from './types';
 import { crossProblem } from './cross';
+import { compareProblem } from './compare';
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -190,9 +191,24 @@ function partnerActions(
 			// Lot 6 (Q44) : la partenaire donne les PROBABILITÉS d'une variable aléatoire
 			withCounts({ id: `law:${partner.name}`, label: `Loi avec probabilités ${partner.name}` }),
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
+			// Lot 5 (Q113) : deux séries de longueurs quelconques, sans appariement
+			{
+				id: `compare:${partner.name}`,
+				label: `Comparer avec ${partner.name}`,
+				...(isList(object) &&
+					isList(partner) &&
+					compareProblem(object, partner) !== undefined && {
+						disabledReason: compareProblem(object, partner)
+					})
+			},
 			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
 			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
-		].map((action) => (words === undefined ? action : { ...action, disabledReason: words }));
+		].map((action) =>
+			// « Comparer » garde SA raison, celle que donne aussi la commande (revue)
+			words === undefined || action.id.startsWith('compare:')
+				? action
+				: { ...action, disabledReason: words }
+		);
 		// Le nom de la partenaire voyage avec l'action : la carte les regroupe dessus
 		return actions.map((action) => ({ ...action, partner: partner.name }));
 	});

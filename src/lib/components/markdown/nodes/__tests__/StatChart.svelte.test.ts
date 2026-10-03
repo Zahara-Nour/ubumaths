@@ -18,6 +18,8 @@ import {
 } from '$lib/ubumark/utils/stat-chart-scene';
 import { parseMarkdown, type ListNode as ListAst } from '$lib/ubumark';
 import { DOCUMENT_FIGURE_LIMITS } from '../../render-budget';
+import { buildComparisonScene } from '$lib/ubumark/utils/comparison-scene';
+import { describeList } from '$lib/statistics/describe';
 
 // =============================================================================
 // Helpers
@@ -311,6 +313,32 @@ describe('StatChart — `série:` (v2 lot 4, Q106)', () => {
 		expect(screen.container.querySelector('figcaption')?.textContent).toBe('Notes');
 		expect(screen.container.querySelector('svg')).toBeNull();
 		expect(screen.container.querySelector('.stat-indicateurs')).toBeNull();
+	});
+});
+
+describe('StatChart — comparaison de deux séries (`.comparer`, v2 lot 5)', () => {
+	it('un tableau accessible : en-têtes de colonnes et de lignes, groupes marqués', async () => {
+		const scene = buildComparisonScene([
+			{ name: 'L', summary: describeList([12, 15, 9])! },
+			{ name: 'M', summary: describeList([8, 17])! }
+		]);
+		const screen = await render(StatChart, { target: mainElement(), props: { scene } });
+		const table = screen.container.querySelector('table')!;
+		const columns = [...table.querySelectorAll('th[scope="col"]')].map((th) => th.textContent);
+		const rows = [...table.querySelectorAll('tbody tr')];
+		const first = (header: string) =>
+			rows.find((tr) => tr.querySelector('th')?.textContent === header)!;
+
+		expect(table.querySelector('caption')?.textContent).toBe('Comparaison de L et M');
+		expect(columns).toEqual(['L', 'M']);
+		expect([...first('Moyenne').querySelectorAll('td')].map((td) => td.textContent)).toEqual([
+			'12',
+			'12,5'
+		]);
+		const border = (header: string) =>
+			parseFloat(getComputedStyle(first(header).querySelector('th')!).borderTopWidth);
+		expect(border('Moyenne')).toBeGreaterThan(border('Écart type'));
+		expect(screen.container.querySelector('figcaption')).toBeNull();
 	});
 });
 

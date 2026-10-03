@@ -28,6 +28,7 @@ import {
 	type CrossTableScene,
 	type CumulativeScene,
 	type HistogramScene,
+	type ComparisonScene,
 	type LawScene,
 	type SimulationScene,
 	type MeanScene,
@@ -431,6 +432,19 @@ function simulationTypst(scene: SimulationScene): string {
 	return `${titleBlock(scene.title)}${caption}#align(center)[#table(\n  columns: 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
 }
 
+/** Comparaison de deux séries (atelier) : une ligne par indicateur, une colonne par série */
+function comparisonTypst(scene: ComparisonScene): string {
+	const cells: string[] = [
+		'  []',
+		...scene.columns.map((c) => `  text(weight: "bold")${textContent(c)}`)
+	];
+	for (const row of scene.rows) {
+		cells.push(`  text(weight: "bold")${textContent(row.header)}`);
+		for (const cell of row.cells) cells.push(`  ${textContent(cell)}`);
+	}
+	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.columns.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+}
+
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
@@ -453,6 +467,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return lawTypst(scene);
 		case 'simulation':
 			return simulationTypst(scene);
+		case 'comparaison':
+			return comparisonTypst(scene);
 		case 'moyenne-selon-n':
 			return meanTypst(scene, size);
 	}

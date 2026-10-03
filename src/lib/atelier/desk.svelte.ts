@@ -450,6 +450,16 @@ export class CalcDesk {
 			}
 		}
 
+		// « Comparer avec M » (Q113) : rien à compléter, la commande s'exécute et
+		// reste lisible dans l'historique
+		// ⚠️ Le brouillon de l'élève survit au clic : `submit` le vide (revue)
+		if (root === 'compare' && partner !== undefined) {
+			const { draft, notice } = this;
+			this.submit(`.comparer ${name} ${partner}`);
+			this.draft = draft;
+			this.notice = notice;
+			return 'ok';
+		}
 		if (root === 'keep-derivative') {
 			this.#keepDerivative(name);
 			return 'ok';

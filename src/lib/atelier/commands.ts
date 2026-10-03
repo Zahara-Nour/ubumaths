@@ -98,6 +98,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	[
+		'compare',
+		{
+			french: 'comparer',
+			description: 'Comparer deux séries de nombres : un tableau d’indicateurs',
+			example: '.comparer L M',
+			exampleSetup: { L: '12 ; 15 ; 9 ; 14', M: '8 ; 17 ; 11 ; 13 ; 16' }
+		}
+	],
+	[
 		'cross',
 		{
 			french: 'croiser',
@@ -296,7 +305,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'frequency',
 	'samples',
 	'cross',
-	'filter'
+	'filter',
+	'compare'
 ]);
 
 /**

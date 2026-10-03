@@ -20,11 +20,12 @@ const ids = (atelier: Atelier, name: string, partner?: string) =>
 	actionsFor(atelier.get(name)!, atelier, partner).map((a) => a.id);
 
 describe('regroupement par partenaire', () => {
-	// Q46 : au plus 9 ; Q78 : 10 avec « Simuler avec probabilités M »
-	it('8 listes : au plus 10 boutons', () => {
+	// Q46 : au plus 9 ; Q78 : 10 avec « Simuler avec probabilités M » ; Q119 :
+	// 11 avec « Comparer avec M »
+	it('8 listes : au plus 11 boutons', () => {
 		const atelier = atelierWith(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
 
-		expect(actionsFor(atelier.get('A')!, atelier).length).toBeLessThanOrEqual(10);
+		expect(actionsFor(atelier.get('A')!, atelier).length).toBeLessThanOrEqual(11);
 	});
 
 	it('les actions d’UNE partenaire seulement', () => {
