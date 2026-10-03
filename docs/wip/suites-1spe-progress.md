@@ -195,3 +195,20 @@ texte brut entre guillemets (le PDF compile). Questions 1 à 9 correctes.
 
 - 2-07, 2-09, 2-10, 3-03, 3-05, 3-07 : coefficients et raisons dès 1, termes constants pouvant valoir 0 ; 2-10 : `c != r`, `c != p*r` retirées.
 - 3-02 : q et p ∈ [−5 ; 5] privés de 0 et 1 (suite géométrique non dégénérée). Raison r ≠ 0 gardée.
+
+## cleanCoefficients activé (modèles publiés, 2026-10-03)
+
+Modèles PUBLIÉS de `scripts/questions/suites-existants/` (lot `suites` de
+`update-published-questions.ts`, qui accepte l'ajout de `shared.cleanCoefficients: true`).
+Rien n'est écrit en base : écriture par David après relecture.
+
+- **0af4bf32** (deviner, suite arithmétique) : u₀ ∈ [−9 ; 9], raison dès 1 (comme 2-09) →
+  `−7 + n`, `−n`, `7n`. 9 specs ajoutées (`−7+1n` → factorOne, `0+7n` → nullTerms).
+- Gardés, corrigé en chaîne que l'option ne nettoie pas (il faudrait le réécrire) : 7703e625
+  (`u_3 = 1 × 3 + 0`), 79d69593 et 1239554b (`u_1 = −1u_0 + 2 = …`, `u_0² + 0`, et
+  `\dfrac{u_n}{2}+0` illisible). Option sans effet sur `1\times2^n` (fc921674, déjà tiré
+  aujourd'hui, forme u₀ × qⁿ) et 95c38330 : non activée. Raison r ∉ {−1, 0, 1} gardée
+  (8ed02829, a8b51d16 : aucun coefficient devant une lettre ; fc921674 : q ≠ ±1, liste ambiguë).
+- Non touchés : 158ecaa4 (sous-domaine « Écriture » en base ≠ « Ecriture » du fichier : le
+  script s'arrête) ; 337d31c3, 849aabbc, 1315d326, 7247dbb0, c23840b6 (hors du lot du script).
+- Vérifs : 300 tirages/variation, 0 échec, 0 motif interdit ; recalcul Python 0 écart.

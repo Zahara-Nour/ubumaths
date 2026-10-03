@@ -65,3 +65,15 @@ réduite), C-01 à C-04.
 - B-01 à B-04, B-06 : coefficients dès 1 (et non 2). B-02 v0 a ∈ {1, 3, 5, 7}.
 - B-05, B-06 : variable `x` déclarée lettre tirée (`x|x`) pour que `{{eval:a*x+b}}` écrive `x+3` et non `1x+3` (calcul littéral).
 - Gardé : dénominateur non nul, a ≠ 0 quand le degré en dépend.
+
+## cleanCoefficients activé (modèle publié 74d77343, 2026-10-03)
+
+`derivation-existants/74d77343` (lot `derivation` de `update-published-questions.ts`, qui accepte
+l'ajout de `shared.cleanCoefficients: true`). Rien n'est écrit en base : écriture par David.
+
+- v3 (`kx + b`) : k dès 1 → `f(x) = x + 2`, `−x − 4` ; corrigé « 1 × 1 + 0 » (règle appliquée,
+  comme « 9 × 1 + 0 »). Gardés : v3 b ≠ 0 (le corrigé parle de la constante) ; v2 k ≠ ±1
+  (corrigé « f(x) = k × xⁿ » en `\times`, non nettoyé : « 1 × x⁴ ») ; v0, v4 b ≠ ±1 et v1, v5
+  k ≠ 1 (1/x et √x sont les fonctions de référence, pas de coefficient affiché).
+- Vérifs : 300 tirages/variation, 0 échec ; recalcul Python (dérivée sympy) 0 écart ; 3 specs
+  ajoutées, vertes (25) ; PDF regardé.
