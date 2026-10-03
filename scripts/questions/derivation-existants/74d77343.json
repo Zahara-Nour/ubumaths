@@ -9,6 +9,9 @@
 	"level": 2,
 	"delay": 20,
 	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn",
@@ -85,7 +88,7 @@
 			"variables": [
 				{
 					"name": "k",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "b",
@@ -398,6 +401,42 @@
 			},
 			"description": "−5√x : signe oublié",
 			"variationIndex": 5
+		},
+		{
+			"description": "v3 k=1 (x+3) : 1",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1",
+				"b": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 k=-1 (−x−4) : −1",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-1",
+				"b": "-4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 k=-1 : 1 refusé",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-1",
+				"b": "-4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
 		}
 	]
 }
