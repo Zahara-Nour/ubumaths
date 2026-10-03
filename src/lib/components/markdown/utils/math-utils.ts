@@ -136,6 +136,12 @@ function findHoleIndices(node: MathNode): number[] {
 	return [...new Set(indices)].sort((a, b) => a - b);
 }
 
+/** Indices des `\placeholder[N]{}` d'un texte LaTeX, uniques et triés. */
+function findPlaceholderIndices(latex: string): number[] {
+	const indices = [...latex.matchAll(/\\placeholder\[(\d+)\]/g)].map((m) => Number(m[1]));
+	return [...new Set(indices)].sort((a, b) => a - b);
+}
+
 /**
  * Extract prompt/placeholder indices from a math expression.
  *
@@ -148,7 +154,12 @@ function findHoleIndices(node: MathNode): number[] {
  */
 export function extractPromptIndices(expression: string, syntax: 'latex' | 'custom'): number[] {
 	const result = syntax === 'latex' ? parseLatexSafe(expression) : parseCustomSafe(expression);
-	if (!result.ast) return [];
+	if (!result.ast) {
+		// Le parseur ne lit pas tout le LaTeX affichable (`\vec`, `\overrightarrow`…),
+		// alors que MathLive l'affiche : on repère les cases dans le texte, sinon la
+		// formule serait rendue statique et l'élève ne verrait aucune case.
+		return syntax === 'latex' ? findPlaceholderIndices(expression) : [];
+	}
 	return findHoleIndices(result.ast);
 }
 
