@@ -14,7 +14,7 @@
 	},
 	"options": {
 		"constraints": {
-			"form": "warn",
+			"form": "off",
 			"brackets": "off",
 			"products": "off"
 		}
@@ -249,14 +249,13 @@
 		{
 			"answers": ["\\frac{1}{2^n}"],
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			},
 			"variables": {
 				"a": "1",
 				"b": "2"
 			},
-			"description": "u_0=1 : 1/2^n équivalent, pas la forme u_0×q^n (comme pour 6/5^n)",
+			"description": "u_0=1 : 1/2^n juste (l'énoncé n'impose pas la forme u_0×q^n, décision de David 2026-10-03)",
 			"variationIndex": 0
 		},
 		{
@@ -295,6 +294,18 @@
 			},
 			"description": "u_0=-1 oublié",
 			"variationIndex": 1
+		},
+		{
+			"answers": ["\\frac{6}{5^n}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "6",
+				"b": "5"
+			},
+			"description": "6/5^n juste (forme non imposée)",
+			"variationIndex": 0
 		}
 	]
 }

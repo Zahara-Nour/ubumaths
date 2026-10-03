@@ -233,3 +233,5 @@ recalcul Python (Fraction) des réponses, des termes affichés et de 4171 chaîn
 PDF de contrôle (17 tirages à ±1 / 0) relu. Simulation finale : `shared`, `variations`,
 `testSpecs`. Écriture (David) :
 `pnpm tsx scripts/update-published-questions.ts --lot suites --seulement 7703e625,79d69593,1239554b,fc921674,95c38330 --publier`.
+
+Décision de David (2026-10-03, « je te suis ») : fc921674 et 95c38330 passent à `options.constraints.form: "off"` — l'énoncé (« Conjecture l'expression de u_n ») n'impose pas la forme u_0 × qⁿ, donc `\frac{1}{2^n}`, `\frac{6}{5^n}`, `(-2)^n\times3` sont justes ; `1\times(\frac12)^n` reste non optimal (facteur 1).

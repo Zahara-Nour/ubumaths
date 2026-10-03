@@ -14,7 +14,7 @@
 	},
 	"options": {
 		"constraints": {
-			"form": "warn",
+			"form": "off",
 			"products": "off"
 		}
 	},
@@ -299,6 +299,18 @@
 			},
 			"description": "u_1=2, raison 2 : u_0=1, u_n=2^n",
 			"variationIndex": 1
+		},
+		{
+			"answers": ["(-2)^n\\times3"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "3",
+				"b": "-2"
+			},
+			"description": "autre écriture juste (forme non imposée, décision de David 2026-10-03)",
+			"variationIndex": 0
 		}
 	]
 }
