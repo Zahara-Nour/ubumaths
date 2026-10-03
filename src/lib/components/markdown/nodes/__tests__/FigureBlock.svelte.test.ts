@@ -42,7 +42,11 @@ afterEach(() => {
 });
 
 async function svgOf(container: HTMLElement): Promise<SVGSVGElement> {
-	await expect.poll(() => container.querySelector('svg[role="img"]')).not.toBeNull();
+	// 5 s et non 1 s (défaut) : le PREMIER rendu charge geometry-core à la demande,
+	// ce qui dépassait 1 s sur une CI à froid (échec intermittent, 2026-10-03).
+	await expect
+		.poll(() => container.querySelector('svg[role="img"]'), { timeout: 5000 })
+		.not.toBeNull();
 	return container.querySelector('svg[role="img"]') as SVGSVGElement;
 }
 

@@ -66,13 +66,17 @@ style(c, couleur="gris")
 # Corde horizontale
 d1 = droite(point(-6, 2), point(6, 2))
 style(d1, couleur="gris", trait="tirets")
-(P1, P2, s1) = corde(c, d1)
+s1 = corde(c, d1)
+P1 = extremite(s1, 1)
+P2 = extremite(s1, 2)
 style(s1, couleur="rouge", epaisseur=2)
 
 # Corde oblique
 d2 = droite(point(-6, -3), point(6, 1))
 style(d2, couleur="gris", trait="tirets")
-(P3, P4, s2) = corde(c, d2)
+s2 = corde(c, d2)
+P3 = extremite(s2, 1)
+P4 = extremite(s2, 2)
 style(s2, couleur="bleu", epaisseur=2)`;
 
 	const powerDsl = `O = point(0, 0, couleur="noir")
@@ -177,7 +181,7 @@ style(c, remplissage="bleu", opacite_fond=0.3)`;
 	<DslDemo
 		dsl={chordDsl}
 		title="Corde"
-		description="corde(c, d) cree le segment d'intersection entre un cercle et une droite. Retourne (P1, P2, segment)."
+		description="corde(c, d) cree le segment d'intersection entre un cercle et une droite ; ses extremites via extremite(s, 1) et extremite(s, 2)."
 		width={700}
 		height={500}
 		pixelsPerUnit={35}

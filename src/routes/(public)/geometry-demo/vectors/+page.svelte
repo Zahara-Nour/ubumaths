@@ -21,35 +21,35 @@
 	const vectorFig = new Figure();
 
 	// Bound vectors (tied to points)
-	const vA = vectorFig.createFreePoint(pt(-5, -2), { label: 'A', color: '#1e40af' });
-	const vB = vectorFig.createFreePoint(pt(-1, 1), { label: 'B', color: '#1e40af' });
-	const vC = vectorFig.createFreePoint(pt(-5, 2), { label: 'C', color: '#1e40af' });
-	const vD = vectorFig.createFreePoint(pt(-2, 4), { label: 'D', color: '#1e40af' });
+	const vA = vectorFig.createFreePoint(pt(-5, -2), { label: 'A', color: 'bleu' });
+	const vB = vectorFig.createFreePoint(pt(-1, 1), { label: 'B', color: 'bleu' });
+	const vC = vectorFig.createFreePoint(pt(-5, 2), { label: 'C', color: 'bleu' });
+	const vD = vectorFig.createFreePoint(pt(-2, 4), { label: 'D', color: 'bleu' });
 
-	vectorFig.createVectorByPoints(vA, vB, { label: 'u', color: '#dc2626' });
-	vectorFig.createVectorByPoints(vC, vD, { label: 'v', color: '#059669' });
+	vectorFig.createVectorByPoints(vA, vB, { label: 'u', color: 'rouge' });
+	vectorFig.createVectorByPoints(vC, vD, { label: 'v', color: 'vert' });
 
 	// Free vectors (by components, draggable as a unit)
 	vectorFig.createFreeVector(ex(3), ex(0), pt(1, -3), {
 		label: 'i',
-		color: '#6366f1'
+		color: 'violet'
 	});
 	vectorFig.createFreeVector(ex(0), ex(2), pt(1, -3), {
 		label: 'j',
-		color: '#9333ea'
+		color: 'violet'
 	});
 
 	// Translation by vector: P' = P + vec(AB)
-	const vP = vectorFig.createFreePoint(pt(3, 1), { label: 'P', color: '#ea580c' });
+	const vP = vectorFig.createFreePoint(pt(3, 1), { label: 'P', color: 'orange' });
 	const vec = vectorFig.createVectorByPoints(vA, vB, {
-		color: '#dc2626',
+		color: 'rouge',
 		style: { dash: 'dashed' }
 	});
 	const elVec = vectorFig.getElementById(vec)!;
 	if (elVec.type === 'vectorByPoints') {
 		vectorFig.createTranslatedPoint(vP, elVec.startId, elVec.endId, {
 			label: "P'",
-			color: '#ea580c'
+			color: 'orange'
 		});
 	}
 
