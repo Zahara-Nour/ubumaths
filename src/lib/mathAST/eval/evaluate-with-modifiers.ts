@@ -455,7 +455,7 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
  * Résultat exact par défaut, comme TinyMath : `\dfrac{9}{7}`, `2 \sqrt{2}`
  * (décimal si le calcul contient un décimal). Modifiers:
  * - `decimal` (`;d`): écriture décimale (1/2 → 0.5)
- * - `addPositive`: Add + sign for positive results
+ * - `addPositive`: Add + sign for positive or zero results (0 → +0)
  * - `bracketNegative`: Wrap negative results in parentheses
  * - `derivative`: Not implemented (reserved for future use)
  *
@@ -480,7 +480,7 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
  * ```typescript
  * evaluateWithModifiers('5', { addPositive: true })      // Returns: '+5'
  * evaluateWithModifiers('-3', { addPositive: true })     // Returns: '-3' (no change for negative)
- * evaluateWithModifiers('0', { addPositive: true })      // Returns: '0' (no change for zero)
+ * evaluateWithModifiers('0', { addPositive: true })      // Returns: '+0' (« y0 » serait lu comme un produit)
  * ```
  *
  * @example Bracket negative modifier
@@ -557,7 +557,8 @@ export function evaluateAstWithModifiers(
 	let formattedOutput = modifiers.decimal ? formatNumber(numValue) : formatExact(ast, numValue);
 
 	// Apply formatting modifiers
-	if (modifiers.addPositive && numValue > 0) {
+	// `>= 0` : 0 s'écrit « +0 », sinon `y{{c;+}}` donne « y0 », lu comme un produit
+	if (modifiers.addPositive && numValue >= 0) {
 		if (!formattedOutput.startsWith('+')) {
 			formattedOutput = '+' + formattedOutput;
 		}

@@ -108,6 +108,14 @@ interface Options {
 	/** Bornes de `classes:`, telles qu'écrites (série brute en classes, Q104) */
 	classBounds: string[] | null;
 	seriesMode: SeriesMode | null;
+	/** `afficher:` d'un diagramme en barres à deux séries (Q116) */
+	barDisplay: 'effectifs' | 'fréquences' | null;
+}
+
+/** Une série nommée (`données Garçons: …`), lue ligne par ligne */
+interface NamedSeries {
+	name: string;
+	entries: { text: string; line: number }[];
 }
 
 /** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
@@ -200,7 +208,7 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	lignes: ['tableau-croise'],
 	colonnes: ['tableau-croise'],
 	totaux: ['tableau-croise'],
-	afficher: ['tableau-croise'],
+	afficher: ['tableau-croise', 'barres'],
 	masquer: ['tableau-croise', 'loi'],
 	coin: ['tableau-croise'],
 	mode: ['simulation'],
@@ -243,6 +251,9 @@ const RAW_DATA_KINDS: readonly StatChartKind[] = [
 	'histogramme',
 	'frequences-cumulees'
 ];
+
+/** `données Garçons: 12 ; 15` : une série nommée (le nom, puis les valeurs) */
+const NAMED_SERIES_REGEX = /^donn[ée]es\s+([^:]+?)\s*:\s*(.*)$/i;
 
 const RAW_AND_COUNTS = 'soit les données, soit les effectifs (catégorie = effectif), pas les deux';
 
@@ -536,9 +547,18 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 		case 'colonnes':
 			options.columns = parseNames(value, 'colonnes');
 			return;
-		case 'afficher':
+		case 'afficher': {
+			if (kind === 'barres') {
+				const shown = (['effectifs', 'fréquences'] as const).find(
+					(d) => normalizeKey(d) === normalizeKey(value.trim())
+				);
+				if (shown === undefined) throw new LineError('afficher : effectifs ou fréquences');
+				options.barDisplay = shown;
+				return;
+			}
 			options.display = oneOf(value, CROSS_TABLE_DISPLAYS, 'affichage');
 			return;
+		}
 		case 'coin':
 			options.corner = parseText(value, 'coin');
 			return;
@@ -699,6 +719,123 @@ function parseRawEntries(text: string): string[] {
  * comparées sans la casse (et en NFC), écrites comme leur première occurrence
  * (Q85). Rend les catégories, ou l'erreur située.
  */
+/** Une catégorie d'une série brute, et ses effectifs série par série */
+interface RawCategory {
+	label: string;
+	value: number;
+	count: number[];
+	line: number;
+}
+
+/**
+ * Regrouper des valeurs brutes en catégories (Q103) : si TOUTES se lisent comme
+ * des nombres, dans l'ordre croissant (`12,5` et `12,50`, `1/2` et `0,5` ne
+ * font qu'une catégorie) ; sinon modalités dans l'ordre d'apparition, comparées
+ * sans la casse (et en NFC), écrites comme leur première occurrence (Q85).
+ * `series` (0 par défaut) dit à quelle série chaque valeur appartient.
+ */
+function groupRaw(
+	raw: readonly { text: string; line: number; series?: number }[],
+	seriesCount = 1
+): { categories: RawCategory[]; numeric: boolean } | { error: StatChartIssue } {
+	const values = raw.map((entry) => rawNumber(entry.text));
+	const numeric = values.every((value) => value !== null);
+	const groups = new Map<string, RawCategory>();
+	for (const [i, { text, line, series = 0 }] of raw.entries()) {
+		// `+ 0` : -0 et 0 sont la même catégorie
+		const value = numeric ? (values[i] ?? 0) + 0 : 0;
+		const key = numeric ? String(value) : text.normalize('NFC').toLocaleLowerCase('fr');
+		const group = groups.get(key);
+		if (group) {
+			group.count[series]++;
+			continue;
+		}
+		let label = text;
+		if (numeric) {
+			try {
+				label = numericLabel(text, value);
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				return { error: { message: `Ligne ${line} : ${message}`, line } };
+			}
+		}
+		const count = new Array<number>(seriesCount).fill(0);
+		count[series] = 1;
+		groups.set(key, { label, value, count, line });
+	}
+	const categories = [...groups.values()];
+	if (numeric) categories.sort((a, b) => a.value - b.value);
+	return { categories, numeric };
+}
+
+/**
+ * Deux séries nommées (lot 5 PR b, Q115) : leurs valeurs réunies en catégories
+ * communes (au plus 15, deux barres chacune), l'effectif de chacune par série.
+ */
+function tallyTwoSeries(
+	first: NamedSeries,
+	second: NamedSeries,
+	forced: 'effectifs' | 'fréquences' | null
+):
+	| { data: StatChartDatum[]; twoSeries: NonNullable<StatChartSpec['twoSeries']> }
+	| { error: StatChartIssue } {
+	for (const series of [first, second]) {
+		if (series.entries.length > STAT_CHART_LIMITS.rawValues) {
+			const line = series.entries[0].line;
+			return {
+				error: {
+					message: `Ligne ${line} : données ${series.name} : au plus ${STAT_CHART_LIMITS.rawValues} valeurs (ici ${series.entries.length})`,
+					line
+				}
+			};
+		}
+	}
+	const grouped = groupRaw(
+		[
+			...first.entries.map((e) => ({ ...e, series: 0 })),
+			...second.entries.map((e) => ({ ...e, series: 1 }))
+		],
+		2
+	);
+	if ('error' in grouped) return grouped;
+	const { categories, numeric } = grouped;
+	const firstLine = Math.min(first.entries[0].line, second.entries[0].line);
+	const tooLong = categories.find((c) => c.label.length > STAT_CHART_LIMITS.labelLength);
+	if (tooLong) {
+		return {
+			error: {
+				message: `Ligne ${tooLong.line} : nom de catégorie trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`,
+				line: tooLong.line
+			}
+		};
+	}
+	const max = STAT_CHART_LIMITS.twoSeriesCategories;
+	if (categories.length > max) {
+		return {
+			error: {
+				message: `Ligne ${firstLine} : données : ${categories.length} valeurs différentes, au plus ${max} (deux barres chacune)`,
+				line: firstLine
+			}
+		};
+	}
+	const values = (series: NamedSeries) => series.entries.map((e) => rawNumber(e.text) ?? 0);
+	return {
+		data: categories.map((c) => ({
+			label: c.label,
+			value: c.count[0],
+			interval: null,
+			line: c.line
+		})),
+		twoSeries: {
+			names: [first.name, second.name],
+			counts: [categories.map((c) => c.count[0]), categories.map((c) => c.count[1])],
+			display:
+				forced ?? (first.entries.length === second.entries.length ? 'effectifs' : 'fréquences'),
+			values: numeric ? [values(first), values(second)] : null
+		}
+	};
+}
+
 function tallyRawData(
 	kind: StatChartKind,
 	raw: readonly { text: string; line: number }[],
@@ -715,30 +852,9 @@ function tallyRawData(
 		);
 	}
 
-	const values = raw.map((entry) => rawNumber(entry.text));
-	const numeric = values.every((value) => value !== null);
-	const groups = new Map<string, { label: string; value: number; count: number; line: number }>();
-	for (const [i, { text, line }] of raw.entries()) {
-		// `+ 0` : -0 et 0 sont la même catégorie
-		const value = numeric ? (values[i] ?? 0) + 0 : 0;
-		const key = numeric ? String(value) : text.normalize('NFC').toLocaleLowerCase('fr');
-		const group = groups.get(key);
-		if (group) {
-			group.count++;
-			continue;
-		}
-		let label = text;
-		if (numeric) {
-			try {
-				label = numericLabel(text, value);
-			} catch (error) {
-				return at(line, error instanceof Error ? error.message : String(error));
-			}
-		}
-		groups.set(key, { label, value, count: 1, line });
-	}
-	const categories = [...groups.values()];
-	if (numeric) categories.sort((a, b) => a.value - b.value);
+	const grouped = groupRaw(raw);
+	if ('error' in grouped) return grouped;
+	const categories = grouped.categories.map((c) => ({ ...c, count: c.count[0] }));
 
 	const tooLong = categories.find((c) => c.label.length > STAT_CHART_LIMITS.labelLength);
 	if (tooLong) {
@@ -1202,7 +1318,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		samples: 100,
 		sampleSize: 100,
 		classBounds: null,
-		seriesMode: null
+		seriesMode: null,
+		barDisplay: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1212,6 +1329,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	const tableRows: TableRow[] = [];
 	// Série brute (`données:`), dépouillée une fois tout lu
 	const raw: { text: string; line: number }[] = [];
+	// Séries nommées (`données Garçons: …`, Q115), dans l'ordre d'apparition
+	const named: NamedSeries[] = [];
 	const isTable = kind === 'tableau-croise';
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
 	const maxCategories = isClasses
@@ -1227,6 +1346,39 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		try {
 			const kv = KEY_LINE_REGEX.exec(content);
 			const key = kv ? normalizeKey(kv[1]) : null;
+			const series = NAMED_SERIES_REGEX.exec(content);
+			if (series) {
+				if (kind === 'circulaire') throw new LineError('une seule série par diagramme circulaire');
+				if (CLASS_CHART_KINDS.includes(kind)) {
+					throw new LineError('deux séries : arrive bientôt pour les séries en classes');
+				}
+				if (kind !== 'barres') {
+					throw new LineError(
+						`l'option « données » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ')})`
+					);
+				}
+				if (data.length > 0) throw new LineError(RAW_AND_COUNTS);
+				const name = series[1].trim();
+				// `données  : 1` : des espaces seules ne font pas un nom (revue)
+				if (name === '') throw new LineError('nom de série vide (écrire données A: …)');
+				if (name.length > STAT_CHART_LIMITS.labelLength) {
+					throw new LineError(
+						`nom de série trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+					);
+				}
+				const same = named.find((s) => s.name === name);
+				const homonym = named.find(
+					(s) => s.name !== name && s.name.toLocaleLowerCase('fr') === name.toLocaleLowerCase('fr')
+				);
+				if (homonym) {
+					throw new LineError(`deux séries de même nom (« ${homonym.name} » et « ${name} »)`);
+				}
+				if (!same && named.length === 2) throw new LineError('au plus deux séries');
+				const entries = parseRawEntries(series[2]).map((text) => ({ text, line }));
+				if (same) same.entries.push(...entries);
+				else named.push({ name, entries });
+				return;
+			}
 			if (kv && key === 'donnees') {
 				if (!RAW_DATA_KINDS.includes(kind)) {
 					const names = RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ');
@@ -1333,7 +1485,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				tableRows.push({ name: written, values, line });
 				return;
 			}
-			if (raw.length > 0) throw new LineError(RAW_AND_COUNTS);
+			if (raw.length > 0 || named.length > 0) throw new LineError(RAW_AND_COUNTS);
 			const { label, interval } = isClasses
 				? parseClass(written)
 				: { label: written, interval: null };
@@ -1364,6 +1516,28 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		}
 	});
 
+	let twoSeries: StatChartSpec['twoSeries'] = null;
+	if (errors.length === 0 && named.length > 0) {
+		const line = named[0].entries[0]?.line ?? 0;
+		if (named.length < 2 || raw.length > 0) {
+			errors.push({
+				message: `Ligne ${line} : écrire deux séries nommées : données A: … et données B: …`,
+				line
+			});
+		} else {
+			const tallied = tallyTwoSeries(named[0], named[1], options.barDisplay);
+			if ('error' in tallied) errors.push(tallied.error);
+			else {
+				data.push(...tallied.data);
+				twoSeries = tallied.twoSeries;
+			}
+		}
+	}
+	if (errors.length === 0 && options.barDisplay !== null && twoSeries === null) {
+		const line = optionLines.afficher ?? 0;
+		errors.push({ message: `Ligne ${line} : afficher : seulement avec deux séries`, line });
+	}
+
 	let rawValues: number[] | null = null;
 	if (errors.length === 0 && isClasses && options.classBounds !== null && raw.length === 0) {
 		const line = optionLines.classes ?? 0;
@@ -1387,17 +1561,30 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	let series: StatChartSpec['series'] = null;
 	if (errors.length === 0 && options.seriesMode !== null) {
 		const line = optionLines.serie ?? 0;
-		const values = raw.map(({ text }) => ({ text, value: rawNumber(text) }));
-		if (raw.length === 0) {
+		const sources: { name: string | null; entries: { text: string }[] }[] =
+			twoSeries !== null ? named : raw.length > 0 ? [{ name: null, entries: raw }] : [];
+		const read = sources.map((source) => ({
+			name: source.name,
+			values: source.entries.map(({ text }) => ({ text, value: rawNumber(text) }))
+		}));
+		if (sources.length === 0) {
 			errors.push({ message: `Ligne ${line} : série : seulement avec données:`, line });
-		} else if (options.seriesMode === 'triée' && values.some((v) => v.value === null)) {
+		} else if (
+			options.seriesMode === 'triée' &&
+			read.some((r) => r.values.some((v) => v.value === null))
+		) {
 			errors.push({ message: `Ligne ${line} : série : triée demande des nombres`, line });
 		} else {
 			// Tri stable : deux écritures d'une même valeur gardent leur ordre
-			if (options.seriesMode === 'triée') values.sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
+			if (options.seriesMode === 'triée') {
+				for (const r of read) r.values.sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
+			}
 			series = {
 				mode: options.seriesMode,
-				values: values.map((v) => ({ text: v.text, numeric: v.value !== null }))
+				lines: read.map((r) => ({
+					name: r.name,
+					values: r.values.map((v) => ({ text: v.text, numeric: v.value !== null }))
+				}))
 			};
 		}
 	}
@@ -1462,7 +1649,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					law,
 					simulation,
 					rawValues,
-					series
+					series,
+					twoSeries
 				}
 			: null;
 
