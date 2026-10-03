@@ -256,7 +256,7 @@ describe('mode échantillons — scène', () => {
 		expect(scene.indicators[1]).toMatch(
 			/^\d+ samples out of 200 have a mean in \[μ − 2σ\/√n ; μ \+ 2σ\/√n\]$/
 		);
-		expect(scene.axisTitles).toEqual({ x: 'Sample mean', y: 'Count' });
+		expect(scene.axisTitles).toEqual({ x: 'Sample mean', y: 'Frequency' });
 	});
 });
 

@@ -52,6 +52,7 @@ import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/stati
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
 import { buildComparisonScene } from './comparison-scene';
+import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 import { createRandomSource } from '$lib/utils/random';
 
 // ============================================================================
@@ -291,7 +292,7 @@ export interface ComparisonScene extends SceneCommon {
 	/** Noms des séries : en-têtes des colonnes */
 	columns: string[];
 	/** `groupStart` : première ligne d'un groupe (moyenne, médiane, minimum) */
-	rows: { header: string; cells: string[]; groupStart: boolean }[];
+	rows: { id: IndicatorRowId; header: string; cells: string[]; groupStart: boolean }[];
 }
 
 /** Une valeur simulée : une ligne du tableau */
@@ -407,13 +408,7 @@ export const PIE_MARKER_RADIUS = 0.13;
 /** Pas d'échantillonnage des arcs, en degrés */
 const ARC_STEP_DEGREES = 3;
 
-const KIND_TITLE = {
-	barres: 'Diagramme en barres',
-	circulaire: 'Diagramme circulaire',
-	histogramme: 'Histogramme',
-	'frequences-cumulees': 'Polygone des fréquences cumulées',
-	'tableau-croise': 'Tableau croisé'
-} as const;
+// Titres des genres de blocs : `STAT_TEXT[locale].kind` (stat-chart-text.ts)
 
 /** Nom de la ligne et de la colonne des totaux */
 const TOTAL = 'Total';
@@ -465,14 +460,14 @@ function formatValue(value: number, unit: StatChartUnit, locale: ContentLocale):
 // ============================================================================
 
 /** Lignes du tableau d'indicateurs d'un bloc à deux séries, dans l'ordre de l'auteur */
-const INDICATOR_ROWS: Record<StatChartIndicator, string[]> = {
-	effectif: ['Effectif'],
-	moyenne: ['Moyenne'],
-	mediane: ['Médiane'],
-	quartiles: ['Q1', 'Q3'],
-	'ecart-interquartile': ['Écart interquartile'],
-	etendue: ['Étendue'],
-	'ecart-type': ['Écart type'],
+const INDICATOR_ROWS: Record<StatChartIndicator, IndicatorRowId[]> = {
+	effectif: ['count'],
+	moyenne: ['mean'],
+	mediane: ['median'],
+	quartiles: ['q1', 'q3'],
+	'ecart-interquartile': ['iqr'],
+	etendue: ['range'],
+	'ecart-type': ['deviation'],
 	'classe-mediane': []
 };
 
@@ -543,16 +538,19 @@ function buildBarScene(spec: StatChartSpec, locale: ContentLocale): BarScene {
 	return {
 		kind: 'barres',
 		title: spec.title,
-		accessibleTitle: KIND_TITLE.barres,
+		accessibleTitle: STAT_TEXT[locale].kind.barres,
 		description:
-			spec.description ?? `${KIND_TITLE.barres} : ${listed.join(two === null ? ', ' : ' ; ')}.`,
+			spec.description ??
+			`${STAT_TEXT[locale].kind.barres} : ${listed.join(two === null ? ', ' : ' ; ')}.`,
 		pixelSize: { width, height },
 		bars,
 		yMax,
 		ticks,
 		axisTitles: {
 			x: spec.axes.x,
-			y: spec.axes.y ?? (unit === 'pourcentages' ? 'Fréquence (%)' : 'Effectif')
+			y:
+				spec.axes.y ??
+				(unit === 'pourcentages' ? STAT_TEXT[locale].axis.relative : STAT_TEXT[locale].axis.count)
 		},
 		color: spec.color,
 		showValues: spec.showValues,
@@ -605,19 +603,19 @@ function barIndicators(spec: StatChartSpec, locale: ContentLocale): string[] {
 	return spec.indicators.flatMap((indicator) => {
 		switch (indicator) {
 			case 'effectif':
-				return [`Effectif total : ${formatTick(s.count, locale)}`];
+				return [STAT_TEXT[locale].total(formatTick(s.count, locale))];
 			case 'moyenne':
-				return [`Moyenne ${v(s.mean)}`];
+				return [`${STAT_TEXT[locale].rows.mean} ${v(s.mean)}`];
 			case 'mediane':
-				return [`Médiane ${v(s.median)}`];
+				return [`${STAT_TEXT[locale].rows.median} ${v(s.median)}`];
 			case 'quartiles':
 				return [`Q1 ${v(s.q1)}`, `Q3 ${v(s.q3)}`];
 			case 'ecart-interquartile':
-				return [`Écart interquartile ${v(s.iqr)}`];
+				return [`${STAT_TEXT[locale].rows.iqr} ${v(s.iqr)}`];
 			case 'etendue':
-				return [`Étendue ${v(s.range)}`];
+				return [`${STAT_TEXT[locale].rows.range} ${v(s.range)}`];
 			case 'ecart-type':
-				return [`Écart type ${v(s.deviation)}`];
+				return [`${STAT_TEXT[locale].rows.deviation} ${v(s.deviation)}`];
 			case 'classe-mediane':
 				return [];
 		}
@@ -826,8 +824,8 @@ function buildPieScene(spec: StatChartSpec, locale: ContentLocale): PieScene {
 	return {
 		kind: 'circulaire',
 		title: spec.title,
-		accessibleTitle: KIND_TITLE.circulaire,
-		description: spec.description ?? `${KIND_TITLE.circulaire} : ${listed.join(', ')}.`,
+		accessibleTitle: STAT_TEXT[locale].kind.circulaire,
+		description: spec.description ?? `${STAT_TEXT[locale].kind.circulaire} : ${listed.join(', ')}.`,
 		pixelSize: { width, height: width },
 		sectors,
 		legend,
@@ -892,13 +890,13 @@ function classIndicators(
 	return spec.indicators.flatMap((indicator) => {
 		switch (indicator) {
 			case 'effectif':
-				return [`Effectif total : ${formatTick(summary.total, locale)}`];
+				return [STAT_TEXT[locale].total(formatTick(summary.total, locale))];
 			case 'moyenne':
-				return [`Moyenne ${v(exact?.mean ?? summary.mean)}`];
+				return [`${STAT_TEXT[locale].rows.mean} ${v(exact?.mean ?? summary.mean)}`];
 			case 'classe-mediane':
-				return [`Classe médiane : ${shownLabel(spec.data[medianClass].label, locale)}`];
+				return [STAT_TEXT[locale].medianClass(shownLabel(spec.data[medianClass].label, locale))];
 			case 'mediane':
-				return [`Médiane ${v(exact?.median ?? summary.estimatedMedian)}`];
+				return [`${STAT_TEXT[locale].rows.median} ${v(exact?.median ?? summary.estimatedMedian)}`];
 			default:
 				return [];
 		}
@@ -917,7 +915,7 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 	const common = {
 		kind: 'histogramme' as const,
 		title: spec.title,
-		accessibleTitle: KIND_TITLE.histogramme,
+		accessibleTitle: STAT_TEXT[locale].kind.histogramme,
 		pixelSize: { width, height },
 		xMin,
 		xMax,
@@ -933,7 +931,8 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		const listed = spec.data.map((d) => `${shownLabel(d.label, locale)} ${valueLabel(d.value)}`);
 		return {
 			...common,
-			description: spec.description ?? `${KIND_TITLE.histogramme} : ${listed.join(', ')}.`,
+			description:
+				spec.description ?? `${STAT_TEXT[locale].kind.histogramme} : ${listed.join(', ')}.`,
 			rects: summary.classes.map((c, i) => ({
 				label: shownLabel(spec.data[i].label, locale),
 				lower: c.lower,
@@ -948,7 +947,11 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 			grid: { xs: [], ys: ticks.map((t) => t.value) },
 			axisTitles: {
 				x: spec.axes.x,
-				y: spec.axes.y ?? (spec.unit === 'pourcentages' ? 'Fréquence (%)' : 'Effectif')
+				y:
+					spec.axes.y ??
+					(spec.unit === 'pourcentages'
+						? STAT_TEXT[locale].axis.relative
+						: STAT_TEXT[locale].axis.count)
 			}
 		};
 	}
@@ -961,16 +964,16 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 	const unitWord =
 		spec.areaLegend?.unit ??
 		(spec.areaLegend === null && spec.unit === 'pourcentages' ? '%' : null);
-	const legend = `1 carreau = ${formatTick(value, locale)}${unitWord ? ` ${unitWord}` : ''}`;
+	const legend = `${STAT_TEXT[locale].square}${formatTick(value, locale)}${unitWord ? ` ${unitWord}` : ''}`;
 
 	const described = summary.classes.map((c, i) => {
 		const across = Math.round(c.width / carreauWidth);
 		// Un rectangle très plat ne fait pas « 0 de haut »
 		const tall =
 			heights[i] > 0 && heights[i] < 0.005
-				? `moins de ${formatTick(0.01, locale)}`
+				? STAT_TEXT[locale].lessThan(formatTick(0.01, locale))
 				: formatRounded(heights[i], 2, locale);
-		const size = `${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`;
+		const size = STAT_TEXT[locale].squareSize(across, tall);
 		return spec.showValues
 			? `${shownLabel(spec.data[i].label, locale)} : ${valueLabel(c.count)}, ${size}`
 			: `${shownLabel(spec.data[i].label, locale)} : ${size}`;
@@ -980,7 +983,8 @@ function buildHistogramScene(spec: StatChartSpec, locale: ContentLocale): Histog
 		...common,
 		// Q30 : les dimensions visibles, pas les effectifs (sauf `valeurs: oui`)
 		description:
-			spec.description ?? `${KIND_TITLE.histogramme} : ${described.join(' ; ')} ; ${legend}.`,
+			spec.description ??
+			`${STAT_TEXT[locale].kind.histogramme} : ${described.join(' ; ')} ; ${legend}.`,
 		rects: summary.classes.map((c, i) => ({
 			label: shownLabel(spec.data[i].label, locale),
 			lower: c.lower,
@@ -1068,8 +1072,15 @@ function classIndicatorTable(spec: StatChartSpec, locale: ContentLocale): Compar
 	});
 	const rows = spec.indicators.flatMap((indicator) =>
 		indicator === 'classe-mediane'
-			? [{ header: 'Classe médiane', cells: medianClass, groupStart: false }]
-			: table.rows.filter((row) => INDICATOR_ROWS[indicator].includes(row.header))
+			? [
+					{
+						id: 'medianClass' as const,
+						header: STAT_TEXT[locale].rows.medianClass,
+						cells: medianClass,
+						groupStart: false
+					}
+				]
+			: table.rows.filter((row) => INDICATOR_ROWS[indicator].includes(row.id))
 	);
 	return { ...table, rows };
 }
@@ -1084,7 +1095,7 @@ function buildTwoHistograms(spec: StatChartSpec, locale: ContentLocale): Histogr
 	// Chaque histogramme nomme et décrit SA série (revue a11y : B était lu deux
 	// fois, la seconde sans son nom)
 	const named = (scene: HistogramScene, name: string) => ({
-		accessibleTitle: `${KIND_TITLE.histogramme} — ${name}`,
+		accessibleTitle: `${STAT_TEXT[locale].kind.histogramme} — ${name}`,
 		description: `${scene.description.replace(/\.$/, '')} (${name}).`
 	});
 	return {
@@ -1166,23 +1177,25 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 				// Sur le polygone décroissant, Q1 laisse 75 % des données au-dessus
 				percent: increasing ? percent : 100 - percent,
 				x: outcome.value,
-				text: `${name} ${formatIndicatorValue(outcome.value, locale)}`
+				text: `${STAT_TEXT[locale].reading[name]} ${formatIndicatorValue(outcome.value, locale)}`
 			}
 		];
 	});
 
-	const listed = points.map(
-		(p) => `${formatRounded(p.y, 1, locale)} % en ${formatTick(p.x, locale)}`
+	const listed = points.map((p) =>
+		STAT_TEXT[locale].vertex(formatRounded(p.y, 1, locale), formatTick(p.x, locale))
 	);
 	// « Me » est prononcé « mé » par les lecteurs d'écran : en toutes lettres ici
-	const spoken = readings.map((r) => (r.name === 'Me' ? r.text.replace(/^Me/, 'Médiane') : r.text));
+	const spoken = readings.map((r) =>
+		r.name === 'Me' ? r.text.replace(/^\S+/, STAT_TEXT[locale].medianSpoken) : r.text
+	);
 	const read = spoken.length > 0 ? ` ${spoken.join(', ')}.` : '';
-	const title = `${KIND_TITLE['frequences-cumulees']} ${spec.direction}`;
+	const title = `${STAT_TEXT[locale].kind['frequences-cumulees']} ${STAT_TEXT[locale].direction[spec.direction]}`;
 
 	return {
 		kind: 'frequences-cumulees',
 		title: spec.title,
-		accessibleTitle: KIND_TITLE['frequences-cumulees'],
+		accessibleTitle: STAT_TEXT[locale].kind['frequences-cumulees'],
 		description: spec.description ?? `${title} : ${listed.join(', ')}.${read}`,
 		pixelSize: { width, height },
 		xMin,
@@ -1195,7 +1208,7 @@ function buildCumulativeScene(spec: StatChartSpec, locale: ContentLocale): Cumul
 		})),
 		readings,
 		direction: spec.direction,
-		axisTitles: { x: spec.axes.x, y: spec.axes.y ?? 'Fréquence cumulée (%)' },
+		axisTitles: { x: spec.axes.x, y: spec.axes.y ?? STAT_TEXT[locale].axis.cumulative },
 		color: spec.color,
 		indicators: classIndicators(spec, summary, locale)
 	};
@@ -1368,7 +1381,12 @@ const SIMULATION_TEXT: Record<
 	en: {
 		caption: (draws, plural, seed) =>
 			`Simulation of ${draws} draw${plural ? 's' : ''} (seed ${seed})`,
-		headers: { count: 'Count', frequency: 'Observed frequency', probability: 'Probability' }
+		// Q122 : *frequency* = effectif, *relative frequency* = fréquence
+		headers: {
+			count: 'Frequency',
+			frequency: 'Observed relative frequency',
+			probability: 'Probability'
+		}
 	}
 };
 

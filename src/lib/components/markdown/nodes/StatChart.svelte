@@ -26,6 +26,7 @@
 		type StatChartScene
 	} from '$lib/ubumark/utils/stat-chart-scene';
 	import { readContentLocale } from '../content-locale';
+	import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 	import StatChart from './StatChart.svelte';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
@@ -849,7 +850,7 @@
 	<div
 		class="stat-indisponible rounded-md border border-dashed border-border p-3 text-center text-sm text-muted-foreground {className}"
 	>
-		Figure indisponible
+		{STAT_TEXT[locale()].unavailable}
 	</div>
 {/if}
 

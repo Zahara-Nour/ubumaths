@@ -1,0 +1,143 @@
+/**
+ * Textes des blocs statistiques, selon la langue du document
+ * ==========================================================
+ *
+ * Q121-Q124 (2026-10-03) : une fiche en anglais reçoit des blocs en anglais —
+ * tout texte que le bloc PRODUIT (titres, axes, indicateurs, descriptions lues
+ * par le lecteur d'écran) ; jamais les textes de l'auteur, ni les messages
+ * d'erreur (l'interface de l'auteur est en français).
+ *
+ * ⚠️ Vocabulaire scolaire anglais (Q122) : *frequency* = EFFECTIF, *relative
+ * frequency* = FRÉQUENCE. Une traduction mot à mot inverserait le sens.
+ *
+ * @module ubumark/utils/stat-chart-text
+ */
+
+import type { ContentLocale } from '$lib/types/locale';
+import type { StatChartDirection } from '../types/stat-chart';
+
+/** Lignes possibles d'un tableau d'indicateurs (`.comparer`, deux séries) */
+export type IndicatorRowId =
+	| 'count'
+	| 'mean'
+	| 'deviation'
+	| 'median'
+	| 'q1'
+	| 'q3'
+	| 'iqr'
+	| 'min'
+	| 'max'
+	| 'range'
+	| 'medianClass';
+
+interface StatText {
+	kind: {
+		barres: string;
+		circulaire: string;
+		histogramme: string;
+		'frequences-cumulees': string;
+		'tableau-croise': string;
+	};
+	/** Titres d'axe par défaut */
+	axis: { count: string; relative: string; cumulative: string };
+	/** Noms des indicateurs (lignes « Moyenne = 12 », en-têtes des tableaux) */
+	rows: Record<IndicatorRowId, string>;
+	/** « Effectif total : 8 » */
+	total: (n: string) => string;
+	/** « Classe médiane : [5 ; 10[ » */
+	medianClass: (label: string) => string;
+	/** Légende d'aire : « 1 carreau = 2 élèves » */
+	square: string;
+	/** Description d'un rectangle à carreaux */
+	squareSize: (across: number, tall: string) => string;
+	lessThan: (value: string) => string;
+	/** Description d'un sommet du polygone : « 25 % en 10 » */
+	vertex: (percent: string, x: string) => string;
+	direction: Record<StatChartDirection, string>;
+	/** Nom d'une lecture graphique, tel qu'écrit à côté du pointillé */
+	reading: { Q1: string; Me: string; Q3: string };
+	/** Ce que lit le lecteur d'écran pour « Me » (prononcé « mé ») */
+	medianSpoken: string;
+	comparison: (names: readonly string[]) => string;
+	unavailable: string;
+}
+
+export const STAT_TEXT: Record<ContentLocale, StatText> = {
+	fr: {
+		kind: {
+			barres: 'Diagramme en barres',
+			circulaire: 'Diagramme circulaire',
+			histogramme: 'Histogramme',
+			'frequences-cumulees': 'Polygone des fréquences cumulées',
+			'tableau-croise': 'Tableau croisé'
+		},
+		axis: {
+			count: 'Effectif',
+			relative: 'Fréquence (%)',
+			cumulative: 'Fréquence cumulée (%)'
+		},
+		rows: {
+			count: 'Effectif',
+			mean: 'Moyenne',
+			deviation: 'Écart type',
+			median: 'Médiane',
+			q1: 'Q1',
+			q3: 'Q3',
+			iqr: 'Écart interquartile',
+			min: 'Minimum',
+			max: 'Maximum',
+			range: 'Étendue',
+			medianClass: 'Classe médiane'
+		},
+		total: (n) => `Effectif total : ${n}`,
+		medianClass: (label) => `Classe médiane : ${label}`,
+		square: '1 carreau = ',
+		squareSize: (across, tall) =>
+			`${across} carreau${across > 1 ? 'x' : ''} de large, ${tall} de haut`,
+		lessThan: (value) => `moins de ${value}`,
+		vertex: (percent, x) => `${percent} % en ${x}`,
+		direction: { croissantes: 'croissantes', décroissantes: 'décroissantes' },
+		reading: { Q1: 'Q1', Me: 'Me', Q3: 'Q3' },
+		medianSpoken: 'Médiane',
+		comparison: (names) => `Comparaison de ${names.join(' et ')}`,
+		unavailable: 'Figure indisponible'
+	},
+	en: {
+		kind: {
+			barres: 'Bar chart',
+			circulaire: 'Pie chart',
+			histogramme: 'Histogram',
+			'frequences-cumulees': 'Cumulative frequency polygon',
+			'tableau-croise': 'Two-way table'
+		},
+		axis: {
+			count: 'Frequency',
+			relative: 'Relative frequency (%)',
+			cumulative: 'Cumulative relative frequency (%)'
+		},
+		rows: {
+			count: 'Frequency',
+			mean: 'Mean',
+			deviation: 'Standard deviation',
+			median: 'Median',
+			q1: 'Q1',
+			q3: 'Q3',
+			iqr: 'Interquartile range',
+			min: 'Minimum',
+			max: 'Maximum',
+			range: 'Range',
+			medianClass: 'Median class'
+		},
+		total: (n) => `Total frequency: ${n}`,
+		medianClass: (label) => `Median class: ${label}`,
+		square: '1 square = ',
+		squareSize: (across, tall) => `${across} square${across > 1 ? 's' : ''} wide, ${tall} high`,
+		lessThan: (value) => `less than ${value}`,
+		vertex: (percent, x) => `${percent}% at ${x}`,
+		direction: { croissantes: 'increasing', décroissantes: 'decreasing' },
+		reading: { Q1: 'Q1', Me: 'Median', Q3: 'Q3' },
+		medianSpoken: 'Median',
+		comparison: (names) => `Comparison of ${names.join(' and ')}`,
+		unavailable: 'Figure unavailable'
+	}
+};

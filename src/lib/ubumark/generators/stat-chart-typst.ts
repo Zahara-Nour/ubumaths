@@ -20,6 +20,7 @@
 import type { CourbeColor, CourbeSize } from '../types/courbe';
 import type { StatChartNode } from '../types/stat-chart';
 import { WIDTH_CM } from './courbe-typst';
+import { STAT_TEXT } from '../utils/stat-chart-text';
 import {
 	PIE_MARKER_CM,
 	STAT_CHART_ASPECT_RATIO,
@@ -73,8 +74,11 @@ const PIE_COLORS = [
 	'rgb("#6b7280")'
 ];
 
-const UNAVAILABLE =
-	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';
+/** Cadre neutre d'un bloc qui ne se dessine pas, dans la langue du document */
+function unavailable(language: string | undefined): string {
+	const text = STAT_TEXT[language === 'en' ? 'en' : 'fr'].unavailable;
+	return `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[${text}]`;
+}
 
 /** Classes hors de μ ± 2σ/√n (moyennes d'échantillons) : grises, comme à l'écran */
 const OUTSIDE_COLOR = 'luma(150)';
@@ -557,7 +561,7 @@ export function generateStatChartTypst(
 	node: StatChartNode,
 	options: StatChartTypstOptions = {}
 ): string {
-	if (!node.spec) return UNAVAILABLE;
+	if (!node.spec) return unavailable(options.language);
 
 	// Une exception ici ferait échouer TOUTE la fiche : le cadre neutre vaut mieux
 	try {
@@ -572,6 +576,6 @@ export function generateStatChartTypst(
 		if (scene.seriesOnly) return head;
 		return head + figureTypst({ ...scene, title: null }, node.spec.size) + indicatorsBlock(scene);
 	} catch {
-		return UNAVAILABLE;
+		return unavailable(options.language);
 	}
 }
