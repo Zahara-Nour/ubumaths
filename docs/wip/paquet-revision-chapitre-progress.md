@@ -42,9 +42,20 @@ Décisions : `docs/wip/questions-de-cours-progress.md` (Q163–Q168). Comporteme
 - Constat : index unique partiel → UNE question publiée par catégorie ; le paquet a donc une question par
   catégorie distincte des séries.
 
-## Ouvert (à trancher par David)
+- (2026-10-03) **Retours de revue / audit traités** (après merge d'`origin/main`) :
+  - `ReviewSession` : état `loadError` (« Impossible de charger » + « Réessayer ») et état « cartes
+    écartées » distincts de « rien à revoir » ; test client rouge avant (3/4).
+  - Modèles filtrés par catégorie EXACTE (`categoriesFilter`, `or` PostgREST), plafond
+    `MAX_DECK_TEMPLATES` signalé par une erreur ; tests.
+  - Types plats partagés `DueReviewCard` / `ChapterDueCard` / `ChapterDueResponse` (`$lib/srs/types`) ;
+    l'ancien `ReviewCard` imbriqué supprimé (aucun usage) ; note FSRS typée par le schéma (`z.literal`).
+  - Intégration : série à publication future, prof / admin → 403, élève archivé → 404, L5 changement de
+    classe, N3 graines différentes.
+  - **Q169 (a)** : `recordSrsReviewAttempt` (`server/srs/srs-attempt.ts`), partagé avec le submit du
+    Programme : trace `skill_attempts` source `srs` pour toute réponse acceptée (questions de cours
+    comprises, comme au Programme) ; aucune trace pour une réponse refusée ; pas d'ajout au Programme.
 
-- Traces : le submit du chapitre n'insère PAS de `skill_attempts` (le Programme le fait, ADR 0016 dit que
-  les traces auto-évaluées alimentent le référentiel). À décider.
+## Ouvert
+
 - « Dues aujourd'hui » = échéance ≤ maintenant (comme le Programme), pas fin de journée.
-- Revues `code-reviewer` + `security-auditor`, puis PR (pas de migration).
+- PR (pas de migration).
