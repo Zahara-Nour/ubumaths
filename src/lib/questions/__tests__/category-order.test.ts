@@ -189,6 +189,28 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it("Géométrie : produit scalaire puis géométrie repérée, sous-domaines dans l'ordre", () => {
+		const domains = ['Géométrie repérée', 'Produit scalaire'].map((domain) => ({
+			theme: 'Géométrie',
+			domain,
+			subdomain: ''
+		}));
+		expect(sortItems(domains).map((item) => item.domain)).toEqual([
+			'Produit scalaire',
+			'Géométrie repérée'
+		]);
+		const subdomains = [
+			'Équation de cercle',
+			'Projeté orthogonal',
+			'Vecteur normal et équation de droite'
+		].map((subdomain) => ({ theme: 'Géométrie', domain: 'Géométrie repérée', subdomain }));
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Vecteur normal et équation de droite',
+			'Projeté orthogonal',
+			'Équation de cercle'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',
