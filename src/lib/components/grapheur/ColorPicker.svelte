@@ -6,7 +6,7 @@ function color palette when clicking on the current color swatch.
 
 Features:
 - Popover UI showing current color as trigger
-- Displays all FUNCTION_COLORS as visual swatches
+- Displays the 4 curve colors (CURVE_COLORS) as swatches, in the current mode's variant
 - Keyboard navigation support
 - ARIA roles for screen readers
 - Visual feedback for selected color
@@ -21,12 +21,20 @@ Features:
 -->
 
 <script lang="ts">
-	import { FUNCTION_COLORS } from '$lib/grapheur/colors';
+	import {
+		CURVE_COLORS,
+		CURVE_COLOR_LABELS,
+		curveColorValue,
+		isCurveColor
+	} from '$lib/grapheur/colors';
 	import * as Popover from '$lib/components/ui/popover';
 
 	let { value, onchange }: { value: string; onchange: (color: string) => void } = $props();
 
 	let open = $state(false);
+
+	/** Nom de la couleur courante ; une couleur hors palette (ancienne sauvegarde) est lue telle quelle */
+	const currentLabel = $derived(isCurveColor(value) ? CURVE_COLOR_LABELS[value] : value);
 
 	function selectColor(color: string) {
 		onchange(color);
@@ -39,27 +47,27 @@ Features:
 		<button
 			type="button"
 			class="color-trigger"
-			style:background-color={value}
+			style:background-color={curveColorValue(value)}
 			title="Changer la couleur"
 			aria-label="Changer la couleur de la courbe"
 		>
-			<span class="sr-only">Couleur actuelle: {value}</span>
+			<span class="sr-only">Couleur actuelle : {currentLabel}</span>
 		</button>
 	</Popover.Trigger>
 
 	<Popover.Content class="w-auto p-3" align="start">
 		<div class="color-picker" role="radiogroup" aria-label="Couleur de la courbe">
-			{#each FUNCTION_COLORS as color (color)}
+			{#each CURVE_COLORS as color (color)}
 				<button
 					type="button"
 					class="color-swatch"
 					class:selected={value === color}
-					style:background-color={color}
+					style:background-color={curveColorValue(color)}
 					onclick={() => selectColor(color)}
 					aria-checked={value === color}
-					aria-label="Sélectionner la couleur {color}"
+					aria-label="Sélectionner la couleur {CURVE_COLOR_LABELS[color]}"
 					role="radio"
-					title="Couleur {color}"
+					title={CURVE_COLOR_LABELS[color]}
 				></button>
 			{/each}
 		</div>

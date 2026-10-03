@@ -88,6 +88,34 @@
 	--animate-out-duration: 150ms;
 }
 
+/*
+ * `static` : Tailwind n'émet une variable de `@theme` que s'il la voit utilisée.
+ * `var(--color-curve-N)` est construit en TypeScript (curveColorValue), donc
+ * invisible pour lui — sans `static`, la variable disparaît du CSS et la courbe
+ * est peinte en noir.
+ */
+@theme static {
+	/*
+	 * Grapheur. Fond du graphique et couleurs des courbes : une courbe stocke son
+	 * identité (`curve-1`…), jamais une valeur — c'est ici qu'elle prend sa teinte
+	 * selon le mode. Contraste ≥ 4,5 sur --color-graph-bg dans les deux modes,
+	 * vérifié par src/lib/grapheur/__tests__/curve-palette.test.ts.
+	 * Courbes 5 à 8 : les mêmes couleurs en pointillés (daltonisme).
+	 */
+	--color-graph-bg: light-dark(#ffffff, #1a1a2e);
+	--color-graph-grid-minor: light-dark(#e5e5e5, #2a2a3e);
+	--color-graph-grid-major: light-dark(#d4d4d4, #3a3a52);
+	--color-graph-axis: light-dark(#374151, #9ca3af);
+	--color-graph-axis-label: light-dark(#6b7280, #9ca3af);
+	--color-graph-tooltip-bg: light-dark(#1f2937, #374151);
+	--color-graph-intersection: light-dark(#6b7280, #9ca3af);
+	--color-graph-intersection-hover: light-dark(#374151, #d1d5db);
+	--color-curve-1: light-dark(#017cb7, #228bc7); /* bleu */
+	--color-curve-2: light-dark(#dd2779, #ed3a86); /* framboise */
+	--color-curve-3: light-dark(#b16203, #c0701f); /* ocre */
+	--color-curve-4: light-dark(#8b55ef, #9863fe); /* violet */
+}
+
 /* Shadcn/Bits UI Animation Keyframes */
 @keyframes enter-from-left {
 	from {

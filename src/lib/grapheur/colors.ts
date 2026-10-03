@@ -6,12 +6,15 @@
  */
 
 export {
-	FUNCTION_COLORS,
-	getNextColor,
-	getColorByIndex,
+	CURVE_COLORS,
+	CURVE_COLOR_LABELS,
+	CURVE_SLOTS,
+	curveColorValue,
+	getNextSlot,
+	isCurveColor,
+	migrateLegacyColor,
 	isValidColor,
-	isPaletteColor,
 	normalizeColor
 } from '$lib/geometry-core/rendering/colors';
 
-export type { FunctionColor } from '$lib/geometry-core/rendering/colors';
+export type { CurveColor, CurveSlot } from '$lib/geometry-core/rendering/colors';

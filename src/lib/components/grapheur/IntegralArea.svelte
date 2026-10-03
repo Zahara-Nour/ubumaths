@@ -13,6 +13,7 @@
 
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import type { IntegralResult } from '$lib/grapheur/analysis';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -51,7 +52,7 @@
 </script>
 
 {#if path}
-	<path d={path} fill={color} class="integral-area" aria-hidden="true" />
+	<path d={path} style:fill={curveColorValue(color)} class="integral-area" aria-hidden="true" />
 {/if}
 
 <style>

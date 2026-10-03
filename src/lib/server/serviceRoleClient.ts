@@ -59,7 +59,12 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'evaluation-attempts.ts',
 	// Game milestone awards (student_achievements RLS only allows service_role inserts)
 	'/api/games/2048/scores',
-	'/api/games/mathemo/scores'
+	'/api/games/mathemo/scores',
+	// Cartes VIP (Q131-Q137) : attribution, défausse, restitution, verrous et
+	// traduction d'instances réservés au serveur, appelés APRÈS les contrôles
+	// des routes (exchange, choose, marché)
+	'lib/server/vip-card-grants.ts',
+	'marketplace/helpers.ts'
 ] as const;
 
 /**

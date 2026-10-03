@@ -259,19 +259,19 @@
 
 <style>
 	.axis-line {
-		stroke: var(--graph-axis, #374151);
+		stroke: var(--color-graph-axis);
 		stroke-width: 1.5;
 	}
 
 	.tick-mark {
-		stroke: var(--graph-axis, #374151);
+		stroke: var(--color-graph-axis);
 		stroke-width: 1;
 	}
 
 	.axis-label {
 		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 		font-size: 11px;
-		fill: var(--graph-axis-label, #6b7280);
+		fill: var(--color-graph-axis-label);
 		user-select: none;
 		pointer-events: none;
 	}
@@ -284,25 +284,8 @@
 		font-family: 'Computer Modern', Georgia, 'Times New Roman', serif;
 		font-style: italic;
 		font-size: 14px;
-		fill: var(--graph-axis-label, #6b7280);
+		fill: var(--color-graph-axis-label);
 		user-select: none;
 		pointer-events: none;
-	}
-
-	/* Dark mode support */
-	:global(.dark) .axis-line {
-		stroke: var(--graph-axis-dark, #9ca3af);
-	}
-
-	:global(.dark) .tick-mark {
-		stroke: var(--graph-axis-dark, #9ca3af);
-	}
-
-	:global(.dark) .axis-label {
-		fill: var(--graph-axis-label-dark, #9ca3af);
-	}
-
-	:global(.dark) .axis-name {
-		fill: var(--graph-axis-label-dark, #9ca3af);
 	}
 </style>

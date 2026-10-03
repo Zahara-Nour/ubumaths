@@ -5,6 +5,7 @@ import { createProposalSchema } from '$lib/server/marketplace/validation';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
+	resolveCardInstances,
 	isMarketplaceEnabled,
 	getStudentGidouilles,
 	enrichWithParticipants,
@@ -96,13 +97,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// l'échange, la carte n'y est justement plus.
 	//
 	// `resolve_card_instances` est SECURITY DEFINER, bornée, et ne rend que
-	// instance → modèle.
+	// instance → modèle. Réservée au serveur (Q134) : appelée par le client
+	// service via `resolveCardInstances`.
 	const instancesOffertes = listing.offered_card_ids ?? [];
 
-	const { data: resolues, error: resolutionError } =
-		instancesOffertes.length > 0
-			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesOffertes })
-			: { data: [], error: null };
+	const { data: resolues, error: resolutionError } = await resolveCardInstances(instancesOffertes);
 
 	// Ces cartes composent la moitié du résumé d'échange. Une carte non résolue
 	// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
@@ -363,7 +362,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Lock cards if offering any
 	if (data.offered_card_ids.length > 0) {
 		const lockResult = await lockCardsForEntity(
-			supabase,
 			userId,
 			data.offered_card_ids,
 			listingId,

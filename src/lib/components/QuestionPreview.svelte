@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 
@@ -42,6 +43,8 @@
 	let { template }: Props = $props();
 
 	let instance = $state<QuestionInstance | null>(null);
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance?.genericFunctions));
 	let errors = $state<string[]>([]);
 	let isGenerating = $state(false);
 	let seed = $state(Math.floor(Math.random() * 1000000));
@@ -322,7 +325,7 @@
 						<Badge>{QUESTION_TYPE_LABELS[getQuestionType(template)]}</Badge>
 					</div>
 					<div class="rounded-lg border bg-card p-4" use:renderLatex>
-						<MarkdownRenderer content={instance.statement} showAuthoringErrors />
+						<MarkdownRenderer content={instance.statement} showAuthoringErrors {genericFunctions} />
 					</div>
 				</div>
 
@@ -382,7 +385,9 @@
 									<Badge variant={isCorrect ? 'default' : 'outline'}>
 										{String.fromCharCode(65 + i)}
 									</Badge>
-									<div class="flex-1"><MarkdownRenderer content={choice.content} /></div>
+									<div class="flex-1">
+										<MarkdownRenderer content={choice.content} {genericFunctions} />
+									</div>
 									{#if isCorrect}
 										<Check class="h-5 w-5 text-green-600" />
 									{/if}
@@ -397,7 +402,11 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Correction</Badge>
 						<div class="rounded-lg border bg-muted/50 p-4 text-sm">
-							<MarkdownRenderer content={correctionMarkdown} showAuthoringErrors />
+							<MarkdownRenderer
+								content={correctionMarkdown}
+								showAuthoringErrors
+								{genericFunctions}
+							/>
 						</div>
 					</div>
 				{/if}

@@ -36,6 +36,7 @@
 	import IntersectionPoints from './IntersectionPoints.svelte';
 	import AsymptoteLines from './AsymptoteLines.svelte';
 	import SpecialPoints from './SpecialPoints.svelte';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -496,7 +497,7 @@
 										rx={circle.radius * transformer.scaleX}
 										ry={circle.radius * transformer.scaleY}
 										fill="none"
-										stroke={plottable.color}
+										style:stroke={curveColorValue(plottable.color)}
 										stroke-width={1}
 										stroke-dasharray="2 3"
 										class="osculating-circle"
@@ -509,7 +510,7 @@
 								cx={contact.x}
 								cy={contact.y}
 								r={5}
-								fill={plottable.color}
+								style:fill={curveColorValue(plottable.color)}
 								stroke="white"
 								stroke-width={2}
 								class="tangent-point"
@@ -574,17 +575,12 @@
 		position: relative;
 		overflow: hidden;
 		border-radius: 0.5rem;
-		background: var(--graph-bg, #ffffff);
+		background: var(--color-graph-bg);
 	}
 
 	.graph-svg {
 		width: 100%;
 		height: 100%;
 		display: block;
-	}
-
-	/* Dark mode support */
-	:global(.dark) .graph-container {
-		background: var(--graph-bg-dark, #1a1a2e);
 	}
 </style>

@@ -10,7 +10,7 @@
 import { browser } from '$app/environment';
 import { parseFunction } from '$lib/grapheur/evaluator';
 import { DEFAULT_VIEWPORT, panViewport, zoomViewport } from '$lib/grapheur/viewport';
-import { getNextColor } from '$lib/grapheur/colors';
+import { getNextSlot, migrateLegacyColor } from '$lib/grapheur/colors';
 import type {
 	Plottable,
 	ExplicitFunction,
@@ -176,8 +176,8 @@ class GrapheurStore {
 		centerY: (this.viewport.yMin + this.viewport.yMax) / 2
 	});
 
-	/** Colors currently in use */
-	usedColors = $derived(this.functions.map((f) => f.color));
+	/** Places (couleur + style de trait) déjà occupées : décident de la suivante */
+	usedSlots = $derived(this.functions.map((f) => ({ color: f.color, lineStyle: f.lineStyle })));
 
 	/** Only the sequences */
 	sequences = $derived(this.functions.filter(isSequence));
@@ -327,7 +327,7 @@ class GrapheurStore {
 
 	addFunction(latex: string = ''): string {
 		const id = crypto.randomUUID();
-		const color = getNextColor(this.usedColors);
+		const slot = getNextSlot(this.usedSlots);
 		const parseResult = parseFunction(latex);
 
 		const func: ExplicitFunction = {
@@ -342,10 +342,10 @@ class GrapheurStore {
 			integral: null,
 			showOsculating: false,
 			showArcLength: false,
-			color,
+			color: slot.color,
 			visible: true,
 			lineWidth: 2,
-			lineStyle: 'solid'
+			lineStyle: slot.lineStyle
 		};
 
 		this.functions = [...this.functions, func];
@@ -427,7 +427,7 @@ class GrapheurStore {
 	 */
 	addSequence(mode: SequenceMode = 'explicit', latex: string = ''): string {
 		const id = crypto.randomUUID();
-		const color = getNextColor(this.usedColors);
+		const slot = getNextSlot(this.usedSlots);
 		const name = nextSequenceName(this.sequenceNames);
 		const parseResult = parseSequence(latex, mode, name, this.parameterNames);
 
@@ -450,10 +450,10 @@ class GrapheurStore {
 			// them.
 			representation: 'ranks',
 			cobwebSteps: DEFAULT_COBWEB_STEPS,
-			color,
+			color: slot.color,
 			visible: true,
 			lineWidth: 2,
-			lineStyle: 'solid'
+			lineStyle: slot.lineStyle
 		};
 
 		this.functions = [...this.functions, sequence];
@@ -475,16 +475,19 @@ class GrapheurStore {
 	 */
 	addScatter(xs: readonly number[], ys: readonly number[], label = ''): string {
 		const id = crypto.randomUUID();
+		// Un nuage n'a pas de trait : il prend la couleur de la place, le style ne
+		// se voit pas (formes de points distinctes : hors chantier, décision Q1a).
+		const slot = getNextSlot(this.usedSlots);
 		const scatter: ScatterPlottable = {
 			id,
 			type: 'scatter',
 			label,
 			xs: [...xs],
 			ys: [...ys],
-			color: getNextColor(this.usedColors),
+			color: slot.color,
 			visible: true,
 			lineWidth: 2,
-			lineStyle: 'solid'
+			lineStyle: slot.lineStyle
 		};
 
 		this.functions = [...this.functions, scatter];
@@ -845,8 +848,10 @@ class GrapheurStore {
 			// Parameters first: the expressions below are parsed against their names.
 			this.parameters = state.parameters;
 
-			// Re-parse everything (AST is not stored)
-			this.functions = state.functions.map((p): Plottable => {
+			// Re-parse everything (AST is not stored). Les couleurs de l'ancienne
+			// palette sont traduites au passage vers les places actuelles.
+			this.functions = state.functions.map((stored): Plottable => {
+				const p = { ...stored, ...migrateLegacyColor(stored.color, stored.lineStyle ?? 'solid') };
 				// Un nuage n'a rien à reparser : ses deux séries sont la donnée.
 				if (p.type === 'scatter') {
 					const scatter: ScatterPlottable = {

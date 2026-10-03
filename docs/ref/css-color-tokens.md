@@ -105,6 +105,45 @@ Règles :
 - Pour tester : les **deux cas mixtes** (OS clair + choix sombre, et l'inverse).
   Playwright : `newContext({ colorScheme: os })` + `localStorage['mode-watcher-mode'] = choix`.
 
+## ⚠️ `@theme` élague les variables qu'il ne voit pas utilisées
+
+Tailwind 4 n'émet une variable de `@theme` que si une **classe** l'utilise
+(`bg-info` → `--color-info`). Une variable lue seulement par `var(--color-x)` dans
+du code — surtout une chaîne **construite** en TypeScript, `` `var(--color-${id})` `` —
+est retirée du CSS, sans erreur : la propriété retombe sur son initiale (noir pour
+`stroke`/`fill`). Mesuré sur 4.2.2 :
+
+```css
+@theme {
+	--color-curve-1: red;
+} /* absent du CSS si aucune classe ne s'en sert */
+@theme static {
+	--color-curve-1: red;
+} /* toujours émis */
+```
+
+→ Une couleur appelée depuis du code va dans un bloc **`@theme static`** (cf. le
+bloc du grapheur dans `src/app.css`). Le tester sur la couleur **rendue**
+(`getComputedStyle(el).stroke`) dans un test navigateur, jamais sur l'attribut.
+
+## Couleurs des courbes du grapheur
+
+Une courbe stocke une **identité** (`curve-1` … `curve-4`), jamais une valeur. La
+teinte vit dans `src/app.css` (`--color-curve-N`, en `light-dark()`), et
+`curveColorValue()` (`$lib/grapheur/colors`) la traduit au moment de peindre :
+
+```svelte
+<path style:stroke={curveColorValue(func.color)} /> <!-- pas stroke={func.color} -->
+```
+
+- **4 couleurs × 2 styles de trait** (pleins, puis pointillés) : sous contrainte
+  de contraste (≥ 4,5 sur le fond du grapheur, dans les deux modes), huit couleurs
+  ne restent pas distinctes pour un élève daltonien. Le test
+  `grapheur/__tests__/curve-palette.test.ts` lit `app.css` et vérifie le contraste.
+- **Export** (`grapheur/export.ts`) : toujours en clair, styles calculés figés
+  dans le fichier — un SVG exporté ne connaît pas `app.css`.
+- Décisions et mesures : `docs/wip/grapheur-couleurs-theme-progress.md`.
+
 ## La garde CI
 
 `scripts/check-css-tokens.sh`, appelée par le job **Lint** de

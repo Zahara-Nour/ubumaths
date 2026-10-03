@@ -37,10 +37,30 @@ describe('ScatterPlot', () => {
 		expect(pointsOf(container).length).toBe(3);
 	});
 
+	// Couleur RENDUE (getComputedStyle), pas l'attribut : la couleur passe par le
+	// style, et une identité de palette ne se lit qu'une fois le thème appliqué.
 	it('leur donne la couleur de l’objet', async () => {
 		const { container } = await render(ScatterPlot, { scatter: scatter(), transformer });
 
-		expect(pointsOf(container)[0].getAttribute('fill')).toBe('#d946ef');
+		expect(getComputedStyle(pointsOf(container)[0]).fill).toBe('rgb(217, 70, 239)');
+	});
+
+	it('peint une couleur de la palette dans la variante du mode courant', async () => {
+		const root = document.documentElement;
+		const { container } = await render(ScatterPlot, {
+			scatter: scatter({ color: 'curve-1' }),
+			transformer
+		});
+		const point = pointsOf(container)[0];
+
+		try {
+			root.style.colorScheme = 'light';
+			expect(getComputedStyle(point).fill).toBe('rgb(1, 124, 183)'); // #017cb7
+			root.style.colorScheme = 'dark';
+			expect(getComputedStyle(point).fill).toBe('rgb(34, 139, 199)'); // #228bc7
+		} finally {
+			root.style.colorScheme = '';
+		}
 	});
 
 	it('les place aux bonnes coordonnées', async () => {

@@ -1,108 +1,121 @@
 /**
- * Color Utilities - Function color palette and color management
+ * Couleurs des courbes du grapheur.
  *
- * This module provides a curated palette of accessible colors for
- * mathematical functions that work well in both light and dark modes.
+ * Une courbe stocke une **identité** (`curve-1`…`curve-4`), jamais une valeur :
+ * la teinte vit dans `src/app.css` (`--color-curve-N`, en `light-dark()`), et
+ * suit donc le mode clair / sombre sans que la courbe enregistrée change.
  *
- * The colors are chosen to be:
- * - Visually distinct from each other
- * - Accessible (sufficient contrast in both themes)
- * - Aesthetically pleasing for mathematical graphs
+ * Quatre couleurs seulement : sous la contrainte de contraste (≥ 4,5 sur le fond
+ * du grapheur), huit couleurs ne peuvent pas rester distinctes pour un élève
+ * daltonien. Les courbes 5 à 8 reprennent donc les quatre couleurs en pointillés.
+ * Mesures et décisions : docs/wip/grapheur-couleurs-theme-progress.md.
  *
  * @module geometry-core/rendering/colors
  */
 
-// =============================================================================
-// Color Palette
-// =============================================================================
-
-/**
- * Palette of 8 accessible colors for function plotting
- *
- * These colors are carefully selected to:
- * - Work on both light and dark backgrounds
- * - Be distinguishable for most color vision types
- * - Match common mathematical graphing conventions
- *
- * The order is designed for optimal visual distinction when
- * multiple functions are plotted together.
- */
-export const FUNCTION_COLORS = [
-	'#2563eb', // Blue (primary, most common for first function)
-	'#dc2626', // Red (classic secondary color)
-	'#16a34a', // Green (good contrast with blue/red)
-	'#9333ea', // Purple (distinct from primary colors)
-	'#ea580c', // Orange (warm, stands out)
-	'#0891b2', // Cyan (cool, complements orange)
-	'#be185d', // Pink/Magenta (distinct from red)
-	'#854d0e' // Brown/Amber (warm, high visibility)
-] as const;
-
-/**
- * Type for function colors from the palette
- */
-export type FunctionColor = (typeof FUNCTION_COLORS)[number];
+import type { LineStyle } from '../viewport/types';
 
 // =============================================================================
-// Color Selection
+// Palette
 // =============================================================================
 
-/**
- * Get the next available color from the palette
- *
- * Cycles through the palette, preferring colors not already in use.
- * If all colors are used, returns the least recently used color
- * (the one that appears first in the palette but not in usedColors).
- *
- * @param usedColors - Array of colors currently in use
- * @returns The next recommended color to use
- *
- * @example
- * ```typescript
- * // First function gets blue
- * getNextColor([]); // '#2563eb'
- *
- * // Second function gets red
- * getNextColor(['#2563eb']); // '#dc2626'
- *
- * // If all colors used, cycles back to first unused
- * getNextColor(['#2563eb', '#dc2626', '#16a34a']); // '#9333ea'
- * ```
- */
-export function getNextColor(usedColors: readonly string[]): string {
-	// Create a Set for O(1) lookup
-	const usedSet = new Set(usedColors.map((c) => c.toLowerCase()));
+/** Les 4 identités de couleur, dans l'ordre d'attribution */
+export const CURVE_COLORS = ['curve-1', 'curve-2', 'curve-3', 'curve-4'] as const;
 
-	// Find the first color not in use
-	for (const color of FUNCTION_COLORS) {
-		if (!usedSet.has(color.toLowerCase())) {
-			return color;
-		}
-	}
+export type CurveColor = (typeof CURVE_COLORS)[number];
 
-	// All colors are used - return the first color in the palette
-	// This creates a visual cycling effect
-	return FUNCTION_COLORS[0];
+/** Nom affiché à l'élève (sélecteur de couleur) */
+export const CURVE_COLOR_LABELS: Record<CurveColor, string> = {
+	'curve-1': 'bleu',
+	'curve-2': 'framboise',
+	'curve-3': 'ocre',
+	'curve-4': 'violet'
+};
+
+/** Une place : une couleur et un style de trait */
+export interface CurveSlot {
+	readonly color: CurveColor;
+	readonly lineStyle: LineStyle;
+}
+
+/** Les 8 places, dans l'ordre d'attribution : trait plein, puis pointillés */
+export const CURVE_SLOTS: readonly CurveSlot[] = [
+	...CURVE_COLORS.map((color) => ({ color, lineStyle: 'solid' as const })),
+	...CURVE_COLORS.map((color) => ({ color, lineStyle: 'dashed' as const }))
+];
+
+export function isCurveColor(color: string): color is CurveColor {
+	return (CURVE_COLORS as readonly string[]).includes(color);
 }
 
 /**
- * Get a color by index, cycling through the palette
+ * Ce qu'on écrit dans `style:stroke` / `style:fill`.
  *
- * Useful when you want to assign colors based on function order.
- *
- * @param index - The index (can be any non-negative integer)
- * @returns A color from the palette
- *
- * @example
- * ```typescript
- * getColorByIndex(0); // '#2563eb' (blue)
- * getColorByIndex(1); // '#dc2626' (red)
- * getColorByIndex(8); // '#2563eb' (cycles back to blue)
- * ```
+ * ⚠️ Pas dans un attribut de présentation SVG (`stroke={…}`) : une `var()` n'y est
+ * pas garantie. Une couleur hors palette (ancienne sauvegarde non reconnue) passe
+ * telle quelle.
  */
-export function getColorByIndex(index: number): string {
-	const safeIndex = Math.abs(Math.floor(index)) % FUNCTION_COLORS.length;
-	return FUNCTION_COLORS[safeIndex];
+export function curveColorValue(color: string): string {
+	return isCurveColor(color) ? `var(--color-${color})` : color;
+}
+
+// =============================================================================
+// Attribution
+// =============================================================================
+
+/**
+ * La première place libre pour une nouvelle courbe.
+ *
+ * Une place est prise par une courbe qui a **à la fois** sa couleur et son style :
+ * une courbe bleue que l'élève a passée en pointillés libère le bleu plein.
+ * Les 8 places prises, on recommence au bleu plein.
+ */
+export function getNextSlot(
+	used: readonly { readonly color: string; readonly lineStyle: LineStyle }[]
+): CurveSlot {
+	const taken = new Set(used.map((u) => `${u.color}|${u.lineStyle}`));
+	return CURVE_SLOTS.find((s) => !taken.has(`${s.color}|${s.lineStyle}`)) ?? CURVE_SLOTS[0];
+}
+
+// =============================================================================
+// Migration des anciennes sauvegardes
+// =============================================================================
+
+/**
+ * L'ancienne palette (8 hexadécimaux figés), dans son ordre d'attribution.
+ * Ne sert plus qu'à reconnaître les graphiques sauvegardés avant le 2026-10-03.
+ */
+const LEGACY_FUNCTION_COLORS = [
+	'#2563eb',
+	'#dc2626',
+	'#16a34a',
+	'#9333ea',
+	'#ea580c',
+	'#0891b2',
+	'#be185d',
+	'#854d0e'
+] as const;
+
+/**
+ * Traduit une couleur de l'ancienne palette vers la place de MÊME RANG.
+ *
+ * Par rang, pas par « couleur la plus proche » : celle-ci envoyait orange, vert
+ * et marron sur l'ocre, et un graphique de 5 courbes en gardait deux identiques.
+ * Par rang, deux anciennes couleurs différentes en trait plein restent deux
+ * places différentes. Un style choisi par l'élève (autre que `solid`) est
+ * conservé — au prix d'une collision rare : un ancien bleu passé en `dashed` par
+ * l'élève et un ancien orange plein deviennent tous deux bleu pointillé.
+ * Une couleur inconnue, ou déjà traduite, passe telle quelle.
+ */
+export function migrateLegacyColor(
+	color: string,
+	lineStyle: LineStyle
+): { color: string; lineStyle: LineStyle } {
+	const rank = (LEGACY_FUNCTION_COLORS as readonly string[]).indexOf(color.toLowerCase());
+	if (rank === -1) return { color, lineStyle };
+
+	const slot = CURVE_SLOTS[rank];
+	return { color: slot.color, lineStyle: lineStyle === 'solid' ? slot.lineStyle : lineStyle };
 }
 
 // =============================================================================
@@ -167,16 +180,6 @@ export function isValidColor(color: string): boolean {
 	}
 
 	return false;
-}
-
-/**
- * Check if a color is from the function palette
- *
- * @param color - The color to check
- * @returns true if the color is in FUNCTION_COLORS
- */
-export function isPaletteColor(color: string): boolean {
-	return FUNCTION_COLORS.some((c) => c.toLowerCase() === color.toLowerCase());
 }
 
 /**

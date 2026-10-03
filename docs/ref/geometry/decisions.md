@@ -291,7 +291,7 @@ Le drag est le seul cas ou on a besoin de 60 fps. Pour tout le reste, le calcul 
 | ---------------------- | -------------------------------------------------------------------- | -------------------------- |
 | `grapheur/viewport.ts` | CoordinateTransformer, panViewport, zoomViewport, getViewportMetrics | `geometry-core/viewport/`  |
 | `grapheur/bezier.ts`   | curveToSVGPath, catmullRomToBezier                                   | `geometry-core/rendering/` |
-| `grapheur/colors.ts`   | FUNCTION_COLORS, getNextColor, isValidColor                          | `geometry-core/rendering/` |
+| `grapheur/colors.ts`   | CURVE_COLORS, getNextSlot, curveColorValue, isValidColor             | `geometry-core/rendering/` |
 | `grapheur/export.ts`   | prepareSvgForExport, exportAsPng                                     | `geometry-core/export/`    |
 
 **Migration** : grapheur/ re-exporte depuis geometry-core/ (pas de breaking change).

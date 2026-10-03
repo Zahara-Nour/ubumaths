@@ -21,6 +21,7 @@ import {
 	tangentAt,
 	toAnalysisInputs
 } from '../analysis';
+import { CURVE_SLOTS } from '../colors';
 import { createEvaluator, parseFunction } from '../evaluator';
 import { computeSequenceTerms, parseSequence, toComputeSpec } from '../sequence';
 import { graphStateSchema, nextParameterName, RESERVED_PARAMETER_NAMES } from '../types';
@@ -216,12 +217,21 @@ describe('courbe dérivée', () => {
 		expect(createEvaluator(d!.ast!)(-2)).toBeCloseTo(-4);
 	});
 
-	it('se distingue de la fonction : pointillés, trait plus fin, id dérivé', () => {
+	it('se distingue de la fonction : pointillé fin, trait plus fin, id dérivé', () => {
 		const d = derivativeCurve(curve('x^2'));
 
-		expect(d?.lineStyle).toBe('dashed');
+		expect(d?.lineStyle).toBe('dotted');
 		expect(d?.lineWidth).toBeLessThan(curve('x^2').lineWidth);
 		expect(d?.id).toBe('x^2:derivative');
+	});
+
+	// Les places (CURVE_SLOTS) attribuent plein et pointillés : une dérivée tracée
+	// dans l'un d'eux se confondrait avec la courbe d'une autre place, la 5ᵉ
+	// (bleu pointillé) ressemblant à la dérivée de la 1ʳᵉ.
+	it('porte un style qu’aucune place n’attribue, pour ne pas imiter une autre courbe', () => {
+		const d = derivativeCurve(curve('x^2'));
+
+		expect(CURVE_SLOTS.map((s) => s.lineStyle)).not.toContain(d?.lineStyle);
 	});
 
 	it('ne se dérive pas elle-même', () => {

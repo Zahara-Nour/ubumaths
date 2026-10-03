@@ -18,6 +18,7 @@
 <script lang="ts">
 	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import type { GenericFunctionConfig } from '$lib/mathAST';
 	import { Check, X, Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { MULTIPLE_ANSWERS_INSTRUCTION } from '$lib/questions/feedback';
@@ -38,6 +39,8 @@
 		disabled?: boolean;
 		showValidation?: boolean;
 		onSubmit?: (index: number) => void;
+		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
+		genericFunctions?: GenericFunctionConfig;
 	}
 
 	let {
@@ -46,7 +49,8 @@
 		multipleAnswers = false,
 		disabled = false,
 		showValidation = false,
-		onSubmit
+		onSubmit,
+		genericFunctions
 	}: Props = $props();
 
 	// Toggle choice selection
@@ -153,7 +157,7 @@
 
 				<!-- Choice content - now a ResolvedMarkdown string rendered directly -->
 				<div class="choice-content">
-					<MarkdownRenderer content={choice.content} />
+					<MarkdownRenderer content={choice.content} {genericFunctions} />
 				</div>
 
 				<!-- Validation indicator -->

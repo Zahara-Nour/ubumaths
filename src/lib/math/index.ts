@@ -8,7 +8,7 @@
  * @module math
  */
 
-import { parseLatex, parseLatexSafe } from '$lib/mathAST/parser';
+import { parseLatex, parseLatexSafe, type GenericFunctionConfig } from '$lib/mathAST/parser';
 import { evaluate } from '$lib/mathAST/eval';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { normalize, denormalize } from '$lib/mathAST/normal';
@@ -137,19 +137,27 @@ export function evaluateExpression(latex: string): number | string {
  * @param options.assumptions - Hypothèses de l'énoncé (ADR 0012), ex.
  *                            `{ x: 'positive', n: 'integer' }` : la comparaison se fait
  *                            sur le domaine déclaré. Absent ou vide : rien ne change.
+ * @param options.genericFunctions - Fonctions génériques à reconnaître (`P'(2)` déclaré
+ *                            par le modèle). Absent : défauts du parseur, rien ne change.
  */
 export function areEquivalent(
 	latex1: string,
 	latex2: string,
-	options?: { signal?: AbortSignal; timeoutMs?: number; assumptions?: AnswerAssumptions }
+	options?: {
+		signal?: AbortSignal;
+		timeoutMs?: number;
+		assumptions?: AnswerAssumptions;
+		genericFunctions?: GenericFunctionConfig;
+	}
 ): boolean {
 	// La réponse attendue (latex2) décide du rôle des virgules nues : une
 	// attendue « (3,14) » est un couple, pas le décimal 3,14 (cf. mathAST/decimal-comma)
 	const commas = expectsSeparatorComma(latex2) ? 'separator' : 'decimal';
 	const cleaned1 = stripLatexSpacing(latex1, commas);
 	const cleaned2 = stripLatexSpacing(latex2, commas);
-	const result1 = parseLatexSafe(cleaned1);
-	const result2 = parseLatexSafe(cleaned2);
+	const parseOptions = { genericFunctions: options?.genericFunctions };
+	const result1 = parseLatexSafe(cleaned1, parseOptions);
+	const result2 = parseLatexSafe(cleaned2, parseOptions);
 
 	if (!result1.ast || !result2.ast) {
 		return cleaned1 === cleaned2;
