@@ -72,6 +72,31 @@ describe('données — dépouillement', () => {
 		]);
 	});
 
+	it('lus comme dans l’atelier (Q92) : +3, 1e3, 0012, -0, fractions ; noms récrits', () => {
+		expect(tally('données: +3 ; 2 ; 1e3 ; 0012 ; 12')).toEqual([
+			['2', 1],
+			['3', 1],
+			['12', 2],
+			['1000', 1]
+		]);
+		expect(tally('données: -0 ; 0 ; 12,50 ; 12,5')).toEqual([
+			['0', 2],
+			['12,5', 2]
+		]);
+		// Des nombres : ordre croissant, et 1/2 = 0,5 = 2/4
+		expect(tally('données: 1/2 ; 1/4 ; 0,5 ; +2/4')).toEqual([
+			['1/4', 1],
+			['1/2', 3]
+		]);
+	});
+
+	it('une modalité garde son écriture : vrai signe moins, accents composés (NFC)', () => {
+		expect(tally('données: A−B ; A−B')).toEqual([['A−B', 2]]);
+		expect(tally(`données: ${'e\u0301t\u00e9'} ; ${'\u00e9t\u00e9'}`)).toEqual([
+			['e\u0301t\u00e9', 2]
+		]);
+	});
+
 	it('plusieurs lignes `données:` mises bout à bout ; point-virgule final permis', () => {
 		expect(tally('données: 1 ; 2 ;\ndonnées: 2 ; 3')).toEqual([
 			['1', 1],
@@ -117,6 +142,24 @@ describe('données — indicateurs calculés sur la série brute', () => {
 		]);
 	});
 
+	it('décimaux, signe moins, série paire, fractions : ceux du module statistique', () => {
+		const raw = [12.5, -3, 12.5, 2, 10, 0.25];
+		const scene = buildStatChartScene(
+			specOf(
+				'données: 12,50 ; −3 ; 12,5 ; 2 ; 10 ; 1/4\nindicateurs: moyenne ; médiane ; quartiles'
+			)
+		);
+		const s = describeList(raw)!;
+		const v = (x: number) => formatApproxValue(x, 'fr');
+
+		expect(scene.indicators).toEqual([
+			`Moyenne ${v(s.mean)}`,
+			`Médiane ${v(s.median)}`,
+			`Q1 ${v(s.q1)}`,
+			`Q3 ${v(s.q3)}`
+		]);
+	});
+
 	it('une série qualitative refuse les indicateurs (message habituel)', () => {
 		expect(errorOf('données: Bus ; Vélo\nindicateurs: moyenne')).toMatch(
 			/toutes les catégories doivent être des nombres/
@@ -135,8 +178,15 @@ describe('données — Typst', () => {
 		);
 
 		expect(typst).not.toContain('Figure indisponible');
-		expect(typst).toContain('[#"2"]');
-		expect(typst).toContain('[#"12"]');
+		// Catégories dans l'ordre croissant, et les effectifs écrits dans cet ordre
+		const at = (text: string) => typst.indexOf(`[#"${text}"]`);
+		expect(at('8')).toBeGreaterThan(-1);
+		expect(at('8')).toBeLessThan(at('12'));
+		expect(at('12')).toBeLessThan(at('15'));
+		const values = [...typst.matchAll(/anchor: "south", text\(size: [\d.]+pt\)\[#"(\d+)"\]/g)].map(
+			(m) => m[1]
+		);
+		expect(values).toEqual(['1', '2', '1']);
 	});
 });
 
@@ -151,18 +201,32 @@ describe('données — erreurs situées', () => {
 		expect(errorOf('A = 3\ndonnées: 1 ; 2')).toBe(`Ligne 2 : ${message}`);
 	});
 
-	it('au plus 500 valeurs', () => {
-		const many = Array.from({ length: 612 }, (_, i) => i % 5).join(' ; ');
-		expect(errorOf(`données: ${many}`)).toBe('Ligne 1 : données : au plus 500 valeurs (ici 612)');
+	it('au plus 500 valeurs : 500 passent, 501 non', () => {
+		const many = (n: number) => Array.from({ length: n }, (_, i) => i % 5).join(' ; ');
+		expect(specOf(`données: ${many(500)}`).data).toHaveLength(5);
+		expect(errorOf(`données: ${many(501)}`)).toBe(
+			'Ligne 1 : données : au plus 500 valeurs (ici 501)'
+		);
 	});
 
-	it('trop de valeurs différentes : 30 barres, 12 secteurs', () => {
+	it('valeurs différentes : 30 barres et 12 secteurs passent, une de plus non', () => {
 		const distinct = (n: number) => Array.from({ length: n }, (_, i) => i).join(' ; ');
-		expect(errorOf(`données: ${distinct(35)}`)).toBe(
-			'Ligne 1 : données : 35 valeurs différentes, au plus 30 barres'
+		expect(specOf(`données: ${distinct(30)}`).data).toHaveLength(30);
+		expect(errorOf(`données: ${distinct(31)}`)).toBe(
+			'Ligne 1 : données : 31 valeurs différentes, au plus 30 barres'
 		);
+		expect(specOf(`données: ${distinct(12)}`, 'circulaire').data).toHaveLength(12);
 		expect(errorOf(`données: ${distinct(13)}`, 'circulaire')).toBe(
 			'Ligne 1 : données : 13 valeurs différentes, au plus 12 secteurs'
+		);
+	});
+
+	it('l’erreur pointe la bonne ligne `données:`', () => {
+		expect(errorOf(`titre: T\ndonnées: a ; b\n\ndonnées: ${'x'.repeat(41)}`)).toMatch(
+			/^Ligne 4 : nom de catégorie trop long/
+		);
+		expect(errorOf('données: 1 ; 2\ndonnées: 3 ; ; 4')).toBe(
+			'Ligne 2 : valeur vide (un « ; » de trop ?)'
 		);
 	});
 
@@ -178,6 +242,16 @@ describe('données — erreurs situées', () => {
 		);
 		expect(errorOf('données: fille, garçon')).toBe(
 			'Ligne 1 : séparer les valeurs par des points-virgules : fille ; garçon'
+		);
+		// Mélanges et fractions : refusés aussi ; un décimal n'est pas coupé
+		expect(errorOf('données: 12, Bus')).toBe(
+			'Ligne 1 : séparer les valeurs par des points-virgules : 12 ; Bus'
+		);
+		expect(errorOf('données: 1/2, 1/4')).toBe(
+			'Ligne 1 : séparer les valeurs par des points-virgules : 1/2 ; 1/4'
+		);
+		expect(errorOf('données: 12,5, 13')).toBe(
+			'Ligne 1 : séparer les valeurs par des points-virgules : 12,5 ; 13'
 		);
 		expect(tally('données: 12,5 ; 3')).toEqual([
 			['3', 1],

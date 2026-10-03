@@ -14,7 +14,8 @@ Décisions Q100-Q108 (`outils-statistiques-v2-progress.md`). Spec PR (a) validé
 - [x] Empreinte du parseur avant / après : 1 642 textes (970 contenus prod + .md du dépôt)
       IDENTIQUES — ⚠️ un seul bloc statistique dans ce corpus : la preuve de non-régression des
       blocs sans `données:` est la suite stat-chart (265 tests existants, verts)
-- [ ] Revue, PR, CI, merge
+- [x] Revue : lecture des nombres PARTAGÉE avec l’atelier (`statistics/read-value.ts`, Q92 : `+3`, `1e3`, fractions = nombres) ; noms récrits (`0012` → 12, `-0` → 0) ; virgules refusées aussi pour mots+nombres et fractions ; `12,5, 13` corrigé en `12,5 ; 13` ; modalité gardée telle quelle (−, NFC) ; tests aux bornes exactes
+- [ ] PR, CI, merge
 
 ## PR (b) — histogramme / polygone, `classes:` (Q104)
 

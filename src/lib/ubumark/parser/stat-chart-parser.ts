@@ -70,6 +70,7 @@ import { summarizeClasses } from '$lib/statistics/classes';
 import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
+import { readListValue } from '$lib/statistics/read-value';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -618,15 +619,36 @@ function checkSimulationOptions(
 	return null;
 }
 
-/** Une valeur de série brute qui se lit comme un nombre (vrai signe moins compris) */
-function isRawNumber(text: string): boolean {
-	return PLAIN_NUMBER_REGEX.test(text.replaceAll('−', '-'));
+/**
+ * Une valeur de série brute, si elle se lit comme un nombre : la lecture de
+ * l'atelier (Q92 — `+3`, `1e3`, `1/2`, vrai signe moins), sinon null.
+ */
+function rawNumber(text: string): number | null {
+	return readListValue(text);
+}
+
+/** `1/2`, `−3/4`, `+2/4` : une fraction d'entiers, écrite proprement */
+const RAW_FRACTION = /^\s*([-+]?\d+)\s*\/\s*(\d+)\s*$/;
+
+/**
+ * Nom d'une catégorie numérique : la fraction telle qu'écrite (sans `+`), sinon
+ * le nombre récrit (`0012` → `12`, `-0` → `0`, `12,50` → `12,5`, `1e3` →
+ * `1000`), lisible par les indicateurs.
+ */
+function numericLabel(text: string, value: number): string {
+	const fraction = RAW_FRACTION.exec(text.replaceAll('−', '-'));
+	if (fraction) return `${Number(fraction[1])}/${Number(fraction[2])}`;
+	const written = String(value);
+	if (written.includes('e')) {
+		throw new LineError(`données : « ${text} » est trop grand ou trop petit pour un diagramme`);
+	}
+	return written.replace('.', ',');
 }
 
 /**
  * Les valeurs d'une ligne `données:` (Q101). Un point-virgule final ne compte
  * pas ; une valeur vide ailleurs, ou des virgules en guise de séparateur
- * (`12, 15, 8`, la règle de l'atelier Q86), sont refusées.
+ * (`12, 15, 8`, `12, Bus`), sont refusées en montrant la correction.
  */
 function parseRawEntries(text: string): string[] {
 	const entries = text.split(';').map((entry) => entry.trim());
@@ -634,12 +656,12 @@ function parseRawEntries(text: string): string[] {
 	if (entries.length === 1 && entries[0] === '') throw new LineError('données : aucune valeur');
 	for (const entry of entries) {
 		if (entry === '') throw new LineError('valeur vide (un « ; » de trop ?)');
-		if (!entry.includes(',') || isRawNumber(entry)) continue;
-		// `12,5` se lit : décimal ; `12, 15, 8` ne se lit pas et donne des nombres
-		const pieces = entry.split(',').map((piece) => piece.trim());
-		const allNumbers = pieces.every(isRawNumber);
-		const allWords = pieces.every((piece) => /\p{L}/u.test(piece) && !isRawNumber(piece));
-		if (pieces.length >= 2 && (allNumbers || allWords)) {
+		// `12,5` se lit : un décimal, jamais deux valeurs
+		if (!entry.includes(',') || rawNumber(entry) !== null) continue;
+		// `12,5, 13` : couper d'abord sur « virgule espace », pour ne pas casser 12,5
+		const spaced = entry.split(/\s*,\s+/);
+		const pieces = (spaced.length >= 2 ? spaced : entry.split(',')).map((p) => p.trim());
+		if (pieces.length >= 2 && pieces.every((piece) => piece !== '')) {
 			throw new LineError(`séparer les valeurs par des points-virgules : ${pieces.join(' ; ')}`);
 		}
 	}
@@ -647,10 +669,11 @@ function parseRawEntries(text: string): string[] {
 }
 
 /**
- * Dépouiller une série brute (Q103) : nombres dans l'ordre croissant (une même
- * valeur écrite `12,5` et `12,50` ne fait qu'une catégorie), sinon modalités
- * dans l'ordre d'apparition, comparées sans la casse, écrites comme leur
- * première occurrence (Q85). Rend les catégories, ou l'erreur située.
+ * Dépouiller une série brute (Q103) : si toutes les valeurs se lisent comme
+ * des nombres, dans l'ordre croissant (`12,5` et `12,50`, `1/2` et `0,5` ne
+ * font qu'une catégorie) ; sinon modalités dans l'ordre d'apparition,
+ * comparées sans la casse (et en NFC), écrites comme leur première occurrence
+ * (Q85). Rend les catégories, ou l'erreur située.
  */
 function tallyRawData(
 	kind: StatChartKind,
@@ -668,15 +691,27 @@ function tallyRawData(
 		);
 	}
 
-	const numeric = raw.every((entry) => isRawNumber(entry.text));
+	const values = raw.map((entry) => rawNumber(entry.text));
+	const numeric = values.every((value) => value !== null);
 	const groups = new Map<string, { label: string; value: number; count: number; line: number }>();
-	for (const { text, line } of raw) {
-		const written = text.replaceAll('−', '-');
-		const value = numeric ? toNumber(written) : 0;
-		const key = numeric ? String(value) : text.toLocaleLowerCase('fr');
+	for (const [i, { text, line }] of raw.entries()) {
+		// `+ 0` : -0 et 0 sont la même catégorie
+		const value = numeric ? (values[i] ?? 0) + 0 : 0;
+		const key = numeric ? String(value) : text.normalize('NFC').toLocaleLowerCase('fr');
 		const group = groups.get(key);
-		if (group) group.count++;
-		else groups.set(key, { label: written, value, count: 1, line });
+		if (group) {
+			group.count++;
+			continue;
+		}
+		let label = text;
+		if (numeric) {
+			try {
+				label = numericLabel(text, value);
+			} catch (error) {
+				return at(line, error instanceof Error ? error.message : String(error));
+			}
+		}
+		groups.set(key, { label, value, count: 1, line });
 	}
 	const categories = [...groups.values()];
 	if (numeric) categories.sort((a, b) => a.value - b.value);
