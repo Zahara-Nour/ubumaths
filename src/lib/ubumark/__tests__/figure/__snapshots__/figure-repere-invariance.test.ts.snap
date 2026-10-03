@@ -34,6 +34,7 @@ exports[`figure sans repère — rendu inchangé > asymetrique : SVG d'écran id
       "elementId": "pt_1",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -53,6 +54,7 @@ exports[`figure sans repère — rendu inchangé > asymetrique : SVG d'écran id
       "elementId": "pt_2",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -78,15 +80,20 @@ exports[`figure sans repère — rendu inchangé > asymetrique : Typst identique
   import cetz.draw: *
   scale(x: 0.45, y: 0.45)
   rect((2, 1), (12, 8), stroke: none)
-  // element ln_3
-  line((2, 1.286), (11.4, 8), stroke: rgb("#000000") + 1.5pt)
-  // element circ_4
-  circle((10, 7), radius: 2.5, stroke: rgb("#000000") + 1.5pt, fill: none)
-  // element pt_1
-  circle((3, 2), radius: 0.178, fill: rgb("#000000"), stroke: none)
+  content((2, 8), anchor: "north-west", box(width: 4.5cm, height: 3.15cm, clip: true, place(top + left, dx: -1cm, dy: -1.675cm, cetz.canvas({
+    import cetz.draw: *
+    scale(x: 0.45, y: 0.45)
+    rect((-0.222, -1.222), (14.722, 11.722), stroke: none)
+    // element ln_3
+    line((2, 1.286), (11.4, 8), stroke: rgb("#000000") + 1.5pt)
+    // element circ_4
+    circle((10, 7), radius: 2.5, stroke: rgb("#000000") + 1.5pt, fill: none)
+    // element pt_1
+    circle((3, 2), radius: 0.178, fill: rgb("#000000"), stroke: none)
+    // element pt_2
+    circle((10, 7), radius: 0.178, fill: rgb("#000000"), stroke: none)
+  }))))
   content((3.333, 2.278), anchor: "south-west", text(style: "italic", "A"))
-  // element pt_2
-  circle((10, 7), radius: 0.178, fill: rgb("#000000"), stroke: none)
   content((10.333, 7.278), anchor: "south-west", text(style: "italic", "B"))
 })
 ]"
@@ -195,6 +202,7 @@ exports[`figure sans repère — rendu inchangé > triangle : SVG d'écran ident
       "elementId": "pt_1",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -214,6 +222,7 @@ exports[`figure sans repère — rendu inchangé > triangle : SVG d'écran ident
       "elementId": "pt_2",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -233,6 +242,7 @@ exports[`figure sans repère — rendu inchangé > triangle : SVG d'écran ident
       "elementId": "pt_3",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -252,6 +262,7 @@ exports[`figure sans repère — rendu inchangé > triangle : SVG d'écran ident
       "elementId": "mid_11",
       "kind": "dot",
       "r": 3,
+      "shape": "dot",
     },
     {
       "anchor": "start",
@@ -288,34 +299,39 @@ exports[`figure sans repère — rendu inchangé > triangle : Typst identique 1`
   import cetz.draw: *
   scale(x: 0.7222, y: 0.7222)
   rect((-1, -1), (8, 6), stroke: none)
-  // element vec_7
-  line((5, 0), (0, 4), stroke: rgb("#000000") + 1.5pt, mark: (end: "stealth", fill: rgb("#000000")))
-  // element ln_9
-  line((0, -1), (0, 6), stroke: rgb("#000000") + 1.5pt)
-  // element ray_10
-  line((5, 0), (-1, 4.8), stroke: rgb("#000000") + 1.5pt)
-  // element circ_8
-  circle((0, 0), radius: 1, stroke: rgb("#000000") + 1.5pt, fill: none)
-  // element poly_4
-  line((0, 0), (5, 0), (0, 4), close: true, stroke: rgb("#000000") + 1.5pt, fill: none)
-  // element ang_5
-  line((0.415, 0), (0.415, 0.415), (0, 0.415), stroke: rgb("#000000") + 1pt)
-  // element segM_6
-  line((2.445, 0.208), (2.445, -0.208), stroke: rgb("#000000") + 1.5pt)
-  line((2.555, 0.208), (2.555, -0.208), stroke: rgb("#000000") + 1.5pt)
-  // element pt_1
-  circle((0, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
+  content((-1, 6), anchor: "north-west", box(width: 6.5cm, height: 5.055cm, clip: true, place(top + left, dx: -1cm, dy: -1cm, cetz.canvas({
+    import cetz.draw: *
+    scale(x: 0.7222, y: 0.7222)
+    rect((-2.385, -2.385), (9.385, 7.385), stroke: none)
+    // element vec_7
+    line((5, 0), (0, 4), stroke: rgb("#000000") + 1.5pt, mark: (end: "stealth", fill: rgb("#000000")))
+    // element ln_9
+    line((0, -1), (0, 6), stroke: rgb("#000000") + 1.5pt)
+    // element ray_10
+    line((5, 0), (-1, 4.8), stroke: rgb("#000000") + 1.5pt)
+    // element circ_8
+    circle((0, 0), radius: 1, stroke: rgb("#000000") + 1.5pt, fill: none)
+    // element poly_4
+    line((0, 0), (5, 0), (0, 4), close: true, stroke: rgb("#000000") + 1.5pt, fill: none)
+    // element ang_5
+    line((0.415, 0), (0.415, 0.415), (0, 0.415), stroke: rgb("#000000") + 1pt)
+    // element segM_6
+    line((2.445, 0.208), (2.445, -0.208), stroke: rgb("#000000") + 1.5pt)
+    line((2.555, 0.208), (2.555, -0.208), stroke: rgb("#000000") + 1.5pt)
+    // element pt_1
+    circle((0, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
+    // element pt_2
+    circle((5, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
+    // element pt_3
+    circle((0, 4), radius: 0.111, fill: rgb("#000000"), stroke: none)
+    // element mid_11
+    circle((2.5, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
+    // element txt_12
+  }))))
   content((0.208, 0.173), anchor: "south-west", text(style: "italic", "A"))
-  // element pt_2
-  circle((5, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
   content((5.208, 0.173), anchor: "south-west", text(style: "italic", "B"))
-  // element pt_3
-  circle((0, 4), radius: 0.111, fill: rgb("#000000"), stroke: none)
   content((0.208, 4.173), anchor: "south-west", text(style: "italic", "C"))
-  // element mid_11
-  circle((2.5, 0), radius: 0.111, fill: rgb("#000000"), stroke: none)
   content((2.708, 0.173), anchor: "south-west", text(style: "italic", "I"))
-  // element txt_12
   content((2, 3), text(size: 9pt, fill: rgb("#000000"), "hypoténuse"))
 })
 ]"

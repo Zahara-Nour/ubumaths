@@ -22,7 +22,7 @@
 <script lang="ts">
 	import type { FigureNode } from '$lib/ubumark/types/figure';
 	import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
-	import { figureToSvg, type FigureShape } from '$lib/ubumark/utils/figure-svg';
+	import { accentTspans, figureToSvg, type FigureShape } from '$lib/ubumark/utils/figure-svg';
 	import FigureErrors from './FigureErrors.svelte';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 	import { readContentLocale } from '../content-locale';
@@ -98,7 +98,39 @@
 		{:else if s.kind === 'arrowhead'}
 			<polygon data-element={s.elementId} points={s.points} style:fill={s.color} />
 		{:else if s.kind === 'dot'}
-			<circle data-element={s.elementId} cx={s.cx} cy={s.cy} r={s.r} style:fill={s.color} />
+			<!-- Forme du point (`forme=`) : mêmes proportions qu'au PDF (export-typst) -->
+			{#if s.shape === 'cross'}
+				{@const h = s.r * 1.25}
+				<path
+					data-element={s.elementId}
+					class="figure-point-trait"
+					d="M {s.cx - h} {s.cy - h} L {s.cx + h} {s.cy + h} M {s.cx + h} {s.cy - h} L {s.cx -
+						h} {s.cy + h}"
+					style:stroke={s.color}
+				/>
+			{:else if s.shape === 'circle'}
+				<circle
+					data-element={s.elementId}
+					class="figure-point-trait"
+					cx={s.cx}
+					cy={s.cy}
+					r={s.r}
+					style:stroke={s.color}
+					fill="none"
+				/>
+			{:else if s.shape === 'square'}
+				{@const h = s.r * 0.875}
+				<rect
+					data-element={s.elementId}
+					x={s.cx - h}
+					y={s.cy - h}
+					width={2 * h}
+					height={2 * h}
+					style:fill={s.color}
+				/>
+			{:else}
+				<circle data-element={s.elementId} cx={s.cx} cy={s.cy} r={s.r} style:fill={s.color} />
+			{/if}
 		{:else if s.kind === 'label'}
 			<text
 				data-element={s.elementId}
@@ -108,7 +140,12 @@
 				y={s.y}
 				style:fill={s.color}
 				text-anchor={s.anchor}
-				dominant-baseline={s.baseline === 'middle' ? 'middle' : undefined}>{s.text}</text
+				dominant-baseline={s.baseline === 'middle' ? 'middle' : undefined}
+				>{#if s.runs}{#each accentTspans(s.runs) as t, j (j)}<tspan
+							class={t.className}
+							dx={t.dx}
+							dy={t.dy}>{t.text}</tspan
+						>{/each}{:else}{s.text}{/if}</text
 			>
 		{/if}
 	{/each}
@@ -221,6 +258,12 @@
 		font-size: 10px;
 	}
 
+	/* Croix et cercle vide : trait de 1,5 comme au PDF (1,5 pt) */
+	.figure-point-trait {
+		stroke-width: 1.5;
+		fill: none;
+	}
+
 	/* 13px = FIGURE_LABEL_FONT_PX (figure-svg.ts) : le placement des noms en dépend */
 	.figure-etiquette {
 		font-size: 13px;
@@ -231,5 +274,14 @@
 
 	.figure-nom {
 		font-style: italic;
+	}
+
+	/* `n⃗` : lettre en italique (comme en maths), flèche plus petite au-dessus */
+	.figure-accent-base {
+		font-style: italic;
+	}
+
+	.figure-accent {
+		font-size: 10px;
 	}
 </style>

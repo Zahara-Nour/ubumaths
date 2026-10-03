@@ -193,7 +193,7 @@ function assertNameNotReserved(name: string, line: number): void {
  */
 function unknownVariableHint(name: string): string {
 	const lower = name.toLowerCase();
-	if (lower === 'pi') {
+	if (lower === 'pi' || name === 'π') {
 		return ' (la constante π s\'écrit "\\pi" avec backslash)';
 	}
 	if (name === 'E' || lower === 'euler') {

@@ -113,6 +113,8 @@ export function generateFigureTypst(node: FigureNode, options: FigureTypstOption
 		markScale: 1 / unitCm,
 		includeImport: false,
 		includeViewportBounds: true,
+		// Objets découpés à la fenêtre comme à l'écran ; repère, noms et textes entiers
+		clipToViewport: true,
 		annotate: true
 	});
 	return `#import "@preview/cetz:0.3.0"\n\n#align(center)[\n${canvas}\n]`;

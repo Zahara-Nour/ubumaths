@@ -85,6 +85,7 @@ describe('figure → Typst', () => {
 			...block.map((l) => `   ${l}`)
 		].join('\n');
 		const typst = generateTypst(parseMarkdown(md), { includeSetup: false });
-		expect(typst.match(/cetz\.canvas/g)).toHaveLength(2);
+		// Une toile par figure (la toile découpée à la fenêtre est imbriquée : `#cetz`)
+		expect(typst.match(/#cetz\.canvas/g)).toHaveLength(2);
 	});
 });

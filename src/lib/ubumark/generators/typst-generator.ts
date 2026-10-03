@@ -769,6 +769,26 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 // ============================================================================
 
 /**
+ * `trim()` qui respecte l'espace de contrôle LaTeX `\ ` : une cellule
+ * `x \iff\ ` découpée sur `&` puis rognée finissait par un `\` orphelin, qui
+ * échappait en Typst le délimiteur suivant (`<=>\$`, `display(x\)`) →
+ * « unclosed delimiter », TOUTE la fiche échouait. Un nombre impair de `\` en
+ * fin de chaîne garde donc une espace.
+ */
+function trimLatex(text: string): string {
+	const start = text.trimStart();
+	const end = start.trimEnd();
+	if (end.length === start.length) return end;
+	const backslashes = end.match(/\\+$/)?.[0].length ?? 0;
+	return backslashes % 2 === 1 ? `${end} ` : end;
+}
+
+/** Cellules d'une ligne d'alignement : `&` non échappé (`\&` est une esperluette). */
+function splitAlignCells(row: string): string[] {
+	return row.split(/(?<!\\)&/).map(trimLatex);
+}
+
+/**
  * Pattern to match alignment symbols in LaTeX align environments.
  * Matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
  */
@@ -838,7 +858,7 @@ function generateAlignedEquation(content: string): string {
 	// Split by \\ to get rows
 	const rows = protectedContent
 		.split(/\\\\/)
-		.map((row) => row.trim())
+		.map(trimLatex)
 		.filter((row) => row.length > 0)
 		// Restore nested environments
 		.map((row) => row.replace(/__NESTED_ENV_(\d+)__/g, (_, idx) => nestedEnvs[parseInt(idx)]));
@@ -849,9 +869,9 @@ function generateAlignedEquation(content: string): string {
 
 	// Check if this uses alignment symbols (implications, equivalences, equations, inequations)
 	const hasAlignmentSymbol = rows.some((row) => {
-		const parts = row.split('&');
+		const parts = splitAlignCells(row);
 		if (parts.length >= 2) {
-			const rightPart = parts[1].trim();
+			const rightPart = parts[1];
 			return ALIGNMENT_SYMBOL_PATTERN.test(rightPart);
 		}
 		return false;
@@ -872,7 +892,7 @@ function generateAlignedGrid(rows: string[]): string {
 	const gridRows: string[] = [];
 
 	for (const row of rows) {
-		const parts = row.split('&').map((p) => p.trim());
+		const parts = splitAlignCells(row);
 
 		// Column 1: membre de gauche de CHAQUE ligne (vide pour une continuation `&=`).
 		// Il n'était écrit que pour la première ligne : `3p&=0.45` sortait « = 0,45 ».
@@ -880,7 +900,8 @@ function generateAlignedGrid(rows: string[]): string {
 		const col1 = parts[0] ? `[$${convertLatexToTypstMath(markDisplayFractions(parts[0]))}$]` : '[]';
 
 		if (parts.length >= 2) {
-			const rightPart = parts.slice(1).join('&').trim();
+			// `&` suivants (`a &\iff& b`) : simples points d'alignement, pas de cellule en plus
+			const rightPart = trimLatex(parts.slice(1).join(' '));
 
 			// Extract alignment symbol (=, <, >, \Rightarrow, \leq, etc.)
 			const symbolMatch = rightPart.match(ALIGNMENT_SYMBOL_PATTERN);
@@ -890,7 +911,7 @@ function generateAlignedGrid(rows: string[]): string {
 			if (symbolMatch) {
 				const symbol = symbolMatch[0];
 				col2 = `[$${convertLatexToTypstMath(symbol)}$]`;
-				restOfRight = rightPart.slice(symbol.length).trim();
+				restOfRight = trimLatex(rightPart.slice(symbol.length));
 			}
 
 			// Extract explanatory text (after \quad or \qquad followed by \text)
@@ -905,8 +926,8 @@ function generateAlignedGrid(rows: string[]): string {
 				// Find where the \quad starts
 				const quadIndex = restOfRight.search(/\\q?quad/);
 				if (quadIndex !== -1) {
-					col3Content = restOfRight.slice(0, quadIndex).trim();
-					col4Content = restOfRight.slice(quadIndex).trim();
+					col3Content = trimLatex(restOfRight.slice(0, quadIndex));
+					col4Content = trimLatex(restOfRight.slice(quadIndex));
 					// Remove the \quad/\qquad prefix from the text
 					col4Content = col4Content.replace(/^\\q?quad\s*/, '');
 				}
@@ -944,11 +965,11 @@ function generateSimpleAlignGrid(rows: string[]): string {
 	const gridRows: string[] = [];
 
 	for (const row of rows) {
-		const parts = row.split('&').map((p) => p.trim());
+		const parts = splitAlignCells(row);
 
 		if (parts.length >= 2) {
 			const leftPart = convertLatexToTypstMath(parts[0]);
-			const rightPart = convertLatexToTypstMath(parts.slice(1).join('&'));
+			const rightPart = convertLatexToTypstMath(parts.slice(1).join(' '));
 			// Use inline math $...$ (no spaces) to avoid centering
 			gridRows.push(`  [$${leftPart}$], [$${rightPart}$]`);
 		} else {
@@ -2256,7 +2277,7 @@ export function convertLatexToTypstMath(latex: string): string {
 		// Split by \\ and clean up
 		const lines = content
 			.split(/\\\\/)
-			.map((line: string) => line.trim())
+			.map(trimLatex)
 			.filter((line: string) => line.length > 0);
 		// Wrap each line in display() for normal size
 		// Virgules de premier niveau protégées : sinon `display(… -300, n in NN)`
@@ -2712,7 +2733,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	// LaTeX control space `\ ` (as in `400\ \text{m}^2`): in Typst math a
 	// backslash before a space is a LINE BREAK. `\\` pairs are matched first so
 	// the line break `x \\ y` is left for step 10.
-	result = result.replace(/\\\\|\\ /g, (m) => (m === '\\ ' ? ' space ' : m));
+	// Espace de contrôle suivie d'une tabulation ou d'un retour à la ligne : idem.
+	result = result.replace(/\\\\|\\[ \t\r\n]/g, (m) => (m === '\\\\' ? m : ' space '));
 
 	// 8. LaTeX tilde (~) is a non-breaking space in math mode
 	// In Typst math, ~ would be interpreted as tilde symbol, so convert to space
