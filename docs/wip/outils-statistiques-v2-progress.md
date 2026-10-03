@@ -146,3 +146,7 @@ Manche 7 (2026-10-03), lot 4 « série brute dans les blocs » — recommandatio
 
 PR prévues : (a) barres / circulaire (Q100-Q103, Q105) ; (b) histogramme / polygone + `classes:`
 (Q104) ; (c) `série:` (Q106).
+
+- **Lot 4 (a) livrée #682** (2026-10-03) : `données:` dans barres / circulaire. Lecture des nombres
+  PARTAGÉE avec l'atelier (`statistics/read-value.ts`, Q92). Détail : `blocs-donnees-progress.md`.
+  Suivant : (b) histogramme / polygone + `classes:` (Q104) ; (c) `série:` (Q106).
