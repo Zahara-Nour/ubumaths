@@ -223,6 +223,14 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/rendu-ensembles`), ne plus contourner :
+dans le PDF, une commande collée à la suivante (`\mathbb{N}\subset\mathbb{Z}`, `𝔻\subset`,
+`x\in𝔻`, `a\cdot{b}`, `\alpha2`) ne fait plus échouer la fiche ; `\mathbb{X}` pour toute lettre
+(`\mathbb{D}` = 𝔻) ; `\not\subset`, `\nsubset`, `\not\subseteq`, `\nsubseteq`, `\not\supset`,
+`\not\in`, `\ni`, `\not=`, `\neg` / `\lnot`, `\wedge` / `\land`, `\vee` / `\lor`,
+`\complement`, `\operatorname{Card}` ; à l'écran comme au PDF, une formule réduite à `$𝔻$`
+(caractère hors du plan de base) n'est plus coupée en deux caractères cassés.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -277,11 +285,6 @@ Toujours vrai :
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
-- **PDF, ensembles** (relevé sur la logique, 2026-10-03) : `\mathbb{D}` sort « mathbbD » (seuls
-  R, N, Z, Q, C sont convertis) → caractère `𝔻` ; mais une formule réduite à `$𝔻$` est coupée en
-  deux moitiés UTF-16 (caractères cassés) → toujours derrière une commande (`x\in 𝔻`) ; une
-  commande collée `\mathbb{N}\subset` fait échouer TOUTE la fiche → espace (`\mathbb{N} \subset`) ;
-  `\not\subset`, `\nsubseteq`, `\operatorname{Card}` sortent en texte brut → `\mathrm{Card}`.
 - **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
   (`+ -3`) → écrire `({{p}})`.
 - **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
