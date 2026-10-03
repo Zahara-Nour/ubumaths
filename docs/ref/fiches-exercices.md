@@ -223,6 +223,15 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/regle-negatif-inegalite`), ne plus
+contourner : dans une règle de validation (`custom`, `range`, `divisor`, `multiple`,
+`equation_root`, `equivalent`), une variable négative ou une expression est substituée entre
+parenthèses (`answer^2 + {{p}} < {{q}}*answer` avec p = −3, `{{p}}^2` vaut p²) ; `({{p}})` reste
+accepté ; `cleanCoefficients` nettoie une inégalité écrite en LaTeX (`\leqslant`, `\geqslant`,
+`\leq`, `\geq`, `\le`, `\ge`, `\neq` : `x^2+1x\leqslant2` → `x^2 + x \leqslant 2`, `\le` / `\leq`
+rendus `\leqslant`) avec les mêmes gardes (chaîne `0\leqslant x\leqslant 2` laissée telle quelle,
+chaque membre garde sa valeur) ; rien à nettoyer : le texte d'auteur reste intact.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -282,10 +291,6 @@ Toujours vrai :
   deux moitiés UTF-16 (caractères cassés) → toujours derrière une commande (`x\in 𝔻`) ; une
   commande collée `\mathbb{N}\subset` fait échouer TOUTE la fiche → espace (`\mathbb{N} \subset`) ;
   `\not\subset`, `\nsubseteq`, `\operatorname{Card}` sortent en texte brut → `\mathrm{Card}`.
-- **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
-  (`+ -3`) → écrire `({{p}})`.
-- **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
-  (`x^2+1x\leqslant2` reste tel quel ; `x^2-x>7` est nettoyé).
 - **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
   vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
   réponse.
