@@ -6,7 +6,8 @@
  * cannot be resolved.
  */
 
-import { colorForPrint } from '$lib/theme/named-colors';
+import { colorForPrint, colorForScreen, namedColorScreen } from '$lib/theme/named-colors';
+import { isValidColor } from './colors';
 import type { Figure, FigureDefaults } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
 import { geoToNumber } from '../compute/to-number';
@@ -76,6 +77,9 @@ export interface GeoStyleResolved {
 	readonly roughPreserveVertices: boolean;
 }
 
+/** Couleur d'un objet sans couleur : le bleu de la palette (décision L2-a) */
+const DEFAULT_ELEMENT_COLOR = 'bleu';
+
 const DASH_ARRAYS: Record<'solid' | 'dashed' | 'dotted', string> = {
 	solid: '',
 	dashed: '12 8',
@@ -85,7 +89,7 @@ const DASH_ARRAYS: Record<'solid' | 'dashed' | 'dotted', string> = {
 export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults): GeoStyleResolved {
 	const dash = element.style?.dash ?? defaults?.defaultDash ?? 'solid';
 	return {
-		color: element.style?.color ?? element.color ?? defaults?.defaultColor ?? '#1e40af',
+		color: element.style?.color ?? element.color ?? defaults?.defaultColor ?? DEFAULT_ELEMENT_COLOR,
 		strokeWidth: element.style?.strokeWidth ?? defaults?.defaultStrokeWidth ?? 2,
 		dash,
 		dashArray: DASH_ARRAYS[dash],
@@ -113,9 +117,6 @@ export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults)
  * Le style à IMPRIMER (exports Typst / SVG / TikZ) : une couleur nommée prend
  * sa variante claire (`rouge` → `#dc2626`). Un hexadécimal passe tel quel, et
  * une couleur inconnue de la palette (nom CSS) aussi, comme avant.
- *
- * Les figures interactives l'utilisent aussi en attendant d'être thémables
- * (lot 2 : docs/wip/palette-figures-progress.md).
  */
 export function resolvePrintStyle(
 	element: GeoElementBase,
@@ -129,6 +130,52 @@ export function resolvePrintStyle(
 			style.fillColor === undefined
 				? undefined
 				: (colorForPrint(style.fillColor) ?? style.fillColor)
+	};
+}
+
+/**
+ * Une couleur à PEINDRE à l'écran (`style:stroke` / `style:fill`) : variable du
+ * thème pour un nom de la palette, hexadécimal tel quel, nom CSS validé par
+ * `isValidColor` (comportement antérieur), sinon null.
+ *
+ * ⚠️ Le résultat finit dans un style inline : jamais de chaîne d'auteur brute.
+ * `isValidColor` n'admet qu'un identifiant alphabétique, un hex ou rgb()/hsl().
+ */
+function screenColor(raw: string): string | null {
+	const themed = colorForScreen(raw);
+	if (themed !== null) return themed;
+	const value = raw.trim();
+	return isValidColor(value) ? value : null;
+}
+
+/**
+ * Un remplissage à peindre : `none` reste « pas de remplissage » (sinon les
+ * secteurs et anneaux, qui retombent sur la couleur du trait, se rempliraient).
+ */
+function screenFill(raw: string): string | undefined {
+	if (raw.trim().toLowerCase() === 'none') return 'none';
+	return screenColor(raw) ?? undefined;
+}
+
+/**
+ * Le style à AFFICHER dans les figures interactives (GeometryCanvas,
+ * constructions) : les noms de la palette suivent le thème clair / sombre
+ * (`rouge` → `var(--color-fig-rouge)`), un hex d'auteur reste fixe (D2a).
+ * Une couleur invalide retombe sur la couleur par défaut (ou sur le bleu de
+ * la palette), un remplissage invalide est ignoré.
+ */
+export function resolveScreenStyle(
+	element: GeoElementBase,
+	defaults?: FigureDefaults
+): GeoStyleResolved {
+	const style = resolveStyle(element, defaults);
+	const fallback =
+		(defaults?.defaultColor !== undefined ? screenColor(defaults.defaultColor) : null) ??
+		namedColorScreen(DEFAULT_ELEMENT_COLOR);
+	return {
+		...style,
+		color: screenColor(style.color) ?? fallback,
+		fillColor: style.fillColor === undefined ? undefined : screenFill(style.fillColor)
 	};
 }
 

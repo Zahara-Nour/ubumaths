@@ -183,16 +183,41 @@ export function roughSegmentMark(
 // HTML string helpers — for {@html} injection in Svelte
 // =============================================================================
 
+/**
+ * Déplace les couleurs que rough.js pose en ATTRIBUTS (`stroke=`, `fill=`)
+ * dans le `style` de chaque nœud. Une `var(--color-fig-rouge)` dans un
+ * attribut de présentation SVG n'est pas garantie partout (Firefox non
+ * vérifié) ; dans `style`, elle l'est. Passer par le CSSOM (`style.setProperty`)
+ * écarte en prime toute valeur que le navigateur ne reconnaît pas comme couleur.
+ */
+export function paintInStyle<T extends Element>(node: T): T {
+	const nodes: Element[] = [node, ...Array.from(node.querySelectorAll('*'))];
+	for (const el of nodes) {
+		if (!(el instanceof SVGElement)) continue;
+		for (const prop of ['stroke', 'fill'] as const) {
+			const value = el.getAttribute(prop);
+			if (value === null) continue;
+			el.removeAttribute(prop);
+			el.style.setProperty(prop, value);
+		}
+	}
+	return node;
+}
+
+function themedHTML(node: Element): string {
+	return paintInStyle(node).outerHTML;
+}
+
 export function roughLineHTML(rc: RoughSVG, svg: LineSVG, opts: RoughOptions): string {
-	return roughLine(rc, svg, opts).outerHTML;
+	return themedHTML(roughLine(rc, svg, opts));
 }
 
 export function roughCircleHTML(rc: RoughSVG, svg: CircleSVG, opts: RoughOptions): string {
-	return roughCircle(rc, svg, opts).outerHTML;
+	return themedHTML(roughCircle(rc, svg, opts));
 }
 
 export function roughArcHTML(rc: RoughSVG, svgPath: string, opts: RoughOptions): string {
-	return roughArc(rc, svgPath, opts).outerHTML;
+	return themedHTML(roughArc(rc, svgPath, opts));
 }
 
 export function roughPolygonHTML(
@@ -200,11 +225,11 @@ export function roughPolygonHTML(
 	points: [number, number][],
 	opts: RoughOptions
 ): string {
-	return roughPolygon(rc, points, opts).outerHTML;
+	return themedHTML(roughPolygon(rc, points, opts));
 }
 
 export function roughAngleHTML(rc: RoughSVG, svg: AngleSVG, opts: RoughOptions): string {
-	return roughAngle(rc, svg, opts).outerHTML;
+	return themedHTML(roughAngle(rc, svg, opts));
 }
 
 export function roughSegmentMarkHTML(
@@ -212,7 +237,7 @@ export function roughSegmentMarkHTML(
 	svg: SegmentMarkSVG,
 	opts: RoughOptions
 ): string {
-	return roughSegmentMark(rc, svg, opts).outerHTML;
+	return themedHTML(roughSegmentMark(rc, svg, opts));
 }
 
 export function roughVectorHTML(
@@ -225,5 +250,5 @@ export function roughVectorHTML(
 	const shaft = rc.line(svg.x1, svg.y1, svg.shaftX2, svg.shaftY2, opts);
 	// Filled arrowhead polygon (rough) — uses raw vertices, no string parsing
 	const arrow = rc.polygon(svg.arrowVertices, { ...opts, fill: color, fillStyle: 'solid' });
-	return shaft.outerHTML + arrow.outerHTML;
+	return themedHTML(shaft) + themedHTML(arrow);
 }

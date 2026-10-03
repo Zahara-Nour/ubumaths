@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * Protractor - SVG protractor instrument for geometric constructions
 	 *
@@ -156,7 +158,7 @@
 				x2={RAY - mark.length}
 				y2="0"
 				transform="rotate({-mark.angle})"
-				stroke="#333333"
+				style="stroke: var(--color-foreground)"
 				stroke-width="0.7"
 			/>
 		{/each}
@@ -191,7 +193,7 @@
 				x2={RAY_INT + intTickPx}
 				y2="0"
 				transform="rotate({-mark.angle})"
-				stroke="#333333"
+				style="stroke: var(--color-foreground)"
 				stroke-width="0.7"
 			/>
 		{/each}
@@ -215,7 +217,14 @@
 		{/if}
 
 		<!-- Center point marker -->
-		<circle cx="0" cy="0" r="2" stroke="black" stroke-width="1" fill="none" />
+		<circle
+			cx="0"
+			cy="0"
+			r="2"
+			style="stroke: var(--color-foreground)"
+			stroke-width="1"
+			fill="none"
+		/>
 
 		<!-- Sesamath branding in bottom bar -->
 		<text

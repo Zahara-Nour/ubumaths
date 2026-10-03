@@ -25,7 +25,7 @@
 		angleToSVG,
 		segmentMarkToSVG,
 		textToSVG,
-		resolvePrintStyle,
+		resolveScreenStyle,
 		resolveStyle,
 		functionToSVG,
 		integralAreaToSVG,
@@ -723,7 +723,7 @@
 		const el = figure.getElementById(elementId);
 		if (!el) return;
 
-		const sty = resolvePrintStyle(el, figure.defaults);
+		const sty = resolveScreenStyle(el, figure.defaults);
 		const currentDx = el.labelOffset?.dx ?? sty.pointSize + 4;
 		const currentDy = el.labelOffset?.dy ?? -(sty.pointSize + 2);
 
@@ -835,7 +835,7 @@
 			{#each elements as el (`${el.id}_bgimg_${version}`)}
 				{#if el.type === 'image' && el.layer === 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						{@const imgCx = svg.x + svg.width / 2}
@@ -878,7 +878,7 @@
 			{/each}
 
 			{#each elements as el (`${el.id}_${version}`)}
-				{@const sty = resolvePrintStyle(el, figure.defaults)}
+				{@const sty = resolveScreenStyle(el, figure.defaults)}
 				{#if el.type === 'segment'}
 					{@const svg = segmentToSVG(el.id, figure, transformer)}
 					{#if svg}
@@ -894,14 +894,16 @@
 								class="segment"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+							<g opacity={sty.opacity} class="rough"
+								>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+							>
 						{:else}
 							<line
 								x1={svg.x1}
 								y1={svg.y1}
 								x2={svg.x2}
 								y2={svg.y2}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								stroke-linecap="round"
@@ -917,8 +919,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -939,14 +940,16 @@
 								class="geo-line"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+							<g opacity={sty.opacity} class="rough"
+								>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+							>
 						{:else}
 							<line
 								x1={svg.x1}
 								y1={svg.y1}
 								x2={svg.x2}
 								y2={svg.y2}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								stroke-linecap="round"
@@ -970,8 +973,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -992,14 +994,16 @@
 								class="ray"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+							<g opacity={sty.opacity} class="rough"
+								>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+							>
 						{:else}
 							<line
 								x1={svg.x1}
 								y1={svg.y1}
 								x2={svg.x2}
 								y2={svg.y2}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								opacity={sty.opacity}
@@ -1014,8 +1018,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1037,7 +1040,7 @@
 								class="vector"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}
+							<g opacity={sty.opacity} class="rough"
 								>{@html roughVectorHTML(rc, svg, getRoughOpts(el.id, sty), sty.color)}</g
 							>
 						{:else}
@@ -1059,7 +1062,7 @@
 								y1={svg.y1}
 								x2={svg.shaftX2}
 								y2={svg.shaftY2}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								opacity={sty.opacity}
@@ -1068,7 +1071,7 @@
 							<!-- Arrowhead -->
 							<polygon
 								points={svg.arrowPoints}
-								fill={sty.color}
+								style:fill={sty.color}
 								opacity={sty.opacity}
 								pointer-events="none"
 							/>
@@ -1080,8 +1083,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1097,11 +1099,11 @@
 							cx={svgC.x}
 							cy={svgC.y}
 							r={rPx}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
-							fill={sty.fillColor ?? 'none'}
+							style:fill={sty.fillColor ?? 'none'}
 							fill-opacity={sty.fillOpacity}
 							class="circle"
 							class:hovered={hoveredId === el.id}
@@ -1122,19 +1124,20 @@
 								class="circle"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}>{@html roughCircleHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+							<g opacity={sty.opacity} class="rough"
+								>{@html roughCircleHTML(rc, svg, getRoughOpts(el.id, sty))}</g
 							>
 						{:else if sty.dash !== 'solid'}
 							{@const pathSvg = circleToPathSVG(el.id, figure, transformer)}
 							{#if pathSvg}
 								<path
 									d={pathSvg.path}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={sty.strokeWidth}
 									stroke-dasharray={sty.dashArray}
 									stroke-linecap="round"
 									opacity={sty.opacity}
-									fill={sty.fillColor ?? 'none'}
+									style:fill={sty.fillColor ?? 'none'}
 									fill-opacity={sty.fillOpacity}
 									class="circle"
 									class:hovered={hoveredId === el.id}
@@ -1145,10 +1148,10 @@
 								cx={svg.cx}
 								cy={svg.cy}
 								r={svg.r}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
-								fill={sty.fillColor ?? 'none'}
+								style:fill={sty.fillColor ?? 'none'}
 								fill-opacity={sty.fillOpacity}
 								class="circle"
 								class:hovered={hoveredId === el.id}
@@ -1170,17 +1173,17 @@
 								pointer-events="all"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}
+							<g opacity={sty.opacity} class="rough"
 								>{@html roughPolygonHTML(rc, pts, getRoughOpts(el.id, sty))}</g
 							>
 						{:else}
 							<polygon
 								points={pts.map((p) => `${p[0]},${p[1]}`).join(' ')}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								opacity={sty.opacity}
-								fill={sty.fillColor ?? 'none'}
+								style:fill={sty.fillColor ?? 'none'}
 								fill-opacity={sty.fillOpacity}
 								class:hovered={hoveredId === el.id}
 							/>
@@ -1191,11 +1194,11 @@
 					{#if svg}
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
-							fill={sty.fillColor ?? sty.color}
+							style:fill={sty.fillColor ?? sty.color}
 							fill-opacity={sty.fillOpacity ?? 0.3}
 							class:hovered={hoveredId === el.id}
 						/>
@@ -1205,10 +1208,10 @@
 					{#if svg}
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							opacity={sty.opacity}
-							fill={sty.fillColor ?? sty.color}
+							style:fill={sty.fillColor ?? sty.color}
 							fill-opacity={sty.fillOpacity ?? 0.3}
 							fill-rule="evenodd"
 							class:hovered={hoveredId === el.id}
@@ -1222,7 +1225,7 @@
 							y1={svg.y1}
 							x2={svg.x2}
 							y2={svg.y2}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1245,8 +1248,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1260,7 +1262,7 @@
 							y1={svg.y1}
 							x2={svg.x2}
 							y2={svg.y2}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1277,7 +1279,7 @@
 							y1={svg.y1}
 							x2={svg.x2}
 							y2={svg.y2}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1300,8 +1302,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1335,7 +1336,7 @@
 								y1={sy}
 								x2={shaftX2}
 								y2={shaftY2}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								pointer-events="none"
@@ -1343,7 +1344,7 @@
 							<!-- Arrowhead -->
 							<polygon
 								points={`${Math.round(w1x * 100) / 100},${Math.round(w1y * 100) / 100} ${Math.round(ex * 100) / 100},${Math.round(ey * 100) / 100} ${Math.round(w2x * 100) / 100},${Math.round(w2y * 100) / 100}`}
-								fill={sty.color}
+								style:fill={sty.color}
 								opacity={sty.opacity}
 								pointer-events="none"
 							/>
@@ -1352,8 +1353,7 @@
 									x={(sx + ex) / 2 + (el.labelOffset?.dx ?? 6)}
 									y={(sy + ey) / 2 + (el.labelOffset?.dy ?? -8)}
 									class="label"
-									fill={sty.color}
-									stroke="white"
+									style:fill={sty.color}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1368,7 +1368,7 @@
 							y1={svg.y1}
 							x2={svg.x2}
 							y2={svg.y2}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1386,13 +1386,13 @@
 						{#each svg.paths as p, i (i)}
 							<path
 								d={p.d}
-								fill={sty.color}
+								style:fill={sty.color}
 								fill-opacity={el.signed
 									? p.sign === 'positive'
 										? baseFillOpacity
 										: baseFillOpacity * 0.5
 									: baseFillOpacity}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={0.5}
 								stroke-opacity={0.5}
 								class="integral-area"
@@ -1419,21 +1419,21 @@
 									y1={arrowY}
 									x2={arrowTipX}
 									y2={arrowY}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={2}
 									stroke-opacity={0.95}
 								/>
 								<polyline
 									points={`${arrowTipX - sign * arrowHead},${arrowY - arrowHead} ${arrowTipX},${arrowY} ${arrowTipX - sign * arrowHead},${arrowY + arrowHead}`}
 									fill="none"
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={2}
 									stroke-opacity={0.95}
 								/>
 								<text
 									x={arrowTailX - sign * 4}
 									y={arrowY + 5}
-									fill={sty.color}
+									style:fill={sty.color}
 									font-size="16"
 									font-weight="bold"
 									font-style="italic"
@@ -1448,7 +1448,7 @@
 					{#if svg}
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1461,14 +1461,14 @@
 						{#if svg.endpointMarkers}
 							{#each svg.endpointMarkers as marker (marker.cx + ',' + marker.cy)}
 								{#if marker.bracketType === 'closed'}
-									<circle cx={marker.cx} cy={marker.cy} r={marker.r} fill={sty.color} />
+									<circle cx={marker.cx} cy={marker.cy} r={marker.r} style:fill={sty.color} />
 								{:else}
 									<circle
 										cx={marker.cx}
 										cy={marker.cy}
 										r={marker.r}
-										fill="white"
-										stroke={sty.color}
+										class="open-endpoint"
+										style:stroke={sty.color}
 										stroke-width="2"
 									/>
 								{/if}
@@ -1490,8 +1490,7 @@
 									x={svgPt.x + (el.labelOffset?.dx ?? sign * nx * offset)}
 									y={svgPt.y + (el.labelOffset?.dy ?? sign * ny * offset)}
 									class="label"
-									fill={sty.color}
-									stroke="white"
+									style:fill={sty.color}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1504,13 +1503,13 @@
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							opacity={sty.opacity}
-							fill={svg.closed && sty.fillColor ? sty.fillColor : 'none'}
+							style:fill={svg.closed && sty.fillColor ? sty.fillColor : 'none'}
 							fill-opacity={svg.closed && sty.fillColor ? sty.fillOpacity : 0}
 							class="function-curve"
 							class:hovered={hoveredId === el.id}
@@ -1545,8 +1544,7 @@
 									x={labelPos.x + (el.labelOffset?.dx ?? 10)}
 									y={labelPos.y + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									fill={sty.color}
-									stroke="white"
+									style:fill={sty.color}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1555,8 +1553,7 @@
 									x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 									y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									fill={sty.color}
-									stroke="white"
+									style:fill={sty.color}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1568,7 +1565,7 @@
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							{#each svg.paths as pathD, i (i)}
-								<g opacity={sty.opacity}
+								<g opacity={sty.opacity} class="rough"
 									>{@html roughArcHTML(rc, pathD, getRoughOpts(el.id, sty))}</g
 								>
 							{/each}
@@ -1576,7 +1573,7 @@
 							{#each svg.paths as pathD, i (i)}
 								<path
 									d={pathD}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={sty.strokeWidth}
 									stroke-dasharray={sty.dashArray}
 									stroke-linecap="round"
@@ -1596,8 +1593,7 @@
 									x={svgPt.x + (el.labelOffset?.dx ?? 10)}
 									y={svgPt.y + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									fill={sty.color}
-									stroke="white"
+									style:fill={sty.color}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1609,7 +1605,7 @@
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							{#each svg.paths as pathD, i (i)}
-								<g opacity={sty.opacity}
+								<g opacity={sty.opacity} class="rough"
 									>{@html roughArcHTML(rc, pathD, getRoughOpts(el.id, sty))}</g
 								>
 							{/each}
@@ -1617,7 +1613,7 @@
 							{#each svg.paths as pathD, i (i)}
 								<path
 									d={pathD}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={sty.strokeWidth}
 									stroke-dasharray={sty.dashArray}
 									stroke-linecap="round"
@@ -1634,8 +1630,7 @@
 								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1646,7 +1641,7 @@
 					{#if svg}
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1661,8 +1656,7 @@
 								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 								class="label"
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1673,7 +1667,7 @@
 					{#if svg}
 						<path
 							d={svg.path}
-							stroke={sty.color}
+							style:stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							stroke-linecap="round"
@@ -1691,7 +1685,7 @@
 			{#each elements as el (`${el.id}_arc_${version}`)}
 				{#if el.type === 'arcByAngles' || el.type === 'arcByPoints'}
 					{@const svg = arcToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							<path
@@ -1703,13 +1697,13 @@
 								class="arc"
 								class:hovered={hoveredId === el.id}
 							/>
-							<g opacity={sty.opacity}
+							<g opacity={sty.opacity} class="rough"
 								>{@html roughArcHTML(rc, svg.path, getRoughOpts(el.id, sty))}</g
 							>
 						{:else}
 							<path
 								d={svg.path}
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								stroke-linecap="round"
@@ -1727,7 +1721,7 @@
 			{#each elements as el (`${el.id}_ang_${version}`)}
 				{#if el.type === 'angle'}
 					{@const svg = angleToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc && svg.paths.length > 0}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1735,7 +1729,7 @@
 								{#each svg.paths as path, i (i)}
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
 								{/each}
-								<g opacity={sty.opacity}
+								<g opacity={sty.opacity} class="rough"
 									>{@html roughAngleHTML(rc, svg, getRoughOpts(el.id, sty))}</g
 								>
 							</g>
@@ -1745,7 +1739,7 @@
 								{#if svg.fillPath && sty.fillColor}
 									<path
 										d={svg.fillPath}
-										fill={sty.fillColor}
+										style:fill={sty.fillColor}
 										fill-opacity={sty.fillOpacity}
 										stroke="none"
 										class="angle-sector-fill"
@@ -1755,7 +1749,7 @@
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
 									<path
 										d={path}
-										stroke={sty.color}
+										style:stroke={sty.color}
 										stroke-width={sty.strokeWidth}
 										stroke-dasharray={sty.dashArray}
 										opacity={sty.opacity}
@@ -1769,8 +1763,7 @@
 							<text
 								x={svg.labelX}
 								y={svg.labelY}
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke"
 								font-size="14"
@@ -1788,14 +1781,14 @@
 			{#each elements as el (`${el.id}_${version}`)}
 				{#if isPointElement(el)}
 					{@const svg = pointToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{#if svg}
 						{#if sty.pointShape === 'dot'}
 							<circle
 								cx={svg.cx}
 								cy={svg.cy}
 								r={sty.pointSize}
-								fill={sty.color}
+								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
 								class:draggable={interactive && 'draggable' in el && el.draggable}
@@ -1808,7 +1801,7 @@
 								cy={svg.cy}
 								r={sty.pointSize}
 								fill="none"
-								stroke={sty.color}
+								style:stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
@@ -1829,7 +1822,7 @@
 									y1={svg.cy - sty.pointSize}
 									x2={svg.cx + sty.pointSize}
 									y2={svg.cy + sty.pointSize}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={sty.strokeWidth}
 								/>
 								<line
@@ -1837,7 +1830,7 @@
 									y1={svg.cy - sty.pointSize}
 									x2={svg.cx - sty.pointSize}
 									y2={svg.cy + sty.pointSize}
-									stroke={sty.color}
+									style:stroke={sty.color}
 									stroke-width={sty.strokeWidth}
 								/>
 							</g>
@@ -1847,7 +1840,7 @@
 								y={svg.cy - sty.pointSize}
 								width={sty.pointSize * 2}
 								height={sty.pointSize * 2}
-								fill={sty.color}
+								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
 								class:draggable={interactive && 'draggable' in el && el.draggable}
@@ -1864,8 +1857,7 @@
 								y={ly}
 								class="label"
 								class:label-dragging={draggingLabelId === el.id}
-								fill={sty.color}
-								stroke="white"
+								style:fill={sty.color}
 								stroke-width="3"
 								paint-order="stroke"
 								onpointerdown={(e) => onLabelPointerDown(e, el.id)}>{el.label}</text
@@ -1879,7 +1871,7 @@
 			{#each elements as el (`${el.id}_segm_${version}`)}
 				{#if el.type === 'segmentMark'}
 					{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1894,7 +1886,7 @@
 										stroke-width="12"
 									/>
 								{/each}
-								<g opacity={sty.opacity}
+								<g opacity={sty.opacity} class="rough"
 									>{@html roughSegmentMarkHTML(rc, svg, getRoughOpts(el.id, sty))}</g
 								>
 							</g>
@@ -1915,7 +1907,7 @@
 										y1={tick.y1}
 										x2={tick.x2}
 										y2={tick.y2}
-										stroke={sty.color}
+										style:stroke={sty.color}
 										stroke-width={sty.strokeWidth}
 										opacity={sty.opacity}
 										class="segment-mark"
@@ -1931,7 +1923,7 @@
 			{#each elements as el (`${el.id}_txt_${version}`)}
 				{#if el.type === 'text'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1958,12 +1950,15 @@
 								width={svg.text.length * 8 + 8}
 								height={16}
 								rx={3}
-								fill="white"
 								fill-opacity="0.85"
 								class="text-bg"
 							/>
-							<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="geo-text"
-								>{svg.text}</text
+							<text
+								x={svg.x}
+								y={svg.y}
+								style:fill={sty.color}
+								opacity={sty.opacity}
+								class="geo-text">{svg.text}</text
 							>
 						</g>
 					{/if}
@@ -2003,9 +1998,7 @@
 								: undefined}
 						>
 							<foreignObject x={svg.x - 4} y={svg.y - 36} width="250" height="64">
-								<div
-									style="display:flex; align-items:center; color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
-								>
+								<div class="geo-html-label" style="display:flex; align-items:center;">
 									{@html convertLatexToMarkup(svg.text, { defaultMode: 'inline-math' })}
 								</div>
 							</foreignObject>
@@ -2045,9 +2038,7 @@
 								: undefined}
 						>
 							<foreignObject x={svg.x - 4} y={svg.y - 20} width="350" height="32">
-								<div
-									style="color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
-								>
+								<div class="geo-html-label">
 									{@html inlineNodesToHTML(inlineNodes)}
 								</div>
 							</foreignObject>
@@ -2060,7 +2051,7 @@
 			{#each elements as el (`${el.id}_img_${version}`)}
 				{#if el.type === 'image' && el.layer !== 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
-					{@const sty = resolvePrintStyle(el, figure.defaults)}
+					{@const sty = resolveScreenStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						{@const imgCx2 = svg.x + svg.width / 2}
@@ -2144,18 +2135,23 @@
 </div>
 
 <style>
+	/*
+	 * Habillage sur les tokens du thème (lot 2) : le fond suit celui des cartes.
+	 * Pas de style inline ici, pour que les états (survol…) restent maîtres.
+	 */
 	.geometry-canvas {
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
-		background: #ffffff;
+		background: var(--color-card);
 		touch-action: none;
 		user-select: none;
 	}
 
 	.parametric-tooltip {
 		position: absolute;
-		background: rgba(0, 0, 0, 0.8);
-		color: white;
+		background: var(--color-popover);
+		color: var(--color-popover-foreground);
+		border: 1px solid var(--color-border);
 		font-family: monospace;
 		font-size: 0.75rem;
 		padding: 4px 8px;
@@ -2182,31 +2178,31 @@
 	}
 
 	.sliders-panel {
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--color-border);
 		padding: 0.25rem 0;
-		background: #f9fafb;
+		background: var(--color-muted);
 		border-radius: 0 0 0.375rem 0.375rem;
 	}
 
 	.grid-line-minor {
-		stroke: #e5e7eb;
+		stroke: var(--color-border);
 		stroke-width: 0.3;
 	}
 
 	.grid-line {
-		stroke: #d1d5db;
+		stroke: var(--color-border);
 		stroke-width: 0.5;
 	}
 
 	.grid-line.axis {
-		stroke: #6b7280;
+		stroke: var(--color-muted-foreground);
 		stroke-width: 1.5;
 	}
 
 	.graduation {
 		font-size: 11px;
 		font-family: 'KaTeX_Main', serif;
-		fill: #6b7280;
+		fill: var(--color-muted-foreground);
 		pointer-events: none;
 	}
 
@@ -2236,18 +2232,35 @@
 		cursor: grab;
 	}
 
+	/*
+	 * États : la couleur d'auteur est peinte en `style:` (inline). `!important`
+	 * fait gagner le surlignage sur ce style inline — pour les points dont
+	 * l'élément `.point` porte lui-même le contour (cercle, point plein). Un point
+	 * en croix n'est PAS surligné : `.point` est sur le <g>, ses <line> ont leur
+	 * propre couleur, qui l'emporte sur l'héritage (comme avant le lot 2).
+	 */
 	.point.draggable:hover,
 	.point.hovered {
-		stroke: #f59e0b;
+		stroke: var(--color-warning) !important;
 		stroke-width: 2;
 		r: 7;
 	}
 
 	.point.dragging {
-		stroke: #f59e0b;
+		stroke: var(--color-warning) !important;
 		stroke-width: 3;
 		r: 8;
 		cursor: grabbing;
+	}
+
+	/* Halo des étiquettes : la couleur du fond de la figure */
+	.label,
+	.angle-label {
+		stroke: var(--color-card);
+	}
+
+	.open-endpoint {
+		fill: var(--color-card);
 	}
 
 	.label {
@@ -2271,7 +2284,17 @@
 	}
 
 	.text-bg {
+		fill: var(--color-card);
 		pointer-events: none;
+	}
+
+	.geo-html-label {
+		color: var(--color-popover-foreground);
+		background: color-mix(in srgb, var(--color-popover) 92%, transparent);
+		font-size: 14px;
+		padding: 2px 6px;
+		border-radius: 4px;
+		width: fit-content;
 	}
 
 	.draggable-text {

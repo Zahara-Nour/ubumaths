@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
+	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
 	 * Ruler - SVG ruler instrument for geometric constructions
 	 *
@@ -122,7 +124,14 @@
 			<g class="graduations">
 				{#each graduations as mark (mark.x)}
 					<!-- Tick mark -->
-					<line x1={mark.x} y1="0" x2={mark.x} y2={mark.height} stroke="black" stroke-width="0.7" />
+					<line
+						x1={mark.x}
+						y1="0"
+						x2={mark.x}
+						y2={mark.height}
+						style="stroke: var(--color-foreground)"
+						stroke-width="0.7"
+					/>
 
 					<!-- Label for major marks -->
 					{#if mark.label !== undefined}

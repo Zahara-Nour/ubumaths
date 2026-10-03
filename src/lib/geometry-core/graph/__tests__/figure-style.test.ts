@@ -9,11 +9,13 @@ function pt(x: number, y: number) {
 }
 
 describe('FigureDefaults', () => {
-	it('Figure without defaults uses #1e40af', () => {
+	// Lot 2 (décision L2-a) : le défaut était '#1e40af', c'est désormais le bleu de
+	// la palette, gardé sous son NOM pour suivre le thème (exports : #2563eb).
+	it('Figure without defaults uses the palette blue (bleu)', () => {
 		const f = new Figure();
 		const id = f.createFreePoint(pt(0, 0));
 		const el = f.getElementById(id)!;
-		expect(el.color).toBe('#1e40af');
+		expect(el.color).toBe('bleu');
 	});
 
 	it('Figure with defaultColor uses that color', () => {
