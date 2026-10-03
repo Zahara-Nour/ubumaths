@@ -127,7 +127,7 @@
 	class="tooltip-bg"
 	class:pinned
 	class:accented={accent !== null}
-	style={accent === null ? undefined : `stroke: ${curveColorValue(accent)}`}
+	style:stroke={accent === null ? undefined : curveColorValue(accent)}
 />
 
 {#if content.latex}

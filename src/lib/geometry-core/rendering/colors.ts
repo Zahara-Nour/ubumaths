@@ -101,8 +101,10 @@ const LEGACY_FUNCTION_COLORS = [
  *
  * Par rang, pas par « couleur la plus proche » : celle-ci envoyait orange, vert
  * et marron sur l'ocre, et un graphique de 5 courbes en gardait deux identiques.
- * Par rang, deux anciennes couleurs différentes restent deux places différentes.
- * Un style choisi par l'élève (autre que `solid`) est conservé.
+ * Par rang, deux anciennes couleurs différentes en trait plein restent deux
+ * places différentes. Un style choisi par l'élève (autre que `solid`) est
+ * conservé — au prix d'une collision rare : un ancien bleu passé en `dashed` par
+ * l'élève et un ancien orange plein deviennent tous deux bleu pointillé.
  * Une couleur inconnue, ou déjà traduite, passe telle quelle.
  */
 export function migrateLegacyColor(

@@ -70,6 +70,25 @@ describe('export du grapheur', () => {
 		expect(background?.getAttribute('fill')).toBe('rgb(255, 255, 255)');
 	});
 
+	it('garde la mise en page en ligne d’une formule (étiquette LaTeX dans un foreignObject)', () => {
+		const svg = graph();
+		const fo = document.createElementNS(SVG_NS, 'foreignObject');
+		const box = document.createElement('div');
+		box.className = 'tooltip-math';
+		box.style.height = '24px';
+		const sup = document.createElement('span');
+		sup.className = 'ML__sup';
+		sup.style.verticalAlign = '4px';
+		box.append(sup);
+		fo.append(box);
+		svg.append(fo);
+
+		const out = prepareSvgForExport(svg, 200, 100);
+
+		expect(out).toContain('height: 24px');
+		expect(out).toContain('vertical-align: 4px');
+	});
+
 	it('laisse le graphique affiché intact', () => {
 		const svg = graph();
 		prepareSvgForExport(svg, 200, 100);

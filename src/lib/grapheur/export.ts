@@ -114,20 +114,27 @@ function resolveGraphBackground(host: HTMLElement): string {
 }
 
 /**
- * Remplace le style de chaque élément par ses valeurs calculées.
+ * Fige, dans le style en ligne de chaque élément, les valeurs calculées.
+ *
+ * On FUSIONNE avec le style en ligne existant, sans le remplacer : le balisage
+ * MathLive des étiquettes (dans un `foreignObject`) porte sa mise en page en
+ * ligne — hauteurs, `vertical-align` des exposants et des fractions.
+ * Une `var(…)` en ligne est écrasée par sa valeur calculée.
  *
  * ⚠️ Toutes les valeurs sont lues AVANT d'en écrire une seule : écrire le style
  * d'un parent changerait ce dont ses enfants héritent pendant la lecture.
  */
 function freezeComputedStyles(root: Element): void {
-	const elements = [root, ...root.querySelectorAll('*')];
+	const elements = [root, ...root.querySelectorAll('*')].filter(
+		(el): el is SVGElement | HTMLElement => el instanceof SVGElement || el instanceof HTMLElement
+	);
 	const frozen = elements.map((el) => {
 		const computed = getComputedStyle(el);
-		return EXPORTED_PROPERTIES.map((prop) => `${prop}: ${computed.getPropertyValue(prop)}`).join(
-			'; '
-		);
+		return EXPORTED_PROPERTIES.map((prop) => [prop, computed.getPropertyValue(prop)] as const);
 	});
-	elements.forEach((el, i) => el.setAttribute('style', frozen[i]));
+	elements.forEach((el, i) => {
+		for (const [prop, value] of frozen[i]) el.style.setProperty(prop, value);
+	});
 }
 
 /**
