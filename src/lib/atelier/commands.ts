@@ -43,7 +43,9 @@ export interface AtelierCommand {
 	readonly unavailable?: string;
 	/**
 	 * Les listes que cite l'exemple (`.simuler L M 100`) : il se joue dans un
-	 * atelier qui les contient, sur le chemin réel de l'élève (Q79).
+	 * atelier qui les contient, sur le chemin réel de l'élève (Q79). Un décor
+	 * VIDE (`.binomiale`) déclare une commande qui montre un tableau ou un
+	 * graphique sans citer de liste.
 	 */
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 }

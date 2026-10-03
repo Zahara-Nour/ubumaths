@@ -30,7 +30,7 @@ const refusal = (input: string) => {
 
 /** Ce que le bloc donnerait pour la même loi */
 const block = (source: string) =>
-	buildStatChartScene(parseStatChartContent('loi', source).spec!) as LawScene;
+	buildStatChartScene(parseStatChartContent('loi', source).spec!, { locale: 'fr' }) as LawScene;
 
 describe('la commande se découvre', () => {
 	it('« binomiale » au catalogue, avec son exemple', () => {
@@ -72,6 +72,11 @@ describe('cas nominal', () => {
 		expect(s.atelier.objects).toHaveLength(0);
 	});
 
+	it('« 30 % » et « 1 / 2 » avec des espaces, comme dans le bloc', () => {
+		expect(law('.binomiale X 10 30 %').scene.probabilities[3].text).toBe('0,267');
+		expect(law('.binomiale X 4 1 / 2').scene.probabilities[2].text).toBe('0,375');
+	});
+
 	it('au-delà de 30 valeurs : pas de tableau, les lignes restent', () => {
 		const { scene } = law('.binomiale X 100 0,5 P(40 ⩽ X ⩽ 60)');
 		expect(scene.tableHidden).toBe(true);
@@ -94,6 +99,18 @@ describe('erreurs : un message, rien de dessiné', () => {
 			'probabilités : « P(Y ⩽ 2) » parle de Y, la variable est X'
 		);
 		expect(refusal('.binomiale X 10 0,3 intervalle 2')).toMatch(/^intervalle : /);
+	});
+
+	it('une minuscule, une option sans valeur, une option en double, un saut de ligne', () => {
+		expect(refusal('.binomiale x 10 0,3')).toBe(
+			'La variable s’écrit en majuscule : .binomiale X 10 0,3'
+		);
+		expect(refusal('.binomiale X 10 0,3 intervalle')).toBe(
+			'« intervalle » sans valeur : écrire par exemple intervalle 0,95'
+		);
+		expect(refusal('.binomiale X 10 0,3 intervalle 0,95 ; intervalle 0,9')).toMatch(/déjà donnée/);
+		// Un saut de ligne ne glisse pas de ligne dans le bloc (revue : injection)
+		expect(refusal('.binomiale X 10 0,3\nmasquer: 3')).not.toBe('');
 	});
 
 	it('une option inconnue', () => {

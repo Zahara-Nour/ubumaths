@@ -40,8 +40,22 @@ const HEAD = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
 
 /** `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil P(X > k) ⩽ 0,05]` */
 export function binomialCommand(_atelier: Atelier, argument: string): BinomialResult {
-	const head = HEAD.exec(argument.trim());
-	if (!head) return { ok: false, message: USAGE };
+	// « 30 % » et « 1 / 2 » avec des espaces : comme le bloc les accepte (revue)
+	const written = argument
+		.trim()
+		.replace(/(\d)\s+%/g, '$1%')
+		.replace(/(\d)\s*\/\s*(\d)/g, '$1/$2');
+	const head = HEAD.exec(written);
+	if (!head) {
+		// Une lettre minuscule : dire pourquoi, pas seulement l'usage (revue)
+		if (/^[a-z]\s+\S+\s+\S+/.test(written)) {
+			return {
+				ok: false,
+				message: `La variable s’écrit en majuscule : ${USAGE.slice(USAGE.indexOf('.'))}`
+			};
+		}
+		return { ok: false, message: USAGE };
+	}
 	const [, variable, n, p, rest] = head;
 
 	const queries: string[] = [];
@@ -50,6 +64,11 @@ export function binomialCommand(_atelier: Atelier, argument: string): BinomialRe
 		.split(';')
 		.map((o) => o.trim())
 		.filter((o) => o !== '')) {
+		// Une option sans valeur : dire ce qui manque (revue)
+		if (/^(intervalle|seuil)$/i.test(option)) {
+			const example = /^i/i.test(option) ? 'intervalle 0,95' : `seuil P(${variable} > k) ⩽ 0,05`;
+			return { ok: false, message: `« ${option} » sans valeur : écrire par exemple ${example}` };
+		}
 		if (option.startsWith('P(')) queries.push(option);
 		else if (/^intervalle\s+/i.test(option))
 			lines.push(`intervalle: ${option.replace(/^intervalle\s+/i, '')}`);
