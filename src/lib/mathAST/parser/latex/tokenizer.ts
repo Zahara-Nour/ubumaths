@@ -317,8 +317,10 @@ export class Tokenizer {
 	 */
 	private scanSingleChar(): Token {
 		const startPos = this.position;
-		const char = this.input[this.position];
-		this.position++;
+		// Un POINT de code, pas une unité UTF-16 : `𝔻` (U+1D53B) est une paire de
+		// substitution, lue en deux moitiés cassées (`\ud835 \udd3b`) sinon
+		const char = String.fromCodePoint(this.input.codePointAt(this.position) ?? 0);
+		this.position += char.length;
 
 		// `%` nu (réponse attendue écrite `20%`) : le même pourcentage que `\%`,
 		// jamais une variable nommée « % » multipliée en silence

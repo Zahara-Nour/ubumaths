@@ -48,7 +48,8 @@ const TEXT = {
 	},
 	en: {
 		sampleAxis: 'Sample mean',
-		countAxis: 'Count',
+		// Q122 : *frequency* = effectif
+		countAxis: 'Frequency',
 		samplesDescription: (count: string, classes: string) =>
 			`Histogram of the ${count} sample means; in colour, the classes between μ − 2σ/√n and μ + 2σ/√n: ${classes}.`,
 		meanTitle: 'Mean of the draws by their number',

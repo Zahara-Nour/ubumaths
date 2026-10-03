@@ -232,6 +232,14 @@ accepté ; `cleanCoefficients` nettoie une inégalité écrite en LaTeX (`\leqsl
 rendus `\leqslant`) avec les mêmes gardes (chaîne `0\leqslant x\leqslant 2` laissée telle quelle,
 chaque membre garde sa valeur) ; rien à nettoyer : le texte d'auteur reste intact.
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/rendu-ensembles`), ne plus contourner :
+dans le PDF, une commande collée à la suivante (`\mathbb{N}\subset\mathbb{Z}`, `𝔻\subset`,
+`x\in𝔻`, `a\cdot{b}`, `\alpha2`) ne fait plus échouer la fiche ; `\mathbb{X}` pour toute lettre
+(`\mathbb{D}` = 𝔻) ; `\not\subset`, `\nsubset`, `\not\subseteq`, `\nsubseteq`, `\not\supset`,
+`\not\in`, `\ni`, `\not=`, `\neg` / `\lnot`, `\wedge` / `\land`, `\vee` / `\lor`,
+`\complement`, `\operatorname{Card}` ; à l'écran comme au PDF, une formule réduite à `$𝔻$`
+(caractère hors du plan de base) n'est plus coupée en deux caractères cassés.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -280,17 +288,12 @@ Toujours vrai :
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
 - **Condition `a<-1`** est mal lue : écrire `a< -1` (espace).
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
-  c = 0 → `shared.cleanCoefficients: true` (ci-dessus) et `+{{c}}` au lieu de `{{c;+}}` (le `;+`
-  d'un 0 n'écrit pas de `+`). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
+  c = 0 → `shared.cleanCoefficients: true` (ci-dessus ; `{{c;+}}` écrit `+0` depuis #701, que
+  l'option retire). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
 - **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
-- **PDF, ensembles** (relevé sur la logique, 2026-10-03) : `\mathbb{D}` sort « mathbbD » (seuls
-  R, N, Z, Q, C sont convertis) → caractère `𝔻` ; mais une formule réduite à `$𝔻$` est coupée en
-  deux moitiés UTF-16 (caractères cassés) → toujours derrière une commande (`x\in 𝔻`) ; une
-  commande collée `\mathbb{N}\subset` fait échouer TOUTE la fiche → espace (`\mathbb{N} \subset`) ;
-  `\not\subset`, `\nsubseteq`, `\operatorname{Card}` sortent en texte brut → `\mathrm{Card}`.
 - **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
   vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
   réponse.

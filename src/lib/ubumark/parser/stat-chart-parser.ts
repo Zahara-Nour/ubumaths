@@ -68,6 +68,7 @@ import {
 	type StatChartUnit
 } from '../types/stat-chart';
 import { COURBE_COLORS, COURBE_SIZES, type CourbeColor, type CourbeSize } from '../types/courbe';
+import { resolveNamedColor } from '$lib/theme/named-colors';
 import { summarizeClasses } from '$lib/statistics/classes';
 import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
@@ -506,7 +507,8 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			);
 			return;
 		case 'couleur':
-			options.color = oneOf(value, COURBE_COLORS, 'couleur');
+			// Synonymes anglais (`pink` → `rose`) ramenés au nom de la palette
+			options.color = oneOf(resolveNamedColor(value) ?? value, COURBE_COLORS, 'couleur');
 			return;
 		case 'etiquettes':
 			options.labels = oneOf(value, STAT_CHART_LABELS, 'étiquette');

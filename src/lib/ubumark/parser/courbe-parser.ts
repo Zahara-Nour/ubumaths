@@ -49,7 +49,8 @@ import type {
 	CourbeTangent,
 	CourbeWindow
 } from '../types/courbe';
-import { COURBE_COLORS, COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
+import { COURBE_LIMITS, COURBE_SIZES, courbeRangeProblem } from '../types/courbe';
+import { resolveNamedColor } from '$lib/theme/named-colors';
 import type { MathNode } from '$lib/mathAST/types';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
@@ -374,7 +375,7 @@ function parseDomain(raw: string): CourbeDomain {
 
 function isOption(token: string): boolean {
 	return (
-		(COURBE_COLORS as readonly string[]).includes(token.toLowerCase()) ||
+		resolveNamedColor(token) !== null ||
 		DASHED_WORDS.has(token.toLowerCase()) ||
 		token.toLowerCase() === STAIRCASE_WORD ||
 		token.toLowerCase() === TERMS_WORD ||
@@ -406,7 +407,7 @@ function splitOptions(rest: string): LineOptions {
 		else if (DASHED_WORDS.has(lower)) dashed = true;
 		else if (lower === STAIRCASE_WORD) staircase = true;
 		else if (lower === TERMS_WORD) terms = true;
-		else color = lower as CourbeColor;
+		else color = resolveNamedColor(lower) ?? color;
 	}
 	return { body: tokens.join(' '), color, dashed, label, staircase, terms };
 }
