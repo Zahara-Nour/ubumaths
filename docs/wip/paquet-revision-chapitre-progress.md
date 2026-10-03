@@ -25,3 +25,26 @@ Décisions : `docs/wip/questions-de-cours-progress.md` (Q163–Q168). Comporteme
 ## État
 
 - (2026-10-03) Doc créé.
+- (2026-10-03) **Fait, commité, non poussé.**
+  - Tests d'abord, rouges (modules absents) : `server/srs/__tests__/chapter-deck.test.ts` (16),
+    `tests/integration/paquet-revision-chapitre.test.ts` (13), puis verts. Preuve par neutralisation :
+    sans le recontrôle « modèle dans le paquet » du submit → 4 rouges (E2, L1, L2).
+  - `server/srs/chapter-deck.ts` : calcul pur (`resolveDeckTemplateIds`, `selectChapterSession`) +
+    lectures aux droits de l'élève (`loadChapterDecks`, `summarizeChapterDecks`). Résolution catégorie →
+    modèles = `templatesOfCategory` de `questions/series-items.ts` (exportée, rendue générique).
+  - Routes `api/srs/chapters/[chapterId]/{due,submit}` (élève, Zod, 404 / 403, `applyFsrsReview` avec
+    `bestOfDay` (ADR 0016) et `verifyWrite`, rien vers le Programme).
+  - UI : `ChapterRevisionButton` (page élève du chapitre, « Mes chapitres » dans « Mes révisions »),
+    séance `revisions/chapitres/[chapterId]` = `ReviewSession` paramétrée par `$lib/srs/review-source`.
+  - Bug latent corrigé au passage : `ReviewSession` lisait `card.card.*` alors que `review/due` rend des
+    cartes plates (toute carte de paquet faisait planter l'écran) ; une séance vide affichait « Session
+    terminée » au lieu de l'état vide.
+- Constat : index unique partiel → UNE question publiée par catégorie ; le paquet a donc une question par
+  catégorie distincte des séries.
+
+## Ouvert (à trancher par David)
+
+- Traces : le submit du chapitre n'insère PAS de `skill_attempts` (le Programme le fait, ADR 0016 dit que
+  les traces auto-évaluées alimentent le référentiel). À décider.
+- « Dues aujourd'hui » = échéance ≤ maintenant (comme le Programme), pas fin de journée.
+- Revues `code-reviewer` + `security-auditor`, puis PR (pas de migration).
