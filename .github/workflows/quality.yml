@@ -298,10 +298,91 @@ jobs:
       - name: Fail on critical prod vulns (blocking)
         run: pnpm audit --audit-level critical --prod
 
+  # Garde-fou SECURITY DEFINER (décision de David, Q162 b) — BLOQUANT via
+  # `summary.needs`. Une fonction SECURITY DEFINER contourne la RLS : toute
+  # nouvelle fonction appelable par un élève (authenticated) ou sans connexion
+  # (anon) doit figurer, justifiée, dans
+  # tests/integration/fixtures/fonctions-definer-verifiees.ts.
+  # Le test lit seulement le catalogue Postgres : `supabase db start` (base seule,
+  # migrations appliquées, ~15 s) suffit — ni GoTrue, ni PostgREST, ni la suite
+  # d'intégration complète (qui reste dans nightly-integration.yml).
+  # Pas de filtre de chemins : un check obligatoire qui ne tourne pas bloque la PR.
+  # Local : `pnpm db:start` puis `pnpm test:definer-guard`.
+  definer-guard:
+    name: Garde SECURITY DEFINER
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Supabase CLI version
+        # Clé du cache des images Docker (étape suivante).
+        id: supabase-cli
+        run: |
+          version="$(pnpm exec supabase --version)"
+          echo "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # Même raison que nightly-integration.yml (#562) : sans cache, le quota de
+      # téléchargement par IP de public.ecr.aws (partagé entre runners) fait
+      # échouer le job avant le test. Clé distincte : `db start` n'utilise
+      # qu'une partie des images de la pile complète.
+      - name: Restore Supabase DB images
+        id: supabase-images
+        uses: actions/cache/restore@v6
+        with:
+          path: /tmp/supabase-db-images.tar.zst
+          key: supabase-db-images-v1-${{ runner.os }}-${{ steps.supabase-cli.outputs.version }}-${{ hashFiles('supabase/config.toml') }}
+
+      - name: Load Supabase DB images
+        if: steps.supabase-images.outputs.cache-hit == 'true'
+        run: zstd -dc /tmp/supabase-db-images.tar.zst | docker load
+
+      - name: Start Postgres only (applies migrations)
+        run: pnpm exec supabase db start
+
+      - name: Save Supabase DB images
+        if: steps.supabase-images.outputs.cache-hit != 'true'
+        run: |
+          set -o pipefail
+          images="$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)supabase/' | grep -v ':<none>$')"
+          echo "$images"
+          test -n "$images"
+          docker save $images | zstd -T0 -3 -o /tmp/supabase-db-images.tar.zst
+          ls -lh /tmp/supabase-db-images.tar.zst
+
+      - name: Upload Supabase DB images to the cache
+        if: steps.supabase-images.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: /tmp/supabase-db-images.tar.zst
+          key: ${{ steps.supabase-images.outputs.cache-primary-key }}
+
+      - name: Run the SECURITY DEFINER guard
+        run: pnpm test:definer-guard
+
+      - name: Stop Supabase
+        if: always()
+        run: pnpm exec supabase stop --no-backup
+
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, build, test-server, test-client, audit]
+    needs: [lint, typecheck, build, test-server, test-client, audit, definer-guard]
     if: always()
 
     steps:
@@ -313,13 +394,15 @@ jobs:
           echo "Server Tests: ${{ needs.test-server.result }}"
           echo "Client Tests: ${{ needs.test-client.result }}"
           echo "Security Audit (critical): ${{ needs.audit.result }}"
+          echo "Garde SECURITY DEFINER: ${{ needs.definer-guard.result }}"
 
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ] || \
              [ "${{ needs.test-server.result }}" != "success" ] || \
              [ "${{ needs.test-client.result }}" != "success" ] || \
-             [ "${{ needs.audit.result }}" != "success" ]; then
+             [ "${{ needs.audit.result }}" != "success" ] || \
+             [ "${{ needs.definer-guard.result }}" != "success" ]; then
             echo "::error::Some checks failed"
             exit 1
           else

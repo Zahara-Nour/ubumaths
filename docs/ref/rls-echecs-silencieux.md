@@ -212,3 +212,6 @@ Une fonction SECURITY DEFINER ignore la RLS : si un élève peut l'appeler, seul
 **Que faire :** lire le corps ; s'il ne contrôle pas l'appelant (`auth.uid() = p_user_id`, `is_teacher_or_admin()`, `assert_*`, jeton…), ajouter la garde ou révoquer EXECUTE — jamais l'inverse. S'il le contrôle, ajouter l'entrée avec une justification VRAIE d'une ligne (et `anon: true` seulement pour une page publique).
 Entrée périmée → la retirer. `search_path` → `SET search_path = public, pg_temp`.
 Les fonctions laissées hors liste exprès (en attente de décision) sont nommées en tête du fichier de liste.
+**Bloquant en CI (Q162 b)** : job `Garde SECURITY DEFINER` de `quality.yml`, sur toutes les PR, compté dans « CI Summary » (check obligatoire) — un rouge empêche le merge.
+Il ne démarre que Postgres (`supabase db start`, migrations appliquées), sans la suite d'intégration ; config `vitest.definer-guard.config.ts`.
+En local : `pnpm db:start` puis `pnpm test:definer-guard` (sous le verrou `supabase`, < 1 s).
