@@ -48,7 +48,7 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 	},
 	T_SPE: {
 		md: 'docs/wip/referentiel/terminale-spe-programme.md',
-		out: 'supabase/migrations/20261004090000_seed_curriculum_terminale_spe.sql',
+		out: 'supabase/migrations/20261004100000_seed_curriculum_terminale_spe.sql',
 		prefixe: 'TSPE',
 		source: [
 			"« Programme de l'enseignement de spécialité de mathématiques de la",
