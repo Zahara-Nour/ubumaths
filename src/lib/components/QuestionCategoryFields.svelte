@@ -8,6 +8,9 @@
   - La valeur courante reste toujours proposée, même absente des données.
   - Les valeurs créées par « Ajouter… » restent disponibles pendant la session,
     rattachées au thème / domaine choisis au moment de l'ajout.
+  - « Ajouter… » d'un domaine est désactivé tant qu'aucun thème n'est choisi (idem
+    sous-domaine sans domaine) : sinon la valeur créée n'est rattachée à rien et
+    disparaît de la liste filtrée dès qu'un thème est choisi.
   - Changer de thème ou de domaine NE vide PAS une valeur devenue incompatible :
     elle reste sélectionnée, et un message signale qu'elle est nouvelle dans ce
     thème / domaine (elle sera créée avec le modèle). L'utilisateur choisit alors
@@ -64,10 +67,12 @@
 	}
 
 	function addDomain(newDomain: string) {
+		if (!theme) return;
 		addedEntries = [...addedEntries, { theme, domain: newDomain, subdomain: null }];
 	}
 
 	function addSubdomain(newSubdomain: string) {
+		if (!theme || !domain) return;
 		addedEntries = [...addedEntries, { theme, domain, subdomain: newSubdomain }];
 	}
 </script>
@@ -95,6 +100,7 @@
 			required={true}
 			onValueChange={(val) => (domain = val)}
 			onAddNew={addDomain}
+			addDisabledHint={theme ? '' : 'Choisis d’abord un thème'}
 		/>
 		{#if domainError}
 			<p class="mt-1 text-xs text-destructive">{domainError}</p>
@@ -114,6 +120,11 @@
 			allowEmpty={true}
 			onValueChange={(val) => (subdomain = val)}
 			onAddNew={addSubdomain}
+			addDisabledHint={!theme
+				? 'Choisis d’abord un thème'
+				: !domain
+					? 'Choisis d’abord un domaine'
+					: ''}
 		/>
 		{#if subdomainIsNewHere}
 			<p class="mt-1 text-xs text-amber-700 dark:text-amber-400">

@@ -80,20 +80,19 @@ export async function checkCategoryUniqueness(
 			query = query.neq('id', excludeTemplateId);
 		}
 
-		const { data, error } = await query.limit(1).single();
+		// Lecture en liste, sans `.single()` : l'absence de doublon est le cas normal,
+		// et `.single()` la faisait répondre en 406 (PGRST116) dans les logs
+		const { data, error } = await query.limit(1);
 
-		if (error) {
-			// PGRST116 = no rows found (category is unique)
-			if (error.code === 'PGRST116') {
-				return { isUnique: true };
-			}
-			throw error;
-		}
+		if (error) throw error;
+
+		const existing = data?.[0];
+		if (!existing) return { isUnique: true };
 
 		// Found existing template with same category
 		return {
 			isUnique: false,
-			existingTemplateId: data?.id
+			existingTemplateId: existing.id
 		};
 	} catch (error) {
 		console.error('Error checking category uniqueness:', error);

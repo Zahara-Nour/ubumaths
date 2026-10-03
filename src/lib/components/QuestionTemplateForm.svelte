@@ -103,6 +103,7 @@
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
 	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
+	import { keepFirstCorrectChoice, keepFirstDeclaredChoice } from '$lib/questions/single-answer';
 	import {
 		assumptionsToRows,
 		duplicateAssumptionMessage,
@@ -981,6 +982,20 @@
 		_jsonErrors = errors;
 	}
 
+	// « Plusieurs réponses » coupé dans un éditeur (case ou « Vrai / Faux ») : le
+	// réglage vaut pour tout le modèle → chaque variation et le partagé ne gardent
+	// que leur première bonne réponse
+	function handleSingleAnswer() {
+		variations = variations.map((variation) => ({
+			...variation,
+			...(variation.choices ? { choices: keepFirstCorrectChoice(variation.choices) } : {}),
+			...(variation.correctChoiceIndex !== undefined
+				? { correctChoiceIndex: keepFirstDeclaredChoice(variation.correctChoiceIndex) }
+				: {})
+		}));
+		sharedChoices = keepFirstCorrectChoice(sharedChoices);
+	}
+
 	// Handle save
 
 	// Save as draft (no category validation)
@@ -1004,9 +1019,11 @@
 		const templateData = buildTemplate();
 		// QCM (V1) : plusieurs bonnes réponses sans « plusieurs réponses » → refusé,
 		// même en brouillon (le serveur refuserait aussi)
+		// Toast même en silencieux : sinon la modification (ex. un test supprimé)
+		// n'est pas enregistrée et rien ne le dit
 		const countErrors = choiceAnswerCountErrors(templateData, { draft: true });
 		if (countErrors.length > 0) {
-			if (!options?.silent) toaster.error(countErrors[0]);
+			toaster.error(countErrors[0]);
 			return;
 		}
 		onSave(templateData, options);
@@ -1527,6 +1544,7 @@
 			{questionType}
 			bind:multipleAnswers
 			bind:shuffleChoices={optShuffleChoices}
+			onSingleAnswer={handleSingleAnswer}
 			bind:sharedStatement
 			bind:sharedVariables
 			bind:sharedCorrectChoiceIndex
@@ -1733,6 +1751,7 @@
 														bind:choices={variation.choices}
 														bind:multipleAnswers
 														bind:shuffleChoices={optShuffleChoices}
+														onSingleAnswer={handleSingleAnswer}
 													/>
 												</Card.Content>
 											</Collapsible.Content>

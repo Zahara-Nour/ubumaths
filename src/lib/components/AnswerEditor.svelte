@@ -16,12 +16,16 @@
 	- multipleAnswers: boolean (bindable, for QCM)
 	- shuffleChoices: boolean (bindable, for QCM) — `false` après le préréglage
 	  « Vrai / Faux » (Q106 : jamais mélangé)
+	- onSingleAnswer: appelé quand « plusieurs réponses » est coupé ici (case
+	  décochée ou « Vrai / Faux ») : le réglage vaut pour tout le modèle, le parent
+	  normalise les AUTRES listes de choix
 -->
 
 <script lang="ts">
 	import type { QuestionType, TemplateBlank } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
+	import { keepFirstCorrectChoice } from '$lib/questions/single-answer';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
@@ -38,6 +42,7 @@
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
 		shuffleChoices?: boolean;
+		onSingleAnswer?: () => void;
 	}
 
 	// Constantes
@@ -50,7 +55,8 @@
 		blanks = $bindable([]),
 		choices = $bindable([]),
 		multipleAnswers = $bindable(),
-		shuffleChoices = $bindable()
+		shuffleChoices = $bindable(),
+		onSingleAnswer
 	}: Props = $props();
 
 	// Plusieurs éditeurs sur la page (partagé + variations) : un groupe radio chacun
@@ -125,6 +131,7 @@
 		}));
 		multipleAnswers = false;
 		shuffleChoices = false;
+		onSingleAnswer?.();
 	}
 
 	function requestTrueFalse() {
@@ -139,11 +146,8 @@
 	function handleMultipleAnswersChange(checked: boolean) {
 		multipleAnswers = checked;
 		if (!checked) {
-			const firstCorrectIndex = choices.findIndex((c) => c.isCorrect);
-			choices = choices.map((c, i) => ({
-				...c,
-				isCorrect: firstCorrectIndex >= 0 && i === firstCorrectIndex
-			}));
+			choices = keepFirstCorrectChoice(choices);
+			onSingleAnswer?.();
 		}
 	}
 

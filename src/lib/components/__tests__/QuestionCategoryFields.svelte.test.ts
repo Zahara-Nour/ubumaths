@@ -89,4 +89,34 @@ describe('QuestionCategoryFields', () => {
 			.element(page.getByText('« Arithmétiques » n’existe pas encore dans le thème « Fractions »'))
 			.toBeVisible();
 	});
+	it('sans thème : « Ajouter… » du domaine est désactivé, avec une indication', async () => {
+		await renderFields({});
+
+		// Sans thème, le domaine ET le sous-domaine portent l'indication
+		await expect.element(page.getByText('Choisis d’abord un thème').first()).toBeVisible();
+		await page.getByRole('button', { name: /^Domaine/ }).click();
+		const addOption = page.getByRole('option', { name: '➕ Ajouter…' });
+		await expect.element(addOption).toHaveAttribute('data-disabled');
+		await userEvent.keyboard('{Escape}');
+	});
+
+	it('sans domaine : « Ajouter… » du sous-domaine est désactivé, avec une indication', async () => {
+		await renderFields({ theme: 'Suites' });
+
+		await expect.element(page.getByText('Choisis d’abord un domaine')).toBeVisible();
+		await page.getByRole('button', { name: /^Sous-domaine/ }).click();
+		const addOption = page.getByRole('option', { name: '➕ Ajouter…' });
+		await expect.element(addOption).toHaveAttribute('data-disabled');
+		await userEvent.keyboard('{Escape}');
+	});
+
+	it('thème choisi : « Ajouter… » du domaine est actif, sans indication', async () => {
+		await renderFields({ theme: 'Suites' });
+
+		expect(page.getByText('Choisis d’abord un thème').elements()).toHaveLength(0);
+		await page.getByRole('button', { name: /^Domaine/ }).click();
+		const addOption = page.getByRole('option', { name: '➕ Ajouter…' });
+		await expect.element(addOption).not.toHaveAttribute('data-disabled');
+		await userEvent.keyboard('{Escape}');
+	});
 });

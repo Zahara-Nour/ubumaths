@@ -59,7 +59,7 @@ export function templateRow(): Row {
 function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 	const filters: Array<(row: Row) => boolean> = [];
 	let patch: Row | null = null;
-	let single = false;
+	let single: false | 'single' | 'maybe' = false;
 
 	function execute() {
 		const matching = db[table].filter((row) => filters.every((keep) => keep(row)));
@@ -68,6 +68,9 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 			for (const row of matching) Object.assign(row, patch);
 		}
 		const data = matching.map((row) => ({ ...row }));
+		// Comportement réel : `.maybeSingle()` rend { null, null } sur zéro ligne ;
+		// seul `.single()` rend l'erreur PGRST116 (HTTP 406)
+		if (single === 'maybe') return { data: data[0] ?? null, error: null };
 		if (single) {
 			return data.length === 0
 				? { data: null, error: { code: 'PGRST116', message: 'no rows' } }
@@ -97,11 +100,11 @@ function fakeQuery(db: FakeDb, table: 'question_templates' | 'profiles') {
 		order: () => builder,
 		limit: () => builder,
 		single: () => {
-			single = true;
+			single = 'single';
 			return builder;
 		},
 		maybeSingle: () => {
-			single = true;
+			single = 'maybe';
 			return builder;
 		},
 		// Voulu : un constructeur PostgREST est « thenable », c'est `await` qui l'exécute

@@ -9,6 +9,8 @@
   - `value` : valeur choisie (bindable) ; '' = aucune
   - `allowEmpty` : ajoute une entrée « Aucun » (champ facultatif)
   - `onAddNew` : appelé avec la nouvelle valeur ; la valeur est aussi sélectionnée
+  - `addDisabledHint` : si renseigné, « Ajouter… » est désactivé et ce texte s'affiche
+    sous la liste (ex. « Choisis d'abord un thème »)
 
   Usage :
     <CategorySelector label="Thème" bind:value={theme} options={themeOptions} required
@@ -32,6 +34,8 @@
 		allowEmpty?: boolean;
 		onValueChange: (value: string) => void;
 		onAddNew?: (newValue: string) => void;
+		/** Désactive « Ajouter… » et affiche cette indication (parent non choisi) */
+		addDisabledHint?: string;
 	}
 
 	// Valeurs sentinelles : jamais des catégories réelles
@@ -46,7 +50,8 @@
 		required = false,
 		allowEmpty = false,
 		onValueChange,
-		onAddNew
+		onAddNew,
+		addDisabledHint = ''
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -62,7 +67,9 @@
 	const items = $derived([
 		...(allowEmpty ? [{ value: NONE, label: 'Aucun' }] : []),
 		...options.map((option) => ({ value: option, label: option })),
-		...(onAddNew ? [{ value: ADD_NEW, label: '➕ Ajouter…' }] : [])
+		...(onAddNew
+			? [{ value: ADD_NEW, label: '➕ Ajouter…', disabled: Boolean(addDisabledHint) }]
+			: [])
 	]);
 
 	function select(newValue: string) {
@@ -74,7 +81,7 @@
 		if (selected === ADD_NEW) {
 			// Ne pas laisser « Ajouter… » affiché comme valeur choisie
 			selectValue = value ?? '';
-			dialogOpen = true;
+			if (!addDisabledHint) dialogOpen = true;
 			return;
 		}
 		select(selected === NONE ? '' : selected);
@@ -113,6 +120,9 @@
 		triggerAriaLabel={`${label} : ${value || 'aucun'}`}
 		onValueChange={handleSelectChange}
 	/>
+	{#if onAddNew && addDisabledHint}
+		<p class="text-xs text-muted-foreground">{addDisabledHint}</p>
+	{/if}
 </div>
 
 {#if onAddNew}
