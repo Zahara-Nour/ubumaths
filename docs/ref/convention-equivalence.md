@@ -168,3 +168,31 @@ valeurs absolues, carrés, quotients, inverses `1/\log_{a}(b)`, bases inversées
 faux positifs), 3 680 faux → vrai (tous vérifiés numériquement). Échantillon sans base (4 000 paires) :
 0 écart. Seconde passe après la revue de #524 (exposants, `log_b(b^u)`) : 70 194 paires, 0 faux
 positif ; 177 vrai → faux (exactement les 177 faux positifs de `main`), 4 051 faux → vrai.
+
+## Réponse « équation » : même ensemble de points (case `answerKind: "equation"`)
+
+`areEquivalent` compare deux équations comme deux relations : `2x-y+1=0` et `y=2x+1` ne sont pas
+« la même chose » pour lui. Une case marquée `answerKind: "equation"` (géométrie repérée,
+spécification de David du 2026-10-03) ne passe PAS par `areEquivalent` :
+`questions/equations/equation-answer.ts` réduit P = (gauche − droite) avec `normalize` (exact :
+rationnels et radicaux, aucun flottant) et exige un polynôme non constant en x et y. Réponse et
+attendue sont justes si P_rép = k·P_att, k constante non nulle (produits en croix exacts) :
+
+| Attendue            | Réponse                                           | Verdict                  |
+| ------------------- | ------------------------------------------------- | ------------------------ |
+| `2x-y+1=0`          | `y=2x+1`, `4x-2y+2=0`, `x-\frac12y+\frac12=0`     | juste (droite : tout k)  |
+| `x=4`               | `x-4=0`, `2x=8`                                   | juste                    |
+| `(x-1)^2+(y+2)^2=9` | `x^2+y^2-2x+4y-4=0`, `…=3^2`, `9=(x-1)^2+(y+2)^2` | juste (coefficient ±1)   |
+| `2x^2+2y^2=8`       | `x^2+y^2=4`                                       | juste (attendue ramenée) |
+| `(x-1)^2+(y+2)^2=9` | `2x^2+2y^2-4x+8y-8=0`, `-2x^2-2y^2…=0`            | ½ : \|k\| = 2 (degré 2)  |
+| `2x-y+1=0`          | `2x-y+1`, `x<3`, `x=\sqrt{y}`, `a+b=0`            | faux, sans exception     |
+
+Formes exigeables (`requiredForm`) : `reduite`, `cartesienne`, `centre-rayon`, jugées sur
+l'écriture APRÈS la valeur (mauvaise forme seulement si l'équation est juste). Sans `answerKind`,
+rien ne change : une équation reste comparée par `areEquivalent`.
+
+Degré ≥ 2 (décision du 2026-10-03) : l'équation est ramenée au coefficient 1 d'un terme de
+référence avant de mesurer k : x², sinon y², sinon le premier terme de plus haut degré dans
+l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coefficient vaut ±1
+(signe libre : membres échangés, tout changé de signe), ½ sinon. L'écriture de l'attendue
+(`2x^2+2y^2=8`) n'est donc jamais imposée à l'élève.

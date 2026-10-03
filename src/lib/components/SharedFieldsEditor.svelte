@@ -53,6 +53,7 @@
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
 		sharedBlankIntervals: boolean;
+		sharedBlankEquation: boolean;
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
@@ -82,6 +83,7 @@
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
 		sharedBlankIntervals = $bindable(),
+		sharedBlankEquation = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
 		sharedVariableHelpOpen = $bindable()
@@ -327,6 +329,11 @@
 							<MyCheckbox
 								bind:checked={sharedBlankIntervals}
 								label="Réponse : ensemble en intervalles"
+							/>
+							<!-- Équation de droite ou de cercle : y=2x+1 juste pour 2x-y+1=0 -->
+							<MyCheckbox
+								bind:checked={sharedBlankEquation}
+								label="Réponse : équation (droite, cercle)"
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>

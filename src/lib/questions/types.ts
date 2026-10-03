@@ -235,10 +235,10 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
-export type AnswerKind = 'intervalles';
+export type AnswerKind = 'intervalles' | 'equation';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
-export const ANSWER_KINDS = ['intervalles'] as const satisfies readonly AnswerKind[];
+export const ANSWER_KINDS = ['intervalles', 'equation'] as const satisfies readonly AnswerKind[];
 
 /**
  * Default validation settings applied to all blanks in a question.
@@ -300,6 +300,11 @@ export interface TemplateBlank {
 	 * syntaxe maison : `]-\infty;{{x1}}[\cup]{{x2}};+\infty[`. Jugée par
 	 * `questions/intervals/interval-answer.ts` ; écriture réglée par la contrainte
 	 * `intervalForm`.
+	 * `'equation'` = une équation de droite ou de cercle en x et y, jugée sur
+	 * l'ensemble de points qu'elle décrit : juste si (gauche − droite) est
+	 * proportionnel à celui de l'attendue (coefficient 1 exigé dès le degré 2,
+	 * sinon ½). Formes exigeables : `requiredForm` `reduite`, `cartesienne`,
+	 * `centre-rayon`. Jugée par `questions/equations/equation-answer.ts`.
 	 */
 	answerKind?: AnswerKind;
 
@@ -997,6 +1002,11 @@ export interface ConstraintOptions {
  * - 'fraction': Must be a fraction (e.g., 1/2, a/b)
  * - 'power': Must be a power/exponent (e.g., x², 2³)
  *
+ * Formes d'une ÉQUATION (`EquationForm`, case `answerKind: 'equation'` surtout) :
+ * - 'reduite': y = mx + p (ou x = c pour une verticale) ; `x+1=y` refusée
+ * - 'cartesienne': ax + by + c = 0 (membre droit 0, membre gauche réduit)
+ * - 'centre-rayon': (x − a)² + (y − b)² = r²
+ *
  * Custom pattern: Use a pattern string with placeholders
  * - { pattern: 'a:integer * b:integer' }
  *
@@ -1012,11 +1022,22 @@ export type RequiredForm =
 	| 'additionOnly'
 	| 'fraction'
 	| 'power'
+	| EquationForm
 	| {
 			pattern: string;
 			/** Forme juste mais pas celle demandée : perfectible (`(z-7)(z-7)` pour un carré) */
 			acceptable?: string;
 	  };
+
+/** Forme exigeable d'une équation (cf. `RequiredForm`) */
+export type EquationForm = 'reduite' | 'cartesienne' | 'centre-rayon';
+
+/** Valeurs de `EquationForm` (schémas Zod, éditeur) */
+export const EQUATION_FORMS = [
+	'reduite',
+	'cartesienne',
+	'centre-rayon'
+] as const satisfies readonly EquationForm[];
 
 // ============================================================================
 // TEST SPECS

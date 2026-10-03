@@ -37,7 +37,7 @@
 		ConstraintMode,
 		TestSpec
 	} from '$lib/questions/types';
-	import { getQuestionType } from '$lib/questions/types';
+	import { EQUATION_FORMS, getQuestionType } from '$lib/questions/types';
 	import type { DisplayOptions } from '$lib/ubumark/parameterization/display-options';
 	import { questionTemplateSchema } from '$lib/questions/template-schema';
 	import { CONSTRAINT_IDS } from '$lib/questions/constraint-constants';
@@ -381,6 +381,9 @@
 	let sharedBlankIntervals = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'intervalles'
 	);
+	let sharedBlankEquation = $state(
+		initialTemplate?.shared?.blankDefaults?.answerKind === 'equation'
+	);
 	let sharedValidationRulesJson = $state(
 		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
@@ -389,7 +392,14 @@
 	);
 
 	// Valid required form values (used in buildTemplate)
-	const VALID_REQUIRED_FORMS = ['product', 'sum', 'additionOnly', 'fraction', 'power'] as const;
+	const VALID_REQUIRED_FORMS = [
+		'product',
+		'sum',
+		'additionOnly',
+		'fraction',
+		'power',
+		...EQUATION_FORMS
+	] as const;
 
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);
@@ -750,7 +760,9 @@
 		}
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
+		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
 		if (sharedBlankIntervals) blankDefaults.answerKind = 'intervalles';
+		else if (sharedBlankEquation) blankDefaults.answerKind = 'equation';
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
 			const rules = JSON.parse(sharedValidationRulesJson);
@@ -904,6 +916,7 @@
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
+		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 
@@ -1561,6 +1574,7 @@
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
 			bind:sharedBlankIntervals
+			bind:sharedBlankEquation
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
 			bind:sharedVariableHelpOpen

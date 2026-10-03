@@ -35,6 +35,7 @@ import {
 import { P } from '$lib/mathAST/pattern/builder';
 import { matches, tryMatch } from '$lib/mathAST/pattern/match';
 import { isMathNodeBinding } from '$lib/mathAST/pattern/types';
+import { EQUATION_FEEDBACK, matchesEquationForm } from './equations/equation-answer';
 
 // =============================================================================
 // CONSTANTS
@@ -49,6 +50,8 @@ export const REQUIRED_FORM_FEEDBACK = {
 	additionOnly: 'La réponse doit être une addition, sans soustraction.',
 	fraction: 'La réponse doit être écrite sous forme de fraction.',
 	power: 'La réponse doit être écrite sous forme de puissance.',
+	// Formes d'une équation : mêmes messages que la case « équation »
+	...EQUATION_FEEDBACK.forms,
 	pattern: 'La réponse ne respecte pas la forme demandée.',
 	acceptable: 'La réponse est juste, mais pas écrite sous la forme demandée.'
 } as const;
@@ -188,6 +191,10 @@ function matchesPredefinedForm(
 			return isValidFraction(node);
 		case 'power':
 			return isValidPower(node);
+		case 'reduite':
+		case 'cartesienne':
+		case 'centre-rayon':
+			return matchesEquationForm(node, formType);
 	}
 }
 
