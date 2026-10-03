@@ -75,7 +75,9 @@
 -- 034e37d72fe626946edad5fd11f1191a, update_student_gidouilles(5 args)
 -- df540176c353b6d9010fa43abdb5ef7d. Seules les modifications ci-dessus sont
 -- apportées (balisées « Q146 », « Q153 », « Q157 », « Audit A/B », « Q158 »). Droits inchangés (CREATE OR
--- REPLACE conserve proacl : {postgres, service_role}).
+-- REPLACE conserve proacl : process_achievement_event {postgres, service_role} ;
+-- update_student_gidouilles(5 args) {postgres, authenticated, service_role}, un élève
+-- étant refusé par la garde de rôle).
 --
 -- Lot 4 (20261003210000) : search_path des fonctions SECURITY DEFINER figé à
 -- « public, pg_temp ». Les deux fonctions DEFINER recréées ici le gardent
