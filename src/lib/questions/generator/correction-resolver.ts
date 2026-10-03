@@ -245,6 +245,7 @@ export function buildCorrectionContext(
  * @param context - Correction context (solutions, expression)
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
+ * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
  * @returns Resolved markdown with pseudo-variables replaced and client placeholders preserved
  */
 export function resolveCorrectionContent(
@@ -252,7 +253,8 @@ export function resolveCorrectionContent(
 	resolvedVariables: ResolvedVariable[],
 	context: CorrectionContext,
 	random: RandomSource = Math.random,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	cleanCoefficients = false
 ): ResolvedMarkdown {
 	// Step 0: conditions sur les variables tirées résolues ici ; les autres restent au client
 	const withoutVariableConditionals = resolveVariableConditionals(
@@ -276,7 +278,8 @@ export function resolveCorrectionContent(
 		templateMarkdown(preprocessed),
 		enrichedVariables,
 		random,
-		genericFunctions
+		genericFunctions,
+		cleanCoefficients
 	);
 
 	// Step 5: Restore client placeholders

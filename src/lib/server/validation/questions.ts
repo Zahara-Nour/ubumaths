@@ -104,6 +104,18 @@ function refineSharedGenericFunctions(data: { shared?: unknown }, ctx: z.Refinem
 	}
 }
 
+/** `shared.cleanCoefficients` : un booléen, lu par la génération */
+function refineSharedCleanCoefficients(data: { shared?: unknown }, ctx: z.RefinementCtx): void {
+	const shared = data.shared;
+	if (typeof shared !== 'object' || shared === null || !('cleanCoefficients' in shared)) return;
+	if (typeof shared.cleanCoefficients === 'boolean') return;
+	ctx.addIssue({
+		code: 'custom',
+		message: '« Nettoyer les coefficients » vaut vrai ou faux',
+		path: ['shared', 'cleanCoefficients']
+	});
+}
+
 /** Contrôles croisés communs à la création et à la mise à jour */
 function refineTemplate(
 	data: Parameters<typeof refineAssumptionCollisions>[0] & { shared?: unknown },
@@ -111,6 +123,7 @@ function refineTemplate(
 ): void {
 	refineAssumptionCollisions(data, ctx);
 	refineSharedGenericFunctions(data, ctx);
+	refineSharedCleanCoefficients(data, ctx);
 }
 
 /**

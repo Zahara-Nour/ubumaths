@@ -466,6 +466,14 @@ export interface SharedVariationDefaults {
 	 * @see templateGenericFunctions (generic-functions.ts)
 	 */
 	genericFunctions?: string[];
+
+	/**
+	 * Nettoie les coefficients des formules après le tirage : `1x-1y+0=0` → `x-y=0`
+	 * (énoncé, correction, choix, réponses attendues). Absente ou `false` : rien ne
+	 * change. Pas de surcharge par variation.
+	 * @see cleanCoefficientsAst (clean-coefficients.ts)
+	 */
+	cleanCoefficients?: boolean;
 }
 
 // ============================================================================

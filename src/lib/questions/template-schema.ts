@@ -584,7 +584,9 @@ const sharedStrictZ = z
 		answerFormats: z.record(z.string(), z.string()).optional(),
 		conditions: z.array(z.string()).optional(),
 		// Fonctions déclarées (`P`, `C`) : complètent f, g, h… (cf. generic-functions.ts)
-		genericFunctions: genericFunctionNamesSchema.optional()
+		genericFunctions: genericFunctionNamesSchema.optional(),
+		// 1x → x, +0 retiré dans les formules (cf. clean-coefficients.ts)
+		cleanCoefficients: z.boolean().optional()
 	})
 	.strict();
 

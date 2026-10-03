@@ -45,6 +45,7 @@ import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variab
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
 import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
+import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
@@ -229,6 +230,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Sans déclaration, `undefined` partout → défauts du parseur, rien ne change.
 		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
 		const genericFunctions = templateGenericFunctions(genericFunctionNames);
+		// Coefficients nettoyés (`1x-1y+0` → `x-y`) : strictement `true`, sinon rien ne change
+		const cleanCoefficients = template.shared?.cleanCoefficients === true;
 
 		// 4. Detect circular dependencies in resolved variation
 		if (resolvedVariation.variables) {
@@ -297,7 +300,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			statementTemplate,
 			resolvedVariables,
 			random,
-			genericFunctions
+			genericFunctions,
+			cleanCoefficients
 		);
 
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
@@ -386,9 +390,19 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const normalized = isMathBlank
 					? normalizeAnswerExpression(rawExpected, resolvedVariables)
 					: rawExpected;
-				const expectedAnswer = normalized.includes('{{')
+				const resolvedExpected = normalized.includes('{{')
 					? resolveExpression(normalized, resolvedVariables, random)
 					: normalized;
+				// Option du modèle : `1x-1y+0=0` → `x-y=0` (case mathématique sans unité ni
+				// ensemble ; une formule illisible reste telle quelle)
+				const isCleanable =
+					cleanCoefficients &&
+					isMathBlank &&
+					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
+					(blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind) !== 'intervalles';
+				const expectedAnswer = isCleanable
+					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
+					: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
 				// (left-to-right, consecutive, 0-based). If that contract changes,
@@ -441,7 +455,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					resolved.expectedAnswerLatex =
 						resolved.answerKind === 'intervalles'
 							? expectedIntervalsLatex(resolved.expectedAnswer)
-							: convertToLatex(resolved.expectedAnswer, genericFunctions);
+							: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
 				}
 				return resolved;
 			});
@@ -490,7 +504,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			resolvedChoices = resolvedVariation.choices.map((choice, i) => {
 				const content = choice.content;
 				const resolvedContent: ResolvedMarkdown = content.includes('{{')
-					? resolveMarkdownContent(content, resolvedVariables, random, genericFunctions)
+					? resolveMarkdownContent(
+							content,
+							resolvedVariables,
+							random,
+							genericFunctions,
+							cleanCoefficients
+						)
 					: resolvedMarkdown(content);
 				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
 				const isCorrect =
@@ -540,7 +560,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						correctionContext,
 						random,
-						genericFunctions
+						genericFunctions,
+						cleanCoefficients
 					);
 				}
 				if (feedback.incorrect) {
@@ -549,7 +570,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						correctionContext,
 						random,
-						genericFunctions
+						genericFunctions,
+						cleanCoefficients
 					);
 				}
 				if (feedback.partial) {
@@ -558,7 +580,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						correctionContext,
 						random,
-						genericFunctions
+						genericFunctions,
+						cleanCoefficients
 					);
 				}
 			}
@@ -570,7 +593,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						resolvedVariables,
 						correctionContext,
 						random,
-						genericFunctions
+						genericFunctions,
+						cleanCoefficients
 					)
 				);
 			}

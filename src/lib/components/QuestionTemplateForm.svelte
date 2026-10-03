@@ -67,6 +67,7 @@
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
 	import MySelect from './MySelect.svelte';
+	import MyCheckbox from './MyCheckbox.svelte';
 	import CourseQuestionToggle from './CourseQuestionToggle.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { templateMarkdown } from '$lib/ubumark';
@@ -399,6 +400,8 @@
 	let genericFunctionsText = $state(
 		formatGenericFunctionNames(initialTemplate?.shared?.genericFunctions)
 	);
+	// Coefficients nettoyés après le tirage (shared.cleanCoefficients) : 1x → x, +0 retiré
+	let cleanCoefficients = $state(initialTemplate?.shared?.cleanCoefficients === true);
 	let genericFunctionsError = $derived.by(() => {
 		const result = genericFunctionNamesSchema.safeParse(
 			parseGenericFunctionNames(genericFunctionsText)
@@ -794,6 +797,8 @@
 		// Noms invalides transmis tels quels : la route les refuse avec leur message
 		const genericFunctionNames = parseGenericFunctionNames(genericFunctionsText);
 		if (genericFunctionNames.length > 0) shared.genericFunctions = genericFunctionNames;
+		// Absente quand décochée : un modèle sans l'option reste identique
+		if (cleanCoefficients) shared.cleanCoefficients = true;
 
 		// Build defaultDisplayOptions
 		const displayOpts: DisplayOptions = {};
@@ -938,6 +943,7 @@
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 		genericFunctionsText = formatGenericFunctionNames(t.shared?.genericFunctions);
+		cleanCoefficients = t.shared?.cleanCoefficients === true;
 
 		// Variations
 		variations = t.variations?.map((v) => ({
@@ -1132,6 +1138,7 @@
 			questionType,
 			exerciseInstruction,
 			genericFunctionsText,
+			cleanCoefficients,
 			multipleAnswers,
 			variations: variations.map((v) => ({
 				statement: v.statement,
@@ -1558,6 +1565,20 @@
 			{#if genericFunctionsError}
 				<p class="text-xs text-destructive" role="alert">{genericFunctionsError}</p>
 			{/if}
+		</div>
+
+		<!-- Coefficients nettoyés (shared.cleanCoefficients) -->
+		<div class="space-y-1">
+			<MyCheckbox
+				bind:checked={cleanCoefficients}
+				label="Nettoyer les coefficients (1x → x, +0)"
+				aria-describedby="clean-coefficients-help"
+			/>
+			<p id="clean-coefficients-help" class="text-xs text-muted-foreground">
+				Après le tirage, dans l'énoncé, la correction, les choix et les réponses attendues : 1x → x,
+				-1x → -x, 0x et +0 retirés, + (-3) → - 3. Les fonctions (f(1), P(-3)) ne sont jamais
+				touchées.
+			</p>
 		</div>
 
 		<!-- Display Options -->
