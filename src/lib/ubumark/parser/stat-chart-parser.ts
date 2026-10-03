@@ -970,6 +970,17 @@ function checkFrequencyTable(
 	if (options.decimalFrequencies !== null && !rows.some((row) => row.startsWith('fréquences'))) {
 		return at(optionLines.frequences ?? 0, 'fréquences : seulement avec une ligne de fréquences');
 	}
+	// « Total » désigne la colonne des totaux : une catégorie ne peut pas s'y
+	// appeler ainsi (revue, comme le tableau croisé)
+	const homonym = options.showTotals
+		? data.find((d) => normalizeKey(d.label.trim()) === normalizeKey(TOTAL))
+		: undefined;
+	if (homonym) {
+		return at(
+			homonym.line,
+			'« Total » est réservé à la colonne des totaux : renommer cette valeur'
+		);
+	}
 	const masked =
 		options.tableMasked === null
 			? []
@@ -1013,10 +1024,19 @@ function resolveTableMasks(
 		}
 		return row;
 	};
-	const squash = (text: string) => text.replace(/\s+/g, '').replaceAll('−', '-');
+	// Aux espaces et à la casse près, comme les noms de lignes (revue)
+	const squash = (text: string) =>
+		text.replace(/\s+/g, '').replaceAll('−', '-').toLocaleLowerCase('fr');
 	const masked: { row: FrequencyTableRow; column: number | 'total' }[] = [];
-	for (const piece of pieces.map((p) => p.trim()).filter((p) => p !== '')) {
+	const entries = pieces.map((p) => p.trim()).filter((p) => p !== '');
+	// `masquer:` vide : la fiche partirait sans case à compléter (revue)
+	if (entries.length === 0) return 'masquer : aucune case donnée';
+	for (const piece of entries) {
 		const slash = piece.lastIndexOf('/');
+		// Une classe sans « / » : une case mal écrite, pas un nom de ligne (revue)
+		if (slash === -1 && piece.startsWith('[')) {
+			return 'masquer : écrire valeur/ligne, par exemple 12/effectifs';
+		}
 		if (slash === -1) {
 			const row = rowOf(piece);
 			if (!FREQUENCY_TABLE_ROWS.includes(row as FrequencyTableRow)) return row;
