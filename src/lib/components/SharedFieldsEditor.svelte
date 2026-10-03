@@ -210,6 +210,7 @@
 								bind:multipleAnswers
 								bind:shuffleChoices
 								{onSingleAnswer}
+								seedEmpty={false}
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>
