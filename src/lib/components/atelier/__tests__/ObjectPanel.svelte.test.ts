@@ -157,7 +157,7 @@ describe('actions avec une autre liste', () => {
 		expect(labels(carte)).toContain('Nuage avec M');
 	});
 
-	it('plusieurs partenaires : un menu, au plus 10 boutons (Q78), et le choix change les actions', async () => {
+	it('plusieurs partenaires : un menu, au plus 11 boutons (Q78, Q119), et le choix change les actions', async () => {
 		const { carte, atelier } = await cardOf(['L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']);
 		const trigger = carte.querySelector('[aria-haspopup="listbox"]') as HTMLButtonElement;
 
@@ -165,9 +165,10 @@ describe('actions avec une autre liste', () => {
 		expect(trigger.getAttribute('aria-label')).toBe('Avec la liste M');
 		const group = carte.querySelector('[role="group"]');
 		expect(group?.getAttribute('aria-label')).toBe('Avec la liste M');
-		expect(labels(carte).length).toBeLessThanOrEqual(10);
-		// Q78 : le 10ᵉ bouton est bien rendu sur la carte
+		expect(labels(carte).length).toBeLessThanOrEqual(11);
+		// Q78, Q119 : les 10ᵉ et 11ᵉ boutons sont bien rendus sur la carte
 		expect(labels(carte)).toContain('Simuler avec probabilités M');
+		expect(labels(carte)).toContain('Comparer avec M');
 		expect(labels(carte)).toContain('Nuage avec M');
 
 		// Un vrai clic : bits-ui réagit aux événements de pointeur, pas à `.click()`

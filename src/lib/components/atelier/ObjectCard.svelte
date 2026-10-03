@@ -110,7 +110,7 @@
 					</span>
 				{/if}
 			{/each}
-			<!-- Une partenaire à la fois (Q46) : au plus 10 boutons (Q78), quel que soit le
+			<!-- Une partenaire à la fois (Q46) : au plus 11 boutons (Q78, Q119), quel que soit le
 			     nombre de listes. Avec plusieurs listes, l'élève la choisit ici. -->
 			{#if partner !== null}
 				<!-- Un groupe NOMMÉ : le lecteur d'écran sait avec quelle liste agissent

@@ -256,6 +256,18 @@ export interface LawScene extends SceneCommon {
 	hiddenLabel: string;
 }
 
+/**
+ * Comparer deux séries (atelier, `.comparer`, v2 lot 5, Q112) : une ligne par
+ * indicateur, une colonne par série. Jamais produite par un bloc (pour l'instant).
+ */
+export interface ComparisonScene extends SceneCommon {
+	kind: 'comparaison';
+	/** Noms des séries : en-têtes des colonnes */
+	columns: string[];
+	/** `groupStart` : première ligne d'un groupe (moyenne, médiane, minimum) */
+	rows: { header: string; cells: string[]; groupStart: boolean }[];
+}
+
 /** Une valeur simulée : une ligne du tableau */
 export interface SimulationRow {
 	/** Valeur telle qu'écrite, vrai signe moins, séparateur selon la langue */
@@ -307,6 +319,7 @@ export interface MeanScene extends SceneCommon {
 }
 
 export type StatChartScene =
+	| ComparisonScene
 	| SimulationScene
 	| MeanScene
 	| LawScene

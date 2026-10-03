@@ -24,6 +24,7 @@ import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } fro
 import { renderResult } from './render';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
+import { compareCommand } from './compare';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
@@ -250,7 +251,9 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Tableau croisé (Q89) : lit des NOMS de listes, pas de hasard
 	cross: (atelier, argument) => crossCommand(atelier, argument),
 	// Filtre (Q90) : lit des NOMS de listes, pas de hasard
-	filter: (atelier, argument) => filterCommand(atelier, argument)
+	filter: (atelier, argument) => filterCommand(atelier, argument),
+	// Comparer deux séries (Q112) : lit des NOMS de listes, pas de hasard
+	compare: (atelier, argument) => compareCommand(atelier, argument)
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */

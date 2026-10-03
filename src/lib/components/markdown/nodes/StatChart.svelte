@@ -133,6 +133,7 @@
 	let crossTable = $derived(scene?.kind === 'tableau-croise' ? scene : null);
 	let law = $derived(scene?.kind === 'loi' ? scene : null);
 	let simulation = $derived(scene?.kind === 'simulation' ? scene : null);
+	let comparison = $derived(scene?.kind === 'comparaison' ? scene : null);
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	/** Histogramme, polygone ou moyenne selon n : abscisses continues, axe vertical gradué */
 	let classChart = $derived(histogram ?? cumulative ?? mean);
@@ -206,7 +207,7 @@
 {#if scene}
 	<figure class="stat-figure {className}">
 		<!-- Un tableau porte son titre dans <caption> : pas de figcaption en plus -->
-		{#if scene.title && !crossTable && !law && !simulation}
+		{#if scene.title && !crossTable && !law && !simulation && !comparison}
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
@@ -217,6 +218,33 @@
 
 		{#if scene.seriesOnly}
 			<!-- `série: seule` : l'énoncé, sans la figure -->
+		{:else if comparison}
+			<!-- `.comparer` (v2 lot 5, Q112) : une ligne par indicateur, une colonne
+			     par série ; un trait plus marqué ouvre chaque groupe -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="stat-tableau-defilement" role="region" aria-labelledby={captionId} tabindex="0">
+				<table class="stat-tableau">
+					<caption id={captionId}>{comparison.accessibleTitle}</caption>
+					<thead>
+						<tr>
+							<td></td>
+							{#each comparison.columns as column, i (i)}
+								<th scope="col">{column}</th>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each comparison.rows as row, i (i)}
+							<tr class:stat-groupe={row.groupStart}>
+								<th scope="row">{row.header}</th>
+								{#each row.cells as value, j (j)}
+									<td>{value}</td>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		{:else if simulation}
 			<!-- Simulation (v2, lot 3) : une ligne par valeur ; le titre de l'auteur
 			     et la légende des tirages dans <caption> -->
@@ -852,6 +880,12 @@
 		paint-order: stroke;
 		stroke: var(--color-background);
 		stroke-width: 3px;
+	}
+
+	/* `.comparer` : un trait plus marqué ouvre chaque groupe d'indicateurs (Q112) */
+	.stat-tableau .stat-groupe th,
+	.stat-tableau .stat-groupe td {
+		border-top-width: 3px;
 	}
 
 	.stat-serie {
