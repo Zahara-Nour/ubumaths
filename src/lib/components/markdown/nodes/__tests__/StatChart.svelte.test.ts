@@ -272,6 +272,48 @@ describe('StatChart — série brute (`données:`, v2 lot 4)', () => {
 	});
 });
 
+describe('StatChart — `série:` (v2 lot 4, Q106)', () => {
+	it('affichée : la série en texte, sous le titre, avant la figure', async () => {
+		const node = parseStatChartContent(
+			'barres',
+			'titre: Notes\ndonnées: 12 ; −3 ; 12,5\nsérie: affichée'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const series = screen.container.querySelector('.stat-serie')!;
+		const svg = screen.container.querySelector('svg[role="img"]')!;
+
+		expect(series.textContent).toBe('Série\u00a0: 12\u00a0; −3\u00a0; 12,5');
+		expect(series.compareDocumentPosition(svg) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+	});
+
+	it('la légende du carreau garde sa mise en page (régression de la règle .stat-serie)', async () => {
+		const node = parseStatChartContent(
+			'histogramme',
+			'[0 ; 10[ = 4\n[10 ; 20[ = 6\nlégende: 1 carreau = 2 élèves'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const legend = screen.container.querySelector<HTMLElement>('.stat-legende-aire')!;
+
+		expect(getComputedStyle(legend).display).toBe('flex');
+		expect(getComputedStyle(legend).justifyContent).toBe('center');
+	});
+
+	it('seule : la série, ni figure ni indicateurs', async () => {
+		const node = parseStatChartContent(
+			'histogramme',
+			'titre: Notes\nclasses: 0 ; 10 ; 20\ndonnées: 12 ; 3\nsérie: seule\nindicateurs: moyenne'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('.stat-serie')?.textContent).toBe(
+			'Série\u00a0: 12\u00a0; 3'
+		);
+		expect(screen.container.querySelector('figcaption')?.textContent).toBe('Notes');
+		expect(screen.container.querySelector('svg')).toBeNull();
+		expect(screen.container.querySelector('.stat-indicateurs')).toBeNull();
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

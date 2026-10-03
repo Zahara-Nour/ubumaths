@@ -1,0 +1,404 @@
+{
+	"title": "Équation de la médiatrice d'un segment",
+	"description": "Déterminer une équation de la médiatrice d'un segment : droite passant par le milieu, de vecteur normal AB",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Vecteur normal et équation de droite",
+	"level": 2,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true,
+			"answerKind": "equation"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère les points $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et $B({{eval:xB}}\\,;\\,{{eval:yB}})$.\n\nDonne une équation cartésienne de la médiatrice du segment $[AB]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "yI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:xI-h"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:yI-k"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xI+h"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yI+k"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:2*k"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xI+dy*yI)"
+				},
+				{
+					"name": "mxI",
+					"expression": "eval:-xI"
+				},
+				{
+					"name": "myI",
+					"expression": "eval:-yI"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:c/2"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La médiatrice de $[AB]$ est la droite passant par le milieu $I$ de $[AB]$ et perpendiculaire à $(AB)$ : $\\overrightarrow{AB}$ en est un vecteur normal.",
+					"$x_I=\\dfrac{{{eval:xA}}+{{xB;()}}}{2}={{eval:xI}}$, $y_I=\\dfrac{{{eval:yA}}+{{yB;()}}}{2}={{eval:yI}}$ et $\\overrightarrow{AB}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{IM}\\cdot\\overrightarrow{AB}=0$, avec $\\overrightarrow{IM}\\begin{pmatrix}x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}}\\\\y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{IM}\\cdot\\overrightarrow{AB}={{if:dx==1|(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx==-1|-(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dy==1|+(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy==-1|-(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation cartésienne de la droite est donc $\\textcolor{{{color:primary.0}}}{ {{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0 }$.",
+					"En divisant par $2$ : ${{if:h==1|x}}{{if:h==-1|-x}}{{if:h>1|{{eval:h}}x}}{{if:h< -1|{{eval:h}}x}}{{if:k==1|+y}}{{if:k==-1|-y}}{{if:k>1|+{{eval:k}}y}}{{if:k< -1|{{eval:k}}y}}{{if:c2>0|+{{eval:c2}}}}{{if:c2< 0|{{eval:c2}}}}=0$ est aussi une équation de la médiatrice."
+				]
+			}
+		},
+		{
+			"statement": "On considère les points $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et $B({{eval:xB}}\\,;\\,{{eval:yB}})$.\n\nDonne l'équation réduite de l'ensemble des points $M$ du plan tels que $MA=MB$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "yI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "h",
+					"expression": "2..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1|-1"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:xI-h"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:yI-k"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xI+h"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yI+k"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:2*k"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xI+dy*yI)"
+				},
+				{
+					"name": "mxI",
+					"expression": "eval:-xI"
+				},
+				{
+					"name": "myI",
+					"expression": "eval:-yI"
+				},
+				{
+					"name": "mdx",
+					"expression": "eval:-dx"
+				},
+				{
+					"name": "mc",
+					"expression": "eval:-c"
+				},
+				{
+					"name": "q",
+					"expression": "eval:(h*xI+k*yI)/k"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{eval:-h/k}}x{{q;+}}",
+					"requiredForm": "reduite"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les points $M$ tels que $MA=MB$ sont les points de la médiatrice du segment $[AB]$.",
+					"La médiatrice de $[AB]$ est la droite passant par le milieu $I$ de $[AB]$ et perpendiculaire à $(AB)$ : $\\overrightarrow{AB}$ en est un vecteur normal.",
+					"$x_I=\\dfrac{{{eval:xA}}+{{xB;()}}}{2}={{eval:xI}}$, $y_I=\\dfrac{{{eval:yA}}+{{yB;()}}}{2}={{eval:yI}}$ et $\\overrightarrow{AB}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{IM}\\cdot\\overrightarrow{AB}=0$, avec $\\overrightarrow{IM}\\begin{pmatrix}x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}}\\\\y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{IM}\\cdot\\overrightarrow{AB}={{if:dx==1|(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx==-1|-(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dy==1|+(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy==-1|-(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation de la médiatrice est ${{eval:dx}}x{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$, soit ${{if:dy==1|y}}{{if:dy==-1|-y}}{{if:dy>1|{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}={{if:mdx==1|x}}{{if:mdx==-1|-x}}{{if:mdx>1|{{eval:mdx}}x}}{{if:mdx< -1|{{eval:mdx}}x}}{{if:mc>0|+{{eval:mc}}}}{{if:mc< 0|{{eval:mc}}}}$.",
+					"On divise par ${{eval:dy}}$ : $\\textcolor{{{color:primary.0}}}{ y={{eval:-h/k}}x{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Les points $A$ et $B$ sont placés dans le repère orthonormé ci-dessous.\n\n```figure\nfenetre: {{eval:min(min(xA,xB),0)-1.5}} ; {{eval:max(max(xA,xB),0)+1.5}} ; {{eval:min(min(yA,yB),0)-1.5}} ; {{eval:max(max(yA,yB),0)+1.5}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; le segment [AB].\n---\nA = point({{xA}}, {{yA}}, etiquette=\"{{if:h*k>0|haut-gauche|haut-droite}}\")\nB = point({{xB}}, {{yB}}, etiquette=\"{{if:h*k>0|haut-gauche|haut-droite}}\")\nsegment(A, B)\n```\n\nLis les coordonnées de $A$ et de $B$, puis donne une équation cartésienne de la médiatrice du segment $[AB]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "xI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "yI",
+					"expression": "-4..4!0"
+				},
+				{
+					"name": "h",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:xI-h"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:yI-k"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xI+h"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yI+k"
+				},
+				{
+					"name": "dx",
+					"expression": "eval:2*h"
+				},
+				{
+					"name": "dy",
+					"expression": "eval:2*k"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(dx*xI+dy*yI)"
+				},
+				{
+					"name": "mxI",
+					"expression": "eval:-xI"
+				},
+				{
+					"name": "myI",
+					"expression": "eval:-yI"
+				}
+			],
+			"conditions": ["c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:dx}}x{{eval:dy;+}}y{{eval:c;+}}=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On lit $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et $B({{eval:xB}}\\,;\\,{{eval:yB}})$.",
+					"La médiatrice de $[AB]$ est la droite passant par le milieu $I$ de $[AB]$ et perpendiculaire à $(AB)$ : $\\overrightarrow{AB}$ en est un vecteur normal.",
+					"$x_I=\\dfrac{{{eval:xA}}+{{xB;()}}}{2}={{eval:xI}}$, $y_I=\\dfrac{{{eval:yA}}+{{yB;()}}}{2}={{eval:yI}}$ et $\\overrightarrow{AB}\\begin{pmatrix}{{eval:dx}}\\\\{{eval:dy}}\\end{pmatrix}$.",
+					"$M(x\\,;\\,y)$ appartient à la droite si et seulement si $\\overrightarrow{IM}\\cdot\\overrightarrow{AB}=0$, avec $\\overrightarrow{IM}\\begin{pmatrix}x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}}\\\\y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}}\\end{pmatrix}$.",
+					"$\\overrightarrow{IM}\\cdot\\overrightarrow{AB}={{if:dx==1|(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx==-1|-(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx>1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dx< -1|{{eval:dx}}(x{{if:mxI>0|+{{eval:mxI}}}}{{if:mxI< 0|{{eval:mxI}}}})}}{{if:dy==1|+(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy==-1|-(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy>1|+{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}{{if:dy< -1|{{eval:dy}}(y{{if:myI>0|+{{eval:myI}}}}{{if:myI< 0|{{eval:myI}}}})}}={{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}$",
+					"Une équation cartésienne de la droite est donc $\\textcolor{{{color:primary.0}}}{ {{if:dx==1|x}}{{if:dx==-1|-x}}{{if:dx>1|{{eval:dx}}x}}{{if:dx< -1|{{eval:dx}}x}}{{if:dy==1|+y}}{{if:dy==-1|-y}}{{if:dy>1|+{{eval:dy}}y}}{{if:dy< -1|{{eval:dy}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0 }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : A(-1;1), B(3;5) : 4x + 4y - 16 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "2"
+			},
+			"answers": ["4x+4y-16=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : simplifiée x + y - 4 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "2"
+			},
+			"answers": ["x+y-4=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : réduite",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "2"
+			},
+			"answers": ["y=-x+4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : droite (AB) au lieu de la médiatrice",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "2"
+			},
+			"answers": ["x-y+2=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : passe par A au lieu du milieu",
+			"variationIndex": 0,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "2"
+			},
+			"answers": ["4x+4y=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y = -2x + 5",
+			"variationIndex": 1,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "1"
+			},
+			"answers": ["y=-2x+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : cartésienne",
+			"variationIndex": 1,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "1"
+			},
+			"answers": ["4x+2y-10=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : pente de (AB)",
+			"variationIndex": 1,
+			"variables": {
+				"xI": "1",
+				"yI": "3",
+				"h": "2",
+				"k": "1"
+			},
+			"answers": ["y=\\frac{1}{2}x+\\frac{5}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : A(-1;-1), B(3;-3)",
+			"variationIndex": 2,
+			"variables": {
+				"xI": "1",
+				"yI": "-2",
+				"h": "2",
+				"k": "-1"
+			},
+			"answers": ["4x-2y-8=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe de c",
+			"variationIndex": 2,
+			"variables": {
+				"xI": "1",
+				"yI": "-2",
+				"h": "2",
+				"k": "-1"
+			},
+			"answers": ["4x-2y+8=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

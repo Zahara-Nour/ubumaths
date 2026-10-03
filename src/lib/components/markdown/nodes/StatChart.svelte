@@ -210,7 +210,14 @@
 			<figcaption class="stat-titre">{scene.title}</figcaption>
 		{/if}
 
-		{#if simulation}
+		<!-- `série:` (Q106) : la série brute, sous le titre, avant la figure -->
+		{#if scene.series}
+			<p class="stat-serie">{scene.series}</p>
+		{/if}
+
+		{#if scene.seriesOnly}
+			<!-- `série: seule` : l'énoncé, sans la figure -->
+		{:else if simulation}
 			<!-- Simulation (v2, lot 3) : une ligne par valeur ; le titre de l'auteur
 			     et la légende des tirages dans <caption> -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -845,6 +852,11 @@
 		paint-order: stroke;
 		stroke: var(--color-background);
 		stroke-width: 3px;
+	}
+
+	.stat-serie {
+		margin-bottom: 0.5rem;
+		overflow-wrap: anywhere;
 	}
 
 	.stat-legende-aire,

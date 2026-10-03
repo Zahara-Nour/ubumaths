@@ -319,6 +319,14 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 					'Angles et longueurs',
 					'Lieux de points'
 				]
+			},
+			{
+				domain: 'Géométrie repérée',
+				subdomains: [
+					'Vecteur normal et équation de droite',
+					'Projeté orthogonal',
+					'Équation de cercle'
+				]
 			}
 		]
 	}

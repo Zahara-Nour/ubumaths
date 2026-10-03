@@ -43,6 +43,8 @@ import {
 	type CrossTableDisplay,
 	type LawData,
 	type LawIndicator,
+	SERIES_MODES,
+	type SeriesMode,
 	SIMULATION_MODES,
 	type SimulationData,
 	type SimulationMode,
@@ -105,6 +107,7 @@ interface Options {
 	sampleSize: number;
 	/** Bornes de `classes:`, telles qu'écrites (série brute en classes, Q104) */
 	classBounds: string[] | null;
+	seriesMode: SeriesMode | null;
 }
 
 /** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
@@ -167,7 +170,8 @@ const OPTION_KEYS = [
 	'tirages',
 	'graine',
 	'echantillons',
-	'classes'
+	'classes',
+	'serie'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -203,14 +207,16 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	tirages: ['simulation'],
 	graine: ['simulation'],
 	echantillons: ['simulation'],
-	classes: ['histogramme', 'frequences-cumulees']
+	classes: ['histogramme', 'frequences-cumulees'],
+	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
 /** Options dont l'auteur écrit l'accent */
 const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	etiquettes: 'étiquettes',
 	legende: 'légende',
-	echantillons: 'échantillons'
+	echantillons: 'échantillons',
+	serie: 'série'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -433,7 +439,7 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 		const shown = key === 'taille' ? FIGURE_KINDS : allowed;
 		const names = shown.map((k) => KIND_NAME[k]).join(', ');
 		throw new LineError(
-			`l'option « ${key} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${names})`
+			`l'option « ${OPTION_SPELLING[key] ?? key} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${names})`
 		);
 	}
 	switch (key) {
@@ -471,6 +477,12 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			}
 			options.size = oneOf(value, COURBE_SIZES, 'taille');
 			return;
+		case 'serie': {
+			const mode = SERIES_MODES.find((m) => normalizeKey(m) === normalizeKey(value.trim()));
+			if (mode === undefined) throw new LineError('série : affichée, triée ou seule');
+			options.seriesMode = mode;
+			return;
+		}
 		case 'classes':
 			options.classBounds = parseClassBounds(value);
 			return;
@@ -1189,7 +1201,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		seed: 1,
 		samples: 100,
 		sampleSize: 100,
-		classBounds: null
+		classBounds: null,
+		seriesMode: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1371,6 +1384,24 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		else data.push(...tallied.data);
 	}
 
+	let series: StatChartSpec['series'] = null;
+	if (errors.length === 0 && options.seriesMode !== null) {
+		const line = optionLines.serie ?? 0;
+		const values = raw.map(({ text }) => ({ text, value: rawNumber(text) }));
+		if (raw.length === 0) {
+			errors.push({ message: `Ligne ${line} : série : seulement avec données:`, line });
+		} else if (options.seriesMode === 'triée' && values.some((v) => v.value === null)) {
+			errors.push({ message: `Ligne ${line} : série : triée demande des nombres`, line });
+		} else {
+			// Tri stable : deux écritures d'une même valeur gardent leur ordre
+			if (options.seriesMode === 'triée') values.sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
+			series = {
+				mode: options.seriesMode,
+				values: values.map((v) => ({ text: v.text, numeric: v.value !== null }))
+			};
+		}
+	}
+
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	let table: CrossTableData | null = null;
 	let law: LawData | null = null;
@@ -1430,7 +1461,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					table,
 					law,
 					simulation,
-					rawValues
+					rawValues,
+					series
 				}
 			: null;
 

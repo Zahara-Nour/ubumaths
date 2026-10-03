@@ -217,6 +217,18 @@ Toujours vrai :
   `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
   coin bas-gauche sur `(x, y)`. Pointillés `trait="pointilles"` / `"tirets"` (alias
   `style="pointille"`). `point(…, visible=faux)` = point masqué, utilisable dans les constructions.
+- **`\iff\ &` dans un `align*`** fait échouer TOUT le PDF (« unclosed delimiter ») : écrire
+  `X&=0\\\iff Y&=Z` (relevé sur la géométrie repérée, 2026-10-03).
+- **Nom de point `Ω` refusé** par le DSL du bloc ```figure (« Caractère inattendu ») : point `W`avec`etiquette="aucune"`puis`texte(…, "Ω")`.
+- **Case équation avec `requiredForm: "centre-rayon"`** : un multiple de l'équation est
+  `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
+- **Condition `a<-1`** est mal lue : écrire `a< -1` (espace).
+- **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
+  c = 0 ; tirer |coefficients| ≥ 2 et c ≠ 0 dans `expectedAnswer`, `{{if:a==1|x}}…` dans le texte.
+- **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
+  (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
+- **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
+  dans l'énoncé (« tracé en bleu »).
 
 Règles d'écriture qui évitent un défaut :
 

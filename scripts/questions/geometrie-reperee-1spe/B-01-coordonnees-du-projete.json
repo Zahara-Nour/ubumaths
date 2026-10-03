@@ -1,0 +1,381 @@
+{
+	"title": "Coordonnées du projeté orthogonal d'un point sur une droite",
+	"description": "Calculer les coordonnées du projeté orthogonal d'un point sur une droite (colinéarité avec un vecteur normal, intersection avec la perpendiculaire, ou produit scalaire nul avec un vecteur directeur)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Projeté orthogonal",
+	"level": 2,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xH",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yH",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:xH+t*a"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:yH+t*b"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(a*xH+b*yH)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a*a+b*b"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*xM+b*yM+c"
+				},
+				{
+					"name": "mt",
+					"expression": "eval:-t"
+				}
+			],
+			"conditions": ["abs(xM) <= 6", "abs(yM) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xH}}"
+				},
+				{
+					"expectedAnswer": "{{yH}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}\\begin{pmatrix}{{eval:a}}\\\\{{eval:b}}\\end{pmatrix}$ est normal à $d$. Le projeté orthogonal $H$ de $M$ sur $d$ est le point de $d$ tel que $\\overrightarrow{MH}$ soit colinéaire à $\\vec{n}$ : $\\overrightarrow{MH}=k\\vec{n}$ pour un réel $k$, soit $H\\left({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}}\\,;\\,{{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}}\\right)$.",
+					"$H\\in d$ : ${{if:a==1|({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a==-1|-({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a>1|{{eval:a}}({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a< -1|{{eval:a}}({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:b==1|+({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b==-1|-({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b>1|+{{eval:b}}({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b< -1|{{eval:b}}({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$, soit ${{eval:S}}k{{if:N>0|+{{eval:N}}}}{{if:N< 0|{{eval:N}}}}=0$, donc $k={{eval:mt}}$.",
+					"$x_H={{eval:xM}}+{{mt;()}}\\times{{a;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:xH}} }$ et $y_H={{eval:yM}}+{{mt;()}}\\times{{b;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:yH}} }$.",
+					"```figure\nfenetre: {{eval:min(min(xM,xH),0)-2}} ; {{eval:max(max(xM,xH),0)+2}} ; {{eval:min(min(yM,yH),0)-2}} ; {{eval:max(max(yM,yH),0)+2}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d, le point M et son projeté orthogonal H sur d.\n---\nH = point({{xH}}, {{yH}}, etiquette=\"{{if:yM>yH|bas|haut}}-{{if:xM>xH|gauche|droite}}\")\nH2 = point({{eval:xH-b}}, {{eval:yH+a}}, visible=faux)\nd = droite(H, H2)\nM = point({{xM}}, {{yM}}, etiquette=\"{{if:yM>yH|haut|bas}}-{{if:xM>xH|droite|gauche}}\")\nsegment(M, H, trait=\"tirets\")\nangle(M, H, H2, marque=\"carre\")\n```"
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ d'équation $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: {{eval:min(min(xM,xH),0)-2}} ; {{eval:max(max(xM,xH),0)+2}} ; {{eval:min(min(yM,yH),0)-2}} ; {{eval:max(max(yM,yH),0)+2}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point M.\n---\nD1 = point({{xH}}, {{yH}}, visible=faux)\nD2 = point({{eval:xH+1}}, {{eval:yH+m}}, visible=faux)\nd = droite(D1, D2)\nM = point({{xM}}, {{yM}}, etiquette=\"{{if:yM>yH|haut|bas}}-{{if:xM>xH|droite|gauche}}\")\n```\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "p",
+					"expression": "-3..3"
+				},
+				{
+					"name": "xH",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "yH",
+					"expression": "eval:m*xH+p"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:xH+t*m"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:yH-t"
+				},
+				{
+					"name": "cp",
+					"expression": "eval:-(xM+m*yM)"
+				},
+				{
+					"name": "S1",
+					"expression": "eval:1+m*m"
+				},
+				{
+					"name": "E2",
+					"expression": "eval:m*p+cp"
+				}
+			],
+			"conditions": ["abs(xM) <= 5", "abs(yM) <= 5", "abs(yH) <= 5"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xH}}"
+				},
+				{
+					"expectedAnswer": "{{yH}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{u}\\begin{pmatrix}1\\\\{{eval:m}}\\end{pmatrix}$ est un vecteur directeur de $d$. $H$ est le point d'intersection de $d$ et de la droite $\\Delta$ perpendiculaire à $d$ passant par $M$.",
+					"$\\vec{u}$ est normal à $\\Delta$ : $\\Delta$ a une équation de la forme $x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}+c'=0$. $M\\in\\Delta$ : ${{eval:xM}}+{{m;()}}\\times{{yM;()}}+c'=0$, donc $c'={{eval:cp}}$.",
+					"Les coordonnées de $H$ vérifient $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$ ; on remplace $y$ dans l'équation de $\\Delta$ : $x{{if:m==1|+({{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}})}}{{if:m==-1|-({{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}})}}{{if:m>1|+{{eval:m}}({{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}})}}{{if:m< -1|{{eval:m}}({{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}})}}{{if:cp>0|+{{eval:cp}}}}{{if:cp< 0|{{eval:cp}}}}=0$, soit ${{eval:S1}}x{{if:E2>0|+{{eval:E2}}}}{{if:E2< 0|{{eval:E2}}}}=0$, donc $x_H=\\textcolor{{{color:primary.0}}}{ {{eval:xH}} }$.",
+					"$y_H={{eval:m}}\\times{{xH;()}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}=\\textcolor{{{color:primary.0}}}{ {{eval:yH}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ passe par le point $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$. On considère le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xA",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yA",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "t",
+					"expression": "1|-1"
+				},
+				{
+					"name": "xH",
+					"expression": "eval:xA+s*u1"
+				},
+				{
+					"name": "yH",
+					"expression": "eval:yA+s*u2"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:xH-t*u2"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:yH+t*u1"
+				},
+				{
+					"name": "AMx",
+					"expression": "eval:xM-xA"
+				},
+				{
+					"name": "AMy",
+					"expression": "eval:yM-yA"
+				},
+				{
+					"name": "UU",
+					"expression": "eval:u1*u1+u2*u2"
+				},
+				{
+					"name": "PS",
+					"expression": "eval:AMx*u1+AMy*u2"
+				}
+			],
+			"conditions": ["abs(xH) <= 6", "abs(yH) <= 6", "abs(xM) <= 6", "abs(yM) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{xH}}"
+				},
+				{
+					"expectedAnswer": "{{yH}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$H\\in d$ : il existe un réel $k$ tel que $\\overrightarrow{AH}=k\\vec{u}$, soit $H\\left({{if:xA==0|{{if:u1==1|k}}{{if:u1==-1|-k}}{{if:u1>1|{{eval:u1}}k}}{{if:u1< -1|{{eval:u1}}k}}|{{eval:xA}}{{if:u1==1|+k}}{{if:u1==-1|-k}}{{if:u1>1|+{{eval:u1}}k}}{{if:u1< -1|{{eval:u1}}k}}}}\\,;\\,{{if:yA==0|{{if:u2==1|k}}{{if:u2==-1|-k}}{{if:u2>1|{{eval:u2}}k}}{{if:u2< -1|{{eval:u2}}k}}|{{eval:yA}}{{if:u2==1|+k}}{{if:u2==-1|-k}}{{if:u2>1|+{{eval:u2}}k}}{{if:u2< -1|{{eval:u2}}k}}}}\\right)$.",
+					"$(MH)$ est perpendiculaire à $d$ : $\\overrightarrow{MH}\\cdot\\vec{u}=0$. Comme $\\overrightarrow{MH}=\\overrightarrow{AH}-\\overrightarrow{AM}=k\\vec{u}-\\overrightarrow{AM}$, on obtient $k\\,\\vec{u}\\cdot\\vec{u}-\\overrightarrow{AM}\\cdot\\vec{u}=0$.",
+					"$\\overrightarrow{AM}\\begin{pmatrix}{{eval:AMx}}\\\\{{eval:AMy}}\\end{pmatrix}$, $\\overrightarrow{AM}\\cdot\\vec{u}={{eval:AMx}}\\times{{u1;()}}+{{AMy;()}}\\times{{u2;()}}={{eval:PS}}$ et $\\vec{u}\\cdot\\vec{u}={{eval:UU}}$, donc $k=\\dfrac{{{eval:PS}}}{{{eval:UU}}}={{eval:s}}$.",
+					"$x_H={{eval:xA}}+{{s;()}}\\times{{u1;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:xH}} }$ et $y_H={{eval:yA}}+{{s;()}}\\times{{u2;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:yH}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : d : x + 2y - 5 = 0, M(3 ; 6) → H(1 ; 2)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["1", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : point M recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["3", "6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : coordonnées échangées",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["2", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : symétrique de M (k doublé)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["-1", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y = 2x - 1, H(1 ; 1)",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "-1",
+				"xH": "1",
+				"t": "1"
+			},
+			"answers": ["1", "1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : M recopié",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "-1",
+				"xH": "1",
+				"t": "1"
+			},
+			"answers": ["3", "0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : point de d à la verticale de M",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "-1",
+				"xH": "1",
+				"t": "1"
+			},
+			"answers": ["3", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : A(0 ; 1), u(2 ; 1), H(2 ; 2)",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "2",
+				"u2": "1",
+				"xA": "0",
+				"yA": "1",
+				"s": "1",
+				"t": "1"
+			},
+			"answers": ["2", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : A recopié",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "2",
+				"u2": "1",
+				"xA": "0",
+				"yA": "1",
+				"s": "1",
+				"t": "1"
+			},
+			"answers": ["0", "1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : M recopié",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "2",
+				"u2": "1",
+				"xA": "0",
+				"yA": "1",
+				"s": "1",
+				"t": "1"
+			},
+			"answers": ["1", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
