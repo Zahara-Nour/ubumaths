@@ -179,3 +179,10 @@ describe('style= : alias de trait=', () => {
 		);
 	});
 });
+
+describe('marque_segment() mal appelé', () => {
+	it('propose la syntaxe acceptée `traits=`, pas `marques=`', () => {
+		expect(() => run('A = point(0, 0)\nmarque_segment(A)')).toThrow(/traits=2/);
+		expect(() => run('A = point(0, 0)\nmarque_segment(A)')).not.toThrow(/marques=/);
+	});
+});

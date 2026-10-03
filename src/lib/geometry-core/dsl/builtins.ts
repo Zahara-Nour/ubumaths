@@ -2668,8 +2668,8 @@ function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
 						description: 'marque (un trait) sur le segment `[AB]`'
 					},
 					{
-						syntax: 'marque_segment(A, B, marques=2)',
-						description: 'marques multiples (égalité de segments), `marques ∈ {1, 2, 3}`'
+						syntax: 'marque_segment(A, B, traits=2)',
+						description: 'traits multiples (égalité de segments), `traits ∈ {1, 2, 3}`'
 					}
 				]
 			},
