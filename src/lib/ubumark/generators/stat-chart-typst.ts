@@ -112,10 +112,18 @@ function titleBlock(title: string | null): string {
 function barsTypst(scene: BarScene, size: CourbeSize): string {
 	const W = WIDTH_CM[size];
 	const H = W * STAT_CHART_ASPECT_RATIO;
-	const n = scene.bars.length;
+	const n = scene.labels.length;
 	const X = (x: number) => fmt((x / n) * W);
 	const Y = (y: number) => fmt((y / scene.yMax) * H);
 	const color = TYPST_COLORS[scene.color];
+	// Seconde série (Q117) : hachures diagonales dans une autre teinte, cadre plein
+	const second = scene.secondColor === null ? null : TYPST_COLORS[scene.secondColor];
+	const hatch =
+		second === null
+			? ''
+			: `#let hachures = tiling(size: (4pt, 4pt))[#place(line(start: (0pt, 4pt), end: (4pt, 0pt), stroke: 0.8pt + ${second}))]\n`;
+	// Deux barres par bande : des valeurs plus petites, sinon « 16,7 % » et « 20 % » se touchent
+	const valueSize = scene.legend === null ? '6.5pt' : '5pt';
 	const lines: string[] = ['  import cetz.draw: *'];
 
 	lines.push('  // graduations');
@@ -129,20 +137,27 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 	for (const bar of scene.bars) {
 		lines.push('  // barre');
 		lines.push(
-			`  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${color}, stroke: none)`
+			bar.series === 1 && second !== null
+				? `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: hachures, stroke: 0.6pt + ${second})`
+				: `  rect((${X(bar.left)}, 0), (${X(bar.right)}, ${Y(bar.value)}), fill: ${color}, stroke: none)`
 		);
 		const center = X((bar.left + bar.right) / 2);
-		const label = `text(size: 6.5pt)${textContent(bar.label)}`;
-		lines.push(
-			scene.rotateLabels
-				? `  content((${center}, -0.1), anchor: "east", angle: 45deg, ${label})`
-				: `  content((${center}, -0.1), anchor: "north", ${label})`
-		);
 		if (scene.showValues) {
 			lines.push(
-				`  content((${center}, ${fmt(Number(Y(bar.value)) + 0.06)}), anchor: "south", text(size: 6.5pt)${textContent(bar.valueLabel)})`
+				`  content((${center}, ${fmt(Number(Y(bar.value)) + 0.06)}), anchor: "south", text(size: ${valueSize})${textContent(bar.valueLabel)})`
 			);
 		}
+	}
+
+	// Une étiquette par catégorie, au centre de sa bande (une ou deux barres)
+	for (const label of scene.labels) {
+		const center = X(label.center);
+		const text = `text(size: 6.5pt)${textContent(label.text)}`;
+		lines.push(
+			scene.rotateLabels
+				? `  content((${center}, -0.1), anchor: "east", angle: 45deg, ${text})`
+				: `  content((${center}, -0.1), anchor: "north", ${text})`
+		);
 	}
 
 	lines.push('  // axes');
@@ -159,7 +174,15 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		);
 	}
 
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+	const legend =
+		scene.legend === null || second === null
+			? ''
+			: `\n// légende des séries\n#align(center, text(size: 7.5pt)[#box(width: 8pt, height: 8pt, fill: ${color}) #h(3pt) #${typstString(scene.legend[0])} #h(10pt) #box(width: 8pt, height: 8pt, fill: hachures, stroke: 0.6pt + ${second}) #h(3pt) #${typstString(scene.legend[1])}])`;
+	const table =
+		scene.indicatorTable === null
+			? ''
+			: `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`;
+	return `${CETZ_IMPORT}\n${hatch}\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${table}`;
 }
 
 // ============================================================================
@@ -491,7 +514,9 @@ export function generateStatChartTypst(
 		});
 		if (!scene.series) return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
 		// `série:` (Q106) : sous le titre, avant la figure — ou seule (l'énoncé)
-		const head = `${titleBlock(scene.title)}#block(text(size: 9pt)${textContent(scene.series)})\n`;
+		// Deux séries : une ligne chacune, saut de ligne Typst (`\\`)
+		const seriesLines = scene.series.split('\n').map((line) => `#${typstString(line)}`);
+		const head = `${titleBlock(scene.title)}#block(text(size: 9pt)[${seriesLines.join(' \\ ')}])\n`;
 		if (scene.seriesOnly) return head;
 		return head + figureTypst({ ...scene, title: null }, node.spec.size) + indicatorsBlock(scene);
 	} catch {

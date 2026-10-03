@@ -160,7 +160,8 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 		law: null,
 		simulation: null,
 		rawValues: null,
-		series: null
+		series: null,
+		twoSeries: null
 	};
 
 	const count = rowCategories.length;
