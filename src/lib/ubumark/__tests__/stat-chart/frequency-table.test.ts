@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type FrequencyTableScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
-import { parseMarkdown, type BlockNode } from '$lib/ubumark';
+import { parseMarkdown, type BlockNode, type ListNode } from '$lib/ubumark';
 import type { StatChartNode } from '../../types/stat-chart';
 
 // =============================================================================
@@ -85,10 +85,14 @@ describe('effectifs — le tableau', () => {
 		expect(grid(tableOf(`${NOTES}\nlignes: fréquences\nfréquences: décimales`))[1]).toEqual([
 			'Fréquence',
 			'0,17',
-			'0,5',
+			'0,50',
 			'0,33',
-			'1'
+			'1,00'
 		]);
+		// `fréquences: pourcentages` : le défaut, écrit
+		expect(grid(tableOf(`${NOTES}\nlignes: fréquences\nfréquences: pourcentages`))[1][2]).toBe(
+			'50 %'
+		);
 	});
 
 	it('fréquences cumulées ; sens décroissant', () => {
@@ -124,6 +128,15 @@ describe('effectifs — le tableau', () => {
 		]);
 		expect(scene.rows[1].cells[0]).toBe('16.7%');
 		expect(scene.caption).toBe('Frequency table');
+		expect(scene.columns.at(-1)).toBe('Total');
+		const down = tableOf(
+			`${NOTES}\nlignes: effectifs cumulés ; fréquences cumulées\nsens: décroissantes`,
+			'en'
+		);
+		expect(down.rows.map((r) => r.header)).toEqual([
+			'Decreasing cumulative frequency',
+			'Decreasing cumulative relative frequency'
+		]);
 	});
 });
 
@@ -149,11 +162,15 @@ describe('effectifs — Typst', () => {
 
 	it('dans un document : reconnu au premier niveau et dans une liste', () => {
 		const block = ['```effectifs', NOTES, '```'];
-		const doc = parseMarkdown(['Avant.', '', ...block, '', 'Après.'].join('\n'));
-		const charts = doc.children.filter((c): c is StatChartNode => c.type === 'stat-chart');
+		const top = parseMarkdown(['Avant.', '', ...block, '', 'Après.'].join('\n'));
+		const list = parseMarkdown(
+			['1. Compléter :', '', ...block.map((l) => `   ${l}`), '2. Suite.'].join('\n')
+		).children[0] as ListNode;
+		const charts = (children: BlockNode[]) =>
+			children.filter((c): c is StatChartNode => c.type === 'stat-chart').map((c) => c.kind);
 
-		expect(charts.map((c) => c.kind)).toEqual(['effectifs']);
-		expect((doc.children as BlockNode[]).map((c) => c.type)).toContain('stat-chart');
+		expect(charts(top.children)).toEqual(['effectifs']);
+		expect(charts(list.items[0].children as BlockNode[])).toEqual(['effectifs']);
 	});
 });
 
@@ -165,6 +182,33 @@ describe('effectifs — erreurs situées', () => {
 	it('une ligne cumulée avec des mots', () => {
 		expect(errorOf('Bus = 3\nVélo = 1\nlignes: effectifs cumulés')).toBe(
 			'Ligne 3 : effectifs cumulés : seulement pour des nombres ou des classes'
+		);
+	});
+
+	it('des valeurs dans le désordre avec un cumul (revue : cumul faux)', () => {
+		expect(errorOf('15 = 2\n8 = 1\n12 = 3\nlignes: effectifs cumulés')).toBe(
+			"Ligne 2 : effectifs cumulés : écrire les valeurs dans l'ordre croissant (8 après 15)"
+		);
+		// Sans cumul : l'ordre de l'auteur reste libre
+		expect(grid(tableOf('15 = 2\n8 = 1'))[0]).toEqual(['Valeur', '15', '8', 'Total']);
+		// Vrai signe moins accepté (lecture de l'atelier)
+		expect(grid(tableOf('−3 = 1\n2 = 1\nlignes: effectifs cumulés'))[1]).toEqual([
+			'Effectif cumulé croissant',
+			'1',
+			'2',
+			''
+		]);
+	});
+
+	it('un effectif total nul', () => {
+		expect(errorOf('A = 0\nB = 0\nlignes: fréquences')).toBe(
+			'Ligne 1 : effectif total nul : rien à dépouiller'
+		);
+	});
+
+	it('`classes:` avec des lignes [a ; b[ : un message qui le dit', () => {
+		expect(errorOf('classes: 0 ; 10 ; 20\n[0 ; 10[ = 4')).toBe(
+			'Ligne 1 : classes : inutile, les lignes [a ; b[ donnent déjà les classes'
 		);
 	});
 

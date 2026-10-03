@@ -71,6 +71,8 @@ interface StatText {
 		value: string;
 		classes: string;
 		total: string;
+		/** Lu à la place d'une case Total vide (cumuls) */
+		notApplicable: string;
 		row: (row: FrequencyTableRow, direction: StatChartDirection) => string;
 	};
 }
@@ -122,6 +124,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			value: 'Valeur',
 			classes: 'Classe',
 			total: 'Total',
+			notApplicable: 'sans objet',
 			row: (row, direction) => {
 				const up = direction === 'croissantes';
 				switch (row) {
@@ -183,6 +186,7 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			value: 'Value',
 			classes: 'Class',
 			total: 'Total',
+			notApplicable: 'not applicable',
 			// Q122 : *frequency* = effectif, *relative frequency* = fréquence
 			row: (row, direction) => {
 				const down = direction === 'décroissantes' ? 'Decreasing cumulative' : 'Cumulative';

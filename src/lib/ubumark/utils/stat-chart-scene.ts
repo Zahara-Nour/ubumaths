@@ -298,6 +298,8 @@ export interface FrequencyTableScene extends SceneCommon {
 	/** Une ligne par grandeur ; une case vide pour le total d'un cumul */
 	rows: { header: string; cells: string[] }[];
 	vertical: boolean;
+	/** Ce que lit le lecteur d'écran dans une case vide (« sans objet ») */
+	emptyLabel: string;
 }
 
 /**
@@ -1393,6 +1395,8 @@ function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
 
 /** Au-delà, le tableau passe à la verticale (Q127) */
 const FREQUENCY_TABLE_MAX_COLUMNS = 12;
+/** … ou au-delà de 60 caractères de libellés en tout */
+const FREQUENCY_TABLE_MAX_CHARACTERS = 60;
 
 function buildFrequencyTableScene(spec: StatChartSpec, locale: ContentLocale): FrequencyTableScene {
 	const table = spec.frequencyTable;
@@ -1409,13 +1413,16 @@ function buildFrequencyTableScene(spec: StatChartSpec, locale: ContentLocale): F
 
 	const frequency = (part: number) => {
 		const f = total === 0 ? 0 : part / total;
+		// « Au centième » : toujours deux décimales (0,50), une colonne alignée (revue)
 		return table.decimals
-			? formatRounded(f, 2, locale)
+			? f.toFixed(2).replace('.', locale === 'en' ? '.' : ',')
 			: `${formatRounded(f * 100, 1, locale)}${text.percent}`;
 	};
 	const totalCell = (row: (typeof table.rows)[number]): string => {
 		if (row === 'effectifs') return formatTick(total, locale);
-		if (row === 'fréquences') return table.decimals ? formatTick(1, locale) : `100${text.percent}`;
+		if (row === 'fréquences') {
+			return table.decimals ? (locale === 'en' ? '1.00' : '1,00') : `100${text.percent}`;
+		}
 		return '';
 	};
 	const rows = table.rows.map((row) => {
@@ -1450,7 +1457,12 @@ function buildFrequencyTableScene(spec: StatChartSpec, locale: ContentLocale): F
 		valueHeader: table.classes ? text.frequencyTable.classes : text.frequencyTable.value,
 		columns,
 		rows,
-		vertical: labels.length > FREQUENCY_TABLE_MAX_COLUMNS
+		// Vertical au-delà de 12 valeurs, ou si les libellés ne tiendraient pas en
+		// largeur (ils ne se coupent pas : classes « [1000 ; 1200[ », revue)
+		vertical:
+			labels.length > FREQUENCY_TABLE_MAX_COLUMNS ||
+			labels.reduce((sum, l) => sum + l.length, 0) > FREQUENCY_TABLE_MAX_CHARACTERS,
+		emptyLabel: text.frequencyTable.notApplicable
 	};
 }
 

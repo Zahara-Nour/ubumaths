@@ -937,11 +937,25 @@ function checkFrequencyTable(
 	});
 	const rows = options.tableRows ?? ['effectifs'];
 	const cumulative = rows.find((row) => row.endsWith('cumulés') || row.endsWith('cumulées'));
-	const numeric = data.every(
-		(d) => PLAIN_NUMBER_REGEX.test(d.label) || /^-?\d+\/\d+$/.test(d.label)
-	);
+	// La lecture de l'atelier (Q92) : vrai signe moins, `+3`, fractions (revue)
+	const values = data.map((d) => rawNumber(d.label));
+	const numeric = values.every((v) => v !== null);
 	if (cumulative !== undefined && !classes && !numeric) {
 		return at(optionLines.lignes ?? 0, `${cumulative} : seulement pour des nombres ou des classes`);
+	}
+	// Un cumul suit l'ordre croissant des valeurs : écrites dans le désordre, il
+	// serait faux (revue) — refusé plutôt que réordonné en silence
+	if (cumulative !== undefined && !classes) {
+		const unsorted = values.findIndex((v, i) => i > 0 && (v ?? 0) <= (values[i - 1] ?? 0));
+		if (unsorted !== -1) {
+			return at(
+				data[unsorted].line,
+				`${cumulative} : écrire les valeurs dans l'ordre croissant (${data[unsorted].label} après ${data[unsorted - 1].label})`
+			);
+		}
+	}
+	if (data.every((d) => d.value === 0)) {
+		return at(data[0].line, 'effectif total nul : rien à dépouiller');
 	}
 	if (seen.has('sens') && cumulative === undefined) {
 		return at(optionLines.sens ?? 0, 'sens : seulement avec une ligne cumulée');
@@ -988,7 +1002,7 @@ function tallyRawData(
 		);
 	}
 	if (categories.length > maxCategories) {
-		const shapes = kind === 'circulaire' ? 'secteurs' : 'barres';
+		const shapes = kind === 'circulaire' ? 'secteurs' : kind === 'effectifs' ? 'valeurs' : 'barres';
 		return at(
 			firstLine,
 			`données : ${categories.length} valeurs différentes, au plus ${maxCategories} ${shapes}`
@@ -1721,10 +1735,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		named.length === 0
 	) {
 		const line = optionLines.classes ?? 0;
-		errors.push({
-			message: `Ligne ${line} : classes : seulement avec données: (sinon écrire [0 ; 5[ = effectif)`,
-			line
-		});
+		// Des lignes `[a ; b[ = n` donnent déjà les classes (revue)
+		const message =
+			tableClasses === true
+				? 'classes : inutile, les lignes [a ; b[ donnent déjà les classes'
+				: 'classes : seulement avec données: (sinon écrire [0 ; 5[ = effectif)';
+		errors.push({ message: `Ligne ${line} : ${message}`, line });
 	} else if (errors.length === 0 && raw.length > 0 && classMode) {
 		const ranged = tallyIntoClasses(kind, raw, options.classBounds, optionLines.classes ?? 0);
 		if ('error' in ranged) errors.push(ranged.error);

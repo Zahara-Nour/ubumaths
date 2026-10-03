@@ -11,6 +11,7 @@ Décisions Q125-Q133 (`outils-statistiques-v2-progress.md`). Spec PR (a) validé
 - [x] Scène `FrequencyTableScene` (horizontal, vertical au-delà de 12 valeurs), écran, Typst,
       textes FR / EN (Q133) ; filet anglais étendu au nouveau bloc
 - [x] Fiche compilée : colonnes à la largeur du contenu, sans césure (« Ef-fec-tif » sinon)
-- [ ] Revue, PR, CI, merge
+- [x] Revue : valeurs dans le désordre avec un cumul REFUSÉES (cumul faux sinon, preuve rouge) ; total nul refusé ; vrai signe moins lu comme l’atelier ; fréquences décimales toujours à deux décimales (0,50) ; case Total vide annoncée « sans objet » ; vertical aussi si les libellés dépassent 60 caractères ; messages `classes:` et « valeurs »
+- [ ] PR, CI, merge
 
 ## PR (b) — `masquer:`, `indicateurs:`

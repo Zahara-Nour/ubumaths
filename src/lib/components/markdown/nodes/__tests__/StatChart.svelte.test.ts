@@ -471,6 +471,15 @@ describe('StatChart — tableau d’effectifs (Q125-Q129)', () => {
 		).toEqual(['1', '2', '1', '4']);
 	});
 
+	it('la case Total d’un cumul : vide, annoncée « sans objet »', async () => {
+		const node = parseStatChartContent('effectifs', 'données: 1 ; 2\nlignes: effectifs cumulés');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const last = [...screen.container.querySelectorAll('tbody tr')].at(-1)!.querySelectorAll('td');
+
+		expect(last[last.length - 1].textContent).toBe('sans objet');
+		expect(last[last.length - 1].querySelector('.sr-only')).not.toBeNull();
+	});
+
 	it('vertical au-delà de 12 valeurs : les grandeurs en colonnes', async () => {
 		const values = Array.from({ length: 13 }, (_, i) => i).join(' ; ');
 		const node = parseStatChartContent('effectifs', `données: ${values}`);
