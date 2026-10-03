@@ -166,3 +166,20 @@ PR prévues : (a) barres / circulaire (Q100-Q103, Q105) ; (b) histogramme / poly
 110. (2026-10-03) Catégories numériques et classes **affichées selon la langue**, dans tous les
      blocs (écran et PDF) : séparateur décimal, vrai signe moins — comme le tableau d'une loi.
      Les données internes (et donc les indicateurs) ne changent pas.
+
+Manche 8 (2026-10-03), lot 5 « comparer deux séries » (2de `2-169`) — recommandations suivies :
+
+111. Atelier d'abord (`.comparer L M`), blocs ensuite (représentations graphiques données).
+112. `.comparer` : tableau d'indicateurs, une colonne par série — effectif ; moyenne, écart type ;
+     médiane, Q1, Q3, écart interquartile ; min, max, étendue. AUCUNE phrase de conclusion.
+113. Deux listes numériques de longueurs quelconques ; qualitative refusée avec sa raison ; commande
+     - action « Comparer avec M » sur la carte.
+114. Pas de graphique dans l'atelier.
+115. Blocs barres / histogramme : `données Garçons: …` et `données Filles: …` ; barres groupées par
+     valeur ; deux histogrammes mêmes classes, même échelle, l'un au-dessus de l'autre ; exactement 2.
+116. Fréquences (%) par défaut si effectifs différents, sinon effectifs ; `afficher:` force.
+117. Deux couleurs, la seconde hachurée (daltonisme, noir et blanc) ; légende des noms.
+118. `indicateurs:` → tableau sous la figure, une colonne par série ; `série:` une ligne par série.
+
+PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'indicateurs ;
+(c) deux histogrammes.
