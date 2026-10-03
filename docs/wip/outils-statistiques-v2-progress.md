@@ -183,3 +183,8 @@ Manche 8 (2026-10-03), lot 5 « comparer deux séries » (2de `2-169`) — recom
 
 PR prévues : (a) `.comparer` + action ; (b) barres à deux séries + tableau d'indicateurs ;
 (c) deux histogrammes.
+
+119. (2026-10-03) Plafond de boutons par carte : **11** (« Comparer avec M »).
+
+- **Lot 5 (a) livrée #698** (2026-10-03) : `.comparer L M` + action « Comparer avec M ».
+  Suivant : (b) barres à deux séries + tableau d'indicateurs ; (c) deux histogrammes.
