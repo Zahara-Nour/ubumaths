@@ -23,7 +23,7 @@ import { resolveColorReferences } from '../parser/color-parser';
 import type { RandomSource } from '$lib/utils/random';
 import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
-import { cleanCoefficientsAst } from '../clean-coefficients';
+import { cleanCoefficientsAst, latexRelationsToCustom } from '../clean-coefficients';
 
 // ============================================================================
 // MATH ZONE CONVERSION
@@ -78,6 +78,17 @@ function customToLatex(
 		toLatex(cleanCoefficients ? cleanCoefficientsAst(ast) : ast, { preserveHoles: true });
 	const direct = parseCustomSafe(content, { genericFunctions });
 	if (direct.ast) return render(direct.ast);
+	if (cleanCoefficients && latexRelationsToCustom(content) !== content) {
+		// Inégalité écrite en LaTeX (`x^2+1x\\leqslant2`) : relue en syntaxe maison pour
+		// être nettoyée ; rien à nettoyer, le texte d'auteur reste à l'octet près
+		const relation = parseCustomSafe(latexRelationsToCustom(exactLatexToCustom(content)), {
+			genericFunctions
+		});
+		if (relation.ast) {
+			const cleaned = cleanCoefficientsAst(relation.ast);
+			return cleaned === relation.ast ? null : toLatex(cleaned, { preserveHoles: true });
+		}
+	}
 	if (!content.includes('\\dfrac') && !content.includes('\\sqrt')) return null;
 	const rewritten = parseCustomSafe(exactLatexToCustom(content), { genericFunctions });
 	return rewritten.ast ? render(rewritten.ast) : null;

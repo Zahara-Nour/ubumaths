@@ -19,8 +19,14 @@
  * - une chaîne de calcul (`r = -1 - (-4) = 3`, deux relations ou plus) est laissée
  *   telle quelle : chaque terme y est une étape voulue ; de même une relation dont
  *   les deux membres deviendraient identiques (`x - (-3) = x + 3`) ;
- * - la valeur ne change pas (`areEquivalent`), aucune case `?` ne disparaît ;
+ * - la valeur ne change pas (`areEquivalent`) ; pour une relation (égalité ou
+ *   inégalité), chaque MEMBRE garde sa valeur et la relation reste la même
+ *   (`keepsValue`) ; aucune case `?` ne disparaît ;
  * - formule illisible, exception, ou rien à nettoyer : la formule d'origine.
+ *
+ * La syntaxe maison ne lit pas `\\leqslant`, `\\geq`, `\\neq`… : `latexRelationsToCustom`
+ * les réécrit (`<=`, `>=`, `!=`) avant lecture, sinon une inégalité écrite en LaTeX
+ * n'était jamais nettoyée.
  */
 
 import {
@@ -49,7 +55,39 @@ const NON_COEFFICIENT_FACTORS: ReadonlySet<MathNode['type']> = new Set([
 	'positive'
 ]);
 
+/**
+ * Relations LaTeX → syntaxe maison. La commande ne doit pas être suivie d'une lettre :
+ * `\\left`, `\\neg`, `\\geometry` ne sont pas des relations.
+ */
+const LATEX_RELATIONS: ReadonlyArray<readonly [RegExp, string]> = [
+	[/\\(?:leqslant|leq|le)(?![A-Za-z])/g, '<='],
+	[/\\(?:geqslant|geq|ge)(?![A-Za-z])/g, '>='],
+	[/\\(?:neq|ne)(?![A-Za-z])/g, '!='],
+	[/\\lt(?![A-Za-z])/g, '<'],
+	[/\\gt(?![A-Za-z])/g, '>']
+];
+
 // Fonctions
+
+/** `x\\leqslant2` → `x<=2` : relations LaTeX réécrites pour la syntaxe maison */
+export function latexRelationsToCustom(source: string): string {
+	return LATEX_RELATIONS.reduce((text, [pattern, custom]) => text.replace(pattern, custom), source);
+}
+
+/**
+ * Garde de valeur. Pour une relation, `areEquivalent` sur le tout jugerait
+ * `2x²+2x ⩽ 4` égal à `x²+x ⩽ 2` (même ensemble de solutions) : on exige la même
+ * relation et chaque membre de même valeur. Sinon, valeur de l'expression.
+ */
+export function keepsValue(original: MathNode, cleaned: MathNode): boolean {
+	if (original.type !== 'relation') return areEquivalent(original, cleaned);
+	return (
+		cleaned.type === 'relation' &&
+		cleaned.relation === original.relation &&
+		areEquivalent(original.left, cleaned.left) &&
+		areEquivalent(original.right, cleaned.right)
+	);
+}
 
 /** Nombre de nœuds d'un type dans une formule (`hole` : cases `?`) */
 function countNodes(ast: MathNode, type: MathNode['type']): number {
@@ -151,7 +189,7 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 		// `x - (-3) = x + 3` → `x + 3 = x + 3` : le calcul montré disparaîtrait
 		if (isTautology(cleaned) && !isTautology(ast)) return ast;
 		// Garde de valeur : chaque étape est sûre, on le vérifie quand même
-		if (!areEquivalent(ast, cleaned)) return ast;
+		if (!keepsValue(ast, cleaned)) return ast;
 		return cleaned;
 	} catch {
 		return ast;

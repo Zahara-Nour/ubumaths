@@ -223,6 +223,15 @@ zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite apr�
 de plusieurs lettres valant un multiple de π dans `round(…)` / `cos(…)` ; `x_i`, `p_i`, `u_{i+1}`
 dans un énoncé (un `i` en indice est un nom d'indice ; `1+i` reste l'unité imaginaire).
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/regle-negatif-inegalite`), ne plus
+contourner : dans une règle de validation (`custom`, `range`, `divisor`, `multiple`,
+`equation_root`, `equivalent`), une variable négative ou une expression est substituée entre
+parenthèses (`answer^2 + {{p}} < {{q}}*answer` avec p = −3, `{{p}}^2` vaut p²) ; `({{p}})` reste
+accepté ; `cleanCoefficients` nettoie une inégalité écrite en LaTeX (`\leqslant`, `\geqslant`,
+`\leq`, `\geq`, `\le`, `\ge`, `\neq` : `x^2+1x\leqslant2` → `x^2 + x \leqslant 2`, `\le` / `\leq`
+rendus `\leqslant`) avec les mêmes gardes (chaîne `0\leqslant x\leqslant 2` laissée telle quelle,
+chaque membre garde sa valeur) ; rien à nettoyer : le texte d'auteur reste intact.
+
 Corrigés dans le moteur le 2026-10-03 (branche `fix/rendu-ensembles`), ne plus contourner :
 dans le PDF, une commande collée à la suivante (`\mathbb{N}\subset\mathbb{Z}`, `𝔻\subset`,
 `x\in𝔻`, `a\cdot{b}`, `\alpha2`) ne fait plus échouer la fiche ; `\mathbb{X}` pour toute lettre
@@ -279,16 +288,12 @@ Toujours vrai :
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
 - **Condition `a<-1`** est mal lue : écrire `a< -1` (espace).
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
-  c = 0 → `shared.cleanCoefficients: true` (ci-dessus) et `+{{c}}` au lieu de `{{c;+}}` (le `;+`
-  d'un 0 n'écrit pas de `+`). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
+  c = 0 → `shared.cleanCoefficients: true` (ci-dessus ; `{{c;+}}` écrit `+0` depuis #701, que
+  l'option retire). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
 - **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
-- **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
-  (`+ -3`) → écrire `({{p}})`.
-- **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
-  (`x^2+1x\leqslant2` reste tel quel ; `x^2-x>7` est nettoyé).
 - **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
   vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
   réponse.
