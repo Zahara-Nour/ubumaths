@@ -28,6 +28,7 @@ une lecture ; pas d'autres indicateurs ouverts.
 - [x] Erreurs : bornes non croissantes, < 2 bornes, > 20 classes, une option sans l'autre, mélange
 - [x] Tests `raw-data-classes.test.ts` (16), preuve rouge des indicateurs exacts ; fiche compilée
       vérifiée à la main (2/3/3/2, moyenne 9,65, médiane 9,5, lecture Me = 10)
-- [ ] Revue, PR, CI, merge
+- [x] Revue : Q109 tranchée par David (classe médiane = celle qui contient la médiane exacte, si série brute) ; borne suggérée arrondie (0,4, pas 0,39999999999999997) ; décimales et grandeur vérifiées sur la borne écrite ; tests bornes décimales / négatives
+- [ ] PR, CI, merge
 
 ## PR (c) — `série:` (Q106)

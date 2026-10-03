@@ -768,6 +768,19 @@ function classIndicators(
 	// Série brute connue (`données:`, Q105) : moyenne et médiane EXACTES ; sinon
 	// estimées à partir des classes (centres, interpolation)
 	const exact = spec.rawValues === null ? null : describeList(spec.rawValues);
+	// Q109 : série brute connue, la classe médiane est celle qui CONTIENT la
+	// médiane exacte (`4 ; 6` en [0 ; 5[, [5 ; 10[ : médiane 5, classe [5 ; 10[) ;
+	// la règle des 50 % la plaçait dans [0 ; 5[, contredisant « Médiane = 5 »
+	const containing =
+		exact === null
+			? -1
+			: spec.data.findIndex(
+					(d) =>
+						d.interval !== null &&
+						exact.median >= d.interval.lower &&
+						exact.median < d.interval.upper
+				);
+	const medianClass = containing === -1 ? summary.medianClassIndex : containing;
 	return spec.indicators.flatMap((indicator) => {
 		switch (indicator) {
 			case 'effectif':
@@ -775,7 +788,7 @@ function classIndicators(
 			case 'moyenne':
 				return [`Moyenne ${v(exact?.mean ?? summary.mean)}`];
 			case 'classe-mediane':
-				return [`Classe médiane : ${spec.data[summary.medianClassIndex].label}`];
+				return [`Classe médiane : ${spec.data[medianClass].label}`];
 			case 'mediane':
 				return [`Médiane ${v(exact?.median ?? summary.estimatedMedian)}`];
 			default:

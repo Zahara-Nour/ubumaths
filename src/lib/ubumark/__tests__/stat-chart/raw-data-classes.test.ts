@@ -111,6 +111,19 @@ describe('données + classes — indicateurs', () => {
 		);
 	});
 
+	it('classe médiane : celle qui contient la médiane exacte (Q109)', () => {
+		const scene = buildStatChartScene(
+			specOf('classes: 0 ; 5 ; 10\ndonnées: 4 ; 6\nindicateurs: médiane ; classe médiane')
+		);
+
+		expect(scene.indicators).toEqual(['Médiane = 5', 'Classe médiane : [5 ; 10[']);
+		// Sans série brute : la règle des 50 % reste la même
+		const written = buildStatChartScene(
+			specOf('[0 ; 5[ = 1\n[5 ; 10[ = 1\nindicateurs: classe médiane')
+		);
+		expect(written.indicators).toEqual(['Classe médiane : [0 ; 5[']);
+	});
+
 	it('polygone : la médiane exacte à côté de la lecture graphique', () => {
 		const scene = buildStatChartScene(
 			specOf(`${BLOCK}\nlecture: médiane\nindicateurs: médiane`, 'frequences-cumulees')
