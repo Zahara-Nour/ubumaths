@@ -66,11 +66,35 @@ Deux ajouts au moteur de validation, validés par David le 2026-10-03.
 
 ## Lots
 
-- [ ] 1 — tests rouges (module vecteur, câblage, `isPrime`)
-- [ ] 2 — module `questions/vectors/vector-answer.ts` + câblage + éditeur + clavier
-- [ ] 3 — `isPrime` dans `validation-rule-evaluator.ts`
-- [ ] 4 — modèle sonde (scratchpad) rejoué avec `question:specs --file`
-- [ ] 5 — non-régression (suites, 209 JSON du dépôt, specs de la PROD lecture seule) ; docs
+- [x] 1 — tests rouges : `vector-answer.test.ts` (module absent : fichier en échec au chargement),
+      `vector-answer-wiring.test.ts` 13 rouges / 19 (verts : comportements déjà « faux »),
+      `validation-rule-is-prime.test.ts` 11 rouges / 26 (verts : « n'est pas premier », borne) ;
+      journal `scratchpad/vecteur/rouge.log`.
+- [x] 2 — `questions/vectors/vector-answer.ts` (67 tests) ; câblage : `AnswerKind` + `VectorMode`
+      (`types.ts`), Zod souple et strict, `answer-validator` (`validateSingleBlank`,
+      `validateBlankValue` → `orderIndependent`, `matchedAnswerForm`, arrondi exclu), générateur
+      (`vectorMode` recopié, `cleanCoefficients` exclu, attendue rendue en colonne),
+      `test-spec-runner`, `blank-verdicts`, éditeur (2 cases à cocher), onglet « Vecteur » du clavier
+      (`keyboard-vectors.ts`, 4 tests) ; 19 tests de câblage verts.
+- [x] 3 — `isPrime` (`replacePrimalityCalls` + `isPrimeBounded`, borne 10^12) : 26 verts.
+- [x] Saisie MathLive RÉELLE (`FillBlanksInput-vector-keyboard.svelte.test.ts`, 5 verts) : MathLive
+      sérialise la colonne `\begin{pmatrix}-4\\ 6\end{pmatrix}` (`\\ ` avec espace) ; la flèche droite
+      passe à la coordonnée suivante (ni Tab, ni flèche bas, ni `moveToNextPlaceholder`) ; `(-2;3)`
+      tapé au clavier physique (smartFence actif) est relu juste.
+- [x] 4 — modèle sonde `scratchpad/vecteur/sonde-vecteur.json` (4 variations : colinéaire,
+      exact en colonne, attendue en fractions, dimension 3) : 14/14 specs, 200/200 tirages, importable.
+- [x] 5 — non-régression : `questions` + `utils` + `components/questions` (144 fichiers, 5 186 tests),
+      `mathAST` + `server` + `math` (482 fichiers, 19 258 tests) ; specs de la PROD (lecture seule)
+      APRÈS : 815 modèles, 7 561 specs, 0 KO, sortie IDENTIQUE à l'avant ; JSON du dépôt : 209 `question:specs --file`, sortie IDENTIQUE (`diff -r` vide).
+      `check:incremental` 0 erreur ; `lint:fast` rien à signaler.
+
+## Points ouverts
+
+- **`\vec` dans la formule d'une case** : le parseur mathAST ne connaît ni `\vec` ni
+  `\overrightarrow` (« Unknown command ») → `hasPrompts` faux → formule rendue STATIQUE, aucune case
+  saisissable. Touche aussi les modèles existants (`A-01` : `$\vec{n}\begin{pmatrix}?\\?\end{pmatrix}$`).
+  Hors périmètre (composants de rendu, parseur) ; contournement documenté : case seule `$?$`.
+- Une coordonnée juste non simplifiée (`\frac{2}{4}`) est juste sans ½ : à confirmer.
 
 Mesure AVANT (main `d01588c13`, 2026-10-03) : PROD 815 modèles, 811 avec specs, 7 561 specs,
 0 KO ; `question:specs --file` sur les 209 JSON de `scripts/questions` : 209 exit 0.

@@ -51,6 +51,7 @@ import { generateCorrection } from './correction-generator';
 import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
 import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
+import { expectedVectorLatex } from '../vectors/vector-answer';
 import { evaluateConditions } from './condition-evaluator';
 import { createRandomSource, randomIndex, type RandomSource } from '$lib/utils/random';
 
@@ -406,11 +407,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					: normalized;
 				// Option du modèle : `1x-1y+0=0` → `x-y=0` (case mathématique sans unité ni
 				// ensemble ; une formule illisible reste telle quelle)
+				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
 				const isCleanable =
 					cleanCoefficients &&
 					isMathBlank &&
 					!(blank.unit ?? resolvedVariation.blankDefaults?.unit) &&
-					(blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind) !== 'intervalles';
+					answerKind !== 'intervalles' &&
+					answerKind !== 'vecteur';
 				const expectedAnswer = isCleanable
 					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
 					: resolvedExpected;
@@ -419,7 +422,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// (left-to-right, consecutive, 0-based). If that contract changes,
 				// this lookup silently returns undefined.
 				const expressionName = blankResult.expressionNameByIndex?.[i];
-				const answerKind = blank.answerKind ?? resolvedVariation.blankDefaults?.answerKind;
+				const vectorMode = blank.vectorMode ?? resolvedVariation.blankDefaults?.vectorMode;
 				const resolved: InstanceBlank = {
 					expectedAnswer,
 					type: blankResult.blankTypes[i],
@@ -443,6 +446,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						acceptDecimal: true
 					}),
 					...(answerKind && { answerKind }),
+					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })
 				};
@@ -463,10 +467,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// Generate expectedAnswerLatex for math blanks
 				if (resolved.type === 'math') {
 					// Ensemble en notation intervalle : ni expression ni calcul, rendu à part
+					// Vecteur : rendu en colonne
 					resolved.expectedAnswerLatex =
 						resolved.answerKind === 'intervalles'
 							? expectedIntervalsLatex(resolved.expectedAnswer)
-							: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
+							: resolved.answerKind === 'vecteur'
+								? expectedVectorLatex(resolved.expectedAnswer)
+								: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
 				}
 				return resolved;
 			});

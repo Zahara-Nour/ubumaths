@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS, EQUATION_FORMS } from './types';
+import { ANSWER_KINDS, EQUATION_FORMS, VECTOR_MODES } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
@@ -297,6 +297,7 @@ export const blankDefaultsSchema = z.object({
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	vectorMode: z.enum(VECTOR_MODES).optional(),
 	unit: unitSchema.optional()
 });
 
@@ -311,6 +312,7 @@ export const blankSchema = z.object({
 	rulesSuffice: z.boolean().optional(),
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
+	vectorMode: z.enum(VECTOR_MODES).optional(),
 	unit: unitSchema.optional()
 });
 
@@ -538,6 +540,7 @@ const blankDefaultsStrictZ = z
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		vectorMode: z.enum(VECTOR_MODES).optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -554,6 +557,7 @@ const blankStrictZ = z
 		rulesSuffice: z.boolean().optional(),
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
+		vectorMode: z.enum(VECTOR_MODES).optional(),
 		unit: unitStrictZ.optional()
 	})
 	.strict();

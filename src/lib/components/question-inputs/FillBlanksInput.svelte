@@ -42,6 +42,7 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
+	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
 
@@ -237,6 +238,12 @@
 				)
 	);
 	let hasIntervalBlank = $derived(intervalPromptIds.length > 0);
+	// Case « vecteur » à remplir : onglet « Vecteur » (colonne, coordonnées en ligne)
+	let hasVectorBlank = $derived(
+		!flashMode &&
+			!effectiveDisabled &&
+			blanks.some((blank) => blank.type === 'math' && blank.answerKind === 'vecteur')
+	);
 
 	let container: HTMLDivElement | undefined = $state();
 
@@ -246,7 +253,7 @@
 	}
 
 	/**
-	 * Onglets « Unités » / « Intervalles » du clavier virtuel MathLive.
+	 * Onglets « Unités » / « Intervalles » / « Vecteur » du clavier virtuel MathLive.
 	 *
 	 * Le clavier est un singleton global (`window.mathVirtualKeyboard`) partagé
 	 * par tous les champs de la page : les onglets sont ajoutés quand le focus ENTRE
@@ -273,7 +280,8 @@
 		const element = container;
 		const layouts = [
 			...(unitKeys.length > 0 ? [buildUnitsKeyboardLayout(unitKeys)] : []),
-			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : [])
+			...(hasIntervalBlank ? [buildIntervalsKeyboardLayout()] : []),
+			...(hasVectorBlank ? [buildVectorsKeyboardLayout()] : [])
 		];
 		if (!element || layouts.length === 0) return;
 

@@ -3,7 +3,7 @@
  *
  * Une case en `rulesSuffice` est jugée par le validateur : toute bonne réponse
  * est verte, pas seulement celle tirée ; de même un décimal exact dans une case
- * `acceptDecimal`, et toute case « intervalles » ou « équation ». Les autres cases gardent la
+ * `acceptDecimal`, et toute case « intervalles », « équation » ou « vecteur ». Les autres cases gardent la
  * comparaison textuelle historique.
  */
 
@@ -21,6 +21,8 @@ export function computeBlankVerdicts(values: string[], instance: QuestionInstanc
 		if (blank.answerKind === 'intervalles') return isBlankValueCorrect(value, blank, instance);
 		// Équation : jugée sur l'ensemble de points (`y=2x+1` pour `2x-y+1=0`)
 		if (blank.answerKind === 'equation') return isBlankValueCorrect(value, blank, instance);
+		// Vecteur : jugé sur ses coordonnées (un colinéaire est vert en mode `colineaire`)
+		if (blank.answerKind === 'vecteur') return isBlankValueCorrect(value, blank, instance);
 		// Décimal exact accepté (`acceptDecimal`) : « 0,5 » pour ½ est vert, jugé par sa valeur
 		if (blank.acceptDecimal === true && isSimpleNumberLatex(value)) {
 			return isBlankValueCorrect(value, blank, instance);
