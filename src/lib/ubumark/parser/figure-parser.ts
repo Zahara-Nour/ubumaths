@@ -8,9 +8,15 @@
  * fenetre: -1 ; 8 ; -1 ; 6
  * taille: petite
  * description: Triangle rectangle ABC.
+ * axes: oui
+ * grille: 1
  * ---
  * A = point(0, 0)
  * ```
+ *
+ * Repère (géométrie repérée) : `axes: oui|non`, `grille: oui|non|pas|pas x ; pas y`
+ * (mêmes mots que ```courbe), `graduations: pas|pas x ; pas y|non` (défaut : le
+ * pas de la grille, sinon 1). Sans ces clés, ni axes ni grille.
  *
  * Volontairement LÉGER : aucun import de geometry-core (le parseur Markdown est
  * dans le chunk de toutes les pages). Le script est interprété par
@@ -26,6 +32,7 @@ import { bodyOpensParagraph } from './block-closure';
 import type {
 	FigureBlockRange,
 	FigureHeader,
+	FigureStep,
 	FigureIssue,
 	FigureNode,
 	FigureSize,
@@ -47,7 +54,18 @@ const SEPARATOR_REGEX = /^\s*---\s*$/;
 /** `clé: valeur` */
 const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 
-const KNOWN_KEYS = ['fenetre', 'fenêtre', 'taille', 'description'] as const;
+const KNOWN_KEYS = [
+	'fenetre',
+	'fenêtre',
+	'taille',
+	'description',
+	'axes',
+	'grille',
+	'graduations'
+] as const;
+
+/** Clés citées dans les messages (sans la variante accentuée) */
+const KEYS_HINT = 'fenetre, taille, description, axes, grille, graduations';
 
 // ============================================================================
 // DÉTECTION
@@ -162,6 +180,34 @@ function parseWindow(value: string): FigureWindow {
 	return { xMin, xMax, yMin, yMax };
 }
 
+/** `oui` / `non` → booléen ; null si ce n'est ni l'un ni l'autre */
+function yesNo(value: string): boolean | null {
+	const v = value.trim().toLowerCase();
+	if (v === 'oui') return true;
+	if (v === 'non') return false;
+	return null;
+}
+
+/** Un pas, ou deux pas « x ; y » (comme `grille:` de ```courbe), strictement positifs. */
+function parseStep(value: string, key: string): FigureStep {
+	const parts = value.split(';').map((p) => p.trim());
+	if (parts.length > 2 || parts.some((p) => p === '')) {
+		throw new LineError(`${key} attend oui, non, un pas, ou deux pas « x ; y » (ex. 1 ; 2)`);
+	}
+	const x = evaluateBound(parts[0]);
+	const y = parts.length === 2 ? evaluateBound(parts[1]) : x;
+	if (!(x > 0) || !(y > 0)) throw new LineError(`${key} : les pas doivent être positifs`);
+	return { x, y };
+}
+
+/** Trop de lignes de grille ou de graduations pour la fenêtre ? */
+function tooManyLines(step: FigureStep, w: FigureWindow): boolean {
+	return (
+		(w.xMax - w.xMin) / step.x > FIGURE_LIMITS.gridLines ||
+		(w.yMax - w.yMin) / step.y > FIGURE_LIMITS.gridLines
+	);
+}
+
 // ============================================================================
 // BLOC
 // ============================================================================
@@ -173,7 +219,16 @@ function parseWindow(value: string): FigureWindow {
 export function parseFigureContent(source: string): FigureNode {
 	const lines = source.split('\n');
 	const errors: FigureIssue[] = [];
-	const header: FigureHeader = { window: null, size: 'moyenne', description: null };
+	const header: FigureHeader = {
+		window: null,
+		size: 'moyenne',
+		description: null,
+		axes: false,
+		grid: null,
+		ticks: null
+	};
+	/** Ligne de chaque clé du repère, pour les erreurs qui dépendent de la fenêtre */
+	const keyLines: { grille?: number; graduations?: number } = {};
 
 	const separator = lines.findIndex((l) => SEPARATOR_REGEX.test(l));
 	const headerLines = separator === -1 ? lines : lines.slice(0, separator);
@@ -189,9 +244,7 @@ export function parseFigureContent(source: string): FigureNode {
 			if (!kv || key === undefined || !(KNOWN_KEYS as readonly string[]).includes(key)) {
 				// Sans séparateur, le script commence ici : l'erreur est dite une seule fois plus bas
 				if (separator === -1) return;
-				throw new LineError(
-					`« ${trimmed} » : en-tête attendu (fenetre, taille, description), puis ---`
-				);
+				throw new LineError(`« ${trimmed} » : en-tête attendu (${KEYS_HINT}), puis ---`);
 			}
 			const value = kv[2].trim();
 			if (key === 'fenetre' || key === 'fenêtre') {
@@ -203,6 +256,19 @@ export function parseFigureContent(source: string): FigureNode {
 					throw new LineError(`taille « ${value} » inconnue (${FIGURE_SIZES.join(', ')})`);
 				}
 				header.size = size as FigureSize;
+			} else if (key === 'axes') {
+				const on = yesNo(value);
+				if (on === null) throw new LineError(`axes « ${value} » : écrire oui ou non`);
+				header.axes = on;
+			} else if (key === 'grille') {
+				keyLines.grille = line;
+				const on = yesNo(value);
+				header.grid = on === null ? parseStep(value, 'grille') : on ? { x: 1, y: 1 } : null;
+			} else if (key === 'graduations') {
+				keyLines.graduations = line;
+				// `oui` : le pas par défaut (celui de la grille, sinon 1)
+				const on = yesNo(value);
+				header.ticks = on === null ? parseStep(value, 'graduations') : on ? null : false;
 			} else {
 				header.description = value === '' ? null : value;
 			}
@@ -212,10 +278,27 @@ export function parseFigureContent(source: string): FigureNode {
 		}
 	});
 
+	// Repère : cohérence entre clés, et nombre de lignes une fois la fenêtre connue
+	const located = (line: number, message: string) =>
+		errors.push({ message: `Ligne ${line} : ${message}`, line });
+	if (keyLines.graduations !== undefined && header.ticks && !header.axes) {
+		located(keyLines.graduations, 'graduations sans axes : ajouter « axes: oui »');
+	}
+	const w = header.window;
+	if (w !== null) {
+		const tooSmall = `pas trop petit pour la fenêtre (plus de ${FIGURE_LIMITS.gridLines} lignes par axe)`;
+		if (keyLines.grille !== undefined && header.grid && tooManyLines(header.grid, w)) {
+			located(keyLines.grille, `grille : ${tooSmall}`);
+		}
+		if (keyLines.graduations !== undefined && header.ticks && tooManyLines(header.ticks, w)) {
+			located(keyLines.graduations, `graduations : ${tooSmall}`);
+		}
+	}
+	errors.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
+
 	if (separator === -1) {
 		errors.push({
-			message:
-				'Séparateur --- manquant : écrire l’en-tête (fenetre, taille, description), puis ---, puis le script'
+			message: `Séparateur --- manquant : écrire l’en-tête (${KEYS_HINT}), puis ---, puis le script`
 		});
 	}
 	if (!windowSeen) {

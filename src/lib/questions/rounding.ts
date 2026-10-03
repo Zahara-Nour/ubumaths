@@ -15,6 +15,10 @@
  * - moins de décimales → accepté si la valeur est EXACTEMENT l'arrondi de la
  *   valeur attendue (3,1 pour 3,10).
  *
+ * Cases sans ordre (`orderIndependent`) : même verdict. Une réponse juste à
+ * l'arrondi près est appariée à sa case APRÈS les réponses exactes (cf.
+ * `matchAnswersToBlanks`, utils/answer-validator), puis jugée mauvaise forme.
+ *
  * Le nombre de décimales se lit sur l'ÉCRITURE de l'élève (LaTeX MathLive :
  * `3{,}14`, `12\,345{,}6`) : la valeur seule ne distingue pas 3,1 de 3,10.
  *

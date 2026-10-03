@@ -212,8 +212,8 @@ function piTickLabel(k: number, ratio: { p: number; q: number }): string {
 	return den === 1 ? `${sign}${head}` : `${sign}${head}/${den}`;
 }
 
-/** Multiples entiers du pas compris dans [min ; max] */
-function multiples(step: number, min: number, max: number): number[] {
+/** Multiples entiers du pas compris dans [min ; max] (aussi la grille du bloc ```figure) */
+export function multiples(step: number, min: number, max: number): number[] {
 	if (!(step > 0) || !Number.isFinite(step) || !Number.isFinite(min) || !Number.isFinite(max)) {
 		return [];
 	}

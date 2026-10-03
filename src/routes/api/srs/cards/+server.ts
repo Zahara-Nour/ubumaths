@@ -141,6 +141,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
+		// Le paquet Programme est rempli par le serveur seul : la base refuse
+		// l'insertion (migration 20261003100000) — on répond 403, pas 500.
+		if (deck.is_auto_managed) {
+			return json(
+				{ error: 'Cannot add cards to the Programme deck. It is managed automatically.' },
+				{ status: 403 }
+			);
+		}
+
 		// Handle discriminated union - Zod has already validated the structure
 		if (body.cardType === 'template') {
 			// Verify template exists and is published

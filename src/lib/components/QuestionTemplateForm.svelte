@@ -330,6 +330,9 @@
 	);
 	let sharedCorrectionString = $state(correctionToString(initialTemplate?.shared?.correction));
 	let sharedChoices = $state(initialTemplate?.shared?.choices ?? []);
+	// Choix partagés réels : des choix aux libellés tous vides ne comptent pas,
+	// sinon ils écraseraient à l'enregistrement les choix propres aux variations
+	let hasSharedChoices = $derived(sharedChoices.some((c) => c.content.trim().length > 0));
 	let sharedRequiredFormSelect = $state<string>(
 		initialTemplate?.shared?.requiredForm
 			? typeof initialTemplate.shared.requiredForm === 'string'
@@ -642,7 +645,7 @@
 				...(variation.statement?.trim() ? { statement: variation.statement } : {}),
 				...(filteredVars && filteredVars.length > 0 ? { variables: filteredVars } : {}),
 				...(questionType === 'multiple_choice'
-					? sharedChoices.length > 0
+					? hasSharedChoices
 						? // Shared choices: preserve per-variation correctChoiceIndex, no per-variation choices
 							variation.correctChoiceIndex &&
 							(!Array.isArray(variation.correctChoiceIndex) ||
@@ -711,14 +714,13 @@
 			const filtered = sharedVariables.filter((v) => v.name && v.expression);
 			if (filtered.length > 0) shared.variables = filtered;
 		}
-		if (questionType === 'multiple_choice' && sharedChoices.length > 0) {
+		if (questionType === 'multiple_choice' && hasSharedChoices) {
 			const sharedDerived = deriveCorrectChoiceIndex(sharedChoices);
 			if (sharedDerived) shared.correctChoiceIndex = sharedDerived;
 		}
 		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
-		if (questionType === 'multiple_choice' && sharedChoices.length > 0)
-			shared.choices = sharedChoices;
+		if (questionType === 'multiple_choice' && hasSharedChoices) shared.choices = sharedChoices;
 		if (sharedRequiredFormSelect) {
 			if (sharedRequiredFormSelect === 'custom' && sharedRequiredFormPattern.trim()) {
 				shared.requiredForm = customRequiredForm(
@@ -1314,9 +1316,7 @@
 						statement: sharedStatement || undefined,
 						variables: sharedVariables.length > 0 ? sharedVariables : undefined,
 						choices:
-							questionType === 'multiple_choice' && sharedChoices.length > 0
-								? sharedChoices
-								: undefined
+							questionType === 'multiple_choice' && hasSharedChoices ? sharedChoices : undefined
 					}
 				: undefined}
 			options={currentOptions}

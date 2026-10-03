@@ -127,3 +127,22 @@ PR prévues lot 3 : (a) bloc + mode `tirages` ; (b) modes `moyenne` et `échanti
 
 **Lot 3 (simulation dans les fiches) TERMINÉ** (#671, #674).
 Suivant (Q67) : série brute dans les blocs (`données:`) ; puis comparer deux séries.
+
+Manche 7 (2026-10-03), lot 4 « série brute dans les blocs » — recommandations suivies :
+
+100. `données:` dans les quatre blocs dessinés (barres, circulaire, histogramme, polygone) : le bloc
+     dépouille ; options, indicateurs et PDF inchangés. Pas le tableau croisé, la loi, la simulation.
+101. `données: 12 ; 15 ; 8` (virgule décimale) ; plusieurs lignes `données:` mises bout à bout ;
+     au plus 500 valeurs ; des mots pour barres / circulaire (série qualitative).
+102. `données:` et lignes « catégorie = effectif » dans un même bloc : refusé, message situé.
+103. Nombres dans l'ordre croissant ; mots dans l'ordre de première apparition (comparés comme Q85) ;
+     plafonds 30 barres / 12 secteurs rappelés si trop de valeurs distinctes.
+104. Histogramme : `classes: 0 ; 5 ; 10 ; 15 ; 20` (bornes → [0 ; 5[ …) ; valeur hors classes
+     refusée et nommée ; pas de dernière classe fermée.
+105. Indicateurs calculés sur la série brute (exacts, même pour l'histogramme) ; conventions v1.
+106. `série: affichée` / `série: triée` écrit la liste sous le titre.
+107. Bloc ```effectifs (tableau de dépouillement) : PAS dans ce lot, candidat après « comparer ».
+108. Variables `{{…}}` résolues avant, comme Q98 ; pas de générateur de séries.
+
+PR prévues : (a) barres / circulaire (Q100-Q103, Q105) ; (b) histogramme / polygone + `classes:`
+(Q104) ; (c) `série:` (Q106).

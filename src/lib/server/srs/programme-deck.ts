@@ -14,6 +14,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 type SB = SupabaseClient<Database>;
 
@@ -30,12 +31,14 @@ const PROGRAMME_DECK_DESCRIPTION =
  * @returns UUID du deck Programme
  */
 export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise<string> {
-	// 1. Lookup existant
+	// 1. Lookup existant — un paquet « assigné » n'est jamais le Programme : sans ce filtre,
+	// un paquet auto-managé créé à la main avec is_assigned = true serait rempli par le serveur.
 	const { data: existing, error: lookupErr } = await supabase
 		.from('srs_decks')
 		.select('id')
 		.eq('owner_id', userId)
 		.eq('is_auto_managed', true)
+		.eq('is_assigned', false)
 		.limit(1)
 		.maybeSingle();
 
@@ -71,6 +74,7 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 				.select('id')
 				.eq('owner_id', userId)
 				.eq('is_auto_managed', true)
+				.eq('is_assigned', false)
 				.limit(1)
 				.maybeSingle();
 			if (refreshErr) {
@@ -96,6 +100,15 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
  * sur au moins une skill famille A (sinon la carte n'a pas vocation à être
  * dans le Programme).
  *
+ * ⚠️ `userId` doit venir de la SESSION authentifiée de l'appelant, jamais d'une
+ * entrée client : la carte est écrite avec les droits du serveur.
+ *
+ * Le paquet est lu (ou créé) avec le client de l'ÉLÈVE : la RLS de `srs_decks`
+ * et le filtre `owner_id = userId` garantissent qu'il lui appartient. La carte,
+ * elle, est écrite avec le client service : depuis la migration
+ * 20261003100000, aucun compte connecté ne peut insérer dans un paquet
+ * `is_auto_managed` (le paquet Programme est rempli par le serveur seul).
+ *
  * Idempotence : utilise l'index UNIQUE `uq_srs_cards_deck_template` (migration
  * L3 2026-06-10) — un INSERT en double est silencieusement ignoré.
  */
@@ -106,20 +119,28 @@ export async function ensureProgrammeDeckCard(
 ): Promise<void> {
 	const deckId = await ensureProgrammeDeck(supabase, userId);
 
-	// ⚠️ Écrit avec le client de l'ÉLÈVE dans un paquet `is_auto_managed` : seule la
-	// policy large « Users can create cards in decks » l'autorise (la stricte exclut
-	// ces paquets). Ne pas la retirer sans faire écrire ce code avec les droits du
-	// serveur — cf. docs/ref/rls-echecs-silencieux.md (cas `srs_cards`).
-	const { error: insertErr } = await supabase.from('srs_cards').insert({
-		deck_id: deckId,
-		card_type: 'template',
-		template_id: templateId
-	});
+	const service = createServiceRoleClient();
+	const { data: inserted, error: insertErr } = await service
+		.from('srs_cards')
+		.insert({
+			deck_id: deckId,
+			card_type: 'template',
+			template_id: templateId
+		})
+		.select('id');
 
 	if (insertErr) {
 		// Code 23505 = unique violation : carte déjà présente, no-op.
 		if (insertErr.code === '23505') return;
 		console.error('[programme-deck] Card insert failed:', insertErr);
 		throw insertErr;
+	}
+
+	// Un refus silencieux rendrait zéro ligne sans erreur
+	// (cf. docs/ref/rls-echecs-silencieux.md) : on le rend visible.
+	if (!inserted || inserted.length !== 1) {
+		const message = `[programme-deck] Carte non écrite : ${inserted?.length ?? 0} ligne(s) rendue(s)`;
+		console.error(message, { deckId, templateId });
+		throw new Error(message);
 	}
 }

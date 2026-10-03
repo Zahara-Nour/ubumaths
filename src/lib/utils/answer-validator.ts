@@ -822,6 +822,41 @@ function validateBlankValue(
 }
 
 /**
+ * Réponse juste à l'arrondi près pour cette case (trop de chiffres, mais la
+ * réponse arrondie redonne l'attendu : 1,136 pour 1,14) : le message d'arrondi
+ * (« Arrondis au centième. »), sinon `undefined`. Sert à l'appariement
+ * `orderIndependent`, APRÈS les réponses exactes (cf. questions/rounding).
+ */
+function roundingOnlyFeedback(
+	userAnswer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): string | undefined {
+	if (!blank.precision || blank.answerKind === 'intervalles' || blank.type === 'text') {
+		return undefined;
+	}
+	if (isAnswerTooComplex(userAnswer) || rulesDecide(blank)) return undefined;
+	if (blank.validationRules && blank.validationRules.length > 0) {
+		if (evaluateValidationRules(blank.validationRules, userAnswer, instance)) return undefined;
+	}
+	if (blank.unit?.expected) {
+		const result = validateQuantityAnswer(
+			userAnswer,
+			blank.expectedAnswer,
+			blank.precision,
+			blank.unit.required
+		);
+		return result.onlyRoundingMissing ? (result.feedback ?? undefined) : undefined;
+	}
+	const { result, onlyRoundingMissing } = numericalVerdict(
+		userAnswer,
+		blank.expectedAnswer,
+		blank.precision
+	);
+	return onlyRoundingMissing ? result.feedback : undefined;
+}
+
+/**
  * Forme juste mais pas celle demandée (motif `acceptable`) : perfectible. S'ajoute au
  * résultat des contraintes cosmétiques, sans jamais rendre juste un refus.
  */
@@ -1430,10 +1465,16 @@ function isAnswerMatch(
  * et largement assez rapide pour le nombre de cases d'une question.
  *
  * @param accepts - `accepts[a][b]` : la case `b` accepte la réponse `a`
+ * @param initial - appariement de départ (même forme que le résultat), complété
  * @returns `matching[a]` = case attribuée à la réponse `a`, `-1` si aucune
  */
-function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
+function maximumMatching(accepts: boolean[][], blankCount: number, initial?: number[]): number[] {
 	const answerOfBlank: number[] = Array.from({ length: blankCount }, () => -1);
+	// Appariement de départ : ses réponses restent appariées (un chemin augmentant
+	// peut les déplacer, jamais les détacher)
+	initial?.forEach((b, a) => {
+		if (b !== -1) answerOfBlank[b] = a;
+	});
 
 	const tryAssign = (a: number, visited: boolean[]): boolean => {
 		for (let b = 0; b < blankCount; b++) {
@@ -1449,6 +1490,7 @@ function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
 	};
 
 	for (let a = 0; a < accepts.length; a++) {
+		if (initial && initial[a] !== -1) continue;
 		tryAssign(
 			a,
 			Array.from({ length: blankCount }, () => false)
@@ -1463,6 +1505,47 @@ function maximumMatching(accepts: boolean[][], blankCount: number): number[] {
 }
 
 /**
+ * Appariement réponses → cases (`orderIndependent`), en deux temps : d'abord les
+ * réponses justes, puis — sans en détacher aucune — celles qui ne sont justes
+ * qu'à l'arrondi près (trop de chiffres, cf. questions/rounding). Une réponse
+ * exacte passe donc avant une trop précise pour la même case.
+ *
+ * @returns `matching[a]` = case de la réponse `a` (`-1` si aucune) ;
+ *   `roundingFeedback[a]` = message d'arrondi si elle n'y est juste qu'à l'arrondi près
+ */
+function matchAnswersToBlanks(
+	userAnswers: string[],
+	instance: QuestionInstance
+): { matching: number[]; roundingFeedback: (string | undefined)[] } {
+	const blanks = instance.blanks ?? [];
+	const accepts = userAnswers.map((answer) =>
+		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
+	);
+	const exactMatching = maximumMatching(accepts, blanks.length);
+	if (exactMatching.every((b, a) => b !== -1 || !userAnswers[a].trim())) {
+		return { matching: exactMatching, roundingFeedback: userAnswers.map(() => undefined) };
+	}
+
+	const roundingFeedbacks = userAnswers.map((answer, a) =>
+		blanks.map((blank, b) =>
+			answer.trim() !== '' && !accepts[a][b]
+				? roundingOnlyFeedback(answer, blank, instance)
+				: undefined
+		)
+	);
+	const looseAccepts = accepts.map((row, a) =>
+		row.map((ok, b) => ok || roundingFeedbacks[a][b] !== undefined)
+	);
+	const matching = maximumMatching(looseAccepts, blanks.length, exactMatching);
+	return {
+		matching,
+		roundingFeedback: matching.map((b, a) =>
+			b !== -1 && !accepts[a][b] ? roundingFeedbacks[a][b] : undefined
+		)
+	};
+}
+
+/**
  * Forme d'une réponse appariée à sa case (`orderIndependent`) : forme exigée,
  * puis contraintes cosmétiques. La valeur est déjà jugée juste.
  */
@@ -1470,8 +1553,17 @@ function matchedAnswerForm(
 	userAnswer: string,
 	blankLatex: string | undefined,
 	blank: InstanceBlank,
-	instance: QuestionInstance
+	instance: QuestionInstance,
+	roundingFeedback?: string
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	// Appariée à l'arrondi près : mauvaise forme, violation `rounding` (cf. questions/rounding)
+	if (roundingFeedback) {
+		return {
+			status: 'bad_form',
+			violations: roundingBadForm(roundingFeedback).constraintViolations
+		};
+	}
+
 	// Case « intervalles » appariée (valeur déjà juste) : écriture jugée par son propre module,
 	// jamais par la comparaison d'expressions (qui la dirait de mauvaise forme)
 	if (blank.answerKind === 'intervalles') {
@@ -1482,6 +1574,13 @@ function matchedAnswerForm(
 	if (blank.answerKind === 'equation') {
 		const result = equationBlankResult(blankLatex || userAnswer, blank);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
+	}
+
+	// Grandeur appariée (valeur déjà juste) : même jugement qu'en mode positionnel
+	// (partie numérique + unité), jamais la comparaison à l'écriture de l'attendu
+	if (blank.unit?.expected) {
+		const result = validateSingleBlank(userAnswer, blank, blankLatex, instance);
+		return { status: singleBlankStatus(result), violations: result.constraintViolations ?? [] };
 	}
 
 	let worstStatus: ValidationStatus = 'correct';
@@ -1506,7 +1605,7 @@ function matchedAnswerForm(
 		// comme pour une case seule (l'attendu n'est pas LA forme à reproduire)
 		const { status, violations } = blank.requiredForm
 			? requiredFormCosmetics(blankLatex, instance.options?.constraints ?? {})
-			: rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
+			: blank.precision || rulesDecide(blank) || acceptsExactDecimal(blank, blankLatex)
 				? checkSimpleNumberForm(blankLatex, instance.options?.constraints ?? {})
 				: applyConstraints(
 						[userAnswer],
@@ -1555,10 +1654,7 @@ function validateBlanksOrderIndependent(
 	// Compatibilités réponse × case (valeur seule), puis appariement MAXIMAL.
 	// Un appariement glouton (première case libre qui accepte) pouvait prendre
 	// la seule case d'une autre réponse et refuser une copie juste.
-	const accepts = userAnswers.map((answer) =>
-		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
-	);
-	const matching = maximumMatching(accepts, blanks.length);
+	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 
 	// Count unmatched non-empty answers
@@ -1606,7 +1702,8 @@ function validateBlanksOrderIndependent(
 			userAnswers[a],
 			userAnswersLatex?.[a],
 			blanks[matching[a]],
-			instance
+			instance,
+			roundingFeedback[a]
 		);
 		if (form.status === 'bad_form') worstStatus = 'bad_form';
 		else if (form.status === 'unoptimal_form' && worstStatus === 'correct')
@@ -1754,10 +1851,7 @@ function orderIndependentDetails(
 ): { status: ValidationStatus; remarks: string[] }[] {
 	const blanks = instance.blanks ?? [];
 
-	const accepts = userAnswers.map((answer) =>
-		blanks.map((blank) => answer.trim() !== '' && validateBlankValue(answer, blank, instance))
-	);
-	const matching = maximumMatching(accepts, blanks.length);
+	const { matching, roundingFeedback } = matchAnswersToBlanks(userAnswers, instance);
 	const used = new Set(matching.filter((b) => b !== -1));
 	const freeBlanks = blanks.filter((_, b) => !used.has(b));
 	return userAnswers.map((answer, a) => {
@@ -1768,7 +1862,13 @@ function orderIndependentDetails(
 				remarks: unmatchedRemarks(answer, userAnswersLatex?.[a], freeBlanks, instance)
 			};
 		}
-		const form = matchedAnswerForm(answer, userAnswersLatex?.[a], blanks[matching[a]], instance);
+		const form = matchedAnswerForm(
+			answer,
+			userAnswersLatex?.[a],
+			blanks[matching[a]],
+			instance,
+			roundingFeedback[a]
+		);
 		return { status: form.status, remarks: remarksOf(undefined, form.violations) };
 	});
 }

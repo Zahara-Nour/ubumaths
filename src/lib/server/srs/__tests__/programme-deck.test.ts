@@ -11,7 +11,8 @@
  *
  * Couverture :
  *   - ensureProgrammeDeck : lookup hit / insert success / retry 23505 / non-23505 / error
- *   - ensureProgrammeDeckCard : INSERT success / 23505 silent no-op / propagation
+ *   - ensureProgrammeDeckCard : carte écrite par le client SERVICE (jamais celui
+ *     de l'élève) / 23505 silent no-op / 0 ligne rendue = erreur / propagation
  *
  * Note : `isTemplateTaggedFamilyA` a été supprimé en 2026-06-10 (refactor
  * code-quality #2.3) — le tagging est désormais récupéré inline dans
@@ -21,6 +22,21 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Client service simulé : `from('srs_cards').insert(...).select('id')` rend le
+// prochain résultat de la file `serviceInsertResults`.
+const service = vi.hoisted(() => {
+	const results: Array<{ data: unknown; error: unknown }> = [];
+	const select = vi.fn(async () => results.shift() ?? { data: [{ id: 'card-uuid' }], error: null });
+	const insert = vi.fn(() => ({ select }));
+	const from = vi.fn(() => ({ insert }));
+	return { results, select, insert, from };
+});
+
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ from: service.from })
+}));
+
 import { ensureProgrammeDeck, ensureProgrammeDeckCard } from '../programme-deck';
 
 // ============================================================================
@@ -32,14 +48,11 @@ interface MockState {
 	maybeSingleResults: Array<{ data: unknown; error: unknown }>;
 	/** Queue of responses for `.single()` calls (in order). */
 	singleResults: Array<{ data: unknown; error: unknown }>;
-	/** Direct response from `.insert()` (when no .select chain follows). */
-	insertOnlyResult: { error: unknown };
 }
 
 function buildMockSupabase(state: Partial<MockState> = {}) {
 	const ms = [...(state.maybeSingleResults ?? [])];
 	const ss = [...(state.singleResults ?? [])];
-	const insertOnly = state.insertOnlyResult ?? { error: null };
 
 	const chain = {
 		select: vi.fn().mockReturnThis(),
@@ -52,22 +65,14 @@ function buildMockSupabase(state: Partial<MockState> = {}) {
 		single: vi.fn().mockImplementation(async () => {
 			return ss.shift() ?? { data: null, error: null };
 		}),
-		/** insert returns chainable when followed by .select().single() ;
-		 * sinon il faut traiter le `.then()` directement. On gère via .then(). */
-		insert: vi.fn().mockImplementation(() => {
-			// Returns a thenable + chainable for .select().single()
-			const insertChain = {
-				select: vi.fn().mockReturnThis(),
-				single: vi.fn().mockImplementation(async () => {
-					return ss.shift() ?? { data: null, error: null };
-				}),
-				// Direct await on .insert(...) without .select() → resolve to insertOnlyResult
-				then: (onFulfilled: (v: { error: unknown }) => unknown) => {
-					return Promise.resolve(insertOnly).then(onFulfilled);
-				}
-			};
-			return insertChain;
-		})
+		// Création du paquet : `.insert(...).select('id').single()` (client de l'élève).
+		// La carte, elle, passe par le client service simulé plus haut.
+		insert: vi.fn().mockImplementation(() => ({
+			select: vi.fn().mockReturnThis(),
+			single: vi.fn().mockImplementation(async () => {
+				return ss.shift() ?? { data: null, error: null };
+			})
+		}))
 	};
 
 	const supabase = {
@@ -197,38 +202,50 @@ describe('ensureProgrammeDeck', () => {
 // ensureProgrammeDeckCard
 // ============================================================================
 
+const CARTE = { deck_id: 'deck-uuid', card_type: 'template', template_id: 'template-uuid' };
+
 describe('ensureProgrammeDeckCard', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		service.results.length = 0;
 	});
 
-	it('inserts a new card successfully when none exists', async () => {
-		// 1. ensureProgrammeDeck retourne un deck existant
-		// 2. INSERT srs_cards réussit
+	it('écrit la carte avec le client SERVICE, jamais avec celui de l’élève', async () => {
 		const { supabase, chain } = buildMockSupabase({
-			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }], // deck lookup
-			insertOnlyResult: { error: null } // card insert success
+			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }]
 		});
+		service.results.push({ data: [{ id: 'card-uuid' }], error: null });
 
 		await expect(
 			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
 		).resolves.toBeUndefined();
 
-		// Vérifie que insert a été appelé avec les bonnes valeurs
-		expect(chain.insert).toHaveBeenCalledWith({
-			deck_id: 'deck-uuid',
-			card_type: 'template',
-			template_id: 'template-uuid'
+		expect(service.from).toHaveBeenCalledWith('srs_cards');
+		expect(service.insert).toHaveBeenCalledWith(CARTE);
+		expect(service.select).toHaveBeenCalledWith('id');
+		// Le client de l'élève ne touche jamais `srs_cards`
+		expect(supabase.from).not.toHaveBeenCalledWith('srs_cards');
+		expect(chain.insert).not.toHaveBeenCalled();
+	});
+
+	it('cherche le paquet du userId reçu (propriétaire = élève de la session)', async () => {
+		const { supabase, chain } = buildMockSupabase({
+			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }]
 		});
+
+		await ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid');
+
+		expect(supabase.from).toHaveBeenCalledWith('srs_decks');
+		expect(chain.eq).toHaveBeenCalledWith('owner_id', 'student-uuid');
+		expect(chain.eq).toHaveBeenCalledWith('is_auto_managed', true);
 	});
 
 	it('no-ops silently on 23505 (carte déjà présente)', async () => {
 		const { supabase } = buildMockSupabase({
-			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }],
-			insertOnlyResult: { error: { code: '23505', message: 'unique_violation' } }
+			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }]
 		});
+		service.results.push({ data: null, error: { code: '23505', message: 'unique_violation' } });
 
-		// Ne doit PAS throw
 		await expect(
 			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
 		).resolves.toBeUndefined();
@@ -236,56 +253,52 @@ describe('ensureProgrammeDeckCard', () => {
 
 	it('throws on non-23505 insert errors', async () => {
 		const { supabase } = buildMockSupabase({
-			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }],
-			insertOnlyResult: {
-				error: { code: '42501', message: 'permission denied' }
-			}
+			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }]
 		});
+		service.results.push({ data: null, error: { code: '42501', message: 'permission denied' } });
 
 		await expect(
 			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
-		).rejects.toMatchObject({
-			code: '42501'
-		});
+		).rejects.toMatchObject({ code: '42501' });
 	});
 
-	it('propagates errors from ensureProgrammeDeck (deck lookup fails)', async () => {
+	it('échoue quand l’écriture rend zéro ligne sans erreur (refus silencieux)', async () => {
+		const { supabase } = buildMockSupabase({
+			maybeSingleResults: [{ data: { id: 'deck-uuid' }, error: null }]
+		});
+		service.results.push({ data: [], error: null });
+
+		await expect(
+			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
+		).rejects.toThrow(/0 ligne/);
+	});
+
+	it('propagates errors from ensureProgrammeDeck (deck lookup fails) sans rien écrire', async () => {
 		const { supabase } = buildMockSupabase({
 			maybeSingleResults: [{ data: null, error: { code: '08006', message: 'connection failure' } }]
 		});
 
 		await expect(
 			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
-		).rejects.toMatchObject({
-			code: '08006'
-		});
+		).rejects.toMatchObject({ code: '08006' });
+		expect(service.insert).not.toHaveBeenCalled();
 	});
 
 	it('chains ensureProgrammeDeck and INSERT (deck created → card added)', async () => {
 		const { supabase, chain } = buildMockSupabase({
 			maybeSingleResults: [{ data: null, error: null }], // deck lookup miss
-			singleResults: [{ data: { id: 'deck-fresh' }, error: null }], // deck created
-			insertOnlyResult: { error: null } // card insert success
+			singleResults: [{ data: { id: 'deck-fresh' }, error: null }] // deck created
 		});
 
 		await ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid');
 
-		// Vérifie séquence : un INSERT pour deck puis un INSERT pour card
-		expect(chain.insert).toHaveBeenCalledTimes(2);
-		// 1er INSERT (deck) avec owner_id
-		expect(chain.insert).toHaveBeenNthCalledWith(
-			1,
-			expect.objectContaining({
-				owner_id: 'student-uuid',
-				is_auto_managed: true
-			})
+		// Le paquet est créé par le client de l'élève…
+		expect(chain.insert).toHaveBeenCalledTimes(1);
+		expect(chain.insert).toHaveBeenCalledWith(
+			expect.objectContaining({ owner_id: 'student-uuid', is_auto_managed: true })
 		);
-		// 2e INSERT (card) référence le deck créé
-		expect(chain.insert).toHaveBeenNthCalledWith(2, {
-			deck_id: 'deck-fresh',
-			card_type: 'template',
-			template_id: 'template-uuid'
-		});
+		// … la carte par le client service, dans le paquet créé
+		expect(service.insert).toHaveBeenCalledWith({ ...CARTE, deck_id: 'deck-fresh' });
 	});
 });
 
@@ -296,68 +309,28 @@ describe('ensureProgrammeDeckCard', () => {
 describe('Regression : sequence of calls preserves idempotence', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		service.results.length = 0;
 	});
 
-	it('2 sequential ensureProgrammeDeckCard calls on same template → 1 valid path even if 23505 on 2nd', async () => {
-		// 1er appel : deck créé + card insertée
-		// 2e appel : deck déjà là (lookup hit) + card 23505 (no-op)
-		// Le test simule les 2 chaînes via un seul mock partagé.
-		const ms = [
-			{ data: null, error: null }, // 1er deck lookup miss
-			{ data: { id: 'deck-1' }, error: null } // 2e deck lookup hit
-		];
-		const ss = [{ data: { id: 'deck-1' }, error: null }]; // 1er deck créé
+	it('2 sequential ensureProgrammeDeckCard calls on same template → 2nd is a 23505 no-op', async () => {
+		const { supabase } = buildMockSupabase({
+			maybeSingleResults: [
+				{ data: null, error: null }, // 1er deck lookup miss
+				{ data: { id: 'deck-1' }, error: null } // 2e deck lookup hit
+			],
+			singleResults: [{ data: { id: 'deck-1' }, error: null }] // 1er deck créé
+		});
+		service.results.push(
+			{ data: [{ id: 'card-1' }], error: null },
+			{ data: null, error: { code: '23505', message: 'unique_violation' } }
+		);
 
-		// Insert sequence:
-		//   1. INSERT deck (single) → succeeds
-		//   2. INSERT card (insert-only) → succeeds (1er card)
-		//   3. INSERT card (insert-only) → 23505 (2e card no-op)
-		let insertOnlyCalls = 0;
-		const insertResults: Array<{ error: unknown }> = [
-			{ error: null }, // 1er card
-			{ error: { code: '23505', message: 'unique_violation' } } // 2e card
-		];
-
-		const chain: {
-			select: ReturnType<typeof vi.fn>;
-			eq: ReturnType<typeof vi.fn>;
-			limit: ReturnType<typeof vi.fn>;
-			in: ReturnType<typeof vi.fn>;
-			maybeSingle: ReturnType<typeof vi.fn>;
-			single: ReturnType<typeof vi.fn>;
-			insert: ReturnType<typeof vi.fn>;
-		} = {
-			select: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockReturnThis(),
-			in: vi.fn().mockReturnThis(),
-			maybeSingle: vi
-				.fn()
-				.mockImplementation(async () => ms.shift() ?? { data: null, error: null }),
-			single: vi.fn().mockImplementation(async () => ss.shift() ?? { data: null, error: null }),
-			insert: vi.fn().mockImplementation(() => {
-				return {
-					select: vi.fn().mockReturnThis(),
-					single: vi.fn().mockImplementation(async () => ss.shift() ?? { data: null, error: null }),
-					then: (onFulfilled: (v: { error: unknown }) => unknown) => {
-						const result = insertResults[insertOnlyCalls] ?? { error: null };
-						insertOnlyCalls += 1;
-						return Promise.resolve(result).then(onFulfilled);
-					}
-				};
-			})
-		};
-		const supabase = { from: vi.fn().mockReturnValue(chain) };
-
-		const wrap = supabase as unknown as Parameters<typeof ensureProgrammeDeckCard>[0];
-
-		// 1er appel : crée tout
 		await expect(
-			ensureProgrammeDeckCard(wrap, 'student-uuid', 'template-uuid')
+			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
 		).resolves.toBeUndefined();
-		// 2e appel : carte déjà là, no-op
 		await expect(
-			ensureProgrammeDeckCard(wrap, 'student-uuid', 'template-uuid')
+			ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid')
 		).resolves.toBeUndefined();
+		expect(service.insert).toHaveBeenCalledTimes(2);
 	});
 });

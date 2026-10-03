@@ -43,6 +43,12 @@
 		multipleAnswers?: boolean;
 		shuffleChoices?: boolean;
 		onSingleAnswer?: () => void;
+		/**
+		 * Amorcer des champs vides (deux choix, un trou) quand il n'y en a pas.
+		 * `false` pour l'éditeur « Réponse partagée » : monté même replié, il
+		 * inventerait des choix partagés vides qui écraseraient ceux des variations.
+		 */
+		seedEmpty?: boolean;
 	}
 
 	// Constantes
@@ -56,7 +62,8 @@
 		choices = $bindable([]),
 		multipleAnswers = $bindable(),
 		shuffleChoices = $bindable(),
-		onSingleAnswer
+		onSingleAnswer,
+		seedEmpty = true
 	}: Props = $props();
 
 	// Plusieurs éditeurs sur la page (partagé + variations) : un groupe radio chacun
@@ -72,18 +79,22 @@
 	// Nombre de bonnes réponses (V1) : signalé au plus près des choix ; le refus
 	// d'enregistrer vit dans `choiceAnswerCountErrors` (formulaire et serveur)
 	let correctCount = $derived((choices ?? []).filter((c) => c.isCorrect).length);
+	// Aucun choix (éditeur partagé non amorcé) : rien à signaler
 	let answerCountWarning = $derived(
-		correctCount === 0
-			? multipleAnswers
-				? 'Coche au moins une bonne réponse.'
-				: 'Coche la bonne réponse.'
-			: correctCount > 1 && !multipleAnswers
-				? 'Une seule bonne réponse sans « plusieurs réponses ».'
-				: ''
+		(choices ?? []).length === 0
+			? ''
+			: correctCount === 0
+				? multipleAnswers
+					? 'Coche au moins une bonne réponse.'
+					: 'Coche la bonne réponse.'
+				: correctCount > 1 && !multipleAnswers
+					? 'Une seule bonne réponse sans « plusieurs réponses ».'
+					: ''
 	);
 
 	// Initialize fields based on question type
 	$effect(() => {
+		if (!seedEmpty) return;
 		if (questionType === 'multiple_choice') {
 			if (!choices || choices.length === 0) {
 				choices = [

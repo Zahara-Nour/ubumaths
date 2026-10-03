@@ -17,6 +17,7 @@
 -->
 <script lang="ts">
 	import type { FigureNode } from '$lib/ubumark/types/figure';
+	import { FIGURE_AXES_MARGIN_PX, FIGURE_PIXEL_WIDTH } from '$lib/ubumark/types/figure';
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget } from '../render-budget';
 	import FigureErrors from './FigureErrors.svelte';
@@ -37,12 +38,17 @@
 	const budget = readRenderBudget();
 	let admitted = $derived(budget()?.admits(node) ?? true);
 
-	/** Largeur à l'écran par taille (même table que `FIGURE_PIXEL_WIDTH`, sans l'importer) */
-	const PLACEHOLDER_WIDTH = { petite: 280, moyenne: 400, grande: 560 } as const;
+	/** Marge des axes (flèches, graduations), comme l'afficheur */
+	let margin = $derived(node.header.axes ? FIGURE_AXES_MARGIN_PX : 0);
+	let placeholderWidth = $derived(FIGURE_PIXEL_WIDTH[node.header.size] + 2 * margin);
 
 	let placeholderRatio = $derived.by(() => {
 		const w = node.header.window;
-		return w ? `${w.xMax - w.xMin} / ${w.yMax - w.yMin}` : '4 / 3';
+		if (!w) return '4 / 3';
+		if (margin === 0) return `${w.xMax - w.xMin} / ${w.yMax - w.yMin}`;
+		const px = FIGURE_PIXEL_WIDTH[node.header.size];
+		const height = (px * (w.yMax - w.yMin)) / (w.xMax - w.xMin);
+		return `${px + 2 * margin} / ${height + 2 * margin}`;
 	});
 
 	const view = import('./FigureBlockView.svelte');
@@ -56,7 +62,7 @@
 	{#await view}
 		<div
 			class="figure-chargement mx-auto my-2 w-full rounded-md bg-muted/40 {className}"
-			style:max-width="{PLACEHOLDER_WIDTH[node.header.size]}px"
+			style:max-width="{placeholderWidth}px"
 			style:aspect-ratio={placeholderRatio}
 			aria-busy="true"
 			aria-label="Figure en cours de chargement"
