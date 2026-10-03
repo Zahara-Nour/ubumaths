@@ -28,37 +28,6 @@ const ACHIEVEMENT_CONTEXTS = [
 	'meta'
 ] as const;
 
-/**
- * Valid achievement event types
- */
-const ACHIEVEMENT_EVENT_TYPES = [
-	// Minesweeper
-	'minesweeper_game_completed',
-	'minesweeper_game_won',
-	'minesweeper_game_lost',
-	// Questions
-	'question_answered',
-	'question_streak',
-	'subject_mastery',
-	// Assessments
-	'assessment_completed',
-	'assessment_perfect_score',
-	// SRS
-	'srs_card_reviewed',
-	'srs_daily_streak',
-	'srs_retention_milestone',
-	// Riddles
-	'riddle_solved',
-	'riddle_daily_solved',
-	// Social
-	'friend_added',
-	'message_sent',
-	'help_given',
-	// Meta
-	'achievement_unlocked',
-	'level_up'
-] as const;
-
 // ============================================================================
 // QUERY PARAMETER SCHEMAS
 // ============================================================================
@@ -113,49 +82,6 @@ export const leaderboardQuerySchema = z.object({
 // ============================================================================
 
 /**
- * Schema for processing achievement events
- * Used in: POST /api/achievements/events
- *
- * Example:
- * ```json
- * {
- *   "eventType": "minesweeper_game_completed",
- *   "studentId": "123e4567-e89b-12d3-a456-426614174000",
- *   "eventData": {
- *     "game_id": "uuid",
- *     "difficulty": "expert",
- *     "score": 150,
- *     "time_seconds": 45,
- *     "perfect": true
- *   }
- * }
- * ```
- */
-export const processEventSchema = z.object({
-	eventType: z.enum(ACHIEVEMENT_EVENT_TYPES).describe('Event type'),
-	studentId: z.string().uuid('Invalid student ID'),
-	eventData: z
-		.object({})
-		.passthrough() // Allow any additional properties
-		.default({})
-		.refine(
-			(data) => {
-				// Event data must be a valid object (not null, not array)
-				return typeof data === 'object' && data !== null && !Array.isArray(data);
-			},
-			{ message: 'Event data must be a valid object' }
-		)
-		.refine(
-			(data) => {
-				// Payload size limit: max 10KB to prevent DoS
-				const json = JSON.stringify(data);
-				return json.length <= 10000;
-			},
-			{ message: 'Event data too large (maximum 10KB allowed)' }
-		)
-});
-
-/**
  * Schema for manually awarding achievements
  * Used in: POST /api/achievements/award
  *
@@ -196,5 +122,4 @@ export type AchievementContextQuery = z.infer<typeof achievementContextSchema>;
 export type StudentIdParam = z.infer<typeof studentIdSchema>;
 export type AchievementIdParam = z.infer<typeof achievementIdSchema>;
 export type LeaderboardQuery = z.infer<typeof leaderboardQuerySchema>;
-export type ProcessEventBody = z.infer<typeof processEventSchema>;
 export type AwardAchievementBody = z.infer<typeof awardAchievementSchema>;

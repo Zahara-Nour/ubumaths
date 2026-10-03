@@ -10,6 +10,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { PalotinType } from '$lib/config/buddy-messages';
 import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
  * Get a student's buddy. Returns null if no buddy chosen yet.
@@ -107,14 +108,18 @@ export async function changeStudentPalotin(
 /**
  * Add XP to a student's buddy via the add_buddy_xp RPC.
  * Handles daily cap and level calculation atomically in the database.
+ *
+ * Client service (lot 3, Q141) : la base refuse cette fonction aux comptes
+ * connectés — sinon un élève créditerait n'importe quel compagnon, plafond
+ * contourné. L'appelant fournit `studentId` depuis la SESSION, jamais depuis
+ * le corps de la requête.
  */
 export async function addBuddyXp(
-	supabase: SupabaseClient<Database>,
 	studentId: string,
 	xp: number,
 	isMilestone: boolean = false
 ): Promise<BuddyXpGainResult> {
-	const { data, error } = await supabase.rpc('add_buddy_xp', {
+	const { data, error } = await createServiceRoleClient().rpc('add_buddy_xp', {
 		p_student_id: studentId,
 		p_xp: xp,
 		p_is_milestone: isMilestone

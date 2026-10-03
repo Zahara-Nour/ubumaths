@@ -24,6 +24,13 @@ import type { Achievement } from '$lib/types/achievements';
 // MOCKS AND FIXTURES
 // ============================================================================
 
+// processEvent passe par le client service (lot 3, Q141) : le mock renvoie le
+// client factice du test en cours.
+let serviceRoleMock: SupabaseClient<Database>;
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => serviceRoleMock
+}));
+
 // Mock Supabase client
 const createMockSupabase = () => {
 	return {
@@ -321,6 +328,7 @@ describe('processEvent', () => {
 
 	beforeEach(() => {
 		mockSupabase = createMockSupabase();
+		serviceRoleMock = mockSupabase;
 	});
 
 	it('should process event and return unlocked achievements', async () => {
@@ -340,7 +348,7 @@ describe('processEvent', () => {
 
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: mockResult, error: null });
 
-		const result = await processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {
+		const result = await processEvent('minesweeper_game_completed', studentId, {
 			game_id: 'uuid',
 			difficulty: 'beginner'
 		});
@@ -364,7 +372,7 @@ describe('processEvent', () => {
 
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: mockResult, error: null });
 
-		const result = await processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {});
+		const result = await processEvent('minesweeper_game_completed', studentId, {});
 
 		expect(result.unlockedAchievements).toEqual([]);
 		expect(result.count).toBe(0);
@@ -374,23 +382,23 @@ describe('processEvent', () => {
 		const mockError = { message: 'RPC error' };
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: mockError });
 
-		await expect(
-			processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {})
-		).rejects.toThrow(AchievementServiceError);
-		await expect(
-			processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {})
-		).rejects.toThrow('Failed to process achievement event');
+		await expect(processEvent('minesweeper_game_completed', studentId, {})).rejects.toThrow(
+			AchievementServiceError
+		);
+		await expect(processEvent('minesweeper_game_completed', studentId, {})).rejects.toThrow(
+			'Failed to process achievement event'
+		);
 	});
 
 	it('should throw error when no data returned', async () => {
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: null, error: null });
 
-		await expect(
-			processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {})
-		).rejects.toThrow(AchievementServiceError);
-		await expect(
-			processEvent(mockSupabase, 'minesweeper_game_completed', studentId, {})
-		).rejects.toThrow('No data returned from event processing');
+		await expect(processEvent('minesweeper_game_completed', studentId, {})).rejects.toThrow(
+			AchievementServiceError
+		);
+		await expect(processEvent('minesweeper_game_completed', studentId, {})).rejects.toThrow(
+			'No data returned from event processing'
+		);
 	});
 });
 
