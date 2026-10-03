@@ -2055,28 +2055,53 @@ function replaceLatexCmd(
 	return str.replace(pattern, (match, offset) => {
 		let result = typstCmd;
 
-		// Add space BEFORE if preceded by letter or digit (prevents "xtimes" and "2sect")
-		if (offset > 0 && /[a-zA-Z0-9)]/.test(str[offset - 1])) {
+		// Espace AVANT si le nom Typst se collerait à ce qui précède (`xtimes`, `2sect`,
+		// `NNsubset`, `𝔻subset`) : voir gluesBefore
+		if (gluesBefore(str, offset)) {
 			result = ' ' + result;
 		}
 
 		// Add space AFTER if followed by:
-		// - digit: prevents "times0" being parsed as variable
+		// - digit, letter (hors ASCII : `in𝔻`), backslash or `{` (effacé plus tard) :
+		//   voir gluesAfter
 		// - open paren: prevents "times(...)" being parsed as function call
 		//   (skip for math functions like \sin where sin(x) is correct)
-		// - backslash: prevents "sect\overline" becoming "sectoverline" after conversion
 		const afterPos = offset + match.length;
-		if (afterPos < str.length) {
-			const afterChar = str[afterPos];
-			if (/[\d\\]/.test(afterChar)) {
-				result = result + ' ';
-			} else if (afterChar === '(' && !options?.noSpaceBeforeParen) {
-				result = result + ' ';
-			}
+		if (gluesAfter(str, afterPos)) {
+			result = result + ' ';
+		} else if (str[afterPos] === '(' && !options?.noSpaceBeforeParen) {
+			result = result + ' ';
 		}
 
 		return result;
 	});
+}
+
+/**
+ * Vrai si un nom Typst inséré à `offset` se collerait à ce qui précède pour former un
+ * identifiant inconnu, qui fait échouer TOUT le PDF. Collent : une lettre (y compris hors
+ * ASCII : `𝔻`, `ℝ`), un chiffre, `)`, et `}` (le groupe LaTeX est effacé en fin de
+ * conversion, et `\mathbb{N}` devient `NN` APRÈS les opérateurs : `\mathbb{N}\subset`
+ * donnait `NNsubset`).
+ */
+function gluesBefore(str: string, offset: number): boolean {
+	return offset > 0 && /[\p{L}\p{N})}]$/u.test(str.slice(Math.max(0, offset - 2), offset));
+}
+
+/**
+ * Vrai si un nom Typst qui se termine à `pos` se collerait à ce qui suit : une lettre
+ * (hors ASCII : `\in𝔻`), un chiffre (`times0`), une commande (`\cap\overline` →
+ * `sectoverline`) ou un groupe `{…}` (effacé plus tard : `\cdot{b}` → `dot.cb`).
+ */
+function gluesAfter(str: string, pos: number): boolean {
+	return /^[\p{L}\p{N}\\{]/u.test(str.slice(pos, pos + 2));
+}
+
+/** Entoure d'espaces le symbole `typst` remplaçant `str[offset … offset+length[`, si besoin. */
+function padSymbol(typst: string, str: string, offset: number, length: number): string {
+	const before = gluesBefore(str, offset) ? ' ' : '';
+	const after = gluesAfter(str, offset + length) ? ' ' : '';
+	return `${before}${typst}${after}`;
 }
 
 export function convertLatexToTypstMath(latex: string): string {
@@ -2392,9 +2417,14 @@ export function convertLatexToTypstMath(latex: string): string {
 		// Suivi d'une parenthèse (`\Omega(1\,;2)`), Typst lirait un APPEL de fonction
 		// dont le `;` sépare des lignes d'arguments, et tout le PDF échouerait : une
 		// espace après le nom en fait une simple parenthèse.
+		// Collé à un groupe effacé plus tard (`{x}\pi` → `xpi`) ou suivi d'un chiffre ou d'un
+		// groupe (`\alpha2` → identifiant inconnu `alpha2`, `\pi{x}` → `pix`) : même règle.
+		// Un chiffre AVANT (`2\pi` → `2pi`) ne colle pas : un nombre n'entre pas dans un nom.
 		result = result.replace(regex, (match: string, offset: number, str: string) => {
-			const before = offset > 0 && /[a-zA-Z]/.test(str[offset - 1]) ? ' ' : '';
-			const after = str[offset + match.length] === '(' ? ' ' : '';
+			const glued = /[\p{L}}]$/u.test(str.slice(Math.max(0, offset - 2), offset));
+			const before = glued ? ' ' : '';
+			const end = offset + match.length;
+			const after = str[end] === '(' || gluesAfter(str, end) ? ' ' : '';
 			return `${before}${letter}${after}`;
 		});
 	}
@@ -2414,6 +2444,23 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'pm', 'plus.minus');
 	result = replaceLatexCmd(result, 'mp', 'minus.plus');
 	result = replaceLatexCmd(result, 'infty', 'infinity');
+
+	// Négations : `\not` devant une relation → forme niée unique (`\not\subset` = `\nsubset`),
+	// convertie avec les opérateurs d'ensembles. AVANT `\neq` (`/\\neq/` lirait `\nequiv`).
+	// Sinon `\not` sortait en texte brut (« A"not" subset B »).
+	result = result.replace(
+		/\\not\s*(?:\\(in|ni|subseteq|subset|supseteq|supset|equiv|exists)(?![a-zA-Z])|(=))/g,
+		(_m, rel: string | undefined) =>
+			rel === undefined
+				? '\\neq'
+				: rel === 'in'
+					? '\\notin'
+					: rel === 'ni'
+						? '\\notni'
+						: `\\n${rel}`
+	);
+	result = replaceLatexCmd(result, 'nequiv', 'equiv.not');
+	result = replaceLatexCmd(result, 'nexists', 'exists.not');
 
 	// Convert comparison operators - ORDER MATTERS: slant/negated versions before regular
 	result = replaceLatexCmd(result, 'nleqslant', 'lt.eq.slant.not');
@@ -2449,7 +2496,13 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// Convert set operators
 	result = replaceLatexCmd(result, 'notin', 'in.not');
+	result = replaceLatexCmd(result, 'notni', 'in.rev.not');
 	result = replaceLatexCmd(result, 'in', 'in');
+	result = replaceLatexCmd(result, 'ni', 'in.rev');
+	result = replaceLatexCmd(result, 'nsubseteq', 'subset.eq.not');
+	result = replaceLatexCmd(result, 'nsubset', 'subset.not');
+	result = replaceLatexCmd(result, 'nsupseteq', 'supset.eq.not');
+	result = replaceLatexCmd(result, 'nsupset', 'supset.not');
 	result = replaceLatexCmd(result, 'subseteq', 'subset.eq');
 	result = replaceLatexCmd(result, 'subset', 'subset');
 	result = replaceLatexCmd(result, 'supseteq', 'supset.eq');
@@ -2460,6 +2513,21 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
 	// \varnothing (∅ rond de LaTeX) : Typst n'a qu'un ensemble vide, `emptyset`
 	result = replaceLatexCmd(result, 'varnothing', 'emptyset');
+	result = replaceLatexCmd(result, 'complement', '∁');
+
+	// Connecteurs logiques : écrits en Unicode, entourés d'espaces (sortaient en texte brut,
+	// « "neg" P », « P"wedge" Q »)
+	result = result.replace(/\s*\\(?:neg|lnot)(?![a-zA-Z])\s*/g, ' ¬ ');
+	result = result.replace(/\s*\\(?:wedge|land)(?![a-zA-Z])\s*/g, ' ∧ ');
+	result = result.replace(/\s*\\(?:vee|lor)(?![a-zA-Z])\s*/g, ' ∨ ');
+
+	// \operatorname{Card} → op("Card") : opérateur droit, nom entier. Sortait en
+	// « "operatorname"C a r d ».
+	result = result.replace(
+		/\\operatorname\*?\s*\{([^{}]*)\}/g,
+		(match: string, name: string, offset: number, str: string) =>
+			padSymbol(`op("${name.trim()}")`, str, offset, match.length).replace(/ $/, '')
+	);
 
 	// Géométrie : écrits en Unicode, entourés d'espaces. Un nom Typst (`perp`) collé à la
 	// commande suivante (`\perp\vec v` → `perparrow(v)`) formait un mot inconnu, et ces
@@ -2540,12 +2608,23 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = convertLatexOneArgCommand(result, 'overline', 'overline');
 	result = convertLatexOneArgCommand(result, 'underline', 'underline');
 
-	// 4. Number sets (blackboard bold) - specific letters
-	result = result.replace(/\\mathbb\s*{R}/g, 'RR');
-	result = result.replace(/\\mathbb\s*{N}/g, 'NN');
-	result = result.replace(/\\mathbb\s*{Z}/g, 'ZZ');
-	result = result.replace(/\\mathbb\s*{Q}/g, 'QQ');
-	result = result.replace(/\\mathbb\s*{C}/g, 'CC');
+	// 4. Number sets (blackboard bold) : R, N, Z, Q, C → symboles Typst doublés ; toute
+	// autre lettre (`\mathbb{D}`, `\mathbb K`) → `bb(D)`. Sortait en « "mathbb"D ».
+	result = result.replace(
+		/\\mathbb\s*(?:\{\s*([^{}]*?)\s*\}|([A-Za-z0-9]))/g,
+		(
+			match: string,
+			braced: string | undefined,
+			bare: string | undefined,
+			offset: number,
+			str: string
+		) => {
+			const content = braced ?? bare ?? '';
+			if (!content) return '';
+			const symbol = /^[RNZQC]$/.test(content) ? content + content : `bb(${content})`;
+			return padSymbol(symbol, str, offset, match.length);
+		}
+	);
 	// French shortcuts for number sets (common in French math documents)
 	// Must use word boundary (?![a-zA-Z]) to avoid matching \Natural, etc.
 	result = result.replace(/\\R(?![a-zA-Z])/g, 'RR');
