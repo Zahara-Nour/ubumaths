@@ -1,3 +1,5 @@
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
 import { maintenanceHandle } from '$lib/server/maintenance';
 import { adminElevationHandle } from '$lib/server/adminElevation';
@@ -415,7 +417,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
  * - Clickjacking (frame-ancestors)
  *
  * External resources allowed:
- * - Supabase: *.supabase.co (backend, auth, realtime)
+ * - Supabase: *.supabase.co (backend, auth, realtime) ; images : NOTRE projet seulement
  * - Google Fonts: fonts.googleapis.com, fonts.gstatic.com
  * - CDNs: cdn.jsdelivr.net (Pyodide, Typst), cdn.plot.ly (Plotly), unpkg.com (Swagger)
  * - Google APIs: googleapis.com (OAuth, Classroom API)
@@ -446,7 +448,7 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		"font-src 'self' https://fonts.gstatic.com",
 
 		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test) + YouTube thumbnails + Unsplash (demo) + Giphy (demo)
-		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com https://images.unsplash.com https://i.giphy.com",
+		`img-src 'self' data: blob: ${supabaseCspSource(PUBLIC_SUPABASE_URL)} https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com https://images.unsplash.com https://i.giphy.com`,
 
 		// Connect: API calls + WebSocket for realtime + Typst packages
 		[
