@@ -30,6 +30,7 @@ Spec validée le 2026-10-03.
 - [x] Tests `two-series.test.ts` (19) + navigateur (2) ; fiche FR / EN compilée et vérifiée à la main
 - ⚠️ Connu, hors périmètre : en-têtes du tableau et titres d'axe en français dans un document anglais
   (comme les indicateurs de tous les blocs aujourd'hui)
-- [ ] Revue, PR, CI, merge
+- [x] Revue : nom de série vide refusé ; valeurs plus petites à l’écran avec deux séries (test navigateur) ; test `couleur: orange` ; test Typst des hauteurs proportionnelles. PDF déjà compilé avec le compilateur de prod (`tiling` OK)
+- [ ] PR, CI, merge
 
 ## PR (c) — deux histogrammes

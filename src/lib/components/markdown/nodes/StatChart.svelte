@@ -419,6 +419,7 @@
 					{#if bars.showValues}
 						<text
 							class="stat-valeur"
+							class:stat-valeur-serree={bars.legend !== null}
 							x={(sx(bar.left) + sx(bar.right)) / 2}
 							y={sy(bar.value) - 4}
 							text-anchor="middle">{bar.valueLabel}</text
@@ -940,6 +941,11 @@
 	.stat-tableau .stat-groupe th,
 	.stat-tableau .stat-groupe td {
 		border-top-width: 3px;
+	}
+
+	/* Deux barres par bande : des valeurs plus petites, comme dans le PDF (revue) */
+	.stat-svg .stat-valeur-serree {
+		font-size: 8px;
 	}
 
 	.stat-legende-series {

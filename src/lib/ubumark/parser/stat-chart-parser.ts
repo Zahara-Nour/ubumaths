@@ -1359,6 +1359,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				}
 				if (data.length > 0) throw new LineError(RAW_AND_COUNTS);
 				const name = series[1].trim();
+				// `données  : 1` : des espaces seules ne font pas un nom (revue)
+				if (name === '') throw new LineError('nom de série vide (écrire données A: …)');
 				if (name.length > STAT_CHART_LIMITS.labelLength) {
 					throw new LineError(
 						`nom de série trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`

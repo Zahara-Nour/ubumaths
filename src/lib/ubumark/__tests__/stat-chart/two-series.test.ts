@@ -165,8 +165,25 @@ describe('deux séries — Typst', () => {
 		expect(typst).toContain('"Garçons"');
 		expect(typst).toContain('"Filles"');
 		expect(typst.match(/\/\/ barre\n/g)).toHaveLength(scene.bars.length);
+		// Hauteurs : le haut de chaque rectangle, proportionnel à la valeur de la scène
+		const tops = [
+			...typst.matchAll(/\/\/ barre\n {2}rect\(\([\d.]+, 0\), \([\d.]+, ([\d.]+)\)/g)
+		].map((m) => Number(m[1]));
+		const tallest = scene.bars.reduce(
+			(best, bar, i) => (bar.value > scene.bars[best].value ? i : best),
+			0
+		);
+		scene.bars.forEach((bar, i) => {
+			expect(tops[i] / tops[tallest]).toBeCloseTo(bar.value / scene.bars[tallest].value, 2);
+		});
 		expect(typst).toContain('#table(');
 		expect(typst).toContain(`"${scene.indicatorTable!.rows[0].cells[0]}"`);
+	});
+
+	it('`couleur: orange` : la seconde série passe en bleu, l’inverse sinon', () => {
+		expect(sceneOf(`${BLOCK}\ncouleur: orange`).secondColor).toBe('bleu');
+		expect(sceneOf(BLOCK).secondColor).toBe('orange');
+		expect(sceneOf(`${BLOCK}\ncouleur: vert`).secondColor).toBe('orange');
 	});
 
 	it('un bloc à une série reste sans hachures', () => {
@@ -185,6 +202,12 @@ describe('deux séries — erreurs situées', () => {
 		const message = 'écrire deux séries nommées : données A: … et données B: …';
 		expect(errorOf('données A: 1 ; 2')).toBe(`Ligne 1 : ${message}`);
 		expect(errorOf('données: 1\ndonnées A: 1 ; 2')).toBe(`Ligne 2 : ${message}`);
+	});
+
+	it('un nom de série vide', () => {
+		expect(errorOf('données  : 1 ; 2\ndonnées B: 3')).toBe(
+			'Ligne 1 : nom de série vide (écrire données A: …)'
+		);
 	});
 
 	it('une troisième série', () => {

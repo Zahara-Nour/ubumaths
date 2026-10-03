@@ -367,6 +367,16 @@ describe('StatChart — barres à deux séries (v2 lot 5, Q115-Q118)', () => {
 		).toEqual(['Garçons', 'Filles']);
 	});
 
+	it('valeurs plus petites qu’avec une série (deux barres par bande)', async () => {
+		const size = async (source: string) => {
+			const node = parseStatChartContent('barres', `${source}\nvaleurs: oui`);
+			const screen = await render(StatChart, { target: mainElement(), props: { node } });
+			return parseFloat(getComputedStyle(screen.container.querySelector('.stat-valeur')!).fontSize);
+		};
+
+		expect(await size('données A: 1 ; 2\ndonnées B: 2')).toBeLessThan(await size('données: 1 ; 2'));
+	});
+
 	it('le tableau d’indicateurs sous la figure, une colonne par série', async () => {
 		const node = parseStatChartContent('barres', SOURCE);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });
