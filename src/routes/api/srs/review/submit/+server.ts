@@ -143,8 +143,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.select('*')
 			.eq('user_id', user.id)
 			.eq('deck_id', body.deckId)
-			.gte('created_at', todayStr)
-			.order('created_at', { ascending: false })
+			.gte('started_at', todayStr)
+			.order('started_at', { ascending: false })
 			.limit(1)
 			.maybeSingle();
 
@@ -159,8 +159,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const isCorrect = body.grade >= 3;
 		const timeSpent = body.timeSpent || 0;
 
+		// Statistiques de séance : secondaires, une panne ne doit pas faire échouer une
+		// révision déjà enregistrée ; on la journalise.
 		if (existingSession) {
-			await supabase
+			const { error: sessionUpdateError } = await supabase
 				.from('srs_review_sessions')
 				.update({
 					cards_reviewed: existingSession.cards_reviewed + 1,
@@ -168,14 +170,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					total_time: existingSession.total_time + timeSpent
 				})
 				.eq('id', existingSession.id);
+			if (sessionUpdateError) console.error('Séance non mise à jour :', sessionUpdateError);
 		} else {
-			await supabase.from('srs_review_sessions').insert({
+			const { error: sessionInsertError } = await supabase.from('srs_review_sessions').insert({
 				user_id: user.id,
 				deck_id: body.deckId,
 				cards_reviewed: 1,
 				correct_count: isCorrect ? 1 : 0,
 				total_time: timeSpent
 			});
+			if (sessionInsertError) console.error('Séance non créée :', sessionInsertError);
 		}
 
 		return json({
