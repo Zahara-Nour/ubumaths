@@ -42,7 +42,18 @@
 		return parsed.body.textContent ?? '';
 	}
 
+	/** Message illisible (JSON malformé) : on l'annonce, sans planter la page */
+	const UNREADABLE = '[contenu illisible]';
+
 	function toMarkdown(value: unknown): string {
+		try {
+			return convert(value);
+		} catch {
+			return UNREADABLE;
+		}
+	}
+
+	function convert(value: unknown): string {
 		if (isTipTapDoc(value)) return tipTapToMarkdown(value);
 		if (typeof value !== 'string') return '';
 		try {

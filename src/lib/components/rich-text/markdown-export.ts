@@ -114,7 +114,8 @@ function convertParagraphToMarkdown(para: JSONContent): string {
  * Convert heading to Markdown
  */
 function convertHeadingToMarkdown(heading: JSONContent): string {
-	const level = (heading.attrs?.level as number) || 1;
+	// Borné : le JSON d'un message vient du navigateur (`level: 1e8` gelait l'onglet)
+	const level = clampInt(heading.attrs?.level, 1, 6, 1);
 	const prefix = '#'.repeat(level);
 	const content = heading.content ? convertInlineNodesToMarkdown(heading.content) : '';
 	return `${prefix} ${content}`;
@@ -174,7 +175,7 @@ function convertOrderedListToMarkdown(
 	// Use parent's indent style for base indentation
 	const baseIndent = parentListType === 'bullet' ? '  ' : '   ';
 	const indent = baseIndent.repeat(indentLevel);
-	const startNum = (list.attrs?.start as number) || 1;
+	const startNum = clampInt(list.attrs?.start, 0, 1_000_000, 1);
 
 	const items = list.content.map((item, index) => {
 		// Pass parentListType so item can calculate correct continuation indent
@@ -196,7 +197,7 @@ function convertOrderedListToMarkdown(
  * (un marqueur de sous-liste a le retrait de la sous-liste).
  */
 function columnsMarker(list: JSONContent, indent: string): string {
-	const columns = Number(list.attrs?.columns);
+	const columns = clampInt(list.attrs?.columns, 1, 6, 1);
 	return columns > 1 ? `${indent}:colonnes ${columns}\n` : '';
 }
 
@@ -839,4 +840,14 @@ function convertTaskList(node: JSONContent): string {
 function convertFencedDsl(node: JSONContent, keyword: string): string {
 	const content = (node.attrs?.content as string | undefined) ?? '';
 	return `\`\`\`${keyword}\n${content}\n\`\`\``;
+}
+
+/**
+ * Un entier borné, ou la valeur par défaut. Les attributs numériques d'un JSON
+ * TipTap venu du navigateur ne sont pas fiables (messages, signalements).
+ */
+function clampInt(value: unknown, min: number, max: number, fallback: number): number {
+	const n = Number(value);
+	if (!Number.isFinite(n)) return fallback;
+	return Math.min(max, Math.max(min, Math.trunc(n)));
 }

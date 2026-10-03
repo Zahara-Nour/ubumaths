@@ -114,6 +114,7 @@ export const UNSAFE_MATH_COMMANDS = [
  * commande à argument libre absente des deux listes.
  */
 export const REVIEWED_SAFE_MATH_COMMANDS = [
+	'"',
 	"'",
 	'.',
 	'=',

@@ -16,9 +16,12 @@ import { REVIEWED_SAFE_MATH_COMMANDS, UNSAFE_MATH_COMMANDS } from '../restricted
 function freeArgumentCommands(): string[] {
 	const source = readFileSync(resolve(process.cwd(), 'node_modules/mathlive/mathlive.mjs'), 'utf8');
 	const found = new Set<string>();
-	for (const m of source.matchAll(/defineFunction\(\s*(\[[^\]]*\]|"[^"]*")\s*,\s*"([^"]*)"/g)) {
+	// Noms entre "…" ou '…' (`defineFunction('"', …)`), seuls ou en tableau
+	const call =
+		/defineFunction\(\s*(\[[^\]]*\]|"[^"\n]{1,40}"|'[^'\n]{1,40}')\s*,\s*["']([^"'\n]*)["']/g;
+	for (const m of source.matchAll(call)) {
 		if (!/:(value|string|color|raw)\b/.test(m[2])) continue;
-		for (const name of m[1].matchAll(/"([^"]+)"/g)) found.add(name[1]);
+		for (const name of m[1].matchAll(/"([^"\n]+)"|'([^'\n]+)'/g)) found.add(name[1] ?? name[2]);
 	}
 	return [...found].sort();
 }

@@ -126,4 +126,22 @@ describe('RestrictedRichText — contenu d’élève lu par d’autres', () => {
 		expect(el.querySelector('img')).toBeNull();
 		expect(hostileAttributes(el)).toEqual([]);
 	});
+
+	// Audit ciblé (2026-10-03) : le contenu n'est validé qu'en longueur, pas en
+	// forme. Un JSON malformé ne doit ni planter ni geler l'onglet du lecteur.
+	it('JSON malformé (content non tableau) : le texte brut, sans planter', async () => {
+		const el = await shown({ type: 'doc', content: 'x' });
+		expect(el.querySelector('.markdown-content')).not.toBeNull();
+	});
+
+	it('titre de niveau démesuré : rendu borné, sans geler', async () => {
+		const started = performance.now();
+		const el = await shown({
+			type: 'doc',
+			content: [{ type: 'heading', attrs: { level: 1e8 }, content: [{ type: 'text', text: 'T' }] }]
+		});
+		await expect.poll(() => el.textContent).toContain('T');
+		expect(performance.now() - started).toBeLessThan(2000);
+		expect((el.textContent ?? '').length).toBeLessThan(200);
+	});
 });
