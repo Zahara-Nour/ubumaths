@@ -583,7 +583,11 @@
 								variant={template.scope === 'system' ? 'default' : 'secondary'}
 								class="text-xs"
 							>
-								{template.scope === 'system' ? 'Système' : lore.entities.class}
+								{template.scope === 'system'
+									? 'Système'
+									: template.class_id
+										? lore.entities.class
+										: 'Personnel'}
 							</Badge>
 						</div>
 						{#if template.tags && template.tags.length > 0}
