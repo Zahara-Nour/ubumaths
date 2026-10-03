@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
 import { createTournamentSchema } from '$lib/server/validation/minesweeper-tournament';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
  * List tournaments for the authenticated user
@@ -47,7 +48,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 		// Auto-activate scheduled tournaments that have passed their start date
 		// This ensures tournaments become active even without a cron job
-		await locals.supabase.rpc('auto_activate_scheduled_tournaments');
+		// Tâche de maintenance réservée au serveur (Q143) : client service, l'utilisateur
+		// n'a plus le droit d'exécuter ces fonctions.
+		await createServiceRoleClient().rpc('auto_activate_scheduled_tournaments');
 
 		// Parse query parameters
 		const statusParam = url.searchParams.get('status');
