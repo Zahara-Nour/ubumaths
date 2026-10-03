@@ -70,6 +70,7 @@ import { summarizeClasses } from '$lib/statistics/classes';
 import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
+import { readListValue } from '$lib/statistics/read-value';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -224,6 +225,11 @@ const LAW_INDICATOR_NAMES: Record<LawIndicator, string> = {
 	variance: 'variance',
 	'ecart-type': 'écart type'
 };
+
+/** Blocs qui dépouillent une série brute (`données:`, v2 lot 4 PR a) */
+const RAW_DATA_KINDS: readonly StatChartKind[] = ['barres', 'circulaire'];
+
+const RAW_AND_COUNTS = 'soit les données, soit les effectifs (catégorie = effectif), pas les deux';
 
 /** Nom réservé à la ligne et à la colonne des totaux */
 const TOTAL = 'Total';
@@ -613,6 +619,122 @@ function checkSimulationOptions(
 	return null;
 }
 
+/**
+ * Une valeur de série brute, si elle se lit comme un nombre : la lecture de
+ * l'atelier (Q92 — `+3`, `1e3`, `1/2`, vrai signe moins), sinon null.
+ */
+function rawNumber(text: string): number | null {
+	return readListValue(text);
+}
+
+/** `1/2`, `−3/4`, `+2/4` : une fraction d'entiers, écrite proprement */
+const RAW_FRACTION = /^\s*([-+]?\d+)\s*\/\s*(\d+)\s*$/;
+
+/**
+ * Nom d'une catégorie numérique : la fraction telle qu'écrite (sans `+`), sinon
+ * le nombre récrit (`0012` → `12`, `-0` → `0`, `12,50` → `12,5`, `1e3` →
+ * `1000`), lisible par les indicateurs.
+ */
+function numericLabel(text: string, value: number): string {
+	const fraction = RAW_FRACTION.exec(text.replaceAll('−', '-'));
+	if (fraction) return `${Number(fraction[1])}/${Number(fraction[2])}`;
+	const written = String(value);
+	if (written.includes('e')) {
+		throw new LineError(`données : « ${text} » est trop grand ou trop petit pour un diagramme`);
+	}
+	return written.replace('.', ',');
+}
+
+/**
+ * Les valeurs d'une ligne `données:` (Q101). Un point-virgule final ne compte
+ * pas ; une valeur vide ailleurs, ou des virgules en guise de séparateur
+ * (`12, 15, 8`, `12, Bus`), sont refusées en montrant la correction.
+ */
+function parseRawEntries(text: string): string[] {
+	const entries = text.split(';').map((entry) => entry.trim());
+	if (entries.length > 1 && entries.at(-1) === '') entries.pop();
+	if (entries.length === 1 && entries[0] === '') throw new LineError('données : aucune valeur');
+	for (const entry of entries) {
+		if (entry === '') throw new LineError('valeur vide (un « ; » de trop ?)');
+		// `12,5` se lit : un décimal, jamais deux valeurs
+		if (!entry.includes(',') || rawNumber(entry) !== null) continue;
+		// `12,5, 13` : couper d'abord sur « virgule espace », pour ne pas casser 12,5
+		const spaced = entry.split(/\s*,\s+/);
+		const pieces = (spaced.length >= 2 ? spaced : entry.split(',')).map((p) => p.trim());
+		if (pieces.length >= 2 && pieces.every((piece) => piece !== '')) {
+			throw new LineError(`séparer les valeurs par des points-virgules : ${pieces.join(' ; ')}`);
+		}
+	}
+	return entries;
+}
+
+/**
+ * Dépouiller une série brute (Q103) : si toutes les valeurs se lisent comme
+ * des nombres, dans l'ordre croissant (`12,5` et `12,50`, `1/2` et `0,5` ne
+ * font qu'une catégorie) ; sinon modalités dans l'ordre d'apparition,
+ * comparées sans la casse (et en NFC), écrites comme leur première occurrence
+ * (Q85). Rend les catégories, ou l'erreur située.
+ */
+function tallyRawData(
+	kind: StatChartKind,
+	raw: readonly { text: string; line: number }[],
+	maxCategories: number
+): { data: StatChartDatum[] } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const firstLine = raw[0].line;
+	if (raw.length > STAT_CHART_LIMITS.rawValues) {
+		return at(
+			firstLine,
+			`données : au plus ${STAT_CHART_LIMITS.rawValues} valeurs (ici ${raw.length})`
+		);
+	}
+
+	const values = raw.map((entry) => rawNumber(entry.text));
+	const numeric = values.every((value) => value !== null);
+	const groups = new Map<string, { label: string; value: number; count: number; line: number }>();
+	for (const [i, { text, line }] of raw.entries()) {
+		// `+ 0` : -0 et 0 sont la même catégorie
+		const value = numeric ? (values[i] ?? 0) + 0 : 0;
+		const key = numeric ? String(value) : text.normalize('NFC').toLocaleLowerCase('fr');
+		const group = groups.get(key);
+		if (group) {
+			group.count++;
+			continue;
+		}
+		let label = text;
+		if (numeric) {
+			try {
+				label = numericLabel(text, value);
+			} catch (error) {
+				return at(line, error instanceof Error ? error.message : String(error));
+			}
+		}
+		groups.set(key, { label, value, count: 1, line });
+	}
+	const categories = [...groups.values()];
+	if (numeric) categories.sort((a, b) => a.value - b.value);
+
+	const tooLong = categories.find((c) => c.label.length > STAT_CHART_LIMITS.labelLength);
+	if (tooLong) {
+		return at(
+			tooLong.line,
+			`nom de catégorie trop long (au plus ${STAT_CHART_LIMITS.labelLength} caractères)`
+		);
+	}
+	if (categories.length > maxCategories) {
+		const shapes = kind === 'circulaire' ? 'secteurs' : 'barres';
+		return at(
+			firstLine,
+			`données : ${categories.length} valeurs différentes, au plus ${maxCategories} ${shapes}`
+		);
+	}
+	return {
+		data: categories.map((c) => ({ label: c.label, value: c.count, interval: null, line: c.line }))
+	};
+}
+
 function parseLawIndicators(raw: string): LawIndicator[] {
 	const names = raw
 		.split(';')
@@ -950,6 +1072,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	const isSimulation = kind === 'simulation';
 	const isLaw = kind === 'loi' || isSimulation;
 	const tableRows: TableRow[] = [];
+	// Série brute (`données:`), dépouillée une fois tout lu
+	const raw: { text: string; line: number }[] = [];
 	const isTable = kind === 'tableau-croise';
 	const isClasses = CLASS_CHART_KINDS.includes(kind);
 	const maxCategories = isClasses
@@ -965,6 +1089,20 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		try {
 			const kv = KEY_LINE_REGEX.exec(content);
 			const key = kv ? normalizeKey(kv[1]) : null;
+			if (kv && key === 'donnees') {
+				if (CLASS_CHART_KINDS.includes(kind)) {
+					throw new LineError('données : arrive bientôt pour les séries en classes (classes:)');
+				}
+				if (!RAW_DATA_KINDS.includes(kind)) {
+					const names = RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ');
+					throw new LineError(
+						`l'option « ${kv[1]} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${names})`
+					);
+				}
+				if (data.length > 0) throw new LineError(RAW_AND_COUNTS);
+				raw.push(...parseRawEntries(kv[2]).map((text) => ({ text, line })));
+				return;
+			}
 			if (kv && key !== null && isOptionKey(key)) {
 				if (seenOptions.has(key)) throw new LineError(`option « ${kv[1]} » déjà donnée`);
 				seenOptions.add(key);
@@ -1060,6 +1198,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				tableRows.push({ name: written, values, line });
 				return;
 			}
+			if (raw.length > 0) throw new LineError(RAW_AND_COUNTS);
 			const { label, interval } = isClasses
 				? parseClass(written)
 				: { label: written, interval: null };
@@ -1089,6 +1228,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			errors.push({ message: `Ligne ${line} : ${message}`, line, content });
 		}
 	});
+
+	if (errors.length === 0 && raw.length > 0) {
+		const tallied = tallyRawData(kind, raw, maxCategories);
+		if ('error' in tallied) errors.push(tallied.error);
+		else data.push(...tallied.data);
+	}
 
 	const dataUnit: StatChartUnit = unit?.value ?? 'effectifs';
 	let table: CrossTableData | null = null;
