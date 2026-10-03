@@ -45,4 +45,5 @@ Spec validée le 2026-10-03 (polygones superposés, pas de mode carreaux).
       `legend`) ; tableau d'indicateurs avec la classe médiane (Q109)
 - [x] Écran (nom au-dessus, motif, StatChart imbriqué pour le second et le tableau) et Typst
 - [x] Tests `two-series-classes.test.ts` (15) + navigateur (2) ; fiche compilée et vérifiée à la main
-- [ ] Revue, PR, CI, merge
+- [x] Revue : polygone construit sur les effectifs bruts (les fréquences arrondies déplaçaient les lectures selon la série voisine, preuve rouge) ; chaque histogramme nomme et décrit sa série (a11y) ; tests de l’échelle commune et des lectures exactes
+- [ ] PR, CI, merge

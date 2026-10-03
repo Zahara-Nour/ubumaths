@@ -1013,11 +1013,14 @@ function secondColorOf(color: CourbeColor): CourbeColor {
  * La spec d'UNE des deux séries : ses effectifs (ou fréquences en % au dixième,
  * Q116) dans les classes communes, sans titre, sans indicateurs.
  */
-function seriesSpec(spec: StatChartSpec, series: 0 | 1): StatChartSpec {
+function seriesSpec(
+	spec: StatChartSpec,
+	series: 0 | 1,
+	frequencies = spec.twoSeries!.display === 'fréquences'
+): StatChartSpec {
 	const two = spec.twoSeries!;
 	const counts = two.counts[series];
 	const total = counts.reduce((a, b) => a + b, 0);
-	const frequencies = two.display === 'fréquences';
 	return {
 		...spec,
 		data: spec.data.map((d, i) => ({
@@ -1078,17 +1081,23 @@ function buildTwoHistograms(spec: StatChartSpec, locale: ContentLocale): Histogr
 	// Même échelle verticale : celle du plus haut des deux
 	const top = a.yMax >= b.yMax ? a : b;
 	const scale = { yMax: top.yMax, ticks: top.ticks, grid: top.grid };
+	// Chaque histogramme nomme et décrit SA série (revue a11y : B était lu deux
+	// fois, la seconde sans son nom)
+	const named = (scene: HistogramScene, name: string) => ({
+		accessibleTitle: `${KIND_TITLE.histogramme} — ${name}`,
+		description: `${scene.description.replace(/\.$/, '')} (${name}).`
+	});
 	return {
 		...a,
 		...scale,
+		...named(a, two.names[0]),
+		...(spec.description !== null && { description: spec.description }),
 		title: spec.title,
-		description:
-			spec.description ??
-			`${a.description.replace(/\.$/, '')} (${two.names[0]}) ; ${b.description.replace(/\.$/, '')} (${two.names[1]}).`,
 		seriesName: two.names[0],
 		second: {
 			...b,
 			...scale,
+			...named(b, two.names[1]),
 			seriesName: two.names[1],
 			hatched: true,
 			hatchColor: secondColorOf(spec.color)
@@ -1101,7 +1110,11 @@ function buildTwoHistograms(spec: StatChartSpec, locale: ContentLocale): Histogr
 /** Deux polygones sur les mêmes axes, le second en pointillés */
 function buildTwoPolygons(spec: StatChartSpec, locale: ContentLocale): CumulativeScene {
 	const two = spec.twoSeries!;
-	const [a, b] = ([0, 1] as const).map((s) => buildCumulativeScene(seriesSpec(spec, s), locale));
+	// Effectifs bruts : le polygone normalise lui-même ; des fréquences arrondies
+	// au dixième déplaçaient les lectures selon la série voisine (revue)
+	const [a, b] = ([0, 1] as const).map((s) =>
+		buildCumulativeScene(seriesSpec(spec, s, false), locale)
+	);
 	return {
 		...a,
 		title: spec.title,

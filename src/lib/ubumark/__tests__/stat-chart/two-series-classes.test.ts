@@ -88,6 +88,12 @@ describe('deux histogrammes l’un au-dessus de l’autre', () => {
 		expect(second.hatched).toBe(true);
 		expect(scene.hatched ?? false).toBe(false);
 		expect(second.yMax).toBe(scene.yMax);
+		// L'échelle commune est celle du plus haut : B monte à 60 %
+		expect(scene.yMax).toBeGreaterThanOrEqual(60);
+		// Chacun nomme sa série pour le lecteur d'écran
+		expect(scene.accessibleTitle).toBe('Histogramme — 2de A');
+		expect(second.accessibleTitle).toBe('Histogramme — 2de B');
+		expect(scene.description).not.toContain('2de B');
 		expect(second.ticks).toEqual(scene.ticks);
 		expect(second.xMin).toBe(scene.xMin);
 		expect(second.xMax).toBe(scene.xMax);
@@ -143,11 +149,27 @@ describe('deux polygones sur les mêmes axes', () => {
 		expect(scene.second!.points.map((p) => p.y)).toEqual([0, 0, 20, 80, 100]);
 	});
 
+	it('lectures exactes même quand les effectifs diffèrent (7 contre 2 valeurs)', () => {
+		const b = '1 ; 6 ; 6 ; 11 ; 11 ; 11 ; 12';
+		const two = polygonOf(
+			`classes: 0 ; 5 ; 10 ; 15\ndonnées A: 1 ; 2\ndonnées B: ${b}\nlecture: quartiles`
+		);
+		const alone = polygonOf(`classes: 0 ; 5 ; 10 ; 15\ndonnées: ${b}\nlecture: quartiles`);
+
+		expect(two.second!.readings).toEqual(alone.readings);
+		expect(two.second!.points).toEqual(alone.points);
+	});
+
 	it('`lecture: médiane` sur les deux polygones', () => {
 		const scene = polygonOf(`${BLOCK}\nlecture: médiane`);
 
 		expect(scene.readings).toHaveLength(1);
 		expect(scene.second!.readings).toHaveLength(1);
+		// Chaque lecture vaut celle de la série SEULE : rien n'arrondit les fréquences
+		const alone = (values: string) =>
+			polygonOf(`classes: 0 ; 5 ; 10 ; 15 ; 20\ndonnées: ${values}\nlecture: médiane`).readings[0];
+		expect(scene.readings[0]).toEqual(alone(A.join(' ; ')));
+		expect(scene.second!.readings[0]).toEqual(alone(B.join(' ; ')));
 	});
 });
 
