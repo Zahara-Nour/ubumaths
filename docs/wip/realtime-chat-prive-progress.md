@@ -195,3 +195,119 @@ local) :
 6. Test d'intégration côté client + vérification manuelle en preview/prod.
 7. Ensuite seulement, envisager de couper l'accès public au Realtime
    (réglage projet) — vérifier d'abord les 5 autres canaux de l'inventaire.
+
+## PR 2 — client en canal privé (branche `feat/realtime-chat-client-prive`, 2026-10-03)
+
+Faite après `db:migrate` de la PR 1 (migration en prod).
+
+### Ce qui change
+
+- `supabaseRealtimeManager.createChannel(name, { private: true })` →
+  `supabase.channel(name, { config: { private: true } })`. Seul `chat-<id>`
+  l'utilise ; `trade:`, `match:`, notifications, présence, succès : inchangés.
+- `chatStore.subscribeToConversation` appelle `supabase.realtime.setAuth()` avant
+  la jonction. Rafraîchissement du jeton : déjà fait par supabase-js 2.103.3
+  (`_handleTokenChanged` sur `TOKEN_REFRESHED`/`SIGNED_IN` → `realtime.setAuth`),
+  rien à ajouter.
+- **Broadcast = signal.** `new_message` ne transporte plus que `{ message: { id } }`,
+  envoyé APRÈS l'insertion en base (avant : avant l'insertion, avec contenu et
+  expéditeur). Le destinataire relit la ligne (`messages` + jointure `profiles`,
+  sous RLS) via `relireEtAfficherMessage` — le même chemin que `postgres_changes`.
+  Zéro ligne (PGRST116 : id inventé ou masqué par la RLS) → rien d'affiché ; ligne
+  d'une autre conversation que celle du canal → ignorée. Les champs en trop
+  (anciens clients) sont ignorés par Zod.
+- `message_reaction` : signal `{ messageId }` ; le destinataire relit les
+  réactions du message en base (`message_reactions`) et les remplace. Auteur,
+  emoji, ajout/retrait du payload : jamais appliqués.
+- `message_read` : aucun client ne l'émet, le handler ne fait que journaliser →
+  rien d'affiché, laissé tel quel.
+- Présence : le chat n'en utilise pas (vérifié) → rien ne casse.
+
+### Preuves
+
+- Unitaires `src/lib/stores/__tests__/chat-canal-prive.svelte.test.ts` : 6/6,
+  **6 rouges avant l'implémentation** (dont « expected [ {…} ] to deeply equal [] » :
+  le payload forgé s'affichait). `chat.svelte.test.ts` : 7 tests qui asseraient
+  l'ancien comportement (affichage du payload, payload complet à l'envoi,
+  `createChannel('chat-conv-1')`) réécrits ; dossier `stores/__tests__` 437/437.
+- Intégration `tests/integration/realtime-chat-client-prive.test.ts` (le VRAI
+  `chatStore`, une instance par utilisateur via `vi.resetModules`) : 4/4, stable
+  sur 4 exécutions :
+  1. A → B en privé, `sender_id` relu en base ;
+  2. signal forgé par un participant (expéditeur « prof », contenu « FAUX ») : B
+     affiche la ligne en base ; id inconnu → rien ;
+  3. `postgres_changes` livre bien sur le canal privé (ligne insérée sans
+     broadcast) ;
+  4. non-participant : abonnement rejeté, rien reçu.
+- **Rouge sans `private: true`** (copie du fichier, flag retiré, restauré depuis la
+  copie) : `× un non-participant ne peut pas s'abonner et ne reçoit rien —
+promise resolved "undefined" instead of rejecting` (1 failed | 3 passed). Le
+  test « échange en privé » ne PEUT pas rougir sans le flag : un canal public
+  livre aussi broadcast et `postgres_changes` entre participants. C'est le refus
+  du non-participant qui prouve que le canal est privé.
+
+### Observations
+
+- Base locale trouvée SANS les deux policies alors que la migration
+  `20261004090000` était inscrite (probablement l'état du test de rollback de la
+  PR 1, ou une autre session). `db:reset` → policies présentes. À vérifier en
+  prod en lecture seule avant le merge : `select polname from pg_policy where
+polrelid = 'realtime.messages'::regclass`.
+- Premier run juste après `db:reset` : le test `postgres_changes` a échoué une
+  fois (Realtime redémarré, réplication pas prête), vert ensuite (4 fois).
+- Le nom de l'expéditeur affiché chez un élève dépend de la lecture de
+  `profiles` (B ne lisait pas le profil de A en local : `sender_firstname` null)
+  — comportement antérieur, hors périmètre, non asserté.
+
+### Risques
+
+- Rollback de la migration = temps réel du chat coupé (canal privé refusé) :
+  revenir au client public d'abord.
+- Déploiement : un ancien client (public) et un nouveau (privé) ne s'échangent
+  plus de broadcast ; les messages passent toujours par `postgres_changes`
+  (~300 ms au lieu de ~50 ms) jusqu'au rechargement des pages.
+- Latence : le signal part après l'insertion → ~+200 ms par rapport à l'ancien
+  broadcast. C'est le prix de « l'expéditeur affiché est celui de la base ».
+- Retrait d'un participant : cf. « Limite connue » plus haut (inchangée).
+
+### Reste
+
+- Vérification manuelle en preview/prod (deux comptes, échange, refus d'un tiers).
+- `security-auditor` + `code-reviewer` sur cette PR.
+- `trade:<id>` : même classe de faille, chantier séparé.
+
+### Suites de revue / audit (2026-10-03, 2ᵉ commit)
+
+- Identifiants en anglais : `refetchAndDisplayMessage`, `aggregateReactions`,
+  `expectedConversationId`, `rows`, `sentPayload`.
+- Anti-saturation des signaux `new_message` : id déjà affiché → ignoré ; `Set` des
+  relectures en cours ; plafond de 20 relectures / 10 s / conversation (au-delà :
+  ignoré, `postgres_changes` reste le filet). Le chat n'écoute pas d'UPDATE
+  `postgres_changes` (INSERT seulement) : rien à exempter.
+- Réactions : signaux regroupés par message (debounce 300 ms), relecture dans un
+  try/catch (`reloadReactions`).
+- Rapprochement d'un message relu : par `id` SEULEMENT (le repli sur `created_at`
+  permettait de masquer le message d'un autre en copiant son horodatage).
+- Signal envoyé après l'insertion des pièces jointes.
+- Preuves : 8 mutations (contrôle de conversation retiré, affichage malgré zéro
+  ligne, repli `created_at` remis, « déjà affiché » retiré, `Set` retiré, plafond
+  retiré, debounce retiré, try/catch retiré) → chacune rougit le test visé ;
+  fichier restauré depuis une copie. Stores 442/442, intégration 4/4.
+
+### CI rouge du 2026-10-03 (run 37152839565) : test fragile, pas un défaut
+
+- `postgres_changes muet sur le canal privé` : la ligne était insérée ~50 ms
+  après `SUBSCRIBED`, mais le serveur n'a annoncé `Subscribed to PostgreSQL`
+  (événement `system`, `ok`) que 2,5 s plus tard → ligne écrite avant
+  l'armement, jamais livrée. Dans le même run, `postgres_changes` livre ensuite
+  normalement sur le canal privé (« Replaced … with DB version » chez A et B au
+  test 4).
+- Le `Failed to subscribe … CHANNEL_ERROR` du log est celui de O, le
+  non-participant du test 4 : refus attendu.
+- Mesuré en local, Realtime redémarré à froid : un des deux canaux armé 5 ms
+  après `SUBSCRIBED`, l'autre 2,9 s après.
+- Correction : le test pose une écoute `system` avant la jonction et attend
+  `Subscribed to PostgreSQL` sur le canal de B (20 s max) avant d'écrire.
+- Fenêtre identique avec un canal public (comportement de Realtime, pas du
+  canal privé). En prod, le signal broadcast envoyé après l'insertion couvre un
+  message écrit dans cette fenêtre.
