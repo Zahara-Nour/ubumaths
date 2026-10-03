@@ -99,8 +99,10 @@ describe('evaluateWithModifiers - addPositive modifier', () => {
 		expect(evaluateWithModifiers('-3', { addPositive: true })).toBe('-3');
 	});
 
-	it('does not add + sign to zero: 0 -> 0', () => {
-		expect(evaluateWithModifiers('0', { addPositive: true })).toBe('0');
+	// Décision de David (2026-10-03) : « ;+ » écrit aussi le signe de 0, sinon `y{{c;+}}`
+	// donne « y0 », lu comme un produit (mesuré : 3 modèles cassés en production)
+	it('adds + sign to zero: 0 -> +0', () => {
+		expect(evaluateWithModifiers('0', { addPositive: true })).toBe('+0');
 	});
 
 	it('does not add + sign to negative result: 3-5 -> -2', () => {
