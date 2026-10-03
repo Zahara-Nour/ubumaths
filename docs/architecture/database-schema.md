@@ -1010,3 +1010,15 @@ publication), les élèves arrivés **après** perdraient leurs fiches en silenc
 personne ne le verrait dans l'interface du professeur, qui affiche ce qui a été
 publié, pas ce que chaque élève reçoit. Vu rouge en neutralisant la fonction :
 2 des 5 tests tombent.
+
+## Chat — canal temps réel privé (S3, 2026-10-03)
+
+Migration `20261004090000_realtime_chat_prive`. Deux policies sur `realtime.messages`,
+`TO authenticated`, extension `broadcast` : `chat_realtime_participants_receive` (SELECT =
+recevoir) et `chat_realtime_participants_send` (INSERT = diffuser). Condition : une ligne
+`conversation_participants` avec `user_id = auth.uid()` et
+`'chat-' || conversation_id::text = realtime.topic()` (comparaison texte : un topic mal formé est
+refusé, jamais d'erreur de cast). Ne s'appliquent qu'aux canaux **privés**
+(`config: { private: true }`) ; le client passe en privé dans une PR séparée, après application de
+la migration. Suivi : `docs/wip/realtime-chat-prive-progress.md`. Tests :
+`tests/integration/realtime-chat-prive.test.ts`.
