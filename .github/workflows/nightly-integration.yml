@@ -73,6 +73,7 @@ on:
       - 'src/lib/types/database-helpers.ts'
       - 'src/lib/types/grades.ts'
       - 'src/lib/types/locale.ts'
+      - 'src/lib/types/vip-card.ts'
       - 'src/lib/typst/image-loader.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
       # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`
@@ -85,6 +86,8 @@ on:
       - 'src/routes/*/presques-evaluations/*page.server.ts'
       - 'src/routes/api/evaluations/assignments/*/start/*server.ts'
       - 'src/routes/api/marketplace/listings/*/proposals/*server.ts'
+      - 'src/routes/api/vip-cards/choose/*server.ts'
+      - 'src/routes/api/vip-cards/exchange/*server.ts'
       - 'src/routes/api/skill-attempts/*server.ts'
       - 'src/routes/api/srs/decks/*/sections/*server.ts'
       - 'src/routes/api/srs/decks/*/sections/*/*server.ts'
