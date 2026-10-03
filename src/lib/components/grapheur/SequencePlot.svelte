@@ -21,6 +21,7 @@
 	} from '$lib/grapheur/sequence';
 	import { sampleFunction } from '$lib/geometry-core/viewport';
 	import { curveToPolylinePath, curveToSVGPath } from '$lib/grapheur/bezier';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -176,7 +177,7 @@
 		{#if functionPathData}
 			<path
 				d={functionPathData}
-				stroke={sequence.color}
+				style:stroke={curveColorValue(sequence.color)}
 				stroke-width={sequence.lineWidth}
 				fill="none"
 				stroke-linecap="round"
@@ -188,7 +189,7 @@
 		{#if cobwebPathData}
 			<path
 				d={cobwebPathData}
-				stroke={sequence.color}
+				style:stroke={curveColorValue(sequence.color)}
 				stroke-width={Math.max(1, sequence.lineWidth - 0.5)}
 				stroke-dasharray={strokeDasharray}
 				fill="none"
@@ -204,7 +205,7 @@
 				cx={point.svg.x}
 				cy={point.svg.y}
 				r={pointRadius}
-				fill={sequence.color}
+				style:fill={curveColorValue(sequence.color)}
 				class="sequence-point"
 			/>
 		{/each}

@@ -8,6 +8,7 @@
 	 */
 	import type { ScatterPlottable } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/geometry-core/viewport';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	let {
 		scatter,
@@ -54,7 +55,7 @@
 				cx={point.x}
 				cy={point.y}
 				r={POINT_RADIUS}
-				fill={scatter.color}
+				style:fill={curveColorValue(scatter.color)}
 				class="scatter-point"
 			/>
 		{/each}

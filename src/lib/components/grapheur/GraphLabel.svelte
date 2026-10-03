@@ -13,6 +13,7 @@
 	 */
 
 	import { convertLatexToMarkup } from 'mathlive';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	/** A label: plain text always, plus LaTeX when the value is worth rendering. */
 	export interface GraphLabelContent {
@@ -126,7 +127,7 @@
 	class="tooltip-bg"
 	class:pinned
 	class:accented={accent !== null}
-	style={accent === null ? undefined : `stroke: ${accent}`}
+	style={accent === null ? undefined : `stroke: ${curveColorValue(accent)}`}
 />
 
 {#if content.latex}
@@ -149,7 +150,7 @@
 
 <style>
 	.tooltip-bg {
-		fill: var(--graph-tooltip-bg, #1f2937);
+		fill: var(--color-graph-tooltip-bg);
 		opacity: 0.95;
 	}
 
@@ -184,9 +185,5 @@
 		font-size: 11px;
 		fill: white;
 		user-select: none;
-	}
-
-	:global(.dark) .tooltip-bg {
-		fill: var(--graph-tooltip-bg-dark, #374151);
 	}
 </style>

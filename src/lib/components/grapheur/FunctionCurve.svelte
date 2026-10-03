@@ -15,6 +15,7 @@
 	import { bindParameters, sampleCached } from '$lib/grapheur/analysis';
 	import type { VariableBindings } from '$lib/grapheur/evaluator';
 	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
+	import { curveColorValue } from '$lib/grapheur/colors';
 
 	// Props
 	let {
@@ -112,7 +113,7 @@
 {#if func.visible && func.ast && pathData}
 	<path
 		d={pathData}
-		stroke={func.color}
+		style:stroke={curveColorValue(func.color)}
 		stroke-width={func.lineWidth}
 		stroke-dasharray={strokeDasharray}
 		fill="none"
