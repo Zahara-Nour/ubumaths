@@ -19,6 +19,7 @@
 <script lang="ts">
 	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
 	import { escapeHtml } from '../utils';
+	import { readRestrictedRendering } from '../restricted-rendering';
 
 	type VideoProvider = 'html5' | 'youtube';
 
@@ -51,6 +52,9 @@
 		muted = false,
 		class: className = ''
 	}: Props = $props();
+
+	// Mode restreint (chat élève) : aucune vidéo, aucune requête (S1)
+	const isRestricted = readRestrictedRendering();
 
 	// Escaped values for safe rendering
 	let escapedSrc = $derived(escapeHtml(src));
@@ -119,7 +123,12 @@
 	});
 </script>
 
-{#if provider === 'youtube' && videoId}
+{#if isRestricted()}
+	<!-- Texte échappé par Svelte : ni <video>, ni <iframe> -->
+	<span class="restricted-media text-sm text-muted-foreground italic"
+		>[vidéo non affichée{alt ? ` : ${alt}` : ''}]</span
+	>
+{:else if provider === 'youtube' && videoId}
 	<!-- YouTube embed -->
 	<div class="video-wrapper {alignmentClass} {className}" style={wrapperStyles}>
 		<iframe

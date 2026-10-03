@@ -19,6 +19,7 @@
 	- Auto-navigation to next pending report
 -->
 <script lang="ts">
+	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
@@ -339,7 +340,7 @@
 			</div>
 		</Card.Header>
 		<Card.Content>
-			<RichTextDisplay
+			<RestrictedRichText
 				content={descriptionContent}
 				class="prose prose-sm max-w-none dark:prose-invert"
 			/>

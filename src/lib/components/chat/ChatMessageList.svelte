@@ -315,7 +315,11 @@
 											? 'text-primary-foreground'
 											: ''}"
 									>
-										<MarkdownRenderer content={tipTapToMarkdown(message.content as JSONContent)} />
+										<!-- Rendu restreint : contenu d'élève lu par d'autres élèves (S1) -->
+										<MarkdownRenderer
+											content={tipTapToMarkdown(message.content as JSONContent)}
+											restricted
+										/>
 									</div>
 								{/if}
 

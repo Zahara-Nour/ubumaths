@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
@@ -100,7 +101,7 @@
 
 			<div>
 				<p class="mb-1 text-sm font-medium">Votre description</p>
-				<RichTextDisplay content={descriptionContent} class="text-sm text-muted-foreground" />
+				<RestrictedRichText content={descriptionContent} class="text-sm text-muted-foreground" />
 			</div>
 
 			{#if responseContent}

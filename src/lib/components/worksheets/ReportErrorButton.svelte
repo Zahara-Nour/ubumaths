@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
@@ -127,7 +128,7 @@
 										{formatDate(report.created_at)}
 									</span>
 								</div>
-								<RichTextDisplay
+								<RestrictedRichText
 									content={parseDescription(report.description)}
 									class="text-sm text-muted-foreground"
 								/>

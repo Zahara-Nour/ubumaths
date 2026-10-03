@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
@@ -23,7 +24,6 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { cn } from '$lib/utils';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
@@ -240,7 +240,7 @@
 				<!-- Message content -->
 				<div class="mt-6">
 					{#if message.content}
-						<RichTextDisplay
+						<RestrictedRichText
 							content={message.content}
 							class="prose prose-sm max-w-none dark:prose-invert"
 						/>
