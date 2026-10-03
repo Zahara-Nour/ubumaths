@@ -150,8 +150,12 @@ toute la classe.
 2. Fiche : script sur le modèle de `scripts/create-automatismes-evolutions-1spe.ts` — chaque
    **série** est un exercice listant des (modèle, graine) ; `buildSerie`
    (`src/lib/worksheets/serie-automatismes.ts`) met les cases en pointillés et les réponses en gras
-   au corrigé. **Relire les séries en simulation** et changer une graine qui tombe sur un cas limite
-   (coefficient 0) ou sur une question déjà posée (refusé automatiquement).
+   au corrigé, et convertit chaque formule maison `~…~` / `~~…~~` en LaTeX `$…$` / `$$…$$` avec
+   les fonctions déclarées par **le modèle de la question** (formule illisible : série refusée).
+   L'exercice figé n'a donc pas de `generic_functions` : l'écran et le PDF ne relisent jamais une
+   formule LaTeX avec la liste d'un exercice. **Relire les séries en simulation** et changer une
+   graine qui tombe sur un cas limite (coefficient 0) ou sur une question déjà posée (refusé
+   automatiquement).
 3. Vérifier comme au § 2.6 (`regen-depuis-base.ts`, compilation, débords, pages).
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
@@ -170,10 +174,11 @@ rouge dans `~…~`, réponse de l'élève jamais comprise). Déclarer les lettre
 fonction ; différence avec `generic_functions` d'un exercice, qui les remplace) ; dérivées
 (`P'`, `P''`) et réciproque (`P^{-1}`) comprises. Une lettre par nom, ni `e` ni `i`, au plus 10.
 Vaut pour tout le modèle : énoncé, choix, réponses attendues, correction (y compris les étapes
-générées), réponse de l'élève, barème serveur, `testSpecs`, et l'exercice figé d'une série
-(`buildSerie` lui donne `generic_functions` = défauts ∪ fonctions déclarées par TOUS ses modèles,
-sans plafond ; une lettre déclarée par un modèle est donc aussi une fonction dans les `~…~` des
-autres questions de la série). Un motif `requiredForm` les lit aussi : `a:integer*C(b:integer)`
+générées), réponse de l'élève, barème serveur, `testSpecs`, et la question figée dans une série
+(depuis le 2026-10-03, `buildSerie` convertit ses `~…~` en LaTeX avec la liste DE SON modèle : `P`
+déclaré par un modèle reste un produit dans `P(1+t)` d'une autre question de la série ; avant, la
+série recevait `generic_functions` = union des modèles — les deux séries « Évolutions » déjà
+créées n'ont aucune `~…~` ni liste, rien à reprendre). Un motif `requiredForm` les lit aussi : `a:integer*C(b:integer)`
 reconnaît `3C(2)` (le motif était illisible, jamais reconnu).
 
 Le contrôle de forme relit aussi la réponse avec ces fonctions : `P'(2)` tapé (ou saisi
@@ -210,6 +215,18 @@ nettoyée (`x = 5`, pas `1x + 0 = 5`) ; une parenthèse devenue inutile dispara�
 répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
 
 ### Pièges de l'écriture d'un modèle (relevés pendant les chantiers suites et exponentielle, 2026-10)
+
+**Variable qui peut être négative, citée sans parenthèses** : `{{a}}` est remplacé par sa valeur
+telle quelle (voulu : `{{a}}x{{b}}` avec b toujours négatif donne `2x-3`). Avec a = −3, `x-{{a}}`
+s'affiche `x--3`, `5\times{{a}}` → `5\times-3`, `2^{{a}}` → `2^-3`, `{{a}}^2` → `-3^2` (lu −(3²)),
+et `2{{a}}` → `2-3` (produit lu comme une soustraction). Écrire `{{a;()}}` (parenthèses si
+négatif) ou `{{eval:…}}` ; terme signé : `{{a;+}}`. `pnpm question:specs` **avertit**
+(« Avertissement : … », exemple de rendu sur un tirage réel) sans changer le verdict : formules
+seulement (`$…$`, `~…~`, réponses attendues, formats), variable négative sur au moins un tirage ;
+le produit implicite (collé à un chiffre, une lettre, `)`) n'est signalé que si la variable prend
+aussi des valeurs positives. Mesure du 2026-10-03 : 0 avertissement sur les 209 JSON du dépôt et
+les 815 modèles de production (2424 citations de variables négatives examinées ; les 32 contextes
+suspects hors formules sont dans des blocs ` ```courbe `, lus par le parseur : `x--2` = x + 2).
 
 Corrigés dans le moteur le 2026-10-02 (#616 et la PR `fix/pieges-generation`), ne plus
 contourner : réponse attendue réduite à `e` ou `i` ; `{{eval:…}}` contenant e (rendu

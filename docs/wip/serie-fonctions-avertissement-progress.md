@@ -16,12 +16,19 @@ Branche `feat/serie-fonctions-avertissement` (worktree `ubumaths-wt-serie`). Dé
 
 ## 2. Avertissement : valeur négative citée sans parenthèses
 
-- `checkTemplate` (utilisé par `pnpm question:specs`) gagne `warnings` (n'affecte pas le verdict).
+- `src/lib/questions/validators/negative-substitution.ts` ; `checkTemplate` (utilisé par
+  `pnpm question:specs`) gagne `warnings` (n'affecte ni `passed` ni `reasons`).
+- Signalé dans une formule : `{{a}}` nu, a négatif sur un tirage, après `-`/`+`/`\times`/`\cdot`/`*`/`^`,
+  ou devant `^` (sauf `^\circ`) ; collé à un chiffre/lettre/`)` seulement si a prend aussi des
+  valeurs positives (terme signé toujours négatif = voulu).
+- Mesures : 209 JSON du dépôt → verdicts identiques à `main`, 0 avertissement ; 815 modèles de
+  prod → 0 avertissement (2424 citations examinées ; 32 contextes suspects tous dans des blocs
+  ` ```courbe `, hors formules).
 
 ## État
 
-- [x] Tests rouges écrits (série à deux modèles)
-- [ ] Implémentation point 1
-- [ ] Tests + implémentation point 2
-- [ ] Mesures (JSON du dépôt, prod)
-- [ ] Doc `docs/ref/fiches-exercices.md`
+- [x] Tests rouges écrits puis verts (série à deux modèles ; 27 cas d'avertissement)
+- [x] Implémentation points 1 et 2
+- [x] Mesures (JSON du dépôt, prod, séries existantes : main = branche à l'octet)
+- [x] Doc `docs/ref/fiches-exercices.md`
+- [x] Suites worksheets/questions/ubumark/migration (9799 verts), `check:incremental` 0, `lint:fast`
