@@ -28,6 +28,19 @@ all **delegate to `is_teacher_or_admin()`**, so they are **admin-inclusive**:
 | `is_class_teacher(p_class_id)` | `RETURN is_teacher_or_admin()` — the `p_class_id` arg is ignored (every class belongs to the sole teacher) |
 | `is_my_student(p_student_id)`  | delegates to `is_teacher_or_admin()` plus an enrolment (`class_members`) check                             |
 
+**Gardes d'appelant des RPC `SECURITY DEFINER`** (`20261003130000_rpc_lot1_donnees_mineurs`,
+Q143/Q144) : `assert_teacher_or_admin()` et `assert_can_read_student(p_student_id)` (soi,
+prof/admin, ou appel service `auth.uid() IS NULL`) lèvent `42501`. Elles ne sont exécutables que
+par `service_role` : seules les fonctions `SECURITY DEFINER` (propriété de `postgres`) les
+appellent, en première instruction pour les fonctions `LANGUAGE sql`.
+`get_user_conversations` refuse un `p_user_id` étranger ; `get_teacher_classes_with_data` et les
+deux `get_*_completion_stats` sont réservées au prof/admin ; `get_student_exercises` passe par
+`assert_can_read_student`. Sans appelant client, donc `service_role` seul :
+`get_conversation_participants`, les 7 `compute_*_level`, `get_friend_ids`,
+`check_gidouilles_balance`, `get_shop_items`, `get_shop_item_detail`. Recherche d'amis
+(`get_classes_by_user_grade`, `get_students_in_class_by_grade`) : classes actives de
+`my_school()` seulement.
+
 Two consequences worth knowing (security-audit notes):
 
 - **`student_warnings` insert/delete are admin-inclusive.** The policies
