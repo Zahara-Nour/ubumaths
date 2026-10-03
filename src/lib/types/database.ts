@@ -13992,6 +13992,10 @@ export type Database = {
         Returns: undefined
       }
       assert_teacher_or_admin: { Args: never; Returns: undefined }
+      auto_accept_exact_proposal: {
+        Args: { p_proposal_id: string }
+        Returns: Json
+      }
       auto_activate_scheduled_tournaments: { Args: never; Returns: number }
       auto_complete_ended_tournaments: { Args: never; Returns: number }
       auto_expire_listings: { Args: never; Returns: number }

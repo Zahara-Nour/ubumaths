@@ -24,6 +24,7 @@ export const createListingSchema = z
 		// Wanted items (for both listing types)
 		wanted_card_template_ids: z
 			.array(z.string().min(1, 'ID de modèle de carte invalide'))
+			.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
 			.default([]),
 		wanted_gidouilles: z
 			.number()

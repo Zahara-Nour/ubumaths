@@ -35,9 +35,16 @@ vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 		lockCardsForEntity: vi.fn().mockResolvedValue({ success: true }),
 		// Réservée au serveur (client service) : jamais de vrai client en test unitaire
 		resolveCardInstances: vi.fn().mockResolvedValue({ data: [], error: null }),
-		isMarketplaceEnabled: vi.fn().mockResolvedValue(true)
+		isMarketplaceEnabled: vi.fn().mockResolvedValue(true),
+		getStudentSchoolId: vi.fn().mockResolvedValue('school-1')
 	};
 });
+
+// L'auto-acceptation se décide en base (auto_accept_exact_proposal, client
+// service) : couverte par tests/integration/marche-*.test.ts. Ici, offre non exacte.
+vi.mock('$lib/server/marketplace/auto-accept', () => ({
+	autoAcceptExactProposal: vi.fn().mockResolvedValue({ success: false, reason: 'not_exact' })
+}));
 
 vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
 	const actual = await importActual<typeof import('$lib/server/marketplace/notifications')>();
@@ -86,6 +93,14 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			success: true
 		});
 		(helpers.isMarketplaceEnabled as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
+		(helpers.getStudentSchoolId as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+			'school-1'
+		);
+		const autoAccept = await import('$lib/server/marketplace/auto-accept');
+		(autoAccept.autoAcceptExactProposal as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+			success: false,
+			reason: 'not_exact'
+		});
 
 		// Create test data
 		mockSupabase = createMockSupabase();

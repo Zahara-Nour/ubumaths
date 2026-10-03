@@ -8,16 +8,22 @@ import {
 	resolveCardInstances,
 	isMarketplaceEnabled,
 	getStudentGidouilles,
+	getStudentSchoolId,
 	enrichWithParticipants,
 	enrichProposalsWithCardData
 } from '$lib/server/marketplace/helpers';
+import { autoAcceptExactProposal } from '$lib/server/marketplace/auto-accept';
+import { proposersRejectedByAcceptance } from '$lib/server/marketplace/acceptance';
 import {
 	notifyNewProposal,
 	notifyProposalAccepted,
 	notifyProposalRejected
 } from '$lib/server/marketplace/notifications';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { z } from 'zod';
-import { acceptProposalSchema } from '$lib/server/validation/marketplace-rpc';
+
+// Refus d'auto-acceptation qui ne sont pas des pannes (cf. autoAcceptExactProposalSchema)
+const REFUS_PREVUS = new Set(['not_exact', 'busy', 'cards_unavailable']);
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -249,6 +255,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(403, 'Vous ne pouvez pas faire une proposition sur votre propre annonce');
 	}
 
+	// L'école est la frontière du marché : une annonce d'une autre école ne se
+	// propose pas, même si son identifiant est connu.
+	const proposerSchoolId = await getStudentSchoolId(supabase, userId);
+	if (!proposerSchoolId || listing.school_id !== proposerSchoolId) {
+		throw error(403, "Cette annonce n'est pas proposée dans votre école");
+	}
+
 	// Check if user already has a pending proposal for this listing
 	const { data: existingProposal, error: existingProposalError } = await supabase
 		.from('marketplace_proposals')
@@ -292,8 +305,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	let proposalError;
 
 	if (existingProposal) {
-		// Update the existing rejected/withdrawn proposal
-		const result = await supabase
+		// Resoumission d'une proposition refusée ou retirée. Client service : depuis
+		// Q147, la RLS ne laisse au proposant que le RETRAIT de sa proposition ; toute
+		// autre écriture passe par ici, après les contrôles ci-dessus (annonce active,
+		// même école, cartes possédées, solde). Les filtres `proposer_id` et `status`
+		// gardent la ligne visée même sans RLS.
+		const result = await createServiceRoleClient()
 			.from('marketplace_proposals')
 			.update({
 				offered_card_ids: data.offered_card_ids,
@@ -302,9 +319,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				status: 'pending',
 				response_message: null,
 				responded_at: null,
+				withdrawn_at: null,
 				created_at: new Date().toISOString()
 			})
 			.eq('id', existingProposal.id)
+			.eq('proposer_id', userId)
+			.in('status', ['rejected', 'withdrawn'])
 			.select(
 				`
         *,
@@ -359,131 +379,99 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, 'Proposition créée sans contenu exploitable');
 	}
 
-	// Lock cards if offering any
+	// Verrouillage des cartes offertes SOUS L'ID DE LA PROPOSITION. Sous l'id de
+	// l'annonce, le refus et le retrait (qui déverrouillent par proposition) les
+	// laissaient verrouillées, et un échec de `lock_cards` — qui efface tout ce
+	// qui est verrouillé sous l'id reçu — effaçait les verrous du VENDEUR.
 	if (data.offered_card_ids.length > 0) {
 		const lockResult = await lockCardsForEntity(
 			userId,
 			data.offered_card_ids,
-			listingId,
+			proposal.id,
 			'listing'
 		);
 
 		if (!lockResult.success) {
-			// Rollback: delete the proposal
-			await supabase.from('marketplace_proposals').delete().eq('id', proposal.id);
+			// Annulation de la proposition. Client service : aucune policy DELETE
+			// sur les propositions, la suppression échouait en silence (0 ligne).
+			const { data: supprimee, error: suppressionError } = await createServiceRoleClient()
+				.from('marketplace_proposals')
+				.delete()
+				.eq('id', proposal.id)
+				.eq('proposer_id', userId)
+				.select('id');
+
+			if (suppressionError || !supprimee || supprimee.length === 0) {
+				console.error(
+					'[marketplace] Proposition non annulée après échec du verrouillage :',
+					suppressionError ?? 'aucune ligne supprimée'
+				);
+			}
 
 			throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
 		}
 	}
 
-	// Increment listing proposal count
-	await supabase
+	// Compteur de propositions de l'annonce. Client service : la RLS ne laisse
+	// écrire l'annonce qu'à son créateur, la mise à jour par le proposant ne
+	// touchait aucune ligne. `.select()` : un refus rend zéro ligne, pas d'erreur.
+	const { data: compteur, error: compteurError } = await createServiceRoleClient()
 		.from('marketplace_listings')
 		.update({
 			// `proposal_count` est nullable : une annonce jamais proposée vaut NULL.
 			proposal_count: (listing.proposal_count ?? 0) + 1
 		})
-		.eq('id', listingId);
+		.eq('id', listingId)
+		.select('id');
 
-	// Check if proposal exactly matches listing demand → auto-accept
-	const exactMatch = await (async () => {
-		const wantedGidouilles = listing.wanted_gidouilles || 0;
-		const offeredGidouilles = data.offered_gidouilles || 0;
-		const wantedTemplateIds = listing.wanted_card_template_ids || [];
-		const offeredCardIds = data.offered_card_ids || [];
-
-		// Case 1: Sell listing — wants gidouilles only
-		if (wantedTemplateIds.length === 0 && wantedGidouilles > 0) {
-			return offeredGidouilles >= wantedGidouilles && offeredCardIds.length === 0;
-		}
-
-		// Case 2: Buy listing — wants specific card templates
-		if (wantedTemplateIds.length > 0 && offeredCardIds.length > 0) {
-			// Resolve offered card instance IDs to their template IDs
-			const { data: proposerProfile, error: proposerProfileError } = await supabase
-				.from('profiles')
-				.select('vip_cards')
-				.eq('id', userId)
-				.single();
-
-			// Ces cartes composent l'offre affichée à l'élève. Une carte non résolue
-			// disparaît de l'offre : mieux vaut une erreur qu'un troc falsifié.
-			if (proposerProfileError) {
-				console.error('Cartes illisibles :', proposerProfileError);
-				throw error(500, 'Impossible de lire les cartes');
-			}
-
-			if (!proposerProfile?.vip_cards) return false;
-
-			const vipCards = proposerProfile.vip_cards as Record<
-				string,
-				{ cardId: string; earnedAt: string }
-			>;
-			const offeredTemplateIds = offeredCardIds.map((id) => vipCards[id]?.cardId).filter(Boolean);
-
-			// Check that every wanted template is covered by offered cards
-			const offeredSet = new Set(offeredTemplateIds);
-			const allWantedCovered = wantedTemplateIds.every((tid: string) => offeredSet.has(tid));
-
-			// Also check gidouilles match if any are wanted
-			const gidouillesOk = wantedGidouilles <= 0 || offeredGidouilles >= wantedGidouilles;
-
-			return allWantedCovered && gidouillesOk;
-		}
-
-		return false;
-	})();
-
-	if (exactMatch) {
-		// Auto-accept: execute trade immediately via RPC
-		const { data: result, error: rpcError } = await supabase.rpc('accept_proposal_atomic', {
-			p_proposal_id: proposal.id,
-			p_user_id: listing.creator_id
-		});
-
-		// `RETURNS json` : on valide la forme réelle plutôt que de lire `.success`
-		// sur le type `Json`, qui ne porte aucune de ces clés.
-		const acceptation = rpcError ? null : acceptProposalSchema.safeParse(result);
-
-		if (acceptation?.success && acceptation.data.success) {
-			// Notify accepted proposer
-			await notifyProposalAccepted(userId, 'Annonce', proposal.id);
-
-			// Notify rejected proposers
-			const { data: rejectedProposals, error: rejectedProposalsError } = await supabase
-				.from('marketplace_proposals')
-				.select('proposer_id')
-				.eq('listing_id', listingId)
-				.eq('status', 'rejected')
-				.neq('id', proposal.id);
-
-			if (rejectedProposalsError) {
-				console.error('Lecture impossible :', rejectedProposalsError);
-				throw error(500, 'Impossible de charger les données');
-			}
-
-			if (rejectedProposals) {
-				for (const p of rejectedProposals) {
-					await notifyProposalRejected(p.proposer_id, 'Annonce', 'Autre proposition acceptée');
-				}
-			}
-
-			return json(
-				{
-					...(await enrichWithParticipants(supabase, [proposal]))[0],
-					status: 'accepted',
-					auto_accepted: true,
-					trade_id: acceptation.data.trade_id
-				},
-				{ status: 201 }
-			);
-		}
-		// If auto-accept fails, fall through to normal proposal flow
+	if (compteurError || !compteur || compteur.length === 0) {
+		// Compteur d'affichage : son échec ne défait pas la proposition, mais il se voit.
 		console.error(
-			'Auto-accept failed:',
-			rpcError ??
-				(acceptation?.success && !acceptation.data.success ? acceptation.data.error : result)
+			'[marketplace] proposal_count non mis à jour :',
+			compteurError ?? 'aucune ligne modifiée'
 		);
+	}
+
+	// Offre exacte → acceptation immédiate. La comparaison offre / demande se fait
+	// EN BASE, sous verrou de la proposition et de l'annonce : comparer ici puis
+	// laisser la base relire la proposition ouvrait une course (le proposant
+	// pouvait la modifier entre les deux), et la comparaison par ensemble laissait
+	// un seul A couvrir une demande [A, A]. `not_exact` = rien n'a bougé.
+	const acceptation = await autoAcceptExactProposal(proposal.id);
+
+	if (acceptation.success) {
+		// Notify accepted proposer
+		await notifyProposalAccepted(userId, 'Annonce', proposal.id);
+
+		// Proposants refusés PAR cette acceptation seulement (pas ceux refusés plus tôt).
+		let refuses: string[];
+		try {
+			refuses = await proposersRejectedByAcceptance(proposal.id);
+		} catch (e) {
+			console.error('Lecture impossible :', e);
+			throw error(500, 'Impossible de charger les données');
+		}
+
+		for (const proposerId of refuses) {
+			await notifyProposalRejected(proposerId, 'Annonce', 'Autre proposition acceptée');
+		}
+
+		return json(
+			{
+				...(await enrichWithParticipants(supabase, [proposal]))[0],
+				status: 'accepted',
+				auto_accepted: true,
+				trade_id: acceptation.trade_id
+			},
+			{ status: 201 }
+		);
+	}
+
+	// Offre non exacte, annonce occupée (`busy`) ou cartes indisponibles : cas
+	// prévus. Tout autre refus est journalisé. Dans tous les cas, rien n'a bougé
+	// et la proposition reste en attente comme une proposition ordinaire.
+	if (!REFUS_PREVUS.has(acceptation.reason)) {
+		console.error('Auto-accept failed:', acceptation.reason, acceptation.error ?? '');
 	}
 
 	// Normal flow: notify listing creator about new proposal

@@ -86,6 +86,7 @@ on:
       - 'src/routes/*/presques-evaluations/*page.server.ts'
       - 'src/routes/api/evaluations/assignments/*/start/*server.ts'
       - 'src/routes/api/marketplace/listings/*/proposals/*server.ts'
+      - 'src/routes/api/marketplace/proposals/*/*server.ts'
       - 'src/routes/api/vip-cards/choose/*server.ts'
       - 'src/routes/api/vip-cards/exchange/*server.ts'
       - 'src/routes/api/skill-attempts/*server.ts'
