@@ -273,3 +273,18 @@ PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ;
 - **Loi binomiale, PR (c) livrée #740** (2026-10-03) : `.binomiale X 10 0,3 [options]`.
   **Loi binomiale TERMINÉE** (#730, #736, #740). Reste à part : référentiel de Terminale ;
   lois de maths complémentaires (uniforme, Bernoulli, géométrique ; densité uniforme, exponentielle).
+
+Manche 12 (2026-10-03), référentiel de Terminale — recommandations suivies :
+
+143. Trois référentiels : `T_SPE` (d'abord), `T_COMP`, `T_EXP` ; une PR par programme.
+144. Sources fournies par David : spécialité (NOUVEAU programme, 14 p.), maths complémentaires
+     (17 p.), maths expertes (11 p.). Section binomiale de la spécialité identique à 2019 :
+     #730/#736/#740 restent conformes.
+145. Conventions de 2de / 1re inchangées : `[C]`, `[SF]`, `[D]`, `[SF+]` ; puces coupées ;
+     LaTeX MathLive ; codes `T_SPE-001`…
+146. Markdown relu par David avant amorçage ; ensuite la page Programme fait foi.
+147. ACCÈS (accordé par David) : tout utilisateur connecté lit le texte des programmes de
+     Terminale, comme les autres niveaux ; contenu officiel, aucune donnée d'élève.
+148. Rien de spécial pour la binomiale.
+149. Maths complémentaires : bâti sur la partie « Contenus » (4 thèmes) ; les 9 thèmes d'étude,
+     les rubriques « Objectifs » et « Histoire des mathématiques » ne sont pas des points.
