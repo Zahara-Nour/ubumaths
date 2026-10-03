@@ -163,6 +163,14 @@ sur ses propres révisions (ni prof, ni badges, ni statistiques). Décision de D
 l'écriture dans un paquet `is_auto_managed` (en gardant la branche prof/admin), avec
 tests d'intégration sur les trois chemins d'ajout et l'assignation.
 
+**Résolu le 2026-10-03 (#680, Q130)** : `ensureProgrammeDeckCard` écrit avec le
+client service, et la policy large est rattachée à `service_role` seul
+(`ALTER POLICY … TO service_role`, migration 20261003100000 — pas de DROP). David a
+aussi retiré la branche prof/admin : aucun écran ne l'utilisait (la copie d'un
+paquet assigné passe déjà par le client service). La séquence a suivi l'ordre
+ci-dessus : code déployé, PUIS migration. Preuve :
+`tests/integration/paquet-programme-rempli-par-le-serveur.test.ts`.
+
 ## La contrainte d'ordre : `db:types` génère depuis la PRODUCTION
 
 `pnpm db:types` interroge le projet distant. Une RPC qui n'est pas encore en
