@@ -515,6 +515,34 @@ describe('StatChart — tableau d’effectifs (Q125-Q129)', () => {
 	});
 });
 
+describe('StatChart — loi binomiale (manche 11)', () => {
+	it('le tableau P(X = k) au millième, le nom de la loi, les probabilités', async () => {
+		const node = parseStatChartContent('loi', 'X ~ B(10 ; 0,3)\nprobabilités: P(X ⩽ 4)');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+
+		expect(table.querySelector('caption')?.textContent).toBe('Loi de X : B(10 ; 0,3)');
+		expect(table.querySelectorAll('tr')[1].querySelectorAll('td')[0].textContent).toBe('0,028');
+		expect(screen.container.querySelector('.stat-indicateurs li')?.textContent).toBe(
+			'P(X ⩽ 4) ≈ 0,850'
+		);
+	});
+
+	it('trop large : vertical ; plus de 30 valeurs : pas de tableau', async () => {
+		const vertical = parseStatChartContent('loi', 'X ~ B(20 ; 0,5)');
+		const v = await render(StatChart, { target: mainElement(), props: { node: vertical } });
+		expect(v.container.querySelectorAll('tbody tr')).toHaveLength(21);
+
+		const large = parseStatChartContent('loi', 'X ~ B(100 ; 0,5)\nprobabilités: P(X ⩽ 50)');
+		const l = await render(StatChart, { target: mainElement(), props: { node: large } });
+		expect(l.container.querySelector('table')).toBeNull();
+		expect(l.container.querySelector('.stat-titre')?.textContent).toBe('Loi de X : B(100 ; 0,5)');
+		expect(l.container.querySelector('.stat-indicateurs li')?.textContent).toBe(
+			'P(X ⩽ 50) ≈ 0,540'
+		);
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

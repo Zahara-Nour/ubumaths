@@ -18,6 +18,7 @@
  */
 
 import type {
+	LawData,
 	StatChartDatum,
 	StatChartDirection,
 	StatChartLabels,
@@ -26,6 +27,7 @@ import type {
 	StatChartSpec,
 	StatChartUnit
 } from '../types/stat-chart';
+import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
 import type { ContentLocale } from '$lib/types/locale';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
@@ -54,6 +56,12 @@ import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene
 import { buildComparisonScene } from './comparison-scene';
 import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
 import { createRandomSource } from '$lib/utils/random';
+import {
+	binomialDistribution,
+	binomialMoments,
+	binomialProbability,
+	roundExact
+} from '$lib/statistics/binomial';
 
 // ============================================================================
 // TYPES
@@ -281,6 +289,10 @@ export interface LawScene extends SceneCommon {
 	probabilities: SceneCell[];
 	/** Ce qu'annonce une case à compléter, dans la langue du document */
 	hiddenLabel: string;
+	/** Loi binomiale de plus de 30 valeurs (Q138) : pas de tableau, les lignes seulement */
+	tableHidden?: boolean;
+	/** Loi binomiale trop large pour une ligne : tableau vertical (k, P(X = k)) */
+	vertical?: boolean;
 }
 
 /**
@@ -1355,9 +1367,75 @@ function asWritten(text: string, locale: ContentLocale): string {
 	return locale === 'en' ? minus.replace(',', '.') : minus.replace('.', ',');
 }
 
+/** Caractères d'une ligne horizontale de loi binomiale au plus (valeurs × « 0,028 ») */
+const BINOMIAL_ROW_CHARACTERS = 40;
+
+/** Un arrondi exact écrit selon la langue ; exact : sans zéros inutiles (`0,5`) */
+function roundedText(num: bigint, den: bigint, places: number, locale: ContentLocale) {
+	const { digits, exact } = roundExact(num, den, places);
+	const text = exact ? formatStatNumber(Number(digits), locale) : digits;
+	return { text: locale === 'en' ? text : text.replace('.', ','), exact };
+}
+
+/**
+ * Loi binomiale (`X ~ B(n ; p)`, manche 11) : le tableau P(X = k) arrondi,
+ * E / V / σ par les formules, puis les lignes `probabilités:` — tout en
+ * valeurs exactes, arrondies à l'affichage seulement.
+ */
+function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLocale): LawScene {
+	const binomial = law.binomial!;
+	const p = Fraction.parse(binomial.p) ?? Fraction.ZERO;
+	const distribution = binomialDistribution(binomial.n, p);
+	const shownP = asWritten(binomial.p, locale);
+	const title =
+		locale === 'en'
+			? `Distribution of ${law.variable}: B(${binomial.n}, ${shownP})`
+			: `Loi de ${law.variable} : B(${binomial.n} ; ${shownP})`;
+	const indicators = [
+		...(law.indicators.length > 0
+			? formatLawIndicators(law.variable, binomialMoments(distribution), locale, law.indicators)
+			: []),
+		...binomial.queries.map((query) => {
+			const { num, den } = binomialProbability(
+				distribution,
+				(k) => k >= query.low && k <= query.high
+			);
+			const { text, exact } = roundedText(num, den, binomial.places, locale);
+			const display = locale === 'en' ? query.display : query.display.replace(/\./g, ',');
+			return `${display} ${exact ? '=' : '≈'} ${text}`;
+		})
+	];
+	return {
+		kind: 'loi',
+		title: spec.title,
+		accessibleTitle: title,
+		description: title,
+		pixelSize: { width: 0, height: 0 },
+		indicators,
+		variable: law.variable,
+		values: law.values,
+		probabilities: distribution.numerators.map((num, k) =>
+			law.masked.includes(k)
+				? { text: '', hidden: true, srText: null }
+				: {
+						text: roundedText(num, distribution.denominator, binomial.places, locale).text,
+						hidden: false,
+						srText: null
+					}
+		),
+		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
+		tableHidden: law.values.length > STAT_CHART_LIMITS.binomialTableValues,
+		// À l'horizontale, une ligne doit tenir dans une colonne de fiche : la
+		// largeur compte, pas seulement le nombre de valeurs (« 0,0156 » × 7
+		// débordait, B(10 ; p) au millième aussi — mesuré sur la fiche compilée)
+		vertical: law.values.length * (binomial.places + 3) > BINOMIAL_ROW_CHARACTERS
+	};
+}
+
 function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
 	const law = spec.law;
 	if (law === null) throw new Error('Loi sans données');
+	if (law.binomial !== null) return buildBinomialScene(spec, law, locale);
 	const spoken = CROSS_TABLE_SPOKEN[locale];
 
 	let indicators: string[] = [];

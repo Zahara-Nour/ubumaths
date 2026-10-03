@@ -93,6 +93,12 @@ const BLOCKS: [string, StatChartKind, string][] = [
 		'lignes: Yes ; No\ncolonnes: A ; B\nYes = 1 ; ?\nNo = 3 ; 4\nmasquer: Total/Total'
 	],
 	['loi', 'loi', 'X = 1 ; 2\nP = 1/2 ; ?'],
+	[
+		'loi binomiale',
+		'loi',
+		'X ~ B(10 ; 0,3)\nindicateurs: espérance ; variance ; écart type\nprobabilités: P(X ⩽ 4)\nmasquer: 2'
+	],
+	['loi binomiale, grand n', 'loi', 'X ~ B(100 ; 0,5)\nprobabilités: P(40 ⩽ X ⩽ 60)'],
 	['simulation, tirages', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 20'],
 	[
 		'tableau d’effectifs',
