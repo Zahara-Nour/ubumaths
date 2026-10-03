@@ -535,6 +535,12 @@ describe('StatChart — loi binomiale (manche 11)', () => {
 
 		expect(bars).toHaveLength(11);
 		expect(screen.container.querySelectorAll('rect.stat-rectangle-hors')).toHaveLength(4);
+		// Le gris est bien PEINT, pas seulement une classe (revue)
+		const grey = screen.container.querySelector<SVGRectElement>('rect.stat-rectangle-hors')!;
+		const blue = screen.container.querySelector<SVGRectElement>(
+			'rect.stat-barre:not(.stat-rectangle-hors)'
+		)!;
+		expect(getComputedStyle(grey).fill).not.toBe(getComputedStyle(blue).fill);
 		expect([...screen.container.querySelectorAll('.stat-indicateurs li')][0].textContent).toBe(
 			'I = [0 ; 6] : P(X ∈ I) ≈ 0,989 ⩾ 0,95'
 		);

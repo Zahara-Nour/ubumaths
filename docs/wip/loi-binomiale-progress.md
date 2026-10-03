@@ -30,6 +30,7 @@ valeurs exactes (Python) pour B(10 ; 0,3) sont I = [0 ; 6] et k = 5.
       hors de I en gris ; axe en probabilités (l'axe des barres montait à 1 : vu sur la fiche),
       numéros à plat ; écran, Typst, anglais
 - [x] Fiche compilée et regardée
-- [ ] Revue, PR, CI, merge
+- [x] Revue : aucune erreur mathématique ; niveau décimal exigé ; P(X ∈ I) avec au moins les décimales du niveau ; α du seuil dans ]0 ; 1[ ; avertissement qui cite le diagramme ; simulation n ⩽ 29 ; description « P(X = 3) ≈ 0,267 » ; en-tête Typst en maths en bloc ; tests des 8 combinaisons de seuil, d’autres niveaux, du gris peint
+- [ ] PR, CI, merge
 
 ## PR (c) — atelier `.binomiale`

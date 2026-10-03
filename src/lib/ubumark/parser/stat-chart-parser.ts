@@ -1295,6 +1295,10 @@ function parseLevel(value: string): Fraction {
 	const alpha = /^(?:α|alpha)\s*=\s*(.+)$/i.exec(value.trim());
 	const read = Fraction.parse(alpha ? alpha[1] : value.trim());
 	if (read === null) throw new LineError(message);
+	// Un niveau DÉCIMAL : 2/3 s'écrivait « 0,6666…667 » avec 40 décimales (revue)
+	let den = read.den;
+	for (const factor of [2n, 5n]) while (den % factor === 0n) den /= factor;
+	if (den !== 1n) throw new LineError(message);
 	const level = alpha ? Fraction.ONE.sub(read) : read;
 	if (level.isNegative() || level.equals(Fraction.ZERO) || !Fraction.ONE.greaterThan(level)) {
 		throw new LineError(message);
@@ -1460,8 +1464,14 @@ function checkBinomial(
 			);
 		}
 		const alpha = Fraction.parse(written[4]);
-		if (alpha === null || alpha.isNegative() || alpha.greaterThan(Fraction.ONE)) {
-			return at(line, 'seuil : α est un nombre entre 0 et 1');
+		// Strictement entre 0 et 1, comme `intervalle:` : 0 ou 1 donnent un k trivial (revue)
+		if (
+			alpha === null ||
+			alpha.isNegative() ||
+			alpha.equals(Fraction.ZERO) ||
+			!Fraction.ONE.greaterThan(alpha)
+		) {
+			return at(line, 'seuil : α est un nombre strictement entre 0 et 1');
 		}
 		threshold = {
 			event: QUERY_OPERATORS[written[2]] as '>' | '⩾' | '<' | '⩽',
@@ -2136,14 +2146,15 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	}
 	const warnings: StatChartIssue[] = [];
 	if (errors.length === 0 && lawBinomial !== null && isSimulation) {
-		// Simulation de B(n ; p) : au plus 31 valeurs, comme une loi lisible (PR b)
+		// Simulation de B(n ; p) : au plus 30 valeurs, comme le tableau d'une loi (PR b)
 		const problem = checkSimulationOptions(options, optionLines);
 		const checked = checkBinomial(lawBinomial, options, optionLines);
 		if (problem) errors.push(problem);
 		else if ('error' in checked) errors.push(checked.error);
-		else if (checked.law.binomial!.n > STAT_CHART_LIMITS.binomialTableValues) {
+		// Même plafond que le tableau d'une loi : 30 valeurs, n ⩽ 29 (revue)
+		else if (checked.law.binomial!.n + 1 > STAT_CHART_LIMITS.binomialTableValues) {
 			errors.push({
-				message: `Ligne ${lawBinomial.line} : B(n ; p) : n au plus ${STAT_CHART_LIMITS.binomialTableValues} pour une simulation`,
+				message: `Ligne ${lawBinomial.line} : B(n ; p) : au plus ${STAT_CHART_LIMITS.binomialTableValues} valeurs pour une simulation (n ⩽ ${STAT_CHART_LIMITS.binomialTableValues - 1})`,
 				line: lawBinomial.line
 			});
 		} else {
@@ -2167,7 +2178,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			const count = checked.law.binomial!.n + 1;
 			if (count > STAT_CHART_LIMITS.binomialTableValues) {
 				warnings.push({
-					message: `Ligne ${lawBinomial.line} : ${count} valeurs : tableau non affiché (au plus ${STAT_CHART_LIMITS.binomialTableValues}) ; les probabilités demandées restent données`,
+					// Le diagramme suit le tableau : le dire s'il était demandé (revue)
+					message: `Ligne ${lawBinomial.line} : ${count} valeurs : tableau non affiché (au plus ${STAT_CHART_LIMITS.binomialTableValues})${options.binomialChart ? ', diagramme non plus' : ''} ; les probabilités demandées restent données`,
 					line: lawBinomial.line
 				});
 			}

@@ -1415,9 +1415,11 @@ function intervalLines(
 	if (binomial.interval === null) return [];
 	const { level, half } = intervalParts(binomial);
 	const { a, b, num, den } = binomialInterval(distribution, level);
-	const { text, exact } = roundedText(num, den, binomial.places, locale);
-	const sign = exact ? '=' : '≈';
 	const shownLevel = exactDecimal(level, locale);
+	// Au moins les décimales du niveau : « ≈ 0,97 ⩾ 0,971 » se lisait faux (revue)
+	const levelPlaces = shownLevel.split(/[.,]/)[1]?.length ?? 0;
+	const { text, exact } = roundedText(num, den, Math.max(binomial.places, levelPlaces), locale);
+	const sign = exact ? '=' : '≈';
 	const shownHalf = exactDecimal(half, locale);
 	return locale === 'en'
 		? [
@@ -1472,6 +1474,7 @@ function binomialChart(
 	spec: StatChartSpec,
 	distribution: BinomialDistribution,
 	binomial: NonNullable<LawData['binomial']>,
+	variable: string,
 	locale: ContentLocale
 ): BarScene {
 	const den = Number(distribution.denominator);
@@ -1499,19 +1502,22 @@ function binomialChart(
 	// Un axe de PROBABILITÉS : gradué en décimaux (celui des barres, fait pour des
 	// effectifs entiers, montait à 1 et écrasait les bâtons — fiche compilée)
 	const max = Math.max(...built.bars.map((bar) => bar.value)) || 1;
+	// `pourcentages` : seulement pour lever le pas minimal de 1 des effectifs (pas de « % »)
 	const { yMax, ticks } = valueAxis(max, built.pixelSize.height, 'pourcentages', locale);
 	// Des numéros courts tiennent à plat, même nombreux
 	const longest = String(binomial.n).length;
 	const bandPx = built.pixelSize.width / built.labels.length;
-	const shown = distribution.numerators.map(
-		(num, k) => `${k} ${roundedText(num, distribution.denominator, binomial.places, locale).text}`
-	);
+	// « P(X = 3) ≈ 0,267 » : lu sans ambiguïté (« 3 0,267, 4 0,200 » mêlait les virgules, revue)
+	const shown = distribution.numerators.map((num, k) => {
+		const { text, exact } = roundedText(num, distribution.denominator, binomial.places, locale);
+		return `P(${variable} = ${k}) ${exact ? '=' : '≈'} ${text}`;
+	});
 	const scene: BarScene = {
 		...built,
 		yMax,
 		ticks,
 		rotateLabels: longest * STAT_CHART_CHAR_PX > bandPx,
-		description: `${STAT_TEXT[locale].kind.barres}${STAT_TEXT[locale].colon}${shown.join(', ')}.`
+		description: `${STAT_TEXT[locale].kind.barres}${STAT_TEXT[locale].colon}${shown.join(' ; ')}.`
 	};
 	if (binomial.interval === null) return scene;
 	const { a, b } = binomialInterval(distribution, intervalParts(binomial).level);
@@ -1584,7 +1590,7 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
 		tableHidden,
 		...(binomial.chart &&
-			!tableHidden && { chart: binomialChart(spec, distribution, binomial, locale) }),
+			!tableHidden && { chart: binomialChart(spec, distribution, binomial, law.variable, locale) }),
 		// À l'horizontale, une ligne doit tenir dans une colonne de fiche : la
 		// largeur compte, pas seulement le nombre de valeurs (« 0,0156 » × 7
 		// débordait, B(10 ; p) au millième aussi — mesuré sur la fiche compilée)

@@ -482,8 +482,8 @@ function lawTypst(scene: LawScene): string {
 function binomialTypst(scene: LawScene, letter: string): string {
 	const hole = '[#box(width: 0.8cm)]';
 	const cell = (p: (typeof scene.probabilities)[number]) => (p.hidden ? hole : textContent(p.text));
-	// `box` : l'en-tête « P(X = xᵢ) » ne se coupe pas en deux lignes
-	const head = [`[#box($${letter}_i$)]`, `[#box($P(${scene.variable} = ${letter}_i)$)]`];
+	// Mathématiques EN BLOC (`$ … $`) : jamais coupées ; `box` laissait « P(X = xᵢ » / « ) »
+	const head = [`[$ ${letter}_i $]`, `[$ P(${scene.variable} = ${letter}_i) $]`];
 	const cells = scene.vertical
 		? [...head, ...scene.values.flatMap((v, i) => [textContent(v), cell(scene.probabilities[i])])]
 		: [head[0], ...scene.values.map(textContent), head[1], ...scene.probabilities.map(cell)];

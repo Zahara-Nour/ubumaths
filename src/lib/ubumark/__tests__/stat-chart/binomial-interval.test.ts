@@ -49,6 +49,21 @@ describe('intervalle: — P(X ∈ I) ⩾ 1 − α', () => {
 		]);
 	});
 
+	it('d’autres niveaux, p = 0, p = 1, n = 1', () => {
+		const first = (source: string) => lawOf(source).indicators[0].split(' : ')[0];
+		expect(first(`${B}\nintervalle: 0,99`)).toBe('I = [0 ; 7]');
+		expect(first(`${B}\nintervalle: 0,5`)).toBe('I = [2 ; 4]');
+		expect(first('X ~ B(10 ; 0)\nintervalle: 0,95')).toBe('I = [0 ; 0]');
+		expect(first('X ~ B(10 ; 1)\nintervalle: 0,95')).toBe('I = [10 ; 10]');
+		expect(first('X ~ B(1 ; 0,5)\nintervalle: 0,95')).toBe('I = [0 ; 1]');
+	});
+
+	it('P(X ∈ I) écrit avec au moins les décimales du niveau', () => {
+		expect(lawOf(`${B}\narrondi: 2\nintervalle: 0,971`).indicators[0]).toMatch(
+			/≈ 0,\d{3} ⩾ 0,971$/
+		);
+	});
+
 	it('95 % et α = 0,05 : le même intervalle', () => {
 		const expected = lawOf(`${B}\nintervalle: 0,95`).indicators;
 		expect(lawOf(`${B}\nintervalle: 95 %`).indicators).toEqual(expected);
@@ -83,6 +98,25 @@ describe('seuil: — le plus petit (ou le plus grand) k', () => {
 		]);
 	});
 
+	it('les 5 autres combinaisons (valeurs Python)', () => {
+		const line = (seuil: string) => lawOf(`${B}\nseuil: ${seuil}`).indicators[0];
+		expect(line('P(X ⩾ k) ⩽ 0,05')).toBe(
+			'plus petit k tel que P(X ⩾ k) ⩽ 0,05 : k = 6 (P(X ⩾ 6) ≈ 0,047)'
+		);
+		expect(line('P(X < k) ⩾ 0,9')).toBe(
+			'plus petit k tel que P(X < k) ⩾ 0,9 : k = 6 (P(X < 6) ≈ 0,953)'
+		);
+		expect(line('P(X < k) ⩽ 0,1')).toBe(
+			'plus grand k tel que P(X < k) ⩽ 0,1 : k = 1 (P(X < 1) ≈ 0,028)'
+		);
+		expect(line('P(X > k) ⩾ 0,5')).toBe(
+			'plus grand k tel que P(X > k) ⩾ 0,5 : k = 2 (P(X > 2) ≈ 0,617)'
+		);
+		expect(line('P(X ⩾ k) ⩾ 0,5')).toBe(
+			'plus grand k tel que P(X ⩾ k) ⩾ 0,5 : k = 3 (P(X ⩾ 3) ≈ 0,617)'
+		);
+	});
+
 	it('aucun k ne convient : le dire', () => {
 		expect(lawOf(`${B}\nseuil: P(X ⩽ k) ⩽ 0,01`).indicators).toEqual([
 			'aucun k de 0 à 10 ne vérifie P(X ⩽ k) ⩽ 0,01'
@@ -111,7 +145,7 @@ describe('diagramme: — les bâtons de la loi', () => {
 		expect(chart.yMax).toBeLessThan(0.5);
 		expect(chart.ticks.length).toBeGreaterThan(2);
 		expect(chart.rotateLabels).toBe(false);
-		expect(chart.description).toContain('3 0,267');
+		expect(chart.description).toContain('P(X = 3) ≈ 0,267');
 		expect(lawOf(`${B}\ndiagramme: oui`, 'en').chart!.axisTitles.y).toBe('Probability');
 	});
 
@@ -159,9 +193,10 @@ describe('simulation de B(n ; p)', () => {
 		}
 	});
 
-	it('jusqu’à 31 valeurs (n ⩽ 30)', () => {
-		expect(errorOf('X ~ B(31 ; 0,5)', 'simulation')).toBe(
-			'Ligne 1 : B(n ; p) : n au plus 30 pour une simulation'
+	it('jusqu’à 30 valeurs (n ⩽ 29), comme le tableau d’une loi', () => {
+		expect(parseStatChartContent('simulation', 'X ~ B(29 ; 0,5)').spec).not.toBeNull();
+		expect(errorOf('X ~ B(30 ; 0,5)', 'simulation')).toBe(
+			'Ligne 1 : B(n ; p) : au plus 30 valeurs pour une simulation (n ⩽ 29)'
 		);
 	});
 });
@@ -177,6 +212,23 @@ describe('erreurs situées', () => {
 		expect(errorOf(`${B}\nintervalle: 1`)).toBe(message);
 		expect(errorOf(`${B}\nintervalle: 0`)).toBe(message);
 		expect(errorOf(`${B}\nintervalle: beaucoup`)).toBe(message);
+		// Un niveau non décimal : 40 décimales sinon (revue)
+		expect(errorOf(`${B}\nintervalle: 2/3`)).toBe(message);
+	});
+
+	it('α du seuil strictement entre 0 et 1', () => {
+		for (const alpha of ['0', '1']) {
+			expect(errorOf(`${B}\nseuil: P(X > k) ⩽ ${alpha}`)).toBe(
+				'Ligne 2 : seuil : α est un nombre strictement entre 0 et 1'
+			);
+		}
+	});
+
+	it('au-delà de 30 valeurs, l’avertissement dit que le diagramme manque aussi', () => {
+		const node = parseStatChartContent('loi', 'X ~ B(40 ; 0,5)\ndiagramme: oui');
+		expect(node.warnings[0].message).toMatch(
+			/tableau non affiché \(au plus 30\), diagramme non plus/
+		);
 	});
 
 	it('un seuil mal écrit, ou d’une autre variable', () => {
