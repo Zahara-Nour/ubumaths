@@ -53,14 +53,25 @@ export function categoryKeyOf(category: QuestionCategory): string {
 	);
 }
 
+/** Ce que la résolution d'une catégorie lit d'un modèle. */
+export type CategorizedTemplate = {
+	theme: string;
+	domain: string;
+	subdomain?: string | null;
+	level: number;
+};
+
 /**
  * Modèles d'une catégorie. Sous-domaine absent : `null` et `''` se valent.
  * Niveau : un ancien panier (localStorage) peut le porter en chaîne.
+ *
+ * Résolution UNIQUE catégorie → modèles : la série (tirage) et le paquet de
+ * révision d'un chapitre (`server/srs/chapter-deck.ts`) passent par elle.
  */
-function templatesOfCategory(
-	templates: readonly QuestionTemplate[],
+export function templatesOfCategory<T extends CategorizedTemplate>(
+	templates: readonly T[],
 	category: QuestionCategory
-): QuestionTemplate[] {
+): T[] {
 	return templates.filter(
 		(template) =>
 			template.theme === category.theme &&

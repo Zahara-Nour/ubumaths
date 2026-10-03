@@ -20,6 +20,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import {
 		ChapterProgressIndicator,
+		ChapterRevisionButton,
 		ChapterSeriesCard,
 		DocumentCard,
 		ChecklistSection
@@ -80,6 +81,11 @@
 				<ChapterProgressIndicator progress={data.chapter.progress} />
 			</div>
 		</Card.Header>
+		{#if data.revisionDeck && data.revisionDeck.deckSize > 0}
+			<Card.Content class="pt-4">
+				<ChapterRevisionButton chapterId={data.chapter.id} deck={data.revisionDeck} />
+			</Card.Content>
+		{/if}
 	</Card.Root>
 
 	{#if data.worksheetsUnavailable}

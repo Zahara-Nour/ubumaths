@@ -18,6 +18,25 @@ import { getChapterWithContent, toggleChecklistItem } from '$lib/server/chapters
 import { buildChapterPlan, type WorksheetPlacement } from '$lib/server/chapter-plan';
 import { toggleChecklistSchema } from '$lib/server/validation/chapters';
 import { listChapterSeries } from '$lib/server/chapter-series';
+import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
+
+/**
+ * Paquet de révision calculé du chapitre (étape 3) : `null` si illisible —
+ * le bouton disparaît, la page reste.
+ */
+async function loadRevisionDeck(
+	supabase: App.Locals['supabase'],
+	userId: string,
+	chapterId: string
+): Promise<ChapterDeckSummary | null> {
+	try {
+		const [summary] = await summarizeChapterDecks(supabase, userId, { chapterId });
+		return summary ?? null;
+	} catch (err) {
+		console.error(`Paquet de révision illisible pour le chapitre ${chapterId} :`, err);
+		return null;
+	}
+}
 
 // `fetch` vient de l'événement, jamais du global : une URL relative ferait
 // lever `Failed to parse URL` au `fetch` de Node — hors `try`, donc 500 sur
@@ -117,7 +136,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// tous types. Les deux lectures passent par `locals.supabase`, donc aux
 	// droits de l'élève — une section d'un chapitre qui n'est pas le sien, ou
 	// une fiche non distribuée, ne remontent pas.
-	const [sectionsResult, placementsResult, seriesResult] = await Promise.all([
+	const [sectionsResult, placementsResult, seriesResult, revisionDeck] = await Promise.all([
 		locals.supabase
 			.from('chapter_sections')
 			.select('*')
@@ -129,7 +148,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 			.eq('chapter_id', chapter.id),
 		// Les séries du chapitre : la RLS ne rend que les rattachements PUBLIÉS
 		// d'un chapitre visible de la classe de l'élève (Q123).
-		listChapterSeries(chapter.id, locals.supabase)
+		listChapterSeries(chapter.id, locals.supabase),
+		// Le paquet de révision calculé du chapitre (Q167 a)
+		loadRevisionDeck(locals.supabase, user.id, chapter.id)
 	]);
 
 	// Même règle que pour les fiches : une panne ne se lit pas « aucune série ».
@@ -179,6 +200,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		className: classInfo?.name || 'Classe',
 		exerciseDetails,
 		worksheets: worksheetsData.worksheets || [],
+		revisionDeck,
 		// Une seule bannière « partie du chapitre non chargée » couvre les deux.
 		worksheetsUnavailable: worksheetsUnavailable || seriesUnavailable
 	};

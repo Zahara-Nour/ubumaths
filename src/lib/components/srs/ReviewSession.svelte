@@ -2,7 +2,10 @@
 	ReviewSession Component
 	=======================
 
-	Manages a complete SRS review session for a deck.
+	Manages a complete SRS review session for a deck — or for the COMPUTED
+	revision deck of a chapter (`source.kind === 'chapter'`, étape 3 des
+	questions de cours). La source (`$lib/srs/review-source`) fixe les adresses
+	et traduit les cartes du serveur ; l'écran est le même.
 
 	Features:
 	- Fetches due cards from API
@@ -13,7 +16,7 @@
 	- Completion summary
 
 	Props:
-	- deckId: ID of the deck being reviewed
+	- source: deck (deckId, states, all) ou chapitre (chapterId)
 	- onComplete: Callback when session ends
 -->
 
@@ -25,23 +28,28 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
-	import { CheckCircle2, Trophy, ArrowLeft } from '@lucide/svelte';
+	import { CheckCircle2, Trophy, ArrowLeft, RotateCcw } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { ReviewCard } from '$lib/srs/types';
+	import {
+		dueUrl,
+		submitRequest,
+		toSessionPayload,
+		type ReviewSource,
+		type SessionCard
+	} from '$lib/srs/review-source';
 
 	interface Props {
-		deckId: string;
-		/** Optional FSRS state filter (e.g. "learning,relearning") used by deck Programme sections. */
-		states?: string;
 		/**
-		 * Révision forcée : toutes les cartes du deck, échéance ignorée.
-		 *
-		 * Le cas d'usage est la veille d'un contrôle — « je vérifie une dernière
-		 * fois que j'ai tout compris ». Le reste de la session ne change pas : même
-		 * carte, mêmes boutons FSRS, même soumission, donc le SRS est alimenté
-		 * comme lors d'une révision normale.
+		 * D'où viennent les cartes. Deck : `states` filtre les états FSRS (sections
+		 * du Programme) ; `all` = révision forcée, échéance ignorée (veille d'un
+		 * contrôle — même carte, mêmes boutons, même soumission). Chapitre : le
+		 * paquet calculé du chapitre.
 		 */
-		all?: boolean;
+		source: ReviewSource;
+		/** Titre affiché quand rien n'est à revoir */
+		emptyTitle?: string;
+		/** Libellé du bouton de retour */
+		backLabel?: string;
 		onComplete?: (summary: SessionSummary) => void;
 		onBack?: () => void;
 	}
@@ -53,15 +61,25 @@
 		totalTime: number;
 	}
 
-	let { deckId, states, all = false, onComplete, onBack }: Props = $props();
+	let {
+		source,
+		emptyTitle = 'Aucune carte à réviser',
+		backLabel = 'Retour aux decks',
+		onComplete,
+		onBack
+	}: Props = $props();
 
 	// State
-	let cards = $state<ReviewCard[]>([]);
+	let cards = $state<SessionCard[]>([]);
 	let currentIndex = $state(0);
 	let isFlipped = $state(false);
 	let isLoading = $state(true);
 	let isSubmitting = $state(false);
 	let sessionComplete = $state(false);
+	/** Chargement en échec (500, 404, réseau) : ni état vide, ni félicitations */
+	let loadError = $state(false);
+	/** Cartes que le serveur (ou la traduction) a écartées à ce chargement */
+	let skippedCount = $state(0);
 
 	// Session stats
 	let correctCount = $state(0);
@@ -90,41 +108,37 @@
 	 */
 	async function fetchDueCards() {
 		isLoading = true;
+		loadError = false;
 
 		try {
-			const url = new URL('/api/srs/review/due', window.location.origin);
-			url.searchParams.set('deck_id', deckId);
-			if (states) url.searchParams.set('states', states);
-			// Seul `'true'` active la révision forcée côté serveur : ne poser le
-			// paramètre que lorsqu'il vaut quelque chose évite un `?all=false`
-			// qui ne dit rien de plus que son absence.
-			if (all) url.searchParams.set('all', 'true');
-			const response = await fetch(url.toString());
+			const response = await fetch(dueUrl(source));
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch due cards');
 			}
 
-			const data = await response.json();
-			cards = data.cards || [];
+			// Cartes PLATES du serveur → cartes de séance (une carte mal formée est
+			// écartée et comptée, l'écran ne plante pas)
+			const payload = toSessionPayload(source, await response.json());
+			cards = payload.cards;
 
 			// Cartes que le serveur n'a pas pu générer : le dire plutôt que
 			// raccourcir la session en silence
-			const skippedCount = typeof data.skipped === 'number' ? data.skipped : 0;
-			if (skippedCount > 0) {
+			skippedCount = payload.skipped;
+			if (skippedCount > 0 && cards.length > 0) {
 				toaster.warning(
 					`${skippedCount} carte(s) n'ont pas pu être générées et ont été mises de côté.`
 				);
 			}
 
-			if (cards.length === 0) {
-				sessionComplete = true;
-			} else {
+			// Rien à revoir : l'état vide, pas un « Session terminée » à 0 carte
+			if (cards.length > 0) {
 				cardStartTime = Date.now();
 			}
 		} catch (error) {
 			console.error('Error fetching due cards:', error);
-			toaster.error('Erreur lors du chargement des cartes');
+			cards = [];
+			loadError = true;
 		} finally {
 			isLoading = false;
 		}
@@ -160,15 +174,11 @@
 		}
 
 		try {
-			const response = await fetch('/api/srs/review/submit', {
+			const request = submitRequest(source, currentCard, grade, timeSpent);
+			const response = await fetch(request.url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					cardId: currentCard.card.id,
-					deckId,
-					grade,
-					timeSpent
-				})
+				body: JSON.stringify(request.body)
 			});
 
 			if (!response.ok) {
@@ -239,11 +249,62 @@
 		</div>
 	</div>
 
+	<!-- Load Error : jamais confondu avec « rien à revoir » -->
+{:else if loadError}
+	<Card.Root class="mx-auto max-w-2xl" role="alert">
+		<Card.Header>
+			<Card.Title>Impossible de charger les cartes</Card.Title>
+			<Card.Description
+				>Le chargement a échoué. Vérifie ta connexion puis réessaie.</Card.Description
+			>
+		</Card.Header>
+		<Card.Content>
+			<div class="flex flex-wrap gap-3">
+				<Button onclick={fetchDueCards}>
+					<RotateCcw class="mr-2 h-4 w-4" aria-hidden="true" />
+					Réessayer
+				</Button>
+				{#if onBack}
+					<Button onclick={onBack} variant="outline">
+						<ArrowLeft class="mr-2 h-4 w-4" />
+						{backLabel}
+					</Button>
+				{/if}
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Toutes les cartes écartées : le dire, ne pas féliciter -->
+{:else if totalCards === 0 && skippedCount > 0}
+	<Card.Root class="mx-auto max-w-2xl" role="alert">
+		<Card.Header>
+			<Card.Title>Aucune carte affichable</Card.Title>
+			<Card.Description>
+				{skippedCount} carte{skippedCount > 1 ? 's' : ''} à revoir n'ont pas pu être affichées. Réessaie
+				plus tard ou préviens ton professeur.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<div class="flex flex-wrap gap-3">
+				<Button onclick={fetchDueCards}>
+					<RotateCcw class="mr-2 h-4 w-4" aria-hidden="true" />
+					Réessayer
+				</Button>
+				{#if onBack}
+					<Button onclick={onBack} variant="outline">
+						<ArrowLeft class="mr-2 h-4 w-4" />
+						{backLabel}
+					</Button>
+				{/if}
+			</div>
+		</Card.Content>
+	</Card.Root>
+
 	<!-- Empty State -->
 {:else if !isLoading && totalCards === 0 && !sessionComplete}
 	<Card.Root class="mx-auto max-w-2xl">
 		<Card.Header>
-			<Card.Title>Aucune carte à réviser</Card.Title>
+			<Card.Title>{emptyTitle}</Card.Title>
 			<Card.Description>Félicitations ! Toutes vos cartes sont à jour.</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -255,7 +316,7 @@
 				{#if onBack}
 					<Button onclick={onBack} variant="outline" class="mt-4">
 						<ArrowLeft class="mr-2 h-4 w-4" />
-						Retour aux decks
+						{backLabel}
 					</Button>
 				{/if}
 			</div>
@@ -307,7 +368,7 @@
 				{#if onBack}
 					<Button onclick={onBack} variant="outline" class="flex-1">
 						<ArrowLeft class="mr-2 h-4 w-4" />
-						Retour aux decks
+						{backLabel}
 					</Button>
 				{/if}
 			</div>
@@ -328,21 +389,23 @@
 
 		<!-- FlashCard Display -->
 		<div class="mb-6">
-			{#if currentCard.card.cardType === 'template' && currentCard.instance}
-				<FlashCard
-					interactive={false}
-					instance={currentCard.instance}
-					size="lg"
-					onFlip={handleFlip}
-				/>
-			{:else if currentCard.card.cardType === 'custom' && currentCard.card.frontContent && currentCard.card.backContent}
-				<CustomFlashCard
-					frontContent={currentCard.card.frontContent}
-					backContent={currentCard.card.backContent}
-					size="lg"
-					onFlip={handleFlip}
-				/>
-			{/if}
+			{#key currentCard.key}
+				{#if currentCard.kind === 'template'}
+					<FlashCard
+						interactive={false}
+						instance={currentCard.instance}
+						size="lg"
+						onFlip={handleFlip}
+					/>
+				{:else}
+					<CustomFlashCard
+						frontContent={currentCard.frontContent}
+						backContent={currentCard.backContent}
+						size="lg"
+						onFlip={handleFlip}
+					/>
+				{/if}
+			{/key}
 		</div>
 
 		<!-- FSRS Grading Buttons (shown after flip) -->

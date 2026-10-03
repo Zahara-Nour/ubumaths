@@ -460,34 +460,47 @@ export interface DbDeckAssignment {
 // ============================================================================
 
 /**
- * Card ready for review (with stats and generated instance)
+ * Statistiques allégées d'une carte, telles que `GET /api/srs/review/due` les rend.
  */
-export interface ReviewCard {
-	/**
-	 * Card metadata
-	 */
-	card: Card;
+export interface DueReviewCardStats {
+	state: CardState;
+	difficulty: number;
+	stability: number;
+	totalReviews: number;
+	lastReview: string | null;
+	nextReview: string;
+}
 
-	/**
-	 * FSRS stats for this card
-	 */
-	stats: CardStats;
+/**
+ * Une carte due, telle que `GET /api/srs/review/due` la rend : forme PLATE
+ * (`cardId`, `cardType`). L'ancien type `ReviewCard` (imbriqué `card.card`)
+ * ne correspondait pas à la réponse et faisait planter l'écran de séance.
+ */
+export type DueReviewCard =
+	| {
+			cardId: string;
+			cardType: 'template';
+			templateId: string;
+			instance: QuestionInstance;
+			stats: DueReviewCardStats;
+	  }
+	| {
+			cardId: string;
+			cardType: 'custom';
+			frontContent: TemplateMarkdown;
+			backContent: TemplateMarkdown;
+			stats: DueReviewCardStats;
+	  };
 
-	/**
-	 * For template cards: Generated instance
-	 * For custom cards: undefined
-	 */
-	instance?: QuestionInstance;
-
-	/**
-	 * Whether this card is due for review
-	 */
-	isDue: boolean;
-
-	/**
-	 * Days until next review (negative if overdue)
-	 */
-	daysUntilDue: number;
+/**
+ * Une question du paquet CALCULÉ d'un chapitre, telle que
+ * `GET /api/srs/chapters/[chapterId]/due` la rend.
+ */
+export interface ChapterDueCard {
+	templateId: string;
+	instance: QuestionInstance;
+	/** Jamais vue : première révision */
+	isNew: boolean;
 }
 
 /**
@@ -598,6 +611,14 @@ export interface SubmitReviewRequest {
  * Response for due cards
  */
 export interface DueCardsResponse {
-	cards: ReviewCard[];
-	totalDue: number;
+	cards: DueReviewCard[];
+	/** Cartes que le serveur n'a pas pu générer */
+	skipped?: number;
+}
+
+/** Réponse de `GET /api/srs/chapters/[chapterId]/due`. */
+export interface ChapterDueResponse {
+	chapter: { id: string; title: string };
+	cards: ChapterDueCard[];
+	skipped: number;
 }
