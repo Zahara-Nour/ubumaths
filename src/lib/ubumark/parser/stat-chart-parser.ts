@@ -76,6 +76,7 @@ import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { readListValue } from '$lib/statistics/read-value';
+import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -118,6 +119,9 @@ interface Options {
 	decimalFrequencies: boolean | null;
 	/** `masquer:` d'un tableau d'effectifs, tel qu'écrit */
 	tableMasked: string | null;
+	/** Loi binomiale : `arrondi:` (décimales) et `probabilités:` tel qu'écrit */
+	places: number | null;
+	binomialQueries: string | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -188,7 +192,9 @@ const OPTION_KEYS = [
 	'echantillons',
 	'classes',
 	'serie',
-	'frequences'
+	'frequences',
+	'arrondi',
+	'probabilites'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -226,6 +232,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	echantillons: ['simulation'],
 	classes: ['histogramme', 'frequences-cumulees', 'effectifs'],
 	frequences: ['effectifs'],
+	arrondi: ['loi'],
+	probabilites: ['loi'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
@@ -235,7 +243,8 @@ const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	legende: 'légende',
 	echantillons: 'échantillons',
 	serie: 'série',
-	frequences: 'fréquences'
+	frequences: 'fréquences',
+	probabilites: 'probabilités'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -267,6 +276,12 @@ const RAW_DATA_KINDS: readonly StatChartKind[] = [
 
 /** `données Garçons: 12 ; 15` : une série nommée (le nom, puis les valeurs) */
 const NAMED_SERIES_REGEX = /^donn[ée]es\s+([^:]+?)\s*:\s*(.*)$/i;
+
+/** `X ~ B(10 ; 0,3)` ou `X suit B(10 ; 0,3)` : la variable, n, p */
+// Séparateur « ; », ou « , » suivi d'une espace : la notation anglaise B(10, 0.3) (revue)
+const BINOMIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*B\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
+
+const BINOMIAL_ALONE = 'une loi binomiale se donne seule : pas de ligne « X = » ni « P = »';
 
 const RAW_AND_COUNTS = 'soit les données, soit les effectifs (catégorie = effectif), pas les deux';
 
@@ -561,6 +576,12 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				return;
 			}
 			options.rows = parseNames(value, 'lignes');
+			return;
+		case 'arrondi':
+			options.places = parseWhole(value, 1, 6, 'arrondi : un nombre de décimales de 1 à 6');
+			return;
+		case 'probabilites':
+			options.binomialQueries = value;
 			return;
 		case 'frequences': {
 			const written = normalizeKey(value.trim());
@@ -1274,6 +1295,136 @@ function parseLawIndicators(raw: string): LawIndicator[] {
  * si c'en est une (somme exacte 1, probabilités dans [0 ; 1], valeurs
  * distinctes). Rend les données, ou les erreurs.
  */
+/** Lecture d'une borne de `probabilités:` : ⩽, ≤, <= ; ⩾, ≥, >= ; <, >, = */
+const QUERY_OPERATORS: Record<string, '<' | '⩽' | '>' | '⩾' | '='> = {
+	'<': '<',
+	'⩽': '⩽',
+	'≤': '⩽',
+	'<=': '⩽',
+	'>': '>',
+	'⩾': '⩾',
+	'≥': '⩾',
+	'>=': '⩾',
+	'=': '='
+};
+const OPERATOR = '(<=|>=|⩽|≤|⩾|≥|<|>|=)';
+const QUERY_ONE_SIDE = new RegExp(
+	`^P\\(\\s*([A-Za-z])\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\)$`
+);
+const QUERY_TWO_SIDES = new RegExp(
+	`^P\\(\\s*(${PLAIN_NUMBER})\\s*${OPERATOR}\\s*([A-Za-z])\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\)$`
+);
+
+/**
+ * Une loi binomiale `X ~ B(n ; p)` (manche 11) : n entier de 1 à 1 000, p
+ * entre 0 et 1 ; `masquer:`, `indicateurs:` comme une loi écrite à la main ;
+ * `probabilités:` traduites en bornes entières P(low ⩽ X ⩽ high).
+ */
+function checkBinomial(
+	binomial: { name: string; n: string; p: string; line: number },
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { law: LawData } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const n = /^\d+$/.test(binomial.n) ? Number(binomial.n) : NaN;
+	if (!(n >= 1 && n <= BINOMIAL_MAX_N)) {
+		return at(binomial.line, 'B(n ; p) : n est un entier de 1 à 1 000');
+	}
+	const p = Fraction.parse(binomial.p);
+	// Un nombre bien écrit mais trop long : le dire, plutôt que « pas un nombre » (revue)
+	if (
+		p === null &&
+		/^[\d\s.,/%]+$/.test(binomial.p) &&
+		/\d{16}/.test(binomial.p.replace(/[\s.,]/g, ''))
+	) {
+		return at(binomial.line, 'B(n ; p) : p a au plus 15 chiffres');
+	}
+	if (p === null || p.isNegative() || p.greaterThan(Fraction.ONE)) {
+		return at(binomial.line, 'B(n ; p) : p est un nombre entre 0 et 1');
+	}
+	// `masquer:` sans tableau à masquer (au-delà de 30 valeurs, revue)
+	if (options.lawMasked.length > 0 && n + 1 > STAT_CHART_LIMITS.binomialTableValues) {
+		return at(
+			optionLines.masquer ?? 0,
+			`masquer : pas de tableau au-delà de ${STAT_CHART_LIMITS.binomialTableValues} valeurs`
+		);
+	}
+
+	const masked: number[] = [];
+	for (const raw of options.lawMasked) {
+		const k = /^\d+$/.test(raw) ? Number(raw) : -1;
+		if (k < 0 || k > n) {
+			return at(optionLines.masquer ?? 0, `masquer : la valeur « ${raw} » n'est pas dans la loi`);
+		}
+		if (!masked.includes(k)) masked.push(k);
+	}
+
+	const queries: { display: string; low: number; high: number }[] = [];
+	const queriesLine = optionLines.probabilites ?? 0;
+	const written = (options.binomialQueries ?? '')
+		.split(';')
+		.map((q) => q.trim())
+		.filter((q) => q !== '');
+	for (const text of written) {
+		const one = QUERY_ONE_SIDE.exec(text);
+		const two = one ? null : QUERY_TWO_SIDES.exec(text);
+		const variable = one?.[1] ?? two?.[3];
+		if (variable === undefined) {
+			return at(queriesLine, 'probabilités : écrire P(X = 3), P(X ⩽ 4) ou P(2 ⩽ X ⩽ 5)');
+		}
+		if (variable !== binomial.name) {
+			return at(
+				queriesLine,
+				`probabilités : « ${text} » parle de ${variable}, la variable est ${binomial.name}`
+			);
+		}
+		const bound = (raw: string) => toNumber(raw);
+		let low = 0;
+		let high = n;
+		let display: string;
+		if (one) {
+			const op = QUERY_OPERATORS[one[2]];
+			const k = bound(one[3]);
+			if (op === '=') [low, high] = Number.isInteger(k) ? [k, k] : [1, 0];
+			else if (op === '⩽') high = Math.floor(k);
+			else if (op === '<') high = Math.ceil(k) - 1;
+			else if (op === '⩾') low = Math.ceil(k);
+			else low = Math.floor(k) + 1;
+			display = `P(${variable} ${op} ${one[3]})`;
+		} else {
+			const [left, right] = [QUERY_OPERATORS[two![2]], QUERY_OPERATORS[two![4]]];
+			if (!['<', '⩽'].includes(left) || !['<', '⩽'].includes(right)) {
+				return at(queriesLine, 'probabilités : écrire P(2 ⩽ X ⩽ 5), les bornes dans l’ordre');
+			}
+			const a = bound(two![1]);
+			const b = bound(two![5]);
+			low = left === '⩽' ? Math.ceil(a) : Math.floor(a) + 1;
+			high = right === '⩽' ? Math.floor(b) : Math.ceil(b) - 1;
+			if (a > b) {
+				return at(
+					queriesLine,
+					`probabilités : « ${text} » : les bornes dans l’ordre (la plus petite d’abord)`
+				);
+			}
+			display = `P(${two![1]} ${left} ${variable} ${right} ${two![5]})`;
+		}
+		queries.push({ display, low, high });
+	}
+
+	return {
+		law: {
+			variable: binomial.name,
+			values: Array.from({ length: n + 1 }, (_, k) => String(k)),
+			probabilities: [],
+			masked,
+			indicators: options.lawIndicators,
+			binomial: { n, p: binomial.p, places: options.places ?? 3, queries }
+		}
+	};
+}
+
 function checkLaw(
 	variable: ({ name: string } & LawLine) | null,
 	probabilities: LawLine | null,
@@ -1345,7 +1496,8 @@ function checkLaw(
 			values: variable.texts.map((text) => text ?? ''),
 			probabilities: probabilities.texts,
 			masked,
-			indicators: options.lawIndicators
+			indicators: options.lawIndicators,
+			binomial: null
 		}
 	};
 }
@@ -1585,9 +1737,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		barDisplay: null,
 		tableRows: null,
 		decimalFrequencies: null,
-		tableMasked: null
+		tableMasked: null,
+		places: null,
+		binomialQueries: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
+	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
+	let lawBinomial = null as { name: string; n: string; p: string; line: number } | null;
 	let lawProbabilities = null as LawLine | null;
 	// Une simulation écrit sa loi comme le bloc ```loi
 	const isSimulation = kind === 'simulation';
@@ -1666,6 +1822,16 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				return;
 			}
 
+			// Loi binomiale : `X ~ B(10 ; 0,3)`, `X suit B(10 ; 3/10)` (pas en simulation : PR b)
+			const binomial = isLaw && !isSimulation ? BINOMIAL_REGEX.exec(content) : null;
+			if (binomial) {
+				if (lawVariable !== null || lawProbabilities !== null || lawBinomial !== null) {
+					throw new LineError(BINOMIAL_ALONE);
+				}
+				lawBinomial = { name: binomial[1], n: binomial[2], p: binomial[3], line };
+				return;
+			}
+
 			const separator = content.lastIndexOf('=');
 			if (separator === -1) {
 				// `Vélo : 3` : un deux-points à la place du signe =
@@ -1688,6 +1854,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 			// Loi : `X = 1 ; 2 ; 3` (la variable) et `P = 1/2 ; 1/4 ; 1/4`
 			if (isLaw) {
+				if (lawBinomial !== null) throw new LineError(BINOMIAL_ALONE);
 				const texts = content
 					.slice(separator + 1)
 					.split(';')
@@ -1889,7 +2056,31 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		const problem = checkSimulationOptions(options, optionLines);
 		if (problem) errors.push(problem);
 	}
-	if (errors.length === 0 && isLaw) {
+	// `arrondi:` et `probabilités:` n'ont de sens qu'avec une loi binomiale
+	for (const key of ['probabilites', 'arrondi'] as const) {
+		if (errors.length === 0 && seenOptions.has(key) && lawBinomial === null) {
+			const line = optionLines[key] ?? 0;
+			errors.push({
+				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec une loi binomiale (X ~ B(n ; p))`,
+				line
+			});
+		}
+	}
+	const warnings: StatChartIssue[] = [];
+	if (errors.length === 0 && lawBinomial !== null) {
+		const checked = checkBinomial(lawBinomial, options, optionLines);
+		if ('error' in checked) errors.push(checked.error);
+		else {
+			law = checked.law;
+			const count = checked.law.binomial!.n + 1;
+			if (count > STAT_CHART_LIMITS.binomialTableValues) {
+				warnings.push({
+					message: `Ligne ${lawBinomial.line} : ${count} valeurs : tableau non affiché (au plus ${STAT_CHART_LIMITS.binomialTableValues}) ; les probabilités demandées restent données`,
+					line: lawBinomial.line
+				});
+			}
+		}
+	} else if (errors.length === 0 && isLaw) {
 		const checked = checkLaw(lawVariable, lawProbabilities, options, optionLines);
 		if ('errors' in checked) errors.push(...checked.errors);
 		else if (isSimulation) {
@@ -1961,7 +2152,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				}
 			: null;
 
-	return { type: 'stat-chart', kind, source, spec, errors, warnings: [] };
+	return { type: 'stat-chart', kind, source, spec, errors, warnings };
 }
 
 /**

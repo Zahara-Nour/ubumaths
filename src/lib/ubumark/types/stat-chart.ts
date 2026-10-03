@@ -86,6 +86,19 @@ export interface LawData {
 	/** Indices des valeurs dont la probabilité est à compléter (`masquer:`) */
 	masked: number[];
 	indicators: LawIndicator[];
+	/**
+	 * Loi binomiale (`X ~ B(n ; p)`, manche 11) : les valeurs sont 0 à n, les
+	 * probabilités calculées (exactes, affichées arrondies) ; sinon null.
+	 */
+	binomial: {
+		n: number;
+		/** p tel qu'écrit (`0,3`, `3/10`) */
+		p: string;
+		/** Décimales affichées (`arrondi:`, 3 par défaut) */
+		places: number;
+		/** `probabilités:` : P(low ⩽ X ⩽ high), et leur écriture normalisée */
+		queries: { display: string; low: number; high: number }[];
+	} | null;
 }
 
 /** Lignes d'un tableau d'effectifs (Q128), dans l'ordre de l'auteur */
@@ -306,6 +319,8 @@ export const STAT_CHART_LIMITS = {
 	simulationSampleDraws: 100_000,
 	/** Valeurs différentes de deux séries : deux barres chacune (30 barres, Q115) */
 	twoSeriesCategories: 15,
+	/** Valeurs affichées d'une loi binomiale : au-delà, pas de tableau (Q138) */
+	binomialTableValues: 30,
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
 	/** Caractères d'un nom de catégorie */

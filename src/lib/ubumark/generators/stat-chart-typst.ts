@@ -458,7 +458,10 @@ function crossTableTypst(scene: CrossTableScene): string {
  * Typst inconnue.
  */
 function lawTypst(scene: LawScene): string {
+	// Loi binomiale de plus de 30 valeurs (Q138) : le titre, puis les lignes seulement
+	if (scene.tableHidden) return titleBlock(scene.title ?? scene.accessibleTitle);
 	const letter = scene.variable.toLowerCase();
+	if (scene.vertical !== undefined) return binomialTypst(scene, letter);
 	const cells: string[] = [];
 	const push = (content: string) => cells.push(`  // case\n  ${content}`);
 
@@ -470,6 +473,22 @@ function lawTypst(scene: LawScene): string {
 		push(p.hidden ? '[#box(width: 1.2cm)]' : textContent(p.text));
 
 	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.values.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+}
+
+/**
+ * Loi binomiale (manche 11) : le nom de la loi en titre (« Loi de X : B(10 ; 0,3) »),
+ * colonnes à la largeur du contenu, sans césure ; vertical si la ligne est trop large.
+ */
+function binomialTypst(scene: LawScene, letter: string): string {
+	const hole = '[#box(width: 0.8cm)]';
+	const cell = (p: (typeof scene.probabilities)[number]) => (p.hidden ? hole : textContent(p.text));
+	// `box` : l'en-tête « P(X = xᵢ) » ne se coupe pas en deux lignes
+	const head = [`[#box($${letter}_i$)]`, `[#box($P(${scene.variable} = ${letter}_i)$)]`];
+	const cells = scene.vertical
+		? [...head, ...scene.values.flatMap((v, i) => [textContent(v), cell(scene.probabilities[i])])]
+		: [head[0], ...scene.values.map(textContent), head[1], ...scene.probabilities.map(cell)];
+	const columns = scene.vertical ? 2 : scene.values.length + 1;
+	return `${titleBlock(scene.title ?? scene.accessibleTitle)}#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${columns},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`;
 }
 
 /**
@@ -549,7 +568,11 @@ function frequencyTableTypst(scene: FrequencyTableScene): string {
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
-	return `\n// indicateurs\n#align(center, text(size: 8pt)${textContent(scene.indicators.join(' · '))})`;
+	// Ce qui est entre parenthèses ne se coupe pas : « P(X ⩽ 4) » restait « P(X » / « ⩽ 4) »
+	const kept = scene.indicators.map((line) =>
+		line.replace(/\(([^)]*)\)/g, (group) => group.replace(/ /g, '\u00a0'))
+	);
+	return `\n// indicateurs\n#align(center, text(size: 8pt)${textContent(kept.join(' · '))})`;
 }
 
 function figureTypst(scene: StatChartScene, size: CourbeSize): string {
