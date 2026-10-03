@@ -44,6 +44,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import {
 		ChevronDown,
@@ -135,6 +136,8 @@
 
 	// Statement markdown - instance.statement is now ResolvedMarkdown (string)
 	const statementMarkdown = $derived(instance.statement);
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 	const needsTruncation = $derived(
 		truncateStatement && !isStatementExpanded && statementMarkdown.length > statementMaxLength
 	);
@@ -338,7 +341,7 @@
 				<span class="text-sm font-semibold">Énoncé</span>
 			</div>
 			<div class="rounded-lg border bg-card p-4">
-				<MarkdownRenderer content={displayedStatement} />
+				<MarkdownRenderer content={displayedStatement} {genericFunctions} />
 
 				<!-- Expand/Collapse Button -->
 				{#if truncateStatement && statementMarkdown.length > statementMaxLength}
@@ -439,7 +442,7 @@
 								{String.fromCharCode(65 + i)}
 							</Badge>
 							<div class="flex-1">
-								<MarkdownRenderer content={choice.content} />
+								<MarkdownRenderer content={choice.content} {genericFunctions} />
 							</div>
 							{#if isCorrect}
 								<CheckCircle class="h-5 w-5 flex-shrink-0 text-green-600" />
@@ -470,7 +473,7 @@
 
 					<Collapsible.Content class="px-2">
 						<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-							<MarkdownRenderer content={correctionMarkdown} />
+							<MarkdownRenderer content={correctionMarkdown} {genericFunctions} />
 						</div>
 					</Collapsible.Content>
 				</div>

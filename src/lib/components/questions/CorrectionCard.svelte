@@ -39,6 +39,7 @@
 	} from '$lib/questions/correction-card-verdict';
 	import { validateAnswerDetailed, type DetailedVerdict } from '$lib/utils/answer-validator';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, TriangleAlert } from '@lucide/svelte';
@@ -85,6 +86,8 @@
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
 	const instance = $derived(answerResult.instance);
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
 
 	// Réponse de l'élève, telle que le validateur la lit (absente : réponse vide)
@@ -264,7 +267,7 @@
 								class="statement-content rounded-lg border bg-muted/30 p-4"
 								data-testid="statement"
 							>
-								<MarkdownRenderer content={instance.statement} inputsDisabled />
+								<MarkdownRenderer content={instance.statement} inputsDisabled {genericFunctions} />
 							</div>
 						{:else if instruction}
 							<div data-testid="instruction">
@@ -324,7 +327,7 @@
 								<GeneratedStepsCorrection steps={renderedSteps} />
 								{#if correctFeedback}
 									<div class="mt-3 border-t pt-3">
-										<MarkdownRenderer content={correctFeedback} />
+										<MarkdownRenderer content={correctFeedback} {genericFunctions} />
 									</div>
 								{/if}
 							</div>
@@ -333,6 +336,7 @@
 								<CorrectionView
 									markdown={correctionMarkdown}
 									expectedAnswer={expectedAnswerMarkdown}
+									{genericFunctions}
 								/>
 							</div>
 						{:else}

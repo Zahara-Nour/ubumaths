@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import { ANSWER_KINDS, EQUATION_FORMS } from './types';
+import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
 // BUILDING BLOCKS (exported, non-strict)
@@ -581,7 +582,9 @@ const sharedStrictZ = z
 		requiredForm: requiredFormStrictZ.optional(),
 		blankDefaults: blankDefaultsStrictZ.optional(),
 		answerFormats: z.record(z.string(), z.string()).optional(),
-		conditions: z.array(z.string()).optional()
+		conditions: z.array(z.string()).optional(),
+		// Fonctions déclarées (`P`, `C`) : complètent f, g, h… (cf. generic-functions.ts)
+		genericFunctions: genericFunctionNamesSchema.optional()
 	})
 	.strict();
 

@@ -14,6 +14,7 @@
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { courseCardFront } from '$lib/questions/course-card';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -47,6 +48,8 @@
 	let assessment = $state<boolean | null>(null);
 
 	const front = $derived(courseCardFront(instance));
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 	const showBack = $derived(revealed || isFlipped);
 	const sizeClasses = $derived(SIZE_CLASSES[size]);
 
@@ -75,7 +78,7 @@
 		class={cn('rounded-lg border bg-card', sizeClasses.face)}
 		data-testid="course-card-front"
 	>
-		<MarkdownRenderer content={front} />
+		<MarkdownRenderer content={front} {genericFunctions} />
 	</section>
 
 	{#if showBack}
@@ -83,7 +86,7 @@
 			aria-label="Verso"
 			class={cn('rounded-lg border border-primary/30 bg-primary/5', sizeClasses.face)}
 		>
-			<CourseCardBack correction={instance.correction} />
+			<CourseCardBack correction={instance.correction} {genericFunctions} />
 		</section>
 
 		{#if interactive && onSelfAssess}

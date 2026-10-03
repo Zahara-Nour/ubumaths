@@ -278,3 +278,34 @@ describe('buildSerie — détails de correction', () => {
 		expect(serie.solution).toContain('2 \\times 1');
 	});
 });
+
+// Fonctions déclarées par un modèle (`shared.genericFunctions`) : l'exercice figé
+// les lit avec SA liste (`generic_functions`, qui REMPLACE les défauts) → la série
+// rend défauts ∪ fonctions déclarées, ou rien si aucun modèle n'en déclare.
+describe('buildSerie — fonctions déclarées par les modèles', () => {
+	const derivee = {
+		...base,
+		id: 'derivee',
+		shared: { genericFunctions: ['P'] },
+		variations: [
+			{ statement: 'Si $P(x)=x^2$, alors ~P(2)~ vaut $?$.', blanks: [{ expectedAnswer: '4' }] }
+		]
+	} as unknown as QuestionTemplate;
+
+	it('liste pour l’exercice : défauts ∪ fonctions déclarées', () => {
+		const modeles = new Map([
+			['derivee', derivee],
+			['coef', coefficient]
+		]);
+		const serie = buildSerie(modeles, [
+			{ templateId: 'derivee', seed: 1 },
+			{ templateId: 'coef', seed: 1 }
+		]);
+		expect(serie.genericFunctions).toEqual(['f', 'g', 'h', 'u', 'v', 'w', 'F', 'G', 'H', 'P']);
+	});
+
+	it('aucun modèle ne déclare : aucune clé', () => {
+		const serie = buildSerie(new Map([['coef', coefficient]]), [{ templateId: 'coef', seed: 1 }]);
+		expect(serie).not.toHaveProperty('genericFunctions');
+	});
+});

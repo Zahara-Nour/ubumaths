@@ -21,6 +21,7 @@ import {
 	testSpecSchema
 } from '$lib/questions/template-schema';
 import { refineAssumptionCollisions } from '$lib/questions/answer-assumptions';
+import { genericFunctionNamesSchema } from '$lib/questions/generic-functions';
 
 // Re-export building blocks for downstream consumers (migration-review.ts, index.ts)
 export {
@@ -86,15 +87,41 @@ const questionTemplateFieldsSchema = z.object({
 });
 
 /**
+ * `shared` reste un jsonb libre côté route, SAUF `shared.genericFunctions` : la liste
+ * atteint le parseur (génération, validation de l'élève) et se valide ici.
+ */
+function refineSharedGenericFunctions(data: { shared?: unknown }, ctx: z.RefinementCtx): void {
+	const shared = data.shared;
+	if (typeof shared !== 'object' || shared === null || !('genericFunctions' in shared)) return;
+	const result = genericFunctionNamesSchema.safeParse(shared.genericFunctions);
+	if (result.success) return;
+	for (const issue of result.error.issues) {
+		ctx.addIssue({
+			code: 'custom',
+			message: issue.message,
+			path: ['shared', 'genericFunctions', ...issue.path.map(String)]
+		});
+	}
+}
+
+/** Contrôles croisés communs à la création et à la mise à jour */
+function refineTemplate(
+	data: Parameters<typeof refineAssumptionCollisions>[0] & { shared?: unknown },
+	ctx: z.RefinementCtx
+): void {
+	refineAssumptionCollisions(data, ctx);
+	refineSharedGenericFunctions(data, ctx);
+}
+
+/**
  * Schema for creating a question template
  *
  * Contrôle croisé : une hypothèse de l'énoncé (`options.answerAssumptions`)
  * ne vise jamais une variable tirée — refusé ici, quel que soit le statut
  * (`validateTemplate` ne tourne qu'à la publication).
  */
-export const createQuestionTemplateSchema = questionTemplateFieldsSchema.superRefine(
-	refineAssumptionCollisions
-);
+export const createQuestionTemplateSchema =
+	questionTemplateFieldsSchema.superRefine(refineTemplate);
 
 /**
  * Schema for updating a question template (all fields optional)
@@ -109,7 +136,7 @@ export const createQuestionTemplateSchema = questionTemplateFieldsSchema.superRe
 export const updateQuestionTemplateSchema = questionTemplateFieldsSchema
 	.partial()
 	.extend({ status: z.enum(['draft', 'published']).optional() })
-	.superRefine(refineAssumptionCollisions);
+	.superRefine(refineTemplate);
 
 /**
  * Schema for listing question templates
