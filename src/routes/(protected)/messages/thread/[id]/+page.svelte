@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { safeMessageAttachmentUrl } from '$lib/utils/file-upload';
+	import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
@@ -205,17 +207,22 @@
 													{formatFileSize(attachment.file_size)}
 												</div>
 											</div>
-											<a
-												href={attachment.public_url}
-												download={attachment.file_name}
-												target="_blank"
-												rel="noopener noreferrer"
-												class="opacity-0 transition-opacity group-hover:opacity-100"
-											>
-												<Button variant="ghost" size="sm" title="Télécharger">
-													<Download class="h-4 w-4" />
-												</Button>
-											</a>
+											{#if safeMessageAttachmentUrl(attachment.public_url, PUBLIC_SUPABASE_URL)}
+												<a
+													href={safeMessageAttachmentUrl(
+														attachment.public_url,
+														PUBLIC_SUPABASE_URL
+													)}
+													download={attachment.file_name}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="opacity-0 transition-opacity group-hover:opacity-100"
+												>
+													<Button variant="ghost" size="sm" title="Télécharger">
+														<Download class="h-4 w-4" />
+													</Button>
+												</a>
+											{/if}
 										</div>
 									{/each}
 								</div>

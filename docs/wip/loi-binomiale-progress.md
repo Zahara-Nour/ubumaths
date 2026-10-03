@@ -15,6 +15,7 @@ seuil (surréservation). Spec PR (a) validée le 2026-10-03.
       fiche), pas de tableau au-delà de 30 valeurs ; écran et Typst ; filet anglais
 - [x] Fiche compilée et vérifiée à la main (B(10 ; 0,3), B(5 ; 1/2), B(100 ; 0,5))
 - [x] Revue : aucune erreur mathématique ; E et V en décimal exact si p est décimal ; notation anglaise B(10, 0.3) ; messages (p à plus de 15 chiffres, bornes inversées, `masquer:` sans tableau) ; pas d’arrondi des cases quand le tableau est caché ; tests (0,513 exact, horizontal, p = 0 / 1, 1/0, 1e3, bornes)
+- [x] Revue : pas d’injection possible ; « 30 % » et « 1 / 2 » acceptés ; minuscule et option sans valeur expliquées ; doc de `exampleSetup` (décor vide)
 - [ ] PR, CI, merge
 
 ## PR (b) — `diagramme:`, `intervalle:`, `seuil:`, simulation
@@ -31,6 +32,17 @@ valeurs exactes (Python) pour B(10 ; 0,3) sont I = [0 ; 6] et k = 5.
       numéros à plat ; écran, Typst, anglais
 - [x] Fiche compilée et regardée
 - [x] Revue : aucune erreur mathématique ; niveau décimal exigé ; P(X ∈ I) avec au moins les décimales du niveau ; α du seuil dans ]0 ; 1[ ; avertissement qui cite le diagramme ; simulation n ⩽ 29 ; description « P(X = 3) ≈ 0,267 » ; en-tête Typst en maths en bloc ; tests des 8 combinaisons de seuil, d’autres niveaux, du gris peint
+- [x] Revue : pas d’injection possible ; « 30 % » et « 1 / 2 » acceptés ; minuscule et option sans valeur expliquées ; doc de `exampleSetup` (décor vide)
 - [ ] PR, CI, merge
 
 ## PR (c) — atelier `.binomiale`
+
+Q142 (David, 2026-10-03) : la commande AFFICHE la loi, sans créer de liste (des listes décimales
+perdraient l'exactitude : l'action « Loi » refuserait B(20 ; 0,3)).
+
+- [x] `atelier/binomial.ts` : `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil …]` écrit
+      le bloc ```loi et en montre la scène (mêmes textes, mêmes valeurs) ; erreurs du bloc sans
+      « Ligne N : » ; catalogue (décor vide déclaré, Q79)
+- [x] Tests `binomiale.test.ts` (8)
+- [x] Revue : pas d’injection possible ; « 30 % » et « 1 / 2 » acceptés ; minuscule et option sans valeur expliquées ; doc de `exampleSetup` (décor vide)
+- [ ] PR, CI, merge
