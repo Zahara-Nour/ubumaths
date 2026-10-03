@@ -12,6 +12,7 @@
  * Usage :
  *   pnpm tsx scripts/generate-curriculum-seed.ts 1_SPE
  *   pnpm tsx scripts/generate-curriculum-seed.ts 2
+ *   pnpm tsx scripts/generate-curriculum-seed.ts T_SPE
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -21,16 +22,39 @@ import { fileURLToPath } from 'url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Un niveau = son markdown, son fichier de seed, et le préfixe de ses codes. */
-const NIVEAUX: Record<string, { md: string; out: string; prefixe: string }> = {
+/**
+ * `source` : les lignes de l'en-tête « Source » du SQL, sans préfixe de
+ * commentaire — c'est l'interpolation qui pose `-- ` devant chacune.
+ */
+const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source: string[] }> = {
 	'1_SPE': {
 		md: 'docs/wip/referentiel/1re-spe-programme.md',
 		out: 'supabase/migrations/20260830090000_seed_curriculum_1re_spe.sql',
-		prefixe: '1SPE'
+		prefixe: '1SPE',
+		source: [
+			'« Programme de spécialité de mathématiques de la classe de première',
+			'de la voie générale » (programme en vigueur, avec la partie transversale',
+			"« Automatismes » ; ce n'est PAS l'arrêté du 17 janvier 2019)."
+		]
 	},
 	'2': {
 		md: 'docs/wip/referentiel/2de-programme.md',
 		out: 'supabase/migrations/20260903090000_seed_curriculum_2de.sql',
-		prefixe: '2'
+		prefixe: '2',
+		source: [
+			'« Programme de mathématiques de seconde générale et technologique »',
+			'(PDF fourni par David).'
+		]
+	},
+	T_SPE: {
+		md: 'docs/wip/referentiel/terminale-spe-programme.md',
+		out: 'supabase/migrations/20261004090000_seed_curriculum_terminale_spe.sql',
+		prefixe: 'TSPE',
+		source: [
+			"« Programme de l'enseignement de spécialité de mathématiques de la",
+			'classe terminale de la voie générale » (nouveau programme, PDF fourni par',
+			'David le 2026-10-03).'
+		]
 	}
 };
 
@@ -143,7 +167,12 @@ function parse(md: string) {
  * quand le contenu change de nature. Les apostrophes doublées sont écrites par
  * ce script, dans un fichier que personne n'édite à la main.
  */
-const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
+const q = (s: string) => {
+	// Le corps de la migration est un bloc `do $bootstrap$ … $bootstrap$` : un
+	// libellé contenant ce délimiteur fermerait le bloc au milieu du seed.
+	if (s.includes('$bootstrap$')) throw new Error(`Libellé interdit ($bootstrap$) : ${s}`);
+	return `'${s.replace(/'/g, "''")}'`;
+};
 
 const md = readFileSync(SRC, 'utf8');
 const { themes, objectives, points } = parse(md);
@@ -256,9 +285,7 @@ const sql = `-- ================================================================
 -- GÉNÉRÉ par scripts/generate-curriculum-seed.ts depuis
 -- ${NIVEAU.md} — ne pas éditer à la main.
 --
--- Source : « Programme de spécialité de mathématiques de la classe de première
--- de la voie générale » (programme en vigueur, avec la partie transversale
--- « Automatismes » ; ce n'est PAS l'arrêté du 17 janvier 2019).
+-- Source : ${NIVEAU.source.join('\n-- ')}
 --
 --   ${themes.length} thèmes · ${objectives.length} objectifs · ${points.length} points
 --   kind        : ${points.filter((p) => p.kind === 'connaissance').length} connaissance · ${points.filter((p) => p.kind === 'savoir_faire').length} savoir_faire · ${points.filter((p) => p.kind === 'demonstration').length} demonstration
@@ -284,6 +311,15 @@ const sql = `-- ================================================================
 -- Ce que le seed ne renseigne pas, volontairement :
 --   · \`regime_acquisition\` — au défaut ('diversite') ; c'est un choix de prof
 --   · \`rang\` — NULL ; le programme ne propose aucune échelle de difficulté
+--
+-- ROLLBACK (migration additive) — valable tant que rien ne s'est rattaché au
+-- niveau. La suppression d'un thème emporte en cascade objectifs, points ET ce
+-- qui pointe vers eux (états d'élèves, exercices, entrées de journal…). Donc,
+-- d'abord, vérifier que cette requête ne rend AUCUNE ligne :
+--   SELECT * FROM public.curriculum_referenced_points('${GRADE}');
+-- puis seulement :
+--   DELETE FROM public.curriculum_themes WHERE grade = '${GRADE}';
+-- Si elle rend des lignes, ne pas annuler : corriger dans la page Programme.
 -- ============================================================================
 
 do $bootstrap$
