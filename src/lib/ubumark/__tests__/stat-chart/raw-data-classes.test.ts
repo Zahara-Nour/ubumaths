@@ -155,6 +155,22 @@ describe('données + classes — erreurs situées', () => {
 		);
 	});
 
+	it('bornes décimales et négatives : valeur pile sur une borne, borne suggérée exacte', () => {
+		// 3/10 = 0,3 pile sur la borne : dans [0,3 ; 0,4[
+		expect(tally('classes: 0,1 ; 0,2 ; 0,3 ; 0,4\ndonnées: 0,1 ; 3/10 ; 0,2')).toEqual([
+			['[0,1 ; 0,2[', 1],
+			['[0,2 ; 0,3[', 1],
+			['[0,3 ; 0,4[', 1]
+		]);
+		expect(errorOf('classes: 0,1 ; 0,2 ; 0,3\ndonnées: 0,35')).toBe(
+			'Ligne 2 : 0,35 sort des classes : la dernière est [0,2 ; 0,3[ (ajouter une borne, par exemple 0,4)'
+		);
+		expect(tally('classes: −10 ; −5 ; 0\ndonnées: −10 ; −5 ; −0,5')).toEqual([
+			['[-10 ; -5[', 1],
+			['[-5 ; 0[', 2]
+		]);
+	});
+
 	it('valeur qui n’est pas un nombre', () => {
 		expect(errorOf('classes: 0 ; 5\ndonnées: 3 ; Bus')).toBe(
 			'Ligne 2 : « Bus » n’est pas un nombre : un histogramme demande des nombres'
@@ -176,6 +192,10 @@ describe('données + classes — erreurs situées', () => {
 			'Ligne 1 : classes : au plus 20 classes (ici 21)'
 		);
 		expect(errorOf('classes: 0 ; cinq\ndonnées: 1')).toMatch(/^Ligne 1 : classes : « cinq »/);
+		// Le message cite la borne écrite, pas une classe reconstituée
+		expect(errorOf('classes: 0 ; 0,12345\ndonnées: 0')).toBe(
+			'Ligne 1 : classes : au plus 4 décimales dans une borne (0,12345)'
+		);
 	});
 
 	it('une option sans l’autre', () => {

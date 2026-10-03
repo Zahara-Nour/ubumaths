@@ -759,8 +759,19 @@ function parseClassBounds(value: string): string[] {
 			throw new LineError(`classes : « ${bound} » n'est pas une borne (écrire 0 ; 5 ; 10)`);
 		}
 	}
-	if (bounds.length < 2)
+	for (const bound of bounds) {
+		// Les contrôles de `parseClass`, mais sur la borne ÉCRITE (revue : le message
+		// citait une classe « [0 ; 0,12345[ » que l'auteur n'avait pas écrite)
+		if ((bound.split(/[.,]/)[1] ?? '').length > 4) {
+			throw new LineError(`classes : au plus 4 décimales dans une borne (${bound})`);
+		}
+		if (Math.abs(toNumber(bound)) > STAT_CHART_LIMITS.maxValue) {
+			throw new LineError(`classes : borne trop grande (${bound}, au plus 10^9 en valeur absolue)`);
+		}
+	}
+	if (bounds.length < 2) {
 		throw new LineError('classes : au moins deux bornes (classes: 0 ; 5 ; 10)');
+	}
 	for (let i = 1; i < bounds.length; i++) {
 		if (!(toNumber(bounds[i - 1]) < toNumber(bounds[i]))) {
 			throw new LineError(
@@ -826,7 +837,9 @@ function tallyIntoClasses(
 			return at(line, `${spokenNumber(value)} sort des classes : la première est ${first.label}`);
 		}
 		if (value >= last.interval.upper) {
-			const next = last.interval.upper + (last.interval.upper - last.interval.lower);
+			// Arrondie aux décimales des bornes : 0,3 + 0,1 donnait 0,39999999999999997
+			const decimals = Math.max(...bounds.map((b) => (b.split(/[.,]/)[1] ?? '').length));
+			const next = Number((2 * last.interval.upper - last.interval.lower).toFixed(decimals));
 			return at(
 				line,
 				`${spokenNumber(value)} sort des classes : la dernière est ${last.label} (ajouter une borne, par exemple ${spokenNumber(next)})`
