@@ -2,6 +2,13 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
+/*
+ * `dark:` suit le choix de l'utilisateur (classe `.dark` posée par mode-watcher),
+ * pas le système. Par défaut, Tailwind 4 la branche sur `prefers-color-scheme` :
+ * les tokens `light-dark()` basculaient alors, mais pas les classes `dark:`.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
 	/* orange corail : #c66140 */
 	/* bleu : #5b8cc6 */
@@ -212,8 +219,8 @@
 }
 
 /*
- * Note: color-scheme is set dynamically via JavaScript in theme.svelte.ts
- * This allows manual control of light/dark mode instead of relying only on system preferences
+ * Note : `color-scheme` (dont dépend `light-dark()`) est posé sur <html> par
+ * mode-watcher, selon le choix de l'utilisateur et non seulement le système.
  */
 
 html,
