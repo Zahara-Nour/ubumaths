@@ -455,19 +455,18 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 			expect(await titres('RPC lot 2 copie forgée')).toHaveLength(0);
 		});
 
-		// ⚠️ duplicate_template échoue TOUJOURS, en prod aussi : elle insère
-		// scope 'class' avec class_id NULL, ce que la contrainte
-		// message_templates_check interdit (23514). Défaut antérieur, hors de ce
-		// lot. Le témoin prouve donc seulement que la GARDE laisse passer le prof :
-		// son appel va jusqu'à l'INSERT, au lieu d'être refusé en 42501.
-		it("témoin : le prof en son nom passe la garde (et bute sur le défaut d'origine)", async () => {
-			const { error } = await rpc(prof, 'duplicate_template', {
+		// Depuis 20261003220000 (Q154), la copie est un modèle personnel (scope
+		// 'class', sans classe) : l'appel aboutit. Détail : succes-gidouilles.test.ts.
+		it('témoin : le prof en son nom passe la garde et obtient sa copie', async () => {
+			const { data, error } = await rpc(prof, 'duplicate_template', {
 				p_template_id: modele,
 				p_user_id: profId,
 				p_new_title: 'RPC lot 2 copie prof'
 			});
-			expect(error?.code).toBe('23514');
-			expect(error?.message).toContain('message_templates_check');
+			expect(error).toBeNull();
+			modelesCrees.push(data as string);
+			const copies = await titres('RPC lot 2 copie prof');
+			expect(copies.find((c) => c.id === data)?.created_by).toBe(profId);
 		});
 	});
 
