@@ -13,35 +13,28 @@ const logger = createLogger('chat.svelte.ts');
 // =============================================================================
 
 /**
- * Schema for broadcast message payload
- * Validates incoming messages from other users via broadcast channel
+ * Signal « nouveau message » reçu sur le canal privé `chat-<id>`.
+ *
+ * ⚠️ Le broadcast n'est qu'un SIGNAL : la policy de `realtime.messages` vérifie
+ * que l'émetteur est participant, pas ce qu'il écrit. Un participant peut donc
+ * forger un payload (expéditeur « le professeur », contenu inventé). On n'en
+ * garde que l'identifiant ; le message affiché est relu en base, sous RLS.
+ * Les champs en trop (anciens clients) sont ignorés par Zod.
  */
 const broadcastMessagePayloadSchema = z.object({
 	type: z.literal('new_message'),
 	message: z.object({
-		id: z.string().uuid(),
-		conversation_id: z.string().uuid(),
-		sender_id: z.string().uuid(),
-		content: z.unknown(),
-		plain_text: z.string().nullable(),
-		created_at: z.string(),
-		sender: z.object({
-			id: z.string(),
-			full_name: z.string().nullable(),
-			avatar_url: z.string().nullable()
-		})
+		id: z.string().uuid()
 	})
 });
 
 /**
- * Schema for reaction payload
+ * Signal « les réactions de ce message ont changé » : seul l'identifiant sert,
+ * les réactions affichées sont relues en base (`message_reactions`).
  */
 const broadcastReactionPayloadSchema = z.object({
 	type: z.literal('message_reaction'),
-	messageId: z.string().uuid(),
-	userId: z.string().uuid(),
-	emoji: z.string().min(1).max(10),
-	action: z.enum(['add', 'remove'])
+	messageId: z.string().uuid()
 });
 
 /**
@@ -129,34 +122,21 @@ export interface MessageReaction {
 }
 
 /**
- * Broadcast message payload for new messages
+ * Signal de nouveau message (l'identifiant seulement, cf. schéma Zod)
  */
 interface BroadcastMessagePayload {
 	type: 'new_message';
 	message: {
 		id: string;
-		conversation_id: string;
-		sender_id: string;
-		content: Database['public']['Tables']['messages']['Row']['content'];
-		plain_text: string | null;
-		created_at: string;
-		sender: {
-			id: string;
-			full_name: string | null;
-			avatar_url: string | null;
-		};
 	};
 }
 
 /**
- * Broadcast message reaction payload
+ * Signal de changement des réactions d'un message
  */
 interface BroadcastReactionPayload {
 	type: 'message_reaction';
 	messageId: string;
-	userId: string;
-	emoji: string;
-	action: 'add' | 'remove';
 }
 
 /**
@@ -384,6 +364,11 @@ class ChatStore {
 	/**
 	 * Subscribe to a conversation (Broadcast + postgres_changes)
 	 *
+	 * Canal PRIVÉ (migration `20261004090000_realtime_chat_prive.sql`) : seuls
+	 * les participants le rejoignent. Le jeton de session est transmis à
+	 * Realtime avant l'abonnement ; ses rafraîchissements le sont ensuite par
+	 * supabase-js lui-même (`_handleTokenChanged` → `realtime.setAuth`).
+	 *
 	 * @param conversationId - The conversation ID to subscribe to
 	 */
 	async subscribeToConversation(conversationId: string): Promise<void> {
@@ -396,18 +381,17 @@ class ChatStore {
 
 		try {
 			// Create channel via realtime manager
-			const channel = supabaseRealtimeManager.createChannel(channelName);
+			const channel = supabaseRealtimeManager.createChannel(channelName, { private: true });
 
-			// Subscribe to Broadcast events (FREE, ephemeral, fast)
-			// All payloads are validated with Zod before processing
+			// Broadcast = SIGNAL seulement : on n'affiche rien du payload, on relit
+			// la base (cf. broadcastMessagePayloadSchema).
 			channel.on('broadcast', { event: 'new_message' }, ({ payload }) => {
 				const validation = broadcastMessagePayloadSchema.safeParse(payload);
 				if (!validation.success) {
 					logger.warn('Invalid broadcast message payload:', validation.error.issues);
 					return;
 				}
-				// Cast after Zod validation - content is validated as unknown but we trust the structure
-				this.handleBroadcastMessage(validation.data as BroadcastMessagePayload);
+				void this.handleBroadcastMessage(conversationId, validation.data);
 			});
 
 			channel.on('broadcast', { event: 'message_reaction' }, ({ payload }) => {
@@ -416,7 +400,7 @@ class ChatStore {
 					logger.warn('Invalid reaction payload:', validation.error.issues);
 					return;
 				}
-				this.handleReaction(validation.data);
+				void this.handleReaction(validation.data);
 			});
 
 			channel.on('broadcast', { event: 'message_read' }, ({ payload }) => {
@@ -454,6 +438,10 @@ class ChatStore {
 				logger.error('Chat channel system error:', payload);
 				this.handleSystemError(conversationId);
 			});
+
+			// Canal privé : Realtime doit connaître l'utilisateur (jeton de session,
+			// pas la clé publique) au moment de la jonction.
+			await this.supabase.realtime.setAuth();
 
 			// Subscribe to the channel
 			await supabaseRealtimeManager.subscribeChannel(channelName);
@@ -570,6 +558,47 @@ class ChatStore {
 	}
 
 	/**
+	 * Regroupe des lignes `message_reactions` par message, puis par emoji
+	 * (`count`, `user_reacted`).
+	 *
+	 * @param reactions - Lignes lues en base
+	 * @returns Réactions agrégées, par identifiant de message
+	 */
+	private agregerReactions(
+		reactions: Array<
+			Pick<MessageReaction, 'id' | 'message_id' | 'user_id' | 'emoji' | 'created_at'>
+		>
+	): Map<string, MessageReaction[]> {
+		const reactionsByMessage = new Map<string, MessageReaction[]>();
+
+		for (const reaction of reactions) {
+			const messageReactions = reactionsByMessage.get(reaction.message_id) || [];
+			const existing = messageReactions.find((r) => r.emoji === reaction.emoji);
+
+			if (existing) {
+				existing.count = (existing.count || 1) + 1;
+				if (reaction.user_id === this.userId) {
+					existing.user_reacted = true;
+				}
+			} else {
+				messageReactions.push({
+					id: reaction.id,
+					message_id: reaction.message_id,
+					user_id: reaction.user_id,
+					emoji: reaction.emoji,
+					created_at: reaction.created_at,
+					count: 1,
+					user_reacted: reaction.user_id === this.userId
+				});
+			}
+
+			reactionsByMessage.set(reaction.message_id, messageReactions);
+		}
+
+		return reactionsByMessage;
+	}
+
+	/**
 	 * Load reactions for a set of messages
 	 * Fetches from message_reactions table, aggregates by emoji, and merges into message objects
 	 *
@@ -598,37 +627,7 @@ class ChatStore {
 			}
 
 			if (reactions && reactions.length > 0) {
-				// Group reactions by message_id, then aggregate by emoji
-				const reactionsByMessage = new Map<string, MessageReaction[]>();
-
-				for (const reaction of reactions) {
-					const messageReactions = reactionsByMessage.get(reaction.message_id) || [];
-
-					// Find existing aggregation for this emoji
-					const existingIndex = messageReactions.findIndex((r) => r.emoji === reaction.emoji);
-
-					if (existingIndex !== -1) {
-						// Increment count and check if current user reacted
-						messageReactions[existingIndex].count =
-							(messageReactions[existingIndex].count || 1) + 1;
-						if (reaction.user_id === this.userId) {
-							messageReactions[existingIndex].user_reacted = true;
-						}
-					} else {
-						// Create new aggregated reaction
-						messageReactions.push({
-							id: reaction.id,
-							message_id: reaction.message_id,
-							user_id: reaction.user_id,
-							emoji: reaction.emoji,
-							created_at: reaction.created_at,
-							count: 1,
-							user_reacted: reaction.user_id === this.userId
-						});
-					}
-
-					reactionsByMessage.set(reaction.message_id, messageReactions);
-				}
+				const reactionsByMessage = this.agregerReactions(reactions);
 
 				// Create NEW message objects with reactions (for Svelte 5 reactivity)
 				const messagesWithReactions = messages.map((message) => ({
@@ -829,34 +828,7 @@ class ChatStore {
 
 		logger.info('Added optimistic message:', optimisticId);
 
-		// 3. Broadcast to other participants (instant delivery, ~50ms)
-		const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-		if (channel) {
-			channel
-				.send({
-					type: 'broadcast',
-					event: 'new_message',
-					payload: {
-						type: 'new_message',
-						message: {
-							id: optimisticId,
-							conversation_id: conversationId,
-							sender_id: this.userId,
-							content: messageContent as Database['public']['Tables']['messages']['Row']['content'],
-							plain_text: plainText,
-							created_at: optimisticMessage.created_at ?? new Date().toISOString(),
-							sender: {
-								id: this.userId,
-								full_name: this.currentUser.full_name,
-								avatar_url: this.currentUser.avatar_url
-							}
-						}
-					} satisfies BroadcastMessagePayload
-				})
-				.catch((err) => logger.error('Failed to broadcast message:', err));
-		}
-
-		// 4. Insert to database (persistent, ~200ms)
+		// 3. Insert to database (persistent, ~200ms)
 		try {
 			const { data: insertedMessage, error: insertError } = await this.supabase
 				.from('messages')
@@ -896,6 +868,23 @@ class ChatStore {
 				const rollback = currentMessages.filter((msg) => msg.id !== optimisticId);
 				this.messages.set(conversationId, rollback);
 				return null;
+			}
+
+			// 4. Signal aux autres participants (canal privé) : l'identifiant
+			// seulement, APRÈS l'écriture — le destinataire relit la ligne en base,
+			// qui doit donc déjà exister.
+			const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+			if (channel) {
+				channel
+					.send({
+						type: 'broadcast',
+						event: 'new_message',
+						payload: {
+							type: 'new_message',
+							message: { id: optimisticId }
+						} satisfies BroadcastMessagePayload
+					})
+					.catch((err) => logger.error('Failed to broadcast message:', err));
 			}
 
 			// 5. Insert attachments if provided
@@ -971,39 +960,19 @@ class ChatStore {
 	}
 
 	/**
-	 * Handle incoming broadcast message (50ms, ephemeral)
+	 * Signal `new_message` reçu sur le canal privé de `conversationId`.
 	 *
-	 * @param payload - Broadcast message payload
+	 * Rien du payload n'est affiché : la ligne est relue en base par son
+	 * identifiant (sous RLS). Zéro ligne (id inventé, ou illisible) → rien.
+	 *
+	 * @param conversationId - La conversation du CANAL (pas celle du payload)
+	 * @param payload - Signal validé par Zod (identifiant seulement)
 	 */
-	private handleBroadcastMessage(payload: BroadcastMessagePayload): void {
-		const { message } = payload;
-
-		// Ignore if from current user (we already have optimistic update)
-		if (message.sender_id === this.userId) {
-			logger.info('Ignoring broadcast message from self:', message.id);
-			return;
-		}
-
-		// Add message with is_broadcast flag (will be replaced by postgres_changes)
-		const broadcastMessage: Message = {
-			id: message.id,
-			conversation_id: message.conversation_id,
-			sender_id: message.sender_id,
-			content: message.content,
-			plain_text: message.plain_text,
-			created_at: message.created_at,
-			edited_at: null,
-			deleted_at: null,
-			is_flagged: false,
-			flag_reason: null,
-			is_broadcast: true,
-			sender: message.sender
-		};
-
-		const existingMessages = this.messages.get(message.conversation_id) || [];
-		this.messages.set(message.conversation_id, [broadcastMessage, ...existingMessages]);
-
-		logger.info('Received broadcast message:', message.id);
+	private async handleBroadcastMessage(
+		conversationId: string,
+		payload: BroadcastMessagePayload
+	): Promise<void> {
+		await this.relireEtAfficherMessage(payload.message.id, conversationId);
 	}
 
 	/**
@@ -1046,8 +1015,23 @@ class ChatStore {
 	private async handlePostgresMessage(
 		newMessage: Database['public']['Tables']['messages']['Row']
 	): Promise<void> {
+		await this.relireEtAfficherMessage(newMessage.id);
+	}
+
+	/**
+	 * Relit un message en base (sous RLS, expéditeur joint) et l'affiche : seule
+	 * source de ce qui est affiché en temps réel.
+	 *
+	 * @param messageId - Identifiant du message à relire
+	 * @param conversationAttendue - Si fourni (signal broadcast), une ligne d'une
+	 *   autre conversation est ignorée
+	 */
+	private async relireEtAfficherMessage(
+		messageId: string,
+		conversationAttendue?: string
+	): Promise<void> {
 		if (!this.supabase) {
-			logger.warn('Cannot handle postgres message: not initialized');
+			logger.warn('Cannot handle message: not initialized');
 			return;
 		}
 
@@ -1061,15 +1045,21 @@ class ChatStore {
 					sender:profiles!sender_id(id, firstname, lastname, avatar_url)
 				`
 				)
-				.eq('id', newMessage.id)
+				.eq('id', messageId)
 				.single();
 
+			// Zéro ligne (PGRST116) : id inexistant, ou masqué par la RLS — la RLS
+			// échoue en silence. Rien à afficher, ce n'est pas une panne.
+			if (error?.code === 'PGRST116' || (!error && !data)) {
+				logger.warn('Message introuvable ou illisible :', messageId);
+				return;
+			}
 			if (error) {
 				throw error;
 			}
 
-			if (!data) {
-				logger.warn('Message not found after postgres_changes:', newMessage.id);
+			if (conversationAttendue && data.conversation_id !== conversationAttendue) {
+				logger.warn('Signal reçu pour un message d’une autre conversation :', messageId);
 				return;
 			}
 
@@ -1140,91 +1130,38 @@ class ChatStore {
 	}
 
 	/**
-	 * Handle incoming message reaction
+	 * Signal `message_reaction` : relit en base les réactions du message et les
+	 * remplace. Rien du payload (auteur, emoji, ajout/retrait) n'est appliqué.
+	 * Un message absent de l'écran (donc jamais relu en base) est ignoré.
 	 *
-	 * @param payload - Reaction payload
+	 * @param payload - Signal validé par Zod (identifiant du message seulement)
 	 */
-	private handleReaction(payload: BroadcastReactionPayload): void {
-		// Find the message across all conversations
-		for (const [conversationId, messages] of this.messages.entries()) {
-			const messageIndex = messages.findIndex((msg) => msg.id === payload.messageId);
+	private async handleReaction(payload: BroadcastReactionPayload): Promise<void> {
+		if (!this.supabase) return;
 
-			if (messageIndex !== -1) {
-				const message = messages[messageIndex];
-				const currentReactions = message.reactions || [];
+		const conversationId = [...this.messages.entries()].find(([, msgs]) =>
+			msgs.some((msg) => msg.id === payload.messageId)
+		)?.[0];
+		if (!conversationId) return;
 
-				let newReactions: MessageReaction[];
+		const { data: lignes, error } = await this.supabase
+			.from('message_reactions')
+			.select('id, message_id, user_id, emoji, created_at')
+			.eq('message_id', payload.messageId);
 
-				if (payload.action === 'add') {
-					// Check if this emoji already exists (aggregated format)
-					const existingIndex = currentReactions.findIndex((r) => r.emoji === payload.emoji);
-
-					if (existingIndex !== -1) {
-						// Increment count
-						newReactions = currentReactions.map((r) =>
-							r.emoji === payload.emoji
-								? {
-										...r,
-										count: (r.count || 1) + 1,
-										// Mark user_reacted if it's the current user (shouldn't happen via broadcast)
-										user_reacted: r.user_reacted || payload.userId === this.userId
-									}
-								: r
-						);
-					} else {
-						// Add new aggregated reaction
-						newReactions = [
-							...currentReactions,
-							{
-								id: crypto.randomUUID(),
-								message_id: payload.messageId,
-								user_id: payload.userId,
-								emoji: payload.emoji,
-								created_at: new Date().toISOString(),
-								count: 1,
-								user_reacted: payload.userId === this.userId
-							}
-						];
-					}
-				} else {
-					// Remove reaction
-					const existingIndex = currentReactions.findIndex((r) => r.emoji === payload.emoji);
-
-					if (existingIndex !== -1) {
-						const existing = currentReactions[existingIndex];
-						if ((existing.count || 1) > 1) {
-							// Decrement count
-							newReactions = currentReactions.map((r) =>
-								r.emoji === payload.emoji
-									? {
-											...r,
-											count: (r.count || 1) - 1,
-											user_reacted: payload.userId === this.userId ? false : r.user_reacted
-										}
-									: r
-							);
-						} else {
-							// Remove entirely
-							newReactions = currentReactions.filter((r) => r.emoji !== payload.emoji);
-						}
-					} else {
-						newReactions = currentReactions;
-					}
-				}
-
-				// Create new message object for Svelte 5 reactivity
-				const updatedMessage = { ...message, reactions: newReactions };
-
-				// Update messages array with new message object
-				const updatedMessages = messages.map((msg) =>
-					msg.id === payload.messageId ? updatedMessage : msg
-				);
-				this.messages.set(conversationId, updatedMessages);
-
-				logger.info('Reaction updated:', payload);
-				break;
-			}
+		if (error) {
+			logger.error('Failed to reload reactions:', error);
+			return;
 		}
+
+		const reactions = this.agregerReactions(lignes ?? []).get(payload.messageId) ?? [];
+		const messages = this.messages.get(conversationId) ?? [];
+		this.messages.set(
+			conversationId,
+			messages.map((msg) => (msg.id === payload.messageId ? { ...msg, reactions } : msg))
+		);
+
+		logger.info('Reactions reloaded from DB:', payload.messageId);
 	}
 
 	/**
@@ -1556,10 +1493,7 @@ class ChatStore {
 						event: 'message_reaction',
 						payload: {
 							type: 'message_reaction',
-							messageId,
-							userId: this.userId,
-							emoji,
-							action: isAdding ? 'add' : 'remove'
+							messageId
 						} satisfies BroadcastReactionPayload
 					})
 					.catch((err) => logger.error('Failed to broadcast reaction:', err));

@@ -74,10 +74,14 @@ class SupabaseRealtimeManager {
 	 * Create a new Realtime channel (does not subscribe yet)
 	 *
 	 * @param channelName - Unique name for the channel
+	 * @param options - `private: true` : canal soumis aux policies RLS de
+	 *   `realtime.messages` (jonction refusée aux non-autorisés). L'appelant doit
+	 *   transmettre le jeton de session (`supabase.realtime.setAuth()`) avant
+	 *   l'abonnement.
 	 * @returns The created RealtimeChannel instance
 	 * @throws Error if manager is not initialized
 	 */
-	createChannel(channelName: string): RealtimeChannel {
+	createChannel(channelName: string, options: { private?: boolean } = {}): RealtimeChannel {
 		if (!browser) {
 			throw new Error('Cannot create channel on server');
 		}
@@ -93,7 +97,9 @@ class SupabaseRealtimeManager {
 		}
 
 		// Create new channel
-		const channel = this.supabase.channel(channelName);
+		const channel = options.private
+			? this.supabase.channel(channelName, { config: { private: true } })
+			: this.supabase.channel(channelName);
 		this.channels.set(channelName, channel);
 
 		logger.info(`Channel "${channelName}" created`);
