@@ -72,7 +72,11 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// traduction d'instances réservés au serveur, appelés APRÈS les contrôles
 	// des routes (exchange, choose, marché)
 	'lib/server/vip-card-grants.ts',
-	'marketplace/helpers.ts'
+	'marketplace/helpers.ts',
+	// Récompenses (lot 3, Q141) : XP du compagnon et succès réservés au serveur,
+	// appelés APRÈS le contrôle d'identité de la route
+	'lib/server/buddy-queries.ts',
+	'lib/server/achievements/service.ts'
 ] as const;
 
 /**

@@ -97,7 +97,9 @@ export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults)
 		// explicit opacity, 0 otherwise. The previous flat `?? 0` made any
 		// explicit fillColor render invisibly when opacite_fond was omitted
 		// (visible bug on closed parametric curves with `remplissage=...`).
-		fillOpacity: element.style?.fillOpacity ?? (element.style?.fillColor !== undefined ? 1 : 0),
+		fillOpacity:
+			element.style?.fillOpacity ??
+			(element.style?.fillColor !== undefined ? (defaults?.defaultFillOpacity ?? 1) : 0),
 		render: element.style?.render ?? 'normal',
 		roughness: element.style?.roughness ?? defaults?.defaultRoughness ?? 1,
 		roughSeed: element.style?.roughSeed,
