@@ -165,6 +165,8 @@ export interface FigureDefaults {
 	readonly defaultPointShape?: 'dot' | 'circle' | 'cross' | 'square';
 	readonly defaultPointSize?: number;
 	readonly defaultOpacity?: number;
+	/** Opacité d'un remplissage dont l'auteur n'a pas donné `opacite_fond` (1 si absent) */
+	readonly defaultFillOpacity?: number;
 	readonly renderMode?: 'normal' | 'rough' | 'mixed';
 	readonly defaultRoughness?: number;
 }

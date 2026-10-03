@@ -73,7 +73,7 @@
 				stroke-width={s.width}
 				stroke-dasharray={s.dash || undefined}
 				style:fill={s.fill ?? 'none'}
-				fill-opacity={s.fill ? 0.25 : undefined}
+				fill-opacity={s.fill ? s.fillOpacity : undefined}
 			/>
 		{:else if s.kind === 'path'}
 			<path
@@ -93,7 +93,7 @@
 				stroke-dasharray={s.dash || undefined}
 				stroke-linejoin="round"
 				style:fill={s.fill ?? 'none'}
-				fill-opacity={s.fill ? 0.25 : undefined}
+				fill-opacity={s.fill ? s.fillOpacity : undefined}
 			/>
 		{:else if s.kind === 'arrowhead'}
 			<polygon data-element={s.elementId} points={s.points} style:fill={s.color} />
