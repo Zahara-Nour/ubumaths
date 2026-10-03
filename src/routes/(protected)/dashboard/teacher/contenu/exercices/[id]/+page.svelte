@@ -45,7 +45,7 @@
 	import { resolve } from '$app/paths';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { ExerciseShareToken } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
@@ -171,12 +171,8 @@
 		getExerciseContentSafe(data.exercise as unknown as import('$lib/exercises/types').Exercise)
 	);
 
-	// Generic functions config for markdown rendering
-	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
-		const gf = data.exercise.generic_functions;
-		if (!gf || gf.length === 0) return undefined;
-		return { names: gf, allowDerivatives: true, allowInverse: true };
-	});
+	// Fonctions déclarées par l'exercice : même config que la fiche élève et le PDF
+	let genericFunctionsConfig = $derived(toGenericFunctionsConfig(data.exercise.generic_functions));
 
 	/**
 	 * Copy JSON to clipboard

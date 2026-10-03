@@ -3418,3 +3418,50 @@ describe('align* : membre de gauche des lignes suivantes', () => {
 		expect(premiere.match(/x\s*\+\s*1/g)).toHaveLength(1);
 	});
 });
+
+describe('espace de contrôle `\\ ` dans un align* ou un cases', () => {
+	// 2026-10-03 : `x^2=4 \iff\ & x=2` — le découpage sur `&` puis `.trim()` ôtait
+	// l'espace de `\ ` : la cellule finissait par `\`, qui échappait le `$` fermant
+	// (`<=>\$`) → « unclosed delimiter », TOUTE la fiche PDF échouait.
+	const sansEchappementOrphelin = (typst: string) => {
+		// Aucun `\` juste avant le `$` fermant d'une cellule, ni avant `)`, ni `\&`
+		expect(typst).not.toMatch(/\\\$/);
+		expect(typst).not.toMatch(/\\\)/);
+		expect(typst).not.toMatch(/\\&/);
+	};
+
+	it('`\\iff\\ &` : espace avant le `&` (membre de gauche)', async () => {
+		const typst = await markdownToTypst('$$\\begin{align*}x^2 = 4 \\iff\\ & x = 2\\end{align*}$$', {
+			includeSetup: false
+		});
+		sansEchappementOrphelin(typst);
+		expect(typst).toContain('<=> space');
+	});
+
+	it('`&\\iff\\ &` : deux `&` autour du symbole', async () => {
+		const typst = await markdownToTypst(
+			'$$\\begin{align*}x^2 = 4 &\\iff\\ & x = 2 \\\\ &\\iff\\ & x = -2\\end{align*}$$',
+			{ includeSetup: false }
+		);
+		sansEchappementOrphelin(typst);
+		expect(typst).toContain('[$<=>$]');
+		expect(typst).toMatch(/x = 2/);
+	});
+
+	it('`\\ ` en fin de ligne avant `\\\\`, et suivi d’un retour à la ligne', async () => {
+		const typst = await markdownToTypst(
+			'$$\\begin{align*}a &= b\\ \\\\ c &= d\\\n\\end{align*}$$',
+			{ includeSetup: false }
+		);
+		sansEchappementOrphelin(typst);
+	});
+
+	it('`\\ ` en fin de ligne d’un cases', () => {
+		const typst = convertLatexToTypstMath('\\begin{cases} x = 1\\ \\\\ y = 2 \\end{cases}');
+		expect(typst).not.toMatch(/\\\)/);
+	});
+
+	it('`\\ ` hors environnement : espace (inchangé)', () => {
+		expect(convertLatexToTypstMath('400\\ \\text{m}')).toMatch(/400 +space +/);
+	});
+});

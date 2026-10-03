@@ -4,6 +4,11 @@
  * Les instantanés ont été enregistrés AVANT l'ajout du repère (2026-10-03) :
  * une figure sans `axes:` ni `grille:` doit produire le même SVG d'écran et le
  * même Typst, octet pour octet.
+ *
+ * Ré-enregistrés le 2026-10-03 (branche fix/figures-pdf), deux changements
+ * VOULUS et seulement eux : `shape` des points à l'écran (forme du point), et
+ * au PDF les objets dans une boîte découpée à la fenêtre (noms et textes
+ * au-dessus) — voir `figure-pdf-defauts.test.ts`.
  */
 import { describe, it, expect } from 'vitest';
 import { parseFigureContent } from '../../parser/figure-parser';

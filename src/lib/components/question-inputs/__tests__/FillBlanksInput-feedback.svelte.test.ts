@@ -68,3 +68,20 @@ describe('FillBlanksInput — messages par trou', () => {
 		await expect.element(messagesRegion()).not.toHaveTextContent('Blanc');
 	});
 });
+
+describe('FillBlanksInput — message avec formule', () => {
+	it('un message par trou contenant `$…$` est rendu en formule', async () => {
+		await render(FillBlanksInput, {
+			props: {
+				statement: twoBlankStatement,
+				blanks: twoBlanks,
+				validationResults: [false, true],
+				blankFeedback: ['Choisis $x>0$.', undefined]
+			}
+		});
+		const status = messagesRegion();
+		await expect.element(status).toHaveTextContent('Blanc 1');
+		expect(status.element().textContent).not.toContain('$');
+		expect(status.element().querySelector('math-span')?.textContent).toContain('x>0');
+	});
+});

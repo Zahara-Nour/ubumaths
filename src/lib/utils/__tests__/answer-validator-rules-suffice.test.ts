@@ -362,3 +362,113 @@ describe('mode precision (arrondis) : inchangé', () => {
 		expect(check('\\frac{1}{2}', blank)).toMatchObject({ isCorrect: false, status: 'bad_form' });
 	});
 });
+
+// ============================================================================
+// MESSAGE ÉCRIT PAR L'AUTEUR (description d'une règle custom)
+// ============================================================================
+//
+// Modèle `logique-1spe/B-02` : « Donne un contre-exemple à x² ≥ a·x ». La
+// règle `custom` porte une `description` écrite pour l'élève ; quand elle
+// échoue, c'est ce message qu'il lit (sous la case, ou en retour global s'il
+// n'y a qu'une case). Les messages génériques restent tus (décision du
+// 2026-09-26 : ils répéteraient la consigne) ; une saisie illisible garde son
+// retour ordinaire.
+
+const NOT_A_COUNTER_EXAMPLE = "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité.";
+
+/** B-02 variante 1, a = 5 : contre-exemples = réels de ]0 ; 5[, exemple tiré 1 */
+function counterExampleB02(overrides?: Partial<InstanceBlank>): InstanceBlank {
+	return divisorBlank({
+		expectedAnswer: '1',
+		validationRules: [
+			{
+				type: 'custom',
+				expression: 'answer^2 < (5)*answer',
+				description: NOT_A_COUNTER_EXAMPLE
+			}
+		],
+		...overrides
+	});
+}
+
+describe('rulesSuffice — message écrit par l’auteur', () => {
+	it('réponse refusée par une règle décrite : la description est le retour', () => {
+		const verdict = check('7', counterExampleB02());
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback).toBe(NOT_A_COUNTER_EXAMPLE);
+	});
+
+	it('un autre contre-exemple juste reste juste, sans message', () => {
+		const verdict = check('2', counterExampleB02());
+		expect(verdict).toMatchObject({ isCorrect: true, status: 'correct' });
+		expect(verdict.feedback).toBeUndefined();
+	});
+
+	it('plusieurs cases : la description s’affiche pour la case fautive seulement', () => {
+		const instance = createInstance([counterExampleB02(), counterExampleB02()]);
+		const verdict = validateAnswer(['2', '-3'], instance, ['2', '-3']);
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.blankFeedback).toEqual([undefined, NOT_A_COUNTER_EXAMPLE]);
+	});
+
+	it('le message ne contient jamais la réponse tirée', () => {
+		const verdict = check('7', counterExampleB02({ expectedAnswer: '4' }));
+		expect(verdict.feedback).toBe(NOT_A_COUNTER_EXAMPLE);
+		expect(verdict.feedback).not.toContain('4');
+	});
+
+	it('règle custom SANS description : retour ordinaire (pas de message générique)', () => {
+		const verdict = check(
+			'7',
+			counterExampleB02({
+				validationRules: [{ type: 'custom', expression: 'answer^2 < (5)*answer' }]
+			})
+		);
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback ?? '').not.toMatch(/critères demandés/);
+	});
+
+	it('règle générique (diviseur) : toujours tue, même à côté d’une règle décrite', () => {
+		const blank = divisorBlank({
+			validationRules: [
+				{ type: 'divisor', dividend: '12' },
+				{ type: 'custom', expression: 'answer != 1', description: 'Autre que 1.' }
+			]
+		});
+		const verdict = check('5', blank);
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback ?? '').not.toMatch(/diviseur|Autre que 1/);
+	});
+
+	it.each(['abc', 'x', ''])(
+		'saisie non numérique (%s) : jamais la description, retour inchangé',
+		(answer) => {
+			const verdict = check(answer, counterExampleB02());
+			expect(verdict.isCorrect).toBe(false);
+			expect(verdict.feedback ?? '').not.toBe(NOT_A_COUNTER_EXAMPLE);
+		}
+	);
+});
+
+describe('note de migration (« Legacy testAnswer: … ») : jamais montrée à l’élève', () => {
+	const legacy: ValidationRule = {
+		type: 'custom',
+		expression: 'answer != 1',
+		description: 'Legacy testAnswer: &answer!=1'
+	};
+
+	it('rulesSuffice : retour ordinaire', () => {
+		const verdict = check('1', counterExampleB02({ validationRules: [legacy] }));
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback ?? '').not.toMatch(/Legacy|&answer/);
+	});
+
+	it('règle en pré-condition (sans le mode) : message générique en français', () => {
+		const verdict = check(
+			'1',
+			counterExampleB02({ validationRules: [legacy], rulesSuffice: undefined })
+		);
+		expect(verdict.isCorrect).toBe(false);
+		expect(verdict.feedback).toBe('Ta réponse ne satisfait pas les critères demandés.');
+	});
+});

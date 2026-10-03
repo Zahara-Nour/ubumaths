@@ -14,6 +14,15 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// L'écriture part au client SERVICE (Q171) : par défaut, le mock service est le
+// même objet que le client passé en argument (cf. buildMockSupabase), ce qui
+// garde les assertions historiques ; le bloc « Q171 » les sépare.
+const service = vi.hoisted(() => ({ client: null as unknown }));
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => service.client
+}));
+
 import { loadOrInitCardStats, upsertCardStats, applyFsrsReview } from '../fsrs-actions';
 import { FSRS } from '$lib/srs/fsrs';
 import { Grade, type CardStats } from '$lib/srs/types';
@@ -40,6 +49,7 @@ function buildMockSupabase(opts: {
 	const supabase = {
 		from: vi.fn().mockReturnValue(chain)
 	};
+	service.client = supabase;
 	return { supabase: supabase as never, chain, upsertMock };
 }
 
@@ -186,18 +196,18 @@ describe('upsertCardStats', () => {
 	};
 
 	it('upserts successfully and resolves void', async () => {
-		const { supabase } = buildMockSupabase({});
-		await expect(upsertCardStats(supabase, sampleStats)).resolves.toBeUndefined();
+		buildMockSupabase({});
+		await expect(upsertCardStats(sampleStats)).resolves.toBeUndefined();
 	});
 
 	it('throws on UPSERT error', async () => {
-		const { supabase } = buildMockSupabase({ upsertError: { code: '42501', message: 'denied' } });
-		await expect(upsertCardStats(supabase, sampleStats)).rejects.toMatchObject({ code: '42501' });
+		buildMockSupabase({ upsertError: { code: '42501', message: 'denied' } });
+		await expect(upsertCardStats(sampleStats)).rejects.toMatchObject({ code: '42501' });
 	});
 
 	it('uses conflict key user_id,card_reference_type,card_reference_id', async () => {
-		const { supabase, upsertMock } = buildMockSupabase({});
-		await upsertCardStats(supabase, sampleStats);
+		const { upsertMock } = buildMockSupabase({});
+		await upsertCardStats(sampleStats);
 
 		// Vérifie le 2e argument (options) du UPSERT
 		expect(upsertMock).toHaveBeenCalledWith(
@@ -207,8 +217,8 @@ describe('upsertCardStats', () => {
 	});
 
 	it('maps camelCase CardStats back to snake_case columns', async () => {
-		const { supabase, upsertMock } = buildMockSupabase({});
-		await upsertCardStats(supabase, sampleStats);
+		const { upsertMock } = buildMockSupabase({});
+		await upsertCardStats(sampleStats);
 
 		// 1er arg = row DB en snake_case
 		expect(upsertMock).toHaveBeenCalledWith(
@@ -413,5 +423,49 @@ describe('applyFsrsReview — options skipIf / verifyWrite', () => {
 			}
 		);
 		expect(result?.totalReviews).toBe(1);
+	});
+});
+
+// ============================================================================
+// Q171 : mémoire écrite par le serveur, lue au client de l'élève
+// ============================================================================
+
+describe('applyFsrsReview — écriture au client service (Q171)', () => {
+	it("lit au client de l'appelant, écrit au client service, jamais l'inverse", async () => {
+		const user = buildMockSupabase({ maybeSingleData: dbRow() });
+		const serviceMock = buildMockSupabase({});
+		// buildMockSupabase a pointé le service sur le DERNIER mock construit
+		expect(service.client).toBe(serviceMock.supabase);
+
+		await applyFsrsReview(
+			user.supabase,
+			buildFsrs(),
+			'user-uuid',
+			'template',
+			'tpl-uuid',
+			Grade.GOOD
+		);
+
+		expect(user.chain.maybeSingle).toHaveBeenCalledTimes(1);
+		expect(user.upsertMock).not.toHaveBeenCalled();
+		expect(serviceMock.chain.maybeSingle).not.toHaveBeenCalled();
+		expect(serviceMock.upsertMock).toHaveBeenCalledWith(
+			expect.objectContaining({ user_id: 'user-uuid', card_reference_id: 'tpl-uuid' }),
+			expect.objectContaining({ onConflict: 'user_id,card_reference_type,card_reference_id' })
+		);
+	});
+
+	it("la ligne écrite porte le userId passé par l'appelant, même sur une fiche neuve", async () => {
+		const user = buildMockSupabase({ maybeSingleData: null });
+		const serviceMock = buildMockSupabase({});
+		await applyFsrsReview(
+			user.supabase,
+			buildFsrs(),
+			'session-user',
+			'template',
+			'tpl-uuid',
+			Grade.AGAIN
+		);
+		expect(serviceMock.upsertMock.mock.calls[0][0]).toMatchObject({ user_id: 'session-user' });
 	});
 });

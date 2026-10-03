@@ -15,6 +15,7 @@ import { circumcircle } from '../geometry/circumcircle';
 import { resolvePrintStyle } from './svg-primitives';
 import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
+import { hasCombiningAccent, splitCombiningAccents } from './combining-accents';
 import {
 	cetzAnchor,
 	labelDirection,
@@ -46,6 +47,14 @@ export interface TypstExportOptions {
 	 * unités du repère : repère et grille d'un bloc ```figure. Vide par défaut.
 	 */
 	underlay?: readonly string[];
+	/**
+	 * Découpe les objets à la fenêtre, comme l'écran (SVG `overflow: hidden`) :
+	 * traits et remplissages dans une boîte Typst `clip: true` aux dimensions de
+	 * la fenêtre ; repère (`underlay`), noms et textes AU-DESSUS, jamais coupés
+	 * (un nom de point hors de la fenêtre est omis). cetz 0.3.0 n'a pas de
+	 * découpe : la boîte contient une seconde toile cetz.
+	 */
+	clipToViewport?: boolean;
 }
 
 const MARK_RADIUS = 0.4;
@@ -77,6 +86,25 @@ function c(x: number, y: number): string {
  */
 function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
+}
+
+/**
+ * Texte d'auteur en Typst : chaîne littérale (`typstString`), sauf une lettre
+ * surmontée d'un accent combinant (`n⃗`, carrés vides au PDF : la police du
+ * texte n'a pas la flèche), écrite en mode math (`[#"vecteur "$arrow(u)$]`).
+ * La lettre entre en mode math en CHAÎNE si ce n'est pas une lettre seule
+ * latine ou grecque (jamais de variable inconnue).
+ */
+function typstText(text: string): string {
+	if (!hasCombiningAccent(text)) return typstString(text);
+	const parts = splitCombiningAccents(text).map((run) => {
+		if (run.kind === 'text') return `#${typstString(run.text)}`;
+		const base = /^[A-Za-z\u0391-\u03A9\u03B1-\u03C9]$/u.test(run.base)
+			? run.base
+			: typstString(run.base);
+		return `$${run.accent}(${base})$`;
+	});
+	return `[${parts.join('')}]`;
 }
 
 /**
@@ -161,6 +189,15 @@ export function exportToTypst(
 	}
 
 	if (options?.underlay) lines.push(...options.underlay);
+	/** Début des objets (après en-tête, cadre et repère) : ce que la découpe enveloppe */
+	const bodyStart = lines.length;
+	const clip = options?.clipToViewport ?? false;
+	/** Point dans la fenêtre (bords compris) : sinon, en découpe, son nom est omis */
+	const inView = (x: number, y: number) =>
+		x >= viewport.xMin - 1e-9 &&
+		x <= viewport.xMax + 1e-9 &&
+		y >= viewport.yMin - 1e-9 &&
+		y <= viewport.yMax + 1e-9;
 
 	// Grid
 	if (showGrid) {
@@ -537,7 +574,7 @@ export function exportToTypst(
 
 		if (showLabels && geom.label) {
 			lines.push(
-				`  content(${c(geom.labelX, geom.labelY)}, text(size: 9pt, fill: ${color}, ${typstString(geom.label)}))`
+				`  content(${c(geom.labelX, geom.labelY)}, text(size: 9pt, fill: ${color}, ${typstText(geom.label)}))`
 			);
 		}
 	}
@@ -606,7 +643,7 @@ export function exportToTypst(
 			lines.push(`  rect(${c(x - s, y - s)}, ${c(x + s, y + s)}, fill: ${color}, stroke: none)`);
 		}
 
-		if (showLabels && el.label && !el.labelHidden) {
+		if (showLabels && el.label && !el.labelHidden && (!clip || inView(x, y))) {
 			// Même table que l'écran du bloc figure (`label-placement.ts`) : le nom
 			// s'écrit du côté choisi, sa boîte posée contre le point par l'ancre cetz.
 			// Nom en TEXTE italique, jamais en mode math (`$AB$` : variable inconnue).
@@ -686,10 +723,12 @@ export function exportToTypst(
 
 			if (mx === undefined || my === undefined) continue;
 			tag(el.id);
+			// Découpé à l'écran : texte posé hors de la fenêtre omis
+			if (clip && !inView(mx, my)) continue;
 			// Centré par défaut ; `ancre=` (textes simples) pose un autre point de la boîte
 			const dir = textAnchorDirection(el.type === 'text' ? el.textAnchor : undefined);
 			lines.push(
-				`  content(${c(mx, my)}${anchorArg(dir)}, text(size: 9pt, fill: ${color}, ${typstString(text)}))`
+				`  content(${c(mx, my)}${anchorArg(dir)}, text(size: 9pt, fill: ${color}, ${typstText(text)}))`
 			);
 		}
 	}
@@ -701,9 +740,72 @@ export function exportToTypst(
 		if (typst) lines.push(typst);
 	}
 
+	if (clip) {
+		const body = lines.splice(bodyStart);
+		lines.push(...clipToViewportLines(body, viewport, scale));
+	}
 	lines.push('})');
 	// Défense en profondeur : une primitive avec un nombre non fini est omise
 	return lines.filter((line) => !hasNonFiniteNumber(line)).join('\n');
+}
+
+/** Ligne d'un nom ou d'un texte (`content(…, text(…))`) : posée au-dessus de la découpe */
+function isLabelLine(line: string): boolean {
+	return line.startsWith('  content(') && !line.includes('image(');
+}
+
+/**
+ * Objets dans une boîte découpée à la fenêtre (`clipToViewport`).
+ *
+ * La boîte (largeur × hauteur de la fenêtre, en cm) est posée par son coin
+ * nord-ouest au coin (xMin ; yMax). Elle contient une seconde toile cetz dont
+ * l'étendue est CONNUE : un rectangle invisible qui englobe la fenêtre et tout
+ * ce qui est tracé (coordonnées et rayons relevés dans les lignes émises, plus
+ * une marge pour les épaisseurs, pointes et marques). Le coin haut-gauche de
+ * cette toile est donc (bx0 ; by1) : un `place` de (xMin − bx0 ; by1 − yMax)
+ * la recale exactement sur la fenêtre.
+ */
+function clipToViewportLines(body: string[], viewport: Viewport, scale: number): string[] {
+	const geometry = body.filter((l) => !isLabelLine(l));
+	const labels = body.filter(isLabelLine);
+	if (!geometry.some((l) => !l.trimStart().startsWith('//'))) return body;
+
+	let x0 = viewport.xMin;
+	let x1 = viewport.xMax;
+	let y0 = viewport.yMin;
+	let y1 = viewport.yMax;
+	for (const line of geometry) {
+		const radius = Number(/radius: (-?[\d.]+)/.exec(line)?.[1] ?? 0);
+		const r = Number.isFinite(radius) ? Math.abs(radius) : 0;
+		for (const m of line.matchAll(/\((-?[\d.]+), (-?[\d.]+)\)/g)) {
+			const x = Number(m[1]);
+			const y = Number(m[2]);
+			if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+			x0 = Math.min(x0, x - r);
+			x1 = Math.max(x1, x + r);
+			y0 = Math.min(y0, y - r);
+			y1 = Math.max(y1, y + r);
+		}
+	}
+	// Marge : 1 cm sur la page (traits, pointes de flèche, croix des points)
+	const margin = 1 / scale;
+	x0 -= margin;
+	x1 += margin;
+	y0 -= margin;
+	y1 += margin;
+
+	const cm = (n: number) => `${Math.round(n * scale * 1000) / 1000}cm`;
+	const width = cm(viewport.xMax - viewport.xMin);
+	const height = cm(viewport.yMax - viewport.yMin);
+	const inner = [
+		`  content(${c(viewport.xMin, viewport.yMax)}, anchor: "north-west", box(width: ${width}, height: ${height}, clip: true, place(top + left, dx: -${cm(viewport.xMin - x0)}, dy: -${cm(y1 - viewport.yMax)}, cetz.canvas({`,
+		'    import cetz.draw: *',
+		...(scale !== 1 ? [`    scale(x: ${scale}, y: ${scale})`] : []),
+		`    rect(${c(x0, y0)}, ${c(x1, y1)}, stroke: none)`,
+		...geometry.map((l) => `  ${l}`),
+		'  }))))'
+	];
+	return [...inner, ...labels];
 }
 
 /** Convert a GeoImage to a Typst cetz content() call. */

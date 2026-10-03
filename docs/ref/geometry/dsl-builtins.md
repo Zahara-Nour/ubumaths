@@ -40,6 +40,26 @@ d = droite(A, B)
 - Code : `ubumark/parser/figure-parser.ts` (clés), `utils/figure-scene.ts` (`buildFigureFrame`),
   `utils/figure-svg.ts` (`frame`), `generators/figure-typst.ts` (`frameToTypst`).
 
+## Noms en lettres grecques, formes de point, flèche combinante (2026-10-03)
+
+- **Noms** : un identifiant peut contenir des lettres grecques Unicode (`Α`…`Ω`, `α`…`ω`, `ς`),
+  seules ou mêlées aux lettres latines et aux chiffres : `Ω = point(0, 1)`, `cercle(Ω, rayon=2)`,
+  `α = 30`. Le nom affiché est celui écrit (« Ω », en italique). `α` et `alpha` / `\alpha` sont
+  deux noms DIFFÉRENTS ; `π` est un nom ordinaire (la constante s'écrit `\pi`, une erreur
+  « variable inconnue » sur `π` le rappelle). Code : `dsl/tokenizer.ts` (`isGreekLetter`).
+- **`forme=`** (`point`, `montre`, `style`) : `point` (rond plein, défaut), `cercle` (vide),
+  `croix`, `carre` (`carré`, et les noms anglais `dot` / `circle` / `cross` / `square`, acceptés).
+  Une valeur inconnue est une erreur qui liste les valeurs (avant : rond à l'écran, rien au PDF).
+  Bloc ```figure : même forme à l'écran (`figure-svg.ts`, champ `shape`) qu'au PDF.
+- **Flèche combinante** dans `texte(…)` : `"n⃗"` (n + U+20D7 ; aussi U+20D6 ←, U+20E1 ↔,
+  U+20D1 ⇀) = lettre en italique surmontée de la flèche, à l'écran (`<tspan>` posés par
+  `accentTspans`) comme au PDF (mode math `arrow(n)`). Code : `rendering/combining-accents.ts`.
+  `texte` n'accepte pas de LaTeX (`mtexte` existe, hors liste blanche du bloc ```figure).
+- **Bloc ```figure, PDF découpé à la fenêtre** : `exportToTypst({ clipToViewport: true })` met
+  les traits et remplissages dans une boîte `clip: true` (2ᵉ toile cetz recalée sur la fenêtre :
+  cetz 0.3.0 n'a pas de découpe) ; repère, noms et textes au-dessus, jamais coupés ; nom d'un
+  point ou texte posé hors de la fenêtre omis (l'écran le découpe).
+
 ## Nom d'un point — `etiquette=` (2026-10-02)
 
 Côté où s'écrit le nom d'un point. Accepté par tout appel qui crée un point nommé (`point`,

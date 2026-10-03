@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RestrictedRichText from '$lib/components/rich-text/RestrictedRichText.svelte';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -110,7 +111,7 @@
 				<!-- Description -->
 				<div class="space-y-1">
 					<p class="text-sm text-muted-foreground">Description:</p>
-					<RichTextDisplay content={descriptionContent} class="text-sm" />
+					<RestrictedRichText content={descriptionContent} class="text-sm" />
 				</div>
 
 				<!-- Teacher response (if exists) -->

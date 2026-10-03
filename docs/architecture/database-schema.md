@@ -645,6 +645,7 @@ Les caches dérivés sont :
 
 - `student_point_state` (arbre de contenus — règles §6.1, `regime_acquisition`) — recalculé par trigger PG sur INSERT `skill_attempts`.
 - `srs_card_stats` (FSRS-6 — état D/S/R par template) — UPSERT côté API en TypeScript (avant l'INSERT `skill_attempts`). FSRS n'est pas porté en PL/pgSQL.
+  **Écriture réservée au serveur** (Q171, migration `20261003233000_srs_memoire_serveur.sql`) : INSERT/UPDATE/DELETE révoqués à `anon`/`authenticated`, policies d'écriture `TO service_role` ; l'élève LIT sa mémoire, le professeur lit celle des élèves à qui il a assigné un paquet. Seul écrivain : `upsertCardStats` (`src/lib/server/srs/fsrs-actions.ts`, client service, `userId` de session) — plus `/api/srs/decks/[id]/assign`.
 
 Le deck Programme est auto-géré : la fonction TypeScript `ensureProgrammeDeckCard` ajoute idempotemment une carte au Programme pour chaque template **tagué à un point de programme** (`question_template_points`) rencontré par l'élève.
 

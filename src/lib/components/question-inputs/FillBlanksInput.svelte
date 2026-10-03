@@ -52,6 +52,7 @@
 	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
 	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
 	// Utility functions
 	import {
@@ -487,7 +488,8 @@
 				{#each blankMessages as { blankNumber, message } (blankNumber)}
 					<li>
 						<span class="font-semibold">Blanc {blankNumber}&nbsp;:</span>
-						{message}
+						<!-- Message écrit par un auteur (règle) : peut contenir une formule `$x>0$` -->
+						<InlineMarkdown content={message} {genericFunctions} />
 					</li>
 				{/each}
 			</ul>

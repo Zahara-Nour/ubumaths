@@ -39,6 +39,12 @@ import {
 	textAnchorDirection
 } from '$lib/geometry-core/rendering/label-placement';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import {
+	ACCENT_GLYPH,
+	hasCombiningAccent,
+	splitCombiningAccents,
+	type TextRun
+} from '$lib/geometry-core/rendering/combining-accents';
 
 // ============================================================================
 // TYPES
@@ -81,7 +87,18 @@ export type FigureShape =
 			fillOpacity: number;
 	  })
 	| (ShapeBase & { kind: 'arrowhead'; points: string })
-	| (ShapeBase & { kind: 'dot'; cx: number; cy: number; r: number })
+	| (ShapeBase & {
+			kind: 'dot';
+			cx: number;
+			cy: number;
+			r: number;
+			/**
+			 * `forme=` du point, comme au PDF (`exportToTypst`) : rond plein, cercle
+			 * vide, croix (deux traits) ou carré plein. Tailles dans les rapports du
+			 * PDF (rayon 0,08 ; demi-croix 0,1 ; demi-carré 0,07).
+			 */
+			shape: 'dot' | 'circle' | 'cross' | 'square';
+	  })
 	| (ShapeBase & {
 			kind: 'label';
 			x: number;
@@ -92,6 +109,11 @@ export type FigureShape =
 			baseline: 'alphabetic' | 'middle';
 			/** Nom de point : en italique */
 			italic: boolean;
+			/**
+			 * Morceaux du texte quand il contient un accent combinant (`n⃗`) : la
+			 * lettre et sa flèche sont dessinées à part (`accentTspans`). Absent sinon.
+			 */
+			runs?: TextRun[];
 	  });
 
 /** Trait du repère, en px de la fenêtre (origine en haut à gauche de la fenêtre) */
@@ -147,9 +169,65 @@ const X_TICK_LABEL_DY_PX = 13;
 const Y_TICK_LABEL_DX_PX = 5;
 const Y_TICK_LABEL_DY_PX = 3.5;
 
+/** Chasse estimée de la flèche (≈ 0,9 em de sa police : 10 px, `.figure-accent`) */
+const ACCENT_ADVANCE_PX = 9;
+/** Montée de la flèche au-dessus de la ligne de base de la lettre */
+const ACCENT_RISE_PX = 8.5;
+
 // ============================================================================
 // FORMES
 // ============================================================================
+
+/** Morceaux d'un texte s'il contient un accent combinant, sinon rien */
+function runsOf(text: string): { runs?: TextRun[] } {
+	return hasCombiningAccent(text) ? { runs: splitCombiningAccents(text) } : {};
+}
+
+/** Chasse estimée d'une lettre à 13 px : majuscule plus large que minuscule */
+function letterAdvancePx(ch: string): number {
+	const em = ch !== ch.toLowerCase() ? 0.68 : /\d/.test(ch) ? 0.55 : 0.52;
+	return em * FIGURE_LABEL_FONT_PX;
+}
+
+export interface AccentTspan {
+	text: string;
+	dx?: number;
+	dy?: number;
+	/** `figure-accent-base` (lettre, italique) ou `figure-accent` (flèche, plus petite) */
+	className?: 'figure-accent-base' | 'figure-accent';
+}
+
+/**
+ * `<tspan>` d'un texte à accents : la lettre (italique, comme en maths), puis la
+ * flèche, reculée pour être centrée au-dessus d'elle et remontée ; le morceau
+ * suivant revient sur la ligne de base, juste après la lettre. La chasse totale
+ * reste celle de la lettre (l'ancrage `middle` / `end` reste juste).
+ */
+export function accentTspans(runs: readonly TextRun[]): AccentTspan[] {
+	const out: AccentTspan[] = [];
+	/** Retour à faire sur le morceau suivant (après une flèche) */
+	let pending: { dx: number; dy: number } | null = null;
+	const withPending = (t: AccentTspan): AccentTspan =>
+		pending ? { ...t, dx: (t.dx ?? 0) + pending.dx, dy: (t.dy ?? 0) + pending.dy } : t;
+	for (const run of runs) {
+		if (run.kind === 'text') {
+			out.push(withPending({ text: run.text }));
+			pending = null;
+			continue;
+		}
+		const base = letterAdvancePx(run.base);
+		out.push(withPending({ text: run.base, className: 'figure-accent-base' }));
+		const r = (n: number) => Math.round(n * 100) / 100;
+		out.push({
+			text: ACCENT_GLYPH[run.accent],
+			className: 'figure-accent',
+			dx: r(-(base + ACCENT_ADVANCE_PX) / 2),
+			dy: -ACCENT_RISE_PX
+		});
+		pending = { dx: r((base - ACCENT_ADVANCE_PX) / 2), dy: ACCENT_RISE_PX };
+	}
+	return out;
+}
 
 /** Repère (grille, axes, graduations) en px de la fenêtre. */
 function frameToSvg(
@@ -331,7 +409,8 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 				text: svg.label,
 				anchor: 'middle',
 				baseline: 'middle',
-				italic: false
+				italic: false,
+				...runsOf(svg.label)
 			});
 		}
 	}
@@ -361,7 +440,15 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 		if (!svg) continue;
 		const sty = resolveStyle(el, figure.defaults);
 		const color = screenColor(sty.color);
-		shapes.push({ elementId: el.id, color, kind: 'dot', cx: svg.cx, cy: svg.cy, r: sty.pointSize });
+		shapes.push({
+			elementId: el.id,
+			color,
+			kind: 'dot',
+			cx: svg.cx,
+			cy: svg.cy,
+			r: sty.pointSize,
+			shape: sty.pointShape
+		});
 		if (el.label && !el.labelHidden) {
 			// Même table que l'export Typst (`label-placement.ts`) : même côté, même ancrage
 			const dir = labelDirection(el.labelPosition);
@@ -405,7 +492,8 @@ export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {
 			text: svg.text,
 			anchor: placed.anchor,
 			baseline: 'alphabetic',
-			italic: false
+			italic: false,
+			...runsOf(svg.text)
 		});
 	}
 

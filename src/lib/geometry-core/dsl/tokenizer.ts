@@ -279,7 +279,8 @@ function tokenizeLine(
 			const type: TokenType = isKeyword(word) ? 'KEYWORD' : 'IDENTIFIER';
 			tokens.push({
 				type,
-				value: word,
+				// `π` seul = la constante, même jeton que `\pi`
+				value: word === 'π' ? '\\pi' : word,
 				line: lineNum,
 				col,
 				start: absStart,
@@ -329,8 +330,18 @@ function isDigit(ch: string): boolean {
 	return ch >= '0' && ch <= '9';
 }
 
+/**
+ * Lettre grecque Unicode (Α…Ω U+0391–U+03A9, α…ω U+03B1–U+03C9, ς compris) :
+ * un centre de cercle se nomme souvent Ω. U+03A2 n'est attribué à aucun caractère.
+ */
+function isGreekLetter(ch: string): boolean {
+	return (
+		(ch >= '\u0391' && ch <= '\u03A9' && ch !== '\u03A2') || (ch >= '\u03B1' && ch <= '\u03C9')
+	);
+}
+
 function isIdentStart(ch: string): boolean {
-	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_';
+	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_' || isGreekLetter(ch);
 }
 
 function isIdentPart(ch: string): boolean {

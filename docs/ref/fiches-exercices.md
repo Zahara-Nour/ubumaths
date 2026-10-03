@@ -259,6 +259,16 @@ lieu de 100 relances ; une division par zéro ou un `arccos` hors domaine resten
 `cleanCoefficients` (étapes générées, `\leqslant` en réponse, `(x+0)`) et `genericFunctions`
 (motifs `requiredForm`, séries de plus de 10 fonctions) : voir les deux sections ci-dessus.
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/figures-pdf`), ne plus contourner :
+`\iff\ &` (et tout `\ ` avant un `&`, en fin de ligne, suivi d'un retour à la ligne, ou dans un
+`cases`) ne fait plus échouer la fiche ; nom de point ou d'objet en lettre grecque (`Ω`, `α`…`ω`,
+`Α`…`Ω` ; `π` est un nom ordinaire, la constante reste `\pi`) ; `texte(…, "n⃗")` (flèche
+combinante U+20D7, aussi ←⃖, ↔⃡) dessine la lettre en italique surmontée de la flèche, à l'écran
+comme au PDF ; `forme="croix"` / `"cercle"` / `"carre"` dessinés à l'écran comme au PDF (une forme
+inconnue est une erreur) ; au PDF, un objet qui dépasse de la `fenetre:` (cercle, droite, segment,
+arc, polygone) est découpé au cadre comme à l'écran, le repère, les noms et les textes restant
+entiers (un nom de point hors de la fenêtre est omis).
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -296,9 +306,6 @@ Toujours vrai :
   `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
   coin bas-gauche sur `(x, y)`. Pointillés `trait="pointilles"` / `"tirets"` (alias
   `style="pointille"`). `point(…, visible=faux)` = point masqué, utilisable dans les constructions.
-- **`\iff\ &` dans un `align*`** fait échouer TOUT le PDF (« unclosed delimiter ») : écrire
-  `X&=0\\\iff Y&=Z` (relevé sur la géométrie repérée, 2026-10-03).
-- **Nom de point `Ω` refusé** par le DSL du bloc ```figure (« Caractère inattendu ») : point `W`avec`etiquette="aucune"`puis`texte(…, "Ω")`.
 - **Case équation avec `requiredForm: "centre-rayon"`** : un multiple de l'équation est
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
@@ -306,8 +313,6 @@ Toujours vrai :
   l'option retire). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
 - **Vecteur colinéaire** : deux cases de coordonnées n'acceptent pas un vecteur colinéaire
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
-- **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
-  dans l'énoncé (« tracé en bleu »).
 - **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
   vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
   réponse.
