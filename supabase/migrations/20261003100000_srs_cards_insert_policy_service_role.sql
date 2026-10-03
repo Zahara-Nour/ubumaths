@@ -1,0 +1,35 @@
+-- ============================================================================
+-- srs_cards : la policy large d'insertion est réservée au serveur
+-- ============================================================================
+--
+-- Question d'accès (tranchée par David le 2026-10-03) :
+--   Personne ne gagne d'accès. Perdent :
+--   - un élève ne peut plus insérer directement une carte dans son paquet
+--     Programme (srs_decks.is_auto_managed = true) ;
+--   - un prof / admin ne peut plus insérer une carte dans le paquet d'autrui
+--     via l'API.
+--
+-- Avant : « Users can create cards in decks » (TO public) acceptait toute
+-- insertion dans un paquet non assigné de l'appelant (paquet Programme compris)
+-- OU n'importe quelle insertion d'un prof / admin, dans n'importe quel paquet.
+-- Les policies permissives se combinant en OU, elle rendait inutile la policy
+-- stricte « Users can create cards in their non-assigned decks » (propre paquet,
+-- non assigné, non auto-managé), qui reste la seule active pour authenticated.
+--
+-- Le paquet Programme est désormais rempli par le serveur :
+-- `ensureProgrammeDeckCard` écrit avec le client service (qui contourne la
+-- RLS). La copie des paquets assignés (`api/srs/decks/[id]/assign`) écrivait
+-- déjà avec le client service.
+--
+-- Additive : aucune policy supprimée, aucune donnée touchée. La policy est
+-- rattachée au seul rôle service_role (qui contourne déjà la RLS) : elle devient
+-- inerte pour anon et authenticated.
+--
+-- ROLLBACK (clause TO d'origine : aucune, donc PUBLIC — baseline
+-- 20260616220000, l. 40015) :
+--   ALTER POLICY "Users can create cards in decks" ON public.srs_cards TO public;
+-- ⚠️ Le rollback rouvre l'insertion directe dans le paquet Programme et dans le
+-- paquet d'autrui pour prof / admin.
+-- ============================================================================
+
+ALTER POLICY "Users can create cards in decks" ON public.srs_cards TO service_role;
