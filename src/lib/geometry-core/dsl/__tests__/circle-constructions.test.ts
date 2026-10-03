@@ -261,7 +261,7 @@ describe('secteur() — edge cases', () => {
 			].join('\n')
 		);
 		const el = figure.getElementById(symbols.get('s')!.figureId)!;
-		expect(el.style?.fillColor).toBe('#16a34a');
+		expect(el.style?.fillColor).toBe('vert');
 		expect(el.style?.fillOpacity).toBe(0.8);
 	});
 });
@@ -336,7 +336,7 @@ describe('couronne() — edge cases', () => {
 			].join('\n')
 		);
 		const el = figure.getElementById(symbols.get('a')!.figureId)!;
-		expect(el.style?.fillColor).toBe('#9333ea');
+		expect(el.style?.fillColor).toBe('violet');
 		expect(el.style?.fillOpacity).toBe(0.5);
 	});
 });
@@ -520,7 +520,7 @@ describe('DSL style — remplissage / opacite_fond', () => {
 			].join('\n')
 		);
 		const el = figure.getElementById(symbols.get('p')!.figureId)!;
-		expect(el.style?.fillColor).toBe('#1e40af');
+		expect(el.style?.fillColor).toBe('bleu');
 	});
 
 	it('style(element, opacite_fond=0.5) sets fillOpacity', () => {
@@ -546,7 +546,7 @@ describe('DSL style — remplissage / opacite_fond', () => {
 			].join('\n')
 		);
 		const el = figure.getElementById(symbols.get('c')!.figureId)!;
-		expect(el.style?.fillColor).toBe('#dc2626');
+		expect(el.style?.fillColor).toBe('rouge');
 		expect(el.style?.fillOpacity).toBe(0.3);
 	});
 });

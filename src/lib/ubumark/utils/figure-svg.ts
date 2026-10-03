@@ -15,7 +15,8 @@
 
 import type { FigureSize } from '../types/figure';
 import { FIGURE_AXES_MARGIN_PX, FIGURE_LABEL_FONT_PX, FIGURE_PIXEL_WIDTH } from '../types/figure';
-import { FIGURE_DEFAULT_COLOR, FIGURE_HEX_COLOR, type FigureScene } from './figure-scene';
+import { colorForScreen } from '$lib/theme/named-colors';
+import { FIGURE_DEFAULT_COLOR, type FigureScene } from './figure-scene';
 import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 import {
 	angleToSVG,
@@ -218,12 +219,13 @@ function frameToSvg(
 /**
  * Couleur posée dans `style:` : Svelte la concatène dans `cssText` SANS
  * échapper. La scène a déjà validé les couleurs ; défense en profondeur :
- * tout ce qui n'est pas hexadécimal devient la couleur par défaut (sinon
+ * `colorForScreen` ne rend qu'une variable du thème (nom de la palette) ou un
+ * hexadécimal, et tout le reste devient la couleur par défaut (sinon
  * `red;mask-image:url(…)` injecterait du CSS, dans le chat élève compris).
  */
-function screenColor(hex: string): string {
-	if (hex.toLowerCase() === FIGURE_DEFAULT_COLOR) return SCREEN_DEFAULT_COLOR;
-	return FIGURE_HEX_COLOR.test(hex) ? hex : SCREEN_DEFAULT_COLOR;
+function screenColor(color: string): string {
+	if (color.toLowerCase() === FIGURE_DEFAULT_COLOR) return SCREEN_DEFAULT_COLOR;
+	return colorForScreen(color) ?? SCREEN_DEFAULT_COLOR;
 }
 
 export function figureToSvg(scene: FigureScene, size: FigureSize): FigureSvg {

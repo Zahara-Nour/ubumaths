@@ -190,7 +190,7 @@ describe('escalier — relecture du 2026-10-01', () => {
 		);
 		const relations = typst.split('\n').filter((l, i, all) => all[i - 1]?.includes('// relation'));
 		expect(relations.some((l) => l.includes('#dc2626'))).toBe(true);
-		expect(relations.some((l) => l.includes('#15803d'))).toBe(true);
+		expect(relations.some((l) => l.includes('#018639'))).toBe(true); // vert de la palette commune
 	});
 
 	it('deux escaliers : une seule droite y = x', () => {

@@ -22,7 +22,7 @@
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import {
 		pointToSVG,
-		resolveStyle,
+		resolvePrintStyle,
 		lineToSVG,
 		rayToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
@@ -388,7 +388,7 @@
 			{#each animatingPointIdArray as id (id)}
 				{@const pt = pointToSVG(id, figure, transformer)}
 				{@const el = figure.getElementById(id)}
-				{@const sty = el ? resolveStyle(el, figure.defaults) : null}
+				{@const sty = el ? resolvePrintStyle(el, figure.defaults) : null}
 				{#if pt && sty}
 					{@const s = pointScale}
 					{@const op = pointAnimProgress}
@@ -516,7 +516,7 @@
 		>
 			{#each animatingLineIdArray as id (id)}
 				{@const el = figure.getElementById(id)}
-				{@const sty = el ? resolveStyle(el, figure.defaults) : null}
+				{@const sty = el ? resolvePrintStyle(el, figure.defaults) : null}
 				{@const seg =
 					el?.type === 'line'
 						? lineToSVG(id, figure, transformer, { width, height })

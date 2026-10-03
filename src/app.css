@@ -114,6 +114,25 @@
 	--color-curve-2: light-dark(#dd2779, #ed3a86); /* framboise */
 	--color-curve-3: light-dark(#b16203, #c0701f); /* ocre */
 	--color-curve-4: light-dark(#8b55ef, #9863fe); /* violet */
+
+	/*
+	 * Couleurs nommées des figures, courbes et graphiques (`couleur: rouge`).
+	 * Palette « Fidèle » : chaque nom garde sa teinte, contraste ≥ 4,5 sur la page
+	 * et sur une carte dans les deux modes. La variante claire est aussi celle du
+	 * PDF : src/lib/theme/named-colors.ts (NAMED_COLOR_PRINT), vérifié par
+	 * src/lib/theme/__tests__/named-colors.test.ts. Noir et blanc n'ont pas de
+	 * token : ils suivent --color-foreground et --color-background.
+	 */
+	--color-fig-bleu: light-dark(#2563eb, #5d93fe);
+	--color-fig-rouge: light-dark(#dc2626, #ff6257);
+	--color-fig-vert: light-dark(#018639, #26ac52);
+	--color-fig-orange: light-dark(#b65a00, #e97607);
+	--color-fig-violet: light-dark(#9333ea, #b478fe);
+	--color-fig-jaune: light-dark(#906f06, #ddac03);
+	--color-fig-cyan: light-dark(#037e9c, #2ba2c3);
+	--color-fig-marron: light-dark(#863805, #bd8b73);
+	--color-fig-rose: light-dark(#d92475, #ff5898);
+	--color-fig-gris: light-dark(#6c727e, #9096a3);
 }
 
 /* Shadcn/Bits UI Animation Keyframes */

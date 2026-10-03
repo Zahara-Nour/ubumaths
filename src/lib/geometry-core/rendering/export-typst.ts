@@ -4,6 +4,7 @@
  * Produces a #cetz.canvas({...}) block using the cetz drawing library.
  */
 
+import { HEX_COLOR } from '$lib/theme/named-colors';
 import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
@@ -11,7 +12,7 @@ import type { ConicParams } from '../types/elements';
 import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
-import { resolveStyle } from './svg-primitives';
+import { resolvePrintStyle } from './svg-primitives';
 import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 import {
@@ -78,16 +79,14 @@ function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
 }
 
-/** Couleurs que `rgb("…")` de Typst accepte (3, 4, 6 ou 8 chiffres hexadécimaux). */
-const TYPST_HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-
 /**
  * Défense en profondeur : une couleur non hexadécimale (`red`, une chaîne
  * avec `"`) ferait échouer tout le document, ou sortirait de la chaîne. Elle
  * devient noire ; l'appelant est censé l'avoir validée avant.
  */
 function hexToTypstColor(hex: string): string {
-	return TYPST_HEX_COLOR.test(hex) ? `rgb("${hex}")` : 'black';
+	// HEX_COLOR : les formes que `rgb("…")` de Typst accepte (3, 4, 6 ou 8 chiffres)
+	return HEX_COLOR.test(hex) ? `rgb("${hex}")` : 'black';
 }
 
 /**
@@ -190,7 +189,7 @@ export function exportToTypst(
 	// Pass 1: segments, lines, rays
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -261,7 +260,7 @@ export function exportToTypst(
 	// Pass 2: circles
 	for (const el of elements) {
 		if (!el.visible) continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -319,7 +318,7 @@ export function exportToTypst(
 	for (const el of elements) {
 		if (!el.visible) continue;
 		if (el.type !== 'arcByAngles' && el.type !== 'arcByPoints') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -365,7 +364,7 @@ export function exportToTypst(
 	// Pass 2b: polygons
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'polygon') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -382,7 +381,7 @@ export function exportToTypst(
 	// Pass 2c: quadratic curves (conics)
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'quadraticCurve') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -401,7 +400,7 @@ export function exportToTypst(
 	// Pass 2e: parametric curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'parametricCurve') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -442,7 +441,7 @@ export function exportToTypst(
 	// Pass 2d: tangents to quadratic curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const stroke = strokeExpr(
 			sty.color,
 			sty.strokeWidth,
@@ -503,7 +502,7 @@ export function exportToTypst(
 		tag(el.id);
 
 		const { vertexX: vx, vertexY: vy, marque } = geom;
-		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+		const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
 			// Label-only.
@@ -520,7 +519,7 @@ export function exportToTypst(
 
 			// Optional sector fill (rendered before arc strokes). Uses OUTER
 			// radius so the fill covers the full visible arc extent.
-			const sty = resolveStyle(el, figure.defaults);
+			const sty = resolvePrintStyle(el, figure.defaults);
 			if (sty.fillColor) {
 				const fillCol = hexToTypstColor(sty.fillColor);
 				const outerR = geom.outerRadius;
@@ -565,7 +564,7 @@ export function exportToTypst(
 		const px = -uy;
 		const py = ux;
 
-		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+		const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 		const totalWidth = (el.markCount - 1) * tickSpacing;
 		const startOffset = -totalWidth / 2;
 
@@ -588,7 +587,7 @@ export function exportToTypst(
 
 		const x = geoToNumber(pos.x);
 		const y = geoToNumber(pos.y);
-		const sty = resolveStyle(el, figure.defaults);
+		const sty = resolvePrintStyle(el, figure.defaults);
 		const color = hexToTypstColor(sty.color);
 
 		tag(el.id);
@@ -627,7 +626,7 @@ export function exportToTypst(
 			const text = figure.resolveTemplate(el.id);
 			if (text === undefined) continue;
 
-			const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+			const color = hexToTypstColor(resolvePrintStyle(el, figure.defaults).color);
 			let mx: number | undefined;
 			let my: number | undefined;
 

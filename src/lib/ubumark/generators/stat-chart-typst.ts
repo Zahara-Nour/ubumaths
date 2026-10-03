@@ -17,8 +17,9 @@
  * @module ubumark/generators/stat-chart-typst
  */
 
-import type { CourbeColor, CourbeSize } from '../types/courbe';
-import type { StatChartNode } from '../types/stat-chart';
+import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
+import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
+import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { WIDTH_CM } from './courbe-typst';
 import {
 	PIE_MARKER_CM,
@@ -51,27 +52,11 @@ export interface StatChartTypstOptions {
 // CONSTANTES
 // ============================================================================
 
-/** Teintes du thème clair de l'écran, comme ```courbe */
-const TYPST_COLORS: Record<CourbeColor, string> = {
-	bleu: 'rgb("#2563eb")',
-	rouge: 'rgb("#dc2626")',
-	vert: 'rgb("#15803d")',
-	orange: 'rgb("#d97706")',
-	violet: 'rgb("#7c3aed")',
-	noir: 'black',
-	gris: 'rgb("#6b7280")'
-};
+/** Variante claire de la palette commune des figures, comme ```courbe */
+const TYPST_COLORS = namedColorTable(COURBE_COLORS, namedColorTypst);
 
-/** Palette des secteurs (même ordre que `StatChart.svelte`) */
-const PIE_COLORS = [
-	'rgb("#2563eb")',
-	'rgb("#d97706")',
-	'rgb("#15803d")',
-	'rgb("#dc2626")',
-	'rgb("#7c3aed")',
-	'rgb("#0d9488")',
-	'rgb("#6b7280")'
-];
+/** Couleurs des secteurs : même ordre que l'écran (`PIE_COLOR_SEQUENCE`) */
+const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorTypst);
 
 const UNAVAILABLE =
 	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';

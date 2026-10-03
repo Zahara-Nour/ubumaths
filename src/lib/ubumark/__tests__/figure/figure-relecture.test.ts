@@ -16,6 +16,7 @@ import { figureToSvg } from '../../utils/figure-svg';
 import { generateFigureTypst } from '../../generators/figure-typst';
 import { resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
 import { resolveMarkdownContent } from '$lib/questions/generator/content-resolver';
+import { resolveNamedColor } from '$lib/theme/named-colors';
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
@@ -44,8 +45,8 @@ describe('figure — couleurs (point 1)', () => {
 		['A = point(0, 0, couleur="rouge")'],
 		['A = point(0, 0, couleur="Bleu")'],
 		['A = point(0, 0, couleur="#2563eb")']
-	])('%s → couleur hexadécimale', (body) => {
-		for (const c of colors(body)) expect(c).toMatch(HEX);
+	])('%s → couleur sûre : nom de la palette ou hexadécimal', (body) => {
+		for (const c of colors(body)) expect(HEX.test(c) || resolveNamedColor(c) === c).toBe(true);
 	});
 
 	it.each([

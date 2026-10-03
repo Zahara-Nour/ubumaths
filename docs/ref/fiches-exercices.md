@@ -379,6 +379,14 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
+- **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart ` : écrire un **nom** de la
+  palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose, gris, noir,
+  blanc). Le nom suit le mode clair / sombre à l'écran et s'imprime dans sa variante claire. Un
+  code `#1e40af` reste figé dans les deux modes : à éviter. `noir` et `blanc` suivent le texte et
+  le fond de la page.
+- **Daltonisme** (décision D4, 2026-10-03) : **4 couleurs au plus** par figure ; au-delà,
+  distinguer aussi par le trait (`pointillé`) ou par une étiquette, jamais par la couleur seule.
+  Éviter d'opposer rouge et vert, ou bleu et violet, sans autre indice.
 
 ---
 

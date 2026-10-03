@@ -4,6 +4,7 @@
  * Maps French DSL function names to Figure factory method calls.
  */
 
+import { resolveNamedColor } from '$lib/theme/named-colors';
 import type { Figure } from '../graph/figure';
 import type { GeoValue, ScalarParam, ScalarRef } from '../types/geo-value';
 import { exact, isScalarRef } from '../types/geo-value';
@@ -130,21 +131,14 @@ export type ResolvedValue =
 	| { type: 'tuple'; elements: ResolvedValue[] }
 	| { type: 'geoValue'; value: GeoValue };
 
-/** French color names to hex. */
-const COLOR_MAP: Record<string, string> = {
-	bleu: '#1e40af',
-	rouge: '#dc2626',
-	vert: '#16a34a',
-	violet: '#9333ea',
-	orange: '#ea580c',
-	cyan: '#0891b2',
-	gris: '#4b5563',
-	noir: '#000000',
-	jaune: '#f59e0b'
-};
-
+/**
+ * Couleur écrite par l'auteur : un nom connu (synonymes anglais compris) devient
+ * son nom canonique (`red` → `rouge`) et le RESTE jusqu'au rendu, qui le
+ * traduit (variable du thème à l'écran, variante claire à l'impression).
+ * Tout le reste (hexadécimal, nom CSS) passe tel quel.
+ */
 export function resolveColorName(name: string): string {
-	return COLOR_MAP[name] ?? name;
+	return resolveNamedColor(name) ?? name;
 }
 
 /** Map of builtin function names to their execution logic. */

@@ -24,7 +24,7 @@ describe('montre() / masque() — visibility verbs', () => {
 		const el = figure.getElementById(id);
 		expect(el?.visible).toBe(true);
 		// Color should be the rouge mapping
-		expect(el?.style?.color).toBe('#dc2626');
+		expect(el?.style?.color).toBe('rouge');
 	});
 
 	it('montre + multiple style args', () => {
@@ -38,7 +38,7 @@ describe('montre() / masque() — visibility verbs', () => {
 		const id = symbols.get('A')!.figureId!;
 		const el = figure.getElementById(id);
 		expect(el?.visible).toBe(true);
-		expect(el?.style?.color).toBe('#1e40af');
+		expect(el?.style?.color).toBe('bleu');
 		expect(el?.style?.pointShape).toBe('cross');
 		expect(el?.style?.strokeWidth).toBe(3);
 	});
