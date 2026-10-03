@@ -57,6 +57,22 @@ export const submitReviewSchema = z.object({
 	timeSpent: z.number().int().nonnegative().max(3600).optional()
 });
 
+/** Paquet calculé d'un chapitre : identifiant du chapitre (paramètre de route). */
+export const chapterDeckParamsSchema = z.object({
+	chapterId: z.string().uuid('Chapitre invalide')
+});
+
+/**
+ * Réponse à une question du paquet d'un chapitre : le modèle et la note FSRS
+ * (1 = À revoir … 4 = Facile). Le serveur revérifie que le modèle appartient au
+ * paquet calculé au moment de l'envoi.
+ */
+export const chapterReviewSubmitSchema = z.object({
+	templateId: z.string().uuid('Question invalide'),
+	grade: z.number().int().min(1).max(4),
+	timeSpent: z.number().int().nonnegative().max(3600).optional()
+});
+
 /**
  * Schema for updating a deck (all fields optional)
  */

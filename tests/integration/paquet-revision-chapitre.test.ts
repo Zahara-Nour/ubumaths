@@ -52,13 +52,15 @@ const ANON_KEY =
 const PAST = new Date(Date.now() - 3600_000).toISOString();
 
 const CAT_A = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Méthode', level: 1 };
+/** Une seule question PUBLIÉE par catégorie (index unique partiel) : A2 porte la seconde. */
+const CAT_A2 = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Méthode', level: 2 };
 const CAT_B = { theme: 'Thème PRC', domain: 'Domaine B PRC', subdomain: null, level: 2 };
 const CAT_C = { theme: 'Thème PRC', domain: 'Domaine C PRC', subdomain: null, level: 1 };
 
 /** Modèles du décor (identifiants fixes, supprimés avant et après). */
 const T = {
 	course: 'a0c0e5e0-0000-4000-8000-0000000000a1', // A, publié, question de cours
-	regular: 'a0c0e5e0-0000-4000-8000-0000000000a2', // A, publié
+	regular: 'a0c0e5e0-0000-4000-8000-0000000000a2', // A2, publié
 	draft: 'a0c0e5e0-0000-4000-8000-0000000000a3', // A, brouillon
 	other: 'a0c0e5e0-0000-4000-8000-0000000000b1', // B, publié (série 2)
 	outside: 'a0c0e5e0-0000-4000-8000-0000000000c1' // C, publié, dans AUCUNE série du chapitre
@@ -205,7 +207,7 @@ describe('paquet de révision calculé du chapitre', () => {
 			.from('question_templates')
 			.insert([
 				templateRow(T.course, CAT_A, 'published', { courseQuestion: true }),
-				templateRow(T.regular, CAT_A, 'published'),
+				templateRow(T.regular, CAT_A2, 'published'),
 				templateRow(T.draft, CAT_A, 'draft'),
 				templateRow(T.other, CAT_B, 'published'),
 				templateRow(T.outside, CAT_C, 'published')
@@ -230,7 +232,7 @@ describe('paquet de révision calculé du chapitre', () => {
 				categories: categories.map((category) => ({ category, quantity: 2, delay: 20 })),
 				created_by: teacherId
 			});
-		const seriesA = await series('Série A PRC', [CAT_A]);
+		const seriesA = await series('Série A PRC', [CAT_A, CAT_A2]);
 		// N6 : la catégorie A revient dans la seconde série
 		const seriesB = await series('Série B PRC', [CAT_B, CAT_A]);
 		const seriesC = await series('Série C PRC', [CAT_C]);
