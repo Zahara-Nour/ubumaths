@@ -34,3 +34,12 @@ valeurs exactes (Python) pour B(10 ; 0,3) sont I = [0 ; 6] et k = 5.
 - [ ] PR, CI, merge
 
 ## PR (c) — atelier `.binomiale`
+
+Q142 (David, 2026-10-03) : la commande AFFICHE la loi, sans créer de liste (des listes décimales
+perdraient l'exactitude : l'action « Loi » refuserait B(20 ; 0,3)).
+
+- [x] `atelier/binomial.ts` : `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil …]` écrit
+      le bloc ```loi et en montre la scène (mêmes textes, mêmes valeurs) ; erreurs du bloc sans
+      « Ligne N : » ; catalogue (décor vide déclaré, Q79)
+- [x] Tests `binomiale.test.ts` (8)
+- [ ] PR, CI, merge
