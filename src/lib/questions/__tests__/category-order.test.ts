@@ -248,6 +248,22 @@ describe('compareCategories', () => {
 		]);
 	});
 
+	it('Polynôme du second degré : « Propriétés » (ex « Vrai ou Faux ») rangé avant les non déclarés', () => {
+		const subdomains = ['Discriminant', 'Propriétés', 'Racines', 'Apprivoiser'].map(
+			(subdomain) => ({
+				theme: 'Fonctions',
+				domain: 'Polynôme du second degré',
+				subdomain
+			})
+		);
+		expect(sortItems(subdomains).map((item) => item.subdomain)).toEqual([
+			'Apprivoiser',
+			'Racines',
+			'Propriétés',
+			'Discriminant'
+		]);
+	});
+
 	it("range les domaines d'Entiers dans l'ordre déclaré", () => {
 		const domains = [
 			'Vocabulaire',
