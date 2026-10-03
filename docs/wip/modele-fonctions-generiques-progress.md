@@ -74,9 +74,13 @@ contrôlée.
   (sauf `simplify/abort.test.ts`, test de chronométrage instable aussi sur main), specs des 195
   JSON identiques à main, production 801 modèles / 7075 specs identiques.
 
+- Lot 3 (relecture PR #696) : `checkRequiredForm` / `requiredFormVerdict` reçoivent
+  `genericFunctions` (case seule, sans ordre, QCM) ; 5 tests rouges prouvés par copie, puis verts.
+  Non-régression : specs des 195 JSON et production (801 / 7075) identiques à main.
+
 ## Restes
 
-- Non branchés (pas de cas réel) : `required-form-validator` (formes product/sum…),
+- Non branchés (pas de cas réel) : motifs `requiredForm` eux-mêmes (`P.parse`),
   `{{eval:…}}` et conditions (une fonction déclarée n'y a pas de valeur), `evaluateExpression`,
   `forgotPercentSign` / `isSimpleNumberLatex` (une fonction n'est jamais un nombre : verdict
   identique avec ou sans la liste).

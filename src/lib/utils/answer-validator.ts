@@ -466,7 +466,10 @@ export function validateAnswer(
 		let acceptableForm = false;
 		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const verdicts = latex.map((l) => requiredFormVerdict(l, instance.requiredForm!));
+			const genericFunctions = templateGenericFunctions(instance.genericFunctions);
+			const verdicts = latex.map((l) =>
+				requiredFormVerdict(l, instance.requiredForm!, { genericFunctions })
+			);
 			acceptableForm = verdicts.includes('acceptable');
 
 			if (verdicts.includes('violated')) {
@@ -1107,7 +1110,9 @@ function validateSingleBlank(
 	// 3. Required form check (per-blank)
 	const formVerdict =
 		blank.requiredForm && userAnswerLatex
-			? requiredFormVerdict(userAnswerLatex, blank.requiredForm)
+			? requiredFormVerdict(userAnswerLatex, blank.requiredForm, {
+					genericFunctions: templateGenericFunctions(instance.genericFunctions)
+				})
 			: 'ok';
 	if (blank.requiredForm && formVerdict === 'violated') {
 		const feedback = getRequiredFormFeedback(blank.requiredForm, false);
@@ -1611,7 +1616,9 @@ function matchedAnswerForm(
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 
 	if (blank.requiredForm && blankLatex) {
-		const verdict = requiredFormVerdict(blankLatex, blank.requiredForm);
+		const verdict = requiredFormVerdict(blankLatex, blank.requiredForm, {
+			genericFunctions: templateGenericFunctions(instance.genericFunctions)
+		});
 		if (verdict === 'violated') {
 			const feedback = getRequiredFormFeedback(blank.requiredForm, false);
 			allViolations.push({ constraint: 'form', severity: 'error', feedback });

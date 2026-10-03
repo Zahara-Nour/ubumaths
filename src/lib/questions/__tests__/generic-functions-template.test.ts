@@ -20,6 +20,7 @@ import {
 	formatGenericFunctionNames
 } from '../generic-functions';
 import { validateAnswer } from '$lib/utils/answer-validator';
+import { requiredFormVerdict } from '../required-form-validator';
 import { createQuestionTemplateSchema } from '$lib/server/validation/questions';
 import { DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST';
 import { parseCustomSafe } from '$lib/mathAST';
@@ -315,5 +316,60 @@ describe('Champ « Fonctions » de l’éditeur', () => {
 	it('affiche la liste déclarée', () => {
 		expect(formatGenericFunctionNames(['P', 'C'])).toBe('P, C');
 		expect(formatGenericFunctionNames(undefined)).toBe('');
+	});
+});
+
+// ============================================================================
+// FORME EXIGÉE (requiredForm) : même lecture que la valeur et checkForm
+// ============================================================================
+
+describe('Forme exigée avec fonctions déclarées', () => {
+	const C = templateGenericFunctions(['C']);
+
+	it("C(2) n'est pas un produit quand C est déclarée ; inchangé sans la liste", () => {
+		expect(requiredFormVerdict('C(2)', 'product', { genericFunctions: C })).toBe('violated');
+		expect(requiredFormVerdict('C(2)', 'product')).toBe('ok');
+	});
+
+	it("C'(2)+1 est une somme quand C est déclarée ; illisible sans la liste", () => {
+		expect(requiredFormVerdict("C'(2)+1", 'sum', { genericFunctions: C })).toBe('ok');
+		expect(requiredFormVerdict("C'(2)+1", 'sum')).toBe('violated');
+	});
+
+	/** Case `requiredForm: sum`, attendu `C'(2)+1` */
+	function sumTemplate(genericFunctions?: string[]): QuestionTemplate {
+		return {
+			...polynomialTemplate(genericFunctions),
+			variations: [
+				{
+					statement: templateMarkdown('Écrire $C(2)+1$ en fonction de $C$ : $?$'),
+					blanks: [{ expectedAnswer: "C'(2)+1", requiredForm: 'sum' }]
+				}
+			]
+		};
+	}
+
+	it.each(["C'(2)+1", "C'\\left(2\\right)+1"])(
+		'case à forme exigée, toutes les voies : %s juste',
+		(latex) => {
+			const instance = instanceOf(sumTemplate(['C']));
+			const result = validateAnswer([latex], instance, [latex]);
+			expect(result.status).toBe('correct');
+			expect(gradeQuestion(instance, { values: [latex] }).points).toBe(1);
+		}
+	);
+
+	it('sans ordre (orderIndependent) : même verdict', () => {
+		const template = sumTemplate(['C']);
+		template.options = { orderIndependent: true };
+		template.variations[0].statement = templateMarkdown('Écrire : $?$ et $?$');
+		template.variations[0].blanks = [
+			{ expectedAnswer: "C'(2)+1", requiredForm: 'sum' },
+			{ expectedAnswer: '5' }
+		];
+		const instance = instanceOf(template);
+		const result = validateAnswer(['5', "C'(2)+1"], instance, ['5', "C'(2)+1"]);
+		expect(result.isCorrect).toBe(true);
+		expect(result.constraintViolations ?? []).toEqual([]);
 	});
 });

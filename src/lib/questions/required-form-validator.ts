@@ -12,6 +12,12 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { RequiredForm } from './types';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser';
+
+/** Lecture de la réponse : fonctions déclarées par le modèle (`C(2)`), défauts sinon */
+export interface RequiredFormOptions {
+	genericFunctions?: GenericFunctionConfig;
+}
 import {
 	parseLatex,
 	isMultiplication,
@@ -538,7 +544,11 @@ function matchesRequiredForm(node: MathNode, requiredForm: RequiredForm): boolea
  * checkRequiredForm(['2 \\times 3'], { pattern: 'a:integer * b:integer' })
  * // => [] (valid)
  */
-export function checkRequiredForm(answersLatex: string[], requiredForm: RequiredForm): number[] {
+export function checkRequiredForm(
+	answersLatex: string[],
+	requiredForm: RequiredForm,
+	options: RequiredFormOptions = {}
+): number[] {
 	const violations: number[] = [];
 
 	for (let i = 0; i < answersLatex.length; i++) {
@@ -546,7 +556,7 @@ export function checkRequiredForm(answersLatex: string[], requiredForm: Required
 
 		try {
 			// Parse the LaTeX
-			const node = parseLatex(latex);
+			const node = parseLatex(latex, { genericFunctions: options.genericFunctions });
 
 			// Strip unnecessary brackets before checking form
 			// This ensures (2×3) is treated the same as 2×3
@@ -574,12 +584,13 @@ export type RequiredFormVerdict = 'ok' | 'acceptable' | 'violated';
  */
 export function requiredFormVerdict(
 	answerLatex: string,
-	requiredForm: RequiredForm
+	requiredForm: RequiredForm,
+	options: RequiredFormOptions = {}
 ): RequiredFormVerdict {
-	if (checkRequiredForm([answerLatex], requiredForm).length === 0) return 'ok';
+	if (checkRequiredForm([answerLatex], requiredForm, options).length === 0) return 'ok';
 	if (typeof requiredForm !== 'string' && requiredForm.acceptable !== undefined) {
 		const acceptable = { pattern: requiredForm.acceptable };
-		if (checkRequiredForm([answerLatex], acceptable).length === 0) return 'acceptable';
+		if (checkRequiredForm([answerLatex], acceptable, options).length === 0) return 'acceptable';
 	}
 	return 'violated';
 }
