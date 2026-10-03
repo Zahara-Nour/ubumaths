@@ -248,7 +248,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Unlock any locked cards
-	await unlockCardsForEntity(supabase, listingId);
+	await unlockCardsForEntity(listingId);
 
 	// Also unlock cards from any pending proposals
 	const { data: proposals, error: proposalsError } = await supabase
@@ -264,7 +264,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	if (proposals && proposals.length > 0) {
 		for (const proposal of proposals) {
-			await unlockCardsForEntity(supabase, proposal.id);
+			await unlockCardsForEntity(proposal.id);
 		}
 	}
 

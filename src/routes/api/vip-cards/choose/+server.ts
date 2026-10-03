@@ -1,29 +1,35 @@
 /**
- * API Endpoint: Choose VIP Cards
- * ================================
+ * Endpoint API : choisir des cartes VIP
+ * =====================================
  *
- * Allows users to select specific VIP cards to receive by using a
- * choose_card action card. The action card is consumed upon successful selection.
+ * Permet de choisir les cartes VIP à recevoir grâce à une carte d'action
+ * `choose_card`, consommée quand le choix aboutit.
  *
  * POST /api/vip-cards/choose
  *
- * SECURITY:
- * - Requires authentication (teacher/admin)
- * - Teacher must teach the student (class_members check)
- * - All input validated with Zod
- * - Validates action card exists, is unused, and has choose_card action
- * - Validates chosen cards respect action filters
+ * SÉCURITÉ :
+ * - authentification requise : l'élève pour lui-même, ou le professeur / admin
+ *   pour un élève de ses classes (contrôle `class_members`) ;
+ * - entrée validée par Zod ;
+ * - la carte d'action existe, est inutilisée, non engagée sur le marché et
+ *   porte une action `choose_card` ;
+ * - les cartes choisies existent, sont activées et respectent les filtres ;
+ * - la carte d'action est consommée EN PREMIER (`use_vip_card`, FOR UPDATE) :
+ *   de deux requêtes concurrentes, une seule attribue des cartes ;
+ * - l'attribution passe par `grant_vip_cards_after_action`, réservée au
+ *   serveur (migration 20261003150000, Q137 b) : toutes les cartes ou aucune.
+ *   Si elle échoue, la carte d'action est rendue (`restore_vip_card_instance`).
  *
- * FLOW:
- * 1. Validate request (Zod)
- * 2. Verify auth & permissions
- * 3. Fetch student's VIP cards
- * 4. Validate action card exists & unused
- * 5. Validate chosen cards count matches action.count
- * 6. Validate chosen cards respect filters (all/maxRarity/possibleCardIds)
- * 7. Award chosen cards via RPC
- * 8. Mark action card as used
- * 9. Return success with awarded cards
+ * DÉROULÉ :
+ * 1. Valider la requête (Zod)
+ * 2. Vérifier l'authentification et les droits
+ * 3. Lire l'inventaire de l'élève
+ * 4. Carte d'action : existante, inutilisée, non verrouillée
+ * 5. Nombre de cartes choisies = action.count
+ * 6. Cartes choisies conformes aux filtres (all / maxRarity / possibleCardIds)
+ * 7. Consommer la carte d'action
+ * 8. Attribuer les cartes (client service) ; en cas d'échec, rendre la carte d'action
+ * 9. Répondre avec les cartes reçues
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -31,24 +37,31 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
-import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
+import type { VipCardAction } from '$lib/types/vip-card';
 import { getRarityPoints } from '$lib/types/vip-card';
-import { getTemplateById, getTemplatesByIds } from '$lib/server/vip-card-queries';
+import { getTemplatesByIds, getTemplateById } from '$lib/server/vip-card-queries';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
 import { asStudentVipCards } from '$lib/types/vip-card';
+import {
+	findLockedCardInstances,
+	grantVipCardsAfterAction,
+	restoreActionCard
+} from '$lib/server/vip-card-grants';
 
 // ============================================================================
 // POST HANDLER
 // ============================================================================
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Require authentication
+	// Authentification requise
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// Parse and validate request body
+	// Lecture et validation du corps de la requête
 	const body = await request.json();
 	const validation = chooseCardsSchema.safeParse(body);
 
@@ -58,12 +71,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const data = validation.data;
 
-	// Authorization logic (two modes: teacher OR student with approved card)
+	// Autorisation : le professeur pour son élève, ou l'élève pour lui-même
 	const isTeacher = profile.role === 'teacher' || profile.role === 'admin';
 	const isStudent = user.id === data.studentId;
 
 	if (isTeacher) {
-		// Teacher flow: verify they teach this student
+		// Le professeur doit enseigner à cet élève
 		const hasAccess = await verifyTeacherStudentWithRole(
 			user.id,
 			data.studentId,
@@ -74,15 +87,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(403, 'You can only choose cards for students in your classes');
 		}
 	} else if (!isStudent) {
-		// Neither teacher nor the student themselves
+		// Ni professeur, ni l'élève lui-même
 		throw error(403, 'You can only choose cards for yourself or your students');
 	} else {
-		// Student flow: check consent
+		// Élève : consentement requis
 		requireConsent(profile, 'purchase_items');
 	}
-	// If isStudent, authorization check will happen after fetching the card (approval required)
+	// Pour l'élève, l'approbation de la carte est vérifiée après sa lecture
 
-	// Fetch student's VIP cards
+	// Inventaire de l'élève
 	const { data: studentProfile, error: fetchError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
@@ -96,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);
 
-	// Validate that action card exists and is not used
+	// La carte d'action existe et n'est pas utilisée
 	const actionCardInstance = vipCards[data.actionCardInstanceId];
 	if (!actionCardInstance) {
 		throw error(404, `Action card instance not found: ${data.actionCardInstanceId}`);
@@ -105,13 +118,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
 	}
 
-	// Get action card template from database (used for both context check and action validation)
+	// Modèle de la carte d'action (contexte d'activation et action)
 	const actionCard = await getTemplateById(supabase, actionCardInstance.cardId);
 	if (!actionCard) {
 		throw error(404, `Action card definition not found: ${actionCardInstance.cardId}`);
 	}
 
-	// If student flow: require teacher approval OR valid activation context
+	// Élève : approbation du professeur OU contexte d'activation valide
 	if (isStudent && !actionCardInstance.activationApprovedAt) {
 		const actionContext = (actionCard.action as VipCardAction | null)?.context;
 		if (actionContext) {
@@ -124,14 +137,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	// Validate card has choose_card action
+	// La carte porte une action choose_card
 	if (!actionCard.action || actionCard.action.type !== 'choose_card') {
 		throw error(400, `Card "${actionCard.name}" does not have a choose_card action`);
 	}
 
 	const chooseAction = actionCard.action;
 
-	// Validate chosen cards count
+	// Nombre de cartes choisies
 	if (data.chosenCardIds.length !== chooseAction.count) {
 		throw error(
 			400,
@@ -139,19 +152,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		);
 	}
 
-	// Validate chosen cards respect filters
-	await validateChosenCards(supabase, data.chosenCardIds, chooseAction);
+	// Cartes choisies conformes aux filtres
+	const templatesMap = await validateChosenCards(supabase, data.chosenCardIds, chooseAction);
 
-	// Award chosen cards
-	const result = await awardChosenCards(
-		supabase,
-		data.studentId,
-		data.chosenCardIds,
-		vipCards,
-		actionCard.name
-	);
+	// Une carte engagée sur le marché ne peut pas être consommée. Lecture par le
+	// client service : sous RLS, le professeur ne voit pas les verrous de ses
+	// élèves et lirait « aucun verrou ».
+	const lockedIds = await findLockedCardInstances(data.studentId, [
+		data.actionCardInstanceId
+	]).catch(() => {
+		throw error(500, 'Failed to verify marketplace lock status');
+	});
+	if (lockedIds.length > 0) {
+		throw error(400, 'Cette carte est engagée sur le marché et ne peut pas être utilisée');
+	}
 
-	// Mark action card as used atomically via RPC (FOR UPDATE + audit trail)
+	// Consommer la carte d'action EN PREMIER. `use_vip_card` verrouille le profil
+	// (FOR UPDATE) et refuse une carte déjà utilisée : de deux requêtes
+	// concurrentes, une seule attribue des cartes. Appelée avec le client de
+	// l'utilisateur : elle revérifie elle-même propriétaire / professeur.
 	const { data: useResult, error: useError } = await supabase.rpc('use_vip_card', {
 		p_student_id: data.studentId,
 		p_instance_id: data.actionCardInstanceId,
@@ -166,10 +185,50 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to mark action card as used: ${useError.message}`);
 	}
 
-	const rpcResult = useResult as { success: boolean; error?: string; cardName?: string };
+	// `usedAt` : posé par `use_vip_card` quand la carte n'a plus d'usage (sinon
+	// null) ; la restitution exige de retrouver exactement cette valeur.
+	const rpcResult = useResult as { success: boolean; error?: string; usedAt?: string | null };
 	if (!rpcResult.success) {
 		throw error(400, rpcResult.error || 'Failed to mark action card as used');
 	}
+
+	// Attribuer toutes les cartes ou aucune (serveur seul, Q137 b). En cas
+	// d'échec (carte désactivée entre-temps…), la carte d'action est rendue :
+	// un refus ne coûte rien à l'élève.
+	const granted = await grantVipCardsAfterAction({
+		studentId: data.studentId,
+		actionInstanceId: data.actionCardInstanceId,
+		discardIds: [],
+		awardCardIds: data.chosenCardIds,
+		source: 'choose',
+		discardMetadata: {},
+		awardMetadata: { action_card_name: actionCard.name }
+	});
+
+	if (!granted) {
+		const restored = await restoreActionCard(
+			data.studentId,
+			data.actionCardInstanceId,
+			actionCardInstance,
+			rpcResult.usedAt ?? null
+		);
+		throw error(
+			409,
+			restored
+				? 'Le choix n’a pas pu se faire : la carte d’action n’a pas été utilisée'
+				: 'Le choix n’a pas pu se faire et la carte d’action n’a pas pu être rendue'
+		);
+	}
+
+	// Chaque instance vient de la base : la même carte choisie deux fois donne
+	// deux instances distinctes.
+	const earnedAt = new Date().toISOString();
+	const cardsReceived = granted.map(({ cardId, instanceId }) => ({
+		cardId,
+		name: templatesMap.get(cardId)?.name || cardId,
+		instanceId,
+		earnedAt
+	}));
 
 	return json({
 		success: true,
@@ -178,27 +237,42 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			name: actionCard.name,
 			instanceId: data.actionCardInstanceId
 		},
-		cardsReceived: result.cardsReceived
+		cardsReceived
 	});
 };
 
 // ============================================================================
-// VALIDATION HELPERS
+// CONTRÔLES
 // ============================================================================
 
 /**
- * Validate that chosen card IDs respect the action's filters
+ * Vérifie que les cartes choisies respectent les filtres de l'action ; rend
+ * leurs modèles, indexés par identifiant.
  */
 async function validateChosenCards(
-	supabase: SupabaseClient,
+	supabase: SupabaseClient<Database>,
 	chosenCardIds: string[],
 	action: { count: number; filter?: 'all'; maxRarity?: string; possibleCardIds?: string[] }
-) {
-	// Load all chosen card templates at once
+): Promise<Map<string, VipCardTemplate>> {
+	// Tous les modèles choisis en une requête
 	const templates = await getTemplatesByIds(supabase, chosenCardIds);
 	const templatesMap = new Map(templates.map((t) => [t.id, t]));
 
-	// Mode 3: possibleCardIds (specific list)
+	// Toutes les cartes choisies doivent exister et être activées, quel que soit
+	// le mode : le serveur attribue avec le client service, sans autre filtre.
+	const chosenTemplates: VipCardTemplate[] = [];
+	for (const cardId of chosenCardIds) {
+		const template = templatesMap.get(cardId);
+		if (!template) {
+			throw error(404, `Card not found: ${cardId}`);
+		}
+		if (!template.is_enabled) {
+			throw error(400, `Card "${template.name}" is not available`);
+		}
+		chosenTemplates.push(template);
+	}
+
+	// Mode 3 : possibleCardIds (liste imposée)
 	if (action.possibleCardIds && action.possibleCardIds.length > 0) {
 		for (const cardId of chosenCardIds) {
 			if (!action.possibleCardIds.includes(cardId)) {
@@ -209,21 +283,16 @@ async function validateChosenCards(
 				);
 			}
 		}
-		return;
+		return templatesMap;
 	}
 
-	// Mode 2: maxRarity (limit by rarity)
+	// Mode 2 : maxRarity (rareté plafonnée)
 	if (action.maxRarity) {
 		const maxRarityValue = getRarityPoints(
 			action.maxRarity as 'common' | 'rare' | 'epic' | 'legendary'
 		);
 
-		for (const cardId of chosenCardIds) {
-			const template = templatesMap.get(cardId);
-			if (!template) {
-				throw error(404, `Card not found: ${cardId}`);
-			}
-
+		for (const template of chosenTemplates) {
 			const cardRarityValue = getRarityPoints(
 				template.rarity as 'common' | 'rare' | 'epic' | 'legendary'
 			);
@@ -234,100 +303,8 @@ async function validateChosenCards(
 				);
 			}
 		}
-		return;
 	}
 
-	// Mode 1: filter='all' (default - all cards allowed)
-	// Just validate cards exist
-	for (const cardId of chosenCardIds) {
-		const template = templatesMap.get(cardId);
-		if (!template) {
-			throw error(404, `Card not found: ${cardId}`);
-		}
-	}
-}
-
-// ============================================================================
-// AWARD HELPERS
-// ============================================================================
-
-/**
- * Award chosen cards to student using RPC
- */
-async function awardChosenCards(
-	supabase: SupabaseClient,
-	studentId: string,
-	chosenCardIds: string[],
-	currentVipCards: StudentVipCards,
-	actionCardName: string
-) {
-	const cardsReceived: Array<{
-		cardId: string;
-		name: string;
-		instanceId: string;
-		earnedAt: string;
-	}> = [];
-
-	const now = new Date().toISOString();
-	let updatedVipCards = { ...currentVipCards };
-
-	for (const cardId of chosenCardIds) {
-		// Award card via RPC
-		const { data: awardedCardId, error: rpcError } = (await supabase.rpc(
-			'award_vip_card_no_cost' as never,
-			{
-				p_student_id: studentId,
-				p_card_id: cardId,
-				p_source: 'choose',
-				p_extra_metadata: { action_card_name: actionCardName }
-			} as never
-		)) as { data: string | null; error: { message: string } | null };
-
-		if (rpcError) {
-			console.error('[choose] RPC error:', rpcError);
-			throw error(500, `Failed to award card "${cardId}": ${rpcError.message}`);
-		}
-
-		if (!awardedCardId) {
-			throw error(500, `No card ID returned for "${cardId}"`);
-		}
-
-		const template = await getTemplateById(supabase, awardedCardId);
-
-		// Fetch updated VIP cards to get instance ID
-		const { data: updatedProfile, error: updatedProfileError } = await supabase
-			.from('profiles')
-			.select('vip_cards')
-			.eq('id', studentId)
-			.single();
-
-		// L'échange a déjà eu lieu en base : lever ici ferait croire à un échec et
-		// pousserait l'élève à recommencer. On garde donc le repli — mais sans cette
-		// relecture, l'identifiant d'instance renvoyé est un UUID inventé, qui ne
-		// désignera aucune carte réelle lors de la prochaine action.
-		if (updatedProfileError) {
-			console.error(
-				'Inventaire relu en échec, identifiant d’instance approximatif :',
-				updatedProfileError
-			);
-		}
-
-		const latestVipCards = asStudentVipCards(updatedProfile?.vip_cards);
-		updatedVipCards = latestVipCards;
-
-		// Find the most recent card instance with this cardId
-		const latestInstanceId = Object.keys(latestVipCards).find((id) => {
-			const inst = latestVipCards[id];
-			return inst.cardId === awardedCardId && !currentVipCards[id]; // Not in original cards
-		});
-
-		cardsReceived.push({
-			cardId: awardedCardId,
-			name: template?.name || awardedCardId,
-			instanceId: latestInstanceId || crypto.randomUUID(), // Fallback to new UUID
-			earnedAt: now
-		});
-	}
-
-	return { cardsReceived, updatedVipCards };
+	// Mode 1 : filter='all' (par défaut : toute carte activée)
+	return templatesMap;
 }

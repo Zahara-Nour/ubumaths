@@ -13987,6 +13987,11 @@ export type Database = {
         Returns: Json
       }
       are_classmates: { Args: { p_user_id: string }; Returns: boolean }
+      assert_can_read_student: {
+        Args: { p_student_id: string }
+        Returns: undefined
+      }
+      assert_teacher_or_admin: { Args: never; Returns: undefined }
       auto_activate_scheduled_tournaments: { Args: never; Returns: number }
       auto_complete_ended_tournaments: { Args: never; Returns: number }
       auto_expire_listings: { Args: never; Returns: number }
@@ -15176,6 +15181,18 @@ export type Database = {
         Args: { p_card_id: string; p_count?: number; p_student_id: string }
         Returns: Json
       }
+      grant_vip_cards_after_action: {
+        Args: {
+          p_action_instance_id: string
+          p_award_card_ids: string[]
+          p_award_metadata?: Json
+          p_discard_ids: string[]
+          p_discard_metadata?: Json
+          p_source: string
+          p_student_id: string
+        }
+        Returns: Json
+      }
       had_class_access_to_assignment: {
         Args: { p_assignment_id: string }
         Returns: boolean
@@ -15559,6 +15576,15 @@ export type Database = {
           id: string
           name: string
         }[]
+      }
+      restore_vip_card_instance: {
+        Args: {
+          p_expected_used_at: string
+          p_instance_id: string
+          p_snapshot: Json
+          p_student_id: string
+        }
+        Returns: boolean
       }
       review_report: {
         Args: {

@@ -13,7 +13,10 @@
  *       désactivée ;
  *   (b) `restore_vip_card_instance` : rend la carte d'action si elle est
  *       EXACTEMENT dans l'état laissé par `use_vip_card`, et refuse sinon
- *       (défausse concurrente d'une carte à plusieurs usages).
+ *       (défausse concurrente d'une carte à plusieurs usages) ;
+ *   (c) cas signalés par l'audit de la livraison B : double restitution,
+ *       restitution après un usage légitime ailleurs, carte d'action dans la
+ *       défausse, défausse incomplète — chaque refus recompté, rien ne bouge.
  *
  * ⚠️ Un refus ne se mesure pas par l'échec d'une relecture : on recompte avec
  * le client service (inventaire, journal, verrous).
@@ -423,5 +426,98 @@ describe('(b) restore_vip_card_instance', () => {
 		expect(error).toBeNull();
 		expect(data).toBe(false);
 		expect(await lireCartes(eleveId)).toEqual(apresDefausse);
+	});
+});
+
+// ============================================================================
+// (c) Cas signalés par l'audit (livraison B)
+// ============================================================================
+
+function restaurer(action: string, snapshot: Instance, expectedUsedAt: string | null) {
+	return rpc(service, 'restore_vip_card_instance', {
+		p_student_id: eleveId,
+		p_instance_id: action,
+		p_snapshot: snapshot,
+		p_expected_used_at: expectedUsedAt
+	});
+}
+
+describe('(c) refus signalés par l’audit', () => {
+	it('deux restitutions successives : la seconde rend false, état inchangé', async () => {
+		const action = crypto.randomUUID();
+		const inventaire = { [action]: instance(T_COMMUNE) };
+		await poserInventaire(eleveId, inventaire);
+		const { usedAt } = await utiliser(action);
+		expect(usedAt).toBeTruthy();
+
+		const premiere = await restaurer(action, inventaire[action], usedAt);
+		expect(premiere.error).toBeNull();
+		expect(premiere.data).toBe(true);
+		const apresPremiere = await etat(eleveId);
+		expect(apresPremiere.cartes).toEqual(inventaire);
+
+		const seconde = await restaurer(action, inventaire[action], usedAt);
+		expect(seconde.error).toBeNull();
+		expect(seconde.data).toBe(false);
+		expect(await etat(eleveId)).toEqual(apresPremiere);
+	});
+
+	it('restitution après un usage légitime ailleurs : refusée, l’usage reste compté', async () => {
+		const action = crypto.randomUUID();
+		const inventaire = { [action]: instance(T_DOUBLE, { usesRemaining: 2 }) };
+		await poserInventaire(eleveId, inventaire);
+
+		// A consomme un usage (2 → 1), puis B consomme le dernier (1 → 0, usedAt posé).
+		const { usedAt } = await utiliser(action);
+		expect(usedAt).toBeNull();
+		const second = await utiliser(action);
+		expect(second.usedAt).toBeTruthy();
+		const avant = await etat(eleveId);
+		expect(avant.cartes[action].usesRemaining).toBe(0);
+
+		const { data, error } = await restaurer(action, inventaire[action], usedAt);
+		expect(error).toBeNull();
+		expect(data).toBe(false);
+		expect(await etat(eleveId)).toEqual(avant);
+	});
+
+	it('grant refuse si la carte d’action figure dans p_discard_ids', async () => {
+		const action = crypto.randomUUID();
+		const d1 = crypto.randomUUID();
+		await poserInventaire(eleveId, {
+			[action]: instance(T_DOUBLE, { usesRemaining: 1 }),
+			[d1]: instance(T_COMMUNE)
+		});
+		const avant = await etat(eleveId);
+
+		const { error } = await grant({ action, discard: [d1, action], award: [T_CIBLE] });
+		expect(error?.message).toMatch(/carte d'action ne peut pas être défaussée/);
+		expect(await etat(eleveId)).toEqual(avant);
+	});
+
+	it.each([
+		['absente', false],
+		['déjà utilisée', true]
+	])('grant refuse une défausse incomplète (carte %s)', async (_cas, dejaUtilisee) => {
+		const action = crypto.randomUUID();
+		const d1 = crypto.randomUUID();
+		const d2 = crypto.randomUUID();
+		const inventaire: Inventaire = {
+			[action]: instance(T_COMMUNE),
+			[d1]: instance(T_COMMUNE)
+		};
+		if (dejaUtilisee) {
+			inventaire[d2] = instance(T_COMMUNE, {
+				usedAt: new Date().toISOString(),
+				usesRemaining: 0
+			});
+		}
+		await poserInventaire(eleveId, inventaire);
+		const avant = await etat(eleveId);
+
+		const { error } = await grant({ action, discard: [d1, d2], award: [T_CIBLE] });
+		expect(error?.message).toMatch(/Défausse incomplète/);
+		// d1 aurait été défaussée seule : l'exception annule aussi sa défausse.
+		expect(await etat(eleveId)).toEqual(avant);
 	});
 });

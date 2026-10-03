@@ -273,7 +273,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Lock cards if this is a 'sell' listing
 	if (data.listing_type === 'sell' && data.offered_card_ids.length > 0) {
 		const lockResult = await lockCardsForEntity(
-			supabase,
 			userId,
 			data.offered_card_ids,
 			listing.id,

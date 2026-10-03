@@ -156,7 +156,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Unlock all cards associated with this trade
-	await unlockCardsForEntity(supabase, tradeId);
+	await unlockCardsForEntity(tradeId);
 
 	// Create notification for the other participant
 	const otherParticipantId = trade.initiator_id === userId ? trade.partner_id : trade.initiator_id;
