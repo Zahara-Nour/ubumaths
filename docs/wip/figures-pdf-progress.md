@@ -1,7 +1,7 @@
 ---
 title: Défauts figures / PDF — progression
 date: 2026-10-03
-status: en cours
+status: corrections faites, branche non poussée
 branche: fix/figures-pdf (worktree ../ubumaths-wt-g1-figures)
 ---
 
@@ -42,3 +42,15 @@ fenêtre en repère, texte « n⃗ », `align*` avec `\iff\ &`, point nommé Ω.
 
 - 2026-10-03 : tests rouges écrits pour 1-5 (montrés), corrections, fiche compilée avant (ÉCHEC
   « unclosed delimiter », « Figure indisponible », cercle hors cadre, □□) / après (OK).
+- Vérifs : suites `geometry-core` + `ubumark` + `constructions-v2` (307 fichiers, 7767 tests)
+  vertes ; tests navigateur des composants figure (14 fichiers) verts ; écran capturé dans le
+  navigateur de test (croix, cercle, carré, `n⃗`, Ω, objets découpés) identique au PDF.
+- Instantanés de `figure-repere-invariance` ré-enregistrés : seuls changements `shape: "dot"` à
+  l'écran et l'enveloppe de découpe au PDF (vérifié ligne à ligne).
+- `question:specs --file` : les 12 modèles à figures (produit scalaire, géométrie repérée) OK.
+- Mesure PRODUCTION (lecture seule, 315 exercices + 815 modèles × 5 tirages, 18 399 rendus) :
+  84 rendus changent, tous dans les 11 modèles à figures (42 Typst, 42 SVG) ; chaque changement
+  est l'enveloppe de découpe (mêmes lignes de dessin, triées) ou le champ `shape: "dot"` ; aucun
+  objet de ces figures ne dépasse de la fenêtre (rendu visuel inchangé) ; 11 figures compilées
+  avec typst.ts 0.6.1-rc5 : OK. 0 exercice ne change : la classe du défaut 4 (`\ ` avant `&`)
+  est absente de la base, prouvée par les tests unitaires seulement.
