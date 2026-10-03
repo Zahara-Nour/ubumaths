@@ -323,3 +323,27 @@ describe('Q40 (choix a de David) : le ½ point ne vaut « Bien » pour le SRS qu
 		expect(isKnownForSrs(gradeQuestion(instance, { values: ['9'] }))).toBe(false);
 	});
 });
+
+describe('gradeQuestion : message d’une règle écrit par l’auteur (rulesSuffice)', () => {
+	const NOT_A_COUNTER_EXAMPLE = "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité.";
+	const blank: InstanceBlank = {
+		expectedAnswer: '1',
+		type: 'math',
+		rulesSuffice: true,
+		validationRules: [
+			{ type: 'custom', expression: 'answer^2 < (5)*answer', description: NOT_A_COUNTER_EXAMPLE }
+		]
+	};
+
+	it('le serveur rend la même description que l’écran', () => {
+		const verdict = gradeQuestion(blanksInstance([blank]), { values: ['7'] });
+		expect(verdict).toMatchObject({ status: 'incorrect', points: 0 });
+		expect(verdict.feedback).toBe(NOT_A_COUNTER_EXAMPLE);
+	});
+
+	it('plusieurs cases : la description dans blankFeedback, à la case fautive', () => {
+		const verdict = gradeQuestion(blanksInstance([blank, blank]), { values: ['2', '7'] });
+		expect(verdict.points).toBe(0);
+		expect(verdict.blankFeedback).toEqual([undefined, NOT_A_COUNTER_EXAMPLE]);
+	});
+});

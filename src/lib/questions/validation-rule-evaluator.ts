@@ -22,6 +22,7 @@ import type {
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser';
 import { numbersAreClose } from '$lib/mathAST/common/constants';
+import { isStudentFacingRuleDescription } from './rules-suffice';
 
 // ============================================================================
 // TYPES
@@ -468,8 +469,13 @@ function evaluateCustomRule(rule: CustomExpressionRule, ctx: EvaluationContext):
 		const result = evaluateCustomExpression(expression);
 		return {
 			valid: result,
-			// La description, écrite par l'auteur, prime ; à défaut, message générique
-			reason: result ? undefined : rule.description || RULE_MESSAGES.customFailed,
+			// La description, écrite par l'auteur, prime ; à défaut (ou note de
+			// migration « Legacy testAnswer: … »), message générique
+			reason: result
+				? undefined
+				: isStudentFacingRuleDescription(rule.description)
+					? rule.description
+					: RULE_MESSAGES.customFailed,
 			debug: { expression: rule.expression, resolved: expression }
 		};
 	} catch (error) {

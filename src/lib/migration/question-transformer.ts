@@ -80,6 +80,7 @@ import {
 import { convertPlaceholders, convertSolutionPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
 import { slashFractionsToLatex } from './answer-latex';
+import { LEGACY_RULE_DESCRIPTION_PREFIX } from '$lib/questions/rules-suffice';
 import { QUESTION_IMAGES_BUCKET } from '$lib/questions/constants';
 // Note: No AsciiMath→LaTeX conversion here. Variables use custom mathAST syntax.
 // LaTeX conversion happens at question instantiation when inside $...$
@@ -1535,7 +1536,7 @@ function parseTestAnswerConjunct(expression: string, warnings: string[]): Valida
 		return {
 			type: 'custom',
 			expression: `answer ${operator} ${toTemplateReferences(value.trim())}`,
-			description: `Legacy testAnswer: ${expression}`
+			description: `${LEGACY_RULE_DESCRIPTION_PREFIX} ${expression}`
 		};
 	}
 
@@ -1557,7 +1558,7 @@ function parseTestAnswerConjunct(expression: string, warnings: string[]): Valida
 			/(?<![!<>=])=(?!=)/g,
 			'=='
 		),
-		description: `Legacy testAnswer: ${expression}`
+		description: `${LEGACY_RULE_DESCRIPTION_PREFIX} ${expression}`
 	};
 }
 

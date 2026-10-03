@@ -88,8 +88,12 @@ export const FORGOTTEN_PERCENT_SIGN = "N'oublie pas le symbole %.";
 /** QCM à plusieurs réponses coché en partie, sans erreur (½ point, V3) */
 export const MISSING_CHOICES_FEEDBACK = 'Il manque des réponses.';
 
-/** Consigne d'un QCM à plusieurs réponses, sous l'énoncé (V2, Q107 b) */
-export const MULTIPLE_ANSWERS_INSTRUCTION = 'Coche toutes les bonnes réponses.';
+/**
+ * Consigne d'un QCM à plusieurs réponses, sous l'énoncé (V2, Q107 b). « la ou
+ * les » : vraie aussi quand le tirage n'a qu'une bonne réponse, sans en révéler
+ * le nombre (ce serait un indice).
+ */
+export const MULTIPLE_ANSWERS_INSTRUCTION = 'Coche la ou les bonnes réponses.';
 
 /**
  * Get feedback message for a constraint violation

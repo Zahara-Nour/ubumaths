@@ -36,8 +36,27 @@ interface SharedLike {
 }
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/**
+ * Préfixe des descriptions posées par la migration TinyMath (`Legacy testAnswer:
+ * &answer!=1`) : une note technique pour le relecteur, jamais un message élève.
+ */
+export const LEGACY_RULE_DESCRIPTION_PREFIX = 'Legacy testAnswer:';
+
+// ============================================================================
 // FUNCTIONS
 // ============================================================================
+
+/**
+ * Description de règle écrite POUR L'ÉLÈVE : non vide et pas une note de
+ * migration. Les autres sont remplacées par un message générique.
+ */
+export function isStudentFacingRuleDescription(description: string | undefined): boolean {
+	if (!description || description.trim() === '') return false;
+	return !description.startsWith(LEGACY_RULE_DESCRIPTION_PREFIX);
+}
 
 /**
  * Index des cases d'une variation en `rulesSuffice` qui n'ont aucune règle,

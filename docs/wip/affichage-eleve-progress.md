@@ -14,6 +14,12 @@ Worktree : `../ubumaths-wt-g1-affichage`. Trois défauts visibles, aucune migrat
   numérique / illisible garde son retour actuel. Le plumbing existant fait le reste : `feedback` (une
   case) / `blankFeedback` (plusieurs cases) → FlashCard / FillBlanksInput ; serveur : `gradeBlanks`
   (`grading.ts`) recopie les mêmes champs, donc écran et serveur disent la même chose.
+- **Trouvé en mesurant** : 7 règles en prod portent une note de migration comme description
+  (`Legacy testAnswer: &answer!=1`, posée par `question-transformer.ts`). Elle n'est jamais un message
+  élève : `isStudentFacingRuleDescription` (`rules-suffice.ts`) la remplace par le message générique, y
+  compris dans le mode historique (règle en pré-condition), où elle s'affichait déjà telle quelle.
+- **Formule dans un message** (`choisis $x>0$`) : le retour de FlashCard et les messages par case de
+  `FillBlanksInput` passent par `InlineMarkdown` (avant : texte brut, `$` visibles).
 
 ## 2. Consigne « Coche toutes les bonnes réponses. »
 
@@ -31,6 +37,10 @@ Worktree : `../ubumaths-wt-g1-affichage`. Trois défauts visibles, aucune migrat
 
 ## État
 
-- [ ] Tests rouges (validateur, barème, FlashCard, consigne QCM, rendu `P(x)`)
-- [ ] Corrections
-- [ ] Non-régression + mesure prod `test_specs`
+- [x] Tests rouges puis verts (validateur, barème, FlashCard, FillBlanksInput, consigne QCM, `P'(2)`
+      dans la fiche élève)
+- [x] Corrections
+- [x] Non-régression : serveur `questions`/`utils`/`migration`/évaluations, client
+      `questions`/`question-inputs`/`student`/`markdown` ; `question:specs` B-02 et 2dd2b712 importables
+- [x] Mesure prod (lecture seule, 815 modèles, 7561 `test_specs`, main vs branche) : 0 statut changé,
+      19 messages changés (1 modèle, B-02) : « Les blancs suivants sont incorrects: 1 » → description.
