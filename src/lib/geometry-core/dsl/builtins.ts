@@ -338,15 +338,27 @@ function applyInlineStyle(
 		style.color = resolveColorName(colorStr);
 	}
 	if (named.has('forme')) {
-		const fv = named.get('forme')!;
-		const formeName = fv.type === 'string' ? fv.value : 'point';
-		const FORME_MAP: Record<string, string> = {
+		// Valeur contrôlée : une forme inconnue passait telle quelle — rond à
+		// l'écran, RIEN au PDF. Les noms anglais restent acceptés (alias).
+		const FORME_MAP = {
 			point: 'dot',
 			cercle: 'circle',
 			croix: 'cross',
-			carre: 'square'
-		};
-		style.pointShape = FORME_MAP[formeName] ?? formeName;
+			carre: 'square',
+			carré: 'square',
+			dot: 'dot',
+			circle: 'circle',
+			cross: 'cross',
+			square: 'square'
+		} as const;
+		const formeName = requireNamedChoice(
+			named.get('forme')!,
+			'forme',
+			Object.keys(FORME_MAP),
+			line,
+			'montre(A, forme="croix")'
+		) as keyof typeof FORME_MAP;
+		style.pointShape = FORME_MAP[formeName];
 	}
 	if (named.has('trait')) {
 		const tv = named.get('trait')!;
