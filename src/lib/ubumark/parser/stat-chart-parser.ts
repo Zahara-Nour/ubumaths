@@ -103,6 +103,8 @@ interface Options {
 	seed: number;
 	samples: number;
 	sampleSize: number;
+	/** Bornes de `classes:`, telles qu'écrites (série brute en classes, Q104) */
+	classBounds: string[] | null;
 }
 
 /** Une ligne `X = …` ou `P = …` d'une loi, avant le contrôle d'ensemble */
@@ -164,7 +166,8 @@ const OPTION_KEYS = [
 	'mode',
 	'tirages',
 	'graine',
-	'echantillons'
+	'echantillons',
+	'classes'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -199,7 +202,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	mode: ['simulation'],
 	tirages: ['simulation'],
 	graine: ['simulation'],
-	echantillons: ['simulation']
+	echantillons: ['simulation'],
+	classes: ['histogramme', 'frequences-cumulees']
 };
 
 /** Options dont l'auteur écrit l'accent */
@@ -227,7 +231,12 @@ const LAW_INDICATOR_NAMES: Record<LawIndicator, string> = {
 };
 
 /** Blocs qui dépouillent une série brute (`données:`, v2 lot 4 PR a) */
-const RAW_DATA_KINDS: readonly StatChartKind[] = ['barres', 'circulaire'];
+const RAW_DATA_KINDS: readonly StatChartKind[] = [
+	'barres',
+	'circulaire',
+	'histogramme',
+	'frequences-cumulees'
+];
 
 const RAW_AND_COUNTS = 'soit les données, soit les effectifs (catégorie = effectif), pas les deux';
 
@@ -461,6 +470,9 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 				return;
 			}
 			options.size = oneOf(value, COURBE_SIZES, 'taille');
+			return;
+		case 'classes':
+			options.classBounds = parseClassBounds(value);
 			return;
 		case 'echantillons':
 			options.samples = parseWhole(
@@ -732,6 +744,105 @@ function tallyRawData(
 	}
 	return {
 		data: categories.map((c) => ({ label: c.label, value: c.count, interval: null, line: c.line }))
+	};
+}
+
+/**
+ * `classes: 0 ; 5 ; 10` (Q104) : des bornes croissantes, au moins deux, au plus
+ * 20 classes. Rend les bornes telles qu'écrites (vrai signe moins récrit).
+ */
+function parseClassBounds(value: string): string[] {
+	const bounds = value.split(';').map((bound) => bound.trim().replaceAll('−', '-'));
+	if (bounds.length > 1 && bounds.at(-1) === '') bounds.pop();
+	for (const bound of bounds) {
+		if (!PLAIN_NUMBER_REGEX.test(bound)) {
+			throw new LineError(`classes : « ${bound} » n'est pas une borne (écrire 0 ; 5 ; 10)`);
+		}
+	}
+	if (bounds.length < 2)
+		throw new LineError('classes : au moins deux bornes (classes: 0 ; 5 ; 10)');
+	for (let i = 1; i < bounds.length; i++) {
+		if (!(toNumber(bounds[i - 1]) < toNumber(bounds[i]))) {
+			throw new LineError(
+				`classes : les bornes doivent croître (${bounds[i - 1]} puis ${bounds[i]})`
+			);
+		}
+	}
+	if (bounds.length - 1 > STAT_CHART_LIMITS.classes) {
+		throw new LineError(
+			`classes : au plus ${STAT_CHART_LIMITS.classes} classes (ici ${bounds.length - 1})`
+		);
+	}
+	return bounds;
+}
+
+/** Un nombre dans un message : virgule décimale, vrai signe moins */
+function spokenNumber(value: number): string {
+	return formatForMessage(value).replace('-', '−');
+}
+
+/**
+ * Ranger une série brute dans ses classes `[a ; b[` (Q104) : mêmes classes que
+ * les lignes `[a ; b[ = effectif` (même lecture des bornes, mêmes contrôles).
+ * Une valeur hors des classes, ou qui n'est pas un nombre, est refusée et
+ * nommée. Rend les classes et les valeurs brutes, ou l'erreur située.
+ */
+function tallyIntoClasses(
+	kind: StatChartKind,
+	raw: readonly { text: string; line: number }[],
+	bounds: readonly string[] | null,
+	boundsLine: number
+): { data: StatChartDatum[]; values: number[] } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	if (bounds === null) {
+		return at(raw[0].line, 'données : écrire aussi les classes (classes: 0 ; 5 ; 10)');
+	}
+	if (raw.length > STAT_CHART_LIMITS.rawValues) {
+		return at(
+			raw[0].line,
+			`données : au plus ${STAT_CHART_LIMITS.rawValues} valeurs (ici ${raw.length})`
+		);
+	}
+
+	let classes: ReturnType<typeof parseClass>[];
+	try {
+		classes = bounds.slice(1).map((upper, i) => parseClass(`[${bounds[i]} ; ${upper}[`));
+	} catch (error) {
+		return at(boundsLine, `classes : ${error instanceof Error ? error.message : String(error)}`);
+	}
+	const first = classes[0];
+	const last = classes[classes.length - 1];
+	const counts = classes.map(() => 0);
+	const values: number[] = [];
+	const chart = kind === 'histogramme' ? 'un histogramme' : 'un polygone';
+	for (const { text, line } of raw) {
+		const value = rawNumber(text);
+		if (value === null) {
+			return at(line, `« ${text} » n’est pas un nombre : ${chart} demande des nombres`);
+		}
+		if (value < first.interval.lower) {
+			return at(line, `${spokenNumber(value)} sort des classes : la première est ${first.label}`);
+		}
+		if (value >= last.interval.upper) {
+			const next = last.interval.upper + (last.interval.upper - last.interval.lower);
+			return at(
+				line,
+				`${spokenNumber(value)} sort des classes : la dernière est ${last.label} (ajouter une borne, par exemple ${spokenNumber(next)})`
+			);
+		}
+		counts[classes.findIndex((c) => value < c.interval.upper)]++;
+		values.push(value);
+	}
+	return {
+		data: classes.map((c, i) => ({
+			label: c.label,
+			value: counts[i],
+			interval: c.interval,
+			line: boundsLine
+		})),
+		values
 	};
 }
 
@@ -1064,7 +1175,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		draws: 100,
 		seed: 1,
 		samples: 100,
-		sampleSize: 100
+		sampleSize: 100,
+		classBounds: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	let lawProbabilities = null as LawLine | null;
@@ -1090,9 +1202,6 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			const kv = KEY_LINE_REGEX.exec(content);
 			const key = kv ? normalizeKey(kv[1]) : null;
 			if (kv && key === 'donnees') {
-				if (CLASS_CHART_KINDS.includes(kind)) {
-					throw new LineError('données : arrive bientôt pour les séries en classes (classes:)');
-				}
 				if (!RAW_DATA_KINDS.includes(kind)) {
 					const names = RAW_DATA_KINDS.map((k) => KIND_NAME[k]).join(', ');
 					throw new LineError(
@@ -1229,7 +1338,21 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		}
 	});
 
-	if (errors.length === 0 && raw.length > 0) {
+	let rawValues: number[] | null = null;
+	if (errors.length === 0 && isClasses && options.classBounds !== null && raw.length === 0) {
+		const line = optionLines.classes ?? 0;
+		errors.push({
+			message: `Ligne ${line} : classes : seulement avec données: (sinon écrire [0 ; 5[ = effectif)`,
+			line
+		});
+	} else if (errors.length === 0 && raw.length > 0 && isClasses) {
+		const ranged = tallyIntoClasses(kind, raw, options.classBounds, optionLines.classes ?? 0);
+		if ('error' in ranged) errors.push(ranged.error);
+		else {
+			data.push(...ranged.data);
+			rawValues = ranged.values;
+		}
+	} else if (errors.length === 0 && raw.length > 0) {
 		const tallied = tallyRawData(kind, raw, maxCategories);
 		if ('error' in tallied) errors.push(tallied.error);
 		else data.push(...tallied.data);
@@ -1293,7 +1416,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					indicators: options.indicators,
 					table,
 					law,
-					simulation
+					simulation,
+					rawValues
 				}
 			: null;
 

@@ -28,7 +28,7 @@ import type {
 import type { CourbeColor } from '../types/courbe';
 import type { ContentLocale } from '$lib/types/locale';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-import { categoryFrequencies, summarizeTable } from '$lib/statistics/describe';
+import { categoryFrequencies, describeList, summarizeTable } from '$lib/statistics/describe';
 import {
 	estimateClassQuantile,
 	summarizeClasses,
@@ -765,16 +765,19 @@ function classIndicators(
 	locale: ContentLocale
 ): string[] {
 	const v = (value: number) => formatIndicatorValue(value, locale);
+	// Série brute connue (`données:`, Q105) : moyenne et médiane EXACTES ; sinon
+	// estimées à partir des classes (centres, interpolation)
+	const exact = spec.rawValues === null ? null : describeList(spec.rawValues);
 	return spec.indicators.flatMap((indicator) => {
 		switch (indicator) {
 			case 'effectif':
 				return [`Effectif total : ${formatTick(summary.total, locale)}`];
 			case 'moyenne':
-				return [`Moyenne ${v(summary.mean)}`];
+				return [`Moyenne ${v(exact?.mean ?? summary.mean)}`];
 			case 'classe-mediane':
 				return [`Classe médiane : ${spec.data[summary.medianClassIndex].label}`];
 			case 'mediane':
-				return [`Médiane ${v(summary.estimatedMedian)}`];
+				return [`Médiane ${v(exact?.median ?? summary.estimatedMedian)}`];
 			default:
 				return [];
 		}

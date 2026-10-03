@@ -264,12 +264,4 @@ describe('données — erreurs situées', () => {
 			expect(errorOf('données: 1 ; 2', kind)).toMatch(/« données » ne s'applique pas aux/);
 		}
 	});
-
-	it('histogramme et polygone : arrive bientôt (classes)', () => {
-		for (const kind of ['histogramme', 'frequences-cumulees'] as const) {
-			expect(errorOf('données: 1 ; 2', kind)).toBe(
-				'Ligne 1 : données : arrive bientôt pour les séries en classes (classes:)'
-			);
-		}
-	});
 });

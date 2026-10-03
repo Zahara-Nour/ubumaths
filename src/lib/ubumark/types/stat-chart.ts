@@ -180,6 +180,11 @@ export interface StatChartSpec {
 	law: LawData | null;
 	/** Bloc ```simulation : la loi et les tirages */
 	simulation: SimulationData | null;
+	/**
+	 * Série en classes écrite en `données:` (lot 4 PR b) : les valeurs brutes,
+	 * pour une moyenne et une médiane EXACTES (Q105) ; sinon null.
+	 */
+	rawValues: number[] | null;
 }
 
 // ============================================================================

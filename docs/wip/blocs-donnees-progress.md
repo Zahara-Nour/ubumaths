@@ -19,4 +19,15 @@ Décisions Q100-Q108 (`outils-statistiques-v2-progress.md`). Spec PR (a) validé
 
 ## PR (b) — histogramme / polygone, `classes:` (Q104)
 
+Spec validée le 2026-10-03 : moyenne / médiane EXACTES ; la lecture graphique du polygone reste
+une lecture ; pas d'autres indicateurs ouverts.
+
+- [x] `classes: 0 ; 5 ; 10` → mêmes classes que les lignes `[a ; b[` (`parseClass`) ;
+      `tallyIntoClasses` range, refuse et nomme une valeur hors classes ou non numérique
+- [x] `spec.rawValues` → `classIndicators` prend moyenne / médiane sur la série brute
+- [x] Erreurs : bornes non croissantes, < 2 bornes, > 20 classes, une option sans l'autre, mélange
+- [x] Tests `raw-data-classes.test.ts` (16), preuve rouge des indicateurs exacts ; fiche compilée
+      vérifiée à la main (2/3/3/2, moyenne 9,65, médiane 9,5, lecture Me = 10)
+- [ ] Revue, PR, CI, merge
+
 ## PR (c) — `série:` (Q106)
