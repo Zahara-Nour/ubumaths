@@ -276,10 +276,20 @@
 							{/if}
 						</Button>
 						<Button variant="ghost" size="sm" onclick={() => startEdit(i)}>Editer</Button>
-						<Button variant="ghost" size="sm" onclick={() => duplicateSpec(i)}>
+						<Button
+							variant="ghost"
+							size="sm"
+							aria-label="Dupliquer le test"
+							onclick={() => duplicateSpec(i)}
+						>
 							<Copy class="h-3 w-3" />
 						</Button>
-						<Button variant="ghost" size="sm" onclick={() => deleteSpec(i)}>
+						<Button
+							variant="ghost"
+							size="sm"
+							aria-label="Supprimer le test"
+							onclick={() => deleteSpec(i)}
+						>
 							<Trash2 class="h-3 w-3" />
 						</Button>
 					</div>

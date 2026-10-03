@@ -56,11 +56,14 @@
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
+		/** « Plusieurs réponses » coupé dans l'éditeur partagé : normaliser le modèle */
+		onSingleAnswer?: () => void;
 	}
 
 	let {
 		open = $bindable(),
 		questionType,
+		onSingleAnswer,
 		multipleAnswers = $bindable(),
 		shuffleChoices = $bindable(),
 		sharedStatement = $bindable(),
@@ -206,6 +209,7 @@
 								bind:choices={sharedChoices}
 								bind:multipleAnswers
 								bind:shuffleChoices
+								{onSingleAnswer}
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>

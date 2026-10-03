@@ -71,8 +71,3 @@ export function rulesDecide(blank: InstanceBlankLike): boolean {
 		!blank.unit?.expected
 	);
 }
-
-/** Une instance a-t-elle au moins une case à plusieurs bonnes réponses ? */
-export function hasRulesSufficeBlank(instance: { blanks?: readonly InstanceBlankLike[] }): boolean {
-	return (instance.blanks ?? []).some(rulesDecide);
-}
