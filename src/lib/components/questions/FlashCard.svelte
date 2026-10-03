@@ -40,6 +40,7 @@
 	} from '$lib/questions/correction-card-verdict';
 	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
@@ -142,6 +143,8 @@
 	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
 
 	const statementMarkdown = $derived(instance.statement);
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 
 	// Choix dans l'ordre affiché, chacun marqué juste ou faux À SA POSITION AFFICHÉE
 	// (sans `isCorrect`, le choix coché était toujours barré après validation)
@@ -413,9 +416,10 @@
 										mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 											? '\\,'
 											: undefined}
+										{genericFunctions}
 									/>
 								{:else}
-									<MarkdownRenderer content={statementMarkdown} />
+									<MarkdownRenderer content={statementMarkdown} {genericFunctions} />
 								{/if}
 							</div>
 						</div>
@@ -432,6 +436,7 @@
 									multipleAnswers={instance.multipleAnswers}
 									disabled={!interactive || isInputDisabled}
 									showValidation={isSubmitted}
+									{genericFunctions}
 								/>
 							</div>
 						{/if}
@@ -518,7 +523,7 @@
 
 						{#if isCourseCard}
 							<!-- Carte de cours : le verso EST la correction (source unique partagée) -->
-							<CourseCardBack correction={instance.correction} />
+							<CourseCardBack correction={instance.correction} {genericFunctions} />
 						{:else}
 							<!-- Statut, consigne et résultat attendu : groupés, plus serrés que les sections -->
 							<div class="space-y-3">
@@ -573,7 +578,7 @@
 									<p class="correction-heading" data-testid="correction-heading">Correction</p>
 									<div class="correction-steps">
 										<!-- Concise par défaut, interrupteur « Voir le détail » (ADR 0017) -->
-										<CorrectionView markdown={correctionMarkdown} />
+										<CorrectionView markdown={correctionMarkdown} {genericFunctions} />
 									</div>
 								</div>
 							{/if}

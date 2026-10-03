@@ -19,6 +19,7 @@
 	import { onMount } from 'svelte';
 	import { ChevronDown } from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import type { GenericFunctionConfig } from '$lib/mathAST';
 	import { readAuthoringErrors } from '$lib/components/markdown/authoring-errors';
 	import { splitCorrectionDetail } from '$lib/questions/correction-detail';
 	import { readDetailPreference, writeDetailPreference } from './correction-view-preference';
@@ -34,9 +35,17 @@
 		 */
 		showAuthoringErrors?: boolean;
 		class?: string;
+		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
+		genericFunctions?: GenericFunctionConfig;
 	}
 
-	let { markdown, expectedAnswer, showAuthoringErrors, class: className = '' }: Props = $props();
+	let {
+		markdown,
+		expectedAnswer,
+		showAuthoringErrors,
+		class: className = '',
+		genericFunctions
+	}: Props = $props();
 
 	const regionId = $props.id();
 	const parentAuthoringErrors = readAuthoringErrors();
@@ -101,7 +110,7 @@
 	<!-- Conteneur de requête : le rappel en marge suit la largeur de la correction -->
 	<div id={regionId} class="@container">
 		{#if displayed}
-			<MarkdownRenderer content={displayed} {showAuthoringErrors} />
+			<MarkdownRenderer content={displayed} {showAuthoringErrors} {genericFunctions} />
 		{/if}
 	</div>
 </div>

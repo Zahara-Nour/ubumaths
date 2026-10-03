@@ -43,6 +43,7 @@
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import type { BlockNode, InlineNode } from '$lib/ubumark';
+	import type { GenericFunctionConfig } from '$lib/mathAST';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -96,6 +97,8 @@
 		 * calcule, cf. `public-question.ts`).
 		 */
 		unitKeys?: string[];
+		/** Fonctions déclarées par le modèle (`P(x)`), pour les formules `~…~` ; absent : défauts */
+		genericFunctions?: GenericFunctionConfig;
 	}
 
 	let {
@@ -112,7 +115,8 @@
 		blankFeedback = [],
 		onSubmit,
 		mathModeSpace,
-		unitKeys: providedUnitKeys
+		unitKeys: providedUnitKeys,
+		genericFunctions
 	}: Props = $props();
 
 	// When showing correct answers, force disabled
@@ -413,6 +417,7 @@
 					prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 					{expressionDisplayMap}
 					{mathModeSpace}
+					{genericFunctions}
 				/>
 			{:else if node.type === 'math-block'}
 				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
@@ -420,15 +425,17 @@
 						{@const displayExpr = node.expressionName
 							? expressionDisplayMap?.[node.expressionName]
 							: undefined}
-						{@const baseLatex = displayExpr ?? expressionToLatex(node.expression, node.syntax)}
+						{@const baseLatex =
+							displayExpr ?? expressionToLatex(node.expression, node.syntax, genericFunctions)}
 						{@const flashLatex = mathPrefilledValues
 							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
-							: (displayExpr ?? expressionToFlashLatex(node.expression, node.syntax))}
+							: (displayExpr ??
+								expressionToFlashLatex(node.expression, node.syntax, genericFunctions))}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
 					{:else if showCorrectAnswers && mathCorrectValues}
-						{@const latex = expressionToLatex(node.expression, node.syntax)}
+						{@const latex = expressionToLatex(node.expression, node.syntax, genericFunctions)}
 						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
@@ -445,12 +452,13 @@
 								correctValues={mathCorrectValues}
 								prefilledValues={interactivePrefilledValues}
 								{mathModeSpace}
+								{genericFunctions}
 							/>
 						{/key}
 					{/if}
 				{:else}
 					{#key node.expression}
-						<MathBlock expression={node.expression} syntax={node.syntax} />
+						<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
 					{/key}
 				{/if}
 			{:else if node.type === 'image'}

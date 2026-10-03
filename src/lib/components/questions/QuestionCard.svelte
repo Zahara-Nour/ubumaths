@@ -34,6 +34,7 @@
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { toOriginalChoiceIndexes } from '$lib/questions/choices';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
@@ -93,6 +94,8 @@
 
 	// Markdown content - instance.statement is now ResolvedMarkdown (string)
 	const statementMarkdown = $derived(instance.statement);
+	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
+	const genericFunctions = $derived(templateGenericFunctions(instance.genericFunctions));
 
 	// ============================================================================
 	// INITIALIZATION
@@ -307,7 +310,7 @@
 				     porte déjà l'énoncé (sinon il apparaissait deux fois) -->
 				{#if !interactive || getQuestionType(instance) !== 'fill_in_blanks'}
 					<div class="statement-section statement-content">
-						<MarkdownRenderer content={statementMarkdown} />
+						<MarkdownRenderer content={statementMarkdown} {genericFunctions} />
 					</div>
 				{/if}
 
@@ -329,6 +332,7 @@
 									? '\\,'
 									: undefined}
 								{unitKeys}
+								{genericFunctions}
 							/>
 						{:else if getQuestionType(instance) === 'multiple_choice'}
 							<MultipleChoiceInput
@@ -337,6 +341,7 @@
 								multipleAnswers={instance.multipleAnswers}
 								disabled={isInputDisabled}
 								showValidation={false}
+								{genericFunctions}
 							/>
 						{/if}
 
