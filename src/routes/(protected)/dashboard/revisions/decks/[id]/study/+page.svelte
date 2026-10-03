@@ -56,7 +56,11 @@
 
 	<!-- Review Session -->
 	{#if deckId}
-		<ReviewSession {deckId} {states} onComplete={handleComplete} onBack={goBack} />
+		<ReviewSession
+			source={{ kind: 'deck', deckId, states }}
+			onComplete={handleComplete}
+			onBack={goBack}
+		/>
 	{:else}
 		<p class="text-center text-muted-foreground">ID de deck invalide</p>
 	{/if}

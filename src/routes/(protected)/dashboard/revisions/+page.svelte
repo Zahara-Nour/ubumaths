@@ -16,6 +16,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import DeckCard from '$lib/components/srs/DeckCard.svelte';
+	import { ChapterRevisionButton } from '$lib/components/cours';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
@@ -29,6 +30,9 @@
 				isAutoManaged?: boolean;
 				stats: { total_cards: number; due_cards: number; new_cards: number };
 			})[];
+			/** Élève : un paquet calculé par chapitre visible ayant des séries */
+			chapterDecks: { chapterId: string; title: string; deckSize: number; toReview: number }[];
+			chapterDecksUnavailable: boolean;
 		};
 	}
 
@@ -143,6 +147,40 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
+
+	<!-- Paquets de chapitre (calculés) : un par chapitre visible ayant des séries -->
+	{#if data.chapterDecks.length > 0 || data.chapterDecksUnavailable}
+		<section class="mb-8" aria-labelledby="chapter-decks-title">
+			<h2 id="chapter-decks-title" class="mb-4 text-xl font-semibold">Mes chapitres</h2>
+			{#if data.chapterDecksUnavailable}
+				<p class="text-sm text-muted-foreground">
+					Les chapitres n'ont pas pu être chargés. Réessaie dans un instant.
+				</p>
+			{:else}
+				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+					{#each data.chapterDecks as chapterDeck (chapterDeck.chapterId)}
+						<Card.Root>
+							<Card.Header>
+								<Card.Title class="text-base">{chapterDeck.title}</Card.Title>
+								<Card.Description>
+									{chapterDeck.deckSize} question{chapterDeck.deckSize > 1 ? 's' : ''}
+								</Card.Description>
+							</Card.Header>
+							<Card.Content>
+								{#if chapterDeck.deckSize > 0}
+									<ChapterRevisionButton chapterId={chapterDeck.chapterId} deck={chapterDeck} />
+								{:else}
+									<p class="text-sm text-muted-foreground">
+										Aucune question à réviser pour l'instant
+									</p>
+								{/if}
+							</Card.Content>
+						</Card.Root>
+					{/each}
+				</div>
+			{/if}
+		</section>
+	{/if}
 
 	<!-- Decks List with Tabs -->
 	<Tabs value="all" class="w-full">

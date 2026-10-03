@@ -19,3 +19,4 @@ export { default as ChecklistSection } from './ChecklistSection.svelte';
 export { default as DocumentCard } from './DocumentCard.svelte';
 export { default as ChapterProgressIndicator } from './ChapterProgressIndicator.svelte';
 export { default as ChapterSeriesCard } from './ChapterSeriesCard.svelte';
+export { default as ChapterRevisionButton } from './ChapterRevisionButton.svelte';

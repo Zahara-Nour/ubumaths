@@ -3,17 +3,46 @@
  * ===================================
  *
  * Load user's SRS decks for the revisions page.
+ *
+ * Élève : aussi une entrée par chapitre visible ayant au moins une série
+ * publiée, avec le nombre à revoir (paquet CALCULÉ du chapitre, Q167 b).
  */
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { summarizeChapterDecks, type ChapterDeckSummary } from '$lib/server/srs/chapter-deck';
 
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
+/**
+ * Paquets de chapitre de l'élève. Une panne ne doit pas se lire « aucun
+ * chapitre » : elle est tracée et signalée (`chapterDecksUnavailable`).
+ */
+async function loadChapterDecks(
+	supabase: App.Locals['supabase'],
+	userId: string,
+	isStudent: boolean
+): Promise<{ chapterDecks: ChapterDeckSummary[]; chapterDecksUnavailable: boolean }> {
+	if (!isStudent) return { chapterDecks: [], chapterDecksUnavailable: false };
+	try {
+		return {
+			chapterDecks: await summarizeChapterDecks(supabase, userId),
+			chapterDecksUnavailable: false
+		};
+	} catch (err) {
+		console.error('Paquets de chapitre illisibles :', err);
+		return { chapterDecks: [], chapterDecksUnavailable: true };
+	}
+}
+
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession, profile } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
+
+	// Les chapitres sont lus aux droits de l'appelant : réservé à l'élève (un
+	// professeur verrait tous les siens).
+	const chapterDecksPromise = loadChapterDecks(supabase, user.id, profile?.role === 'student');
 
 	try {
 		// Get user's decks
@@ -30,7 +59,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 		if (!decks) {
 			return {
-				decks: []
+				decks: [],
+				...(await chapterDecksPromise)
 			};
 		}
 
@@ -92,7 +122,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		);
 
 		return {
-			decks: decksWithStats
+			decks: decksWithStats,
+			...(await chapterDecksPromise)
 		};
 	} catch (err) {
 		console.error('Error in revisions page load:', err);
