@@ -64,3 +64,16 @@ cartes) ; B-03 21/23/26 → 73/124/121 (espérance négative « perd en moyenne 
 n faces) ; C-02 v0 20 → 63, v2 40 → 81. Pluriels corrigés (« 1 boule noire », « 1 point »).
 Specs vertes (115), 3 450 tirages recalculés en Python par énumération des issues : 0 écart, lois
 de somme 1, aucun `imaginaryI`, `{{` ni NaN. Variations non touchées : déjà ≥ 46 énoncés.
+
+## cleanCoefficients activé (2026-10-03)
+
+- **B-07 v0** (`Y = aX + b`) : option activée, `abs(a) >= 2` → `a != 0` (Y = X + 1, Y = −X + 6).
+  53 tirages sur 300 à a = ±1. Gardés : b ≠ 0 (le piège « la constante n'est pas multipliée »
+  disparaîtrait), a ≠ 0 (Y constante). Le calcul `E(Y)=1\times(-3,1)+1` reste écrit (étape de
+  substitution voulue) et « seul E(X) est multiplié par 1 » reste vrai. v1 / v2 non touchées
+  (prix et gain par cible : p = 1 € ferait écrire « sans les multiplier par 1 » et `\dfrac{…}{1}`).
+- **Sans objet** : A-06 (b, c, d distincts entre eux ET de 1, coefficient de la première case `p`),
+  A-07 (k = 1 rendrait « P = 1 × P » trivial), A-04 / probabilités (étiquettes d'arbre).
+- Préexistant, non touché : B-04 / B-05 écrivent `V(X)=1.2+0+1.2` et `0.6 - 0^2` (calcul voulu).
+- Vérifs : 300 tirages/variation, 0 motif interdit ; recalcul Python 0 écart ; 5 specs ajoutées,
+  vertes (21) ; PDF regardé.

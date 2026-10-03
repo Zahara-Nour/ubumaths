@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 60,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true
 		}
@@ -30,7 +31,7 @@
 					"expression": "-9..9"
 				}
 			],
-			"conditions": ["m != 0", "abs(a) >= 2", "b != 0", "a*m+10*b != 0"],
+			"conditions": ["m != 0", "a != 0", "b != 0", "a*m+10*b != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:a*m/10+b}}"
@@ -322,6 +323,41 @@
 			"expected": {
 				"status": "incorrect"
 			}
+		},
+		{
+			"description": "Y = X+1 (a = 1), E(X)=-3,1 : -2,1",
+			"variationIndex": 0,
+			"variables": { "m": "-31", "a": "1", "b": "1" },
+			"answers": ["-2,1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Y = X+1 (a = 1) : b oublié (-3,1)",
+			"variationIndex": 0,
+			"variables": { "m": "-31", "a": "1", "b": "1" },
+			"answers": ["-3,1"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "Y = -X+6 (a = -1), E(X)=2,2 : 3,8",
+			"variationIndex": 0,
+			"variables": { "m": "22", "a": "-1", "b": "6" },
+			"answers": ["3,8"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Y = -X+6 (a = -1) : \\frac{19}{5}",
+			"variationIndex": 0,
+			"variables": { "m": "22", "a": "-1", "b": "6" },
+			"answers": ["\\frac{19}{5}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "Y = -X+6 (a = -1) : signe de a oublié (8,2)",
+			"variationIndex": 0,
+			"variables": { "m": "22", "a": "-1", "b": "6" },
+			"answers": ["8,2"],
+			"expected": { "status": "incorrect" }
 		}
 	],
 	"options": {

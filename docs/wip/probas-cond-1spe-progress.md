@@ -44,3 +44,10 @@ Pièges relevés :
 - Dans un `$…$`, préférer `P_{F}(C)` (accolades) ; `P_A(B)` vérifié correct à l'écran et en Typst.
 - Arrondi : `precision: {type: decimal, digits: 2}` ; tirages à moins de 0,01 d'un demi exclus.
 - Espaces insécables dans « … » (évitent un guillemet seul en fin de ligne dans le PDF).
+
+## cleanCoefficients activé (2026-10-03)
+
+Sans objet : aucun modèle n'écrit de coefficient tiré devant une lettre (les « coefficients » du
+relevé sont des étiquettes de branches d'arbre et des probabilités `0.{{a}}`). Les exclusions
+(`3..9`, `2..8`…) portent sur des probabilités (0 ou 1 = événement impossible ou certain) : maths,
+gardées. Aucun fichier modifié.
