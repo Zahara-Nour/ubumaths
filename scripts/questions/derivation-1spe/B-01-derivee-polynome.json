@@ -8,6 +8,9 @@
 	"level": 1,
 	"status": "draft",
 	"delay": 30,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -19,11 +22,11 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..6;±"
+					"expression": "1..6;±"
 				},
 				{
 					"name": "b",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "c",
@@ -47,15 +50,15 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "b",
-					"expression": "2..6;±"
+					"expression": "1..6;±"
 				},
 				{
 					"name": "c",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "d",
@@ -87,7 +90,7 @@
 				},
 				{
 					"name": "c",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				}
 			],
 			"blanks": [
@@ -201,6 +204,62 @@
 			"variationIndex": 2,
 			"variables": { "a": "-5", "b": "7", "c": "-4" },
 			"answers": ["-5x^2+7x-4"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=−x²+7x+7 (a=−1) → −2x+7",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "7", "c": "7" },
+			"answers": ["-2x+7"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=3x²+x+2 (b=1) → 6x+1",
+			"variationIndex": 0,
+			"variables": { "a": "3", "b": "1", "c": "2" },
+			"answers": ["6x+1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=x²−x+4 (a=1, b=−1) → 2x−1",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-1", "c": "4" },
+			"answers": ["2x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : f(x)=x²−x+4 : (x)′ oublié (2x)",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-1", "c": "4" },
+			"answers": ["2x"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : f(x)=x³−x²+x+2 → 3x²−2x+1",
+			"variationIndex": 1,
+			"variables": { "a": "1", "b": "-1", "c": "1", "d": "2" },
+			"answers": ["3x^2-2x+1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : f(x)=2x³+3x²−x+5 (c=−1) → 6x²+6x−1",
+			"variationIndex": 1,
+			"variables": { "a": "2", "b": "3", "c": "-1", "d": "5" },
+			"answers": ["6x^2+6x-1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : (2/3)x³+(3/2)x²+x → 2x²+3x+1 (c=1)",
+			"variationIndex": 2,
+			"variables": { "a": "2", "b": "3", "c": "1" },
+			"answers": ["2x^2+3x+1"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v2 : (−4/3)x³−(5/2)x²−x → −4x²−5x−1 (c=−1)",
+			"variationIndex": 2,
+			"variables": { "a": "-4", "b": "-5", "c": "-1" },
+			"answers": ["-4x^2-5x-1"],
 			"expected": { "status": "correct" }
 		}
 	]

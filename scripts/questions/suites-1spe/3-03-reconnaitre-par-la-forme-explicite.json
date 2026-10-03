@@ -9,6 +9,7 @@
 	"level": 3,
 	"delay": 30,
 	"shared": {
+		"cleanCoefficients": true,
 		"choices": [
 			{
 				"content": "arithmétique"
@@ -34,17 +35,17 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "b",
-					"expression": "1..9;±"
+					"expression": "-9..9"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-\\left({{eval:a*n+b}}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$$",
+					"$$u_{n+1}-u_n={{a}}(n+1){{eval:b;+}}-({{eval:a*n+b}})$$ soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{a}}}$.",
 					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r={{a}}$ et de premier terme $u_0={{b}}$."
 				]
 			}
@@ -58,27 +59,27 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..9"
+					"expression": "1..9"
 				},
 				{
 					"name": "b",
-					"expression": "1..9"
+					"expression": "0..9"
 				}
 			],
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$$u_{n+1}-u_n={{b}}-{{a}}(n+1)-\\left({{b}}-{{a}}n\\right)=\\textcolor{{{color:primary.0}}}{-{{a}}}$$",
+					"$$u_{n+1}-u_n={{b}}-{{a}}(n+1)-({{b}}-{{a}}n)$$ soit $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{-{{a}}}$.",
 					"La différence ne dépend pas de $n$ : la suite est **arithmétique**, de raison $r=-{{a}}$ et de premier terme $u_0={{b}}$."
 				]
 			}
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}\\times{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "q",
@@ -88,17 +89,17 @@
 			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
-					"$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times{{q}}^{n+1} }{ {{a}}\\times{{q}}^n }=\\textcolor{{{color:primary.0}}}{{{q}}}$$",
+					"$${u_{n+1}}/{u_n}={ {{a}}*{{q}}^{n+1} }/{ {{a}}*{{q}}^n }$$ soit $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
 				]
 			}
 		},
 		{
-			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}\\times{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+			"statement": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "q",
@@ -108,7 +109,7 @@
 			"correctChoiceIndex": ["1"],
 			"correction": {
 				"steps": [
-					"$$\\dfrac{u_{n+1}}{u_n}=\\dfrac{ {{a}}\\times{{q}}^{n+1} }{ {{a}}\\times{{q}}^n }=\\textcolor{{{color:primary.0}}}{{{q}}}$$",
+					"$${u_{n+1}}/{u_n}={ {{a}}*{{q}}^{n+1} }/{ {{a}}*{{q}}^n }$$ soit $\\dfrac{u_{n+1}}{u_n}=\\textcolor{{{color:primary.0}}}{{{q}}}$.",
 					"On passe d'un terme au suivant en multipliant toujours par ${{q}}$ : la suite est **géométrique**, de raison $q={{q}}$ et de premier terme $u_0={{a}}$."
 				]
 			}
@@ -413,6 +414,55 @@
 			"expected": {
 				"status": "correct"
 			}
+		},
+		{
+			"description": "variation 0 (u_n = n + 3, a = 1) : « arithmétique » accepté",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "3" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 (u_n = −n − 8, a = −1) : « arithmétique » accepté",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "-8" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 0 (u_n = 6n, b = 0) : « géométrique » refusé",
+			"variationIndex": 0,
+			"variables": { "a": "6", "b": "0" },
+			"selectedChoices": [1],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 1 (u_n = −n, a = 1, b = 0) : « arithmétique » accepté",
+			"variationIndex": 1,
+			"variables": { "a": "1", "b": "0" },
+			"selectedChoices": [0],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 2 (u_n = 3^n, a = 1) : « géométrique » accepté",
+			"variationIndex": 2,
+			"variables": { "a": "1", "q": "3" },
+			"selectedChoices": [1],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 2 (u_n = 3^n, a = 1) : « ni l'un ni l'autre » refusé",
+			"variationIndex": 2,
+			"variables": { "a": "1", "q": "3" },
+			"selectedChoices": [2],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 3 (u_n = −0,5^n, a = −1) : « géométrique » accepté",
+			"variationIndex": 3,
+			"variables": { "a": "-1", "q": "0.5" },
+			"selectedChoices": [1],
+			"expected": { "status": "correct" }
 		}
 	]
 }

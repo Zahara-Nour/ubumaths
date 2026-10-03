@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 120,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true
 		}
@@ -23,7 +24,7 @@
 				},
 				{
 					"name": "b",
-					"expression": "-6..6!-1..1"
+					"expression": "-6..6!0"
 				},
 				{
 					"name": "c",
@@ -34,7 +35,7 @@
 					"expression": "{{eval:-a*c/b}}"
 				}
 			],
-			"conditions": ["a != 0", "abs(b) >= 2", "c != 0", "mod(abs(a*c),abs(b)) == 0"],
+			"conditions": ["a != 0", "c != 0", "mod(abs(a*c),abs(b)) == 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{R}}"
@@ -43,8 +44,8 @@
 			"correction": {
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
-					"$\\vec{u}\\cdot\\vec{v}=m\\times {{b;()}}+{{a;()}}\\times {{c;()}}={{b}}m{{eval:a*c;+}}$",
-					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux $\\iff {{b}}m{{eval:a*c;+}}=0\\iff m=\\dfrac{ {{eval:-a*c}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+					"$\\vec{u}\\cdot\\vec{v}=m\\times {{b;()}}+{{a;()}}\\times {{c;()}}$, soit ${{b}}m{{eval:a*c;+}}$.",
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{b}}m{{eval:a*c;+}}=0$, c'est-à-dire {{if:b==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:-a*c}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
 				]
 			}
 		},
@@ -72,7 +73,7 @@
 					"expression": "{{eval:-k*b/sm}}"
 				}
 			],
-			"conditions": ["abs(b) >= 2", "abs(b) <= 6"],
+			"conditions": ["b != 0", "abs(b) <= 6"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{R}}"
@@ -81,8 +82,8 @@
 			"correction": {
 				"steps": [
 					"Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul. Dans un repère orthonormé, $\\vec{u}\\begin{pmatrix}x\\\\y\\end{pmatrix}\\cdot\\vec{v}\\begin{pmatrix}x'\\\\y'\\end{pmatrix}=xx'+yy'$.",
-					"$\\vec{u}\\cdot\\vec{v}=(m{{k;+}})\\times {{b;()}}+{{a;()}}\\times m={{b}}m{{eval:k*b;+}}{{a;+}}m={{eval:a+b}}m{{eval:k*b;+}}$",
-					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux $\\iff {{eval:a+b}}m{{eval:k*b;+}}=0\\iff m=\\dfrac{ {{eval:-k*b}} }{ {{eval:a+b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+					"$\\vec{u}\\cdot\\vec{v}=(m{{k;+}})\\times {{b;()}}+{{a;()}}\\times m$, soit ${{b}}m{{eval:k*b;+}}{{a;+}}m$, c'est-à-dire ${{eval:a+b}}m{{eval:k*b;+}}$.",
+					"$\\vec{u}$ et $\\vec{v}$ sont orthogonaux si et seulement si ${{eval:a+b}}m{{eval:k*b;+}}=0$, c'est-à-dire {{if:sm==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:-k*b}} }{ {{eval:a+b}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
 				]
 			}
 		},
@@ -99,7 +100,7 @@
 				},
 				{
 					"name": "p",
-					"expression": "-5..5!-1..1"
+					"expression": "-5..5!0"
 				},
 				{
 					"name": "q",
@@ -122,7 +123,7 @@
 					"expression": "{{eval:xa-q*(yc-ya)/p}}"
 				}
 			],
-			"conditions": ["abs(p) >= 2", "q != 0", "yc != ya", "mod(abs(q*(yc-ya)),abs(p)) == 0"],
+			"conditions": ["q != 0", "yc != ya", "mod(abs(q*(yc-ya)),abs(p)) == 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{R}}"
@@ -131,9 +132,9 @@
 			"correction": {
 				"steps": [
 					"Le triangle $ABC$ est rectangle en $A$ si et seulement si $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$.",
-					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}m{{eval:-xa;+}}\\\\{{eval:yc-ya}}\\end{pmatrix}$.",
-					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}(m{{eval:-xa;+}}){{eval:q*(yc-ya);+}}={{p}}m{{eval:-p*xa+q*(yc-ya);+}}$",
-					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0\\iff m=\\dfrac{ {{eval:p*xa-q*(yc-ya)}} }{ {{p}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$"
+					"$\\overrightarrow{AB}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\overrightarrow{AC}\\begin{pmatrix}m{{if:xa>0|-{{eval:xa}}}}{{if:xa< 0|+{{eval:-xa}}}}\\\\{{eval:yc-ya}}\\end{pmatrix}$.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=xx'+yy'$, soit ${{p}}{{if:xa==0|m|(m{{eval:-xa;+}})}}{{eval:q*(yc-ya);+}}${{if:xa!=0|, c'est-à-dire ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}$}}.",
+					"$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=0$ si et seulement si ${{p}}m{{eval:-p*xa+q*(yc-ya);+}}=0$, c'est-à-dire {{if:p==1|$m=\\textcolor{{{color:primary.0}}}{ {{R}} }$|$m=\\dfrac{ {{eval:p*xa-q*(yc-ya)}} }{ {{p}} }=\\textcolor{{{color:primary.0}}}{ {{R}} }$}}."
 				]
 			}
 		},

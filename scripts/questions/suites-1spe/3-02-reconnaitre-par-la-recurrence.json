@@ -9,6 +9,7 @@
 	"level": 2,
 	"delay": 30,
 	"shared": {
+		"cleanCoefficients": true,
 		"choices": [
 			{
 				"content": "arithmétique"
@@ -54,7 +55,7 @@
 				},
 				{
 					"name": "q",
-					"expression": "2..5;±"
+					"expression": "-5..5!0,1"
 				}
 			],
 			"correctChoiceIndex": ["1"],
@@ -94,7 +95,7 @@
 				},
 				{
 					"name": "p",
-					"expression": "2..4;±"
+					"expression": "-4..4!0,1"
 				},
 				{
 					"name": "b",
@@ -350,6 +351,34 @@
 			"expected": {
 				"status": "correct"
 			}
+		},
+		{
+			"description": "variation 1 (u_{n+1} = −u_n, q = −1) : « géométrique » accepté",
+			"variationIndex": 1,
+			"variables": { "a": "3", "q": "-1" },
+			"selectedChoices": [1],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 1 (u_{n+1} = −u_n, q = −1) : « arithmétique » refusé",
+			"variationIndex": 1,
+			"variables": { "a": "3", "q": "-1" },
+			"selectedChoices": [0],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "variation 3 (u_{n+1} = −u_n + 2, p = −1) : « ni l'un ni l'autre » accepté",
+			"variationIndex": 3,
+			"variables": { "a": "5", "p": "-1", "b": "2" },
+			"selectedChoices": [2],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "variation 3 (u_{n+1} = −u_n + 2, p = −1) : « arithmétique » refusé",
+			"variationIndex": 3,
+			"variables": { "a": "5", "p": "-1", "b": "2" },
+			"selectedChoices": [0],
+			"expected": { "status": "incorrect" }
 		}
 	]
 }

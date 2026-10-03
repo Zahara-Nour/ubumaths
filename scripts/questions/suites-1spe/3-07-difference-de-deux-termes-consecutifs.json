@@ -8,6 +8,9 @@
 	"subdomain": "Différence de deux termes",
 	"level": 1,
 	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"statement": "On considère la suite $(u_n)$ définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nExprime $u_{n+1}-u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n+1}-u_n=?$",
@@ -18,11 +21,11 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "b",
-					"expression": "1..9;±"
+					"expression": "-9..9"
 				}
 			],
 			"blanks": [
@@ -32,8 +35,8 @@
 			],
 			"correction": {
 				"steps": [
-					"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1){{eval:b;+}}={{eval:a*n+a+b}}$.",
-					"$$u_{n+1}-u_n={{eval:a*n+a+b}}-\\left({{eval:a*n+b}}\\right)=\\textcolor{{{color:primary.0}}}{{{a}}}$$"
+					"On remplace $n$ par $n+1$ : $u_{n+1}={{a}}(n+1){{eval:b;+}}$, soit $u_{n+1}={{eval:a*n+a+b}}$.",
+					"$$u_{n+1}-u_n={{eval:a*n+a+b}}-({{eval:a*n+b}})$$ donc $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
 			}
 		},
@@ -46,7 +49,7 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..9;±"
+					"expression": "-9..9"
 				},
 				{
 					"name": "m",
@@ -61,8 +64,8 @@
 			"correction": {
 				"steps": [
 					"On remplace $n$ par $n+1$, sans oublier que $(n+1)^2=n^2+2n+1$ :",
-					"$$u_{n+1}=(n+1)^2{{eval:b;+}}(n+1)=n^2+2n+1{{eval:b*n;+}}{{eval:b;+}}={{eval:n^2+(b+2)*n+m}}$$",
-					"$$u_{n+1}-u_n={{eval:n^2+(b+2)*n+m}}-\\left({{eval:n^2+b*n}}\\right)=\\textcolor{{{color:primary.0}}}{{{eval:2*n+m}}}$$"
+					"$$u_{n+1}=(n+1)^2{{eval:b;+}}(n+1)$$ soit $u_{n+1}=n^2+2n+1{{eval:b;+}}n{{eval:b;+}}$, c'est-à-dire $u_{n+1}={{eval:n^2+(b+2)*n+m}}$.",
+					"$$u_{n+1}-u_n={{eval:n^2+(b+2)*n+m}}-({{eval:n^2+b*n}})$$ donc $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{eval:2*n+m}}}$."
 				]
 			}
 		},
@@ -75,7 +78,7 @@
 				},
 				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				}
 			],
 			"blanks": [
@@ -86,8 +89,8 @@
 			"correction": {
 				"steps": [
 					"On remplace $n$ par $n+1$, sans oublier que $(n+1)^2=n^2+2n+1$ :",
-					"$$u_{n+1}={{a}}(n+1)^2={{a}}\\left(n^2+2n+1\\right)={{eval:a*n^2+2*a*n+a}}$$",
-					"$$u_{n+1}-u_n={{eval:a*n^2+2*a*n+a}}-\\left({{a}}n^2\\right)=\\textcolor{{{color:primary.0}}}{{{eval:2*a*n+a}}}$$"
+					"$$u_{n+1}={{a}}(n+1)^2$$ soit $u_{n+1}={{a}}(n^2+2n+1)$, c'est-à-dire $u_{n+1}={{eval:a*n^2+2*a*n+a}}$.",
+					"$$u_{n+1}-u_n={{eval:a*n^2+2*a*n+a}}-({{a}}n^2)$$ donc $u_{n+1}-u_n=\\textcolor{{{color:primary.0}}}{{{eval:2*a*n+a}}}$."
 				]
 			}
 		}

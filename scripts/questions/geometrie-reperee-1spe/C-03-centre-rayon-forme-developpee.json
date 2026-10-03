@@ -9,6 +9,7 @@
 	"status": "draft",
 	"delay": 150,
 	"shared": {
+		"cleanCoefficients": true,
 		"blankDefaults": {
 			"acceptDecimal": true
 		}
@@ -38,7 +39,6 @@
 					"expression": "{{eval:a^2+b^2-R2}}"
 				}
 			],
-			"conditions": ["c != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{a}}"
@@ -53,7 +53,7 @@
 			"correction": {
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
-					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{c;+}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
+					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
 					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
 					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
 				]
@@ -79,7 +79,7 @@
 					"expression": "{{eval:a^2+b^2-R2}}"
 				}
 			],
-			"conditions": ["mod(R2,4) != 0", "mod(R2,9) != 0", "c != 0"],
+			"conditions": ["mod(R2,4) != 0", "mod(R2,9) != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{a}}"
@@ -94,7 +94,7 @@
 			"correction": {
 				"steps": [
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
-					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{c;+}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
+					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
 					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
 					"Donc $r=\\sqrt{ {{R2}} }$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ \\sqrt{ {{R2}} } }$."
 				]
@@ -128,7 +128,6 @@
 					"expression": "{{eval:a^2+b^2-R2}}"
 				}
 			],
-			"conditions": ["c != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{a}}"
@@ -142,9 +141,9 @@
 			],
 			"correction": {
 				"steps": [
-					"On divise les deux membres par ${{k}}$ pour que les coefficients de $x^2$ et de $y^2$ valent $1$ : $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.",
+					"On divise les deux membres par ${{k}}$ pour que les coefficients de $x^2$ et de $y^2$ valent $1$ : $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$.",
 					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{eval:-2*a;+}}x=(x{{eval:-(a);+}})^2-{{eval:a^2}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
-					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{c;+}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
+					"L'équation s'écrit donc :\n\n$$\\begin{align*}(x{{eval:-(a);+}})^2-{{eval:a^2}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}&=0\\\\\\iff (x{{eval:-(a);+}})^2+(y{{eval:-(b);+}})^2&={{R2}}\\end{align*}$$",
 					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$, c'est-à-dire $\\Omega M^2=r^2$ avec $\\Omega(\\textcolor{{{color:primary.0}}}{ {{a}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} })$ et $r^2={{R2}}$.",
 					"Donc $r=\\sqrt{ {{R2}} }={{r}}$ : $\\mathcal{C}$ est le cercle de centre $\\Omega({{a}}\\,;{{b}})$ et de rayon $\\textcolor{{{color:primary.0}}}{ {{r}} }$."
 				]
@@ -170,7 +169,7 @@
 					"expression": "{{eval:(al^2+4*b^2-m^2)/4}}"
 				}
 			],
-			"conditions": ["mod(abs(al),2) == 1", "abs(al) > 1", "mod(m,2) == 1", "g != 0"],
+			"conditions": ["mod(abs(al),2) == 1", "mod(m,2) == 1"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:-al/2}}"
@@ -184,8 +183,8 @@
 			],
 			"correction": {
 				"steps": [
-					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{al;+}}x=\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
-					"L'équation s'écrit donc :\n\n$$\\begin{align*}\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{g;+}}&=0\\\\\\iff \\left(x{{eval:al/2;+}}\\right)^2+(y{{eval:-(b);+}})^2&={{eval:m^2/4}}\\end{align*}$$",
+					"On complète les carrés à l'aide de $(x-k)^2=x^2-2kx+k^2$ :\n\n$x^2{{if:al==1|+x}}{{if:al==-1|-x}}{{if:al>1|+{{eval:al}}x}}{{if:al< -1|{{eval:al}}x}}=\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}$ et $y^2{{eval:-2*b;+}}y=(y{{eval:-(b);+}})^2-{{eval:b^2}}$.",
+					"L'équation s'écrit donc :\n\n$$\\begin{align*}\\left(x{{eval:al/2;+}}\\right)^2-{{eval:al^2/4}}+(y{{eval:-(b);+}})^2-{{eval:b^2}}{{if:g>0|+{{eval:g}}}}{{if:g< 0|{{eval:g}}}}&=0\\\\\\iff \\left(x{{eval:al/2;+}}\\right)^2+(y{{eval:-(b);+}})^2&={{eval:m^2/4}}\\end{align*}$$",
 					"On reconnaît $(x-x_\\Omega)^2+(y-y_\\Omega)^2=r^2$ avec $\\Omega\\left(\\textcolor{{{color:primary.0}}}{ {{eval:-al/2}} }\\,;\\textcolor{{{color:primary.0}}}{ {{b}} }\\right)$ et $r^2={{eval:m^2/4}}$.",
 					"Donc $r=\\sqrt{ {{eval:m^2/4}} }=\\textcolor{{{color:primary.0}}}{ {{eval:m/2}} }$."
 				]

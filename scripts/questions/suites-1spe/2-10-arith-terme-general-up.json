@@ -8,6 +8,9 @@
 	"level": 2,
 	"status": "draft",
 	"delay": 40,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -23,10 +26,10 @@
 				},
 				{
 					"name": "r",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				}
 			],
-			"conditions": ["c != r"],
+			"conditions": [],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:c-r}}{{eval:r;+}}n"
@@ -35,7 +38,7 @@
 			"correction": {
 				"steps": [
 					"Le premier terme est $u_1$ : pour aller de $u_1$ à $u_n$, on ajoute $n-1$ fois la raison. Donc $u_n=u_1+(n-1)\\times r$.",
-					"$u_n={{c}}+(n-1)\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{c}}{{eval:r;+}}n{{eval:-(r);+}}={{solution}}$"
+					"$u_n={{c}}+(n-1)\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}$, soit $u_n={{c}}{{eval:r;+}}n{{eval:-(r);+}}$, c'est-à-dire $u_n={{solution}}$."
 				]
 			}
 		},
@@ -52,10 +55,10 @@
 				},
 				{
 					"name": "r",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				}
 			],
-			"conditions": ["c != p*r"],
+			"conditions": [],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:c-p*r}}{{eval:r;+}}n"
@@ -64,7 +67,7 @@
 			"correction": {
 				"steps": [
 					"Pour aller de $u_{ {{p}} }$ à $u_n$, on ajoute $n-{{p}}$ fois la raison. Donc $u_n=u_{ {{p}} }+(n-{{p}})\\times r$.",
-					"$u_n={{c}}+(n-{{p}})\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}={{c}}{{eval:r;+}}n{{eval:-(p)*(r);+}}={{solution}}$"
+					"$u_n={{c}}+(n-{{p}})\\times\\textcolor{{{color:primary.0}}}{{{eval:r;()}}}$, soit $u_n={{c}}{{eval:r;+}}n{{eval:-(p)*(r);+}}$, c'est-à-dire $u_n={{solution}}$."
 				]
 			}
 		}
@@ -248,6 +251,62 @@
 				"status": "unoptimal_form",
 				"constraintViolations": ["form"]
 			}
+		},
+		{
+			"description": "v0 : u_1=−7, r=1 (coefficient 1) : −8+n",
+			"variationIndex": 0,
+			"variables": { "c": "-7", "r": "1" },
+			"answers": ["-8+n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : u_1=−7, r=1 : −7+n (u_1 pris comme u_0)",
+			"variationIndex": 0,
+			"variables": { "c": "-7", "r": "1" },
+			"answers": ["-7+n"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v0 : u_1=2, r=2 (u_0 = 0) : 2n",
+			"variationIndex": 0,
+			"variables": { "c": "2", "r": "2" },
+			"answers": ["2n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : u_1=−1, r=−1 : −n",
+			"variationIndex": 0,
+			"variables": { "c": "-1", "r": "-1" },
+			"answers": ["-n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : u_1=−1, r=−1 : −1n non nettoyé",
+			"variationIndex": 0,
+			"variables": { "c": "-1", "r": "-1" },
+			"answers": ["-1n"],
+			"expected": { "status": "unoptimal_form", "constraintViolations": ["factorOne"] }
+		},
+		{
+			"description": "v1 : u_3=6, r=2 (u_0 = 0) : 2n",
+			"variationIndex": 1,
+			"variables": { "p": "3", "c": "6", "r": "2" },
+			"answers": ["2n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : u_2=5, r=−1 : 7−n",
+			"variationIndex": 1,
+			"variables": { "p": "2", "c": "5", "r": "-1" },
+			"answers": ["7-n"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : u_2=5, r=−1 : 5−n (u_p pris comme u_0)",
+			"variationIndex": 1,
+			"variables": { "p": "2", "c": "5", "r": "-1" },
+			"answers": ["5-n"],
+			"expected": { "status": "incorrect" }
 		}
 	]
 }

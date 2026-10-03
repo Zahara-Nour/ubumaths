@@ -8,6 +8,9 @@
 	"level": 4,
 	"status": "draft",
 	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn"
@@ -15,11 +18,11 @@
 	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)=\\frac{ {{a}}x{{eval:b;+}} }{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)={ {{a}}x{{eval:b;+}} }/{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "b",
@@ -44,17 +47,17 @@
 				"steps": [
 					"$f$ est un quotient $\\frac{u}{v}$ : $\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$.",
 					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)={{c}}x{{eval:d;+}}$ : $u'(x)={{a}}$ et $v'(x)={{c}}$.",
-					"$$f'(x)=\\frac{ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})\\times{{c}} }{({{c}}x{{eval:d;+}})^2}=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:a*d-b*c}} }{({{c}}x{{eval:d;+}})^2} }$$",
+					"$$f'(x)={ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})*{{c}} }/{({{c}}x{{eval:d;+}})^2}$$ $$f'(x)=\\textcolor{{{color:primary.0}}}{\\frac{ {{eval:a*d-b*c}} }{({{c}}x{{eval:d;+}})^2} }$$",
 					"Les termes en $x$ s'annulent : le numérateur est une constante."
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)=\\frac{ {{a}}x{{eval:b;+}} }{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+			"statement": "Soit $f$ la fonction définie pour $x\\neq{{eval:-d/c}}$ par $f(x)={ {{a}}x{{eval:b;+}} }/{ {{c}}x{{eval:d;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
 			"variables": [
 				{
 					"name": "a",
-					"expression": "2..5;±"
+					"expression": "1..5;±"
 				},
 				{
 					"name": "b",
@@ -79,7 +82,7 @@
 				"steps": [
 					"$f$ est un quotient $\\frac{u}{v}$ : $\\left(\\frac{u}{v}\\right)'=\\frac{u'v-uv'}{v^2}$.",
 					"Avec $u(x)={{a}}x{{eval:b;+}}$ et $v(x)={{c}}x{{eval:d;+}}$ : $u'(x)={{a}}$ et $v'(x)={{c}}$.",
-					"$$f'(x)=\\frac{ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})\\times{{c}} }{({{c}}x{{eval:d;+}})^2}=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:b*c-a*d}} }{({{c}}x{{eval:d;+}})^2} }$$",
+					"$$f'(x)={ {{a}}({{c}}x{{eval:d;+}})-({{a}}x{{eval:b;+}})*{{c}} }/{({{c}}x{{eval:d;+}})^2}$$ $$f'(x)=\\textcolor{{{color:primary.0}}}{-\\frac{ {{eval:b*c-a*d}} }{({{c}}x{{eval:d;+}})^2} }$$",
 					"Les termes en $x$ s'annulent : le numérateur est une constante."
 				]
 			}
@@ -217,6 +220,41 @@
 			"variationIndex": 2,
 			"variables": { "a": "-5", "b": "-1" },
 			"answers": ["\\frac{x^2-2x+5}{(x-1)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (x−3)/(3x+5) (a=1) → 14/(3x+5)²",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-3", "c": "3", "d": "5" },
+			"answers": ["\\frac{14}{(3x+5)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (−x−3)/(3x−5) (a=−1) → 14/(3x−5)²",
+			"variationIndex": 0,
+			"variables": { "a": "-1", "b": "-3", "c": "3", "d": "-5" },
+			"answers": ["\\frac{14}{(3x-5)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v0 : (x−3)/(3x+5) : u′v+uv′ (6x−4)",
+			"variationIndex": 0,
+			"variables": { "a": "1", "b": "-3", "c": "3", "d": "5" },
+			"answers": ["\\frac{6x-4}{(3x+5)^2}"],
+			"expected": { "status": "incorrect" }
+		},
+		{
+			"description": "v1 : (x+2)/(3x−2) (a=1) → −8/(3x−2)²",
+			"variationIndex": 1,
+			"variables": { "a": "1", "b": "2", "c": "3", "d": "-2" },
+			"answers": ["-\\frac{8}{(3x-2)^2}"],
+			"expected": { "status": "correct" }
+		},
+		{
+			"description": "v1 : (−x+5)/(3x+4) (a=−1) → −19/(3x+4)²",
+			"variationIndex": 1,
+			"variables": { "a": "-1", "b": "5", "c": "3", "d": "4" },
+			"answers": ["-\\frac{19}{(3x+4)^2}"],
 			"expected": { "status": "correct" }
 		}
 	]
