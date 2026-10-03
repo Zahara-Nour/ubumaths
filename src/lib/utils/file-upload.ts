@@ -272,3 +272,26 @@ export async function uploadMultipleMessageAttachments(
 
 	return results;
 }
+
+/**
+ * Lien de téléchargement d'une pièce jointe de messagerie, s'il est sûr.
+ *
+ * ⚠️ `public_url` est écrit par le navigateur de l'expéditeur, sans contrôle en
+ * base : il pourrait valoir `javascript:…` ou un site externe, sur lequel le
+ * prof cliquerait (audit de sécurité du 2026-10-03). Seule une adresse de NOTRE
+ * stockage, dans le compartiment `message-attachments`, est rendue ; sinon null
+ * (pas de lien).
+ */
+export function safeMessageAttachmentUrl(publicUrl: string, supabaseUrl: string): string | null {
+	try {
+		const url = new URL(publicUrl);
+		const base = new URL(supabaseUrl);
+		const ours =
+			url.protocol === base.protocol &&
+			url.origin === base.origin &&
+			url.pathname.startsWith('/storage/v1/object/public/message-attachments/');
+		return ours ? url.href : null;
+	} catch {
+		return null;
+	}
+}
