@@ -286,6 +286,12 @@ Règles d'écriture qui évitent un défaut :
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
   TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+- Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
+  `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`). Un
+  nombre simple OU une fraction (`\frac{1}{2}`, `-\frac{3}{4}`) y est accepté, valeur exacte jugée
+  par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
+  (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
+  `precision`, seul un nombre simple reste admis.
 - Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
