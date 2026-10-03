@@ -1,0 +1,308 @@
+{
+	"title": "Cardinal d'une réunion et d'un produit cartésien",
+	"description": "Card(A ∪ B) = Card A + Card B − Card(A ∩ B) en contexte (activités, langues) et Card(A × B) = Card A × Card B",
+	"grades": ["1_SPE"],
+	"theme": "Logique",
+	"domain": "Ensembles",
+	"subdomain": "Cardinal et produit cartésien",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Dans une classe de ${{n}}$ élèves, ${{a}}$ font du sport en club, ${{b}}$ font de la musique et ${{c}}$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $?$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "ga",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:c+ga}}"
+				},
+				{
+					"name": "gb",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:c+gb}}"
+				},
+				{
+					"name": "z",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:a+b-c+z}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b-c}}"
+				},
+				{
+					"expectedAnswer": "{{z}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $S$ l'ensemble des élèves qui font du sport et $M$ celui des élèves qui font de la musique. Les ${{c}}$ élèves qui font les deux sont comptés **deux fois** dans ${{a}}+{{b}}$ : on les retire une fois.",
+					"$\\mathrm{Card}(S\\cup M)=\\mathrm{Card}(S)+\\mathrm{Card}(M)-\\mathrm{Card}(S\\cap M)={{a}}+{{b}}-{{c}}=\\textcolor{{{color:primary.0}}}{ {{eval:a+b-c}} }$ élèves pratiquent au moins une activité.",
+					"Les autres ne pratiquent aucune des deux : ${{n}}-{{eval:a+b-c}}=\\textcolor{{{color:primary.0}}}{ {{z}} }$ élèves."
+				]
+			}
+		},
+		{
+			"statement": "Dans un lycée, on interroge ${{n}}$ élèves : ${{a}}$ apprennent l'espagnol, ${{b}}$ apprennent l'allemand, et ${{z}}$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "ga",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:c+ga}}"
+				},
+				{
+					"name": "gb",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:c+gb}}"
+				},
+				{
+					"name": "z",
+					"expression": "1..6"
+				},
+				{
+					"name": "n",
+					"expression": "{{eval:a+b-c+z}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On note $E$ l'ensemble des élèves qui apprennent l'espagnol et $D$ celui des élèves qui apprennent l'allemand. Les élèves qui apprennent au moins une des deux langues sont ${{n}}-{{z}}={{eval:n-z}}$ : $\\mathrm{Card}(E\\cup D)={{eval:n-z}}$.",
+					"D'après $\\mathrm{Card}(E\\cup D)=\\mathrm{Card}(E)+\\mathrm{Card}(D)-\\mathrm{Card}(E\\cap D)$ : $\\mathrm{Card}(E\\cap D)={{a}}+{{b}}-{{eval:n-z}}=\\textcolor{{{color:primary.0}}}{ {{c}} }$ élèves apprennent les deux langues."
+				]
+			}
+		},
+		{
+			"statement": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)={{a}}$, $\\mathrm{Card}(B)={{b}}$ et $\\mathrm{Card}(A\\cup B)={{eval:a+b-c}}$.\n\n$\\mathrm{Card}(A\\cap B)=?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..8"
+				},
+				{
+					"name": "ga",
+					"expression": "3..12"
+				},
+				{
+					"name": "a",
+					"expression": "{{eval:c+ga}}"
+				},
+				{
+					"name": "gb",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:c+gb}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On utilise $\\mathrm{Card}(A\\cup B)=\\mathrm{Card}(A)+\\mathrm{Card}(B)-\\mathrm{Card}(A\\cap B)$.",
+					"Donc $\\mathrm{Card}(A\\cap B)=\\mathrm{Card}(A)+\\mathrm{Card}(B)-\\mathrm{Card}(A\\cup B)={{a}}+{{b}}-{{eval:a+b-c}}=\\textcolor{{{color:primary.0}}}{ {{c}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère les ensembles $A=\\{1;2;\\dots;{{m}}\\}$ et $B=\\{0;1;\\dots;{{k}}\\}$.\n\n$\\mathrm{Card}(A\\times B)=?$\n\n$\\mathrm{Card}(B\\times B)=?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "3..9"
+				},
+				{
+					"name": "k",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*(k+1)}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(k+1)^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathrm{Card}(A)={{m}}$ et $\\mathrm{Card}(B)={{eval:k+1}}$ : attention, $B$ contient $0$, il a ${{eval:k+1}}$ éléments et non ${{k}}$.",
+					"Un couple $(x\\,;\\,y)$ de $A\\times B$ s'obtient en choisissant $x$ parmi ${{m}}$ valeurs, puis $y$ parmi ${{eval:k+1}}$ valeurs : $\\mathrm{Card}(A\\times B)=\\mathrm{Card}(A)\\times\\mathrm{Card}(B)={{m}}\\times{{eval:k+1}}=\\textcolor{{{color:primary.0}}}{ {{eval:m*(k+1)}} }$.",
+					"De même, $\\mathrm{Card}(B\\times B)={{eval:k+1}}\\times{{eval:k+1}}=\\textcolor{{{color:primary.0}}}{ {{eval:(k+1)^2}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 16 et 3",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4",
+				"z": "3"
+			},
+			"answers": ["16", "3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a + b sans retirer les deux (21)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4",
+				"z": "3"
+			},
+			"answers": ["21", "3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : aucune = n − a − b, intersection non rajoutée (−2)",
+			"variationIndex": 0,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4",
+				"z": "3"
+			},
+			"answers": ["16", "-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 5 élèves",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4",
+				"z": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : a + b − n (2), oubli des « aucune »",
+			"variationIndex": 1,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4",
+				"z": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : Card(A∩B) = 5",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : Card(A∪B) − Card(A) (4)",
+			"variationIndex": 2,
+			"variables": {
+				"c": "5",
+				"ga": "7",
+				"gb": "4"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : A={1..4}, B={0..3} : 16 et 16",
+			"variationIndex": 3,
+			"variables": {
+				"m": "4",
+				"k": "3"
+			},
+			"answers": ["16", "16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 0 oublié dans B (12 et 9)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "4",
+				"k": "3"
+			},
+			"answers": ["12", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : somme au lieu du produit (8 et 8)",
+			"variationIndex": 3,
+			"variables": {
+				"m": "4",
+				"k": "3"
+			},
+			"answers": ["8", "8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

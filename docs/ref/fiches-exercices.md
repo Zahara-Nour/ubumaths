@@ -277,6 +277,18 @@ Toujours vrai :
   (aucune réponse « vecteur ») ; imposer une coordonnée ou demander « le vecteur lu sur l'équation ».
 - **`texte(…, "n⃗")`** (flèche combinante) sort en carrés vides dans le PDF : nommer le vecteur
   dans l'énoncé (« tracé en bleu »).
+- **PDF, ensembles** (relevé sur la logique, 2026-10-03) : `\mathbb{D}` sort « mathbbD » (seuls
+  R, N, Z, Q, C sont convertis) → caractère `𝔻` ; mais une formule réduite à `$𝔻$` est coupée en
+  deux moitiés UTF-16 (caractères cassés) → toujours derrière une commande (`x\in 𝔻`) ; une
+  commande collée `\mathbb{N}\subset` fait échouer TOUTE la fiche → espace (`\mathbb{N} \subset`) ;
+  `\not\subset`, `\nsubseteq`, `\operatorname{Card}` sortent en texte brut → `\mathrm{Card}`.
+- **Règle `custom` avec une variable négative** : `{{p}}` est substitué sans parenthèses
+  (`+ -3`) → écrire `({{p}})`.
+- **`cleanCoefficients` ne nettoie pas une formule contenant `\leqslant` / `\geqslant`**
+  (`x^2+1x\leqslant2` reste tel quel ; `x^2-x>7` est nettoyé).
+- **QCM et réponse « intervalles »** : un modèle ne mélange pas QCM et cases ; `shuffleChoices`
+  vaut pour tout le modèle → faire tourner les choix avec une variable pour placer la bonne
+  réponse.
 
 Règles d'écriture qui évitent un défaut :
 
