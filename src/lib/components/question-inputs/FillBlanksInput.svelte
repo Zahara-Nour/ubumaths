@@ -6,6 +6,7 @@
 	Supports:
 	- Text blanks ({{blank:N}}) via BlankInput
 	- Math blanks (\placeholder[N]{}) via MathPrompt
+	- Blanks inside table cells (same components, rendered inside TableNode)
 	- Expression convention (expressionName + answerFormat)
 	- Validation state display (correct/incorrect)
 
@@ -42,7 +43,8 @@
 	import { toFrenchDecimal } from '$lib/utils/french-math';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
-	import type { BlockNode, InlineNode } from '$lib/ubumark';
+	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
+	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
 
 	// Node components (reuse from MarkdownRenderer)
@@ -51,6 +53,7 @@
 	import MathPrompt from '$lib/components/markdown/nodes/MathPrompt.svelte';
 	import HeadingNode from '$lib/components/markdown/nodes/HeadingNode.svelte';
 	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
+	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 
@@ -59,7 +62,11 @@
 		augmentASTForExpressions,
 		buildInputStates,
 		buildInputStatesForCorrection,
-		applyValidationToInputStates
+		applyValidationToInputStates,
+		cellHasBlanks,
+		inlineNodesHaveBlanks,
+		tableCellInlineNodes,
+		tableHasBlanks
 	} from './fill-blanks-utils';
 
 	interface Props {
@@ -126,11 +133,10 @@
 	/** Check if a block node contains blanks or math prompts */
 	function nodeHasBlanks(node: BlockNode): boolean {
 		if (node.type === 'paragraph') {
-			return node.children.some(
-				(child) =>
-					child.type === 'blank' ||
-					(child.type === 'math-inline' && hasPrompts(child.expression, child.syntax))
-			);
+			return inlineNodesHaveBlanks(node.children);
+		}
+		if (node.type === 'table') {
+			return tableHasBlanks(node);
 		}
 		if (node.type === 'math-block') {
 			return !!node.expressionName || hasPrompts(node.expression, node.syntax);
@@ -402,6 +408,33 @@
 	}
 </script>
 
+<!--
+	Cellule d'un tableau à trous : mêmes champs que dans un paragraphe (index N du
+	trou, flash, correction, états) ; une cellule sans trou garde le rendu du tableau.
+-->
+{#snippet blankCell(cell: TableCellNode, defaultCell: Snippet<[string]>)}
+	{#if cellHasBlanks(cell.content)}
+		<ParagraphNode
+			element="span"
+			class="table-blank-cell"
+			children={tableCellInlineNodes(cell.content)}
+			inputs={inputStates}
+			onInputChange={handleInputChange}
+			onInputSubmit={handleInputSubmit}
+			inputsDisabled={effectiveDisabled}
+			{flashMode}
+			correctionMode={showCorrectAnswers}
+			correctValues={mathCorrectValues}
+			prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
+			{expressionDisplayMap}
+			{mathModeSpace}
+			{genericFunctions}
+		/>
+	{:else}
+		{@render defaultCell(cell.content)}
+	{/if}
+{/snippet}
+
 <div class="fill-blanks-container" bind:this={container}>
 	{#if augmentedAST}
 		{#each augmentedAST.children as node, i (i)}
@@ -474,6 +507,19 @@
 				/>
 			{:else if node.type === 'heading'}
 				<HeadingNode level={node.level} children={node.children} />
+			{:else if node.type === 'table' && tableHasBlanks(node)}
+				<!-- `relative` : les éléments en position absolue des champs MathLive (libellés
+				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde -->
+				<TableNode
+					header={node.header}
+					rows={node.rows}
+					alignments={node.alignments}
+					transpose={node.transpose}
+					cross={node.cross}
+					{genericFunctions}
+					customCell={blankCell}
+					class="relative"
+				/>
 			{:else}
 				<!-- Blocs sans trou (courbe, tableau, code, liste…) : rendus tels quels -->
 				<StaticBlockNode {node} />
@@ -507,6 +553,20 @@
 <style>
 	.fill-blanks-container {
 		width: 100%;
+	}
+
+	/* Case dans une cellule étroite : largeur minimale lisible, sans retour à la ligne */
+	:global(.table-blank-cell) {
+		white-space: nowrap;
+	}
+
+	:global(.table-blank-cell math-field) {
+		min-width: 2.5em;
+	}
+
+	/* Cellule étroite : sans le bouton de menu (le clic droit l'ouvre toujours) */
+	:global(.table-blank-cell math-field::part(menu-toggle)) {
+		display: none;
 	}
 
 	.helper-text {
