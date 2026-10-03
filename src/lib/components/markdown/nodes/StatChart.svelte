@@ -16,7 +16,7 @@
 	@module components/markdown/nodes/StatChart
 -->
 <script lang="ts">
-	import { COURBE_COLORS, type CourbeColor } from '$lib/ubumark/types/courbe';
+	import { COURBE_COLORS } from '$lib/ubumark/types/courbe';
 	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
 	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import {
