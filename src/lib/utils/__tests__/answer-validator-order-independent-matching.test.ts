@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateAnswer } from '../answer-validator';
+import { blankStatuses, validateAnswer } from '../answer-validator';
 import type { InstanceBlank, QuestionInstance } from '$lib/questions/types';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
@@ -69,5 +69,61 @@ describe('orderIndependent : appariement complet (pas glouton)', () => {
 		// Glouton : 2 → diviseur de 12, 4 → diviseur de 8, 6 → « 2 » échoue.
 		// Affectation valide : 6 → diviseur de 12, 4 → diviseur de 8, 2 → « 2 ».
 		expect(validateAnswer(['2', '4', '6'], instance, ['2', '4', '6']).isCorrect).toBe(true);
+	});
+});
+
+// Case avec unité appariée : même jugement de forme qu'en mode positionnel
+// (partie numérique + unité), jamais la comparaison à l'écriture de l'attendu.
+describe('orderIndependent : forme d’une grandeur appariée', () => {
+	const meters = (expectedAnswer: string): InstanceBlank => ({
+		expectedAnswer,
+		type: 'math',
+		unit: { expected: true }
+	});
+
+	function instanceOf(orderIndependent: boolean): QuestionInstance {
+		return {
+			...createInstance([meters('2.5\\unit{m}'), meters('1.14\\unit{m}')]),
+			options: { orderIndependent }
+		};
+	}
+
+	it('2,5 m et 1,14 m dans le désordre → correct, sans violation', () => {
+		const answers = ['1{,}14\\unit{m}', '2{,}5\\unit{m}'];
+		const result = validateAnswer(answers, instanceOf(true), answers);
+		expect(result.isCorrect).toBe(true);
+		expect(result.constraintViolations ?? []).toEqual([]);
+		expect(blankStatuses(answers, instanceOf(true), answers)).toEqual(['correct', 'correct']);
+	});
+
+	it('250 cm (autre unité) → correct, comme en positionnel', () => {
+		const answers = ['1{,}14\\unit{m}', '250\\unit{cm}'];
+		expect(validateAnswer(answers, instanceOf(true), answers).isCorrect).toBe(true);
+	});
+
+	it('au centième : 1,14 m et 2,5 m dans le désordre → correct, sans violation', () => {
+		const instance = instanceOf(true);
+		instance.blanks = [meters('2.5\\unit{m}'), meters('1.136\\unit{m}')].map((blank) => ({
+			...blank,
+			precision: { type: 'decimal', digits: 2 } as const
+		}));
+		const answers = ['1{,}14\\unit{m}', '2{,}5\\unit{m}'];
+		const result = validateAnswer(answers, instance, answers);
+		expect(result.isCorrect).toBe(true);
+		expect(result.constraintViolations ?? []).toEqual([]);
+		expect(blankStatuses(answers, instance, answers)).toEqual(['correct', 'correct']);
+	});
+
+	it('zéro inutile (2,50 m) → même statut et mêmes violations qu’en positionnel', () => {
+		const ordered = ['2{,}50\\unit{m}', '1{,}14\\unit{m}'];
+		const positional = validateAnswer(ordered, instanceOf(false), ordered);
+		const unordered = [ordered[1], ordered[0]];
+		const result = validateAnswer(unordered, instanceOf(true), unordered);
+		expect(result.status).toBe(positional.status);
+		expect(result.constraintViolations).toEqual(positional.constraintViolations);
+		expect(blankStatuses(unordered, instanceOf(true), unordered)).toEqual([
+			'correct',
+			blankStatuses(ordered, instanceOf(false), ordered)[0]
+		]);
 	});
 });

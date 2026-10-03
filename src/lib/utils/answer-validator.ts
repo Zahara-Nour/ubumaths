@@ -1525,6 +1525,13 @@ function matchedAnswerForm(
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 
+	// Grandeur appariée (valeur déjà juste) : même jugement qu'en mode positionnel
+	// (partie numérique + unité), jamais la comparaison à l'écriture de l'attendu
+	if (blank.unit?.expected) {
+		const result = validateSingleBlank(userAnswer, blank, blankLatex, instance);
+		return { status: singleBlankStatus(result), violations: result.constraintViolations ?? [] };
+	}
+
 	let worstStatus: ValidationStatus = 'correct';
 	const allViolations: NonNullable<ValidationResult['constraintViolations']> = [];
 

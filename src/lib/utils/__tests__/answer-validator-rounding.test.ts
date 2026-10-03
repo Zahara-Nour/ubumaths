@@ -300,10 +300,8 @@ describe('orderIndependent : trop de chiffres mais bon arrondi → mauvaise form
 		const answers = ['1{,}136\\unit{m}', '2{,}5\\unit{m}'];
 		const result = validateAnswer(answers, instance, answers);
 		expect(result.status).toBe('bad_form');
-		expect(result.constraintViolations?.map((v) => v.constraint)).toContain('rounding');
-		// Seule la réponse appariée à l'arrondi près est jugée ici (la forme d'une
-		// grandeur appariée relève d'un autre contrôle)
-		expect(blankStatuses(answers, instance, answers)[0]).toBe('bad_form');
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['rounding']);
+		expect(blankStatuses(answers, instance, answers)).toEqual(['bad_form', 'correct']);
 		const detailed = validateAnswerDetailed(instance, { values: answers, latex: answers });
 		expect(detailed.blanks[0].remarks).toEqual(['Arrondis au centième.']);
 	});
