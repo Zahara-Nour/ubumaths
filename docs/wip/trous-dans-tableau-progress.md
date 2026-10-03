@@ -23,9 +23,26 @@ trou hors tableau faux refusé).
 
 ## État
 
-- [x] 1 · [x] 2 · [x] 3 · [x] 4 · [ ] 5 · [ ] 6
+- [x] 1 · [x] 2 · [x] 3 · [x] 4 · [x] 5 · [x] 6
 
 Tests : `FillBlanksInput-tableau.svelte.test.ts` 9 rouges → 10 verts ; `fill-blanks-table.test.ts`
 8 rouges → verts. Non-régression : client 40 fichiers / 359 tests, serveur 105 / 3984 verts.
 375 px : le tableau défile dans son cadre (`relative` sur le cadre : sinon le libellé
 absolu de MathLive faisait déborder la page à 415 px), bouton de menu MathLive masqué en cellule.
+
+PDF (série figée `buildSerie` du modèle sonde → `rendu-fiche.ts` → `compile-prod.mjs` → PNG) :
+rien à corriger. Énoncé : « …… » dans les deux cellules et sous le tableau ; corrigé : 2 et 4 en gras
+dans les cellules, 6 dessous. Les « …… » sont calés en haut de la cellule (alignement vertical
+`top` des tableaux Typst) : lisible, laissé tel quel.
+
+Mesure en production (lecture seule, 2026-10-03) : 815 modèles lus, 15 avec un tableau, **0** avec
+un trou dans une cellule (génération + `tableHasBlanks`, 40 tirages par variation ; contre-mesure
+textuelle sur les lignes `| … |` : 0 ; témoin positif : le modèle sonde est détecté). Les auteurs
+ont suivi le contournement.
+
+`question:specs` : 31 modèles de `variables-aleatoires-1spe/` et `probas-cond-1spe/` importables.
+
+Point ouvert : Entrée dans une case MathLive ne fait rien et Entrée dans un trou texte valide la
+question — dans un paragraphe comme dans un tableau. Le passage à la case suivante se fait par Tab
+(ordre du DOM). « Entrée → case suivante » serait un changement de comportement pour TOUS les
+trous : non fait, à trancher.
