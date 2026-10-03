@@ -309,6 +309,29 @@ export const CATEGORY_ORDER: readonly ThemeOrder[] = [
 		]
 	},
 	{
+		theme: 'Logique',
+		domains: [
+			{
+				domain: 'Ensembles',
+				subdomains: [
+					'Appartenance et inclusion',
+					'Opérations sur les ensembles',
+					'Intervalles',
+					'Cardinal et produit cartésien'
+				]
+			},
+			{
+				domain: 'Logique et raisonnement',
+				subdomains: [
+					'Connecteurs et contre-exemples',
+					'Implication et équivalence',
+					'Quantificateurs et négation',
+					'Raisonnements'
+				]
+			}
+		]
+	},
+	{
 		theme: 'Géométrie',
 		domains: [
 			{
