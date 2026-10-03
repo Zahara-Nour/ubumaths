@@ -14,7 +14,7 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
-import type { StatChartDirection } from '../types/stat-chart';
+import type { FrequencyTableRow, StatChartDirection } from '../types/stat-chart';
 
 /** Lignes possibles d'un tableau d'indicateurs (`.comparer`, deux séries) */
 export type IndicatorRowId =
@@ -65,6 +65,16 @@ interface StatText {
 	colon: string;
 	/** Typographie : signe pour cent (` %` en français, `%` en anglais) */
 	percent: string;
+	/** Tableau d'effectifs (Q125-Q133) */
+	frequencyTable: {
+		title: string;
+		value: string;
+		classes: string;
+		total: string;
+		/** Lu à la place d'une case Total vide (cumuls) */
+		notApplicable: string;
+		row: (row: FrequencyTableRow, direction: StatChartDirection) => string;
+	};
 }
 
 export const STAT_TEXT: Record<ContentLocale, StatText> = {
@@ -108,7 +118,27 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 		polygonTitle: (direction) => `Polygone des fréquences cumulées ${direction}`,
 		// Espaces ordinaires : le français reste tel qu'il était
 		colon: ' : ',
-		percent: ' %'
+		percent: ' %',
+		frequencyTable: {
+			title: 'Tableau des effectifs',
+			value: 'Valeur',
+			classes: 'Classe',
+			total: 'Total',
+			notApplicable: 'sans objet',
+			row: (row, direction) => {
+				const up = direction === 'croissantes';
+				switch (row) {
+					case 'effectifs':
+						return 'Effectif';
+					case 'fréquences':
+						return 'Fréquence';
+					case 'effectifs cumulés':
+						return `Effectif cumulé ${up ? 'croissant' : 'décroissant'}`;
+					case 'fréquences cumulées':
+						return `Fréquence cumulée ${up ? 'croissante' : 'décroissante'}`;
+				}
+			}
+		}
 	},
 	en: {
 		kind: {
@@ -150,6 +180,27 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 		polygonTitle: (direction) =>
 			`${direction === 'croissantes' ? 'Increasing' : 'Decreasing'} cumulative relative frequency polygon`,
 		colon: ': ',
-		percent: '%'
+		percent: '%',
+		frequencyTable: {
+			title: 'Frequency table',
+			value: 'Value',
+			classes: 'Class',
+			total: 'Total',
+			notApplicable: 'not applicable',
+			// Q122 : *frequency* = effectif, *relative frequency* = fréquence
+			row: (row, direction) => {
+				const down = direction === 'décroissantes' ? 'Decreasing cumulative' : 'Cumulative';
+				switch (row) {
+					case 'effectifs':
+						return 'Frequency';
+					case 'fréquences':
+						return 'Relative frequency';
+					case 'effectifs cumulés':
+						return `${down} frequency`;
+					case 'fréquences cumulées':
+						return `${down} relative frequency`;
+				}
+			}
+		}
 	}
 };

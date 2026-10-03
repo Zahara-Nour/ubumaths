@@ -445,6 +445,55 @@ describe('StatChart — deux séries en classes (v2 lot 5 PR c)', () => {
 	});
 });
 
+describe('StatChart — tableau d’effectifs (Q125-Q129)', () => {
+	it('horizontal : une ligne des valeurs (en-têtes de colonne), une ligne par grandeur', async () => {
+		const node = parseStatChartContent(
+			'effectifs',
+			'données: 12 ; 15 ; 12 ; 8\nlignes: effectifs ; fréquences'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+
+		expect(table.querySelector('caption')?.textContent).toBe('Tableau des effectifs');
+		expect([...table.querySelectorAll('th[scope="col"]')].map((th) => th.textContent)).toEqual([
+			'8',
+			'12',
+			'15',
+			'Total'
+		]);
+		expect([...table.querySelectorAll('th[scope="row"]')].map((th) => th.textContent)).toEqual([
+			'Valeur',
+			'Effectif',
+			'Fréquence'
+		]);
+		expect(
+			[...table.querySelectorAll('tr')[1].querySelectorAll('td')].map((td) => td.textContent)
+		).toEqual(['1', '2', '1', '4']);
+	});
+
+	it('la case Total d’un cumul : vide, annoncée « sans objet »', async () => {
+		const node = parseStatChartContent('effectifs', 'données: 1 ; 2\nlignes: effectifs cumulés');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const last = [...screen.container.querySelectorAll('tbody tr')].at(-1)!.querySelectorAll('td');
+
+		expect(last[last.length - 1].textContent).toBe('sans objet');
+		expect(last[last.length - 1].querySelector('.sr-only')).not.toBeNull();
+	});
+
+	it('vertical au-delà de 12 valeurs : les grandeurs en colonnes', async () => {
+		const values = Array.from({ length: 13 }, (_, i) => i).join(' ; ');
+		const node = parseStatChartContent('effectifs', `données: ${values}`);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+
+		expect([...table.querySelectorAll('thead th')].map((th) => th.textContent)).toEqual([
+			'Valeur',
+			'Effectif'
+		]);
+		expect(table.querySelectorAll('tbody tr')).toHaveLength(14);
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

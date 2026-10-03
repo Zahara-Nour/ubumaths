@@ -31,6 +31,7 @@ import {
 	type CumulativeScene,
 	type HistogramScene,
 	type ComparisonScene,
+	type FrequencyTableScene,
 	type LawScene,
 	type SimulationScene,
 	type MeanScene,
@@ -509,6 +510,34 @@ function comparisonTypst(scene: ComparisonScene): string {
 	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.columns.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
 }
 
+/**
+ * Tableau d'effectifs (Q125-Q129) : à l'horizontale, une ligne des valeurs puis
+ * une par grandeur ; à la verticale au-delà de 12 valeurs. Les cases de la
+ * scène telles quelles : l'écran et le PDF montrent les mêmes.
+ */
+function frequencyTableTypst(scene: FrequencyTableScene): string {
+	const bold = (text: string) => `text(weight: "bold")${textContent(text)}`;
+	// Une valeur, une classe ou un pourcentage ne se coupe jamais (« 100 % »,
+	// « [10 ; 15[ ») : espaces insécables ; les en-têtes, eux, vont à la ligne
+	const solid = (text: string) => text.replace(/ /g, '\u00a0');
+	const cell = (text: string) => textContent(solid(text));
+	const cells: string[] = [];
+	if (!scene.vertical) {
+		cells.push(bold(scene.valueHeader), ...scene.columns.map((c) => bold(solid(c))));
+		for (const row of scene.rows) cells.push(bold(row.header), ...row.cells.map(cell));
+	} else {
+		cells.push(bold(scene.valueHeader), ...scene.rows.map((row) => bold(row.header)));
+		scene.columns.forEach((column, i) => {
+			cells.push(bold(solid(column)), ...scene.rows.map((row) => cell(row.cells[i])));
+		});
+	}
+	const count = scene.vertical ? scene.rows.length + 1 : scene.columns.length + 1;
+	const caption = `#align(center, text(weight: "bold", size: 9pt)${textContent(scene.caption)})\n`;
+	// Colonnes à la largeur de leur contenu, sans césure : des colonnes égales
+	// écrasaient « Effectif » en « Ef-fec-tif » (fiche compilée)
+	return `${caption}#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${count},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`;
+}
+
 /** Ligne d'indicateurs sous la figure (Q28) */
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
@@ -533,6 +562,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return simulationTypst(scene);
 		case 'comparaison':
 			return comparisonTypst(scene);
+		case 'effectifs':
+			return frequencyTableTypst(scene);
 		case 'moyenne-selon-n':
 			return meanTypst(scene, size);
 	}

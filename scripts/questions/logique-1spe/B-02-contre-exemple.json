@@ -168,6 +168,40 @@
 					"Pour $x={{c}}$ : $x^2{{p;+}}={{eval:c^2+p}}$ et ${{q}}x={{eval:q*c}}$. Or ${{eval:c^2+p}}<{{eval:q*c}}$ : l'inégalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{ {{c}} }$ est un contre-exemple (tout réel de $]{{r}};{{s}}[$ convient)."
 				]
 			}
+		},
+		{
+			"statement": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant {{a}}$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x>0$ pour lequel $\\dfrac{1}{x}\\leqslant {{a}}$ est faux.\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..20"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(a+1)}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "custom",
+							"expression": "answer > 0",
+							"description": "La proposition ne parle que des réels strictement positifs : choisis $x>0$."
+						},
+						{
+							"type": "custom",
+							"expression": "({{a}})*answer < 1",
+							"description": "Ce nombre n'est pas un contre-exemple : il vérifie l'inégalité."
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour montrer qu'une proposition « pour tout réel $x>0$, … » est fausse, **un seul** contre-exemple suffit : un réel $x>0$ pour lequel l'inégalité est fausse.",
+					"Pour $x=\\dfrac{1}{ {{eval:a+1}} }$ : $\\dfrac{1}{x}={{eval:a+1}}$ et ${{eval:a+1}}>{{a}}$ : l'inégalité est fausse, donc $x=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{ {{eval:a+1}} } }$ est un contre-exemple.",
+					"Plus généralement, pour $x>0$ : $\\dfrac{1}{x}>{{a}}\\iff x<\\dfrac{1}{ {{a}} }$ : tout réel $x$ strictement compris entre $0$ et $\\dfrac{1}{ {{a}} }$ est un contre-exemple."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -502,6 +536,117 @@
 			"answers": ["3"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x≤4 : 1/5 (attendu)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["\\frac{1}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x≤4 : 0,2 en décimal",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0{,}2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x≤4 : 1/8, autre contre-exemple",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["\\frac{1}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x≤4 : 0,1",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0{,}1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1/x≤4 : 1/4, borne (1/x = 4, vrai)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["\\frac{1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x≤4 : 0,25, borne",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0{,}25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x≤4 : 1 vérifie l'inégalité",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x≤4 : −1 hors du domaine",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x≤4 : 0 hors du domaine",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "1/x≤4 : 2/10 non réduite",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["\\frac{2}{10}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
 			}
 		}
 	],
