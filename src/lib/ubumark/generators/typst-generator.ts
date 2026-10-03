@@ -341,7 +341,7 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 			return generateCourbeTypst(node, { language: options.language });
 
 		case 'figure':
-			return renderFigureTypst(node);
+			return renderFigureTypst(node, { language: options.language });
 
 		case 'stat-chart':
 			return generateStatChartTypst(node, { language: options.language });

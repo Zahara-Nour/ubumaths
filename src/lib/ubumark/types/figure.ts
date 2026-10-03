@@ -31,6 +31,32 @@ import type { BaseNode } from './ast';
 export const FIGURE_SIZES = ['petite', 'moyenne', 'grande'] as const;
 export type FigureSize = (typeof FIGURE_SIZES)[number];
 
+/** Largeur de la FENÊTRE à l'écran par taille, en px (comme ```courbe) ; la hauteur suit (isotrope). */
+export const FIGURE_PIXEL_WIDTH: Record<FigureSize, number> = {
+	petite: 280,
+	moyenne: 400,
+	grande: 560
+};
+
+/** Largeur de la fenêtre au PDF par taille, en cm (comme ```courbe) ; une colonne de fiche fait ~8,7 cm. */
+export const FIGURE_WIDTH_CM: Record<FigureSize, number> = {
+	petite: 4.5,
+	moyenne: 6.5,
+	grande: 7.6
+};
+
+/**
+ * Taille des noms et textes à l'écran, en px : DOIT valoir le `font-size` de
+ * `.figure-etiquette` (`FigureBlockView.svelte`) — le placement en dépend.
+ */
+export const FIGURE_LABEL_FONT_PX = 13;
+
+/**
+ * Marge autour de la fenêtre à l'écran quand les axes sont affichés, en px
+ * (flèches et graduations au-delà du cadre) : la marge `PAD` de ```courbe.
+ */
+export const FIGURE_AXES_MARGIN_PX = 26;
+
 /** Fenêtre en coordonnées mathématiques (repère ISOTROPE : la hauteur se déduit). */
 export interface FigureWindow {
 	xMin: number;
@@ -39,11 +65,26 @@ export interface FigureWindow {
 	yMax: number;
 }
 
+/** Pas en x et en y (grille, graduations), comme `grille: 1 ; 2` de ```courbe */
+export interface FigureStep {
+	x: number;
+	y: number;
+}
+
 export interface FigureHeader {
 	/** null : fenêtre absente ou invalide (erreur dans `errors`) */
 	window: FigureWindow | null;
 	size: FigureSize;
 	description: string | null;
+	/** `axes: oui` : axes fléchés, origine « O », graduations */
+	axes: boolean;
+	/** `grille:` : pas du quadrillage ; null = pas de grille */
+	grid: FigureStep | null;
+	/**
+	 * `graduations:` : pas des graduations ; null = celui de la grille, sinon 1 ;
+	 * false = `graduations: non` (axes sans graduation)
+	 */
+	ticks: FigureStep | false | null;
 }
 
 /** Message situé, à destination de l'AUTEUR (jamais montré à l'élève, Q48). */
@@ -101,5 +142,7 @@ export const FIGURE_LIMITS = {
 	/** Étendue minimale, relative à la plus grande borne (et à 1) */
 	relativeExtent: 1e-6,
 	/** Rapport hauteur / largeur de la fenêtre, dans [1/aspect ; aspect] */
-	aspect: 4
+	aspect: 4,
+	/** Lignes de grille ou graduations par axe (la borne de ```courbe) */
+	gridLines: 200
 } as const;

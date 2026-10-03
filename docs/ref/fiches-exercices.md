@@ -206,7 +206,9 @@ Toujours vrai :
   centième. » s'affiche sous la case. Une troncature au bon nombre de décimales (`1,13`) est
   « incorrect », sans ce message.
 - **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
-- **Bloc ```figure** : pas d'axes ni de grille. Nom d'un point : `etiquette="bas-gauche"` (8
+- **Bloc ```figure** : repère avec `axes: oui` et `grille: oui` dans l'en-tête (pas 1 ;
+  `grille: 2`, `graduations: 2`, `graduations: non` — voir `docs/ref/geometry/dsl-builtins.md`) ;
+  sans ces clés, ni axes ni grille. `O = point(0, 0)` remplace le « O » de l'origine. Nom d'un point : `etiquette="bas-gauche"` (8
   directions `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite` — défaut —,
   `bas-gauche`, `bas-droite` ; `"aucune"` masque le nom seul), sur `point(…)` comme sur tout point
   construit (`milieu`, `intersection`, `projection`…) ou après coup avec `style(A, etiquette=…)` ;

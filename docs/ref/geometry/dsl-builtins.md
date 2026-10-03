@@ -5,6 +5,41 @@ All function names use French identifiers (pedagogical language of the applicati
 
 ---
 
+## Bloc ubumark `figure` — repère : `axes`, `grille`, `graduations` (2026-10-03)
+
+Clés d'EN-TÊTE du bloc (avant `---`), pas des fonctions du DSL. Mêmes mots que le bloc `courbe`.
+
+````
+```figure
+fenetre: -2 ; 7 ; -2 ; 6
+axes: oui
+grille: oui
+---
+A = point(0, 1)
+B = point(4, 3)
+d = droite(A, B)
+```
+````
+
+| Clé           | Valeurs                                       | Défaut                    |
+| ------------- | --------------------------------------------- | ------------------------- |
+| `axes`        | `oui`, `non`                                  | `non`                     |
+| `grille`      | `oui` (pas 1), `non`, un pas, `pas x ; pas y` | `non`                     |
+| `graduations` | un pas, `pas x ; pas y`, `oui`, `non`         | pas de la grille, sinon 1 |
+
+- `axes: oui` : axes fléchés (en 0, sinon au bord le plus proche de la fenêtre), « O » à
+  l'origine (pas écrit si un point nommé y est déjà, `O = point(0, 0)`), graduations en petit SOUS l'axe des abscisses et À GAUCHE de celui des ordonnées
+  (vrai signe −, virgule décimale en français, point en anglais).
+- Une étiquette de graduation qui chevaucherait le nom d'un point (à l'écran OU au PDF) est
+  omise ; la graduation reste tracée. Graduations trop serrées : une étiquette sur 2 (sur 3…).
+- Grille et axes sont dessinés SOUS les objets. Sans ces clés : rendu strictement inchangé.
+- Erreurs situées (`Ligne N : …`) : valeur inconnue, pas ≤ 0, `graduations:` sans
+  `axes: oui`, plus de 200 lignes de grille ou de graduations par axe.
+- Écran : marge de 26 px autour de la fenêtre pour les flèches et graduations (comme `courbe`),
+  objets découpés à la fenêtre. PDF : lignes cetz passées à `exportToTypst({ underlay })`.
+- Code : `ubumark/parser/figure-parser.ts` (clés), `utils/figure-scene.ts` (`buildFigureFrame`),
+  `utils/figure-svg.ts` (`frame`), `generators/figure-typst.ts` (`frameToTypst`).
+
 ## Nom d'un point — `etiquette=` (2026-10-02)
 
 Côté où s'écrit le nom d'un point. Accepté par tout appel qui crée un point nommé (`point`,
