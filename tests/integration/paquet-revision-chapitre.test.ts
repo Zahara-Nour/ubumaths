@@ -56,6 +56,8 @@ const CAT_A = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Métho
 const CAT_A2 = { theme: 'Thème PRC', domain: 'Domaine A PRC', subdomain: 'Méthode', level: 2 };
 const CAT_B = { theme: 'Thème PRC', domain: 'Domaine B PRC', subdomain: null, level: 2 };
 const CAT_C = { theme: 'Thème PRC', domain: 'Domaine C PRC', subdomain: null, level: 1 };
+const CAT_D = { theme: 'Thème PRC', domain: 'Domaine D PRC', subdomain: null, level: 1 };
+const FUTURE = new Date(Date.now() + 86_400_000).toISOString();
 
 /** Modèles du décor (identifiants fixes, supprimés avant et après). */
 const T = {
@@ -63,7 +65,8 @@ const T = {
 	regular: 'a0c0e5e0-0000-4000-8000-0000000000a2', // A2, publié
 	draft: 'a0c0e5e0-0000-4000-8000-0000000000a3', // A, brouillon
 	other: 'a0c0e5e0-0000-4000-8000-0000000000b1', // B, publié (série 2)
-	outside: 'a0c0e5e0-0000-4000-8000-0000000000c1' // C, publié, dans AUCUNE série du chapitre
+	outside: 'a0c0e5e0-0000-4000-8000-0000000000c1', // C, publié, dans AUCUNE série du chapitre
+	future: 'a0c0e5e0-0000-4000-8000-0000000000d1' // D, publié, série à publication FUTURE
 };
 const UNKNOWN_CHAPTER = 'a0c0e5e0-0000-4000-8000-00000000ffff';
 
@@ -71,8 +74,16 @@ const UNKNOWN_CHAPTER = 'a0c0e5e0-0000-4000-8000-00000000ffff';
 const service = createServiceRoleClient();
 
 let teacherId: string;
+let teacher: Person;
+let admin: Person;
 let student: Person;
 let elsewhere: Person;
+/** Ancien membre de K1 (archivé) */
+let archived: Person;
+/** Membre de K1 qui passera en K2 (L5) */
+let mover: Person;
+let k1Id: string;
+let k2Id: string;
 let chapterVisible: string;
 let chapterHidden: string;
 let chapterOther: string;
@@ -92,8 +103,8 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	return client;
 }
 
-async function studentPerson(): Promise<Person> {
-	const profile = await TestData.profile().withRole('student').create();
+async function studentPerson(role: 'student' | 'teacher' | 'admin' = 'student'): Promise<Person> {
+	const profile = await TestData.profile().withRole(role).create();
 	return { id: profile.id, client: await clientFor(profile.email) };
 }
 
@@ -180,7 +191,19 @@ function templateRow(id: string, category: typeof CAT_A, status: string, options
 	};
 }
 
+/** Traces `skill_attempts` de l'élève pour ce modèle, relues hors RLS. */
+async function attempts(studentId: string, templateId: string) {
+	const { data, error } = await service
+		.from('skill_attempts')
+		.select('success, grade, source, with_help')
+		.eq('student_id', studentId)
+		.eq('template_id', templateId);
+	expect(error).toBeNull();
+	return data ?? [];
+}
+
 async function removeTemplates() {
+	await service.from('skill_attempts').delete().in('template_id', Object.values(T));
 	await service.from('srs_card_stats').delete().in('card_reference_id', Object.values(T));
 	await service.from('question_templates').delete().in('id', Object.values(T));
 }
@@ -190,17 +213,24 @@ describe('paquet de révision calculé du chapitre', () => {
 		await cleanupAllTestData();
 		await removeTemplates();
 
-		const teacher = await TestData.profile().withRole('teacher').create();
+		teacher = await studentPerson('teacher');
 		teacherId = teacher.id;
+		admin = await studentPerson('admin');
 		student = await studentPerson();
 		elsewhere = await studentPerson();
+		archived = await studentPerson();
+		mover = await studentPerson();
 
 		const k1 = await TestData.class().withName('1SPE paquet chapitre PRC').create();
 		const k2 = await TestData.class().withName('2DE paquet chapitre PRC').create();
 		const { error: membersError } = await service.from('class_members').insert([
 			{ class_id: k1.id, student_id: student.id, status: 'active' },
-			{ class_id: k2.id, student_id: elsewhere.id, status: 'active' }
+			{ class_id: k2.id, student_id: elsewhere.id, status: 'active' },
+			{ class_id: k1.id, student_id: archived.id, status: 'archived' },
+			{ class_id: k1.id, student_id: mover.id, status: 'active' }
 		]);
+		k1Id = k1.id;
+		k2Id = k2.id;
 		expect(membersError, 'décor : inscriptions').toBeNull();
 
 		const { error: templatesError } = await service
@@ -210,7 +240,8 @@ describe('paquet de révision calculé du chapitre', () => {
 				templateRow(T.regular, CAT_A2, 'published'),
 				templateRow(T.draft, CAT_A, 'draft'),
 				templateRow(T.other, CAT_B, 'published'),
-				templateRow(T.outside, CAT_C, 'published')
+				templateRow(T.outside, CAT_C, 'published'),
+				templateRow(T.future, CAT_D, 'published')
 			] as never);
 		expect(templatesError, 'décor : modèles').toBeNull();
 
@@ -236,6 +267,7 @@ describe('paquet de révision calculé du chapitre', () => {
 		// N6 : la catégorie A revient dans la seconde série
 		const seriesB = await series('Série B PRC', [CAT_B, CAT_A]);
 		const seriesC = await series('Série C PRC', [CAT_C]);
+		const seriesD = await series('Série D PRC', [CAT_D]);
 
 		await insertRow('chapter_series', {
 			chapter_id: chapterVisible,
@@ -246,6 +278,12 @@ describe('paquet de révision calculé du chapitre', () => {
 			chapter_id: chapterVisible,
 			series_id: seriesB,
 			published_at: PAST
+		});
+		// Publication programmée (dans le futur) : pas encore dans le paquet
+		await insertRow('chapter_series', {
+			chapter_id: chapterVisible,
+			series_id: seriesD,
+			published_at: FUTURE
 		});
 		await insertRow('chapter_series', {
 			chapter_id: chapterHidden,
@@ -286,6 +324,42 @@ describe('paquet de révision calculé du chapitre', () => {
 			expect(await dueTemplateIds(student, chapterVisible)).toEqual(
 				[T.course, T.regular, T.other].sort()
 			);
+		});
+
+		it('série à publication future : absente du paquet', async () => {
+			expect(await dueTemplateIds(student, chapterVisible)).not.toContain(T.future);
+		});
+
+		it('E1 : prof ou admin → 403 sur /due et /submit, aucune mémoire ni trace', async () => {
+			for (const person of [teacher, admin]) {
+				expect((await due(person, chapterVisible)).status).toBe(403);
+				expect(
+					(await submit(person, chapterVisible, { templateId: T.regular, grade: 3 })).status
+				).toBe(403);
+				expect(await memory(person.id, T.regular)).toBeNull();
+				expect(await attempts(person.id, T.regular)).toEqual([]);
+			}
+		});
+
+		it('E1 : élève qui a quitté la classe (archivé) → 404', async () => {
+			expect((await due(archived, chapterVisible)).status).toBe(404);
+			expect(
+				(await submit(archived, chapterVisible, { templateId: T.regular, grade: 3 })).status
+			).toBe(404);
+			expect(await memory(archived.id, T.regular)).toBeNull();
+		});
+
+		it('N3 : deux appels → instances tirées avec des graines différentes', async () => {
+			const seeds = async () => {
+				const { body } = await due(student, chapterVisible);
+				return (body as { cards: { templateId: string; instance: { seed?: number } }[] }).cards
+					.map((c) => `${c.templateId}:${c.instance.seed}`)
+					.sort();
+			};
+			const first = await seeds();
+			const second = await seeds();
+			expect(first.every((entry) => !entry.endsWith(':undefined'))).toBe(true);
+			expect(second).not.toEqual(first);
 		});
 
 		it('E1 : chapitre masqué de sa classe → 404', async () => {
@@ -329,6 +403,7 @@ describe('paquet de révision calculé du chapitre', () => {
 				const { status } = await submit(student, chapterVisible, { templateId, grade: 3 });
 				expect(status, templateId).toBe(403);
 				expect(await memory(student.id, templateId), templateId).toBeNull();
+				expect(await attempts(student.id, templateId), templateId).toEqual([]);
 			}
 		});
 
@@ -355,6 +430,10 @@ describe('paquet de révision calculé du chapitre', () => {
 
 			const stats = await memory(student.id, T.regular);
 			expect(stats?.total_reviews).toBe(1);
+			// Q169 (a) : la même trace que le Programme, exactement une
+			expect(await attempts(student.id, T.regular)).toEqual([
+				{ success: true, grade: 3, source: 'srs', with_help: false }
+			]);
 			expect(new Date(stats!.next_review).getTime()).toBeGreaterThan(Date.now());
 
 			const { data: after } = await student.client.rpc('get_due_cards_for_deck', {
@@ -370,6 +449,10 @@ describe('paquet de révision calculé du chapitre', () => {
 			const { status } = await submit(student, chapterVisible, { templateId: T.course, grade: 4 });
 			expect(status).toBe(200);
 			expect((await memory(student.id, T.course))?.total_reviews).toBe(1);
+			// Trace comme au Programme (Q113 ne porte que sur l'entrée dans le paquet)
+			expect(await attempts(student.id, T.course)).toEqual([
+				{ success: true, grade: 4, source: 'srs', with_help: false }
+			]);
 
 			const { data: cards, error } = await service
 				.from('srs_cards')
@@ -377,6 +460,35 @@ describe('paquet de révision calculé du chapitre', () => {
 				.eq('deck_id', programmeDeck);
 			expect(error).toBeNull();
 			expect((cards ?? []).map((c) => c.template_id)).toEqual([T.regular]);
+		});
+	});
+
+	describe('L5 — l’élève change de classe', () => {
+		it('voit les chapitres de sa nouvelle classe, sa mémoire est conservée', async () => {
+			expect(
+				(await submit(mover, chapterVisible, { templateId: T.regular, grade: 3 })).status
+			).toBe(200);
+			expect((await summarizeChapterDecks(mover.client, mover.id)).map((s) => s.chapterId)).toEqual(
+				[chapterVisible]
+			);
+
+			const { error: leaveError } = await service
+				.from('class_members')
+				.update({ status: 'archived' })
+				.eq('class_id', k1Id)
+				.eq('student_id', mover.id);
+			expect(leaveError).toBeNull();
+			const { error: joinError } = await service
+				.from('class_members')
+				.insert({ class_id: k2Id, student_id: mover.id, status: 'active' });
+			expect(joinError).toBeNull();
+
+			expect((await summarizeChapterDecks(mover.client, mover.id)).map((s) => s.chapterId)).toEqual(
+				[chapterOther]
+			);
+			expect((await due(mover, chapterVisible)).status).toBe(404);
+			expect(await dueTemplateIds(mover, chapterOther)).toEqual([T.outside]);
+			expect((await memory(mover.id, T.regular))?.total_reviews).toBe(1);
 		});
 	});
 

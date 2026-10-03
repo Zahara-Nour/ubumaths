@@ -12,8 +12,11 @@
  *   aussi présente dans le Programme y voit donc son échéance avancer.
  * - Auto-évaluation (boutons FSRS) : un seul résultat par jour et par question,
  *   le meilleur (ADR 0016, `bestOfDay`).
- * - Ce circuit n'ajoute RIEN au paquet Programme (Q113 : une question de cours
- *   n'y entre jamais ; les autres y entrent par leurs propres chemins).
+ * - Trace `skill_attempts` identique à celle du Programme (Q169 a,
+ *   `recordSrsReviewAttempt`), questions de cours comprises — Q113 ne porte que
+ *   sur l'entrée dans le paquet Programme.
+ * - Ce circuit n'ajoute RIEN au paquet Programme (pas d'`ensureProgrammeDeckCard`,
+ *   L6 : une question de cours n'y entre jamais).
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -24,6 +27,7 @@ import { requireConsent } from '$lib/server/middleware/consent';
 import { chapterDeckParamsSchema, chapterReviewSubmitSchema } from '$lib/server/validation/srs';
 import { loadChapterDeck, type ChapterDeck } from '$lib/server/srs/chapter-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
+import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireRole(locals, 'student');
@@ -80,8 +84,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible d’enregistrer la révision');
 	}
 
+	// Toutes les réponses laissent une trace, même celles que `bestOfDay` n'a pas
+	// retenues pour la planification (ADR 0016)
+	const attemptRecorded = await recordSrsReviewAttempt(supabase, user.id, templateId, grade);
+
 	return json({
 		success: true,
+		attemptRecorded,
 		// `false` : la journée avait déjà un résultat au moins aussi bon (ADR 0016)
 		recorded: updated !== null,
 		stats: updated

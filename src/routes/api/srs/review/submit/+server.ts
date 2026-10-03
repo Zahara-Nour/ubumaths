@@ -23,6 +23,7 @@ import { requireConsent } from '$lib/server/middleware/consent';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
+import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -98,21 +99,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----
 		// Source='srs', grade conservé, success dérivé (grade >= 2 = Hard ou mieux).
+		// Trace partagée avec le paquet du chapitre (`recordSrsReviewAttempt`).
 		if (cardReferenceType === 'template' && card.template_id) {
-			const success = body.grade >= 2;
-			const { error: skillAttemptErr } = await supabase.from('skill_attempts').insert({
-				student_id: user.id,
-				template_id: card.template_id,
-				success,
-				grade: body.grade,
-				source: 'srs',
-				with_help: false
-			});
+			const recorded = await recordSrsReviewAttempt(
+				supabase,
+				user.id,
+				card.template_id,
+				body.grade
+			);
 
-			if (skillAttemptErr) {
-				console.error('[srs/review/submit] skill_attempts INSERT failed:', skillAttemptErr);
-				// Non bloquant : la review FSRS reste enregistrée.
-			} else {
+			// Non bloquant : la review FSRS reste enregistrée.
+			if (recorded) {
 				// Auto-ajout au deck Programme si le template est tagué sur un point.
 				// Le tagging, les options et le statut viennent de la nested query du
 				// card SELECT (cf. refactor #2.3), aucune query supplémentaire.
