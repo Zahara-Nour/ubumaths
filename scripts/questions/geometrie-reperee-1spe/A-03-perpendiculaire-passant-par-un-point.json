@@ -1,0 +1,426 @@
+{
+	"title": "Droite perpendiculaire passant par un point",
+	"description": "Déterminer une équation de la perpendiculaire à une droite passant par un point : un vecteur directeur de la droite est normal à la perpendiculaire",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Vecteur normal et équation de droite",
+	"level": 2,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true,
+			"answerKind": "equation"
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "x0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				},
+				{
+					"name": "cp",
+					"expression": "eval:b*x0-a*y0"
+				},
+				{
+					"name": "mb",
+					"expression": "eval:-b"
+				}
+			],
+			"conditions": ["cp != 0", "a*x0+b*y0+c != 0", "gcd(abs(a),abs(b)) == 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mb}}x{{a;+}}y{{cp;+}}=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}\\begin{pmatrix}{{eval:a}}\\\\{{eval:b}}\\end{pmatrix}$ est normal à $d$. Le vecteur $\\vec{u}\\begin{pmatrix}{{eval:mb}}\\\\{{eval:a}}\\end{pmatrix}$ vérifie $\\vec{n}\\cdot\\vec{u}={{eval:a}}\\times{{mb;()}}+{{b;()}}\\times{{a;()}}=0$ : c'est un vecteur directeur de $d$.",
+					"$\\Delta$ est perpendiculaire à $d$, donc le vecteur directeur $\\vec{u}$ de $d$ est normal à $\\Delta$ : $\\Delta$ a une équation de la forme ${{eval:mb}}x{{a;+}}y+c'=0$.",
+					"$A\\in\\Delta$ : ${{eval:mb}}\\times{{x0;()}}+{{a;()}}\\times{{y0;()}}+c'=0$, donc $c'={{eval:cp}}$.",
+					"Une équation de $\\Delta$ est $\\textcolor{{{color:primary.0}}}{ {{eval:mb}}x{{a;+}}y{{cp;+}}=0 }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la droite $d$ d'équation $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "2..4;±"
+				},
+				{
+					"name": "p",
+					"expression": "-5..5!0"
+				},
+				{
+					"name": "j",
+					"expression": "-2..2"
+				},
+				{
+					"name": "x0",
+					"expression": "eval:m*j"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "q",
+					"expression": "eval:y0+j"
+				},
+				{
+					"name": "cp",
+					"expression": "eval:-(x0+m*y0)"
+				},
+				{
+					"name": "mcp",
+					"expression": "eval:x0+m*y0"
+				}
+			],
+			"conditions": ["q != 0", "y0 != m*x0+p"],
+			"blanks": [
+				{
+					"expectedAnswer": "y={{eval:-1/m}}x{{q;+}}",
+					"requiredForm": "reduite"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le vecteur $\\vec{u}\\begin{pmatrix}1\\\\{{eval:m}}\\end{pmatrix}$ est un vecteur directeur de $d$ (coefficient directeur ${{eval:m}}$).",
+					"$\\Delta$ est perpendiculaire à $d$, donc $\\vec{u}$ est normal à $\\Delta$ : $\\Delta$ a une équation de la forme $x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}+c'=0$.",
+					"$A\\in\\Delta$ : ${{eval:x0}}+{{m;()}}\\times{{y0;()}}+c'=0$, donc $c'={{eval:cp}}$.",
+					"$x{{if:m==1|+y}}{{if:m==-1|-y}}{{if:m>1|+{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}{{if:cp>0|+{{eval:cp}}}}{{if:cp< 0|{{eval:cp}}}}=0\\iff {{if:m==1|y}}{{if:m==-1|-y}}{{if:m>1|{{eval:m}}y}}{{if:m< -1|{{eval:m}}y}}=-x{{if:mcp>0|+{{eval:mcp}}}}{{if:mcp< 0|{{eval:mcp}}}}\\iff \\textcolor{{{color:primary.0}}}{ y={{eval:-1/m}}x{{if:q>0|+{{eval:q}}}}{{if:q< 0|{{eval:q}}}} }$"
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: -6 ; 6 ; -6 ; 6\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point A.\n---\nB = point({{xB}}, {{yB}}, visible=faux)\nB2 = point({{eval:xB-b}}, {{eval:yB+a}}, visible=faux)\nd = droite(B, B2)\nA = point({{x0}}, {{y0}}, etiquette=\"haut-droite\")\n{{if:e1>=e2|texte({{eval:P1x}}, {{eval:P1y}}, \"d\")|texte({{eval:P2x}}, {{eval:P2y}}, \"d\")}}\n```\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..5;±"
+				},
+				{
+					"name": "xB",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yB",
+					"expression": "-3..3"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(a*xB+b*yB)"
+				},
+				{
+					"name": "x0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "y0",
+					"expression": "-4..4"
+				},
+				{
+					"name": "cp",
+					"expression": "eval:b*x0-a*y0"
+				},
+				{
+					"name": "mb",
+					"expression": "eval:-b"
+				},
+				{
+					"name": "lam",
+					"expression": "eval:min((5*sign(-b)-xB)/(-b),(5*sign(a)-yB)/a)-0.6/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "lam2",
+					"expression": "eval:max((-5*sign(-b)-xB)/(-b),(-5*sign(a)-yB)/a)+0.6/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "P1x",
+					"expression": "eval:xB-lam*b+0.45*a/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "P1y",
+					"expression": "eval:yB+lam*a+0.45*b/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "P2x",
+					"expression": "eval:xB-lam2*b+0.45*a/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "P2y",
+					"expression": "eval:yB+lam2*a+0.45*b/sqrt(a^2+b^2)"
+				},
+				{
+					"name": "e1",
+					"expression": "eval:min(abs(P1x),abs(P1y))"
+				},
+				{
+					"name": "e2",
+					"expression": "eval:min(abs(P2x),abs(P2y))"
+				}
+			],
+			"conditions": [
+				"cp != 0",
+				"a*x0+b*y0+c != 0",
+				"gcd(abs(a),abs(b)) == 1",
+				"abs(xB-b) <= 5",
+				"abs(yB+a) <= 5"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:mb}}x{{a;+}}y{{cp;+}}=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}\\begin{pmatrix}{{eval:a}}\\\\{{eval:b}}\\end{pmatrix}$ est normal à $d$. Le vecteur $\\vec{u}\\begin{pmatrix}{{eval:mb}}\\\\{{eval:a}}\\end{pmatrix}$ vérifie $\\vec{n}\\cdot\\vec{u}={{eval:a}}\\times{{mb;()}}+{{b;()}}\\times{{a;()}}=0$ : c'est un vecteur directeur de $d$.",
+					"$\\Delta$ est perpendiculaire à $d$, donc le vecteur directeur $\\vec{u}$ de $d$ est normal à $\\Delta$ : $\\Delta$ a une équation de la forme ${{eval:mb}}x{{a;+}}y+c'=0$.",
+					"$A\\in\\Delta$ : ${{eval:mb}}\\times{{x0;()}}+{{a;()}}\\times{{y0;()}}+c'=0$, donc $c'={{eval:cp}}$.",
+					"Une équation de $\\Delta$ est $\\textcolor{{{color:primary.0}}}{ {{eval:mb}}x{{a;+}}y{{cp;+}}=0 }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : -3x + 2y - 7 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["-3x+2y-7=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : multiple, membres échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["6x-4y=-14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : réduite",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["y=\\frac{3}{2}x+\\frac{7}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimaux",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["y=1.5x+3.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : parallèle au lieu de perpendiculaire",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["2x+3y-4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signe de c'",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "3",
+				"c": "1",
+				"x0": "-1",
+				"y0": "2"
+			},
+			"answers": ["-3x+2y+7=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y = -1/2 x + 1",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["y=-\\frac{1}{2}x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : décimal",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["y=-0.5x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : cartésienne",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["x+2y-2=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : membres échangés",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["-\\frac{1}{2}x+1=y"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v1 : pente opposée -m",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["y=-2x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : pente 1/m",
+			"variationIndex": 1,
+			"variables": {
+				"m": "2",
+				"p": "3",
+				"j": "1",
+				"y0": "0"
+			},
+			"answers": ["y=\\frac{1}{2}x-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : -2x + 3y - 7 = 0",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"xB": "1",
+				"yB": "0",
+				"x0": "-2",
+				"y0": "1"
+			},
+			"answers": ["-2x+3y-7=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : vecteur normal de d utilisé",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "2",
+				"xB": "1",
+				"yB": "0",
+				"x0": "-2",
+				"y0": "1"
+			},
+			"answers": ["3x+2y+4=0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

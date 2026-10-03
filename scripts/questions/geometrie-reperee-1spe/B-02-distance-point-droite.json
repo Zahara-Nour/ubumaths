@@ -1,0 +1,441 @@
+{
+	"title": "Distance d'un point à une droite",
+	"description": "Calculer la distance d'un point à une droite comme la longueur MH, où H est le projeté orthogonal du point sur la droite (valeur exacte)",
+	"grades": ["1_SPE"],
+	"theme": "Géométrie",
+	"domain": "Géométrie repérée",
+	"subdomain": "Projeté orthogonal",
+	"level": 3,
+	"status": "draft",
+	"delay": 120,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xH",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yH",
+					"expression": "-3..3"
+				},
+				{
+					"name": "t",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:xH+t*a"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:yH+t*b"
+				},
+				{
+					"name": "c",
+					"expression": "eval:-(a*xH+b*yH)"
+				},
+				{
+					"name": "S",
+					"expression": "eval:a*a+b*b"
+				},
+				{
+					"name": "N",
+					"expression": "eval:a*xM+b*yM+c"
+				},
+				{
+					"name": "mt",
+					"expression": "eval:-t"
+				}
+			],
+			"conditions": ["abs(xM) <= 6", "abs(yM) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(t)*sqrt(S)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\vec{n}\\begin{pmatrix}{{eval:a}}\\\\{{eval:b}}\\end{pmatrix}$ est normal à $d$. Le projeté orthogonal $H$ de $M$ sur $d$ est le point de $d$ tel que $\\overrightarrow{MH}$ soit colinéaire à $\\vec{n}$ : $\\overrightarrow{MH}=k\\vec{n}$ pour un réel $k$, soit $H\\left({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}}\\,;\\,{{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}}\\right)$.",
+					"$H\\in d$ : ${{if:a==1|({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a==-1|-({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a>1|{{eval:a}}({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:a< -1|{{eval:a}}({{if:xM==0|{{if:a==1|k}}{{if:a==-1|-k}}{{if:a>1|{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}|{{eval:xM}}{{if:a==1|+k}}{{if:a==-1|-k}}{{if:a>1|+{{eval:a}}k}}{{if:a< -1|{{eval:a}}k}}}})}}{{if:b==1|+({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b==-1|-({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b>1|+{{eval:b}}({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:b< -1|{{eval:b}}({{if:yM==0|{{if:b==1|k}}{{if:b==-1|-k}}{{if:b>1|{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}|{{eval:yM}}{{if:b==1|+k}}{{if:b==-1|-k}}{{if:b>1|+{{eval:b}}k}}{{if:b< -1|{{eval:b}}k}}}})}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$, soit ${{eval:S}}k{{if:N>0|+{{eval:N}}}}{{if:N< 0|{{eval:N}}}}=0$, donc $k={{eval:mt}}$.",
+					"$x_H={{eval:xM}}+{{mt;()}}\\times{{a;()}}={{eval:xH}}$ et $y_H={{eval:yM}}+{{mt;()}}\\times{{b;()}}={{eval:yH}}$.",
+					"$MH=\\sqrt{ (x_H-x_M)^2+(y_H-y_M)^2 }=\\sqrt{ {{eval:xH-xM;()}}^2+{{eval:yH-yM;()}}^2 }=\\sqrt{ {{eval:t*t*S}} }=\\textcolor{{{color:primary.0}}}{ {{eval:abs(t)*sqrt(S)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La droite $d$ passe par le point $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$. On considère le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH=?$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "xA",
+					"expression": "-3..3"
+				},
+				{
+					"name": "yA",
+					"expression": "-3..3"
+				},
+				{
+					"name": "s",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "t",
+					"expression": "1|-1"
+				},
+				{
+					"name": "xH",
+					"expression": "eval:xA+s*u1"
+				},
+				{
+					"name": "yH",
+					"expression": "eval:yA+s*u2"
+				},
+				{
+					"name": "xM",
+					"expression": "eval:xH-t*u2"
+				},
+				{
+					"name": "yM",
+					"expression": "eval:yH+t*u1"
+				},
+				{
+					"name": "AMx",
+					"expression": "eval:xM-xA"
+				},
+				{
+					"name": "AMy",
+					"expression": "eval:yM-yA"
+				},
+				{
+					"name": "UU",
+					"expression": "eval:u1*u1+u2*u2"
+				},
+				{
+					"name": "PS",
+					"expression": "eval:AMx*u1+AMy*u2"
+				}
+			],
+			"conditions": ["abs(xH) <= 6", "abs(yH) <= 6", "abs(xM) <= 6", "abs(yM) <= 6"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:sqrt(UU)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance de $M$ à $d$ est la longueur $MH$, où $H$ est le projeté orthogonal de $M$ sur $d$.",
+					"$H\\in d$ : il existe un réel $k$ tel que $\\overrightarrow{AH}=k\\vec{u}$, soit $H\\left({{if:xA==0|{{if:u1==1|k}}{{if:u1==-1|-k}}{{if:u1>1|{{eval:u1}}k}}{{if:u1< -1|{{eval:u1}}k}}|{{eval:xA}}{{if:u1==1|+k}}{{if:u1==-1|-k}}{{if:u1>1|+{{eval:u1}}k}}{{if:u1< -1|{{eval:u1}}k}}}}\\,;\\,{{if:yA==0|{{if:u2==1|k}}{{if:u2==-1|-k}}{{if:u2>1|{{eval:u2}}k}}{{if:u2< -1|{{eval:u2}}k}}|{{eval:yA}}{{if:u2==1|+k}}{{if:u2==-1|-k}}{{if:u2>1|+{{eval:u2}}k}}{{if:u2< -1|{{eval:u2}}k}}}}\\right)$.",
+					"$(MH)$ est perpendiculaire à $d$ : $\\overrightarrow{MH}\\cdot\\vec{u}=0$. Comme $\\overrightarrow{MH}=\\overrightarrow{AH}-\\overrightarrow{AM}=k\\vec{u}-\\overrightarrow{AM}$, on obtient $k\\,\\vec{u}\\cdot\\vec{u}-\\overrightarrow{AM}\\cdot\\vec{u}=0$.",
+					"$\\overrightarrow{AM}\\begin{pmatrix}{{eval:AMx}}\\\\{{eval:AMy}}\\end{pmatrix}$, $\\overrightarrow{AM}\\cdot\\vec{u}={{eval:AMx}}\\times{{u1;()}}+{{AMy;()}}\\times{{u2;()}}={{eval:PS}}$ et $\\vec{u}\\cdot\\vec{u}={{eval:UU}}$, donc $k=\\dfrac{{{eval:PS}}}{{{eval:UU}}}={{eval:s}}$.",
+					"$x_H={{eval:xA}}+{{s;()}}\\times{{u1;()}}={{eval:xH}}$ et $y_H={{eval:yA}}+{{s;()}}\\times{{u2;()}}={{eval:yH}}$.",
+					"$MH=\\sqrt{ (x_H-x_M)^2+(y_H-y_M)^2 }=\\sqrt{ {{eval:xH-xM;()}}^2+{{eval:yH-yM;()}}^2 }=\\sqrt{ {{eval:UU}} }=\\textcolor{{{color:primary.0}}}{ {{eval:sqrt(UU)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "On considère les points $A({{eval:xA}}\\,;\\,{{eval:yA}})$, $B({{eval:xB}}\\,;\\,{{eval:yB}})$ et $C({{eval:xC}}\\,;\\,{{eval:yC}})$.\n\n```figure\nfenetre: {{eval:min(min(min(xA,xB),xC),0)-1.5}} ; {{eval:max(max(max(xA,xB),xC),0)+1.5}} ; {{eval:min(min(min(yA,yB),yC),0)-1.5}} ; {{eval:max(max(max(yA,yB),yC),0)+1.5}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; le triangle ABC.\n---\nA = point({{xA}}, {{yA}}, etiquette=\"{{if:yA>gy|haut|bas}}-{{if:xA>gx|droite|gauche}}\")\nB = point({{xB}}, {{yB}}, etiquette=\"{{if:yB>gy|haut|bas}}-{{if:xB>gx|droite|gauche}}\")\nC = point({{xC}}, {{yC}}, etiquette=\"{{if:yC>gy|haut|bas}}-{{if:xC>gx|droite|gauche}}\")\npolygone(A, B, C)\n```\n\nCalcule la distance du point $A$ à la droite $(BC)$ (valeur exacte).\n\n$AH=?$",
+			"variables": [
+				{
+					"name": "u1",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "u2",
+					"expression": "1..2;±"
+				},
+				{
+					"name": "xH",
+					"expression": "-2..2"
+				},
+				{
+					"name": "yH",
+					"expression": "-2..2"
+				},
+				{
+					"name": "s1",
+					"expression": "-2..-1"
+				},
+				{
+					"name": "s2",
+					"expression": "1..2"
+				},
+				{
+					"name": "t",
+					"expression": "1|-1|2|-2"
+				},
+				{
+					"name": "xB",
+					"expression": "eval:xH+s1*u1"
+				},
+				{
+					"name": "yB",
+					"expression": "eval:yH+s1*u2"
+				},
+				{
+					"name": "xC",
+					"expression": "eval:xH+s2*u1"
+				},
+				{
+					"name": "yC",
+					"expression": "eval:yH+s2*u2"
+				},
+				{
+					"name": "xA",
+					"expression": "eval:xH-t*u2"
+				},
+				{
+					"name": "yA",
+					"expression": "eval:yH+t*u1"
+				},
+				{
+					"name": "BCx",
+					"expression": "eval:xC-xB"
+				},
+				{
+					"name": "BCy",
+					"expression": "eval:yC-yB"
+				},
+				{
+					"name": "BAx",
+					"expression": "eval:xA-xB"
+				},
+				{
+					"name": "BAy",
+					"expression": "eval:yA-yB"
+				},
+				{
+					"name": "PS",
+					"expression": "eval:BAx*BCx+BAy*BCy"
+				},
+				{
+					"name": "BC2",
+					"expression": "eval:BCx^2+BCy^2"
+				},
+				{
+					"name": "kk",
+					"expression": "eval:PS/BC2"
+				},
+				{
+					"name": "gx",
+					"expression": "eval:(xA+xB+xC)/3"
+				},
+				{
+					"name": "gy",
+					"expression": "eval:(yA+yB+yC)/3"
+				},
+				{
+					"name": "UU",
+					"expression": "eval:u1*u1+u2*u2"
+				}
+			],
+			"conditions": [
+				"abs(xA) <= 6",
+				"abs(yA) <= 6",
+				"abs(xB) <= 6",
+				"abs(yB) <= 6",
+				"abs(xC) <= 6",
+				"abs(yC) <= 6"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:abs(t)*sqrt(UU)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La distance de $A$ à $(BC)$ est la longueur $AH$, où $H$ est le projeté orthogonal de $A$ sur $(BC)$.",
+					"$H\\in(BC)$ : $\\overrightarrow{BH}=k\\overrightarrow{BC}$ pour un réel $k$. $(AH)$ est perpendiculaire à $(BC)$ : $\\overrightarrow{AH}\\cdot\\overrightarrow{BC}=0$, et comme $\\overrightarrow{AH}=\\overrightarrow{BH}-\\overrightarrow{BA}$, on obtient $k\\,BC^2=\\overrightarrow{BA}\\cdot\\overrightarrow{BC}$.",
+					"$\\overrightarrow{BC}\\begin{pmatrix}{{eval:BCx}}\\\\{{eval:BCy}}\\end{pmatrix}$ et $\\overrightarrow{BA}\\begin{pmatrix}{{eval:BAx}}\\\\{{eval:BAy}}\\end{pmatrix}$ : $\\overrightarrow{BA}\\cdot\\overrightarrow{BC}={{eval:BAx}}\\times{{BCx;()}}+{{BAy;()}}\\times{{BCy;()}}={{eval:PS}}$ et $BC^2={{eval:BC2}}$, donc $k={{eval:kk}}$.",
+					"$x_H={{eval:xB}}+{{kk;()}}\\times{{BCx;()}}={{eval:xH}}$ et $y_H={{eval:yB}}+{{kk;()}}\\times{{BCy;()}}={{eval:yH}}$.",
+					"$AH=\\sqrt{ (x_H-x_A)^2+(y_H-y_A)^2 }=\\sqrt{ {{eval:xH-xA;()}}^2+{{eval:yH-yA;()}}^2 }=\\sqrt{ {{eval:t*t*UU}} }=\\textcolor{{{color:primary.0}}}{ {{eval:abs(t)*sqrt(UU)}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : d : x + 2y - 5 = 0, M(3 ; 6) : 2√5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["2\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : carré de la distance",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : valeur approchée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["4.47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : racine non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["\\sqrt{20}"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : longueur du vecteur normal",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "2",
+				"xH": "1",
+				"yH": "2",
+				"t": "2"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : n(3 ; -3), t = 1 : 3√2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "-3",
+				"xH": "0",
+				"yH": "0",
+				"t": "1"
+			},
+			"answers": ["3\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u(2 ; 1) : √5",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "2",
+				"u2": "1",
+				"xA": "0",
+				"yA": "1",
+				"s": "1",
+				"t": "1"
+			},
+			"answers": ["\\sqrt{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : carré",
+			"variationIndex": 1,
+			"variables": {
+				"u1": "2",
+				"u2": "1",
+				"xA": "0",
+				"yA": "1",
+				"s": "1",
+				"t": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2√2",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"u2": "1",
+				"xH": "0",
+				"yH": "0",
+				"s1": "-1",
+				"s2": "2",
+				"t": "2"
+			},
+			"answers": ["2\\sqrt{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : AB au lieu de AH",
+			"variationIndex": 2,
+			"variables": {
+				"u1": "1",
+				"u2": "1",
+				"xH": "0",
+				"yH": "0",
+				"s1": "-1",
+				"s2": "2",
+				"t": "2"
+			},
+			"answers": ["\\sqrt{10}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

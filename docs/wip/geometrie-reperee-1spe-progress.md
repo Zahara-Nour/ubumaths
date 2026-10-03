@@ -1,7 +1,7 @@
 ---
 title: Géométrie repérée 1re SPE — questions
 date: 2026-10-03
-status: en cours (rédaction des modèles)
+status: 12 modèles en brouillon (2026-10-03)
 ---
 
 # Géométrie repérée 1re SPE — point de reprise
@@ -25,4 +25,23 @@ et points dans le cadre) ; `e` est une constante réservée du DSL.
 
 ## Modèles (`scripts/questions/geometrie-reperee-1spe/`)
 
-À rédiger (~11-12).
+| Sous-domaine                         | Fichiers                                                                                                                      |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Vecteur normal et équation de droite | A-01 lire un vecteur normal, A-02 point + vecteur normal, A-03 perpendiculaire, A-04 médiatrice, A-05 hauteur                 |
+| Projeté orthogonal                   | B-01 coordonnées du projeté, B-02 distance point-droite                                                                       |
+| Équation de cercle                   | C-01 centre + rayon, C-02 centre + point / diamètre, C-03 forme développée, C-04 est-ce un cercle ?, C-05 point sur le cercle |
+
+**12 modèles créés en BROUILLON en production le 2026-10-03.** `question:specs` 170/170 ;
+150 tirages par variation (5 850) recalculés en Python, 0 écart ; figures en repère sans erreur
+sur tous les tirages, tout dans la fenêtre ; PDF compilés (prod), pages relues.
+
+Limites et points à relire :
+
+- Vecteur normal : un vecteur colinéaire est refusé (pas de réponse « vecteur ») → consigne « le
+  vecteur lu sur l'équation » ou coordonnée imposée.
+- Réduite exigée : pentes entières seulement (A-02, A-04, A-05 ; A-05 v1 : dy = −1).
+- B-02 : distances toujours irrationnelles. C-03 v3 : r = 1/2 possible (petit cercle).
+- C-05 v2 (intérieur / extérieur) : dans l'esprit du programme, pas une capacité listée.
+- Moteur : coefficients « 1x » dans un `expectedAnswer` à variables (pas de modificateur
+  « coefficient ») ; `Ω` refusé comme nom de point ; `\iff\ &` casse le PDF ; « n⃗ » en texte de
+  figure illisible au PDF.
