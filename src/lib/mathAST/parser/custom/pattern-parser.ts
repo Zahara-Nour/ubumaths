@@ -33,7 +33,12 @@ import type {
 	WildcardComparisonConstraint
 } from '../../pattern/types';
 import { P } from '../../pattern/builder';
-import { PatternTokenizer, type PatternToken, type PatternTokenType } from './pattern-tokenizer';
+import {
+	PatternTokenizer,
+	type PatternParseOptions,
+	type PatternToken,
+	type PatternTokenType
+} from './pattern-tokenizer';
 import { parseConstraintExpr } from './constraint-parser';
 
 // =============================================================================
@@ -87,8 +92,8 @@ export class PatternPrattParser {
 	private readonly tokenizer: PatternTokenizer;
 	private currentToken: PatternToken;
 
-	constructor(input: string) {
-		this.tokenizer = new PatternTokenizer(input);
+	constructor(input: string, options: PatternParseOptions = {}) {
+		this.tokenizer = new PatternTokenizer(input, options);
 		this.currentToken = this.tokenizer.nextToken();
 	}
 
@@ -477,8 +482,8 @@ export class PatternPrattParser {
  * parsePattern('sin(x)')             // => P.func('sin', [P._('x')])
  * parsePattern('(x + y)')            // => P.paren(P.add(P._('x'), P._('y')))
  */
-export function parsePattern(input: string): SumPatternElement {
-	const parser = new PatternPrattParser(input);
+export function parsePattern(input: string, options: PatternParseOptions = {}): SumPatternElement {
+	const parser = new PatternPrattParser(input, options);
 	return withMirroredWildcardComparisons(parser.parse());
 }
 

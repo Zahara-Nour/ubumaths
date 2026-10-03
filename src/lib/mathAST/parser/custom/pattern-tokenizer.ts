@@ -226,6 +226,15 @@ const VALID_SYMBOLS: ReadonlySet<string> = new Set([
 	'infty'
 ]);
 
+/** Options de lecture d'un motif */
+export interface PatternParseOptions {
+	/**
+	 * Fonctions génériques (`f`, `P`, `C`…) : `C(b)` est l'appel de la fonction C, comme dans
+	 * la réponse lue avec les mêmes fonctions (`genericFunctions`).
+	 */
+	readonly functionNames?: readonly string[];
+}
+
 /**
  * Function names sorted by length (longest first) for greedy matching.
  * This ensures that "sqrt" is matched before "s" when checking prefixes.
@@ -269,11 +278,14 @@ export class PatternTokenizer {
 	private position: number = 0;
 	private tokenCache: PatternToken[] = [];
 	private cachePosition: number = 0;
+	/** Fonctions génériques lues comme fonctions (`C(b)`), en plus de sin, cos, etc. */
+	private readonly functionNames: ReadonlySet<string>;
 
-	constructor(input: string) {
+	constructor(input: string, options: PatternParseOptions = {}) {
 		// Strip all whitespace at construction time
 		this.input = input.replace(/\s+/g, '');
 		this.length = this.input.length;
+		this.functionNames = new Set(options.functionNames ?? []);
 	}
 
 	/**
@@ -556,6 +568,18 @@ export class PatternTokenizer {
 					};
 				}
 			}
+		}
+
+		// Fonction générique déclarée (`C(b)`, `f(x)`) : le nom exact, suivi de `(`. Sans cette
+		// lecture, le joker `C` suivi de `(` rendait le motif illisible (jamais reconnu)
+		if (this.functionNames.has(identifier) && this.input[startPos + identifier.length] === '(') {
+			this.position = startPos + identifier.length;
+			return {
+				type: 'FUNC',
+				value: identifier,
+				position: startPos,
+				length: identifier.length
+			};
 		}
 
 		// Not a function - treat as wildcard

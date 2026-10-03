@@ -75,6 +75,7 @@ import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedag
 import type { GeneratedStepsOptions, QuestionInstance } from '../types';
 import { gradeLevelToSchoolLevel } from '../grade-level-to-school-level';
 import { resolveExpression } from './content-resolver';
+import { cleanCoefficientsAst, cleanCoefficientsCustom } from '../clean-coefficients';
 
 // =============================================================================
 // Public API
@@ -91,8 +92,14 @@ import { resolveExpression } from './content-resolver';
  * Wired into `generateInstance()`'s tail; can also be called directly on a
  * pre-built instance (e.g. tests, CLI demos).
  */
-export function generateCorrection(instance: QuestionInstance): QuestionInstance {
+export function generateCorrection(
+	instance: QuestionInstance,
+	options: { cleanCoefficients?: boolean } = {}
+): QuestionInstance {
 	const generatedSteps = instance.correction?.generatedSteps;
+	// `shared.cleanCoefficients` : les étapes partent de la formule nettoyée (`x = 5`), comme
+	// l'énoncé, et non de l'écriture brute du tirage (`1x + 0 = 5`)
+	const cleanCoefficients = options.cleanCoefficients === true;
 	// Strict early-return : zero allocation, zero log, zero copy when Mode B
 	// is not declared. Most existing questions hit this path.
 	if (!generatedSteps) return instance;
@@ -109,6 +116,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderArithmetic({
 					expression: generatedSteps.expression,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -117,6 +125,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderLinearEquation({
 					equation: generatedSteps.equation,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -125,6 +134,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderQuadraticEquation({
 					equation: generatedSteps.equation,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -134,6 +144,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					expression: generatedSteps.expression,
 					variable: generatedSteps.variable ?? 'x',
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -142,6 +153,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderLinearInequality({
 					inequality: generatedSteps.inequality,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -150,6 +162,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderQuadraticInequality({
 					inequality: generatedSteps.inequality,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -158,6 +171,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderRationalInequality({
 					inequality: generatedSteps.inequality,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -168,6 +182,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					variable: generatedSteps.variable,
 					definite: generatedSteps.definite,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -181,6 +196,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					enableLogExp: generatedSteps.enableLogExp,
 					enableAbs: generatedSteps.enableAbs,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -189,6 +205,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderArithmeticFromBlank({
 					expressionName: generatedSteps.expressionName,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -200,6 +217,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					approach: generatedSteps.approach,
 					direction: generatedSteps.direction,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -209,6 +227,7 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					expression: generatedSteps.expression,
 					variable: generatedSteps.variable,
 					instance,
+					cleanCoefficients,
 					schoolLevel,
 					verbosity
 				});
@@ -240,6 +259,8 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 interface ArithmeticDispatch {
 	readonly expression: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -247,10 +268,11 @@ interface ArithmeticDispatch {
 function renderArithmetic({
 	expression,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: ArithmeticDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(expression, instance);
+	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	// Refuse a relation node in the arithmetic kind — the author meant to use
@@ -272,6 +294,8 @@ function renderArithmetic({
 interface ArithmeticFromBlankDispatch {
 	readonly expressionName: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -296,6 +320,7 @@ interface ArithmeticFromBlankDispatch {
 function renderArithmeticFromBlank({
 	expressionName,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: ArithmeticFromBlankDispatch): readonly RenderedStep[] | null {
@@ -305,7 +330,8 @@ function renderArithmeticFromBlank({
 	const parseResult = parseCustomSafe(expr.value.trim(), {
 		genericFunctions: templateGenericFunctions(instance.genericFunctions)
 	});
-	const node = parseResult.ast;
+	const node =
+		parseResult.ast && cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
 	if (!node) return null;
 	if (node.type === 'relation') return null;
 
@@ -324,6 +350,8 @@ function renderArithmeticFromBlank({
 interface LinearEquationDispatch {
 	readonly equation: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -331,10 +359,11 @@ interface LinearEquationDispatch {
 function renderLinearEquation({
 	equation,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: LinearEquationDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(equation, instance);
+	const node = parseExpression(equation, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	// Linear equations require a relation; reject anything else silently.
@@ -361,6 +390,8 @@ function renderLinearEquation({
 interface QuadraticEquationDispatch {
 	readonly equation: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -368,10 +399,11 @@ interface QuadraticEquationDispatch {
 function renderQuadraticEquation({
 	equation,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: QuadraticEquationDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(equation, instance);
+	const node = parseExpression(equation, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	if (node.type !== 'relation') return null;
@@ -406,6 +438,8 @@ function renderQuadraticEquation({
 interface LinearInequalityDispatch {
 	readonly inequality: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -413,10 +447,11 @@ interface LinearInequalityDispatch {
 function renderLinearInequality({
 	inequality,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: LinearInequalityDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(inequality, instance);
+	const node = parseExpression(inequality, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	// Linear inequalities require a relation; reject anything else silently.
@@ -454,6 +489,8 @@ function renderLinearInequality({
 interface QuadraticInequalityDispatch {
 	readonly inequality: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -461,10 +498,11 @@ interface QuadraticInequalityDispatch {
 function renderQuadraticInequality({
 	inequality,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: QuadraticInequalityDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(inequality, instance);
+	const node = parseExpression(inequality, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	if (node.type !== 'relation') return null;
@@ -503,6 +541,8 @@ function renderQuadraticInequality({
 interface RationalInequalityDispatch {
 	readonly inequality: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -510,10 +550,11 @@ interface RationalInequalityDispatch {
 function renderRationalInequality({
 	inequality,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: RationalInequalityDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(inequality, instance);
+	const node = parseExpression(inequality, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	if (node.type !== 'relation') return null;
@@ -552,6 +593,8 @@ interface DifferentiateDispatch {
 	readonly expression: string;
 	readonly variable: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -560,10 +603,11 @@ function renderDifferentiate({
 	expression,
 	variable,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: DifferentiateDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(expression, instance);
+	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	// Differentiation expects an expression — refuse a relation silently.
@@ -585,6 +629,8 @@ interface IntegrateDispatch {
 	readonly variable?: string;
 	readonly definite?: { readonly lower: string; readonly upper: string };
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -594,10 +640,11 @@ function renderIntegrate({
 	variable,
 	definite,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: IntegrateDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(expression, instance);
+	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	// Integration expects an expression — refuse a relation silently.
@@ -611,8 +658,8 @@ function renderIntegrate({
 
 	let definiteParsed: { lower: MathNode; upper: MathNode } | undefined;
 	if (definite) {
-		const lowerNode = parseExpression(definite.lower, instance);
-		const upperNode = parseExpression(definite.upper, instance);
+		const lowerNode = parseExpression(definite.lower, instance, cleanCoefficients);
+		const upperNode = parseExpression(definite.upper, instance, cleanCoefficients);
 		if (lowerNode === null || upperNode === null) return null;
 		definiteParsed = { lower: lowerNode, upper: upperNode };
 	}
@@ -648,6 +695,8 @@ interface SimplifyDispatch {
 	readonly enableLogExp?: boolean;
 	readonly enableAbs?: boolean;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -660,10 +709,11 @@ function renderSimplify({
 	enableLogExp,
 	enableAbs,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: SimplifyDispatch): readonly RenderedStep[] | null {
-	const node = parseExpression(expression, instance);
+	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
 	let result;
@@ -695,6 +745,8 @@ interface LimitDispatch {
 	readonly approach: string;
 	readonly direction?: 'left' | 'right' | 'both';
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -718,6 +770,7 @@ function renderLimit({
 	approach,
 	direction,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: LimitDispatch): readonly RenderedStep[] | null {
@@ -727,7 +780,7 @@ function renderLimit({
 	const limitLevel: SchoolLevel =
 		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
 
-	const resolvedExpression = resolveExpression(expression, instance.resolvedVariables ?? []).trim();
+	const resolvedExpression = resolveForSteps(expression, instance, cleanCoefficients);
 	const resolvedApproach = resolveExpression(approach, instance.resolvedVariables ?? []).trim();
 
 	let result;
@@ -756,6 +809,8 @@ interface DomainDispatch {
 	readonly expression: string;
 	readonly variable?: string;
 	readonly instance: QuestionInstance;
+	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
+	readonly cleanCoefficients: boolean;
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
 }
@@ -776,6 +831,7 @@ function renderDomain({
 	expression,
 	variable,
 	instance,
+	cleanCoefficients,
 	schoolLevel,
 	verbosity
 }: DomainDispatch): readonly RenderedStep[] | null {
@@ -785,7 +841,7 @@ function renderDomain({
 	const domainLevel: PedagogicalDomainSchoolLevel =
 		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
 
-	const resolvedExpression = resolveExpression(expression, instance.resolvedVariables ?? []).trim();
+	const resolvedExpression = resolveForSteps(expression, instance, cleanCoefficients);
 
 	let result;
 	try {
@@ -816,12 +872,32 @@ function renderDomain({
  * failure (caller falls back silently). Fonctions déclarées par le modèle lues
  * comme fonctions (`P(x)`), défauts du parseur sinon.
  */
-function parseExpression(template: string, instance: QuestionInstance): MathNode | null {
+function parseExpression(
+	template: string,
+	instance: QuestionInstance,
+	cleanCoefficients: boolean
+): MathNode | null {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []);
 	const parseResult = parseCustomSafe(resolved.trim(), {
 		genericFunctions: templateGenericFunctions(instance.genericFunctions)
 	});
-	return parseResult.ast ?? null;
+	if (!parseResult.ast) return null;
+	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
+}
+
+/**
+ * Formule de départ d'un pipeline qui lit une chaîne (limite, ensemble de définition) :
+ * variables résolues, puis nettoyée si le modèle le demande.
+ */
+function resolveForSteps(
+	template: string,
+	instance: QuestionInstance,
+	cleanCoefficients: boolean
+): string {
+	const resolved = resolveExpression(template, instance.resolvedVariables ?? []).trim();
+	return cleanCoefficients
+		? cleanCoefficientsCustom(resolved, templateGenericFunctions(instance.genericFunctions))
+		: resolved;
 }
 
 /**

@@ -15,7 +15,8 @@
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
 import { detailedCorrection } from '$lib/questions/correction-detail';
-import { templateGenericFunctions } from '$lib/questions/generic-functions';
+import { declaredGenericFunctions } from '$lib/questions/generic-functions';
+import { DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST/parser/types';
 
 export type SerieItem = { templateId: string; seed: number };
 export type Serie = {
@@ -24,7 +25,9 @@ export type Serie = {
 	/**
 	 * `generic_functions` de l'exercice figé : défauts ∪ fonctions déclarées par les
 	 * modèles (`P`, `C`). La liste d'un exercice REMPLACE les défauts : elle les reprend
-	 * donc. Absente si aucun modèle n'en déclare.
+	 * donc. Absente si aucun modèle n'en déclare. Portée : tout l'exercice — une lettre
+	 * déclarée par UN modèle est aussi une fonction dans les autres questions de la série
+	 * (choix assumé : l'exercice n'a qu'une liste).
 	 */
 	genericFunctions?: string[];
 };
@@ -150,10 +153,17 @@ export function buildSerie(modeles: Map<string, QuestionTemplate>, items: SerieI
 		}
 		vus.set(s.statement, i);
 	});
-	const declared = items.flatMap(
-		({ templateId }) => modeles.get(templateId)?.shared?.genericFunctions ?? []
+	// Union des déclarations : chaque modèle en déclare au plus 10, mais la liste de
+	// l'exercice n'a pas de plafond. Passée d'un bloc à `templateGenericFunctions`, elle était
+	// coupée en silence au 10e nom (la 11e fonction redevenait un produit dans la série).
+	const declared = new Set(
+		items.flatMap(
+			({ templateId }) =>
+				declaredGenericFunctions(modeles.get(templateId)?.shared?.genericFunctions) ?? []
+		)
 	);
-	const genericFunctions = templateGenericFunctions([...new Set(declared)])?.names;
+	const genericFunctions =
+		declared.size > 0 ? [...new Set([...DEFAULT_GENERIC_FUNCTION_NAMES, ...declared])] : undefined;
 	return {
 		statement: figees.map((s, i) => item(i + 1, s.statement)).join('\n\n'),
 		solution: figees.map((s, i) => item(i + 1, s.solution)).join('\n\n'),

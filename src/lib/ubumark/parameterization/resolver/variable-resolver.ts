@@ -87,29 +87,136 @@ function toBinding(value: string): BindingValue {
 }
 
 /**
+ * Faute d'écriture du modèle (syntaxe invalide, fonction ou variable inconnue) : la même
+ * erreur à CHAQUE tirage. Le générateur échoue tout de suite avec son message au lieu de
+ * relancer 100 tirages ; une erreur qui dépend des valeurs tirées (division par zéro,
+ * `arccos(3/2)`) reste une `Error` ordinaire, et le tirage est relancé.
+ */
+export class AuthorExpressionError extends Error {}
+
+/** Erreurs d'évaluation qui ne dépendent pas des valeurs tirées */
+const AUTHOR_EVALUATION_ERROR = /Unknown function|free variables/;
+
+/** Une erreur relancée avec un contexte garde sa nature (faute d'auteur ou non) */
+function rethrowWithContext(error: unknown, context: string): never {
+	const message = `${context}: ${error instanceof Error ? error.message : String(error)}`;
+	throw error instanceof AuthorExpressionError
+		? new AuthorExpressionError(message)
+		: new Error(message);
+}
+
+/**
+ * Niveau de l'opération principale d'une valeur en syntaxe maison : 1 somme ou différence,
+ * 2 produit ou quotient ; `null` pour tout le reste (nombre, opposé, puissance, fonction,
+ * texte, LaTeX, relation…), qui n'est jamais mis entre parenthèses.
+ */
+function formulaLevel(value: string): 1 | 2 | null {
+	if (value.includes('\\') || !/[+\-*/]/.test(value)) return null;
+	try {
+		const ast = parseCustom(value);
+		if (ast.type === 'addition' || ast.type === 'subtraction') return 1;
+		if (ast.type === 'multiplication' || ast.type === 'division') return 2;
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+/** Commande LaTeX qui s'achève juste avant `end` (`3\\times`), sinon `null` */
+function latexCommandBefore(text: string, end: number): string | null {
+	const match = /\\([A-Za-z]+)$/.exec(text.slice(0, end));
+	return match ? match[1] : null;
+}
+
+/** Commande LaTeX qui commence en `start` (`\\times 3`), sinon `null` */
+function latexCommandAt(text: string, start: number): string | null {
+	const match = /^\\([A-Za-z]+)/.exec(text.slice(start));
+	return match ? match[1] : null;
+}
+
+/** Opérateur LaTeX écrit en commande, ramené à son symbole */
+const LATEX_OPERATORS: Readonly<Record<string, string>> = { times: '*', cdot: '*', div: '/' };
+
+/**
+ * Une formule citée dans une autre (`N = T/g` avec T = « 11*11-3 ») doit-elle être mise
+ * entre parenthèses pour garder son sens ? On regarde le caractère qui précède et celui
+ * qui suit la citation : opérateur plus fort que l'opération principale de la valeur, ou
+ * juxtaposition (produit implicite `2T`). Une accolade ouvrante ou fermante qui l'entoure
+ * (`\\dfrac{T}{2}`), un `+`, une relation ou une virgule ne demandent rien.
+ */
+function needsParentheses(text: string, start: number, end: number, level: 1 | 2): boolean {
+	let left = start - 1;
+	while (left >= 0 && text[left] === ' ') left--;
+	let right = end;
+	while (right < text.length && text[right] === ' ') right++;
+
+	// À gauche
+	if (left >= 0) {
+		const command = latexCommandBefore(text, left + 1);
+		const before = command !== null ? (LATEX_OPERATORS[command] ?? '') : text[left];
+		if (before === '^' || before === '/') return true;
+		if (level === 1 && (before === '*' || before === '-')) return true;
+		// Juxtaposition : `2T`, `xT`, `)T`, `{{a}}T` (le `}` d'une citation pas encore remplacée)
+		// ; une commande LaTeX qui n'est pas une opération (`\\quad T`) ne demande rien
+		if (command === null && /[\w)}]/.test(before) && !isGroupClose(text, left)) return true;
+	}
+
+	// À droite
+	if (right < text.length) {
+		const command = latexCommandAt(text, right);
+		// Commande qui n'est pas une opération (`\\text`, `\\quad`) : rien
+		const after = command !== null ? (LATEX_OPERATORS[command] ?? '') : text[right];
+		if (after === '^' || after === '!') return true;
+		if (level === 1 && (after === '*' || after === '/')) return true;
+		if (/[\w(]/.test(after)) return true;
+		if (after === '{' && text.startsWith('{{', right)) return true;
+	}
+	return false;
+}
+
+/**
+ * `}` à gauche d'une citation : fin d'une citation `{{a}}` (juxtaposition), ou fermeture
+ * d'un groupe LaTeX `{…}` qui ne se colle pas à la valeur (`\\dfrac{1}{2}` puis rien) ?
+ * Seule la fin d'une citation `}}` compte comme juxtaposition.
+ */
+function isGroupClose(text: string, at: number): boolean {
+	return text[at] === '}' && text[at - 1] !== '}';
+}
+
+/** Valeur citée dans une autre expression, mise entre parenthèses si son sens l'exige */
+function valueInContext(value: string, text: string, start: number, end: number): string {
+	const level = formulaLevel(value);
+	return level !== null && needsParentheses(text, start, end, level) ? `(${value})` : value;
+}
+
+/**
  * Remplace les noms de variables nus (`c*b*a`) en UN seul passage : une valeur substituée
  * n'est jamais relue. Sinon la lettre tirée « b » (a = « b ») deviendrait la valeur de la
  * variable `b` : « 6 × 2 × 2 » au lieu de « 6 × 2 × b ». Les bornes de mot évitent de
  * toucher le `a` de `tan` ou de `max` ; les noms longs passent avant les courts.
  */
-function substituteBareNames(text: string, resolved: ResolvedVariable[]): string {
+function substituteBareNames(text: string, resolved: ResolvedVariable[], inContext = true): string {
 	if (resolved.length === 0) return text;
 	const values = new Map(resolved.map((v) => [v.name, v.value]));
 	const names = [...values.keys()].sort((a, b) => b.length - a.length);
 	const regex = new RegExp(`\\b(?:${names.join('|')})\\b`, 'g');
-	return text.replace(regex, (name) => values.get(name) ?? name);
+	return text.replace(regex, (name, offset: number) => {
+		const value = values.get(name);
+		if (value === undefined) return name;
+		return inContext ? valueInContext(value, text, offset, offset + name.length) : value;
+	});
 }
 
 /**
  * Réécrit `{{nom;modificateurs}}` en `{{eval:nom;modificateurs}}` quand `nom` est une variable
- * déclarée. Un vrai tirage (`{{2..9;±}}`) ne commence pas par un nom : il n'est pas touché, et
+ * déclarée, modificateurs enchaînés compris (`{{b;();d}}` = `{{eval:b;();d}}`). Un vrai tirage (`{{2..9;±}}`) ne commence pas par un nom : il n'est pas touché, et
  * un nom inconnu non plus (l'erreur de tirage reste visible).
  */
 function modifiedVariablesAsEval(text: string, resolved: ResolvedVariable[]): string {
 	if (resolved.length === 0) return text;
 	const names = new Set(resolved.map((v) => v.name));
 	return text.replace(
-		/\{\{([A-Za-z_]\w*);([^{};]+)\}\}/g,
+		/\{\{([A-Za-z_]\w*);([^{}]+)\}\}/g,
 		(token, name: string, modifiers: string) =>
 			names.has(name) ? `{{eval:${name};${modifiers}}}` : token
 	);
@@ -240,6 +347,34 @@ function parseEvalAst(expression: string): MathNode {
 }
 
 /**
+ * Analyse d'un calcul `{{eval:…}}` : un échec est une faute d'écriture du modèle (les
+ * valeurs tirées y entrent groupées `{…}` et ne changent pas la syntaxe).
+ */
+function parseAuthorExpression(expression: string): MathNode {
+	try {
+		return parseEvalAst(expression);
+	} catch (error) {
+		throw new AuthorExpressionError(error instanceof Error ? error.message : String(error));
+	}
+}
+
+/**
+ * Évaluation d'un calcul : fonction inconnue ou lettre libre (`foo(a)` lu f×o×o) ne
+ * dépendent pas des valeurs tirées → faute d'auteur ; le reste (division par zéro, hors
+ * domaine) reste une erreur ordinaire, et le tirage est relancé.
+ */
+function evaluateClassified<T>(evaluation: () => T): T {
+	try {
+		return evaluation();
+	} catch (error) {
+		if (error instanceof Error && AUTHOR_EVALUATION_ERROR.test(error.message)) {
+			throw new AuthorExpressionError(error.message);
+		}
+		throw error;
+	}
+}
+
+/**
  * Wrap a value being string-substituted into an `{{eval:...}}` expression in
  * `{}` so it parses as a single grouped operand. This preserves the implied
  * grouping of negative or compound values: `{{a}}^2` with a=-5 becomes
@@ -255,6 +390,15 @@ export function braceWrap(value: string): string {
 	// Un résultat exact (`\dfrac{9}{7}`) repasse en syntaxe maison : sinon tout le calcul
 	// part dans parseLatex, qui ne lit ni `2{…}` ni `sqrt(…)`
 	return `{${evalResultToCustom(value)}}`;
+}
+
+/** Crochets fournis par l'appelant (les questions), que ce module ne connaît pas */
+export interface ResolveVariablesHooks {
+	/**
+	 * `{{if:condition|alors|sinon}}` tranché AVANT la lecture des tirages (sinon le `|` est
+	 * lu comme une liste de tirage) : l'évaluateur de conditions vit côté questions.
+	 */
+	resolveConditionals?: (expression: string, resolved: ResolvedVariable[]) => string;
 }
 
 /**
@@ -325,7 +469,8 @@ export function braceWrap(value: string): string {
 export function resolveVariables(
 	variables: Variable[],
 	random: RandomSource = Math.random,
-	templateDisplayDefaults?: DisplayOptions
+	templateDisplayDefaults?: DisplayOptions,
+	hooks: ResolveVariablesHooks = {}
 ): ResolvedVariable[] {
 	if (!variables || variables.length === 0) {
 		return [];
@@ -337,7 +482,10 @@ export function resolveVariables(
 		const variable = variables[i];
 		try {
 			// Une seule source pour toutes les variables : chaque tirage la fait avancer
-			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, random);
+			const expression = hooks.resolveConditionals
+				? hooks.resolveConditionals(variable.expression, resolvedVariables)
+				: variable.expression;
+			const resolvedValue = resolveExpression(expression, resolvedVariables, random);
 
 			// Build the resolved variable
 			const resolved: ResolvedVariable = {
@@ -383,9 +531,7 @@ export function resolveVariables(
 
 			resolvedVariables.push(resolved);
 		} catch (error) {
-			throw new Error(
-				`Failed to resolve variable "${variable.name}": ${error instanceof Error ? error.message : String(error)}`
-			);
+			rethrowWithContext(error, `Failed to resolve variable "${variable.name}"`);
 		}
 	}
 
@@ -432,7 +578,7 @@ export function resolveExpression(
 	// STAGE 0: If no {{...}} tokens, apply bare variable name substitution
 	// This allows expressions like "a^b*a^c" to work without explicit {{}}
 	if (!result.includes('{{')) {
-		return substituteBareNames(result, alreadyResolved);
+		return substituteBareNames(result, alreadyResolved, !options?.markdown);
 	}
 
 	// STAGE 0.5: `{{b;+}}` sur une variable DÉCLARÉE = `{{eval:b;+}}` (signe, parenthèses…).
@@ -450,14 +596,19 @@ export function resolveExpression(
 
 		const resolvedVar = alreadyResolved.find((v) => v.name === varName);
 		if (!resolvedVar) {
-			throw new Error(`Variable "${varName}" not found or not yet resolved`);
+			throw new AuthorExpressionError(`Variable "${varName}" not found or not yet resolved`);
 		}
 
 		const substitution =
 			options?.useDisplayValue && resolvedVar.displayValue
 				? resolvedVar.displayValue
 				: resolvedVar.value;
-		result = result.slice(0, token.start) + substitution + result.slice(token.end);
+		// Hors markdown (variable, réponse attendue) : une formule citée garde son sens
+		// (`{{T}}/{{g}}` avec T = « 11*11-3 » → `(11*11-3)/2`)
+		const inserted = options?.markdown
+			? substitution
+			: valueInContext(substitution, result, token.start, token.end);
+		result = result.slice(0, token.start) + inserted + result.slice(token.end);
 	}
 
 	// STAGE 1.5: Resolve embedded {{eval:...}} tokens before random/digits processing.
@@ -535,7 +686,7 @@ export function resolveExpression(
 
 					const resolvedVar = alreadyResolved.find((v) => v.name === varName);
 					if (!resolvedVar) {
-						throw new Error(`Variable "${varName}" not found in eval expression`);
+						throw new AuthorExpressionError(`Variable "${varName}" not found in eval expression`);
 					}
 					referenced.add(varName);
 
@@ -564,7 +715,7 @@ export function resolveExpression(
 				exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 			}
 
-			const ast = parseEvalAst(exprToParse);
+			const ast = parseAuthorExpression(exprToParse);
 
 			// Build bindings from single-letter variables for AST substitution
 			const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
@@ -572,16 +723,16 @@ export function resolveExpression(
 			// Substitute variables in AST and evaluate
 			for (const name of getVariables(ast)) referenced.add(name);
 			const substituted = substitute(ast, bindings, { maxIterations: 1 });
-			const evaluatedValue = evaluateAstWithModifiers(
-				substituted,
-				parsed.modifiers,
-				drawnLetters(alreadyResolved, referenced)
+			const evaluatedValue = evaluateClassified(() =>
+				evaluateAstWithModifiers(
+					substituted,
+					parsed.modifiers,
+					drawnLetters(alreadyResolved, referenced)
+				)
 			);
 			result = result.slice(0, token.start) + String(evaluatedValue) + result.slice(token.end);
 		} catch (error) {
-			throw new Error(
-				`Failed to evaluate expression "${token.content}": ${error instanceof Error ? error.message : String(error)}`
-			);
+			rethrowWithContext(error, `Failed to evaluate expression "${token.content}"`);
 		}
 	}
 
@@ -887,16 +1038,18 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	}
 
 	// Parse and evaluate
-	const ast = parseEvalAst(exprToParse);
+	const ast = parseAuthorExpression(exprToParse);
 
 	const bindings = singleLetterBindings(parsed.expression, alreadyResolved);
 
 	for (const name of getVariables(ast)) referenced.add(name);
 	const substituted = substitute(ast, bindings, { maxIterations: 1 });
-	const evaluatedValue = evaluateAstWithModifiers(
-		substituted,
-		parsed.modifiers,
-		drawnLetters(alreadyResolved, referenced)
+	const evaluatedValue = evaluateClassified(() =>
+		evaluateAstWithModifiers(
+			substituted,
+			parsed.modifiers,
+			drawnLetters(alreadyResolved, referenced)
+		)
 	);
 	return String(evaluatedValue);
 }

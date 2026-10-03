@@ -24,6 +24,7 @@ import {
 	resolveExpression as sharedResolveExpression
 } from '$lib/ubumark';
 import type { RandomSource } from '$lib/utils/random';
+import { resolveVariableConditionals } from './variable-conditionals';
 
 /**
  * Resolve a single variable expression
@@ -97,7 +98,11 @@ export function resolveVariables(
 
 	// Database now stores pure markdown syntax ({{...}}) directly
 	// No conversion needed anymore - use variables as-is
-	const result = sharedResolveVariables(variables, random);
+	// `{{if:…}}` dans l'expression d'une variable : tranché avant la lecture des tirages
+	const result = sharedResolveVariables(variables, random, undefined, {
+		resolveConditionals: (expression, resolved) =>
+			resolveVariableConditionals(expression, resolved, { strict: true })
+	});
 
 	if (result === null) {
 		throw new Error('Failed to resolve variables');

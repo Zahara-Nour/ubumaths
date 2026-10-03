@@ -12,7 +12,7 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { RequiredForm } from './types';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser';
+import { DEFAULT_GENERIC_FUNCTION_NAMES, type GenericFunctionConfig } from '$lib/mathAST/parser';
 
 /** Lecture de la réponse : fonctions déclarées par le modèle (`C(2)`), défauts sinon */
 export interface RequiredFormOptions {
@@ -470,11 +470,20 @@ function withImplicitNeutrals(pattern: unknown): unknown[] {
  *
  * @param node - The MathAST node to check
  * @param patternStr - The pattern string (e.g., 'a:integer * b:integer')
+ * @param genericFunctions - Fonctions déclarées par le modèle (défauts du parseur sinon)
  * @returns true if the node matches the pattern
  */
-function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
+function matchesCustomPattern(
+	node: MathNode,
+	patternStr: string,
+	genericFunctions?: GenericFunctionConfig
+): boolean {
 	try {
-		const pattern = asUnorderedSums(P.parse(patternStr)) as ReturnType<typeof P.parse>;
+		// Le motif lit les mêmes fonctions que la réponse (`C(2)` déclarée → fonction C)
+		const functionNames = genericFunctions?.names ?? DEFAULT_GENERIC_FUNCTION_NAMES;
+		const pattern = asUnorderedSums(P.parse(patternStr, { functionNames })) as ReturnType<
+			typeof P.parse
+		>;
 		// Tel qu'écrit, OU sans parenthèses de regroupement : rien de ce qui était reconnu
 		// ne cesse de l'être (`(a)^2`, `k*(__reste)`), et `(9+2):4` ≡ `\\frac{9+2}{4}` s'ajoute
 		const loose = patternWithoutParentheses(pattern) as typeof pattern;
@@ -506,11 +515,15 @@ function matchesCustomPattern(node: MathNode, patternStr: string): boolean {
  * @param requiredForm - The required form specification
  * @returns true if the answer matches the required form
  */
-function matchesRequiredForm(node: MathNode, requiredForm: RequiredForm): boolean {
+function matchesRequiredForm(
+	node: MathNode,
+	requiredForm: RequiredForm,
+	genericFunctions?: GenericFunctionConfig
+): boolean {
 	if (typeof requiredForm === 'string') {
 		return matchesPredefinedForm(node, requiredForm);
 	} else {
-		return matchesCustomPattern(node, requiredForm.pattern);
+		return matchesCustomPattern(node, requiredForm.pattern, genericFunctions);
 	}
 }
 
@@ -563,7 +576,7 @@ export function checkRequiredForm(
 			const strippedNode = stripUnnecessaryBrackets(node);
 
 			// Check if the form matches
-			if (!matchesRequiredForm(strippedNode, requiredForm)) {
+			if (!matchesRequiredForm(strippedNode, requiredForm, options.genericFunctions)) {
 				violations.push(i);
 			}
 		} catch {

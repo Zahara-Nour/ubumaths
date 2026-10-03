@@ -24,6 +24,10 @@
  *   (`keepsValue`) ; aucune case `?` ne disparaît ;
  * - formule illisible, exception, ou rien à nettoyer : la formule d'origine.
  *
+ * Une parenthèse dont le contenu nettoyé est une lettre ou un nombre disparaît
+ * (`(x+0)^2` → `x^2`, `2(x+0)` → `2x`), sauf la notation fonctionnelle `C(x)` et un
+ * nombre en facteur non premier (`2(3)`).
+ *
  * La syntaxe maison ne lit pas `\\leqslant`, `\\geq`, `\\neq`… : `latexRelationsToCustom`
  * les réécrit (`<=`, `>=`, `!=`) avant lecture, sinon une inégalité écrite en LaTeX
  * n'était jamais nettoyée.
@@ -161,6 +165,50 @@ function protect(ast: MathNode, store: MathNode[]): MathNode {
 	});
 }
 
+/** Contenu d'une parenthèse qui, nettoyé, n'a plus besoin d'elle : une lettre ou un nombre */
+const ATOMIC_TYPES: ReadonlySet<MathNode['type']> = new Set([
+	'number',
+	'variable',
+	'greek',
+	'constant'
+]);
+
+/** Dernier facteur d'une chaîne de produit (`2·x·C` → `C`) */
+function lastFactor(node: MathNode): MathNode {
+	return node.type === 'multiplication' ? lastFactor(node.right) : node;
+}
+
+/**
+ * `(x+0)` devenu `(x)` : la parenthèse ne sert plus, `x`. Restent :
+ * - la notation fonctionnelle `C(x)` (facteur précédent : une lettre ou une fonction) ;
+ * - un nombre en facteur non premier (`2(3)` ne devient pas `2 3`) ;
+ * - toute autre délimitation (valeur absolue, crochets).
+ */
+function withoutAtomicParentheses(ast: MathNode): MathNode {
+	const kept = new WeakSet<MathNode>();
+	return mapNodeTopDown(ast, (node) => {
+		if (node.type === 'multiplication' && node.right.type === 'delimiter') {
+			const previous = lastFactor(node.left).type;
+			if (
+				previous === 'variable' ||
+				previous === 'function' ||
+				node.right.content.type === 'number'
+			) {
+				kept.add(node.right);
+			}
+		}
+		if (
+			node.type === 'delimiter' &&
+			node.delimiters === 'parentheses' &&
+			ATOMIC_TYPES.has(node.content.type) &&
+			!kept.has(node)
+		) {
+			return node.content;
+		}
+		return node;
+	});
+}
+
 /** Remet les morceaux protégés à leur place */
 function restore(ast: MathNode, store: readonly MathNode[]): MathNode {
 	return mapNode(ast, (node) => {
@@ -180,7 +228,7 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 		const store: MathNode[] = [];
 		let current = protect(ast, store);
 		for (const step of coefficientCleanupSteps()) current = step.transform(current);
-		const cleaned = restore(current, store);
+		const cleaned = withoutAtomicParentheses(restore(current, store));
 
 		// Rien n'a changé à l'écriture : la formule d'origine
 		if (toLatex(cleaned) === toLatex(ast)) return ast;
@@ -197,8 +245,9 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 }
 
 /**
- * Réponse attendue en syntaxe maison (`1x-1y+0=0` → `x-y=0`). Formule illisible ou
- * déjà propre : le texte d'origine, à l'octet près.
+ * Réponse attendue en syntaxe maison (`1x-1y+0=0` → `x-y=0`), ou inégalité écrite en
+ * LaTeX (`x^2+1x\\leqslant 2` → `x^2 + x \\leqslant 2`, rendue en LaTeX). Formule
+ * illisible ou déjà propre : le texte d'origine, à l'octet près.
  */
 export function cleanCoefficientsCustom(
 	source: string,
@@ -207,9 +256,18 @@ export function cleanCoefficientsCustom(
 	if (source.trim() === '') return source;
 	try {
 		const parsed = parseCustomSafe(source.trim(), { genericFunctions });
-		if (!parsed.ast) return source;
-		const cleaned = cleanCoefficientsAst(parsed.ast);
-		return cleaned === parsed.ast ? source : toCustom(cleaned);
+		if (parsed.ast) {
+			const cleaned = cleanCoefficientsAst(parsed.ast);
+			return cleaned === parsed.ast ? source : toCustom(cleaned);
+		}
+		// Inégalité écrite en LaTeX (`x^2+1x\\leqslant 2`) : relue en syntaxe maison pour être
+		// nettoyée, et rendue en LaTeX comme l'auteur l'a écrite (`x^2 + x \\leqslant 2`)
+		const custom = latexRelationsToCustom(source.trim());
+		if (custom === source.trim()) return source;
+		const relation = parseCustomSafe(custom, { genericFunctions });
+		if (!relation.ast) return source;
+		const cleaned = cleanCoefficientsAst(relation.ast);
+		return cleaned === relation.ast ? source : toLatex(cleaned);
 	} catch {
 		return source;
 	}

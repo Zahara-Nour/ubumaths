@@ -309,3 +309,30 @@ describe('buildSerie — fonctions déclarées par les modèles', () => {
 		expect(serie).not.toHaveProperty('genericFunctions');
 	});
 });
+
+// Union des fonctions déclarées au-delà de 10 noms : chaque modèle en déclare au plus 10,
+// mais la liste de l'exercice (`generic_functions`) n'a pas de plafond. Elle était coupée
+// en silence au 10e nom : la 11e fonction redevenait un produit dans la série.
+describe('buildSerie — union de plus de 10 fonctions déclarées', () => {
+	const declare = (id: string, names: string[]) =>
+		({
+			...base,
+			id,
+			shared: { genericFunctions: names },
+			variations: [{ statement: `${id} $?$`, blanks: [{ expectedAnswer: '4' }] }]
+		}) as unknown as QuestionTemplate;
+
+	it('toutes les fonctions déclarées sont gardées', () => {
+		const modeles = new Map([
+			['un', declare('un', ['A', 'B', 'C', 'D', 'E', 'I'])],
+			['deux', declare('deux', ['J', 'K', 'L', 'M', 'N', 'O'])]
+		]);
+		const serie = buildSerie(modeles, [
+			{ templateId: 'un', seed: 1 },
+			{ templateId: 'deux', seed: 1 }
+		]);
+		const defaults = ['f', 'g', 'h', 'u', 'v', 'w', 'F', 'G', 'H'];
+		const declared = ['A', 'B', 'C', 'D', 'E', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+		expect(serie.genericFunctions).toEqual([...defaults, ...declared]);
+	});
+});
