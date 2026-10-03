@@ -72,6 +72,7 @@ ses `parseLatexSafe`. Test `it.fails` posé pour le signaler.
 
 - `checkForm` (cf. point ouvert) — `it.fails` dans `generic-functions-template.test.ts`.
 - Relire en LaTeX `P\left( x \right)` comme une fonction dépend du chantier parallèle du
-  parseur (`f\left(1\right)`) : la réponse MathLive `P'\left(2\right)` en dépend aussi.
+  parseur (`f\left(1\right)`) : la saisie MathLive `P'\left(2\right)` est aujourd'hui lue
+  comme un produit (comme `f'\left(2\right)`) → second `it.fails`, à retirer après ce correctif.
 - Non branchés (pas de cas réel) : `required-form-validator` (formes product/sum…),
   `{{eval:…}}` et conditions (une fonction déclarée n'y a pas de valeur), `evaluateExpression`.

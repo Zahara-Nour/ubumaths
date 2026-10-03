@@ -223,6 +223,15 @@ describe('Validation de la réponse de l’élève', () => {
 		expect(result.status).toBe('correct');
 	});
 
+	// Saisie MathLive (`\\left(…\\right)`) : le parseur LaTeX lit `P'\\left(2\\right)` comme
+	// un produit, même pour f (chantier parallèle `f\\left(1\\right)`). Retirer `.fails`
+	// quand il sera livré.
+	it.fails("saisie MathLive P'\\left(1+1\\right) : juste (dépend du parseur)", () => {
+		const instance = instanceOf(polynomialTemplate(['P'], formOff));
+		const latex = "P'\\left(1+1\\right)";
+		expect(validateAnswer([latex], instance, [latex]).isCorrect).toBe(true);
+	});
+
 	it('barème serveur : même verdict que validateAnswer', () => {
 		const instance = instanceOf(polynomialTemplate(['P'], formOff));
 		expect(gradeQuestion(instance, { values: ["P'(1+1)"] }).points).toBe(1);
