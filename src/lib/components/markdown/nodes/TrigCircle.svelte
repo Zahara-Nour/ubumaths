@@ -19,6 +19,7 @@
 	@module components/markdown/nodes/TrigCircle
 -->
 <script lang="ts">
+	import { colorForScreen, namedColorScreen } from '$lib/theme/named-colors';
 	import 'mathlive';
 	import type {
 		TrigCircleNode,
@@ -90,18 +91,19 @@
 	// COLOR UTILITIES
 	// =========================================================================
 
+	/** Couleur d'un cercle sans couleur valide : le bleu de la palette commune */
+	const DEFAULT_COLOR = namedColorScreen('bleu');
+
+	/**
+	 * La couleur de l'auteur, telle qu'elle peut entrer dans `style="--primary-color: …"`.
+	 *
+	 * ⚠️ JAMAIS la chaîne brute : `red; background-image: url(…)` ferait charger une
+	 * ressource externe chez chaque lecteur, chat élève compris. Seules sortent une
+	 * couleur nommée de la palette (synonymes anglais compris), un hexadécimal
+	 * validé, ou le bleu de la palette par défaut.
+	 */
 	function getColorValue(color: string): string {
-		const colorMap: Record<string, string> = {
-			blue: 'var(--primary, #3b82f6)',
-			red: '#ef4444',
-			green: '#22c55e',
-			orange: '#f97316',
-			purple: '#a855f7',
-			pink: '#ec4899',
-			cyan: '#06b6d4',
-			yellow: '#eab308'
-		};
-		return colorMap[color.toLowerCase()] || color;
+		return colorForScreen(color) ?? DEFAULT_COLOR;
 	}
 
 	// =========================================================================
