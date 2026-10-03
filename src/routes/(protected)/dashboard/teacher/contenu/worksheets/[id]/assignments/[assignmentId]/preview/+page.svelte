@@ -17,6 +17,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
@@ -278,6 +279,8 @@
 
 	// Modal navigation state (uses visual order)
 	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex] ?? null);
+	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
+	let exerciseFunctions = $derived(genericFunctionsConfig(currentExercise?.generic_functions));
 	let hasCorrection = $derived(
 		currentExercise?.correction_visible && currentExercise?.correction !== null
 	);
@@ -647,20 +650,29 @@
 						</Tabs.List>
 						<Tabs.Content value="statement" class="mt-4">
 							<div class="prose prose-sm max-w-none dark:prose-invert">
-								<MarkdownRenderer content={currentExercise.statement} />
+								<MarkdownRenderer
+									content={currentExercise.statement}
+									genericFunctions={exerciseFunctions}
+								/>
 							</div>
 						</Tabs.Content>
 						<Tabs.Content value="correction" class="mt-4">
 							<div
 								class="prose prose-sm max-w-none text-green-800 dark:text-green-200 dark:prose-invert"
 							>
-								<MarkdownRenderer content={currentExercise.correction ?? ''} />
+								<MarkdownRenderer
+									content={currentExercise.correction ?? ''}
+									genericFunctions={exerciseFunctions}
+								/>
 							</div>
 						</Tabs.Content>
 					</Tabs.Root>
 				{:else}
 					<div class="prose prose-sm max-w-none dark:prose-invert">
-						<MarkdownRenderer content={currentExercise.statement} />
+						<MarkdownRenderer
+							content={currentExercise.statement}
+							genericFunctions={exerciseFunctions}
+						/>
 					</div>
 					{#if previewMode === 'student'}
 						<div class="mt-4 rounded-md border border-muted bg-muted/50 p-3">

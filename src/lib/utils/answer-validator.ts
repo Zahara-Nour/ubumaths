@@ -270,6 +270,15 @@ function toNumericAnswer(userAnswer: string): number {
 }
 
 /**
+ * Échec d'une règle de validation. `authoredFeedback` : la `description` écrite
+ * par l'auteur d'une règle `custom` qui a jugé un nombre (« Ce nombre n'est pas
+ * un contre-exemple… ») — le seul message montré en mode `rulesSuffice`.
+ */
+interface RuleFailure extends ValidationResult {
+	authoredFeedback?: string;
+}
+
+/**
  * Evaluate custom validation rules (testAnswers-style)
  *
  * Used for questions where the correct answer depends on generated variables
@@ -284,7 +293,7 @@ function evaluateValidationRules(
 	rules: ValidationRule[],
 	userAnswer: string,
 	instance: QuestionInstance
-): ValidationResult | undefined {
+): RuleFailure | undefined {
 	// Build context from resolved variables
 	const variables: Record<string, number | string> = {};
 	if (instance.resolvedVariables) {
@@ -312,10 +321,21 @@ function evaluateValidationRules(
 	for (const rule of rules) {
 		const result = evaluateRule(rule, ctx);
 		if (!result.valid) {
-			return {
+			const failure: RuleFailure = {
 				isCorrect: false,
 				feedback: result.reason || 'La réponse ne satisfait pas les critères demandés.'
 			};
+			// Message de l'auteur : seulement si la règle a VRAIMENT jugé un nombre
+			// (une saisie illisible rend la règle inévaluable, pas « fausse »)
+			if (
+				rule.type === 'custom' &&
+				rule.description &&
+				result.reason === rule.description &&
+				Number.isFinite(ctx.numericAnswer)
+			) {
+				failure.authoredFeedback = rule.description;
+			}
+			return failure;
 		}
 	}
 
@@ -450,7 +470,7 @@ export function validateAnswer(
 			const userAnswerStr = Array.isArray(userAnswer) ? String(userAnswer[0]) : String(userAnswer);
 			const ruleResult = evaluateValidationRules(instance.validationRules, userAnswerStr, instance);
 
-			if (ruleResult) return ruleResult;
+			if (ruleResult) return { isCorrect: false, feedback: ruleResult.feedback };
 			return { isCorrect: true };
 		}
 
@@ -1055,10 +1075,14 @@ function validateSingleBlank(
 	if (blank.validationRules && blank.validationRules.length > 0) {
 		const ruleResult = evaluateValidationRules(blank.validationRules, userAnswer, instance);
 		if (ruleResult) {
-			// rulesSuffice : la règle EST le verdict ; son message (« 5 n'est pas un
-			// diviseur de 12 ») répéterait la consigne → retour ordinaire d'une
-			// réponse fausse.
-			if (rulesDecide(blank)) return { isCorrect: false };
+			// rulesSuffice : la règle EST le verdict ; son message générique (« 5 n'est
+			// pas un diviseur de 12 ») répéterait la consigne → retour ordinaire d'une
+			// réponse fausse. Seule la description écrite par l'auteur est montrée.
+			if (rulesDecide(blank)) {
+				return ruleResult.authoredFeedback
+					? { isCorrect: false, feedback: ruleResult.authoredFeedback }
+					: { isCorrect: false };
+			}
 			return { isCorrect: false, feedback: ruleResult.feedback };
 		}
 	}

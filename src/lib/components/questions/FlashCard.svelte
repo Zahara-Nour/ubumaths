@@ -40,6 +40,7 @@
 	} from '$lib/questions/correction-card-verdict';
 	import { computeBlankVerdicts } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -476,7 +477,10 @@
 										<div class="flex-1">
 											<p class="font-semibold">{globalVerdict.label}</p>
 											{#if validationFeedback}
-												<p class="mt-1 text-sm opacity-90">{validationFeedback}</p>
+												<!-- Message écrit par un auteur (règle) : peut contenir une formule `$x>0$` -->
+												<p class="mt-1 text-sm opacity-90">
+													<InlineMarkdown content={validationFeedback} {genericFunctions} />
+												</p>
 											{/if}
 										</div>
 									</div>
