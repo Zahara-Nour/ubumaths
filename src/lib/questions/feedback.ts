@@ -74,6 +74,11 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 	intervalForm: {
 		single: "L'ensemble est juste, mais son écriture peut être simplifiée.",
 		multiple: 'Un ensemble est juste, mais son écriture peut être simplifiée.'
+	},
+	// Trop de chiffres, mais bon arrondi (message précis : questions/rounding)
+	rounding: {
+		single: 'Arrondis comme demandé.',
+		multiple: 'Arrondis comme demandé.'
 	}
 } as const;
 

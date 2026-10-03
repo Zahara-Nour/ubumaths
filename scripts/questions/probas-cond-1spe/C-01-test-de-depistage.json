@@ -216,7 +216,8 @@
 			},
 			"answers": ["\\frac{37}{400}", "0{,}486"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -347,7 +348,8 @@
 			},
 			"answers": ["\\frac{37}{400}", "0{,}513"],
 			"expected": {
-				"status": "incorrect"
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{

@@ -200,8 +200,11 @@ Toujours vrai :
   statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
   forme dans l'énoncé ; une valeur arrondie demande `precision`. Une réponse avec trop de
-  décimales (`1,136` pour `1,14`) est « incorrect », AVEC le message « Arrondis au centième. » sous
-  la case (la spec ne montre que le statut).
+  décimales dont l'arrondi redonne l'attendu (`1,136` pour `1,14`) est « mauvaise forme » (0 point,
+  spec : `bad_form` + `constraintViolations: ["rounding"]`) ; si son arrondi ne redonne pas
+  l'attendu (`1,131`), elle est « incorrect ». Dans les deux cas, le message « Arrondis au
+  centième. » s'affiche sous la case. Une troncature au bon nombre de décimales (`1,13`) est
+  « incorrect », sans ce message.
 - **Un modèle ne mélange pas QCM et cases** (« fill_in_blanks requires blanks[] ») : un modèle par type.
 - **Bloc ```figure** : pas d'axes ni de grille. Nom d'un point : `etiquette="bas-gauche"` (8
   directions `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite` — défaut —,
