@@ -7,7 +7,14 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { CURVE_COLORS, CURVE_SLOTS, curveColorValue, getNextSlot, isCurveColor } from '../colors';
+import {
+	CURVE_COLORS,
+	CURVE_SLOTS,
+	curveColorValue,
+	getNextSlot,
+	isCurveColor,
+	migrateLegacyColor
+} from '../colors';
 import type { LineStyle } from '$lib/geometry-core/viewport/types';
 
 // =============================================================================
@@ -147,4 +154,92 @@ describe('contraste des couleurs de courbe (app.css)', () => {
 			expect(contrast(dark, bg.dark)).toBeGreaterThanOrEqual(4.5);
 		});
 	}
+});
+
+// =============================================================================
+// Migration des anciennes sauvegardes (décision du 2026-10-03)
+// =============================================================================
+
+describe('migrateLegacyColor', () => {
+	it('traduit les 4 premières anciennes couleurs vers les 4 nouvelles, en trait plein', () => {
+		expect(migrateLegacyColor('#2563eb', 'solid')).toEqual({
+			color: 'curve-1',
+			lineStyle: 'solid'
+		});
+		expect(migrateLegacyColor('#dc2626', 'solid')).toEqual({
+			color: 'curve-2',
+			lineStyle: 'solid'
+		});
+		expect(migrateLegacyColor('#16a34a', 'solid')).toEqual({
+			color: 'curve-3',
+			lineStyle: 'solid'
+		});
+		expect(migrateLegacyColor('#9333ea', 'solid')).toEqual({
+			color: 'curve-4',
+			lineStyle: 'solid'
+		});
+	});
+
+	it('traduit les 4 suivantes vers les mêmes couleurs, en pointillés', () => {
+		expect(migrateLegacyColor('#ea580c', 'solid')).toEqual({
+			color: 'curve-1',
+			lineStyle: 'dashed'
+		});
+		expect(migrateLegacyColor('#0891b2', 'solid')).toEqual({
+			color: 'curve-2',
+			lineStyle: 'dashed'
+		});
+		expect(migrateLegacyColor('#be185d', 'solid')).toEqual({
+			color: 'curve-3',
+			lineStyle: 'dashed'
+		});
+		expect(migrateLegacyColor('#854d0e', 'solid')).toEqual({
+			color: 'curve-4',
+			lineStyle: 'dashed'
+		});
+	});
+
+	it('garde deux anciennes couleurs différentes distinctes après traduction', () => {
+		const legacy = [
+			'#2563eb',
+			'#dc2626',
+			'#16a34a',
+			'#9333ea',
+			'#ea580c',
+			'#0891b2',
+			'#be185d',
+			'#854d0e'
+		];
+		const migrated = legacy.map((c) => migrateLegacyColor(c, 'solid'));
+		const keys = new Set(migrated.map((m) => `${m.color}|${m.lineStyle}`));
+		expect(keys.size).toBe(8);
+	});
+
+	it('conserve un style que l’élève avait choisi lui-même', () => {
+		expect(migrateLegacyColor('#ea580c', 'dotted')).toEqual({
+			color: 'curve-1',
+			lineStyle: 'dotted'
+		});
+	});
+
+	it('reconnaît une ancienne couleur écrite en majuscules', () => {
+		expect(migrateLegacyColor('#2563EB', 'solid')).toEqual({
+			color: 'curve-1',
+			lineStyle: 'solid'
+		});
+	});
+
+	it('laisse intacte une couleur inconnue', () => {
+		expect(migrateLegacyColor('#123456', 'solid')).toEqual({
+			color: '#123456',
+			lineStyle: 'solid'
+		});
+	});
+
+	it('laisse intacte une identité déjà migrée', () => {
+		expect(migrateLegacyColor('curve-2', 'dashed')).toEqual({
+			color: 'curve-2',
+			lineStyle: 'dashed'
+		});
+	});
 });

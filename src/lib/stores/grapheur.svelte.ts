@@ -10,7 +10,7 @@
 import { browser } from '$app/environment';
 import { parseFunction } from '$lib/grapheur/evaluator';
 import { DEFAULT_VIEWPORT, panViewport, zoomViewport } from '$lib/grapheur/viewport';
-import { getNextSlot } from '$lib/grapheur/colors';
+import { getNextSlot, migrateLegacyColor } from '$lib/grapheur/colors';
 import type {
 	Plottable,
 	ExplicitFunction,
@@ -848,8 +848,10 @@ class GrapheurStore {
 			// Parameters first: the expressions below are parsed against their names.
 			this.parameters = state.parameters;
 
-			// Re-parse everything (AST is not stored)
-			this.functions = state.functions.map((p): Plottable => {
+			// Re-parse everything (AST is not stored). Les couleurs de l'ancienne
+			// palette sont traduites au passage vers les places actuelles.
+			this.functions = state.functions.map((stored): Plottable => {
+				const p = { ...stored, ...migrateLegacyColor(stored.color, stored.lineStyle ?? 'solid') };
 				// Un nuage n'a rien à reparser : ses deux séries sont la donnée.
 				if (p.type === 'scatter') {
 					const scatter: ScatterPlottable = {

@@ -78,6 +78,45 @@ export function getNextSlot(
 }
 
 // =============================================================================
+// Migration des anciennes sauvegardes
+// =============================================================================
+
+/**
+ * L'ancienne palette (8 hexadécimaux figés), dans son ordre d'attribution.
+ * Ne sert plus qu'à reconnaître les graphiques sauvegardés avant le 2026-10-03.
+ */
+const LEGACY_FUNCTION_COLORS = [
+	'#2563eb',
+	'#dc2626',
+	'#16a34a',
+	'#9333ea',
+	'#ea580c',
+	'#0891b2',
+	'#be185d',
+	'#854d0e'
+] as const;
+
+/**
+ * Traduit une couleur de l'ancienne palette vers la place de MÊME RANG.
+ *
+ * Par rang, pas par « couleur la plus proche » : celle-ci envoyait orange, vert
+ * et marron sur l'ocre, et un graphique de 5 courbes en gardait deux identiques.
+ * Par rang, deux anciennes couleurs différentes restent deux places différentes.
+ * Un style choisi par l'élève (autre que `solid`) est conservé.
+ * Une couleur inconnue, ou déjà traduite, passe telle quelle.
+ */
+export function migrateLegacyColor(
+	color: string,
+	lineStyle: LineStyle
+): { color: string; lineStyle: LineStyle } {
+	const rank = (LEGACY_FUNCTION_COLORS as readonly string[]).indexOf(color.toLowerCase());
+	if (rank === -1) return { color, lineStyle };
+
+	const slot = CURVE_SLOTS[rank];
+	return { color: slot.color, lineStyle: lineStyle === 'solid' ? slot.lineStyle : lineStyle };
+}
+
+// =============================================================================
 // Color Validation
 // =============================================================================
 
