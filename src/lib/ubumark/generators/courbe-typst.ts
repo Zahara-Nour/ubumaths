@@ -16,14 +16,8 @@
  * @module ubumark/generators/courbe-typst
  */
 
-import {
-	COURBE_COLORS,
-	type CourbeColor,
-	type CourbeLabel,
-	type CourbeNode,
-	type CourbeSize
-} from '../types/courbe';
-import { namedColorTypst } from '$lib/theme/named-colors';
+import { COURBE_COLORS, type CourbeLabel, type CourbeNode, type CourbeSize } from '../types/courbe';
+import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { buildCourbeScene, type ScenePoint } from '../utils/courbe-scene';
 
 // ============================================================================
@@ -45,9 +39,7 @@ export const WIDTH_CM: Record<CourbeSize, number> = {
 const ASPECT_RATIO = 3 / 4;
 
 /** Variante claire de la palette commune des figures : celle de l'écran en mode clair */
-const TYPST_COLORS = Object.fromEntries(
-	COURBE_COLORS.map((color) => [color, namedColorTypst(color)])
-) as Record<CourbeColor, string>;
+const TYPST_COLORS = namedColorTable(COURBE_COLORS, namedColorTypst);
 
 const UNAVAILABLE =
 	'#block(stroke: 0.5pt + luma(160), inset: 6pt, radius: 3pt)[Figure indisponible]';

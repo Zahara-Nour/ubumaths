@@ -22,7 +22,7 @@
 		type CourbeLabel,
 		type CourbeNode
 	} from '$lib/ubumark/types/courbe';
-	import { namedColorScreen } from '$lib/theme/named-colors';
+	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import { buildCourbeScene, type ScenePoint } from '$lib/ubumark/utils/courbe-scene';
 	import { readContentLocale } from '../content-locale';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -44,9 +44,7 @@
 	const RANK_OFFSET = 26;
 
 	/** Couleurs : palette commune des figures (app.css), claire ou sombre */
-	const COLOR_VAR = Object.fromEntries(
-		COURBE_COLORS.map((color) => [color, namedColorScreen(color)])
-	) as Record<CourbeColor, string>;
+	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
 	/** Lettres calligraphiques Unicode (`\mathcal{C}` → 𝒞), trous du bloc compris */
 	const SCRIPT_HOLES: Record<string, string> = {

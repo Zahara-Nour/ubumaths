@@ -4,6 +4,7 @@
  * Produces a #cetz.canvas({...}) block using the cetz drawing library.
  */
 
+import { HEX_COLOR } from '$lib/theme/named-colors';
 import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
@@ -78,16 +79,14 @@ function typstString(text: string): string {
 	return `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
 }
 
-/** Couleurs que `rgb("…")` de Typst accepte (3, 4, 6 ou 8 chiffres hexadécimaux). */
-const TYPST_HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-
 /**
  * Défense en profondeur : une couleur non hexadécimale (`red`, une chaîne
  * avec `"`) ferait échouer tout le document, ou sortirait de la chaîne. Elle
  * devient noire ; l'appelant est censé l'avoir validée avant.
  */
 function hexToTypstColor(hex: string): string {
-	return TYPST_HEX_COLOR.test(hex) ? `rgb("${hex}")` : 'black';
+	// HEX_COLOR : les formes que `rgb("…")` de Typst accepte (3, 4, 6 ou 8 chiffres)
+	return HEX_COLOR.test(hex) ? `rgb("${hex}")` : 'black';
 }
 
 /**

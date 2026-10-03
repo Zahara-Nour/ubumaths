@@ -77,13 +77,25 @@ Contraste ≥ 4,5 sur page et carte (`#ffffff`/`#fafafa`, `#262624`/`#2f2f2f`). 
 - [x] Étape 5 — tests navigateur (couleur rendue, deux modes) pour figure, courbe, camembert ;
       PDF compilés avec typst.ts 0.6.1-rc5 (figure, courbe, camembert) et regardés ; contrôle
       négatif (`rgb("bleu")` échoue bien)
-- [ ] `code-reviewer` · `check:incremental` · PR
+- [x] `code-reviewer` : 0 bloquant ; éditeur de figure (`ElementPopover`) passé sur les noms
+      de la palette, tables factorisées (`namedColorTable`), `HEX_COLOR` unique
+- [ ] `check:incremental` · PR
+
+## Changements visibles à annoncer (revue du lot 1)
+
+- **Figures interactives et exports du DSL** : les noms anglais (`yellow`, `white`, `pink`…)
+  étaient des couleurs CSS natives (`yellow` = `#ffff00`) ; ce sont maintenant des synonymes
+  de la palette (`yellow` → jaune moutarde `#906f06`). `rose`, `marron`, `blanc` étaient du CSS
+  invalide (noir au PDF) : ils prennent leur couleur.
+- **Deux bleus jusqu'au lot 2** : un objet sans couleur garde le défaut `#1e40af`, un objet
+  `bleu` prend `#2563eb`. Le lot 2 rendra le défaut thémable (à trancher dans sa spécification).
+- `#000000` écrit par un auteur dans un bloc ```figure est assimilé au défaut et suit le texte
+(comportement antérieur, conservé) ; `#000` reste noir.
 
 ## Trouvé en route (hors lot)
 
-- **Export Typst des figures : l'opacité de remplissage n'est appliquée qu'aux secteurs
-  d'angle**, pas aux polygones (`export-typst.ts:517`). `remplissage="vert", opacite_fond=0.2`
-  donne un triangle vert OPAQUE au PDF. Préexistant (inchangé par ce lot).
+- **Opacité de remplissage** : écran figé à 25 %, PDF opaque, `opacite_fond` ignorée →
+  corrigé à part (#705).
 - `rgb("bleu")` fait échouer la compilation : c'est le défaut de la droite graduée (lot 3).
 - Les figures interactives changent légèrement de bleu : `bleu` était `#1e40af` dans le DSL,
   il devient le bleu de la palette `#2563eb` (même valeur qu'au PDF des fiches).

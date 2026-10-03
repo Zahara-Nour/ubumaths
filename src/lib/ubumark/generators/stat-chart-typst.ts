@@ -17,9 +17,9 @@
  * @module ubumark/generators/stat-chart-typst
  */
 
-import { COURBE_COLORS, type CourbeColor, type CourbeSize } from '../types/courbe';
+import { COURBE_COLORS, type CourbeSize } from '../types/courbe';
 import { PIE_COLOR_SEQUENCE, type StatChartNode } from '../types/stat-chart';
-import { namedColorTypst } from '$lib/theme/named-colors';
+import { namedColorTable, namedColorTypst } from '$lib/theme/named-colors';
 import { WIDTH_CM } from './courbe-typst';
 import {
 	PIE_MARKER_CM,
@@ -53,9 +53,7 @@ export interface StatChartTypstOptions {
 // ============================================================================
 
 /** Variante claire de la palette commune des figures, comme ```courbe */
-const TYPST_COLORS = Object.fromEntries(
-	COURBE_COLORS.map((color) => [color, namedColorTypst(color)])
-) as Record<CourbeColor, string>;
+const TYPST_COLORS = namedColorTable(COURBE_COLORS, namedColorTypst);
 
 /** Couleurs des secteurs : même ordre que l'écran (`PIE_COLOR_SEQUENCE`) */
 const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorTypst);

@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { COURBE_COLORS, type CourbeColor } from '$lib/ubumark/types/courbe';
 	import { PIE_COLOR_SEQUENCE, type StatChartNode } from '$lib/ubumark/types/stat-chart';
-	import { namedColorScreen } from '$lib/theme/named-colors';
+	import { namedColorScreen, namedColorTable } from '$lib/theme/named-colors';
 	import {
 		PIE_MARKER_PX,
 		STAT_CHART_CHAR_PX,
@@ -66,9 +66,7 @@
 	const PIE_PAD_RATIO = 0.22;
 
 	/** Couleur des barres : palette commune des figures (app.css), claire ou sombre */
-	const COLOR_VAR = Object.fromEntries(
-		COURBE_COLORS.map((color) => [color, namedColorScreen(color)])
-	) as Record<CourbeColor, string>;
+	const COLOR_VAR = namedColorTable(COURBE_COLORS, namedColorScreen);
 
 	/** Couleurs des secteurs : même ordre que le PDF (`PIE_COLOR_SEQUENCE`) */
 	const PIE_COLORS = PIE_COLOR_SEQUENCE.map(namedColorScreen);

@@ -120,3 +120,14 @@ export function colorForPrint(raw: string): string | null {
 	const value = raw.trim();
 	return HEX_COLOR.test(value) ? value : null;
 }
+
+/**
+ * Table nom → valeur pour un sous-ensemble de noms (ex. les 7 couleurs de
+ * ```courbe) : `namedColorTable(COURBE_COLORS, namedColorScreen)`.
+ */
+export function namedColorTable<N extends NamedColor>(
+	names: readonly N[],
+	value: (named: NamedColor) => string
+): Record<N, string> {
+	return Object.fromEntries(names.map((name) => [name, value(name)])) as Record<N, string>;
+}
