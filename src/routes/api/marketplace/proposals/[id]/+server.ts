@@ -2,7 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateProposalSchema } from '$lib/server/marketplace/validation';
-import { unlockCardsForEntity } from '$lib/server/marketplace/helpers';
+import { unlockProposalCards } from '$lib/server/marketplace/proposal-locks';
+import { proposersRejectedByAcceptance } from '$lib/server/marketplace/acceptance';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
 	notifyProposalAccepted,
 	notifyProposalRejected
@@ -160,28 +162,21 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		// Create notification for accepted proposer
 		await notifyProposalAccepted(proposal.proposer_id, 'Annonce', proposalId);
 
-		// Notify rejected proposers (already handled by the RPC function but we still send notifications)
-		const { data: rejectedProposals, error: rejectedProposalsError } = await supabase
-			.from('marketplace_proposals')
-			.select('id, proposer_id')
-			.eq('listing_id', listing.id)
-			.eq('status', 'rejected')
-			.neq('id', proposalId);
-
-		if (rejectedProposalsError) {
-			console.error('Lecture impossible :', rejectedProposalsError);
+		// Proposants refusés PAR cette acceptation seulement (pas ceux refusés plus tôt).
+		let refuses: string[];
+		try {
+			refuses = await proposersRejectedByAcceptance(proposalId);
+		} catch (e) {
+			console.error('Lecture impossible :', e);
 			throw error(500, 'Impossible de charger les données');
 		}
 
-		if (rejectedProposals && rejectedProposals.length > 0) {
-			for (const rejectedProposal of rejectedProposals) {
-				// Notify them
-				await notifyProposalRejected(
-					rejectedProposal.proposer_id,
-					'Annonce',
-					"L'annonce a été complétée avec une autre proposition"
-				);
-			}
+		for (const proposerId of refuses) {
+			await notifyProposalRejected(
+				proposerId,
+				'Annonce',
+				"L'annonce a été complétée avec une autre proposition"
+			);
 		}
 
 		// Invalidate caches for both participants
@@ -195,18 +190,32 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			trade_completed: true
 		});
 	} else {
-		// Rejecting the proposal
-		await supabase
+		// Refus : seule écriture directe laissée au vendeur (Q149) — status,
+		// response_message, responded_at et rien d'autre. `.select()` : un refus
+		// de la RLS rend zéro ligne, pas une erreur.
+		const { data: refusee, error: refusError } = await supabase
 			.from('marketplace_proposals')
 			.update({
 				status: 'rejected',
 				response_message: response_message || null,
 				responded_at: new Date().toISOString()
 			})
-			.eq('id', proposalId);
+			.eq('id', proposalId)
+			.select('id');
 
-		// Unlock proposer's cards
-		await unlockCardsForEntity(proposalId);
+		if (refusError || !refusee || refusee.length === 0) {
+			console.error('Error rejecting proposal:', refusError ?? 'aucune ligne modifiée');
+			throw error(500, 'Erreur lors du refus de la proposition');
+		}
+
+		// Cartes du proposant, verrouillées sous l'id de la proposition (ou, pour
+		// un verrou ancien, sous celui de l'annonce).
+		await unlockProposalCards({
+			proposalId,
+			listingId: listing.id,
+			proposerId: proposal.proposer_id,
+			offeredCardIds: proposal.offered_card_ids ?? []
+		});
 
 		// Decrement proposal count on listing
 		await supabase
@@ -269,32 +278,52 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		throw error(403, 'Cette proposition ne peut plus être retirée');
 	}
 
-	// Update proposal status
-	const { error: updateError } = await supabase
+	// Retrait : seule écriture directe laissée au proposant (Q147). `withdrawn_at`
+	// est exigé par la contrainte `valid_response_timestamp` : sans lui, le retrait
+	// échouait toujours (aucune proposition « withdrawn » en production).
+	// `.select()` : un refus de la RLS rend zéro ligne, pas une erreur.
+	const maintenant = new Date().toISOString();
+	const { data: retiree, error: updateError } = await supabase
 		.from('marketplace_proposals')
 		.update({
 			status: 'withdrawn',
-			responded_at: new Date().toISOString()
+			withdrawn_at: maintenant,
+			responded_at: maintenant
 		})
-		.eq('id', proposalId);
+		.eq('id', proposalId)
+		.select('id');
 
-	if (updateError) {
-		console.error('Error withdrawing proposal:', updateError);
+	if (updateError || !retiree || retiree.length === 0) {
+		console.error('Error withdrawing proposal:', updateError ?? 'aucune ligne modifiée');
 		throw error(500, 'Erreur lors du retrait de la proposition');
 	}
 
-	// Unlock cards
-	await unlockCardsForEntity(proposalId);
+	// Cartes verrouillées sous l'id de la proposition (ou, verrou ancien, de l'annonce).
+	await unlockProposalCards({
+		proposalId,
+		listingId: proposal.listing_id,
+		proposerId: userId,
+		offeredCardIds: proposal.offered_card_ids ?? []
+	});
 
-	// Decrement proposal count on listing
-	const listing = proposal.listing as { id: string; proposal_count: number } | null | undefined;
+	// Compteur de l'annonce. Client service : le proposant n'a aucun droit
+	// d'écriture sur l'annonce, la mise à jour ne touchait aucune ligne.
+	const listing = proposal.listing as { proposal_count: number | null } | null | undefined;
 	if (listing) {
-		await supabase
+		const { data: compteur, error: compteurError } = await createServiceRoleClient()
 			.from('marketplace_listings')
 			.update({
-				proposal_count: Math.max(0, listing.proposal_count - 1)
+				proposal_count: Math.max(0, (listing.proposal_count ?? 0) - 1)
 			})
-			.eq('id', proposal.listing_id);
+			.eq('id', proposal.listing_id)
+			.select('id');
+
+		if (compteurError || !compteur || compteur.length === 0) {
+			console.error(
+				'[marketplace] proposal_count non mis à jour :',
+				compteurError ?? 'aucune ligne modifiée'
+			);
+		}
 	}
 
 	return json({ success: true });

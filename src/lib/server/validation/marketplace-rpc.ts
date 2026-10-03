@@ -100,3 +100,28 @@ export const acceptProposalSchema = z.discriminatedUnion('success', [
 ]);
 
 export type AcceptProposalResult = z.infer<typeof acceptProposalSchema>;
+
+/**
+ * `auto_accept_exact_proposal(p_proposal_id uuid)` — serveur seul.
+ *
+ * ⚠️ Pas encore dans `database.ts` (généré depuis la production) : l'appel est
+ * non typé, la forme est donc imposée ici. Un refus ne change rien : la
+ * proposition reste en attente. Motifs (`reason`) : `not_exact` (l'offre relue
+ * sous verrou ne couvre pas la demande), `busy` (proposition ou annonce tenue
+ * par une autre transaction, FOR UPDATE NOWAIT), `cards_unavailable` (carte
+ * consommée ou verrouillée ailleurs), `other_school`, `not_found`,
+ * `not_pending`, `listing_inactive`, `own_listing`, `accept_failed` (+ `error`).
+ */
+export const autoAcceptExactProposalSchema = z.discriminatedUnion('success', [
+	z.object({
+		success: z.literal(true),
+		trade_id: z.string().uuid()
+	}),
+	z.object({
+		success: z.literal(false),
+		reason: z.string(),
+		error: z.string().optional()
+	})
+]);
+
+export type AutoAcceptExactProposalResult = z.infer<typeof autoAcceptExactProposalSchema>;

@@ -41,6 +41,19 @@ deux `get_*_completion_stats` sont réservées au prof/admin ; `get_student_exer
 (`get_classes_by_user_grade`, `get_students_in_class_by_grade`) : classes actives de
 `my_school()` seulement.
 
+**Marché verrouillé** (`20261003170000_marche_verrou`, Q140/Q147) : `accept_proposal_atomic`
+refuse un `p_user_id` différent de `auth.uid()` (sauf `service_role`) ou NULL. Par un appel
+direct, le proposant ne peut plus que retirer sa proposition en attente (policy
+`marketplace_proposals_update_authorized` + trigger `guard_marketplace_proposal_update`) ; la
+resoumission passe par la route (client service). L'offre, l'école, le créateur et le type d'une
+annonce sont figés pour les rôles de l'API (trigger `guard_marketplace_listing_update`). Une
+proposition ne vise qu'une annonce active de `my_school()` (policy INSERT) et naît `pending`, sans
+réponse ni retrait (trigger `guard_marketplace_proposal_insert`). Q149 : le vendeur ne peut que
+refuser (`pending` → `rejected`, seuls `status`, `responded_at`, `response_message` changent).
+Les cartes d'une proposition sont verrouillées sous l'id de la PROPOSITION (`locked_for =
+'listing'`, accepté par `validate_locked_entity_reference`) ; refus, retrait et acceptation les
+libèrent sous cet id (et, pour un verrou ancien, sous l'id de l'annonce restreint au proposant).
+
 Two consequences worth knowing (security-audit notes):
 
 - **`student_warnings` insert/delete are admin-inclusive.** The policies

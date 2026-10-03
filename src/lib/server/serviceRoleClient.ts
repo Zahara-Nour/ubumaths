@@ -57,6 +57,14 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Évaluation notée (ADR 0015) : séance, graines, réponses et note écrites par le serveur
 	'/api/evaluations/',
 	'evaluation-attempts.ts',
+	// Marché : auto-acceptation vérifiée en base (serveur seul) et resoumission d'une
+	// proposition, que la RLS ne permet plus au proposant que de retirer (Q147)
+	'lib/server/marketplace/auto-accept.ts',
+	'/api/marketplace/listings/[id]/proposals/',
+	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
+	'lib/server/marketplace/proposal-locks.ts',
+	'lib/server/marketplace/acceptance.ts',
+	'/api/marketplace/proposals/[id]/',
 	// Game milestone awards (student_achievements RLS only allows service_role inserts)
 	'/api/games/2048/scores',
 	'/api/games/mathemo/scores',
