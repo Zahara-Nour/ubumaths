@@ -231,7 +231,11 @@
 				!expanded && 'max-h-24'
 			]}
 		>
-			<MarkdownRenderer content={card.description ?? ''} class="text-xs text-muted-foreground" />
+			<MarkdownRenderer
+				content={card.description ?? ''}
+				restricted
+				class="text-xs text-muted-foreground"
+			/>
 			{#if !expanded}
 				<div
 					class="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-card to-transparent"
