@@ -25,6 +25,8 @@ Huit couleurs ne peuvent pas être distinctes pour un daltonien sous contrainte 
 | Q1a | Nuages de points : pas de forme de point distincte pour l'instant                               |
 | Q2a | Une courbe stocke une **identité** (`curve-1`), pas un hexadécimal (risque de rollback accepté) |
 | M   | Migration des sauvegardes par rang dans l'ancienne palette (pas « la plus proche »)             |
+| D   | Dérivée en pointillé fin (`dotted`) : en `dashed`, elle imitait la 5ᵉ courbe (revue)            |
+| Q1a | Étendue aux **suites** en représentation « rangs » (points seuls : pointillés invisibles)       |
 
 Palette (contraste ≥ 4,5 sur chaque fond, même teinte dans les deux modes) :
 
@@ -59,7 +61,9 @@ Nuancier : https://claude.ai/artifact/5DsP7r5b1CSm1naMdeuc8B
 - [x] Phase 1 — socle : tokens `app.css` (`@theme static`), places, attribution, migration
 - [x] Phase 2 — rendu : composants, sélecteur ; navigateur 4 combinaisons OS × choix ✓
 - [x] Phase 3 — export : rendu clair résolu, table recopiée supprimée ; vrai export SVG en sombre ✓
-- [ ] `code-reviewer` · `check:incremental` · PR
+- [x] `code-reviewer` : 0 bloquant ; export LaTeX corrigé (test vu rouge), dérivée (D), mineurs traités
+- [x] `check:incremental` 0 erreur · `lint:fast` propre
+- [ ] PR
 
 ## Trouvé en route
 
