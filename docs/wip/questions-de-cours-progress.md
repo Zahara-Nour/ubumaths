@@ -147,3 +147,24 @@ Anon : rien. Personne ne perd d'accès. (Correction : avant, l'élève ne lisait
   `tests/integration/series-de-chapitre.test.ts` (base seule, sans code applicatif), ce document.
 - B (code, après `db:migrate` + `db:types`) : tout le reste ; retirer alors `DatabaseWithChapterSeries`
   et `asChapterSeriesClient`.
+
+## Étape 3 — paquet de révision calculé du chapitre (décisions de David, 2026-10-03)
+
+« Je suis tes recos » sur Q163–Q168 :
+
+- **Q163 (a)** Contenu : toutes les questions **publiées** des catégories des séries du chapitre (pas
+  seulement les questions de cours).
+- **Q164** Séries prises en compte : celles **publiées** dans un chapitre **visible** de la classe de
+  l'élève — exactement ce qu'il voit.
+- **Q165** Une seule mémoire par question : `srs_card_stats` (élève, `template`, id) est partagée avec le
+  Programme ; réviser dans le chapitre fait avancer l'échéance partout.
+- **Q166** Séance = toutes les questions dues aujourd'hui + **au plus 10 nouvelles**.
+- **Q167 (a)+(b)** Bouton « Réviser ce chapitre » (avec le nombre à revoir) sur la page du chapitre, et
+  entrée par chapitre dans « Mes révisions ».
+- **Q168** Suivi de classe par le prof : plus tard.
+
+Constat technique : une série = catégories × quantité (`series.categories`, `CartItem`), pas une liste de
+questions ; le circuit de révision actuel (`api/srs/review/due` / `submit`) passe par `srs_cards` (deck,
+carte) → le paquet calculé demande un chemin par `template_id` dans le contexte d'un chapitre. Accès :
+aucune lecture nouvelle (séries déjà lisibles par l'élève, modèles publiés) ; pas de migration prévue à ce
+stade.
