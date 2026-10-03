@@ -171,7 +171,10 @@ fonction ; différence avec `generic_functions` d'un exercice, qui les remplace)
 (`P'`, `P''`) et réciproque (`P^{-1}`) comprises. Une lettre par nom, ni `e` ni `i`, au plus 10.
 Vaut pour tout le modèle : énoncé, choix, réponses attendues, correction (y compris les étapes
 générées), réponse de l'élève, barème serveur, `testSpecs`, et l'exercice figé d'une série
-(`buildSerie` lui donne `generic_functions` = défauts ∪ fonctions déclarées).
+(`buildSerie` lui donne `generic_functions` = défauts ∪ fonctions déclarées par TOUS ses modèles,
+sans plafond ; une lettre déclarée par un modèle est donc aussi une fonction dans les `~…~` des
+autres questions de la série). Un motif `requiredForm` les lit aussi : `a:integer*C(b:integer)`
+reconnaît `3C(2)` (le motif était illisible, jamais reconnu).
 
 Le contrôle de forme relit aussi la réponse avec ces fonctions : `P'(2)` tapé (ou saisi
 `P'\left(2\right)` par MathLive) est juste sans `form: "off"` ; `P'(1+1)` a la bonne valeur
@@ -198,7 +201,10 @@ ou un × (`C(1)`, `x×(-7)`, `97,6×1` : seul le nombre écrit DEVANT un terme e
 signe d'un numérateur (`\dfrac{-10}{10}`), un + écrit (`+\infty`), une chaîne de calcul
 (`r = -1 - (-4) = 3`), une relation qui deviendrait `x + 3 = x + 3`, une formule LaTeX d'auteur
 illisible en syntaxe maison (`\begin{…}`, `f\left(1\right)`) et le DSL des blocs `courbe / `figure.
-Absente ou `false` : rien ne change. Les étapes générées (`generatedSteps`) ne sont pas nettoyées.
+Absente ou `false` : rien ne change. Les étapes générées (`generatedSteps`) partent de la formule
+nettoyée (`x = 5`, pas `1x + 0 = 5`) ; une parenthèse devenue inutile disparaît (`(x+0)^2` →
+`x^2`, `2(x+0)` → `2x` ; `C(x)` et `2(3)` restent) ; une réponse attendue écrite en LaTeX
+(`x^2+{{b}}x\leqslant 2`) est nettoyée et reste en LaTeX (`x^2 + x \leqslant 2`).
 
 ⚠️ `{{c;+}}` avec c = 0 écrit `0` sans `+` (« 1y0 », lu comme un produit) : l'option ne le
 répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
@@ -240,6 +246,19 @@ dans le PDF, une commande collée à la suivante (`\mathbb{N}\subset\mathbb{Z}`,
 `\complement`, `\operatorname{Card}` ; à l'écran comme au PDF, une formule réduite à `$𝔻$`
 (caractère hors du plan de base) n'est plus coupée en deux caractères cassés.
 
+Corrigés dans le moteur le 2026-10-03 (branche `fix/generation-auteurs`), ne plus contourner :
+condition `a<-1` (= `a < -1`, l'espace n'est plus nécessaire ; dans un `~…~`, écrire toujours
+`k< -3`) ; `{{if:condition|alors|sinon}}` dans une réponse attendue et dans l'expression d'une
+variable, imbriqué ou non (`{{if:a>0|{{if:b>0|1|2}}|3}}`) — une condition qui ne porte pas sur
+les variables y est une erreur explicite ; variable dont la valeur est une formule citée dans
+une autre (`N = T/g` avec T = « 11\*11-3 » → `(11*11-3)/2`, parenthèses seulement quand le sens
+l'exige ; `{{eval:…}}` reste nécessaire pour un NOMBRE) ; raccourci `{{b;();d}}` = `{{eval:b;();d}}`
+(plusieurs modificateurs) ; faute d'écriture dans une variable (fonction ou lettre inconnue,
+syntaxe, variable non déclarée) : la génération échoue au premier tirage avec son message, au
+lieu de 100 relances ; une division par zéro ou un `arccos` hors domaine restent relancés ;
+`cleanCoefficients` (étapes générées, `\leqslant` en réponse, `(x+0)`) et `genericFunctions`
+(motifs `requiredForm`, séries de plus de 10 fonctions) : voir les deux sections ci-dessus.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
@@ -252,14 +271,10 @@ Toujours vrai :
   non remarquable écrite avec une fonction : `cos(x) = cos(pi/5)`, `sin(x) > sin(2*pi/7)`. Une borne
   d'arc n'est étiquetée que si elle figure dans le preset ou `angles:`.
 - **Variable nommée `e` ou `i`** : c'est la constante (Euler, imaginaire). Ne jamais nommer ainsi.
-- **`{{if:…|…|…}}`** est inutilisable dans `expectedAnswer` et dans une variable (le `|` est lu
-  comme un tirage) : une variation par cas.
 - **Virgule décimale en dur** dans une formule (`0,1\times`) : la virgule nue est une ponctuation
   (espace après, à l'écran comme dans le PDF : « 0, 1 × 0,3 ») et reste une virgule dans un document
   anglais (« 0, 1 × 0.3 »). Écrire `{{eval:1/10;d}}` (virgule ou point selon la langue) ; `0{,}1`
   s'affiche bien en français mais reste une virgule en anglais (décision du 2026-09-25).
-- **Variable calculée** utilisée sans `{{eval:…}}` : substituée telle quelle, sans parenthèses
-  (`T/g` → « 11\*11-3/2 ») ; toujours passer par `{{eval:…}}`.
 - **Trou dans une cellule de tableau** : affiché mais NON saisissable (le tableau est un bloc
   statique) ; poser la question sous le tableau (`$P(X=3)=?$`).
 - **Écart-type attendu** `\frac{\sqrt{21}}{5}` : `\sqrt{0,84}` est « mauvaise forme » → annoncer la
@@ -286,7 +301,6 @@ Toujours vrai :
 - **Nom de point `Ω` refusé** par le DSL du bloc ```figure (« Caractère inattendu ») : point `W`avec`etiquette="aucune"`puis`texte(…, "Ω")`.
 - **Case équation avec `requiredForm: "centre-rayon"`** : un multiple de l'équation est
   `bad_form` (0 point), pas `unoptimal_form` (½) comme sans forme imposée.
-- **Condition `a<-1`** est mal lue : écrire `a< -1` (espace).
 - **Coefficients d'une équation** : `{{a}}x{{b;+}}y{{c;+}}` affiche « 1x », « -1y », et « 1y0 » si
   c = 0 → `shared.cleanCoefficients: true` (ci-dessus ; `{{c;+}}` écrit `+0` depuis #701, que
   l'option retire). Ne plus exclure ±1 et 0 des tirages pour ce seul motif.
