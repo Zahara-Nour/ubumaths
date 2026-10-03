@@ -90,9 +90,13 @@ const SYMBOL_COMMAND_MAP: Record<string, MathSymbol> = {
 const RELATION_COMMAND_MAP: Record<string, RelationType> = {
 	leq: '<=',
 	leqslant: '<=',
+	// Abréviations LaTeX (MathLive les produit) : mêmes relations
+	le: '<=',
 	geq: '>=',
 	geqslant: '>=',
+	ge: '>=',
 	neq: '!=',
+	ne: '!=',
 	equiv: '≡',
 	approx: '≈',
 	simeq: '≃',
