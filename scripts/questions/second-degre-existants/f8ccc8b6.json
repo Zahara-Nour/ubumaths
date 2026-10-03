@@ -4,7 +4,7 @@
 	"grades": ["1_SPE"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
-	"subdomain": "Vrai ou Faux",
+	"subdomain": "Propriétés",
 	"level": 1,
 	"delay": 20,
 	"status": "published",
@@ -19,6 +19,7 @@
 		]
 	},
 	"options": {
+		"courseQuestion": true,
 		"shuffleChoices": false
 	},
 	"variations": [
