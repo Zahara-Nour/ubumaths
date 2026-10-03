@@ -215,3 +215,22 @@ Manche 9 (2026-10-03), blocs dans une fiche en anglais — recommandations suivi
 
 - **Livrée #710** (2026-10-03) : dictionnaire `ubumark/utils/stat-chart-text.ts`.
   Reste candidat : bloc ```effectifs (Q107).
+
+Manche 10 (2026-10-03), bloc ```effectifs (tableau de dépouillement, Q107) — recommandations suivies :
+
+125. Nouveau bloc ```effectifs : un tableau (comme `tableau-croise`, `loi`), énoncé et correction.
+126. Données comme les autres blocs : « valeur = effectif », `données:`, classes (`[a ; b[ = n` ou
+     `classes:` + `données:`) ; nombres ou mots ; cumuls seulement pour des nombres ou des classes.
+127. Horizontal (ligne « Valeur » puis une ligne par grandeur) ; vertical au-delà de 12 valeurs.
+128. `lignes: effectifs ; fréquences ; effectifs cumulés ; fréquences cumulées` (ordre de
+     l'auteur ; défaut : effectifs) ; fréquences en % au dixième, `fréquences: décimales` au
+     centième ; cumuls croissants, `sens: décroissantes`.
+129. Colonne Total par défaut (effectif total, 100 % ou 1 ; rien pour les cumuls) ; `totaux: non`.
+130. `masquer:` une ligne (`fréquences`) ou des cases (`12/effectifs ; Total/fréquences`) ; case
+     vide, assez large, annoncée « case à compléter ».
+131. `indicateurs:` : la ligne sous le tableau, comme les barres.
+132. Pas de deux séries.
+133. Langue de la fiche (Value, Frequency, Relative frequency, Cumulative frequency).
+
+PR prévues : (a) bloc, données, lignes, totaux, sens, langue (Q125-Q129, Q133) ; (b) `masquer:`,
+`indicateurs:` (Q130-Q131).
