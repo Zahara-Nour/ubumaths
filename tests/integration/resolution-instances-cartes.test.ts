@@ -16,6 +16,11 @@
  * y ajouter le propriétaire ferait d'elle un annuaire « qui possède quoi »
  * lisible par tout compte connecté.
  *
+ * Depuis `20261003150000` (Q134), la fonction est réservée au serveur : le marché
+ * l'appelle avec le client service (`resolveCardInstances`). L'acheteur connecté
+ * ne l'appelle plus lui-même ; les cas ci-dessous passent donc par le client
+ * service, et le dernier vérifie que ni anon ni l'acheteur ne l'atteignent.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -49,6 +54,7 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 
 describe('résoudre une instance de carte', () => {
 	let acheteur: SupabaseClient<Database>;
+	let serveur: SupabaseClient<Database>;
 	let vendeurId: string;
 	let modeleId: string;
 	const INSTANCE_VENDEUR = 'inst-vendeur-MM';
@@ -60,6 +66,7 @@ describe('résoudre une instance de carte', () => {
 		const service = (
 			await import('../helpers/database/trigger-test-helpers')
 		).createServiceRoleClient();
+		serveur = service;
 		await TestData.profile().withRole('teacher').create();
 
 		// ⚠️ `vip_card_templates.id` n'a pas de valeur par défaut, et c'est du
@@ -127,8 +134,8 @@ describe('résoudre une instance de carte', () => {
 	 * ⚠️ LE cas. L'acheteur ne partage RIEN avec le vendeur : sans la fonction,
 	 * il ne peut pas traduire l'instance, et l'annonce s'affiche vide.
 	 */
-	it('un acheteur traduit l’instance d’un vendeur qu’il ne connaît pas', async () => {
-		const { data, error } = await acheteur.rpc(RESOUDRE, {
+	it('le serveur traduit l’instance d’un vendeur que l’acheteur ne connaît pas', async () => {
+		const { data, error } = await serveur.rpc(RESOUDRE, {
 			p_instance_ids: [INSTANCE_VENDEUR]
 		});
 		expect(error).toBeNull();
@@ -145,7 +152,7 @@ describe('résoudre une instance de carte', () => {
 	 * ou non — une liste noire laisserait passer celle qu'on n'aurait pas prévue.
 	 */
 	it('elle ne rend AUCUNE colonne de profil', async () => {
-		const { data } = await acheteur.rpc(RESOUDRE, { p_instance_ids: [INSTANCE_VENDEUR] });
+		const { data } = await serveur.rpc(RESOUDRE, { p_instance_ids: [INSTANCE_VENDEUR] });
 		const ligne = ((data ?? []) as LigneResolue[])[0];
 
 		expect(ligne).toBeDefined();
@@ -156,7 +163,7 @@ describe('résoudre une instance de carte', () => {
 	});
 
 	it('une instance inconnue ne rend rien, sans erreur', async () => {
-		const { data, error } = await acheteur.rpc(RESOUDRE, {
+		const { data, error } = await serveur.rpc(RESOUDRE, {
 			p_instance_ids: [INSTANCE_INCONNUE]
 		});
 		expect(error).toBeNull();
@@ -171,17 +178,17 @@ describe('résoudre une instance de carte', () => {
 		const trop = Array.from({ length: 501 }, (_, i) => `inst-${i}-MM`);
 		trop[0] = INSTANCE_VENDEUR;
 
-		const { data, error } = await acheteur.rpc(RESOUDRE, { p_instance_ids: trop });
+		const { data, error } = await serveur.rpc(RESOUDRE, { p_instance_ids: trop });
 		expect(error).toBeNull();
 		expect(data, 'le plafond de 500 instances ne s’applique plus').toEqual([]);
 	});
 
 	/**
-	 * Sans session, rien. ⚠️ Le refus seul ne prouverait pas grand-chose — il
-	 * serait aussi vert si la fonction n'existait pas — d'où l'appel authentifié
-	 * qui doit réussir.
+	 * Sans session, rien ; avec une session d'élève non plus (Q134). ⚠️ Les refus
+	 * seuls ne prouveraient pas grand-chose — ils seraient aussi verts si la
+	 * fonction n'existait pas — d'où l'appel du serveur qui doit réussir.
 	 */
-	it('un visiteur non connecté ne peut pas l’appeler', async () => {
+	it('ni un visiteur ni un élève connecté ne peuvent l’appeler', async () => {
 		const anonyme = createClient<Database>(SUPABASE_URL, ANON_KEY, {
 			auth: { persistSession: false, autoRefreshToken: false }
 		});
@@ -189,9 +196,14 @@ describe('résoudre une instance de carte', () => {
 		const { error: refus } = await anonyme.rpc(RESOUDRE, { p_instance_ids: [INSTANCE_VENDEUR] });
 		expect(refus, 'anon a pu résoudre une instance').not.toBeNull();
 
-		const { error: autorise } = await acheteur.rpc(RESOUDRE, {
+		const { error: refusEleve } = await acheteur.rpc(RESOUDRE, {
 			p_instance_ids: [INSTANCE_VENDEUR]
 		});
-		expect(autorise, 'la fonction est absente : le refus d’anon ne prouve rien').toBeNull();
+		expect(refusEleve?.code, 'un élève connecté a pu résoudre une instance').toBe('42501');
+
+		const { error: autorise } = await serveur.rpc(RESOUDRE, {
+			p_instance_ids: [INSTANCE_VENDEUR]
+		});
+		expect(autorise, 'la fonction est absente : les refus ne prouvent rien').toBeNull();
 	});
 });

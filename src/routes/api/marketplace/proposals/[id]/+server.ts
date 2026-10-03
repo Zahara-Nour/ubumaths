@@ -206,7 +206,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.eq('id', proposalId);
 
 		// Unlock proposer's cards
-		await unlockCardsForEntity(supabase, proposalId);
+		await unlockCardsForEntity(proposalId);
 
 		// Decrement proposal count on listing
 		await supabase
@@ -284,7 +284,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// Unlock cards
-	await unlockCardsForEntity(supabase, proposalId);
+	await unlockCardsForEntity(proposalId);
 
 	// Decrement proposal count on listing
 	const listing = proposal.listing as { id: string; proposal_count: number } | null | undefined;

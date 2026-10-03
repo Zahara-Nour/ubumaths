@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { insertSystemNotification } from '$lib/server/notifications';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { completerParticipant, fetchParticipants } from './participants';
 
 // ============================================================================
@@ -216,15 +217,19 @@ export async function checkCardsUnused(
 
 /**
  * Locks cards for a specific entity (listing or trade)
- * @param supabase Supabase client
- * @param studentId Student who owns the cards
+ *
+ * ⚠️ `lock_cards` est réservée au serveur (migration 20261003150000, Q131) :
+ * l'appel passe par le client service. La RPC vérifie que chaque carte
+ * appartient à `studentId` ; c'est à L'APPELANT de garantir que `studentId`
+ * est l'utilisateur de la session et que l'entité est la sienne.
+ *
+ * @param studentId Student who owns the cards (identité de session)
  * @param cardIds Array of card IDs to lock
  * @param entityId ID of the listing or trade
  * @param lockType Type of entity locking the cards
  * @returns Success status and optional error message
  */
 export async function lockCardsForEntity(
-	supabase: SupabaseClient<Database>,
 	studentId: string,
 	cardIds: string[],
 	entityId: string,
@@ -234,8 +239,7 @@ export async function lockCardsForEntity(
 		return { success: true };
 	}
 
-	// Use the RPC function to lock cards
-	const { data, error } = await supabase.rpc('lock_cards', {
+	const { data, error } = await createServiceRoleClient().rpc('lock_cards', {
 		p_student_id: studentId,
 		p_card_ids: cardIds,
 		p_entity_id: entityId,
@@ -254,20 +258,53 @@ export async function lockCardsForEntity(
 
 /**
  * Unlocks all cards associated with an entity
- * @param supabase Supabase client
+ *
+ * ⚠️ `unlock_cards` est réservée au serveur (Q131) et libère TOUTES les cartes
+ * de l'entité, quel qu'en soit le propriétaire : l'appelant doit avoir vérifié
+ * que l'utilisateur de la session a le droit d'agir sur cette entité.
+ *
  * @param entityId ID of the listing or trade
  * @returns true if successful, false otherwise
  */
-export async function unlockCardsForEntity(
-	supabase: SupabaseClient<Database>,
-	entityId: string
-): Promise<boolean> {
-	// Use the RPC function to unlock cards
-	const { data, error } = await supabase.rpc('unlock_cards', {
+export async function unlockCardsForEntity(entityId: string): Promise<boolean> {
+	const { data, error } = await createServiceRoleClient().rpc('unlock_cards', {
 		p_entity_id: entityId
 	});
 
 	return !error && !!data;
+}
+
+/**
+ * Libère des cartes précises d'une entité (cartes retirées d'une contre-offre).
+ *
+ * ⚠️ `unlock_specific_cards` est réservée au serveur (migration 20261003150000,
+ * audit) et ne vérifie RIEN : l'appelant doit avoir établi que l'utilisateur
+ * de la session participe à l'entité et que `cardIds` sont ses propres cartes,
+ * lues côté serveur (offre courante), jamais prises dans la requête.
+ *
+ * @returns le résultat brut de la RPC (`RETURNS json`), à valider par l'appelant
+ */
+export async function unlockSpecificCardsForEntity(entityId: string, cardIds: string[]) {
+	return createServiceRoleClient().rpc('unlock_specific_cards', {
+		p_entity_id: entityId,
+		p_card_ids: cardIds
+	});
+}
+
+/**
+ * Traduit des identifiants d'INSTANCE de carte en identifiants de MODÈLE.
+ *
+ * `resolve_card_instances` est réservée au serveur (Q134) : l'appel passe par
+ * le client service. Les identifiants doivent venir de lignes déjà lues sous
+ * RLS par l'utilisateur (annonces, propositions), jamais de la requête.
+ */
+export async function resolveCardInstances(instanceIds: string[]) {
+	if (instanceIds.length === 0) {
+		return { data: [] as { instance_id: string; card_id: string }[], error: null };
+	}
+	return createServiceRoleClient().rpc('resolve_card_instances', {
+		p_instance_ids: instanceIds
+	});
 }
 
 // ============================================================================
@@ -609,10 +646,7 @@ export async function enrichListingsWithCardData<
 		...new Set(listings.flatMap((l) => (l.offered_card_ids as string[] | null) ?? []))
 	];
 
-	const { data: resolues, error: creatorsError } =
-		instancesOffertes.length > 0
-			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesOffertes })
-			: { data: [], error: null };
+	const { data: resolues, error: creatorsError } = await resolveCardInstances(instancesOffertes);
 
 	// Une carte non résolue est SIGNALÉE, jamais retirée en silence (cf. la
 	// construction de `offered_cards` plus bas).
@@ -771,10 +805,7 @@ export async function enrichProposalsWithCardData<
 	// propres `offered_card_ids`.
 	const instancesProposees = [...new Set(proposals.flatMap((p) => p.offered_card_ids ?? []))];
 
-	const { data: resolues, error: proposersError } =
-		instancesProposees.length > 0
-			? await supabase.rpc('resolve_card_instances', { p_instance_ids: instancesProposees })
-			: { data: [], error: null };
+	const { data: resolues, error: proposersError } = await resolveCardInstances(instancesProposees);
 
 	if (proposersError) {
 		console.error('[marketplace] Cartes des proposants illisibles :', proposersError);

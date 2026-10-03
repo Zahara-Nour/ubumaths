@@ -32,6 +32,8 @@ vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
 		validateCardOwnership: vi.fn().mockResolvedValue(true),
 		checkCardsUnused: vi.fn().mockResolvedValue(true),
 		lockCardsForEntity: vi.fn().mockResolvedValue({ success: true }),
+		// Réservée au serveur (client service) : jamais de vrai client en test unitaire
+		resolveCardInstances: vi.fn().mockResolvedValue({ data: [], error: null }),
 		checkActiveListingsLimit: vi.fn().mockResolvedValue(true),
 		isMarketplaceEnabled: vi.fn().mockResolvedValue(true),
 		getStudentSchoolId: vi.fn().mockResolvedValue('school-1'),

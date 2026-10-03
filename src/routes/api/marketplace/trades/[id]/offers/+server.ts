@@ -5,6 +5,7 @@ import { createOfferSchema } from '$lib/server/marketplace/validation';
 import {
 	validateCardOwnership,
 	lockCardsForEntity,
+	unlockSpecificCardsForEntity,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
 import { notifyNewTradeOffer } from '$lib/server/marketplace/notifications';
@@ -156,7 +157,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	// Lock new cards
 	if (newCards.length > 0) {
-		const lockResult = await lockCardsForEntity(supabase, userId, newCards, data.trade_id, 'trade');
+		const lockResult = await lockCardsForEntity(userId, newCards, data.trade_id, 'trade');
 
 		if (!lockResult.success) {
 			// Rollback: revert trade offer and delete offer record
@@ -176,11 +177,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	// Unlock removed cards (cards that were in old offer but not in new offer)
 	if (removedCards.length > 0) {
-		// Use the new RPC function to unlock specific cards that were removed from the offer
-		const { data: unlockResult, error: unlockError } = await supabase.rpc('unlock_specific_cards', {
-			p_entity_id: data.trade_id,
-			p_card_ids: removedCards
-		});
+		// Réservée au serveur (client service) : `removedCards` vient de l'offre
+		// courante de l'échange, lue ci-dessus, et l'appelant en est participant
+		// (contrôles en tête de route).
+		const { data: unlockResult, error: unlockError } = await unlockSpecificCardsForEntity(
+			data.trade_id,
+			removedCards
+		);
 
 		if (unlockError) {
 			console.error('Error unlocking removed cards:', unlockError);
