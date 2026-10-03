@@ -28,7 +28,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
-	import { CheckCircle2, Trophy, ArrowLeft } from '@lucide/svelte';
+	import { CheckCircle2, Trophy, ArrowLeft, RotateCcw } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		dueUrl,
@@ -76,6 +76,10 @@
 	let isLoading = $state(true);
 	let isSubmitting = $state(false);
 	let sessionComplete = $state(false);
+	/** Chargement en échec (500, 404, réseau) : ni état vide, ni félicitations */
+	let loadError = $state(false);
+	/** Cartes que le serveur (ou la traduction) a écartées à ce chargement */
+	let skippedCount = $state(0);
 
 	// Session stats
 	let correctCount = $state(0);
@@ -104,6 +108,7 @@
 	 */
 	async function fetchDueCards() {
 		isLoading = true;
+		loadError = false;
 
 		try {
 			const response = await fetch(dueUrl(source));
@@ -119,8 +124,8 @@
 
 			// Cartes que le serveur n'a pas pu générer : le dire plutôt que
 			// raccourcir la session en silence
-			const skippedCount = payload.skipped;
-			if (skippedCount > 0) {
+			skippedCount = payload.skipped;
+			if (skippedCount > 0 && cards.length > 0) {
 				toaster.warning(
 					`${skippedCount} carte(s) n'ont pas pu être générées et ont été mises de côté.`
 				);
@@ -132,7 +137,8 @@
 			}
 		} catch (error) {
 			console.error('Error fetching due cards:', error);
-			toaster.error('Erreur lors du chargement des cartes');
+			cards = [];
+			loadError = true;
 		} finally {
 			isLoading = false;
 		}
@@ -242,6 +248,57 @@
 			<p class="text-muted-foreground">Chargement des cartes...</p>
 		</div>
 	</div>
+
+	<!-- Load Error : jamais confondu avec « rien à revoir » -->
+{:else if loadError}
+	<Card.Root class="mx-auto max-w-2xl" role="alert">
+		<Card.Header>
+			<Card.Title>Impossible de charger les cartes</Card.Title>
+			<Card.Description
+				>Le chargement a échoué. Vérifie ta connexion puis réessaie.</Card.Description
+			>
+		</Card.Header>
+		<Card.Content>
+			<div class="flex flex-wrap gap-3">
+				<Button onclick={fetchDueCards}>
+					<RotateCcw class="mr-2 h-4 w-4" aria-hidden="true" />
+					Réessayer
+				</Button>
+				{#if onBack}
+					<Button onclick={onBack} variant="outline">
+						<ArrowLeft class="mr-2 h-4 w-4" />
+						{backLabel}
+					</Button>
+				{/if}
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Toutes les cartes écartées : le dire, ne pas féliciter -->
+{:else if totalCards === 0 && skippedCount > 0}
+	<Card.Root class="mx-auto max-w-2xl" role="alert">
+		<Card.Header>
+			<Card.Title>Aucune carte affichable</Card.Title>
+			<Card.Description>
+				{skippedCount} carte{skippedCount > 1 ? 's' : ''} à revoir n'ont pas pu être affichées. Réessaie
+				plus tard ou préviens ton professeur.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<div class="flex flex-wrap gap-3">
+				<Button onclick={fetchDueCards}>
+					<RotateCcw class="mr-2 h-4 w-4" aria-hidden="true" />
+					Réessayer
+				</Button>
+				{#if onBack}
+					<Button onclick={onBack} variant="outline">
+						<ArrowLeft class="mr-2 h-4 w-4" />
+						{backLabel}
+					</Button>
+				{/if}
+			</div>
+		</Card.Content>
+	</Card.Root>
 
 	<!-- Empty State -->
 {:else if !isLoading && totalCards === 0 && !sessionComplete}
