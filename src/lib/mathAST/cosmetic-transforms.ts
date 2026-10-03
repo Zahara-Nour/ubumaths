@@ -819,7 +819,7 @@ export interface CheckFormResult {
 }
 
 /** AST transformer step definition */
-interface TransformerStep {
+export interface TransformerStep {
 	transform: (ast: MathNode) => MathNode;
 	constraintId: string | null;
 }
@@ -986,6 +986,26 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		{ transform: removeMultOperatorAST, constraintId: 'products' },
 		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
 	];
+}
+
+/**
+ * Étapes du pipeline qui nettoient les COEFFICIENTS d'une formule (0·x → 0, x + 0 → x,
+ * signes, 1·x → x), pour l'option de modèle `shared.cleanCoefficients`.
+ * Sélection dans `buildASTPipeline` (source unique), dans son ordre. Exclues : les
+ * parenthèses (`P(x)` → « P x »), la réduction des fractions, le signe × et le tri,
+ * qui changent l'écriture de l'auteur au-delà des coefficients.
+ */
+const COEFFICIENT_CLEANUP_IDS: ReadonlySet<string> = new Set([
+	'factorZero',
+	'nullTerms',
+	'signs',
+	'factorOne'
+]);
+
+export function coefficientCleanupSteps(): TransformerStep[] {
+	return buildASTPipeline().filter(
+		(step) => step.constraintId !== null && COEFFICIENT_CLEANUP_IDS.has(step.constraintId)
+	);
 }
 
 /**

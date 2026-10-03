@@ -21,8 +21,9 @@ import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import type { RandomSource } from '$lib/utils/random';
-import { parseCustomSafe, toLatex, type GenericFunctionConfig } from '$lib/mathAST';
+import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
+import { cleanCoefficientsAst } from '../clean-coefficients';
 
 // ============================================================================
 // MATH ZONE CONVERSION
@@ -66,13 +67,20 @@ function exactLatexToCustom(content: string): string {
  * Formule maison → LaTeX. Si elle ne se lit pas telle quelle, second essai après
  * réécriture des nombres exacts ; sinon `null` (formule LaTeX, laissée intacte).
  * `genericFunctions` : fonctions déclarées par le modèle (absent : défauts du parseur).
+ * `cleanCoefficients` : option du modèle, `1x-1y+0` → `x-y` (cf. clean-coefficients.ts).
  */
-function customToLatex(content: string, genericFunctions?: GenericFunctionConfig): string | null {
+function customToLatex(
+	content: string,
+	genericFunctions?: GenericFunctionConfig,
+	cleanCoefficients = false
+): string | null {
+	const render = (ast: MathNode) =>
+		toLatex(cleanCoefficients ? cleanCoefficientsAst(ast) : ast, { preserveHoles: true });
 	const direct = parseCustomSafe(content, { genericFunctions });
-	if (direct.ast) return toLatex(direct.ast, { preserveHoles: true });
+	if (direct.ast) return render(direct.ast);
 	if (!content.includes('\\dfrac') && !content.includes('\\sqrt')) return null;
 	const rewritten = parseCustomSafe(exactLatexToCustom(content), { genericFunctions });
-	return rewritten.ast ? toLatex(rewritten.ast, { preserveHoles: true }) : null;
+	return rewritten.ast ? render(rewritten.ast) : null;
 }
 
 /**
@@ -93,11 +101,13 @@ function customToLatex(content: string, genericFunctions?: GenericFunctionConfig
  *
  * @param content - Content with resolved variables
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
+ * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
  * @returns Content with math zones converted to LaTeX
  */
 function convertMathZonesToLatex(
 	content: string,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	cleanCoefficients = false
 ): string {
 	let result = content;
 
@@ -113,7 +123,7 @@ function convertMathZonesToLatex(
 		}
 
 		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-		const latex = customToLatex(mathContent.trim(), genericFunctions);
+		const latex = customToLatex(mathContent.trim(), genericFunctions, cleanCoefficients);
 		// On parse error, return original (will show error at render time)
 		return prefix + (latex ?? mathContent);
 	};
@@ -218,13 +228,15 @@ function textQuantities(text: string): string {
  * @param resolvedVariables - Already resolved variables
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
+ * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
  * @returns Resolved markdown ready for rendering
  */
 export function resolveMarkdownContent(
 	markdown: TemplateMarkdown,
 	resolvedVariables: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	cleanCoefficients = false
 ): ResolvedMarkdown {
 	// Stage 0: conditions sur les variables tirées (`{{if:…}}`) → branche retenue
 	const withoutConditionals = resolveVariableConditionals(String(markdown), resolvedVariables);
@@ -245,7 +257,7 @@ export function resolveMarkdownContent(
 
 	// Stage 3: Convert math zones ($...$, $$...$$) from custom to LaTeX
 	// Note: ~...~ and ~~...~~ remain in custom syntax
-	resolvedContent = convertMathZonesToLatex(resolvedContent, genericFunctions);
+	resolvedContent = convertMathZonesToLatex(resolvedContent, genericFunctions, cleanCoefficients);
 
 	// Stage 4: grandeurs restées brutes (formule d'auteur, texte)
 	resolvedContent = displayQuantities(resolvedContent);
@@ -337,13 +349,15 @@ export function resolveAnswerFormat(
  *
  * @param expectedAnswer - Resolved expected answer string (e.g., "5", "10^5")
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
+ * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
  * @returns LaTeX string, or undefined if conversion fails
  */
 export function convertToLatex(
 	expression: string,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	cleanCoefficients = false
 ): string {
-	return customToLatex(expression.trim(), genericFunctions) ?? expression;
+	return customToLatex(expression.trim(), genericFunctions, cleanCoefficients) ?? expression;
 }
 
 /** Fin (exclue) du marqueur `{{if:…}}` ouvert en `start` : accolades équilibrées, -1 sinon */
