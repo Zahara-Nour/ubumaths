@@ -264,3 +264,5 @@ PR prévues : (a) bloc `X ~ B(n ; p)` (tableau, indicateurs, `probabilités:`) ;
 - **Loi binomiale, PR (a) livrée #730** (2026-10-03) : `X ~ B(n ; p)` dans ```loi, calcul exact
 (`statistics/binomial.ts`). Suivant : (b) `diagramme:`, `intervalle:`, `seuil:`, simulation ;
 (c) atelier `.binomiale`. À part : référentiel de Terminale ; autres lois (maths compl.).
+
+- **Loi binomiale, PR (b) livrée #736** (2026-10-03) : `diagramme:`, `intervalle:`, `seuil:`, simulation de B(n ; p). Reste : (c) atelier `.binomiale` ; à part : référentiel de Terminale, lois de maths complémentaires.
