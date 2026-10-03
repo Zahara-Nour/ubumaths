@@ -13,6 +13,12 @@ import { describe, it, expect } from 'vitest';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { buildSerie, BLANK_TEXT } from '../serie-automatismes';
 import { parseMarkdown, type ListNode } from '$lib/ubumark';
+import {
+	expressionToRawLatex,
+	genericFunctionsConfig
+} from '$lib/components/markdown/utils/math-utils';
+import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { toLatex } from '$lib/mathAST';
 
 const base = {
 	title: 't',
@@ -279,60 +285,113 @@ describe('buildSerie — détails de correction', () => {
 	});
 });
 
-// Fonctions déclarées par un modèle (`shared.genericFunctions`) : l'exercice figé
-// les lit avec SA liste (`generic_functions`, qui REMPLACE les défauts) → la série
-// rend défauts ∪ fonctions déclarées, ou rien si aucun modèle n'en déclare.
-describe('buildSerie — fonctions déclarées par les modèles', () => {
+// Fonctions déclarées par un modèle (`shared.genericFunctions`) : chaque question garde
+// SES fonctions (décision du 2026-10-03). Les formules maison `~…~` sont converties en
+// LaTeX au moment de figer la série, avec la liste du modèle de la question ; le LaTeX
+// n'est plus relu par l'écran ni par le PDF, la liste de l'exercice devient inutile.
+// Avant : une seule liste pour l'exercice (union des modèles) → `P` déclaré par un
+// modèle devenait une fonction dans TOUTES les questions de la série.
+describe('buildSerie — chaque question garde ses fonctions déclarées', () => {
 	const derivee = {
 		...base,
 		id: 'derivee',
 		shared: { genericFunctions: ['P'] },
 		variations: [
-			{ statement: 'Si $P(x)=x^2$, alors ~P(2)~ vaut $?$.', blanks: [{ expectedAnswer: '4' }] }
+			{ statement: "Si $P(x)=x^2$, alors ~P'(2)~ vaut $?$.", blanks: [{ expectedAnswer: '4' }] }
 		]
 	} as unknown as QuestionTemplate;
+	// `P` est ici un prix, `P(1+t)` un PRODUIT : le modèle ne déclare aucune fonction
+	const prix = {
+		...base,
+		id: 'prix',
+		variations: [
+			{
+				statement: 'Le prix augmenté vaut ~P(1+t)~ ; on note ~~P(1+t)=P+Pt~~ et \\~ reste.',
+				correction: { steps: ['Développer ~P(1+t)~.'] }
+			}
+		],
+		options: { courseCard: true }
+	} as unknown as QuestionTemplate;
+	const modeles = new Map([
+		['derivee', derivee],
+		['prix', prix]
+	]);
 
-	it('liste pour l’exercice : défauts ∪ fonctions déclarées', () => {
-		const modeles = new Map([
-			['derivee', derivee],
-			['coef', coefficient]
-		]);
+	/** Ce que l'écran et le PDF affichent : chaque formule lue avec la liste de l'exercice */
+	function rendu(texte: string, liste: string[] | undefined): string[] {
+		const formules: string[] = [];
+		const visite = (noeud: unknown): void => {
+			if (!noeud || typeof noeud !== 'object') return;
+			const n = noeud as { type?: string; expression?: string; syntax?: 'latex' | 'custom' };
+			if ((n.type === 'math-inline' || n.type === 'math-block') && n.expression && n.syntax) {
+				formules.push(expressionToRawLatex(n.expression, n.syntax, genericFunctionsConfig(liste)));
+			}
+			for (const valeur of Object.values(noeud)) {
+				if (Array.isArray(valeur)) valeur.forEach(visite);
+				else if (valeur && typeof valeur === 'object') visite(valeur);
+			}
+		};
+		visite(parseMarkdown(texte));
+		return formules;
+	}
+
+	const produit = (expr: string) => toLatex(parseCustomSafe(expr).ast!);
+
+	it('le modèle qui ne déclare rien garde son produit, celui qui déclare garde sa fonction', () => {
 		const serie = buildSerie(modeles, [
 			{ templateId: 'derivee', seed: 1 },
-			{ templateId: 'coef', seed: 1 }
+			{ templateId: 'prix', seed: 1 }
 		]);
-		expect(serie.genericFunctions).toEqual(['f', 'g', 'h', 'u', 'v', 'w', 'F', 'G', 'H', 'P']);
+		const formules = rendu(serie.statement, serie.genericFunctions);
+		// Question 1 : P' se lit comme la dérivée de la fonction P
+		expect(formules).toContain("P'\\left( 2 \\right)");
+		// Question 2 : P(1+t) reste un produit (espace de produit, pas d'appel)
+		expect(formules).toContain(produit('P(1+t)'));
+		expect(formules).toContain(produit('P(1+t)=P+Pt'));
 	});
 
-	it('aucun modèle ne déclare : aucune clé', () => {
-		const serie = buildSerie(new Map([['coef', coefficient]]), [{ templateId: 'coef', seed: 1 }]);
+	it('plus aucune formule maison dans le figé : tout est en LaTeX, délimiteurs conservés', () => {
+		const serie = buildSerie(modeles, [
+			{ templateId: 'derivee', seed: 1 },
+			{ templateId: 'prix', seed: 1 }
+		]);
+		for (const texte of [serie.statement, serie.solution]) {
+			const formules: string[] = [];
+			const visite = (noeud: unknown): void => {
+				if (!noeud || typeof noeud !== 'object') return;
+				const n = noeud as { type?: string; syntax?: string };
+				if (n.type === 'math-inline' || n.type === 'math-block') formules.push(n.syntax ?? '');
+				for (const v of Object.values(noeud)) {
+					if (Array.isArray(v)) v.forEach(visite);
+					else if (v && typeof v === 'object') visite(v);
+				}
+			};
+			visite(parseMarkdown(texte));
+			expect(formules.length).toBeGreaterThan(0);
+			expect(formules.every((s) => s === 'latex')).toBe(true);
+		}
+		// Bloc maison → bloc LaTeX ; tilde échappé laissé tel quel
+		expect(serie.statement).toContain(`$$${produit('P(1+t)=P+Pt')}$$`);
+		expect(serie.statement).toContain('\\~ reste');
+	});
+
+	it('la liste de l’exercice devient inutile : aucune clé `genericFunctions`', () => {
+		const serie = buildSerie(modeles, [
+			{ templateId: 'derivee', seed: 1 },
+			{ templateId: 'prix', seed: 1 }
+		]);
 		expect(serie).not.toHaveProperty('genericFunctions');
 	});
-});
 
-// Union des fonctions déclarées au-delà de 10 noms : chaque modèle en déclare au plus 10,
-// mais la liste de l'exercice (`generic_functions`) n'a pas de plafond. Elle était coupée
-// en silence au 10e nom : la 11e fonction redevenait un produit dans la série.
-describe('buildSerie — union de plus de 10 fonctions déclarées', () => {
-	const declare = (id: string, names: string[]) =>
-		({
+	it('formule maison illisible : refusée (elle s’afficherait en rouge dans la fiche)', () => {
+		const casse = {
 			...base,
-			id,
-			shared: { genericFunctions: names },
-			variations: [{ statement: `${id} $?$`, blanks: [{ expectedAnswer: '4' }] }]
-		}) as unknown as QuestionTemplate;
-
-	it('toutes les fonctions déclarées sont gardées', () => {
-		const modeles = new Map([
-			['un', declare('un', ['A', 'B', 'C', 'D', 'E', 'I'])],
-			['deux', declare('deux', ['J', 'K', 'L', 'M', 'N', 'O'])]
-		]);
-		const serie = buildSerie(modeles, [
-			{ templateId: 'un', seed: 1 },
-			{ templateId: 'deux', seed: 1 }
-		]);
-		const defaults = ['f', 'g', 'h', 'u', 'v', 'w', 'F', 'G', 'H'];
-		const declared = ['A', 'B', 'C', 'D', 'E', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
-		expect(serie.genericFunctions).toEqual([...defaults, ...declared]);
+			id: 'illisible',
+			options: { courseCard: true },
+			variations: [{ statement: 'Voir ~2+*3~.', correction: { steps: ['ok'] } }]
+		} as unknown as QuestionTemplate;
+		expect(() =>
+			buildSerie(new Map([['illisible', casse]]), [{ templateId: 'illisible', seed: 1 }])
+		).toThrow(/illisible.*2\+\*3/);
 	});
 });
