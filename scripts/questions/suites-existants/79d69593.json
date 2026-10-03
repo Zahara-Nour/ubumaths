@@ -9,6 +9,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"variations": [
 		{
 			"blanks": [
@@ -24,11 +27,11 @@
 				},
 				{
 					"name": "b",
-					"expression": "2..3;±"
+					"expression": "1..3;±"
 				},
 				{
 					"name": "c",
-					"expression": "1..3;±"
+					"expression": "-3..3"
 				},
 				{
 					"name": "d",
@@ -38,9 +41,10 @@
 			"correction": {
 				"steps": [
 					"Avec $u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c;+}}$",
-					"$u_1={{b}}u_0{{eval:c;+}}= {{b}} \\times {{eval:a;()}} {{eval:c;+}}={{solution}}$"
+					"$u_1={{if:b==1|u_0|{{if:b==-1|-u_0|{{b}}u_0}}}}{{if:c!=0|{{eval:c;+}}}}={{if:b!=-1 or c!=0 or a< 0|{{if:b==1|{{a}}|{{if:b==-1|-{{eval:a;()}}|{{b}} \\times {{eval:a;()}}}}}}{{if:c!=0|{{eval:c;+}}}}=}}{{solution}}$"
 				]
-			}
+			},
+			"conditions": ["b != 1 or c != 0"]
 		},
 		{
 			"blanks": [
@@ -56,13 +60,13 @@
 				},
 				{
 					"name": "c",
-					"expression": "1..6;±"
+					"expression": "-6..6"
 				}
 			],
 			"correction": {
 				"steps": [
 					"Avec $u_0={{a}}$ et $u_{n+1}=u_n^2{{eval:c;+}}$",
-					"$u_1=u_0^2{{eval:c;+}}=\\textcolor{{{color:primary.0}}}{{{eval:a;()}}}^2{{eval:c;+}}={{solution}}$"
+					"$u_1=u_0^2{{if:c!=0|{{eval:c;+}}}}=\\textcolor{{{color:primary.0}}}{{{eval:a;()}}}^2{{if:c!=0|{{eval:c;+}}}}={{solution}}$"
 				]
 			}
 		},
@@ -72,7 +76,7 @@
 					"expectedAnswer": "{{eval:a/2+(c)}}"
 				}
 			],
-			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=\\dfrac{u_n}{2}{{eval:c;+}}$\n\n$u_1=?$",
+			"statement": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=\\dfrac{u_n}{2}{{if:c!=0|{{eval:c;+}}}}$\n\n$u_1=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -80,14 +84,14 @@
 				},
 				{
 					"name": "c",
-					"expression": "1..6;±"
+					"expression": "-6..6"
 				}
 			],
 			"conditions": ["a/2+(c) != 0"],
 			"correction": {
 				"steps": [
-					"Avec $u_0={{a}}$ et $u_{n+1}=\\dfrac{u_n}{2}{{eval:c;+}}$",
-					"$u_1=\\dfrac{u_0}{2}{{eval:c;+}}=\\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{2}{{eval:c;+}}={{solution}}$"
+					"Avec $u_0={{a}}$ et $u_{n+1}=\\dfrac{u_n}{2}{{if:c!=0|{{eval:c;+}}}}$",
+					"$u_1=\\dfrac{u_0}{2}{{if:c!=0|{{eval:c;+}}}}=\\dfrac{\\textcolor{{{color:primary.0}}}{{{a}}}}{2}{{if:c!=0|{{eval:c;+}}}}={{solution}}$"
 				]
 			}
 		}
@@ -208,6 +212,94 @@
 				"c": "-5"
 			},
 			"description": "calcul non effectué",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "1",
+				"c": "2"
+			},
+			"description": "u_{n+1}=u_n+2 (coefficient 1) : u_1=-1",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-1",
+				"c": "0"
+			},
+			"description": "u_{n+1}=-u_n : u_1=4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-4",
+				"b": "-1",
+				"c": "0"
+			},
+			"description": "u_{n+1}=-u_n : signe oublié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"b": "2",
+				"c": "0"
+			},
+			"description": "u_{n+1}=2u_n (terme constant nul) : u_1=-6",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-3",
+				"c": "0"
+			},
+			"description": "u_{n+1}=u_n^2 : u_1=9",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-9"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-3",
+				"c": "0"
+			},
+			"description": "u_{n+1}=u_n^2 : -3^2 au lieu de (-3)^2",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-4",
+				"c": "0"
+			},
+			"description": "u_{n+1}=u_n/2 : u_1=-2",
 			"variationIndex": 2
 		}
 	]

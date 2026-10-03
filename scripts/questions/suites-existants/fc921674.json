@@ -9,6 +9,9 @@
 	"level": 2,
 	"delay": 30,
 	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn",
@@ -19,11 +22,15 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}\\times{{eval:b;()}}^n"
+					"expectedAnswer": "{{eval:a*(b)^n}}"
 				}
 			],
 			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n$${{c}} \\quad {{d}} \\quad {{f}} \\quad {{g}} \\quad {{h}}$$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
 			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
 				{
 					"name": "a",
 					"expression": "1..4;±"
@@ -63,11 +70,15 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}\\times{{eval:b;()}}^n"
+					"expectedAnswer": "{{eval:a*(b)^n}}"
 				}
 			],
 			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_1$ :\n\n$${{c}} \\quad {{d}} \\quad {{f}} \\quad {{g}} \\quad {{h}}$$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
 			"variables": [
+				{
+					"name": "n",
+					"expression": "n|n"
+				},
 				{
 					"name": "a",
 					"expression": "1..4;±"
@@ -238,6 +249,55 @@
 				"b": "2"
 			},
 			"description": "exposant décalé",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["1\\times2^n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"description": "1, 2, 4… : 1×2^n non simplifié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-(-3)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-3"
+			},
+			"description": "u_1=3, raison -3 : u_0=-1, u_n=-(-3)^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["(-3)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-3"
+			},
+			"description": "u_0=-1 oublié : (-3)^n",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["2^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"description": "u_1=2, raison 2 : u_0=1, u_n=2^n",
 			"variationIndex": 1
 		}
 	]

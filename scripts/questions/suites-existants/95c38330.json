@@ -9,6 +9,9 @@
 	"level": 3,
 	"delay": 30,
 	"status": "published",
+	"shared": {
+		"cleanCoefficients": true
+	},
 	"options": {
 		"constraints": {
 			"form": "warn",
@@ -20,14 +23,18 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}\\times\\left({{c}}\\right)^n"
+					"expectedAnswer": "{{eval:a*(c)^n}}"
 				}
 			],
 			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_0$ :\n\n${{d}}$ ; ${{f}}$ ; ${{g}}$ ; ${{h}}$ ; ${{j}}$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
 			"variables": [
 				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "b",
@@ -67,14 +74,18 @@
 		{
 			"blanks": [
 				{
-					"expectedAnswer": "{{a}}\\times\\left({{c}}\\right)^n"
+					"expectedAnswer": "{{eval:a*(c)^n}}"
 				}
 			],
 			"statement": "Voici les premiers termes de la suite $(u_n)$, à partir de $u_1$ :\n\n${{f}}$ ; ${{g}}$ ; ${{h}}$ ; ${{j}}$ ; ${{k}}$\n\nConjecture l'expression de $u_n$ en fonction de $n$.\n\n$u_n=?$",
 			"variables": [
 				{
+					"name": "n",
+					"expression": "n|n"
+				},
+				{
 					"name": "a",
-					"expression": "2..9;±"
+					"expression": "1..9;±"
 				},
 				{
 					"name": "b",
@@ -221,6 +232,68 @@
 				"b": "5"
 			},
 			"description": "raison inversée",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\left(\\frac{1}{2}\\right)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"description": "u_0=1 : u_n=(1/2)^n",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["\\frac{1}{2^n}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"description": "u_0=1 : 1/2^n équivalent, pas la forme u_0×q^n (comme pour 6/5^n)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["1\\times\\left(\\frac{1}{2}\\right)^n"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["factorOne"]
+			},
+			"variables": {
+				"a": "1",
+				"b": "2"
+			},
+			"description": "u_0=1 : 1×(1/2)^n non simplifié",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["-\\left(-\\frac{1}{3}\\right)^n"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-3"
+			},
+			"description": "u_1=1/3, raison -1/3 : u_0=-1",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["\\left(-\\frac{1}{3}\\right)^n"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "-1",
+				"b": "-3"
+			},
+			"description": "u_0=-1 oublié",
 			"variationIndex": 1
 		}
 	]
