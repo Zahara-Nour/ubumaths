@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Execute cleanup
-		const result = await cleanupOldErrors(locals.supabase, days_old);
+		const result = await cleanupOldErrors(serviceClient, days_old);
 
 		if (!result.success) {
 			// Complete job run (failed)
