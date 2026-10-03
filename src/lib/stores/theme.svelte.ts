@@ -4,27 +4,24 @@ import { toggleMode } from 'mode-watcher';
 function createThemeStore() {
 	let dark = $state(false);
 
-	// Sync color-scheme CSS property with .dark class
-	function syncColorScheme() {
+	// Recopie l'état de la classe `.dark`. `color-scheme` (dont dépend `light-dark()`)
+	// est posé par mode-watcher lui-même, au chargement comme à chaque bascule.
+	function syncDark() {
 		if (!browser) return;
 
-		const isDark = document.documentElement.classList.contains('dark');
-		// Update the color-scheme CSS property to trigger light-dark() function
-		// This is critical for Tailwind CSS 4's light-dark() function to work correctly
-		document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-		dark = isDark;
+		dark = document.documentElement.classList.contains('dark');
 	}
 
 	// Initialize from DOM state (ModeWatcher will set this)
 	if (browser) {
 		// Use setTimeout to ensure ModeWatcher has initialized first
 		setTimeout(() => {
-			syncColorScheme();
+			syncDark();
 		}, 0);
 
 		// Watch for .dark class changes from ModeWatcher
 		const observer = new MutationObserver(() => {
-			syncColorScheme();
+			syncDark();
 		});
 
 		observer.observe(document.documentElement, {
