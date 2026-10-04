@@ -179,6 +179,11 @@ sur un modèle déjà en base (brouillon), `--mettre-a-jour` ajoute les liens ma
 du fichier n'est **jamais** supprimé, sauf `--mettre-a-jour --remplacer-points`. Sans champ `points`,
 aucun lien n'est lu ni touché.
 
+Modèle **publié** : refusé, sauf `--mettre-a-jour --liens-publies`, qui **ajoute** seulement ses liens
+manquants — contenu jamais touché, aucun lien retiré (incompatible avec `--remplacer-points`). Une
+carte publiée rattachée entre dans le paquet de révision « Programme » des élèves dès qu'ils la
+travaillent : simuler d'abord, montrer la simulation à David (décidé le 2026-10-04).
+
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
 
 Par défaut, seules f, g, h, u, v, w, F, G, H sont des fonctions : dans un modèle, `P(x)` ou

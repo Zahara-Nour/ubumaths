@@ -28,6 +28,10 @@
  *                                 sont encore en brouillon (un modèle publié n'est jamais touché),
  *                                 et ajoute leurs liens manquants vers les points du fichier
  *   … --mettre-a-jour --remplacer-points   supprime en plus les liens en base absents du fichier
+ *   … --mettre-a-jour --liens-publies      sur un modèle PUBLIÉ : AJOUTE seulement ses liens
+ *                                 manquants (son contenu n'est jamais touché, aucun lien n'est
+ *                                 retiré). Une carte publiée rattachée entre dans le paquet de
+ *                                 révision « Programme » des élèves : simuler d'abord.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -163,15 +167,21 @@ async function main(): Promise<number> {
 	const publier = hasFlag('--publier');
 	const mettreAJour = hasFlag('--mettre-a-jour');
 	const remplacerPoints = hasFlag('--remplacer-points');
+	const liensPublies = hasFlag('--liens-publies');
 	const dossier = argValue('--dir');
 	if (!dossier) {
 		console.error(
-			'Usage : pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier [--mettre-a-jour [--remplacer-points]]]'
+			'Usage : pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier [--mettre-a-jour [--remplacer-points | --liens-publies]]]'
 		);
 		return 2;
 	}
-	if (remplacerPoints && !mettreAJour) {
-		console.error('⛔ --remplacer-points ne vaut qu’avec --mettre-a-jour');
+	if ((remplacerPoints || liensPublies) && !mettreAJour) {
+		console.error('⛔ --remplacer-points et --liens-publies ne valent qu’avec --mettre-a-jour');
+		return 2;
+	}
+	// Un modèle publié ne perd jamais un lien : les deux drapeaux ne vont pas ensemble
+	if (remplacerPoints && liensPublies) {
+		console.error('⛔ --remplacer-points et --liens-publies sont incompatibles');
 		return 2;
 	}
 	const { supabase, target } = createScriptClient(publier);
@@ -264,8 +274,31 @@ async function main(): Promise<number> {
 				continue;
 			}
 			if (existant.status !== 'draft') {
-				console.error(`⛔ ${fichier} : modèle ${existant.status}, jamais modifié par ce script`);
-				return 1;
+				// Publié : avec --liens-publies, seulement l'AJOUT de liens ; le contenu reste tel quel
+				if (!liensPublies || !codes || !plan) {
+					console.error(`⛔ ${fichier} : modèle ${existant.status}, jamais modifié par ce script`);
+					return 1;
+				}
+				const noteContenu = identique ? '' : ' — contenu différent du fichier, NON touché';
+				if (plan.toAdd.length === 0) {
+					console.log(
+						`  = ${fichier} : ${existant.status}, aucun lien à ajouter${noteContenu}${noteLiens}`
+					);
+					deja++;
+					continue;
+				}
+				if (!publier) {
+					console.log(
+						`  ↻ ${fichier} : ${existant.status}, liens à ajouter (${existant.id})${noteContenu}${noteLiens}`
+					);
+					continue;
+				}
+				await ecrireLiens(supabase, fichier, existant.id, codes, plan, resolus, false);
+				console.log(
+					`  ↻ ${fichier} : ${existant.status}, liens ajoutés (${existant.id})${noteContenu}${noteLiens}`
+				);
+				misAJour++;
+				continue;
 			}
 			const quoi = identique ? 'liens à mettre à jour' : 'contenu à mettre à jour';
 			if (!publier) {
