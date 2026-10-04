@@ -38,7 +38,7 @@ const presencePayloadSchema = z.object({
  * statut). Ce sont elles, jamais le payload, qui s'affichent.
  */
 const TRADE_SNAPSHOT_COLUMNS =
-	'status, current_offer, validated_by_initiator, validated_by_partner, confirmed_by_initiator, confirmed_by_partner, confirmation_started_at, completed_at, cancelled_at' as const;
+	'status, current_offer, validated_by_initiator, validated_by_partner, confirmed_by_initiator, confirmed_by_partner, completed_at, cancelled_at' as const;
 
 /**
  * Événements broadcast traités comme simples SIGNAUX « l'échange a changé,
@@ -91,7 +91,6 @@ type TradeSnapshotRow = Pick<
 	| 'validated_by_partner'
 	| 'confirmed_by_initiator'
 	| 'confirmed_by_partner'
-	| 'confirmation_started_at'
 	| 'completed_at'
 	| 'cancelled_at'
 >;
@@ -341,6 +340,9 @@ class TradeRealtimeStore {
 	/** Messages de chat éphémères acceptés par fenêtre glissante. */
 	private readonly CHAT_MESSAGE_LIMIT = 20;
 
+	/** Durée de la fenêtre glissante du chat (ms). */
+	private readonly CHAT_MESSAGE_WINDOW_MS = 10_000;
+
 	/** Messages de chat gardés en mémoire (les plus récents). */
 	private readonly MAX_CHAT_MESSAGES = 200;
 
@@ -356,8 +358,14 @@ class TradeRealtimeStore {
 	/** Horodatages des relectures récentes. */
 	private refetchTimes: number[] = [];
 
-	/** Horodatages des messages de chat reçus récemment. */
+	/** Horodatages des messages de chat reçus récemment (valides ou non). */
 	private chatMessageTimes: number[] = [];
+
+	/**
+	 * Compteur de MES écritures de validation abouties. Une relecture lancée
+	 * avant la dernière peut rendre une validation périmée (pas un refus).
+	 */
+	private myValidationWrites = 0;
 
 	/**
 	 * Max cards per offer
@@ -604,6 +612,9 @@ class TradeRealtimeStore {
 
 			// Chat éphémère : seul le texte est lu (cf. chatMessagePayloadSchema)
 			channel.on('broadcast', { event: 'chat_message' }, ({ payload }) => {
+				// Plafond AVANT validation : une rafale de payloads invalides ne
+				// doit pas non plus inonder la console.
+				if (!this.acquireChatSlot()) return;
 				const validation = chatMessagePayloadSchema.safeParse(payload);
 				if (!validation.success) {
 					logger.warn('Invalid chat_message payload:', validation.error.issues);
@@ -768,20 +779,29 @@ class TradeRealtimeStore {
 	private async saveMyValidationReset(): Promise<void> {
 		if (!this.supabase || !this.tradeId || !this.myRole) return;
 
-		const { error } =
+		// `.select()` : un refus RLS rend zéro ligne, sans erreur.
+		const { data, error } =
 			this.myRole === 'initiator'
 				? await this.supabase
 						.from('marketplace_trades')
 						.update({ validated_by_initiator: false, updated_at: new Date().toISOString() })
 						.eq('id', this.tradeId)
+						.select('id')
 				: await this.supabase
 						.from('marketplace_trades')
 						.update({ validated_by_partner: false, updated_at: new Date().toISOString() })
-						.eq('id', this.tradeId);
+						.eq('id', this.tradeId)
+						.select('id');
 
 		if (error) {
 			logger.error('Failed to reset validation in DB:', error);
+			return;
 		}
+		if (!data || data.length === 0) {
+			logger.error('Validation reset affected 0 row (RLS or trade gone):', this.tradeId);
+			return;
+		}
+		this.myValidationWrites++;
 	}
 
 	/**
@@ -965,6 +985,7 @@ class TradeRealtimeStore {
 
 			// Update local state
 			this.myValidation = newValidation;
+			this.myValidationWrites++;
 
 			// Signal (après l'écriture en base)
 			this.broadcastSignal('validation_changed');
@@ -1174,7 +1195,7 @@ class TradeRealtimeStore {
 		};
 
 		// Add to local state immediately (optimistic)
-		this.messages = [...this.messages, chatMessage];
+		this.messages = [...this.messages, chatMessage].slice(-this.MAX_CHAT_MESSAGES);
 
 		// Diffuse le TEXTE seulement : l'auteur est déduit par le destinataire.
 		const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
@@ -1386,7 +1407,8 @@ class TradeRealtimeStore {
 	/**
 	 * Signal d'échange reçu : programme une relecture de la ligne en base.
 	 *
-	 * Anti-saturation : les signaux d'une rafale sont regroupés (300 ms), une
+	 * Anti-saturation : les signaux d'une rafale sont regroupés (fenêtre fixe
+	 * de 300 ms ouverte par le premier), une
 	 * seule relecture à la fois (un signal reçu pendant la relecture en
 	 * déclenche UNE autre après), et au plus SIGNAL_REFETCH_LIMIT relectures par
 	 * fenêtre glissante — au-delà, la relecture est reportée, jamais perdue.
@@ -1396,9 +1418,10 @@ class TradeRealtimeStore {
 			this.refetchRequestedDuringFlight = true;
 			return;
 		}
-		if (this.refetchTimer) {
-			clearTimeout(this.refetchTimer);
-		}
+		// Fenêtre FIXE : un minuteur déjà posé (regroupement ou report du
+		// plafond) n'est jamais relancé ni effacé — sinon un signal toutes les
+		// 250 ms repousserait la relecture sans fin.
+		if (this.refetchTimer) return;
 		this.refetchTimer = setTimeout(() => {
 			this.refetchTimer = null;
 			void this.runTradeRefetch();
@@ -1444,6 +1467,7 @@ class TradeRealtimeStore {
 	private async refetchTradeState(): Promise<void> {
 		if (!this.supabase || !this.tradeId) return;
 		const tradeId = this.tradeId;
+		const writesBeforeRead = this.myValidationWrites;
 
 		const { data, error } = await this.supabase
 			.from('marketplace_trades')
@@ -1462,7 +1486,10 @@ class TradeRealtimeStore {
 		// Store détruit ou passé à un autre échange pendant la lecture
 		if (this.tradeId !== tradeId) return;
 
-		this.applyTradeSnapshot(data);
+		// Une de MES validations a été écrite pendant la lecture : la ligne peut
+		// être antérieure, sa valeur pour moi ne prouve pas un refus.
+		const staleForMe = this.myValidationWrites !== writesBeforeRead;
+		this.applyTradeSnapshot(data, staleForMe);
 	}
 
 	/**
@@ -1473,8 +1500,9 @@ class TradeRealtimeStore {
 	 * sauf la remise à zéro par un refus de confirmation.
 	 *
 	 * @param row - Ligne `marketplace_trades` lue en base
+	 * @param staleForMe - Lecture lancée avant ma dernière écriture de validation
 	 */
-	private applyTradeSnapshot(row: TradeSnapshotRow): void {
+	private applyTradeSnapshot(row: TradeSnapshotRow, staleForMe = false): void {
 		if (!this.myRole || !this.trade) return;
 		const partnerIsInitiator = this.myRole === 'partner';
 
@@ -1503,7 +1531,7 @@ class TradeRealtimeStore {
 		const myDbValidation = partnerIsInitiator
 			? row.validated_by_partner
 			: row.validated_by_initiator;
-		if (this.showConfirmationModal && !myDbValidation) {
+		if (this.showConfirmationModal && !myDbValidation && !staleForMe) {
 			this.myValidation = false;
 			this.partnerValidation = false;
 			this.closeConfirmation();
@@ -1532,6 +1560,29 @@ class TradeRealtimeStore {
 	}
 
 	/**
+	 * Réserve une place dans la fenêtre glissante du chat (messages reçus,
+	 * valides ou non). Au-delà du plafond : ignoré, un seul avertissement.
+	 *
+	 * @returns false si le plafond est atteint
+	 */
+	private acquireChatSlot(): boolean {
+		const now = Date.now();
+		this.chatMessageTimes = this.chatMessageTimes.filter(
+			(t) => now - t < this.CHAT_MESSAGE_WINDOW_MS
+		);
+		if (this.chatMessageTimes.length >= this.CHAT_MESSAGE_LIMIT) {
+			if (this.chatMessageTimes.length === this.CHAT_MESSAGE_LIMIT) {
+				logger.warn('Trop de messages de chat reçus, ignorés');
+				// Marqueur : l'avertissement n'est émis qu'une fois par saturation
+				this.chatMessageTimes.push(now);
+			}
+			return false;
+		}
+		this.chatMessageTimes.push(now);
+		return true;
+	}
+
+	/**
 	 * Message de chat éphémère reçu sur le canal privé.
 	 *
 	 * Le chat d'échange n'a pas de source en base (aucune écriture dans
@@ -1547,17 +1598,6 @@ class TradeRealtimeStore {
 		if (!this.trade || !this.myRole) return;
 		const otherStudentId =
 			this.myRole === 'initiator' ? this.trade.partner_id : this.trade.initiator_id;
-
-		// Plafond de messages reçus par fenêtre glissante
-		const now = Date.now();
-		this.chatMessageTimes = this.chatMessageTimes.filter(
-			(t) => now - t < this.SIGNAL_REFETCH_WINDOW_MS
-		);
-		if (this.chatMessageTimes.length >= this.CHAT_MESSAGE_LIMIT) {
-			logger.warn('Trop de messages de chat reçus, ignoré');
-			return;
-		}
-		this.chatMessageTimes.push(now);
 
 		const message: TradeChatMessage = {
 			id: crypto.randomUUID(),

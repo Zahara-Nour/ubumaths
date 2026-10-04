@@ -217,7 +217,22 @@ describe('Échanges : le store client sur le canal privé', { timeout: 120_000 }
 			status: 'negotiating'
 		} as MarketplaceTrade;
 
-		await expect(store['subscribeToChannel']()).rejects.toThrow();
+		// Refus d'AUTORISATION du serveur (pas un délai ni une panne réseau)
+		await expect(store['subscribeToChannel']()).rejects.toThrow(/Unauthorized|permissions to read/);
+
+		// Abonné PUBLIC sur le même nom de canal (client séparé) : si A diffusait
+		// en public, il recevrait ses signaux. Il ne doit rien recevoir.
+		const publicClient = await createAuthenticatedClient(o.email);
+		const publicReceived: unknown[] = [];
+		const publicChannel = publicClient
+			.channel(`trade:${trade}`)
+			.on('broadcast', { event: '*' }, (message) => publicReceived.push(message));
+		const publicStatus = await new Promise<string>((resolve) =>
+			publicChannel.subscribe((status) => {
+				if (status !== 'CLOSED') resolve(status);
+			})
+		);
+		expect(publicStatus, 'le témoin public n’a pas pu s’abonner').toBe('SUBSCRIBED');
 
 		await sessionA.store.sendMessage('pas pour O');
 		sessionA.store.setGidouilles(11);
@@ -228,6 +243,10 @@ describe('Échanges : le store client sur le canal privé', { timeout: 120_000 }
 		await sleep(1_000);
 		expect(store.messages).toEqual([]);
 		expect(store.partnerOffer).toEqual({ cards: [], gidouilles: 0 });
+		expect(publicReceived, 'A a diffusé en public').toEqual([]);
+
+		await publicClient.removeChannel(publicChannel);
+		publicClient.realtime.disconnect();
 
 		await sessionO.realtime.unsubscribeChannel(`trade:${trade}`);
 	});

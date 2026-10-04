@@ -122,7 +122,14 @@ function fakeClient(state: { row: TradeRow | null; delayMs?: number }) {
 				single: vi.fn(() => Promise.resolve({ data: state.row, error: null }))
 			}))
 		})),
-		update: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ data: null, error: null })) }))
+		// `.update().eq()` est attendu tel quel, ou suivi de `.select()` (1 ligne)
+		update: vi.fn(() => ({
+			eq: vi.fn(() =>
+				Object.assign(Promise.resolve({ data: null, error: null }), {
+					select: vi.fn(() => Promise.resolve({ data: [{ id: TRADE }], error: null }))
+				})
+			)
+		}))
 	}));
 	const client = {
 		from,
@@ -197,16 +204,27 @@ describe('Échanges : canal privé, le broadcast ne sert que de signal', () => {
 		expect(tradeRealtimeStore.partnerOffer).toEqual({ cards: [DB_CARD], gidouilles: 5 });
 	});
 
-	it('une validation ou une confirmation forgée n’est pas affichée', async () => {
-		const { client } = fakeClient({ row: dbRow() });
+	it('validation et confirmation : la valeur relue en base s’affiche, jamais celle du payload', async () => {
+		// La base dit OUI, le payload forgé dit NON.
+		const state = {
+			row: dbRow({ validated_by_partner: true, confirmed_by_partner: true }) as TradeRow | null
+		};
+		const { client, reads } = fakeClient(state);
 		await setup(client);
 
+		fake.emit('validation_changed', { from: 'partner', validated: false });
+		fake.emit('confirmation', { from: 'partner', confirmed: false });
+		await vi.advanceTimersByTimeAsync(400);
+		expect(reads).toHaveBeenCalledTimes(1);
+		expect(tradeRealtimeStore.partnerValidation).toBe(true);
+		expect(tradeRealtimeStore.partnerConfirmation).toBe(true);
+
+		// La base dit NON, le payload forgé dit OUI.
+		state.row = dbRow();
 		fake.emit('validation_changed', { from: 'partner', validated: true });
 		fake.emit('confirmation', { from: 'partner', confirmed: true });
-		expect(tradeRealtimeStore.partnerValidation).toBe(false);
-		expect(tradeRealtimeStore.partnerConfirmation).toBe(false);
-
 		await vi.advanceTimersByTimeAsync(400);
+		expect(reads).toHaveBeenCalledTimes(2);
 		expect(tradeRealtimeStore.partnerValidation).toBe(false);
 		expect(tradeRealtimeStore.partnerConfirmation).toBe(false);
 		expect(tradeRealtimeStore.showConfirmationModal).toBe(false);
@@ -329,6 +347,59 @@ describe('Échanges : canal privé, le broadcast ne sert que de signal', () => {
 		// La relecture reportée finit par avoir lieu.
 		await vi.advanceTimersByTimeAsync(10_000);
 		expect(reads.mock.calls.length).toBeGreaterThan(20);
+	});
+
+	it('un signal toutes les 250 ms ne repousse pas la relecture sans fin', async () => {
+		const { client, reads } = fakeClient({ row: dbRow() });
+		await setup(client);
+
+		for (let elapsed = 0; elapsed < 3000; elapsed += 250) {
+			fake.emit('offer_updated', {});
+			await vi.advanceTimersByTimeAsync(250);
+		}
+		// Fenêtre fixe de 300 ms : au moins une relecture par ~500 ms.
+		expect(reads.mock.calls.length).toBeGreaterThanOrEqual(5);
+	});
+
+	it('une relecture lancée avant MA validation n’est pas prise pour un refus', async () => {
+		// Ligne lue AVANT que ma validation soit écrite : moi = false, l'autre = true.
+		const { client } = fakeClient({ row: dbRow({ validated_by_partner: true }), delayMs: 1000 });
+		await setup(client);
+		tradeRealtimeStore.partnerValidation = true;
+
+		fake.emit('offer_updated', {});
+		await vi.advanceTimersByTimeAsync(350); // lecture en cours
+
+		// Je valide pendant la lecture : la confirmation s'ouvre.
+		await tradeRealtimeStore.toggleValidation();
+		expect(tradeRealtimeStore.myValidation).toBe(true);
+		expect(tradeRealtimeStore.showConfirmationModal).toBe(true);
+
+		// La lecture périmée revient (moi = false) : ce n'est PAS un refus.
+		await vi.advanceTimersByTimeAsync(1000);
+		expect(tradeRealtimeStore.showConfirmationModal).toBe(true);
+		expect(tradeRealtimeStore.myValidation).toBe(true);
+	});
+
+	it('un payload de chat invalide passe aussi par le plafond (pas de rafale d’avertissements)', async () => {
+		const { client } = fakeClient({ row: dbRow() });
+		await setup(client);
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		for (let i = 0; i < 100; i++) fake.emit('chat_message', { message: '' });
+		const chatWarnings = warn.mock.calls.filter((c) =>
+			c.some((arg) => typeof arg === 'string' && /chat/i.test(arg))
+		);
+		expect(chatWarnings.length).toBeLessThanOrEqual(21);
+	});
+
+	it('le plafond de 200 messages s’applique aussi à mes envois', async () => {
+		const { client } = fakeClient({ row: dbRow() });
+		await setup(client);
+
+		for (let i = 0; i < 250; i++) await tradeRealtimeStore.sendMessage(`m${i}`);
+		expect(tradeRealtimeStore.messages).toHaveLength(200);
+		expect(tradeRealtimeStore.messages.at(-1)?.message).toBe('m249');
 	});
 
 	it('plafonne les messages de chat reçus en rafale', async () => {

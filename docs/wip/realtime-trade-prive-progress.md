@@ -65,6 +65,18 @@ Migration déjà en prod. Fichiers : `src/lib/stores/tradeRealtime.svelte.ts`,
       `private: true` (copie scratchpad, restaurée par `cmp`) → le test du 3ᵉ élève échoue
       (`promise resolved "undefined" instead of rejecting`). Vert : 11/11 + 3/3 (+ PR 1 10/10).
 - ⚠️ Après cette PR, un rollback de la migration coupe le temps réel des échanges.
+- [x] Corrections après revue et audit (commit séparé) :
+  - regroupement en **fenêtre fixe** : un minuteur posé (300 ms ou report du plafond) n'est
+    jamais relancé ni effacé — avant, un signal toutes les 250 ms empêchait toute relecture ;
+  - refus de confirmation ignoré si la relecture a été lancée avant MA dernière écriture de
+    validation (compteur `myValidationWrites`) ;
+  - `saveMyValidationReset` : `.select('id')`, zéro ligne → erreur loguée ;
+  - chat : plafond appliqué AVANT la validation Zod (pas de rafale d'avertissements), fenêtre
+    dédiée, 200 messages aussi pour mes envois ; `confirmation_started_at` retiré de la relecture ;
+  - `createChannel` lève une erreur si le canal en cache n'a pas la même nature privée/publique ;
+    `subscribeChannel` joint la raison du serveur à l'erreur (`Unauthorized…`) ;
+  - intégration : refus du 3ᵉ élève asserté sur le message d'autorisation, + témoin PUBLIC sur
+    le même topic qui ne reçoit rien (rouge prouvé : `A a diffusé en public`).
 
 ## Limites connues
 
