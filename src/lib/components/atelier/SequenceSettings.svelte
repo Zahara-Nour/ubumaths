@@ -26,57 +26,87 @@
 
 	const atelier = useAtelier();
 
-	/** Pourquoi le dernier réglage n'a pas été retenu — reste affiché (a11y). */
-	let refusal = $state<string | null>(null);
+	/** Le contrôle dont le réglage a été refusé. */
+	type Field = 'mode' | 'firstIndex' | 'firstTerm' | 'steps' | 'display';
+
+	/**
+	 * Pourquoi le dernier réglage n'a pas été retenu, et sur QUEL champ — reste
+	 * affiché, relié à ce seul champ (comme `ValueSlider`, revue a11y du lot 5b).
+	 */
+	let refusal = $state<{ field: Field; message: string } | null>(null);
+
+	/**
+	 * Un refus né pendant la FRAPPE n'est montré qu'en quittant le champ : taper
+	 * `-0,5` refusait le `-` et l'alerte parlait à chaque touche (revue).
+	 */
+	let pending = $state<{ field: Field; message: string } | null>(null);
 
 	const refusalId = $derived(`refus-suite-${object.name}`);
 
 	/** Pourquoi l'escalier est impossible ici, ou `null`. */
-	const cobwebReason = $derived(cobwebRefusal(object));
+	const cobwebReason = $derived(cobwebRefusal(object, atelier.functionNames));
 
 	const MODES = [
 		{ value: 'explicit', label: 'explicite : u(n) = …' },
 		{ value: 'recurrence', label: 'récurrence : u(n+1) = …' }
 	];
 
-	function report(result: { ok: true } | { ok: false; message: string }) {
-		refusal = result.ok ? null : result.message;
+	/** Un geste ponctuel (mode, nuage, escalier) : le refus se dit tout de suite. */
+	function report(field: Field, result: { ok: true } | { ok: false; message: string }) {
+		refusal = result.ok ? null : { field, message: result.message };
+	}
+
+	/** Pendant la frappe : retenu si valable, refus gardé pour la sortie du champ. */
+	function typing(field: Field, result: { ok: true } | { ok: false; message: string }) {
+		pending = result.ok ? null : { field, message: result.message };
+		if (result.ok && refusal?.field === field) refusal = null;
 	}
 
 	function handleMode(value: string) {
 		if (value === 'explicit' || value === 'recurrence') {
-			report(atelier.setSequence(object.name, { mode: value }));
+			report('mode', atelier.setSequence(object.name, { mode: value }));
 		}
 	}
 
 	function handleFirstIndex(event: Event & { currentTarget: HTMLInputElement }) {
 		const parsed = Number(event.currentTarget.value);
 		if (event.currentTarget.value.trim() === '' || !Number.isFinite(parsed)) return;
-		report(atelier.setSequence(object.name, { firstIndex: parsed }));
+		typing('firstIndex', atelier.setSequence(object.name, { firstIndex: parsed }));
 	}
 
 	function handleFirstTerm(event: Event & { currentTarget: HTMLInputElement }) {
 		const typed = event.currentTarget.value.trim();
 		if (typed === '') return;
-		report(atelier.setSequence(object.name, { firstTerm: typed }));
-	}
-
-	/** En quittant un champ, il reprend la valeur RETENUE. */
-	function restore(field: 'firstIndex' | 'firstTerm') {
-		return (event: Event & { currentTarget: HTMLInputElement }) => {
-			event.currentTarget.value = String(object[field]);
-		};
-	}
-
-	function updateDisplay(patch: Partial<SequenceDisplay>) {
-		report(atelier.setSequenceDisplay(object.name, patch));
+		typing('firstTerm', atelier.setSequence(object.name, { firstTerm: typed }));
 	}
 
 	function handleSteps(event: Event & { currentTarget: HTMLInputElement }) {
 		const parsed = Number(event.currentTarget.value);
 		if (event.currentTarget.value.trim() === '' || !Number.isFinite(parsed)) return;
-		updateDisplay({ cobwebSteps: parsed });
+		typing('steps', atelier.setSequenceDisplay(object.name, { cobwebSteps: parsed }));
 	}
+
+	/** En quittant un champ : le refus en attente se dit, et le champ reprend la valeur RETENUE. */
+	function leave(field: 'firstIndex' | 'firstTerm' | 'steps') {
+		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			if (pending?.field === field) refusal = pending;
+			pending = null;
+			event.currentTarget.value =
+				field === 'steps' ? String(object.display?.cobwebSteps ?? '') : String(object[field]);
+		};
+	}
+
+	function updateDisplay(patch: Partial<SequenceDisplay>) {
+		report('display', atelier.setSequenceDisplay(object.name, patch));
+	}
+
+	/** Relier un champ au refus, seulement s'il est le fautif. */
+	function describedBy(field: Field, extra?: string): string | undefined {
+		const ids = [extra, refusal?.field === field ? refusalId : undefined].filter(Boolean);
+		return ids.length > 0 ? ids.join(' ') : undefined;
+	}
+
+	const modeLabel = $derived(MODES.find((m) => m.value === object.mode)?.label ?? object.mode);
 </script>
 
 <div class="suite">
@@ -86,7 +116,7 @@
 			value={object.mode}
 			onValueChange={handleMode}
 			items={MODES}
-			triggerAriaLabel={`Mode de ${object.name} : ${object.mode === 'recurrence' ? 'récurrence' : 'explicite'}`}
+			triggerAriaLabel={`${modeLabel}, mode de ${object.name}`}
 			fitContent
 		/>
 	</div>
@@ -98,10 +128,11 @@
 			min="0"
 			value={object.firstIndex}
 			oninput={handleFirstIndex}
-			onchange={restore('firstIndex')}
+			onchange={leave('firstIndex')}
 			class="h-8 w-16 text-sm"
 			aria-label={`Rang du premier terme de ${object.name}`}
-			aria-describedby={refusal ? refusalId : undefined}
+			aria-invalid={refusal?.field === 'firstIndex'}
+			aria-describedby={describedBy('firstIndex')}
 		/>
 		{#if object.mode === 'recurrence'}
 			<span class="mot" aria-hidden="true">{object.name}({object.firstIndex}) =</span>
@@ -109,73 +140,81 @@
 				type="text"
 				value={object.firstTerm}
 				oninput={handleFirstTerm}
-				onchange={restore('firstTerm')}
+				onchange={leave('firstTerm')}
 				class="h-8 w-20 text-sm"
 				placeholder="0 ou a"
-				aria-label={`Premier terme de ${object.name}`}
-				aria-describedby={refusal ? refusalId : undefined}
+				aria-label={`${object.name}(${object.firstIndex}) =, premier terme de ${object.name}`}
+				aria-invalid={refusal?.field === 'firstTerm'}
+				aria-describedby={describedBy('firstTerm')}
 			/>
 		{/if}
 	</div>
 
 	{#if object.plotted && object.display}
 		{@const display = object.display}
-		<p class="titre">Sur le graphique</p>
-		<div class="ligne">
-			<ColorPicker
-				value={display.color}
-				onchange={(color) => {
-					if (isCurveColor(color)) updateDisplay({ color });
-				}}
-			/>
-			<LineWidthPicker
-				value={display.lineWidth}
-				onchange={(lineWidth) => updateDisplay({ lineWidth })}
-			/>
-			<LineStylePicker
-				value={display.lineStyle}
-				onchange={(lineStyle: LineStyle) => updateDisplay({ lineStyle })}
-			/>
-		</div>
-		<div class="ligne" role="group" aria-label={`Tracé de ${object.name}`}>
-			<button
-				type="button"
-				class="choix"
-				aria-pressed={display.representation === 'ranks'}
-				aria-label={`Tracer ${object.name} en nuage`}
-				onclick={() => updateDisplay({ representation: 'ranks' })}>nuage</button
-			>
-			<!-- `aria-disabled`, pas `disabled` : la raison reste lisible au clavier -->
-			<button
-				type="button"
-				class="choix"
-				aria-pressed={display.representation === 'cobweb'}
-				aria-disabled={cobwebReason !== null}
-				aria-label={`Tracer ${object.name} en escalier`}
-				aria-describedby={cobwebReason ? `escalier-${object.name}` : undefined}
-				onclick={() => {
-					if (cobwebReason === null) updateDisplay({ representation: 'cobweb' });
-				}}>escalier</button
-			>
-			{#if display.representation === 'cobweb'}
-				<span class="mot" aria-hidden="true">marches</span>
-				<Input
-					type="number"
-					step="1"
-					min="1"
-					value={display.cobwebSteps}
-					oninput={handleSteps}
-					class="h-8 w-16 text-sm"
-					aria-label={`Nombre de marches de ${object.name}`}
+		<div class="graphique" role="group" aria-label={`Sur le graphique : ${object.name}`}>
+			<p class="titre">Sur le graphique</p>
+			<div class="ligne">
+				<ColorPicker
+					value={display.color}
+					onchange={(color) => {
+						if (isCurveColor(color)) updateDisplay({ color });
+					}}
 				/>
+				<LineWidthPicker
+					value={display.lineWidth}
+					onchange={(lineWidth) => updateDisplay({ lineWidth })}
+				/>
+				<LineStylePicker
+					value={display.lineStyle}
+					onchange={(lineStyle: LineStyle) => updateDisplay({ lineStyle })}
+				/>
+			</div>
+			<div class="ligne" role="group" aria-label={`Tracé de ${object.name}`}>
+				<button
+					type="button"
+					class="choix"
+					aria-pressed={display.representation === 'ranks'}
+					onclick={() => updateDisplay({ representation: 'ranks' })}
+					><span class="coche" aria-hidden="true">✓</span>nuage</button
+				>
+				<!-- `aria-disabled`, pas `disabled` : la raison reste lisible au clavier -->
+				<button
+					type="button"
+					class="choix"
+					aria-pressed={display.representation === 'cobweb'}
+					aria-disabled={cobwebReason !== null}
+					aria-describedby={describedBy(
+						'display',
+						cobwebReason ? `escalier-${object.name}` : undefined
+					)}
+					onclick={() => {
+						if (cobwebReason === null) updateDisplay({ representation: 'cobweb' });
+					}}><span class="coche" aria-hidden="true">✓</span>escalier</button
+				>
+				{#if display.representation === 'cobweb'}
+					<span class="mot" aria-hidden="true">marches</span>
+					<Input
+						type="number"
+						step="1"
+						min="1"
+						value={display.cobwebSteps}
+						oninput={handleSteps}
+						onchange={leave('steps')}
+						class="h-8 w-16 text-sm"
+						aria-label={`marches de ${object.name}`}
+						aria-invalid={refusal?.field === 'steps'}
+						aria-describedby={describedBy('steps')}
+					/>
+				{/if}
+			</div>
+			{#if cobwebReason}
+				<p class="raison" id={`escalier-${object.name}`}>{cobwebReason}</p>
 			{/if}
 		</div>
-		{#if cobwebReason}
-			<p class="raison" id={`escalier-${object.name}`}>{cobwebReason}</p>
-		{/if}
 	{/if}
 
-	<p class="refus-suite" id={refusalId} role="alert">{refusal ?? ''}</p>
+	<p class="refus-suite" id={refusalId} role="alert">{refusal?.message ?? ''}</p>
 </div>
 
 <style>
@@ -211,9 +250,33 @@
 		font-size: 0.8125rem;
 		cursor: pointer;
 	}
+	.graphique {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+	}
+	/* L'état choisi ne repose pas que sur un fond pâle (projection) : bordure
+	   pleine contrastée et coche ✓ (revue a11y du lot 5b) */
+	.coche {
+		display: none;
+		margin-right: 0.25rem;
+	}
 	.choix[aria-pressed='true'] {
 		background: var(--color-muted);
+		border-color: var(--color-foreground);
 		font-weight: 600;
+	}
+	.choix[aria-pressed='true'] .coche {
+		display: inline;
+	}
+	.choix:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
+	}
+	@media (pointer: coarse) {
+		.choix {
+			min-height: 44px;
+		}
 	}
 	.choix[aria-disabled='true'] {
 		opacity: 0.55;

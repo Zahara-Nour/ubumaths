@@ -336,6 +336,22 @@ Lot 5a mergé (#805).
 - Tests : 18 serveur (15 rouges avant) + 11 navigateur (10 rouges avant) ; un
   ancien test (les deux boutons de tracé) mis en accord. Suites : 367
   navigateur, 1 263 serveur ; `check:incremental` 0 ; lint propre.
+- [x] **Tranché par David (revue du lot 5b)** : le mode CHOISI d'une suite est
+      gardé à la modification, sauf si la définition se met à se citer
+      (→ récurrence). Calcul dit le mode par la forme tapée : `u(n) =` remet en
+      explicite (le cas B1 du lot 5a reste couvert), `u(n+1) =` en récurrence.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - escalier refusé à tort pour une suite `p(n)` (lue p·(n), noms de
+    fonctions absents) ;
+  - suite « ok » qui ne dessinait rien : le moteur garde l'ARBRE substitué
+    (`substitutedAstOf`) au lieu de passer par le texte — `e^(-n)` devenait
+    `\euler^{-n}`, illisible ; `v_n` d'une autre suite explicite est remplacé ;
+    une suite qui ne se calcule ou ne se trace pas est en erreur ;
+  - a11y : noms qui commencent par le mot visible (« nuage », « escalier »,
+    « u(0) = », « marches », le mode) ; refus relié au seul champ fautif,
+    annoncé en quittant le champ (plus d'alerte à chaque touche) ; coche ✓ et
+    bordure pour l'état choisi ; 44 px au doigt ; focus visible.
+- Suites : 368 navigateur, 1 269 serveur ; `check:incremental` 0 ; lint propre.
 
 ## Lots suivants
 

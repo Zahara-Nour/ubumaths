@@ -309,7 +309,9 @@ function syncSequence(
 ): void {
 	const found = id === undefined ? undefined : graph.getFunction(id);
 	// Le nom pointait vers autre chose (une courbe, un nuage) : on le retire
-	if (found !== undefined && found.type !== 'sequence') graph.removeFunction(id!);
+	if (id !== undefined && found !== undefined && found.type !== 'sequence') {
+		graph.removeFunction(id);
+	}
 	let current = found !== undefined && found.type === 'sequence' ? found : undefined;
 	if (current === undefined) {
 		const fresh = graph.addSequence(target.mode, target.latex);

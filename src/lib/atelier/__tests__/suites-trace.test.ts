@@ -250,3 +250,59 @@ describe('saisie MathLive d’une récurrence', () => {
 		expect(terms.ok && terms.terms.map((t) => t.value)).toEqual([2, 4, 5]);
 	});
 });
+
+// =============================================================================
+// Revue de code du lot 5b
+// =============================================================================
+
+describe('revue du lot 5b', () => {
+	// 1 : `p(n)` était lu p·(n) — l'escalier refusé à tort
+	it.each([
+		['text', '2p(n)'],
+		['keyboard', '0.5p\\left(n\\right)+3']
+	] as const)('l’escalier est permis pour une suite p écrite %s', (provenance, definition) => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'p', definition }, provenance);
+		atelier.setPlotted('p', true);
+
+		expect(atelier.setSequenceDisplay('p', { representation: 'cobweb' }).ok).toBe(true);
+	});
+
+	// 2 : une suite « ok » qui ne dessine rien ne doit pas se dire « ok »
+	it('`u_n` d’une autre suite explicite est remplacé', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: '2n' }, 'text');
+		atelier.create({ kind: 'sequence', name: 'v', definition: 'u_n + v_n' }, 'text');
+		atelier.setSequence('v', { firstTerm: '1' });
+		atelier.setPlotted('v', true);
+		const graph = new GrapheurStore(null);
+
+		syncPlots(atelier, graph);
+
+		const terms = termsOf(atelier, 'v', 2);
+		expect(terms.ok && terms.terms.map((t) => t.value)).toEqual([1, 1, 3]);
+		const v = graph.functions.find((p) => p.type === 'sequence') as SequencePlottable;
+		expect(v.parseError).toBeUndefined();
+		expect(v.visible).toBe(true);
+	});
+
+	it('`e^(-n)` se calcule et se trace', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'e^(-n)' }, 'text');
+		atelier.setPlotted('u', true);
+		const graph = new GrapheurStore(null);
+
+		syncPlots(atelier, graph);
+
+		const terms = termsOf(atelier, 'u', 1);
+		expect(terms.ok && terms.terms.length).toBe(2);
+		expect(onlySequence(graph)).toMatchObject({ parseError: undefined, visible: true });
+	});
+
+	it('une suite qui ne se calcule pas est en erreur, pas « ok »', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'n*zz(n)' }, 'text');
+
+		expect(atelier.get('u')?.status).not.toBe('ok');
+	});
+});

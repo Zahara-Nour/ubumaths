@@ -45,7 +45,7 @@ import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
-import { expressionOf, termsOf } from './engine';
+import { expressionOf, graphLatexOf, termsOf } from './engine';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -148,11 +148,19 @@ const sequencePatchSchema = z
 	.strict();
 
 /** Pourquoi une suite ne peut pas se tracer en escalier, ou `null`. */
-export function cobwebRefusal(sequence: SequenceObject): string | null {
+export function cobwebRefusal(
+	sequence: SequenceObject,
+	functionNames: readonly string[]
+): string | null {
 	if (sequence.mode !== 'recurrence') {
 		return `L'escalier demande une récurrence : « ${sequence.name} » est une suite explicite.`;
 	}
-	const ast = astOfDefinition(sequence.definition, sequence.provenance);
+	// Les noms de fonctions, et celui de la suite : sans eux, `p(n)` se lisait
+	// p·(n) et l'escalier était refusé à tort (revue du lot 5b)
+	const ast = astOfDefinition(sequence.definition, sequence.provenance, [
+		...functionNames,
+		sequence.name
+	]);
 	// ⚠️ Le `n` de `u_n` / `u(n)` ne compte pas : seul un n HORS du terme
 	// précédent rend l'escalier impossible (sinon `0,5u_n + 3` était refusée)
 	const withoutSelf =
@@ -668,7 +676,11 @@ export class Atelier {
 		const keptSequence =
 			isSequence(previous) && isSequence(rebuilt)
 				? {
-						mode: rebuilt.mode,
+						// Tranché par David (revue du lot 5b) : le mode CHOISI est gardé,
+						// sauf si la définition se met à se citer (→ récurrence). Calcul dit
+						// le mode par la forme tapée (`u(n) =` / `u(n+1) =`) : c'est là que
+						// le cas B1 du lot 5a (u(3) = 5 au lieu de 7) est réglé.
+						mode: rebuilt.mode === 'recurrence' ? rebuilt.mode : previous.mode,
 						firstIndex: previous.firstIndex,
 						firstTerm: previous.firstTerm
 					}
@@ -955,7 +967,7 @@ export class Atelier {
 		const read = readSequenceDisplayPatch(patch);
 		if (!read.ok) return { ok: false, message: read.message };
 		if (read.patch.representation === 'cobweb') {
-			const reason = cobwebRefusal(current);
+			const reason = cobwebRefusal(current, this.functionNames);
 			if (reason !== null) return { ok: false, message: reason };
 		}
 		if (Object.keys(read.patch).length === 0) return { ok: true };
@@ -1307,10 +1319,18 @@ export class Atelier {
 				} as AtelierObject;
 				return;
 			}
-			if (isSequence(o) && o.mode === 'recurrence') {
+			// Toute suite, explicite ou non : « ok » doit vouloir dire qu'elle se
+			// calcule ET se trace — sinon la carte disait « ok » sur un graphique
+			// vide (revue du lot 5b)
+			if (isSequence(o)) {
 				const terms = termsOf(this, o.name, o.firstIndex);
-				if (!terms.ok) {
-					this.items[i] = { ...o, status: 'error', message: terms.message } as AtelierObject;
+				const message = !terms.ok
+					? terms.message
+					: graphLatexOf(this, o.name) === null
+						? `« ${o.name} » ne se calcule pas pour n = ${o.firstIndex}.`
+						: null;
+				if (message !== null) {
+					this.items[i] = { ...o, status: 'error', message } as AtelierObject;
 				}
 			}
 		});

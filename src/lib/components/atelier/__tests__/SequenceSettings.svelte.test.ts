@@ -34,6 +34,15 @@ function input(card: HTMLElement, label: string): HTMLInputElement {
 	return found;
 }
 
+/** Un bouton nuage / escalier, par son texte visible (WCAG 2.5.3). */
+function choice(card: HTMLElement, label: string): HTMLButtonElement {
+	const found = [...card.querySelectorAll('button.choix')].find(
+		(b) => b.textContent?.replace('✓', '').trim() === label
+	);
+	if (!found) throw new Error(`pas de bouton « ${label} »`);
+	return found as HTMLButtonElement;
+}
+
 function setInput(field: HTMLInputElement, value: string) {
 	field.value = value;
 	field.dispatchEvent(new Event('input', { bubbles: true }));
@@ -61,7 +70,7 @@ describe('la carte d’une suite (U1)', () => {
 	it('le premier terme se règle, et la suite le suit', async () => {
 		const { atelier, card } = await openSequence('2u_n');
 
-		setInput(input(card(), 'Premier terme de u'), '3');
+		setInput(input(card(), 'u(0) =, premier terme de u'), '3');
 
 		await vi.waitFor(() => expect(sequence(atelier).firstTerm).toBe('3'));
 	});
@@ -71,7 +80,7 @@ describe('la carte d’une suite (U1)', () => {
 			a.create({ kind: 'value', name: 'a', definition: '4' }, 'text')
 		);
 
-		setInput(input(card(), 'Premier terme de u'), 'a');
+		setInput(input(card(), 'u(0) =, premier terme de u'), 'a');
 
 		await vi.waitFor(() => expect(sequence(atelier).firstTerm).toBe('a'));
 	});
@@ -84,20 +93,27 @@ describe('la carte d’une suite (U1)', () => {
 		await vi.waitFor(() => expect(sequence(atelier).firstIndex).toBe(1));
 	});
 
-	it('un réglage refusé se dit', async () => {
+	it('un réglage refusé se dit en quittant le champ, relié à lui seul', async () => {
 		const { card } = await openSequence('2u_n');
+		const first = input(card(), 'u(0) =, premier terme de u');
 
-		setInput(input(card(), 'Premier terme de u'), 'u');
+		setInput(first, 'u');
+		// Pas pendant la frappe : l'alerte parlerait à chaque touche
+		expect(card().querySelector('.refus-suite')?.textContent ?? '').toBe('');
+		first.dispatchEvent(new Event('change', { bubbles: true }));
 
 		await vi.waitFor(() =>
 			expect(card().querySelector('.refus-suite')?.textContent).toContain('elle-même')
 		);
+		expect(first.getAttribute('aria-invalid')).toBe('true');
+		expect(first.getAttribute('aria-describedby')).toBe('refus-suite-u');
+		expect(input(card(), 'Rang du premier terme de u').getAttribute('aria-describedby')).toBeNull();
 	});
 
 	it('une suite explicite n’a pas de premier terme à régler', async () => {
 		const { card } = await openSequence('2n + 1');
 
-		expect(card().querySelector('input[aria-label="Premier terme de u"]')).toBeNull();
+		expect(card().querySelector('input[aria-label="u(0) =, premier terme de u"]')).toBeNull();
 		expect(card().querySelector('input[aria-label="Rang du premier terme de u"]')).toBeTruthy();
 	});
 });
@@ -116,21 +132,17 @@ describe('la suite sur le graphique (U2)', () => {
 	it('se règle en escalier, avec son nombre de marches', async () => {
 		const { atelier, card } = await openSequence('0,5u_n + 3', (a) => a.setPlotted('u', true));
 
-		(
-			card().querySelector('button[aria-label="Tracer u en escalier"]') as HTMLButtonElement
-		).click();
+		choice(card(), 'escalier').click();
 		await vi.waitFor(() => expect(sequence(atelier).display?.representation).toBe('cobweb'));
 
-		setInput(input(card(), 'Nombre de marches de u'), '4');
+		setInput(input(card(), 'marches de u'), '4');
 		await vi.waitFor(() => expect(sequence(atelier).display?.cobwebSteps).toBe(4));
 	});
 
 	it('l’escalier d’une suite explicite est désactivé, avec sa raison', async () => {
 		const { card } = await openSequence('2n + 1', (a) => a.setPlotted('u', true));
 
-		const cobweb = card().querySelector(
-			'button[aria-label="Tracer u en escalier"]'
-		) as HTMLButtonElement;
+		const cobweb = choice(card(), 'escalier');
 
 		expect(cobweb.getAttribute('aria-disabled')).toBe('true');
 		expect(card().textContent).toContain('demande une récurrence');
@@ -164,5 +176,19 @@ describe('premiers termes (U3)', () => {
 			)
 		);
 		await vi.waitFor(() => expect(container.querySelector('.nouveau')).toBeTruthy());
+	});
+});
+
+describe('revue a11y du lot 5b', () => {
+	it('le choix nuage / escalier se nomme par son mot visible et se coche', async () => {
+		const { atelier, card } = await openSequence('0,5u_n + 3', (a) => a.setPlotted('u', true));
+
+		expect(choice(card(), 'nuage').getAttribute('aria-label')).toBeNull();
+		choice(card(), 'escalier').click();
+
+		await vi.waitFor(() =>
+			expect(choice(card(), 'escalier').getAttribute('aria-pressed')).toBe('true')
+		);
+		expect(atelier.get('u')).toBeTruthy();
 	});
 });
