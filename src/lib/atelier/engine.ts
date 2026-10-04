@@ -28,6 +28,7 @@ import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
+import { tidyTerms } from './tidy-terms';
 import { derivativeOf } from './names';
 import { astOf, readNumber } from './parse';
 import { constantOf } from './constant';
@@ -175,7 +176,10 @@ function expandDerivatives(
 			// Dériver autant de fois que l'apostrophe le demande : `f''` existe.
 			let derived = target.expression;
 			for (let order = 0; order < (current.derivativeOrder ?? 1); order++) {
-				derived = differentiate(derived);
+				// Terme à terme : `differentiate` écrit a·n·xⁿ⁻¹ sans calculer le
+				// produit (`3*3x^2` sur la carte f′, retour de David) ; l'ordre des
+				// termes reste celui de la règle (voir `tidy-terms.ts`).
+				derived = tidyTerms(differentiate(derived));
 			}
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];

@@ -376,3 +376,31 @@ describe('la carte f′', () => {
 		await vi.waitFor(() => expect(derivativeCard(container)).toBeTruthy());
 	});
 });
+
+// Retour de David (2026-10-04) : re-cliquer une carte ouverte la referme
+describe('refermer une carte', () => {
+	it('re-cliquer l’en-tête d’une carte ouverte la referme', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const card = await open(container, 'f');
+		(card.querySelector('.entete') as HTMLButtonElement).click();
+
+		await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('math-field')).toBeNull());
+		expect(cardFor(container, 'f').classList.contains('selected')).toBe(false);
+	});
+
+	it('et un nouveau clic la rouvre', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'f');
+		(card.querySelector('.entete') as HTMLButtonElement).click();
+		await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('math-field')).toBeNull());
+
+		await open(container, 'f');
+
+		expect(cardFor(container, 'f').querySelector('math-field')).toBeTruthy();
+	});
+});
