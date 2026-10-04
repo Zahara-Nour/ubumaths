@@ -9,8 +9,9 @@
  * pointer la carte d'un élève vers une section du professeur, et Postgres
  * l'accepterait. D'où ces cas.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
+	findAssignedDeckCopy,
 	indexCopiedSections,
 	planDeckCopies,
 	planSectionCopies,
@@ -143,5 +144,47 @@ describe('planDeckCopies — la copie porte sa source', () => {
 
 	it('ne crée rien sans élève', () => {
 		expect(planDeckCopies(SOURCE, DECK, [])).toEqual([]);
+	});
+});
+
+describe('findAssignedDeckCopy', () => {
+	function clientRendant(result: { data: unknown; error: unknown }) {
+		const chain = {
+			select: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			order: vi.fn().mockReturnThis(),
+			limit: vi.fn(async () => result)
+		};
+		const from = vi.fn(() => chain);
+		return {
+			chain,
+			from,
+			client: { from } as unknown as Parameters<typeof findAssignedDeckCopy>[0]
+		};
+	}
+
+	it('cherche la copie par source_deck_id, jamais par le nom', async () => {
+		const copie = { id: 'copie-a', name: 'Fractions', created_at: '2026-10-04' };
+		const { chain, from, client } = clientRendant({ data: [copie], error: null });
+
+		await expect(findAssignedDeckCopy(client, 'eleve-1', 'source-a')).resolves.toEqual(copie);
+
+		expect(from).toHaveBeenCalledWith('srs_decks');
+		expect(chain.eq).toHaveBeenCalledWith('owner_id', 'eleve-1');
+		expect(chain.eq).toHaveBeenCalledWith('source_deck_id', 'source-a');
+		expect(chain.eq).not.toHaveBeenCalledWith('name', expect.anything());
+	});
+
+	it('rend null quand l’élève n’a pas de copie de ce deck', async () => {
+		const { client } = clientRendant({ data: [], error: null });
+		await expect(findAssignedDeckCopy(client, 'eleve-1', 'source-a')).resolves.toBeNull();
+	});
+
+	it('rend null (et journalise) quand la lecture échoue', async () => {
+		const { client } = clientRendant({ data: null, error: { message: 'panne' } });
+		const espion = vi.spyOn(console, 'error').mockImplementation(() => {});
+		await expect(findAssignedDeckCopy(client, 'eleve-1', 'source-a')).resolves.toBeNull();
+		expect(espion).toHaveBeenCalled();
+		espion.mockRestore();
 	});
 });

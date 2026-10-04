@@ -15,6 +15,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/programme-deck');
 
 type SB = SupabaseClient<Database>;
 
@@ -24,6 +27,11 @@ const PROGRAMME_DECK_DESCRIPTION =
 
 /**
  * Retourne l'ID du deck Programme de l'élève. Crée le deck si nécessaire.
+ *
+ * ⚠️ `userId` doit venir de la SESSION authentifiée de l'appelant, jamais d'une
+ * entrée client : la CRÉATION du paquet passe par le client service (décision
+ * de David, 2026-10-04 : un paquet auto-géré ou assigné est toujours créé par
+ * le serveur, jamais par l'élève). La LECTURE reste au client de l'élève.
  *
  * Idempotent grâce à l'index UNIQUE `uq_srs_decks_one_programme_per_owner`
  * (migration 20260610150000) + retry explicite sur code 23505.
@@ -51,8 +59,11 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 		return existing.id as string;
 	}
 
-	// 2. INSERT (l'index UNIQUE garantit unicité)
-	const { data: created, error: insertErr } = await supabase
+	// 2. INSERT par le client SERVICE (l'index UNIQUE garantit l'unicité).
+	// La base refusera bientôt à un compte connecté de créer un paquet
+	// `is_auto_managed` : seul le serveur le fait, pour l'utilisateur de la session.
+	const service = createServiceRoleClient();
+	const { data: created, error: insertErr } = await service
 		.from('srs_decks')
 		.insert({
 			owner_id: userId,
@@ -78,15 +89,18 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 				.limit(1)
 				.maybeSingle();
 			if (refreshErr) {
-				console.error('[programme-deck] Refresh after race failed:', refreshErr);
+				logger.error('Relecture du paquet Programme impossible après course', {
+					userId,
+					error: refreshErr
+				});
 				throw refreshErr;
 			}
 			if (refreshed) return refreshed.id as string;
-			console.error(
-				'[programme-deck] 23505 raised but no row found after refresh — index inconsistant ?'
-			);
+			logger.error('23505 levée mais aucun paquet Programme relu — index incohérent ?', {
+				userId
+			});
 		}
-		console.error('[programme-deck] Insert failed:', insertErr);
+		logger.error('Création du paquet Programme impossible', { userId, error: insertErr });
 		throw insertErr;
 	}
 

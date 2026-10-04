@@ -8,6 +8,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { findAssignedDeckCopy } from '$lib/server/srs/deck-copy';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -76,26 +77,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 					console.error('Contexte illisible :', studentError);
 				}
 
-				// Check if student has the deck copy
-				// Look for any assigned deck with the same name for this student
-				const { data: studentDecks, error: studentDeckError } = await supabase
-					.from('srs_decks')
-					.select('id, name, created_at')
-					.eq('owner_id', assignment.assigned_to)
-					.eq('is_assigned', true)
-					.eq('name', deck.name)
-					.order('created_at', { ascending: false })
-					.limit(1);
-
-				if (studentDeckError) {
-					console.error('Error fetching student deck:', studentDeckError);
-				}
-
-				const studentDeck = studentDecks && studentDecks.length > 0 ? studentDecks[0] : null;
-				console.log(
-					`Student ${assignment.assigned_to}: deck found = ${studentDeck ? 'YES' : 'NO'}`,
-					studentDeck?.id
-				);
+				// La copie de CE deck, retrouvée par sa source — jamais par le nom.
+				const studentDeck = await findAssignedDeckCopy(supabase, assignment.assigned_to, deckId);
 
 				// Get stats for student's deck if it exists
 				let deckStats = null;
