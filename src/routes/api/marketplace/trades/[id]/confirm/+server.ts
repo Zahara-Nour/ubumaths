@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			console.error('Remise a zero de l echange expire impossible :', resetError ?? '0 ligne');
 			throw error(
 				500,
-				"La confirmation a expire, mais l'echange n'a pas pu etre reinitialise. Reessayez."
+				"La confirmation a expiré, mais l'échange n'a pas pu être réinitialisé. Réessayez."
 			);
 		}
 

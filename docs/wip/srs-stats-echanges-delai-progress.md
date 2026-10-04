@@ -88,3 +88,20 @@ to be '42501'`) ; les 4 témoins (confirmation à 4 min, route `/confirm` jusqu'
   (3 tests). Ancienne route : 2 échecs (`expected 410 to be 500`) ; nouvelle : 3/3.
 
 Reste : PR, `security-auditor`, `db:migrate` (session principale).
+
+### Finding d'audit (PR #792) — remise à NULL puis nouvelle phase
+
+Scénario : (1) `confirmation_started_at = null` ; (2) nouvelle heure + sa confirmation ; puis
+`execute_trade`. Test écrit d'abord, lancé sur la migration telle quelle : **il passait**.
+(1) est refusée par la contrainte : `23514 new row for relation "marketplace_trades" violates
+check constraint "validate_timestamps_consistency"` (`validated_at`, figé par la garde, reste
+posé) ; (2) est refusée par la garde de délai : `42501 Le délai de confirmation (5 minutes) est
+dépassé : revalidez l'offre.` ; `execute_trade` rend `success: false`.
+
+Défense en profondeur ajoutée quand même dans la garde : heure posée → NULL = deux validations
+et deux confirmations à false. Flux légitimes vérifiés : seuls `/confirm` (expiration) et
+`refuseConfirmation` (store) remettent l'heure à NULL, et envoient déjà les deux validations à
+false. Test dédié (« remise à NULL d'une phase posée ») : rouge sans la garde, vert avec.
+
+Preuve rouge complète (migration retirée, `db:reset`) : 6 échecs / 10 ; restaurée : 10/10, les
+4 fichiers frères verts (67 tests), suite complète 169 fichiers / 2445 tests.

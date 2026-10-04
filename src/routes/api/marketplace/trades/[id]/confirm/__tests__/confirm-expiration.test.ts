@@ -111,7 +111,7 @@ describe('confirm : remise à zéro d’un échange expiré', () => {
 		expect(update).toHaveBeenCalledTimes(1);
 		expect(select).toHaveBeenCalled();
 		expect(res.status).toBe(500);
-		expect(res.message).toMatch(/pas pu etre reinitialise/);
+		expect(res.message).toMatch(/pas pu être réinitialisé/);
 	});
 
 	it('erreur à la remise à zéro → erreur explicite, pas 410', async () => {
@@ -121,7 +121,7 @@ describe('confirm : remise à zéro d’un échange expiré', () => {
 		const res = await appeler(supabase);
 
 		expect(res.status).toBe(500);
-		expect(res.message).toMatch(/pas pu etre reinitialise/);
+		expect(res.message).toMatch(/pas pu être réinitialisé/);
 	});
 
 	it('témoin : 1 ligne remise à zéro → 410 (comportement nominal)', async () => {

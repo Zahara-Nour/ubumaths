@@ -252,6 +252,60 @@ describe('échanges : délai de confirmation vérifié par la base', () => {
 		expect(ligne.confirmed_by_partner).toBe(false);
 	});
 
+	it('contournement par remise à NULL : NULL, nouvelle phase + confirmation, execute_trade → rien ne s’exécute', async () => {
+		const id = await echangeValide();
+		// B confirme à temps, puis la phase expire.
+		acceptee(await confirmerEnDirect(b, id, 'partner'));
+		await reculerPhase(id, 6);
+
+		// (1) A remet l'heure à NULL.
+		const remise = await a
+			.from('marketplace_trades')
+			.update({ confirmation_started_at: null })
+			.eq('id', id)
+			.select('id');
+		// Avant la garde de remise à zéro : refusée par la contrainte
+		// validate_timestamps_consistency (23514). Depuis : acceptée, mais tout
+		// repasse à false. Dans les deux cas, rien ne doit s'exécuter ensuite.
+		expect([null, '23514']).toContain(remise.error?.code ?? null);
+
+		// (2) A rouvre une phase et confirme dans la même écriture.
+		const relance = await a
+			.from('marketplace_trades')
+			.update({ confirmation_started_at: new Date().toISOString(), confirmed_by_initiator: true })
+			.eq('id', id)
+			.select('id');
+		// Refusée : heure expirée (avant) ou validations remises à false (depuis).
+		expect(relance.error?.code).toBe(REFUS);
+
+		const { data, error } = await a.rpc('execute_trade', { p_trade_id: id });
+		expect(error).toBeNull();
+		expect(data).toMatchObject({ success: false });
+		const ligne = await lireEchange(id);
+		expect(ligne.status).toBe('negotiating');
+		expect(ligne.confirmed_by_initiator && ligne.confirmed_by_partner).toBe(false);
+	});
+
+	it('remise à NULL d’une phase posée : validations et confirmations repassent à false', async () => {
+		const id = await echangeValide();
+		acceptee(await confirmerEnDirect(b, id, 'partner'));
+
+		// Forme de refuseConfirmation (store) réduite à SA validation : la garde
+		// doit remettre à false l'autre validation et les deux confirmations.
+		const res = await a
+			.from('marketplace_trades')
+			.update({ confirmation_started_at: null, validated_by_initiator: false })
+			.eq('id', id)
+			.select('id');
+		acceptee(res);
+		const ligne = await lireEchange(id);
+		expect(ligne.confirmation_started_at).toBeNull();
+		expect(ligne.validated_by_initiator).toBe(false);
+		expect(ligne.validated_by_partner).toBe(false);
+		expect(ligne.confirmed_by_initiator).toBe(false);
+		expect(ligne.confirmed_by_partner).toBe(false);
+	});
+
 	// ── Témoins ──────────────────────────────────────────────────────────────
 
 	it('témoin : confirmation directe dans les temps (4 min écoulées) acceptée', async () => {

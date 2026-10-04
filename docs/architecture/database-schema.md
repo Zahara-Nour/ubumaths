@@ -1086,6 +1086,10 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
     `/confirm`) ; sinon 42501. `execute_trade` n'est pas modifiée : ses 4 drapeaux ne passent à
     `true`, pour un élève, qu'à travers ce trigger ; le flux marché (`accept_proposal_atomic`,
     INSERT sans heure) n'est pas concerné.
+  - remise à NULL d'une `confirmation_started_at` posée (refus, expiration) : les deux
+    validations ET les deux confirmations repassent à `false` (défense en profondeur, même
+    migration ; aujourd'hui `validate_timestamps_consistency` refuse déjà une remise à NULL qui
+    garderait les validations, en 23514).
 - **Policy RESTRICTIVE `marketplace_trades_insert_friend_rules`** : création directe = échange
   `friend` vierge (`negotiating`, offre NULL, 4 drapeaux à false), entre deux élèves amis
   (amitié acceptée) de la même école (`same_school`). Marché activé et quotas : route

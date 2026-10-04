@@ -23,6 +23,17 @@
 -- Délai : même valeur que la route, documentée des deux côtés (une constante
 -- SQL et une constante TypeScript ne se partagent pas).
 --
+-- Défense en profondeur (audit 2026-10-04) : une remise à NULL d'une
+-- confirmation_started_at posée remet à false les deux validations ET les deux
+-- confirmations. Scénario visé : (1) heure → NULL, (2) nouvelle heure (now())
+-- + sa confirmation, la confirmation d'une phase expirée de l'autre survivant.
+-- Aujourd'hui (1) seule est déjà refusée par validate_timestamps_consistency
+-- (23514 : validated_at, figé, reste posé) ; la garde ne dépend plus de cette
+-- contrainte. Flux légitimes : seuls /confirm (expiration) et le store
+-- (refuseConfirmation) remettent l'heure à NULL, et tous deux envoient déjà
+-- les deux validations à false. Dans la même écriture, set_trade_validation_
+-- timestamp_trigger remet alors validated_at à NULL (contrainte respectée).
+--
 -- execute_trade N'EST PAS modifiée : la garde du trigger suffit.
 --   - execute_trade exige déjà les 4 drapeaux (20261004190000) ; pour les rôles
 --     de l'API, confirmed_by_* ne passe à true qu'à travers ce trigger, donc
@@ -182,6 +193,18 @@ BEGIN
     NEW.confirmed_by_partner := false;
   END IF;
 
+  -- Phase de confirmation remise à NULL (refus, expiration) : tout repart de
+  -- zéro, les deux validations ET les deux confirmations. Défense en
+  -- profondeur : une heure remise à NULL puis reposée (now()) ne doit pas
+  -- laisser survivre la confirmation d'une phase expirée. La route /confirm
+  -- et le store (refuseConfirmation) envoient déjà les validations à false.
+  IF OLD.confirmation_started_at IS NOT NULL AND NEW.confirmation_started_at IS NULL THEN
+    NEW.validated_by_initiator := false;
+    NEW.validated_by_partner := false;
+    NEW.confirmed_by_initiator := false;
+    NEW.confirmed_by_partner := false;
+  END IF;
+
   -- Début de la phase de confirmation (2026-10-04, décision de David) : l'heure
   -- est celle de la base. Posée : figée (l'ancienne valeur est gardée, sans
   -- erreur, le store renvoie encore la sienne). Remise à NULL : permise.
@@ -212,7 +235,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.guard_marketplace_trade_update() IS
-  '2026-10-04 : pour les rôles de l''API, un participant ne modifie que sa moitié de l''offre, sa validation, sa confirmation (l''autre : remise à false seulement), ou annule. Offre changée → validation de l''autre et confirmations à false. confirmation_started_at : posée par la base (now()), figée ensuite, remise à NULL permise. Sa confirmation : au plus 5 minutes après confirmation_started_at.';
+  '2026-10-04 : pour les rôles de l''API, un participant ne modifie que sa moitié de l''offre, sa validation, sa confirmation (l''autre : remise à false seulement), ou annule. Offre changée → validation de l''autre et confirmations à false. confirmation_started_at : posée par la base (now()), figée ensuite, remise à NULL permise. Remise à NULL : validations et confirmations à false. Sa confirmation : au plus 5 minutes après confirmation_started_at.';
 
 -- =============================================================================
 -- ROLLBACK — corps précédent (20261004230000_srs_stats_echanges_delai.sql),
