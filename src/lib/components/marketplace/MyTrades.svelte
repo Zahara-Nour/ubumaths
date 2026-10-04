@@ -19,7 +19,6 @@
 	} from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -32,7 +31,6 @@
 
 	// State
 	let selectedTab = $state<'active' | 'completed'>('active');
-	let selectedTrade = $state<MarketplaceTrade | null>(null);
 	let showStartTradeModal = $state(false);
 
 	// Filter trades by status
@@ -70,21 +68,10 @@
 	}
 
 	// Open trade negotiation
+	// Le tableau d'échange en temps réel est la seule interface de négociation :
+	// les échanges 'marketplace' naissent déjà terminés (accept_proposal_atomic).
 	function openTradeNegotiation(trade: MarketplaceTrade) {
-		// Friend trades use the new real-time trade board
-		if (trade.trade_type === 'friend') {
-			goto(`/dashboard/student/marketplace/trade/${trade.id}`);
-			return;
-		}
-		// Marketplace trades use the modal
-		selectedTrade = trade;
-		marketplaceStore.selectTrade(trade);
-	}
-
-	// Close trade negotiation
-	function closeTradeNegotiation() {
-		selectedTrade = null;
-		marketplaceStore.selectTrade(null);
+		goto(`/dashboard/student/marketplace/trade/${trade.id}`);
 	}
 
 	// Cancel trade
@@ -352,12 +339,6 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
-
-<!-- Trade Negotiation Modal -->
-{#if selectedTrade}
-	{@const isOpen = !!selectedTrade}
-	<TradeNegotiationModal trade={selectedTrade} open={isOpen} onClose={closeTradeNegotiation} />
-{/if}
 
 <!-- Start Friend Trade Modal -->
 {#if supabase && userId}

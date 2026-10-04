@@ -189,14 +189,6 @@ export interface CreateProposalData {
 	message?: string;
 }
 
-// Create trade offer data
-export interface CreateTradeOfferData {
-	initiator_card_ids?: string[];
-	initiator_gidouilles?: number;
-	partner_card_ids?: string[];
-	partner_gidouilles?: number;
-}
-
 // Filters for listings
 export interface ListingsFilter {
 	type?: 'all' | 'sell' | 'buy';
