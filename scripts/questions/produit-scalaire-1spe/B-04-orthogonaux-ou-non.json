@@ -2,6 +2,7 @@
 	"title": "Orthogonaux ou non ?",
 	"description": "Décider si deux vecteurs sont orthogonaux en calculant leur produit scalaire (coordonnées, normes et angle, points)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-118", "1SPE-125"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Propriétés",

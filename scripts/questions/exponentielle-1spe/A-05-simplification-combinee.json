@@ -2,6 +2,7 @@
 	"title": "Simplifier une expression exponentielle",
 	"description": "Puissance, produit et quotient combinés : réponse e^{ax+b} réduite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-101"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Propriétés algébriques",

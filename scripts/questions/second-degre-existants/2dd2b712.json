@@ -2,6 +2,7 @@
 	"id": "2dd2b712-3687-4910-ab92-378c46125129",
 	"title": "Trouver une racine évidente d'un polynôme",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-060"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Racines",

@@ -2,6 +2,7 @@
 	"title": "Calculer la forme canonique",
 	"description": "Forme canonique a(x − α)² + β par le calcul de α et β",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-052"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

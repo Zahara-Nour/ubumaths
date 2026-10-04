@@ -2,6 +2,7 @@
 	"title": "Dériver une somme avec 1/x et √x",
 	"description": "Dérivée de k·u et d'une somme de fonctions de référence : x², √x, 1/x",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-072", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

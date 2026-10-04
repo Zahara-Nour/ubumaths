@@ -2,6 +2,7 @@
 	"title": "Dériver g(ax + b)",
 	"description": "Dérivée d'une composée avec une fonction affine : (ax + b)ⁿ et √(ax + b)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-073", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

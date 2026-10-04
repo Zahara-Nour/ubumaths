@@ -2,6 +2,7 @@
 	"id": "44b58fce-45ec-4979-819f-e4bdb8540944",
 	"title": "Reconnaître la forme d'une expression du second degré",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-050", "1SPE-051", "1SPE-052"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

@@ -2,6 +2,7 @@
 	"title": "Choisir la méthode dans une figure usuelle",
 	"description": "Calculer des produits scalaires dans un carré, un triangle équilatéral ou un rectangle en choisissant la méthode adaptée (projection, angle, orthogonalité, décomposition)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-128", "1SPE-118"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Calculer un produit scalaire",

@@ -2,6 +2,7 @@
 	"title": "Intérêts simples ou composés : nature de la suite",
 	"description": "Reconnaître une suite arithmétique ou géométrique dans un placement",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-039", "1SPE-025", "1SPE-028"],
 	"theme": "Suites",
 	"domain": "Modélisation",
 	"subdomain": "Placements",

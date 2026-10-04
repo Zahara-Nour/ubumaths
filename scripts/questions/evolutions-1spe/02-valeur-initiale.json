@@ -2,6 +2,7 @@
 	"title": "Retrouver la valeur initiale avant une évolution",
 	"description": "Prix avant une hausse ou une baisse en pourcentage",
 	"grades": ["1_SPE"],
+	"points": [],
 	"theme": "Proportionnalité",
 	"domain": "Pourcentages",
 	"subdomain": "Variations",

@@ -2,6 +2,7 @@
 	"title": "Reconnaître une suite arithmétique ou géométrique à partir de sa forme explicite",
 	"description": "u(n) = an + b, u(n) = u(0) × qⁿ, ou ni l'un ni l'autre (n² + c, kⁿ + c)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-024", "1SPE-027", "1SPE-022"],
 	"theme": "Suites",
 	"domain": "Reconnaître une suite",
 	"status": "draft",

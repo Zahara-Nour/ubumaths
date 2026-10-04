@@ -3,6 +3,7 @@
 	"title": "Calculer un terme d'une suite arithmétique",
 	"description": "Calculer le terme précédent",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-024"],
 	"theme": "Suites",
 	"domain": "Suites arithmétiques",
 	"subdomain": "Calculer un terme",

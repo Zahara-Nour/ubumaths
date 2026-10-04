@@ -2,6 +2,7 @@
 	"title": "Dériver un produit",
 	"description": "Dérivée d'un produit u·v : polynôme × polynôme, x√x, (ax + b)√x",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-073", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

@@ -2,6 +2,7 @@
 	"title": "Taux de variation et nombre dérivé",
 	"description": "Taux de variation de x² ou x² + bx entre a et a + h, simplifié en fonction de h, puis sa limite f′(a) quand h tend vers 0",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-067", "1SPE-068", "1SPE-076"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

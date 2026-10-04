@@ -2,6 +2,7 @@
 	"title": "Appliquer une évolution en pourcentage",
 	"description": "Nouvelle valeur après une hausse ou une baisse",
 	"grades": ["1_SPE"],
+	"points": [],
 	"theme": "Proportionnalité",
 	"domain": "Pourcentages",
 	"subdomain": "Variations",

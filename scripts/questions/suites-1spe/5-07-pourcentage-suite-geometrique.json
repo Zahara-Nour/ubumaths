@@ -2,6 +2,7 @@
 	"title": "Évolution en pourcentage et suite géométrique",
 	"description": "Hausse ou baisse de t % par période : raison, puis expression de uₙ",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-028", "1SPE-039"],
 	"theme": "Suites",
 	"domain": "Modélisation",
 	"subdomain": "Pourcentages",

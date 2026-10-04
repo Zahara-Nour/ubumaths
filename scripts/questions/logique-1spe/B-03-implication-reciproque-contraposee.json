@@ -2,6 +2,7 @@
 	"title": "Implication, réciproque, contraposée",
 	"description": "Dire si une implication est vraie, énoncer sa réciproque ou sa contraposée, et décider si la réciproque est vraie",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-008", "1SPE-009"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Implication et équivalence",

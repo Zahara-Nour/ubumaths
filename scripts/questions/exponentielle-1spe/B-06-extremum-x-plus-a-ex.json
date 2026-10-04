@@ -2,6 +2,7 @@
 	"title": "Extremum de x ↦ (x + a)eˣ",
 	"description": "Dérivée (x + a + 1)eˣ, signe, abscisse et valeur exacte de l'extremum (−e^(−a−1))",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-091", "1SPE-073"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

@@ -2,6 +2,7 @@
 	"id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
 	"title": "Déterminer la nature de l'extremum",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-094"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

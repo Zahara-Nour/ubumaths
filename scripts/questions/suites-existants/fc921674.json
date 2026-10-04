@@ -3,6 +3,7 @@
 	"title": "Deviner le terme général à partir d'une liste des premiers termes",
 	"description": "Suite géométrique",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-027", "1SPE-036"],
 	"theme": "Suites",
 	"domain": "Apprivoiser",
 	"subdomain": "Deviner le terme général",

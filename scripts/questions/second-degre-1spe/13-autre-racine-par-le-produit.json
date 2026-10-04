@@ -2,6 +2,7 @@
 	"title": "Trouver l'autre racine avec le produit des racines",
 	"description": "Une racine connue, l'autre par x₁x₂ = c/a",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-057", "1SPE-060"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

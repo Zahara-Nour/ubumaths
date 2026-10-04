@@ -2,6 +2,7 @@
 	"title": "Résoudre cos x ≥ a ou cos x < a sur un tour",
 	"description": "Inéquation en cosinus, a valeur remarquable, résolue dans ]−π ; π] ; réponse : intervalle ou réunion",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114", "1SPE-113"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Inéquations",

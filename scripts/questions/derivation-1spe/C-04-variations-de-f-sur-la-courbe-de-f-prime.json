@@ -2,6 +2,7 @@
 	"title": "Lire les variations de f sur la courbe de f′",
 	"description": "La courbe de f′ est donnée : signe de f′, sens de variation et extremums de f (QCM)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-089", "1SPE-091"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

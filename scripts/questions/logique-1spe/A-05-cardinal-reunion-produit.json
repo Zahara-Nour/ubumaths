@@ -2,6 +2,7 @@
 	"title": "Cardinal d'une réunion et d'un produit cartésien",
 	"description": "Card(A ∪ B) = Card A + Card B − Card(A ∩ B) en contexte (activités, langues) et Card(A × B) = Card A × Card B",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-005", "1SPE-004"],
 	"theme": "Logique",
 	"domain": "Ensembles",
 	"subdomain": "Cardinal et produit cartésien",

@@ -2,6 +2,7 @@
 	"title": "Reconnaître la courbe d'une fonction exponentielle",
 	"description": "Associer une courbe à son expression : point d'abscisse 0, sens de variation, asymptote horizontale",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-103", "1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

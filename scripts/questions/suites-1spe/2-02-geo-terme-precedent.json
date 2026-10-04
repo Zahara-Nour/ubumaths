@@ -2,6 +2,7 @@
 	"title": "Calculer un terme d'une suite géométrique",
 	"description": "Calculer le terme précédent",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-027", "1SPE-035"],
 	"theme": "Suites",
 	"domain": "Suites géométriques",
 	"subdomain": "Calculer un terme",

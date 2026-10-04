@@ -2,6 +2,7 @@
 	"title": "Associer une formule à un nuage de points",
 	"description": "Reconnaître la formule explicite d'une suite arithmétique ou géométrique sur son nuage de points",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-032", "1SPE-036"],
 	"theme": "Suites",
 	"domain": "Représentation graphique",
 	"subdomain": "Associer formule et nuage",

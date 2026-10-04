@@ -2,6 +2,7 @@
 	"id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
 	"title": "Déterminer le signe d'une expression du second degré",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-058", "1SPE-061"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

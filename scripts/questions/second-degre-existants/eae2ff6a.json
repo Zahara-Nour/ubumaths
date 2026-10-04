@@ -3,6 +3,7 @@
 	"title": "Déterminer les racines d'un polynôme du second degré.",
 	"description": "Graphiquement",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-051"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

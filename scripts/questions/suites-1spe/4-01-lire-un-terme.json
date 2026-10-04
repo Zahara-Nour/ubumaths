@@ -2,6 +2,7 @@
 	"title": "Lire un terme sur un graphique",
 	"description": "Lire la valeur d'un terme sur le nuage de points d'une suite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-032"],
 	"theme": "Suites",
 	"domain": "Représentation graphique",
 	"subdomain": "Lire un terme",

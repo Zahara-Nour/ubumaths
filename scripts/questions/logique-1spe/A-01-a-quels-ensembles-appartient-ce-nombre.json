@@ -2,6 +2,7 @@
 	"title": "À quels ensembles de nombres appartient ce nombre ?",
 	"description": "Reconnaître l'appartenance d'une fraction, d'une racine carrée ou d'un décimal à ℕ, ℤ, 𝔻, ℚ et ℝ (plusieurs bonnes réponses)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-003", "1SPE-001"],
 	"theme": "Logique",
 	"domain": "Ensembles",
 	"subdomain": "Appartenance et inclusion",

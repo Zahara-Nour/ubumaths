@@ -2,6 +2,7 @@
 	"title": "Somme des puissances successives de q",
 	"description": "1 + q + q² + … + qⁿ, q = 2 ou 3",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-029", "1SPE-037"],
 	"theme": "Suites",
 	"domain": "Sommes",
 	"subdomain": "Suites géométriques",

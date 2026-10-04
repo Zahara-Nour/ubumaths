@@ -2,6 +2,7 @@
 	"title": "Cercle de diamètre [AB]",
 	"description": "Reconnaître l'ensemble des points M tels que MA·MB = 0 et en donner le centre et le rayon",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-124", "1SPE-129"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Lieux de points",

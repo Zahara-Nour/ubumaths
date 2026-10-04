@@ -2,6 +2,7 @@
 	"title": "Gain algébrique moyen",
 	"description": "Déterminer la loi du gain algébrique d'un jeu (mise déduite) puis calculer son espérance",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-163", "1SPE-164", "1SPE-165"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Jeux et gains",

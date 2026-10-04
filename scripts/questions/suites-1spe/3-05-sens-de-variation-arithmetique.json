@@ -2,6 +2,7 @@
 	"title": "Sens de variation d'une suite arithmétique",
 	"description": "Le signe de la raison r donne le sens de variation",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-038"],
 	"theme": "Suites",
 	"domain": "Sens de variation",
 	"status": "draft",

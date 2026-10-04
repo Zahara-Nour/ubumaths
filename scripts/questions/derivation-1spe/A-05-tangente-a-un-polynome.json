@@ -2,6 +2,7 @@
 	"title": "Équation de la tangente à un polynôme",
 	"description": "Calcul de f(a), de f′(a) puis de l'équation réduite de la tangente au point d'abscisse a, pour un polynôme de degré 2 ou 3",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-080", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

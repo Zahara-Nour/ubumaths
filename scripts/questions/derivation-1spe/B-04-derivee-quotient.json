@@ -2,6 +2,7 @@
 	"title": "Dériver un quotient",
 	"description": "Dérivée d'un quotient u/v : affine sur affine, polynôme du second degré sur affine",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-073", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

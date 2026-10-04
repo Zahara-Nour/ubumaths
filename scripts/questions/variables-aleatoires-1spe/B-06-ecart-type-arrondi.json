@@ -2,6 +2,7 @@
 	"title": "Écart-type : valeur arrondie",
 	"description": "Calculer l'espérance, la variance puis l'écart-type d'une variable aléatoire, arrondi au centième",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-165"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Variance et écart-type",

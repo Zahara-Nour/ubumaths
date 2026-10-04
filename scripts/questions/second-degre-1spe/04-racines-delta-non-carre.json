@@ -2,6 +2,7 @@
 	"title": "Calculer les racines avec le discriminant (valeurs exactes)",
 	"description": "Δ non carré parfait : racines avec radical simplifié",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-053", "1SPE-055"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

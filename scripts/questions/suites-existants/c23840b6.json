@@ -3,6 +3,7 @@
 	"title": "Déterminer la raison d'une suite arithmétique",
 	"description": "À partir de deux termes",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-024"],
 	"theme": "Suites",
 	"domain": "Suites arithmétiques",
 	"subdomain": "Déterminer la raison",

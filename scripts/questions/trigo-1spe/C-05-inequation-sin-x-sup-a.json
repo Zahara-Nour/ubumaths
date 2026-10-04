@@ -2,6 +2,7 @@
 	"title": "Résoudre sin x > a sur un tour",
 	"description": "Inéquation sin x > a, a valeur remarquable, résolue dans [0 ; 2π[ ; réponse : intervalle ou réunion",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114", "1SPE-113"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Inéquations",

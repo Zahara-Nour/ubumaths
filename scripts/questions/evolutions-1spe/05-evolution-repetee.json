@@ -2,6 +2,7 @@
 	"title": "Coefficient multiplicateur d'une évolution répétée",
 	"description": "Même taux appliqué plusieurs années de suite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-028"],
 	"theme": "Proportionnalité",
 	"domain": "Pourcentages",
 	"subdomain": "Variations",

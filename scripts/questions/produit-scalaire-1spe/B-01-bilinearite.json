@@ -2,6 +2,7 @@
 	"title": "Bilinéarité du produit scalaire",
 	"description": "Développer un produit scalaire par bilinéarité à partir des normes et du produit scalaire de deux vecteurs",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-119"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Propriétés",

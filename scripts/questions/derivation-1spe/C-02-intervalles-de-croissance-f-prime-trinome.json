@@ -2,6 +2,7 @@
 	"title": "Intervalles où f est croissante, f′ trinôme du second degré",
 	"description": "f′(x) = ax² + bx + c à racines entières : signe du trinôme, réponse en intervalle ou réunion, tableau de variations au corrigé",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-089", "1SPE-056"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

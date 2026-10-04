@@ -2,6 +2,7 @@
 	"title": "Équations trigonométriques : aucune solution, cos x = cos α, sin x = sin α",
 	"description": "cos x = k avec |k| > 1 et sin x = ±3/2, ±5/2 (ensemble vide) ; cos x = cos α dans ]−π ; π] ; sin x = sin α dans [0 ; 2π[",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114", "1SPE-112"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Équations",

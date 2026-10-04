@@ -2,6 +2,7 @@
 	"title": "Probabilité d'un événement du type X ≥ a, X < a ou a ≤ X ≤ b",
 	"description": "À partir du tableau de la loi, additionner les probabilités des valeurs qui réalisent l'événement (inégalité large ou stricte)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-161", "1SPE-157"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Loi d'une variable aléatoire",

@@ -2,6 +2,7 @@
 	"title": "Résoudre une inéquation du type eᵘ ≤ eᵛ",
 	"description": "Inéquation e^u ≤ e^v ou e^u > e^v, u et v affines, réponse en intervalle",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Équations et inéquations",
