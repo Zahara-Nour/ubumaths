@@ -590,7 +590,7 @@
 		{:else if classChart}
 			{#if histogram?.seriesName}
 				<!-- Deux séries (lot 5 PR c) : le nom au-dessus de chaque histogramme -->
-				<p class="stat-nom-serie">{histogram.seriesName}</p>
+				<div class="stat-nom-serie">{histogram.seriesName}</div>
 			{/if}
 			<svg
 				role="img"

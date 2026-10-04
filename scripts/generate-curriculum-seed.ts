@@ -329,7 +329,7 @@ const sql = `-- ================================================================
 -- l'app.
 --
 -- Le markdown garde un seul rôle : amorcer un niveau NEUF (2de, terminale…).
--- Y saisir 153 points à la main dans un formulaire serait une punition.
+-- Y saisir des centaines de points à la main dans un formulaire serait une punition.
 --
 -- Ce que le seed ne renseigne pas, volontairement :
 --   · \`regime_acquisition\` — au défaut ('diversite') ; c'est un choix de prof
