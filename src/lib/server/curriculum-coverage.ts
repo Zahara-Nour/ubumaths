@@ -26,6 +26,7 @@
 import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/references';
 import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
+import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
 
 type Sb = App.Locals['supabase'];
 
@@ -49,6 +50,44 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 				.filter((id): id is string => id !== null)
 		)
 	];
+}
+
+interface TemplatePointRow {
+	template_id: string;
+	point_id: string;
+	curriculum_points: {
+		curriculum_objectives: { curriculum_themes: { grade: string } | null } | null;
+	} | null;
+}
+
+/**
+ * Points rattachés à des modèles de question, restreints au niveau de la
+ * classe quand il est connu.
+ *
+ * Une carte partagée entre deux référentiels (ex. T_SPE et T_COMP) porte un
+ * point de chaque programme : sans ce filtre, la séance d'une classe de T_SPE
+ * couvrirait aussi le point de T_COMP, et le compte de points couverts du
+ * cahier de texte serait gonflé. Règle détaillée : `keepLinksOfGrade`.
+ */
+async function templatePointIds(
+	supabase: Sb,
+	templateIds: string[],
+	grade: string | null,
+	context: string
+): Promise<string[]> {
+	const { data, error } = await supabase
+		.from('question_template_points')
+		.select(
+			'template_id, point_id, curriculum_points(curriculum_objectives(curriculum_themes(grade)))'
+		)
+		.in('template_id', templateIds);
+	if (error) throw new Error(`reconcileAutoCoverage ${context}: ${error.message}`);
+
+	const rows = keepLinksOfGrade((data ?? []) as unknown as TemplatePointRow[], grade, (r) => ({
+		template_id: r.template_id,
+		grade: r.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
+	}));
+	return [...new Set(rows.map((r) => r.point_id))];
 }
 
 /** Taille d'une page de `question_templates` (plafond de PostgREST) */
@@ -99,7 +138,12 @@ function readCategories(raw: unknown): SeriesCategoryRef[] {
  * Un identifiant cité peut être celui d'une évaluation OU, dans un texte écrit
  * avant la séparation, celui de l'ancien assessment (`legacy_assessment_id`).
  */
-export async function evaluationCurriculumPoints(supabase: Sb, ids: string[]): Promise<string[]> {
+export async function evaluationCurriculumPoints(
+	supabase: Sb,
+	ids: string[],
+	/** Niveau de la classe de la séance ; `null` = tous les points. */
+	grade: string | null = null
+): Promise<string[]> {
 	const uuids = ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
 	if (uuids.length === 0) return [];
 
@@ -149,16 +193,12 @@ export async function evaluationCurriculumPoints(supabase: Sb, ids: string[]): P
 	);
 	if (matching.length === 0) return [];
 
-	const { data: points, error: ptsErr } = await supabase
-		.from('question_template_points')
-		.select('point_id')
-		.in(
-			'template_id',
-			matching.map((t) => t.id)
-		);
-	if (ptsErr) throw new Error(`reconcileAutoCoverage evaluation tags: ${ptsErr.message}`);
-
-	return [...new Set((points ?? []).map((p) => p.point_id))];
+	return templatePointIds(
+		supabase,
+		matching.map((t) => t.id),
+		grade,
+		'evaluation tags'
+	);
 }
 
 export interface ReconcileReport {
@@ -201,10 +241,13 @@ export async function reconcileAutoCoverage(
 	// décocher une case, et la réconciliation ci-dessous retire alors son point.
 	const { data: entry, error: entryErr } = await supabase
 		.from('class_journal_entries')
-		.select('lesson_content')
+		.select('lesson_content, classes(grade)')
 		.eq('id', entryId)
 		.maybeSingle();
 	if (entryErr) throw new Error(`reconcileAutoCoverage entry: ${entryErr.message}`);
+	// Niveau de la classe de la séance : écarte les points de l'autre programme
+	// des cartes partagées. Classe sans niveau → tous les points, comme avant.
+	const classGrade = entry?.classes?.grade ?? null;
 
 	// Les travaux à faire vivent dans leur propre table depuis qu'une séance peut
 	// en porter plusieurs. Les oublier ici ferait disparaître de la couverture
@@ -273,16 +316,22 @@ export async function reconcileAutoCoverage(
 	}
 
 	if (templateIds.size > 0) {
-		const { data, error } = await supabase
-			.from('question_template_points')
-			.select('point_id')
-			.in('template_id', [...templateIds]);
-		if (error) throw new Error(`reconcileAutoCoverage question tags: ${error.message}`);
-		for (const t of (data ?? []) as { point_id: string }[]) desiredSet.add(t.point_id);
+		for (const pointId of await templatePointIds(
+			supabase,
+			[...templateIds],
+			classGrade,
+			'question tags'
+		)) {
+			desiredSet.add(pointId);
+		}
 	}
 
 	if (evaluationIds.size > 0) {
-		for (const pointId of await evaluationCurriculumPoints(supabase, [...evaluationIds])) {
+		for (const pointId of await evaluationCurriculumPoints(
+			supabase,
+			[...evaluationIds],
+			classGrade
+		)) {
 			desiredSet.add(pointId);
 		}
 	}

@@ -12,6 +12,7 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { templateToBadge } from '$lib/server/srs/capacity-badge';
+import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
 
 /**
  * Sous-ensemble des CapacityBadge utilisé côté Programme : un template seul
@@ -73,7 +74,7 @@ function toProgrammeBadge(b: ReturnType<typeof templateToBadge>): ProgrammeBadge
 }
 
 export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> => {
-	const { user } = await requireAuth(locals);
+	const { user, profile } = await requireAuth(locals);
 
 	// 1. Récupérer le deck Programme (is_auto_managed=true)
 	const { data: deck, error: deckErr } = await locals.supabase
@@ -128,7 +129,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		locals.supabase
 			.from('question_template_points')
 			.select(
-				'template_id, curriculum_points!inner(objective_id, curriculum_objectives!inner(id, name, display_order))'
+				'template_id, curriculum_points!inner(objective_id, curriculum_objectives!inner(id, name, display_order, curriculum_themes(grade)))'
 			)
 			.in('template_id', templateIds)
 			// Cast nécessaire : Supabase JS ne type pas la syntaxe d'ordre sur jointure nested.
@@ -168,12 +169,28 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		template_id: string;
 		curriculum_points: {
 			objective_id: string;
-			curriculum_objectives: { id: string; name: string; display_order: number } | null;
+			curriculum_objectives: {
+				id: string;
+				name: string;
+				display_order: number;
+				curriculum_themes: { grade: string } | null;
+			} | null;
 		} | null;
 	};
+	// Carte partagée entre deux référentiels (ex. T_SPE et T_COMP) : seuls les
+	// objectifs du niveau de l'élève comptent. Sans cela, le « 1er objectif
+	// rencontré » pouvait être celui de l'autre programme.
+	const linksOfGrade = keepLinksOfGrade(
+		(links ?? []) as unknown as LinkRow[],
+		profile.grade,
+		(l) => ({
+			template_id: l.template_id,
+			grade: l.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
+		})
+	);
 	const objectiveByTemplate = new Map<string, { id: string; name: string }>();
 	// On garde le 1er objectif rencontré (le plus petit display_order grâce au tri ci-dessus)
-	for (const l of (links ?? []) as unknown as LinkRow[]) {
+	for (const l of linksOfGrade) {
 		const obj = l.curriculum_points?.curriculum_objectives;
 		if (obj && !objectiveByTemplate.has(l.template_id)) {
 			objectiveByTemplate.set(l.template_id, { id: obj.id, name: obj.name });
