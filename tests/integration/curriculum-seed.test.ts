@@ -7,6 +7,7 @@
  *   - 2de     → `20260903090000_seed_curriculum_2de.sql`
  *   - Tˡᵉ spé → `20261004100000_seed_curriculum_terminale_spe.sql`
  *   - Tˡᵉ maths complémentaires → `20261004150000_seed_curriculum_terminale_comp.sql`
+ *   - Tˡᵉ maths expertes → `20261004170000_seed_curriculum_terminale_exp.sql`
  *     (tous générés par `scripts/generate-curriculum-seed.ts`)
  *
  * Ces tests ne re-valident pas le contenu pédagogique (c'est la relecture du
@@ -426,6 +427,133 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 		);
 
 		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TCOMP-%');
+		expect(data ?? []).toHaveLength(0);
+	});
+});
+
+describe('Seed du programme — terminale maths expertes', () => {
+	it('pose 3 thèmes, 11 objectifs et 153 points', async () => {
+		const { themes, objectives, points } = await pointsOfGrade('T_EXP');
+		expect(themes).toHaveLength(3);
+		expect(objectives).toHaveLength(11);
+		expect(points).toHaveLength(153);
+	});
+
+	it('reproduit la typologie du BO', async () => {
+		const { points } = await pointsOfGrade('T_EXP');
+		const by = (k: string) => points.filter((p) => p.kind === k).length;
+		expect(by('connaissance')).toBe(65); // Contenus
+		expect(by('savoir_faire')).toBe(72); // Capacités + algorithmes + problèmes possibles
+		expect(by('demonstration')).toBe(16); // Démonstrations
+	});
+
+	// Ici le BO dit « Démonstrations », sans « possibles » : elles sont attendues
+	// (contrairement aux maths complémentaires). Les 32 approfondissements sont
+	// les exemples d'algorithmes et les « Problèmes possibles » (décision de David).
+	it('garde les démonstrations attendues et les problèmes possibles en approfondissement', async () => {
+		const { points } = await pointsOfGrade('T_EXP');
+		const demonstrations = points.filter((p) => p.kind === 'demonstration');
+		expect(demonstrations).toHaveLength(16);
+		expect(demonstrations.every((p) => p.exigence === 'attendu')).toBe(true);
+		const deeper = points.filter((p) => p.exigence === 'approfondissement');
+		expect(deeper).toHaveLength(32);
+		expect(deeper.every((p) => p.kind === 'savoir_faire')).toBe(true);
+	});
+
+	// Arithmétique et Graphes et matrices n'ont pas de sous-parties dans le BO :
+	// chacune est découpée en trois objectifs (décision de David, 2026-10-04).
+	it('découpe les parties 2 et 3 en trois objectifs chacune', async () => {
+		const { objectives, points } = await pointsOfGrade('T_EXP');
+		const expected: Array<[string, number, number]> = [
+			['Divisibilité et congruences', 71, 83],
+			['PGCD, théorèmes de Bézout et de Gauss', 84, 98],
+			['Nombres premiers', 99, 111],
+			['Graphes', 112, 121],
+			['Matrices', 122, 138],
+			['Chaînes de Markov', 139, 153]
+		];
+		for (const [name, first, last] of expected) {
+			const objective = objectives.find((o) => o.name === name);
+			expect(objective, name).toBeDefined();
+			const numbers = points
+				.filter((p) => p.objective_id === objective!.id)
+				.map((p) => Number(p.code!.slice(5)))
+				.sort((a, b) => a - b);
+			expect(numbers, name).toEqual(Array.from({ length: last - first + 1 }, (_, i) => first + i));
+		}
+	});
+
+	it('suit les trois parties du BO', async () => {
+		const { themes } = await pointsOfGrade('T_EXP');
+		expect(themes.map((t) => t.name).sort()).toEqual(
+			['Arithmétique', 'Graphes et matrices', 'Nombres complexes'].sort()
+		);
+	});
+
+	it('donne des codes TEXP-001 à TEXP-153, uniques et contigus', async () => {
+		const { points } = await pointsOfGrade('T_EXP');
+		const codes = points.map((p) => p.code);
+		expect(codes.every((c) => /^TEXP-\d{3}$/.test(c!))).toBe(true);
+		const numbers = codes.map((c) => Number(c!.slice(5))).sort((a, b) => a - b);
+		expect(numbers).toEqual(Array.from({ length: 153 }, (_, i) => i + 1));
+	});
+
+	it('laisse au prof regime_acquisition et rang', async () => {
+		const { points } = await pointsOfGrade('T_EXP');
+		expect(points).toHaveLength(153);
+		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
+		expect(points.filter((p) => p.rang !== null)).toHaveLength(0);
+	});
+
+	it('sort sans rien faire si le niveau existe déjà', () => {
+		const seed = readFileSync(
+			new URL(
+				'../../supabase/migrations/20261004170000_seed_curriculum_terminale_exp.sql',
+				import.meta.url
+			),
+			'utf8'
+		);
+		expect(seed).toMatch(
+			/IF EXISTS \(SELECT 1 FROM public\.curriculum_themes WHERE grade = 'T_EXP'\) THEN/
+		);
+		expect(seed).not.toMatch(/on conflict/i);
+		expect(seed).not.toMatch(/^\s*update\s/im);
+	});
+});
+
+/** Accès (Q147) : même règle que la spécialité — connecté lit, anon ne lit rien. */
+describe('Seed du programme — terminale maths expertes, accès', () => {
+	afterAll(async () => {
+		await cleanupCompetenceTestData();
+	});
+
+	it('un élève connecté lit les 153 points', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const client = (await createAuthenticatedClient(
+			student.email
+		)) as unknown as SupabaseClient<Database>;
+
+		const { data, error } = await client
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TEXP-%');
+		expect(error).toBeNull();
+		expect(data ?? []).toHaveLength(153);
+	});
+
+	it('un visiteur anonyme ne lit aucun point', async () => {
+		// Les 153 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+		const { points } = await pointsOfGrade('T_EXP');
+		expect(points).toHaveLength(153);
+
+		const anon = createClient<Database>(
+			process.env.SUPABASE_TEST_URL || 'http://localhost:54321',
+			process.env.SUPABASE_TEST_ANON_KEY ||
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+			{ auth: { persistSession: false, autoRefreshToken: false } }
+		);
+
+		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TEXP-%');
 		expect(data ?? []).toHaveLength(0);
 	});
 });

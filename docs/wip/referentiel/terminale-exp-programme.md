@@ -1,14 +1,14 @@
-# Programme de suivi terminale mathématiques expertes — Thème → Objectif → Point (à relire)
+# Programme de suivi terminale mathématiques expertes — Thème → Objectif → Point
 
 > **But** : **amorçage** du référentiel de programme (tables `curriculum_*`), grade `'T_EXP'`.
 > ⚠️ **Ce fichier ne fait plus foi une fois le niveau amorcé** : la page **Programme** (`/dashboard/teacher/programme`) prend le relais. Le corriger ici ne produit plus rien — cf. le référentiel de 1ʳᵉ, même règle.
 > **Source** : « Programme d'enseignement optionnel de mathématiques expertes de terminale générale » — PDF fourni par David le 2026-10-03.
 >
-> **Statut** : **brouillon, à relire par David**. Formules reconstruites depuis une extraction texte du PDF (fractions, exposants, indices et conjugués cassés par l'extraction).
+> **Statut** : relu par David le 2026-10-04 (recommandations suivies : « Problèmes possibles » en `[SF+]`, découpage des parties 2 et 3 en trois objectifs chacune). Formules reconstruites depuis une extraction texte du PDF, puis revues contre le texte du BO.
 >
 > L'ordre suit celui du sommaire du BO. Les rubriques **« Préambule »**, **« Intentions majeures »**, **« Quelques lignes directrices pour l'enseignement »**, **« Organisation du programme »**, les textes d'introduction de chaque partie et les encarts **« Histoire des mathématiques »** sont des textes destinés au professeur : ils ne donnent **aucun point**. Le programme ne comporte pas de partie « Automatismes » ni « Algorithmique et programmation ».
 >
-> Les parties **Arithmétique** et **Graphes et matrices** du BO n'ont pas de sous-parties : chacune donne un **objectif unique**, qui porte le titre de la partie.
+> Les parties **Arithmétique** et **Graphes et matrices** du BO n'ont pas de sous-parties. Un objectif unique de plus de 40 points serait illisible dans la page Programme : chacune est **découpée en trois objectifs** (divisibilité et congruences / PGCD, Bézout et Gauss / nombres premiers ; graphes / matrices / chaînes de Markov). Ce découpage est **interprétatif** — écart assumé, comme le thème 1 de la spécialité. Un point qui relève de deux objectifs va à celui dont il est l'outil principal (la matrice d'adjacence et le nombre de chemins vont aux graphes).
 
 ---
 
@@ -23,7 +23,7 @@ Celle de terminale spé — les tags encodent les rubriques du BO, on ne les inv
 | `[D]`   | `demonstration` | `attendu`           | **Démonstration(s)**                                  |
 | `[SF+]` | `savoir_faire`  | `approfondissement` | **Exemples d'algorithmes** et **Problèmes possibles** |
 
-> Le BO de mathématiques expertes n'a pas de rubrique « Approfondissements possibles ». Il propose en revanche des **« Problèmes possibles, mais en aucun cas obligatoires »** (« Organisation du programme ») : ils reçoivent le tag `[SF+]` (approfondissement), par analogie avec les « Approfondissements possibles » de la spécialité. ⚠️ **Hésitation à trancher** : l'alternative est de ne pas en faire des points (texte de pistes pour le professeur et l'épreuve orale, comme les « thèmes d'étude » des mathématiques complémentaires).
+> Le BO de mathématiques expertes n'a pas de rubrique « Approfondissements possibles ». Il propose en revanche des **« Problèmes possibles, mais en aucun cas obligatoires »** (« Organisation du programme ») : ils reçoivent le tag `[SF+]` (approfondissement), par analogie avec les « Approfondissements possibles » de la spécialité. Décision de David (2026-10-04) : un approfondissement ne pénalise pas le suivi, et ces problèmes, souvent traités en classe, gagnent un point auquel rattacher une fiche. Ils diffèrent des « thèmes d'étude » des mathématiques complémentaires, exclus parce que transversaux et non rattachés à une partie.
 >
 > Les démonstrations sont intitulées « Démonstration(s) », sans « possible(s) » : elles reçoivent le tag `[D]` (attendu), comme en spécialité, et non le `[D+]` des mathématiques complémentaires.
 
@@ -151,103 +151,125 @@ Quand une même phrase du BO donnerait un contenu et une démonstration de libel
 
 ## 2. Arithmétique
 
-### 2.1 Arithmétique
+### 2.1 Divisibilité et congruences
 
 - [C] `TEXP-071` Divisibilité dans $\mathbb{Z}$
 - [C] `TEXP-072` Division euclidienne d'un élément de $\mathbb{Z}$ par un élément de $\mathbb{N}^*$
 - [C] `TEXP-073` Congruences dans $\mathbb{Z}$
 - [C] `TEXP-074` Compatibilité des congruences avec les opérations
-- [C] `TEXP-075` PGCD de deux entiers
-- [C] `TEXP-076` Algorithme d'Euclide
-- [C] `TEXP-077` Couples d'entiers premiers entre eux
-- [C] `TEXP-078` Théorème de Bézout
-- [C] `TEXP-079` Théorème de Gauss
-- [C] `TEXP-080` Nombres premiers
-- [C] `TEXP-081` L'ensemble des nombres premiers est infini
-- [C] `TEXP-082` Existence et unicité de la décomposition d'un entier en produit de facteurs premiers
-- [C] `TEXP-083` Petit théorème de Fermat
 
-- [SF] `TEXP-084` Déterminer les diviseurs d'un entier
-- [SF] `TEXP-085` Déterminer le PGCD de deux entiers
-- [SF] `TEXP-086` Résoudre une congruence $ax \equiv b \,[n]$
-- [SF] `TEXP-087` Déterminer un inverse de $a$ modulo $n$ lorsque $a$ et $n$ sont premiers entre eux
-- [SF] `TEXP-088` Établir des tests de divisibilité
-- [SF] `TEXP-089` Utiliser des tests de divisibilité
-- [SF] `TEXP-090` Étudier la primalité de certains nombres
-- [SF] `TEXP-091` Étudier des problèmes de chiffrement
-- [SF] `TEXP-092` Résoudre des équations diophantiennes simples
+- [SF] `TEXP-075` Déterminer les diviseurs d'un entier
+- [SF] `TEXP-076` Résoudre une congruence $ax \equiv b \,[n]$
+- [SF] `TEXP-077` Déterminer un inverse de $a$ modulo $n$ lorsque $a$ et $n$ sont premiers entre eux
+- [SF] `TEXP-078` Établir des tests de divisibilité
+- [SF] `TEXP-079` Utiliser des tests de divisibilité
+- [SF] `TEXP-080` Étudier des problèmes de chiffrement
 
-- [D] `TEXP-093` Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \in \mathbb{Z}^2$
-- [D] `TEXP-094` Théorème de Gauss (démonstration)
-- [D] `TEXP-095` L'ensemble des nombres premiers est infini (démonstration)
+- [SF+] `TEXP-081` Problèmes de codage (codes barres, code ISBN, clé du Rib, code Insee)
+- [SF+] `TEXP-082` Problèmes de chiffrement (affine, Vigenère, Hill, RSA)
+- [SF+] `TEXP-083` Exemples simples de codes correcteurs
 
-- [SF+] `TEXP-096` Algorithme d'Euclide de calcul du PGCD de deux nombres
-- [SF+] `TEXP-097` Calcul d'un couple de Bézout par l'algorithme d'Euclide
-- [SF+] `TEXP-098` Crible d'Ératosthène
-- [SF+] `TEXP-099` Décomposition en facteurs premiers
-- [SF+] `TEXP-100` Détermination des racines rationnelles d'un polynôme à coefficients entiers
-- [SF+] `TEXP-101` Lemme chinois et applications à des situations concrètes
-- [SF+] `TEXP-102` Démonstrations du petit théorème de Fermat
-- [SF+] `TEXP-103` Problèmes de codage (codes barres, code ISBN, clé du Rib, code Insee)
-- [SF+] `TEXP-104` Étude de tests de primalité : notion de témoin, nombres de Carmichaël
-- [SF+] `TEXP-105` Problèmes de chiffrement (affine, Vigenère, Hill, RSA)
-- [SF+] `TEXP-106` Recherche de nombres premiers particuliers (Mersenne, Fermat)
-- [SF+] `TEXP-107` Exemples simples de codes correcteurs
-- [SF+] `TEXP-108` Étude du système cryptographique RSA
-- [SF+] `TEXP-109` Détermination des triplets pythagoriciens
-- [SF+] `TEXP-110` Étude des sommes de deux carrés par les entiers de Gauss
-- [SF+] `TEXP-111` Étude de l'équation de Pell-Fermat
+### 2.2 PGCD, théorèmes de Bézout et de Gauss
+
+- [C] `TEXP-084` PGCD de deux entiers
+- [C] `TEXP-085` Algorithme d'Euclide
+- [C] `TEXP-086` Couples d'entiers premiers entre eux
+- [C] `TEXP-087` Théorème de Bézout
+- [C] `TEXP-088` Théorème de Gauss
+
+- [SF] `TEXP-089` Déterminer le PGCD de deux entiers
+- [SF] `TEXP-090` Résoudre des équations diophantiennes simples
+
+- [D] `TEXP-091` Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \in \mathbb{Z}^2$
+- [D] `TEXP-092` Théorème de Gauss (démonstration)
+
+- [SF+] `TEXP-093` Algorithme d'Euclide de calcul du PGCD de deux nombres
+- [SF+] `TEXP-094` Calcul d'un couple de Bézout par l'algorithme d'Euclide
+- [SF+] `TEXP-095` Détermination des racines rationnelles d'un polynôme à coefficients entiers
+- [SF+] `TEXP-096` Lemme chinois et applications à des situations concrètes
+- [SF+] `TEXP-097` Détermination des triplets pythagoriciens
+- [SF+] `TEXP-098` Étude de l'équation de Pell-Fermat
+
+### 2.3 Nombres premiers
+
+- [C] `TEXP-099` Nombres premiers
+- [C] `TEXP-100` L'ensemble des nombres premiers est infini
+- [C] `TEXP-101` Existence et unicité de la décomposition d'un entier en produit de facteurs premiers
+- [C] `TEXP-102` Petit théorème de Fermat
+
+- [SF] `TEXP-103` Étudier la primalité de certains nombres
+
+- [D] `TEXP-104` L'ensemble des nombres premiers est infini (démonstration)
+
+- [SF+] `TEXP-105` Crible d'Ératosthène
+- [SF+] `TEXP-106` Décomposition en facteurs premiers
+- [SF+] `TEXP-107` Démonstrations du petit théorème de Fermat
+- [SF+] `TEXP-108` Étude de tests de primalité : notion de témoin, nombres de Carmichaël
+- [SF+] `TEXP-109` Recherche de nombres premiers particuliers (Mersenne, Fermat)
+- [SF+] `TEXP-110` Étude du système cryptographique RSA
+- [SF+] `TEXP-111` Étude des sommes de deux carrés par les entiers de Gauss
 
 ---
 
 ## 3. Graphes et matrices
 
-### 3.1 Graphes et matrices
+### 3.1 Graphes
 
 - [C] `TEXP-112` Graphe, sommets, arêtes
 - [C] `TEXP-113` Exemple du graphe complet
 - [C] `TEXP-114` Sommets adjacents, degré, ordre d'un graphe
 - [C] `TEXP-115` Chaîne, longueur d'une chaîne
 - [C] `TEXP-116` Graphe connexe
-- [C] `TEXP-117` Notion de matrice (tableau de nombres réels)
-- [C] `TEXP-118` Matrice carrée, matrice colonne, matrice ligne
-- [C] `TEXP-119` Opérations sur les matrices
-- [C] `TEXP-120` Inverse d'une matrice carrée
-- [C] `TEXP-121` Puissances d'une matrice carrée
-- [C] `TEXP-122` Représentation matricielle : matrice d'adjacence d'un graphe
-- [C] `TEXP-123` Représentation matricielle des transformations géométriques du plan
-- [C] `TEXP-124` Représentation matricielle des systèmes linéaires
-- [C] `TEXP-125` Représentation matricielle des suites récurrentes
-- [C] `TEXP-126` Exemples de calcul de puissances de matrices carrées d'ordre $2$ ou $3$
-- [C] `TEXP-127` Suite de matrices colonnes $(U_n)$ vérifiant une relation de récurrence du type $U_{n+1} = AU_n + C$
-- [C] `TEXP-128` Graphe orienté pondéré associé à une chaîne de Markov à deux ou trois états
-- [C] `TEXP-129` Chaîne de Markov à deux ou trois états
-- [C] `TEXP-130` Distribution initiale d'une chaîne de Markov, représentée par une matrice ligne $\pi_0$
-- [C] `TEXP-131` Matrice de transition d'une chaîne de Markov, graphe pondéré associé
-- [C] `TEXP-132` Pour une chaîne de Markov à deux ou trois états de matrice $P$, interprétation du coefficient $(i, j)$ de $P^n$
-- [C] `TEXP-133` Distribution d'une chaîne de Markov après $n$ transitions, représentée comme la matrice ligne $\pi_0 P^n$
-- [C] `TEXP-134` Distributions invariantes d'une chaîne de Markov à deux ou trois états
+- [C] `TEXP-117` Représentation matricielle : matrice d'adjacence d'un graphe
 
-- [SF] `TEXP-135` Modéliser une situation par un graphe
-- [SF] `TEXP-136` Modéliser une situation par une matrice
-- [SF] `TEXP-137` Associer un graphe orienté pondéré à une chaîne de Markov à deux ou trois états
-- [SF] `TEXP-138` Calculer l'inverse d'une matrice carrée
-- [SF] `TEXP-139` Calculer les puissances d'une matrice carrée
-- [SF] `TEXP-140` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire
-- [SF] `TEXP-141` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire
-- [SF] `TEXP-142` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour calculer le nombre de chemins de longueur donnée entre deux sommets d'un graphe
-- [SF] `TEXP-143` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités
-- [SF] `TEXP-144` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : déterminer une probabilité invariante
+- [SF] `TEXP-118` Modéliser une situation par un graphe
+- [SF] `TEXP-119` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour calculer le nombre de chemins de longueur donnée entre deux sommets d'un graphe
 
-- [D] `TEXP-145` Expression du nombre de chemins de longueur $n$ reliant deux sommets d'un graphe à l'aide de la puissance $n$-ième de la matrice d'adjacence
-- [D] `TEXP-146` Pour une chaîne de Markov, expression de la probabilité de passer de l'état $i$ à l'état $j$ en $n$ transitions
-- [D] `TEXP-147` Pour une chaîne de Markov, expression de la matrice ligne représentant la distribution après $n$ transitions
+- [D] `TEXP-120` Expression du nombre de chemins de longueur $n$ reliant deux sommets d'un graphe à l'aide de la puissance $n$-ième de la matrice d'adjacence
 
-- [SF+] `TEXP-148` Étude de graphes eulériens
-- [SF+] `TEXP-149` Interpolation polynomiale
-- [SF+] `TEXP-150` Marche aléatoire sur un graphe. Étude asymptotique
-- [SF+] `TEXP-151` Modèle de diffusion d'Ehrenfest
-- [SF+] `TEXP-152` Modèle « proie-prédateur » discrétisé : évolution couplée de deux suites récurrentes
+- [SF+] `TEXP-121` Étude de graphes eulériens
+
+### 3.2 Matrices
+
+- [C] `TEXP-122` Notion de matrice (tableau de nombres réels)
+- [C] `TEXP-123` Matrice carrée, matrice colonne, matrice ligne
+- [C] `TEXP-124` Opérations sur les matrices
+- [C] `TEXP-125` Inverse d'une matrice carrée
+- [C] `TEXP-126` Puissances d'une matrice carrée
+- [C] `TEXP-127` Représentation matricielle des transformations géométriques du plan
+- [C] `TEXP-128` Représentation matricielle des systèmes linéaires
+- [C] `TEXP-129` Représentation matricielle des suites récurrentes
+- [C] `TEXP-130` Exemples de calcul de puissances de matrices carrées d'ordre $2$ ou $3$
+- [C] `TEXP-131` Suite de matrices colonnes $(U_n)$ vérifiant une relation de récurrence du type $U_{n+1} = AU_n + C$
+
+- [SF] `TEXP-132` Modéliser une situation par une matrice
+- [SF] `TEXP-133` Calculer l'inverse d'une matrice carrée
+- [SF] `TEXP-134` Calculer les puissances d'une matrice carrée
+- [SF] `TEXP-135` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire
+- [SF] `TEXP-136` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire
+
+- [SF+] `TEXP-137` Interpolation polynomiale
+- [SF+] `TEXP-138` Modèle « proie-prédateur » discrétisé : évolution couplée de deux suites récurrentes
+
+### 3.3 Chaînes de Markov
+
+- [C] `TEXP-139` Graphe orienté pondéré associé à une chaîne de Markov à deux ou trois états
+- [C] `TEXP-140` Chaîne de Markov à deux ou trois états
+- [C] `TEXP-141` Distribution initiale d'une chaîne de Markov, représentée par une matrice ligne $\pi_0$
+- [C] `TEXP-142` Matrice de transition d'une chaîne de Markov, graphe pondéré associé
+- [C] `TEXP-143` Pour une chaîne de Markov à deux ou trois états de matrice $P$, interprétation du coefficient $(i, j)$ de $P^n$
+- [C] `TEXP-144` Distribution d'une chaîne de Markov après $n$ transitions, représentée comme la matrice ligne $\pi_0 P^n$
+- [C] `TEXP-145` Distributions invariantes d'une chaîne de Markov à deux ou trois états
+
+- [SF] `TEXP-146` Associer un graphe orienté pondéré à une chaîne de Markov à deux ou trois états
+- [SF] `TEXP-147` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités
+- [SF] `TEXP-148` Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : déterminer une probabilité invariante
+
+- [D] `TEXP-149` Pour une chaîne de Markov, expression de la probabilité de passer de l'état $i$ à l'état $j$ en $n$ transitions
+- [D] `TEXP-150` Pour une chaîne de Markov, expression de la matrice ligne représentant la distribution après $n$ transitions
+
+- [SF+] `TEXP-151` Marche aléatoire sur un graphe. Étude asymptotique
+- [SF+] `TEXP-152` Modèle de diffusion d'Ehrenfest
 - [SF+] `TEXP-153` Algorithme PageRank
 
 ---
@@ -257,11 +279,11 @@ Quand une même phrase du BO donnerait un contenu et une démonstration de libel
 | #   | Thème               | Objectifs | `[C]`  | `[SF]` | `[D]`  | `[SF+]` | Total   |
 | --- | ------------------- | --------- | ------ | ------ | ------ | ------- | ------- |
 | 1   | Nombres complexes   | 5         | 29     | 21     | 10     | 10      | 70      |
-| 2   | Arithmétique        | 1         | 13     | 9      | 3      | 16      | 41      |
-| 3   | Graphes et matrices | 1         | 23     | 10     | 3      | 6       | 42      |
-|     | **Total**           | **7**     | **65** | **40** | **16** | **32**  | **153** |
+| 2   | Arithmétique        | 3         | 13     | 9      | 3      | 16      | 41      |
+| 3   | Graphes et matrices | 3         | 23     | 10     | 3      | 6       | 42      |
+|     | **Total**           | **11**    | **65** | **40** | **16** | **32**  | **153** |
 
 > Chiffres **comptés dans le fichier** et confirmés par le générateur
-> (`3 thèmes · 7 objectifs · 153 points`, `C=65 SF=72 D=16`, `approfondissement=32`), pas estimés.
+> (`3 thèmes · 11 objectifs · 153 points`, `C=65 SF=72 D=16`, `approfondissement=32`), pas estimés.
 >
 > Les **32 `[SF+]`** (4 exemples d'algorithmes, 28 problèmes possibles) portent `exigence = approfondissement` ; les **121 autres** `attendu`. `regime_acquisition = diversite` partout au seed.
