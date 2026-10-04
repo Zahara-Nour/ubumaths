@@ -1,0 +1,287 @@
+{
+	"title": "Méthode des rectangles : calculer la somme pour n petit",
+	"description": "Somme des aires de n rectangles de même largeur (b − a)/n, hauteur à gauche ou à droite (pièges : oublier la largeur, mauvais côté)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-071", "TSPE-221"],
+	"theme": "Intégration",
+	"domain": "Calcul intégral",
+	"subdomain": "Méthode des rectangles",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On approche $\\displaystyle\\int_{0}^{1}x^2\\,\\mathrm{d}x$ par la méthode des rectangles : on partage $\\left[0\\,;1\\right]$ en ${{n}}$ intervalles de même largeur et, sur chacun, on prend la hauteur de la courbe à {{if:s==0|**gauche**|**droite**}}.\n\nCalcule la valeur exacte de la somme des aires des ${{n}}$ rectangles.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..5"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{eval:(n-1)*(2*n-1)/(6*n^2)}}|{{eval:(n+1)*(2*n+1)/(6*n^2)}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Largeur de chaque rectangle : $\\dfrac{1}{ {{n}} }$. Hauteurs : $f\\left(\\dfrac{k}{ {{n}} }\\right)=\\dfrac{k^2}{ {{eval:n^2}} }$ pour $k$ de {{if:s==0|$0$ à ${{eval:n-1}}$|$1$ à ${{n}}$}}.",
+					"Somme $=\\dfrac{1}{ {{n}} }\\times\\dfrac{ {{if:s==0|{{eval:(n-1)*n*(2*n-1)/6}}|{{eval:n*(n+1)*(2*n+1)/6}}}} }{ {{eval:n^2}} }=\\textcolor{{{color:primary.0}}}{{{if:s==0|{{eval:(n-1)*(2*n-1)/(6*n^2)}}|{{eval:(n+1)*(2*n+1)/(6*n^2)}}}}}$ (la valeur exacte de l'intégrale est $\\dfrac{1}{3}$)."
+				]
+			}
+		},
+		{
+			"statement": "On approche $\\displaystyle\\int_{1}^{2}\\dfrac{1}{x}\\,\\mathrm{d}x$ par la méthode des rectangles : on partage $\\left[1\\,;2\\right]$ en ${{n}}$ intervalles de même largeur et, sur chacun, on prend la hauteur de la courbe à {{if:s==0|**gauche**|**droite**}}.\n\nCalcule la valeur exacte de la somme des aires des ${{n}}$ rectangles.\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2|4"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:n==2|{{if:s==0|{{eval:(1/2)*(1+2/3)}}|{{eval:(1/2)*(2/3+1/2)}}}}|{{if:s==0|{{eval:(1/4)*(1+4/5+2/3+4/7)}}|{{eval:(1/4)*(4/5+2/3+4/7+1/2)}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Largeur : $\\dfrac{1}{ {{n}} }$. {{if:n==2|Hauteurs {{if:s==0|$f(1)=1$ et $f\\left(\\dfrac{3}{2}\\right)=\\dfrac{2}{3}$|$f\\left(\\dfrac{3}{2}\\right)=\\dfrac{2}{3}$ et $f(2)=\\dfrac{1}{2}$}}.|Hauteurs {{if:s==0|$f(1)$, $f\\left(\\dfrac{5}{4}\\right)$, $f\\left(\\dfrac{3}{2}\\right)$, $f\\left(\\dfrac{7}{4}\\right)$, soit $1$, $\\dfrac{4}{5}$, $\\dfrac{2}{3}$, $\\dfrac{4}{7}$|$f\\left(\\dfrac{5}{4}\\right)$, $f\\left(\\dfrac{3}{2}\\right)$, $f\\left(\\dfrac{7}{4}\\right)$, $f(2)$, soit $\\dfrac{4}{5}$, $\\dfrac{2}{3}$, $\\dfrac{4}{7}$, $\\dfrac{1}{2}$}}.}}",
+					"Somme = largeur × somme des hauteurs $=\\textcolor{{{color:primary.0}}}{{{if:n==2|{{if:s==0|{{eval:(1/2)*(1+2/3)}}|{{eval:(1/2)*(2/3+1/2)}}}}|{{if:s==0|{{eval:(1/4)*(1+4/5+2/3+4/7)}}|{{eval:(1/4)*(4/5+2/3+4/7+1/2)}}}}}}}$ (la valeur exacte est $\\ln 2$)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie par $f(x)={{m}}x+{{p}}$. On approche $\\displaystyle\\int_{0}^{2}f(x)\\,\\mathrm{d}x$ par la méthode des rectangles : on partage $\\left[0\\,;2\\right]$ en $4$ intervalles de largeur $\\dfrac{1}{2}$ et, sur chacun, on prend la hauteur de la courbe à {{if:s==0|**gauche**|**droite**}}.\n\nCalcule la somme des aires des $4$ rectangles.\n\n$?$",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "0..3"
+				},
+				{
+					"name": "s",
+					"expression": "0|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==0|{{eval:3*m/2+2*p}}|{{eval:5*m/2+2*p}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Hauteurs : $f(x)$ pour $x$ = {{if:s==0|$0$ ; $0.5$ ; $1$ ; $1.5$|$0.5$ ; $1$ ; $1.5$ ; $2$}}, de somme ${{if:s==0|{{eval:3*m+4*p}}|{{eval:5*m+4*p}}}}$.",
+					"Somme des aires $=\\dfrac{1}{2}\\times{{if:s==0|{{eval:3*m+4*p}}|{{eval:5*m+4*p}}}}=\\textcolor{{{color:primary.0}}}{{{if:s==0|{{eval:3*m/2+2*p}}|{{eval:5*m/2+2*p}}}}}$ (l'intégrale vaut ${{eval:2*m+2*p}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : n=4 gauche → 7/32",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"s": "0"
+			},
+			"answers": ["\\frac{7}{32}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : n=4 droite → 15/32",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"s": "1"
+			},
+			"answers": ["\\frac{15}{32}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : gauche/droite confondus",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"s": "0"
+			},
+			"answers": ["\\frac{15}{32}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : largeur oubliée (somme des hauteurs)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"s": "0"
+			},
+			"answers": ["\\frac{7}{8}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : valeur exacte de l'intégrale",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"s": "0"
+			},
+			"answers": ["\\frac{1}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : n=2 droite → 5/8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "2",
+				"s": "1"
+			},
+			"answers": ["\\frac{5}{8}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : n=2 gauche → 5/6",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "0"
+			},
+			"answers": ["\\frac{5}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : n=2 droite → 7/12",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "1"
+			},
+			"answers": ["\\frac{7}{12}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : largeur oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "0"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : ln 2",
+			"variationIndex": 1,
+			"variables": {
+				"n": "2",
+				"s": "0"
+			},
+			"answers": ["\\ln 2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : n=4 gauche → 319/420",
+			"variationIndex": 1,
+			"variables": {
+				"n": "4",
+				"s": "0"
+			},
+			"answers": ["\\frac{319}{420}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2x+1 gauche → 5",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"s": "0"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2x+1 droite → 7",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"s": "1"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : largeur oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"s": "0"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : intégrale exacte",
+			"variationIndex": 2,
+			"variables": {
+				"m": "2",
+				"p": "1",
+				"s": "0"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

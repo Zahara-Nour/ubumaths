@@ -270,7 +270,9 @@ Jamais touchés : une fonction (`f(1)`, `P'(-3)`), une parenthèse ou un nombre 
 ou un × (`C(1)`, `x×(-7)`, `97,6×1` : seul le nombre écrit DEVANT un terme est un coefficient), le
 signe d'un numérateur (`\dfrac{-10}{10}`), un + écrit (`+\infty`), une chaîne de calcul
 (`r = -1 - (-4) = 3`), une relation qui deviendrait `x + 3 = x + 3`, une formule LaTeX d'auteur
-illisible en syntaxe maison (`\begin{…}`, `f\left(1\right)`) et le DSL des blocs `courbe / `figure.
+illisible en syntaxe maison (`\begin{…}`, `f\left(1\right)`, et aussi `\ln(x)`, `\int`, `\mapsto`,
+`\big[…\big]` : constaté le 2026-10-04 sur les cartes d'intégration de terminale — y construire les
+coefficients avec `{{if:…}}`, ou écrire `ln(x)` en syntaxe maison) et le DSL des blocs `courbe / `figure.
 Absente ou `false` : rien ne change. Les étapes générées (`generatedSteps`) partent de la formule
 nettoyée (`x = 5`, pas `1x + 0 = 5`) ; une parenthèse devenue inutile disparaît (`(x+0)^2` →
 `x^2`, `2(x+0)` → `2x` ; `C(x)` et `2(3)` restent) ; une réponse attendue écrite en LaTeX

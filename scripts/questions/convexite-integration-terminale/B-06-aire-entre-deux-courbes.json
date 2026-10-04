@@ -1,0 +1,210 @@
+{
+	"title": "Aire entre deux courbes",
+	"description": "Aire = ∫ₐᵇ (f(x) − g(x)) dx quand C_f est au-dessus de C_g (pièges : g − f, oubli d'une des deux fonctions)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-079", "TSPE-214"],
+	"theme": "Intégration",
+	"domain": "Intégrale et aire",
+	"subdomain": "Aire entre deux courbes",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f(x)={{k}}x$ et $g(x)=x^2$. Sur $\\left[0\\,;{{k}}\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n```courbe\nx: -0.5 ; {{eval:k+0.5}}\ny: -0.5 ; {{eval:k^2+0.5}}\nf(x) = {{k}}*x   bleu   nom=C_f\ng(x) = x^2   rouge   nom=C_g\ntaille: moyenne\ndescription: Une droite passant par l'origine et une parabole qui se coupent en deux points.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;{{k}}\\right]$.\n\n$?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k^3/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ est au-dessus : l'aire vaut $\\displaystyle\\int_{0}^{{{k}}}\\left(f(x)-g(x)\\right)\\,\\mathrm{d}x$, avec $f(x)-g(x)={{k}}x-x^2$.",
+					"Une primitive de $f-g$ est $F(x)={{eval:k/2}}x^2-\\dfrac{1}{3}x^3$.",
+					"Aire $=F({{k}})-F(0)={{eval:k^3/2}}-{{eval:k^3/3}}=\\textcolor{{{color:primary.0}}}{{{eval:k^3/6}}}$ unités d'aire."
+				]
+			}
+		},
+		{
+			"statement": "Sur $\\left[0\\,;{{b}}\\right]$, la courbe de la fonction exponentielle est au-dessus de la droite d'équation $y=x$.\n\n```courbe\nx: -0.5 ; {{eval:b+0.5}}\ny: -0.5 ; {{eval:5*b-2}}\nf(x) = exp(x)   bleu   nom=C_f\ng(x) = x   rouge\ntaille: moyenne\ndescription: Courbe de l'exponentielle au-dessus de la droite y = x.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre ces deux courbes et les droites d'équations $x=0$ et $x={{b}}$ (valeur exacte).\n\n$?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1|2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:b==1|e-\\frac{3}{2}|e^{2}-3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire $=\\displaystyle\\int_{0}^{{{b}}}\\left(e^{x}-x\\right)\\,\\mathrm{d}x$, car $e^{x}\\geqslant x$ sur cet intervalle.",
+					"Une primitive est $F(x)=e^{x}-\\dfrac{1}{2}x^2$ : aire $=F({{b}})-F(0)={{if:b==1|e-\\dfrac{1}{2}|e^{2}-2}}-1=\\textcolor{{{color:primary.0}}}{{{if:b==1|e-\\dfrac{3}{2}|e^{2}-3}}}$ unités d'aire."
+				]
+			}
+		},
+		{
+			"statement": "On considère $f:x\\mapsto {{eval:a^2}}-x^2$ et $g:x\\mapsto x^2-{{eval:a^2}}$. Sur $\\left[{{eval:-a}}\\,;{{a}}\\right]$, $\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$.\n\n```courbe\nx: {{eval:-a-1}} ; {{eval:a+1}}\ny: {{eval:-a^2-1}} ; {{eval:a^2+1}}\nf(x) = {{eval:a^2}}-x^2   bleu   nom=C_f\ng(x) = x^2-{{eval:a^2}}   rouge   nom=C_g\ntaille: moyenne\ndescription: Deux paraboles symétriques par rapport à l'axe des abscisses, qui se coupent sur cet axe.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1|2|3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:8*a^3/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Aire $=\\displaystyle\\int_{{{eval:-a}}}^{{{a}}}\\left(f(x)-g(x)\\right)\\,\\mathrm{d}x=\\displaystyle\\int_{{{eval:-a}}}^{{{a}}}({{eval:2*a^2}}-2x^2)\\,\\mathrm{d}x$.",
+					"Une primitive est $F(x)={{eval:2*a^2}}x-\\dfrac{2}{3}x^3$ : aire $=F({{a}})-F({{eval:-a}})={{eval:4*a^3/3}}-{{eval:-4*a^3/3;()}}=\\textcolor{{{color:primary.0}}}{{{eval:8*a^3/3}}}$ unités d'aire."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : k=3 → 9/2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\frac{9}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : g − f",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["-\\frac{9}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : aire sous C_f seule",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"answers": ["\\frac{27}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : k=2 → 4/3",
+			"variationIndex": 0,
+			"variables": {
+				"k": "2"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : b=1 → e − 3/2",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1"
+			},
+			"answers": ["e-\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : F(0) oublié",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1"
+			},
+			"answers": ["e-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : aire sous l'exponentielle seule",
+			"variationIndex": 1,
+			"variables": {
+				"b": "1"
+			},
+			"answers": ["e-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : b=2 → e² − 3",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2"
+			},
+			"answers": ["e^2-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : a=2 → 64/3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\frac{64}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : une seule parabole",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\frac{32}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : g − f",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["-\\frac{64}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off",
+			"form": "off"
+		}
+	}
+}
