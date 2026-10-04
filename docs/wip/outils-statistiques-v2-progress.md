@@ -311,3 +311,20 @@ Manche 12 (2026-10-03), référentiel de Terminale — recommandations suivies :
   9 tests rouges sans la migration ; `db:migrate` fait, prod vérifiée : 3 thèmes · 11
   objectifs · 153 points (TEXP-001 → 153). **Manche 12 TERMINÉE** : T_SPE 262, T_COMP 139,
   T_EXP 153 en production. Reste à part : lois de maths complémentaires (sa propre manche).
+
+Manche 13 (2026-10-04), lois de maths complémentaires — recommandations suivies :
+
+150. Trois PR : (a) lois discrètes (géométrique, Bernoulli, uniforme discrète) ; (b) lois à
+     densité (uniforme sur [a ; b], exponentielle) ; (c) atelier `.geometrique`, `.uniforme`,
+     `.exponentielle` (affichent la loi sans créer de liste, comme Q142).
+151. `X ~ G(p)` / `X suit G(p)`, p dans ]0 ; 1].
+152. Loi infinie : tableau k = 1 à 10 puis « … » ; `jusqu'à: 15` ; diagramme coupé au même
+     endroit avec la mention « valeurs suivantes non représentées ».
+153. Géométrique : P(X = k), P(X ⩽ k), P(X > k), P(k ⩽ X ⩽ k′) exactes ; espérance 1/p ;
+     variance / écart type seulement sur demande ; `P(X > 5 | X > 2)` (absence de mémoire).
+154. Bernoulli = `B(1 ; p)`, titre complété « (loi de Bernoulli) ».
+155. `X ~ U(1 ; n)` : uniforme discrète sur des entiers a à b (U(0 ; 9) admis).
+156. Densités `X ~ U([a ; b])`, `X ~ E(λ)` : courbe + aire hachurée de la probabilité demandée ;
+     exponentielle coupée à 99 % ; P(X ⩽ x), P(X ⩾ x), P(c ⩽ X ⩽ d), répartition, E, V ;
+     arrondi par `arrondi:` + forme exacte (« 1 − e^(−0,5×2) ≈ 0,632 »).
+157. Anglais : textes traduits, notation Geo(p), U(1, n), Exp(λ).
