@@ -1107,10 +1107,10 @@ L'Almanach des Chiphres compte les années depuis la **première représentation
 
 **Année bissextile** :
 
-- **7 mois** (dont Auroral allongé d'un jour) = 365 jours
+- **7 mois** de **52 jours numérotés** = 364 jours
 - **+ 1 jour hors-mois** : La Cloche du Grand Reset
-- **+ 1 jour intercalaire** : **_Le Surnuméraire_** à l'équinoxe de printemps
-- **Total : 366 jours** ✓
+- **+ 1 jour intercalaire** : **_Le Surnuméraire_** à l'équinoxe de printemps (21 mars), inséré dans Auroral sans numéro — Auroral dure donc 53 jours
+- **Total : 366 jours** ✓ (l'ancienne formulation, « 7 mois = 365 jours + Cloche + Surnuméraire », comptait 367 jours ; corrigée le 2026-10-04)
 
 **Cohérence mathématique canonique** :
 
@@ -1186,22 +1186,28 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 
 **Effet sur l'année** : l'année bissextile contient 366 jours répartis comme suit :
 
-- Ambraire, Givraire, Glaglavose, Déglaçose : 52 jours chacun (inchangés)
-- **Auroral : 53 jours** (Le Surnuméraire intercalé le 21 mars, hors numérotation)
-- Lumenal, Auguste : 52 jours (décalés d'un jour vers la fin)
-- La Cloche du Grand Reset : 23 août (au lieu du 22)
+- Ambraire, Givraire, Glaglavose, Déglaçose : 52 jours chacun. Le 29 février tombe dans Déglaçose, qui se termine donc le **17 mars** (au lieu du 18).
+- **Auroral : 53 jours** (du **18 mars** au 9 mai) — 52 jours numérotés + Le Surnuméraire le 21 mars, hors numérotation.
+- Lumenal, Auguste : 52 jours, **dates grégoriennes inchangées** (10 mai → 30 juin, 1ᵉʳ juillet → 21 août).
+- La Cloche du Grand Reset : **22 août, comme chaque année** — le 1 Ambraire reste toujours le 23 août.
 
-**Détail d'Auroral en année bissextile** :
+> **Correction du 2026-10-04** (décision de David) : la version précédente plaçait le 1 Auroral au 19 mars et la Cloche au 23 août en année bissextile. Elle comptait deux fois le jour en plus (le 29 février grégorien et Le Surnuméraire), ce qui donnait 367 jours et décalait d'un jour le 1 Ambraire de l'An suivant. Le Surnuméraire **est** le jour en plus de l'année bissextile ; il est simplement placé au 21 mars, à l'équinoxe. Vérification : du 23 août 2027 au 22 août 2028, 366 jours = 4 × 52 + 53 + 2 × 52 + 1.
 
-| Date grégorienne | Jour pataphysique                       |
-| ---------------- | --------------------------------------- |
-| 19 mars          | 1 Auroral                               |
-| 20 mars          | 2 Auroral                               |
-| **21 mars**      | **Le Surnuméraire** (hors numérotation) |
-| 22 mars          | 3 Auroral                               |
-| 23 mars          | 4 Auroral                               |
-| …                | …                                       |
-| 10 mai           | 52 Auroral                              |
+**Détail d'Auroral en année bissextile** (exemple : An 132 E.R., 2028) :
+
+| Date grégorienne | Jour pataphysique                          |
+| ---------------- | ------------------------------------------ |
+| 17 mars          | 52 Déglaçose (dernier jour)                |
+| 18 mars          | 1 Auroral                                  |
+| 19 mars          | 2 Auroral                                  |
+| 20 mars          | 3 Auroral                                  |
+| **21 mars**      | **Le Surnuméraire** (hors numérotation)    |
+| 22 mars          | 4 Auroral (même jour qu'une année normale) |
+| …                | …                                          |
+| 9 mai            | 52 Auroral                                 |
+| 10 mai           | 1 Lumenal                                  |
+
+À partir du 22 mars, chaque date grégorienne porte le même jour pataphysique qu'une année normale : seuls les trois premiers jours d'Auroral (18-20 mars) diffèrent d'un cran.
 
 **Tradition Chiphre** : le jour du Surnuméraire est un **jour libre du Royaume**. Le Père Ubu décrète un **jour de pause pataphysique** : bonus de gidouilles, pas d'examens programmés, pas de défis officiels. Cinématique courte d'Ubu à 12h00 : _« Tudieu ! La mécanique céleste Nous offre un jour de plus. Profitez-en, Polonais, mais ne croyez pas que cela Nous arrive souvent. »_
 
