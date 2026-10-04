@@ -96,9 +96,19 @@ function textContent(text: string): string {
  * peut rester seul en bas de colonne et la figure partir à la page suivante
  * (fiche compilée, lois à densité). Les lignes de texte dessous restent dehors.
  */
-function keptWithTitle(title: string | null, figure: string): string {
-	const head = titleBlock(title);
+function keptWithTitle(head: string, figure: string): string {
 	return head === '' ? figure : `#block(breakable: false, width: 100%)[\n${head}${figure}\n]`;
+}
+
+/**
+ * Ce qui précède la figure : le titre, puis la série écrite par `série:` (Q106),
+ * une ligne par série (saut de ligne Typst `\\`). Les deux restent avec la
+ * figure : la série seule en bas de colonne serait aussi orpheline que le titre.
+ */
+function headOf(scene: { title: string | null; series?: string | null }): string {
+	if (!scene.series) return titleBlock(scene.title);
+	const seriesLines = scene.series.split('\n').map((line) => `#${typstString(line)}`);
+	return `${titleBlock(scene.title)}#block(text(size: 9pt)[${seriesLines.join(' \\ ')}])\n`;
 }
 
 function titleBlock(title: string | null): string {
@@ -183,7 +193,7 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		scene.indicatorTable === null
 			? ''
 			: `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`;
-	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
 }
 
 // ============================================================================
@@ -223,7 +233,7 @@ function pieTypst(scene: PieScene, size: CourbeSize): string {
 
 	const canvas = `cetz.canvas({\n${lines.join('\n')}\n  })`;
 	const stack = `align(left, stack(spacing: 4pt,\n${legend.join(',\n')}\n  ))`;
-	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, grid(columns: 2, column-gutter: 14pt, align: horizon,\n  ${canvas},\n  ${stack}\n))`)}`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, grid(columns: 2, column-gutter: 14pt, align: horizon,\n  ${canvas},\n  ${stack}\n))`)}`;
 }
 
 // ============================================================================
@@ -337,7 +347,7 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 	const table = scene.indicatorTable
 		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
 		: '';
-	return `${CETZ_IMPORT}\n${hatchDef}\n${keptWithTitle(scene.title, `${name}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${second}${table}`;
+	return `${CETZ_IMPORT}\n${hatchDef}\n${keptWithTitle(headOf(scene), `${name}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${second}${table}`;
 }
 
 function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
@@ -408,7 +418,7 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 	const table = scene.indicatorTable
 		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
 		: '';
-	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
 }
 
 /**
@@ -445,7 +455,7 @@ function densityTypst(
 		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
 	);
 	const hatch = `#let hachures = tiling(size: (4pt, 4pt))[#place(line(start: (0pt, 4pt), end: (4pt, 0pt), stroke: 0.8pt + ${color}))]\n`;
-	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(titleBlock(title), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
 }
 
 /**
@@ -472,7 +482,7 @@ function meanTypst(scene: MeanScene, size: CourbeSize): string {
 		...boundLabels(scene.xTicks, X),
 		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
 	];
-	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
 }
 
 // ============================================================================
@@ -688,13 +698,10 @@ export function generateStatChartTypst(
 		const scene = buildStatChartScene(node.spec, {
 			locale: options.language === 'en' ? 'en' : 'fr'
 		});
-		if (!scene.series) return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
-		// `série:` (Q106) : sous le titre, avant la figure — ou seule (l'énoncé)
-		// Deux séries : une ligne chacune, saut de ligne Typst (`\\`)
-		const seriesLines = scene.series.split('\n').map((line) => `#${typstString(line)}`);
-		const head = `${titleBlock(scene.title)}#block(text(size: 9pt)[${seriesLines.join(' \\ ')}])\n`;
-		if (scene.seriesOnly) return head;
-		return head + figureTypst({ ...scene, title: null }, node.spec.size) + indicatorsBlock(scene);
+		// `série:` seule (Q106, l'énoncé) : le titre et la série, sans figure ;
+		// sinon la figure porte elle-même titre et série (`headOf`), insécables
+		if (scene.series && scene.seriesOnly) return headOf(scene);
+		return figureTypst(scene, node.spec.size) + indicatorsBlock(scene);
 	} catch {
 		return unavailable(options.language);
 	}

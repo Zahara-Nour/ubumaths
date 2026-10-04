@@ -10,8 +10,9 @@
 #   no-unused-vars              -> oxlint le couvre à l'identique (Rust, ~1 s)
 #   supabase/require-error-check -> règle AST pure
 #   custom/require-zod-validation -> règle AST pure
+#   no-irregular-whitespace      -> règle de jeton (espace insécable littérale, #762)
 #
-# Les deux dernières tournent donc sous `eslint.fast.config.js`, sans le service
+# Les trois dernières tournent donc sous `eslint.fast.config.js`, sans le service
 # TypeScript : ~2 s et 279 Mo sur le même lot. Vérifié fidèle à la config
 # complète (même verdict, ni raté ni faux positif) sur les 419 routes d'API.
 #

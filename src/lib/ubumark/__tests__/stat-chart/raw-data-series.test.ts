@@ -108,6 +108,23 @@ describe('série — Typst', () => {
 		expect(typst.match(/Notes/g)).toHaveLength(1);
 	});
 
+	// Le titre et la série restent avec la figure : sinon ils peuvent finir seuls
+	// en bas de colonne, la figure sur la page suivante
+	it('titre, série et figure dans un même bloc insécable', () => {
+		for (const kind of ['barres', 'circulaire'] as const) {
+			const typst = typstOf('titre: Notes\ndonnées: 12 ; 8\nsérie: affichée', kind);
+			const block = typst.indexOf('#block(breakable: false, width: 100%)[');
+			expect(block, kind).toBeGreaterThanOrEqual(0);
+			expect(block, kind).toBeLessThan(typst.indexOf('Notes'));
+			expect(typst.indexOf('Notes'), kind).toBeLessThan(typst.indexOf('Série'));
+		}
+		const histogram = typstOf(
+			'titre: Notes\nclasses: 0 ; 10 ; 20\ndonnées: 4 ; 13\nsérie: affichée',
+			'histogramme'
+		);
+		expect(histogram.indexOf('#block(breakable: false')).toBeLessThan(histogram.indexOf('Notes'));
+	});
+
 	it('seule : titre et série, ni figure ni indicateurs', () => {
 		const typst = typstOf('titre: Notes\ndonnées: 12 ; 8\nsérie: seule\nindicateurs: moyenne');
 
