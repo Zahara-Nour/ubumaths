@@ -23,6 +23,8 @@
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
 	import { syncPlots } from '$lib/atelier/plot-sync';
+	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -35,6 +37,11 @@
 		received?: AtelierState | null;
 		/** Ce que la relecture de l'URL a eu à dire. */
 		notice?: string | null;
+		/**
+		 * Un atelier VIDE reçoit une carte de ce type, tracée et prête à taper —
+		 * c'est l'ouverture de `/grapheur` (phase 0 §6 B3 : pas de x² d'office).
+		 */
+		startWith?: 'function';
 	}
 
 	type ViewId = 'calcul' | 'graphe' | 'donnees';
@@ -50,8 +57,19 @@
 		view = 'calcul',
 		ephemeral = false,
 		received = null,
-		notice = null
+		notice = null,
+		startWith
 	}: Props = $props();
+
+	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
+	let confirmReset = $state(false);
+
+	/** Vider l'atelier — seulement après confirmation, jamais sur un lien reçu. */
+	function handleReset() {
+		atelier.restore({ version: ATELIER_STATE_VERSION, objects: [] });
+		selected = null;
+		announce('L’atelier est vide.');
+	}
 
 	// svelte-ignore state_referenced_locally
 	provideAtelier(atelier);
@@ -79,8 +97,24 @@
 	// jamais — rien n'est alors jamais enregistré.
 	let session = $state<Session | null>(null);
 
+	/**
+	 * B3 : à l'ouverture, un atelier VIDE reçoit une carte prête à taper, tracée
+	 * pour que la courbe apparaisse dès la frappe. Après la relecture de la
+	 * sauvegarde, sinon on croirait vide un atelier pas encore relu.
+	 */
+	function startIfEmpty() {
+		if (startWith === undefined || atelier.objects.length > 0) return;
+		const created = atelier.create({ kind: startWith });
+		if (!created.ok) return;
+		atelier.setPlotted(created.object.name, true);
+		selected = created.object.name;
+	}
+
 	onMount(() => {
-		if (ephemeral) return;
+		if (ephemeral) {
+			startIfEmpty();
+			return;
+		}
 		session = openSession(atelier, {
 			storage: readStorage(),
 			target: window,
@@ -89,6 +123,7 @@
 		// Le chargement initial compte comme une modification : on note la
 		// révision de départ pour ne pas ré-enregistrer ce qu'on vient de lire.
 		lastSeenRevision = atelier.revision;
+		startIfEmpty();
 		return () => {
 			session?.close();
 			session = null;
@@ -250,7 +285,22 @@
 	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
 
 	<main class="zone">
-		<ShareBar {received} {notice} />
+		<div class="barre">
+			<ShareBar {received} {notice} />
+			{#if !ephemeral}
+				<button type="button" class="vider" onclick={() => (confirmReset = true)}>
+					Repartir de zéro
+				</button>
+			{/if}
+		</div>
+		<ConfirmDialog
+			bind:open={confirmReset}
+			title="Repartir de zéro ?"
+			description="Tous les objets de l’atelier seront effacés : fonctions, valeurs, suites et listes. Un lien de partage déjà copié les garde."
+			confirmLabel="Vider l’atelier"
+			variant="destructive"
+			onConfirm={handleReset}
+		/>
 		<nav class="onglets" aria-label="Vues de l'atelier">
 			{#each VIEWS as item (item.id)}
 				<button
@@ -316,6 +366,27 @@
 		min-width: 0;
 	}
 
+	.barre {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+	.vider {
+		min-height: 1.75rem;
+		padding: 0.125rem 0.625rem;
+		margin-right: 0.625rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font-size: 0.8125rem;
+		cursor: pointer;
+	}
+	.vider:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
+	}
 	.onglets {
 		display: flex;
 		gap: 0.125rem;

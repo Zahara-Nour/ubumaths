@@ -46,7 +46,7 @@
 	import type { LucideIcon } from '@lucide/svelte';
 	import {
 		Menu,
-		ChartSpline,
+		FlaskConical,
 		Shapes,
 		LogIn,
 		LogOut,
@@ -116,9 +116,10 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : ni le grapheur ni les démos de géométrie ne lisent de
+			// Sans `roles` : ni l'atelier ni les démos de géométrie ne lisent de
 			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
-			{ label: 'Grapheur', href: '/grapheur', icon: ChartSpline },
+			// G1 : l'atelier est l'entrée unique (`/grapheur` y mène encore)
+			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
 			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
 			{
 				label: 'Whiteboard',
