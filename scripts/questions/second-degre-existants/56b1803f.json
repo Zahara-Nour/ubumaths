@@ -2,6 +2,7 @@
 	"id": "56b1803f-f707-49a9-a0b7-3e6b8220f2d7",
 	"title": "Déterminer les coordonnées du sommet",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-054"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

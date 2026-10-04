@@ -2,6 +2,7 @@
 	"title": "Formule des probabilités totales",
 	"description": "P(B) = P(A∩B) + P(Ā∩B) : somme des chemins qui mènent à B",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-149", "1SPE-146"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Arbres pondérés",

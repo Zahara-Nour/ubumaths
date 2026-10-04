@@ -2,6 +2,7 @@
 	"title": "Résoudre une équation du type eᵘ = eᶜ",
 	"description": "e^u = e^v ⇔ u = v, avec v constant : solution entière ou fraction",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-099", "1SPE-101"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Équations et inéquations",

@@ -2,6 +2,7 @@
 	"title": "Résoudre une inéquation du type eᵘ < eᶜ",
 	"description": "Inéquation avec v constant, réponse en intervalle ; a < 0 dans deux variations",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Équations et inéquations",

@@ -2,6 +2,7 @@
 	"title": "Résoudre cos x = a sur un tour (valeurs remarquables)",
 	"description": "cos x = a, a valeur remarquable, résolue dans ]−π ; π] ; réponse : ensemble fini de solutions",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114", "1SPE-112"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Équations",

@@ -2,6 +2,7 @@
 	"title": "Tangente à la courbe de exp en 0",
 	"description": "Coefficient directeur et équation réduite y = x + 1 de la tangente au point d'abscisse 0",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-080", "1SPE-096"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

@@ -2,6 +2,7 @@
 	"title": "Coordonnées du projeté orthogonal d'un point sur une droite",
 	"description": "Calculer les coordonnées du projeté orthogonal d'un point sur une droite (colinéarité avec un vecteur normal, intersection avec la perpendiculaire, ou produit scalaire nul avec un vecteur directeur)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-139", "1SPE-136"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Projeté orthogonal",

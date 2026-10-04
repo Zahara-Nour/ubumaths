@@ -2,6 +2,7 @@
 	"title": "Sens de variation d'une suite géométrique de raison positive",
 	"description": "Le signe de u₀ et la position de q par rapport à 1 donnent le sens de variation",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-038"],
 	"theme": "Suites",
 	"domain": "Sens de variation",
 	"status": "draft",

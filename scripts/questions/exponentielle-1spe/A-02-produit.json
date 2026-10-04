@@ -2,6 +2,7 @@
 	"title": "Produit d'exponentielles",
 	"description": "eᵃ × eᵇ = eᵃ⁺ᵇ, exposants entiers puis affines en x",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-097", "1SPE-101"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Propriétés algébriques",

@@ -2,6 +2,7 @@
 	"title": "Espérance à partir d'un énoncé",
 	"description": "Déterminer la loi d'une variable aléatoire (urne, dé, cartes) puis calculer son espérance",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-164", "1SPE-165"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Espérance",

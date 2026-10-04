@@ -2,6 +2,7 @@
 	"title": "Calculer la différence de deux termes consécutifs",
 	"description": "u(n+1) − u(n) en fonction de n, développée et réduite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-030"],
 	"theme": "Suites",
 	"domain": "Sens de variation",
 	"status": "draft",

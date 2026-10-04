@@ -2,6 +2,7 @@
 	"title": "Centre et rayon d’un cercle à partir de son équation développée",
 	"description": "Compléter les carrés dans x² + y² + αx + βy + γ = 0 pour retrouver le centre et le rayon du cercle",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-141"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Équation de cercle",

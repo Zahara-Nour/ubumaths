@@ -2,6 +2,7 @@
 	"title": "Interpréter une espérance",
 	"description": "Choisir l'interprétation correcte d'une espérance : valeur moyenne sur un grand nombre de répétitions",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-158", "1SPE-166"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Espérance",

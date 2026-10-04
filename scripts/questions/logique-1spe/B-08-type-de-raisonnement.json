@@ -2,6 +2,7 @@
 	"title": "Reconnaître un type de raisonnement",
 	"description": "Reconnaître le type de raisonnement d'une courte démonstration : direct, par l'absurde, par contraposée, par disjonction des cas, contre-exemple",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-014", "1SPE-015", "1SPE-016", "1SPE-007"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Raisonnements",

@@ -2,6 +2,7 @@
 	"title": "Distance d'un point à une droite",
 	"description": "Calculer la distance d'un point à une droite comme la longueur MH, où H est le projeté orthogonal du point sur la droite (valeur exacte)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-139", "1SPE-142"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Projeté orthogonal",

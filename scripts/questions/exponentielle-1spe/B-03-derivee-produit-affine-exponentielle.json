@@ -2,6 +2,7 @@
 	"title": "Dériver un produit de fonction affine et d'exponentielle",
 	"description": "Dérivée d'un produit affine × exponentielle, réponse factorisée par eˣ",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-073", "1SPE-096"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

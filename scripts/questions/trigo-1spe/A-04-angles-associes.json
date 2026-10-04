@@ -2,6 +2,7 @@
 	"title": "Cosinus et sinus d'angles associés",
 	"description": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Cosinus et sinus d'un réel",

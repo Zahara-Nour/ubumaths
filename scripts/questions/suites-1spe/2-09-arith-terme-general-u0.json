@@ -2,6 +2,7 @@
 	"title": "Terme général d'une suite arithmétique",
 	"description": "À partir de u_0 et de la raison",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-036", "1SPE-024"],
 	"theme": "Suites",
 	"domain": "Suites arithmétiques",
 	"subdomain": "Terme général",

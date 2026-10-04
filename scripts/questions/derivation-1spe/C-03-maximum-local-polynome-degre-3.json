@@ -2,6 +2,7 @@
 	"title": "Maximum local d'une fonction polynôme de degré 3",
 	"description": "Dérivée, signe d'un trinôme à racines entières, tableau de variations : abscisse et valeur du maximum local",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-091", "1SPE-090"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

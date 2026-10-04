@@ -2,6 +2,7 @@
 	"title": "Test de dépistage",
 	"description": "Prévalence, sensibilité et spécificité données en pourcentages : probabilité d'un test positif (probabilités totales, valeur exacte) puis probabilité d'être malade (ou sain) sachant le test positif, arrondie au centième",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-149", "1SPE-146"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"status": "draft",

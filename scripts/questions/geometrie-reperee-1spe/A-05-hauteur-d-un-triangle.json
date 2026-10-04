@@ -2,6 +2,7 @@
 	"title": "Équation d'une hauteur d'un triangle",
 	"description": "Déterminer une équation de la hauteur issue d'un sommet d'un triangle : droite passant par le sommet, de vecteur normal le côté opposé",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-138", "1SPE-142"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Vecteur normal et équation de droite",

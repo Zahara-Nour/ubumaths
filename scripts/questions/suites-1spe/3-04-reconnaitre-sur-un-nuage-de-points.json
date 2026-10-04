@@ -2,6 +2,7 @@
 	"title": "Reconnaître une suite arithmétique ou géométrique sur un nuage de points",
 	"description": "Points alignés, termes multipliés par un même nombre, ou ni l'un ni l'autre",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-032", "1SPE-025", "1SPE-028"],
 	"theme": "Suites",
 	"domain": "Reconnaître une suite",
 	"status": "draft",

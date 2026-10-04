@@ -2,6 +2,7 @@
 	"title": "Mesure principale d'un angle",
 	"description": "Ramener une mesure en radians (17π/6, −13π/4, 25π/3…) dans ]−π ; π] en retirant ou en ajoutant des tours",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-111"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Cercle et radians",

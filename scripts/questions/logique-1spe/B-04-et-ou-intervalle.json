@@ -2,6 +2,7 @@
 	"title": "« Et », « ou » et intervalles",
 	"description": "Traduire une proposition composée avec « et » ou « ou » par un intervalle ou une réunion d'intervalles",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-006", "1SPE-003"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Connecteurs et contre-exemples",

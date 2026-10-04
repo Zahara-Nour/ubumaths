@@ -2,6 +2,7 @@
 	"title": "Lire l'équation d'une tangente sur un graphique",
 	"description": "Lecture du coefficient directeur m (entier ou demi-entier) et de l'ordonnée à l'origine p d'une tangente tracée",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-078", "1SPE-069"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

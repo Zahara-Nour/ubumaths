@@ -2,6 +2,7 @@
 	"title": "Dériver un polynôme",
 	"description": "Dérivée d'un polynôme de degré 2 ou 3, coefficients entiers ou fractionnaires simples",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-082", "1SPE-074"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

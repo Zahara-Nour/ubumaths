@@ -2,6 +2,7 @@
 	"title": "Compléter une loi : une probabilité manquante",
 	"description": "La somme des probabilités d'une loi vaut 1 : en déduire la probabilité manquante du tableau",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-157"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Compléter une loi",

@@ -2,6 +2,7 @@
 	"title": "Variations et extremum d'une fonction du second degré",
 	"description": "Sens de variation et extremum depuis ax² + bx + c ; tableau de variations au corrigé",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-094", "1SPE-054"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

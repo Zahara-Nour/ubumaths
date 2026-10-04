@@ -2,6 +2,7 @@
 	"title": "Équation de la médiatrice d'un segment",
 	"description": "Déterminer une équation de la médiatrice d'un segment : droite passant par le milieu, de vecteur normal AB",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-138", "1SPE-142"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Vecteur normal et équation de droite",

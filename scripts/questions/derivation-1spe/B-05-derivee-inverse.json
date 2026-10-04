@@ -2,6 +2,7 @@
 	"title": "Dériver l'inverse d'une fonction",
 	"description": "Dérivée de 1/v et de k/v, v affine ou du second degré",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-073", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions dérivées",

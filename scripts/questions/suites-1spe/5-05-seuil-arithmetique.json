@@ -2,6 +2,7 @@
 	"title": "Seuil d'une suite arithmétique par le calcul",
 	"description": "Plus petit n tel que uₙ > A (ou uₙ < A), par une inéquation",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-036", "1SPE-044"],
 	"theme": "Suites",
 	"domain": "Seuil et algorithmes",
 	"subdomain": "Seuil",

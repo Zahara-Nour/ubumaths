@@ -2,6 +2,7 @@
 	"title": "Intervalle où f est croissante, f′ de la forme (ax + b)eˣ",
 	"description": "Signe de f′ (l'exponentielle est positive), tableau de variations, réponse en intervalle",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-089", "1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

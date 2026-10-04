@@ -2,6 +2,7 @@
 	"title": "Sens de variation à partir du signe de u(n+1) − u(n)",
 	"description": "La différence de deux termes consécutifs est donnée : en déduire le sens de variation",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-030"],
 	"theme": "Suites",
 	"domain": "Sens de variation",
 	"status": "draft",

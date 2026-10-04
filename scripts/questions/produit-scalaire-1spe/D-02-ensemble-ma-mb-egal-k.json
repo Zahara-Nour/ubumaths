@@ -2,6 +2,7 @@
 	"title": "Ensemble des points M tels que MA·MB = k",
 	"description": "Utiliser le milieu I de [AB] pour transformer MA·MB = k en MI² = k + AB²/4 et reconnaître un cercle",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-124", "1SPE-129"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Lieux de points",

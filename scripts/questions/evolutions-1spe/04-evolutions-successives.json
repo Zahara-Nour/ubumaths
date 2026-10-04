@@ -2,6 +2,7 @@
 	"title": "Composer deux évolutions successives",
 	"description": "Coefficient multiplicateur et taux d'évolution globaux",
 	"grades": ["1_SPE"],
+	"points": [],
 	"theme": "Proportionnalité",
 	"domain": "Pourcentages",
 	"subdomain": "Variations",

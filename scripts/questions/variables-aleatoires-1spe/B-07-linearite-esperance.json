@@ -2,6 +2,7 @@
 	"title": "Linéarité de l'espérance",
 	"description": "Utiliser E(aX+b) = aE(X) + b pour calculer une espérance, ou pour retrouver E(X) à partir de E(aX+b)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-159"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Espérance",

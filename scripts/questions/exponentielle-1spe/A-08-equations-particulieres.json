@@ -2,6 +2,7 @@
 	"title": "Équations particulières avec l'exponentielle",
 	"description": "e^u = 1, (x−k)eˣ = 0 (eˣ ne s'annule pas), e^u = k ≤ 0 (aucune solution)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Équations et inéquations",

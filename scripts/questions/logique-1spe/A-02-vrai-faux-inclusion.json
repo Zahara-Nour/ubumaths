@@ -2,6 +2,7 @@
 	"title": "Vrai ou faux : inclusion",
 	"description": "Décider si une inclusion entre intervalles, ensembles de nombres ou ensembles finis est vraie ; contre-exemple sinon",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-001", "1SPE-003", "1SPE-007"],
 	"theme": "Logique",
 	"domain": "Ensembles",
 	"subdomain": "Appartenance et inclusion",

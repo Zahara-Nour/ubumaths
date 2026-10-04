@@ -2,6 +2,7 @@
 	"title": "Réunion, intersection et complémentaire d'intervalles",
 	"description": "Écrire I ∩ J, I ∪ J ou un complémentaire dans ℝ : chevauchement, intervalles disjoints ou accolés, demi-droites",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-003", "1SPE-001"],
 	"theme": "Logique",
 	"domain": "Ensembles",
 	"subdomain": "Intervalles",

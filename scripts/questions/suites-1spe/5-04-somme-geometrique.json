@@ -2,6 +2,7 @@
 	"title": "Somme de termes consécutifs d'une suite géométrique",
 	"description": "u₀ + u₁ + … + uₙ, premier terme et raison entiers",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-037", "1SPE-029"],
 	"theme": "Suites",
 	"domain": "Sommes",
 	"subdomain": "Suites géométriques",

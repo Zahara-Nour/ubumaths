@@ -2,6 +2,7 @@
 	"title": "« Et » et « ou » : vrai ou faux ?",
 	"description": "Décider si une proposition composée avec « et » ou « ou » est vraie pour une valeur donnée de la variable",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-006"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Connecteurs et contre-exemples",

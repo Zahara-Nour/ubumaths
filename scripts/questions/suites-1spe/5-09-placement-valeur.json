@@ -2,6 +2,7 @@
 	"title": "Valeur d'un placement à intérêts simples ou composés",
 	"description": "Capital au bout de n années, exact ou arrondi",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-039", "1SPE-036"],
 	"theme": "Suites",
 	"domain": "Modélisation",
 	"subdomain": "Placements",

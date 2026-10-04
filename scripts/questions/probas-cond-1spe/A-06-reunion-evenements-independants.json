@@ -2,6 +2,7 @@
 	"title": "Probabilité d'une réunion d'événements indépendants",
 	"description": "Calculer P(A∩B) = P(A)×P(B) pour A et B indépendants, puis P(A∪B) = P(A)+P(B)−P(A∩B)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-145", "1SPE-150"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Indépendance",

@@ -2,6 +2,7 @@
 	"title": "Intersection, réunion et complémentaire d'ensembles finis",
 	"description": "Écrire A ∩ B, A ∪ B et un complémentaire dans E pour des ensembles finis donnés en extension ou par leurs diviseurs",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-001", "1SPE-002"],
 	"theme": "Logique",
 	"domain": "Ensembles",
 	"subdomain": "Opérations sur les ensembles",

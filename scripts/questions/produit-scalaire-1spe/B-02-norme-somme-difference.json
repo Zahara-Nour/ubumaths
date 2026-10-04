@@ -2,6 +2,7 @@
 	"title": "Norme d'une somme ou d'une différence",
 	"description": "Utiliser le développement de ‖u+v‖² et ‖u−v‖² pour calculer une norme ou un produit scalaire",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-122"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Propriétés",

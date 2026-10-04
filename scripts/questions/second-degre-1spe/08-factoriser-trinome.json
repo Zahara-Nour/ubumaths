@@ -2,6 +2,7 @@
 	"title": "Factoriser un trinôme à l'aide de ses racines",
 	"description": "Forme factorisée a(x − x₁)(x − x₂)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-051", "1SPE-060"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

@@ -2,6 +2,7 @@
 	"title": "Valeurs et signe de l'exponentielle",
 	"description": "QCM : e⁰ = 1, eˣ > 0 pour tout x, valeur approchée de e",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-098", "1SPE-099"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"subdomain": "Propriétés algébriques",

@@ -2,6 +2,7 @@
 	"title": "Somme de termes consécutifs d'une suite arithmétique",
 	"description": "Nombre de termes × (premier + dernier) / 2",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-037"],
 	"theme": "Suites",
 	"domain": "Sommes",
 	"subdomain": "Suites arithmétiques",

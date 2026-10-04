@@ -2,6 +2,7 @@
 	"title": "Parité et périodicité de cosinus et sinus",
 	"description": "Reconnaître une fonction paire, impaire ou ni l'une ni l'autre ; période 2π",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-088"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Fonctions cosinus et sinus",

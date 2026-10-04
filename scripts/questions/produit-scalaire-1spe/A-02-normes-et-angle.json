@@ -2,6 +2,7 @@
 	"title": "Produit scalaire avec les normes et l'angle",
 	"description": "Calculer un produit scalaire à partir des normes de deux vecteurs et d'une mesure de leur angle (angles remarquables), valeur exacte",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-117", "1SPE-128"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Calculer un produit scalaire",

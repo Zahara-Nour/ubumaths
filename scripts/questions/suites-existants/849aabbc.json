@@ -3,6 +3,7 @@
 	"title": "Déterminer la limite d'une suite",
 	"description": "Suites usuelles",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-031", "1SPE-040"],
 	"theme": "Suites",
 	"domain": "Limites",
 	"subdomain": "Déterminer une limite",

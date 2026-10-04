@@ -2,6 +2,7 @@
 	"title": "Calculer le discriminant",
 	"description": "Δ = b² − 4ac, coefficients entiers",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-053"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

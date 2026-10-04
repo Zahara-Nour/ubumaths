@@ -2,6 +2,7 @@
 	"title": "Résoudre une inéquation du second degré",
 	"description": "ax²+bx+c > / ≥ / < / ≤ 0 : ensemble des solutions en intervalles, depuis le signe du trinôme",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-056", "1SPE-062"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

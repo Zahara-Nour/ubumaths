@@ -2,6 +2,7 @@
 	"title": "Lire une probabilité dans le tableau de la loi",
 	"description": "La loi de X est donnée par un tableau : lire P(X = a) sous la valeur a",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-157", "1SPE-161"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Loi d'une variable aléatoire",
