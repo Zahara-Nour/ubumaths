@@ -173,15 +173,14 @@
 			}
 		},
 		{
-			"description": "v0 : 1/e² pour e⁻² : ½ (form: warn, deux écritures)",
+			"description": "v0 : 1/e² pour e⁻² : même forme (décision du 2026-10-04)",
 			"variationIndex": 0,
 			"variables": {
 				"a": "-2"
 			},
 			"answers": ["\\frac{1}{e^2}"],
 			"expected": {
-				"status": "unoptimal_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			}
 		},
 		{
@@ -337,10 +336,5 @@
 				"status": "incorrect"
 			}
 		}
-	],
-	"options": {
-		"constraints": {
-			"form": "warn"
-		}
-	}
+	]
 }
