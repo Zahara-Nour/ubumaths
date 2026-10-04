@@ -1,7 +1,7 @@
 ---
 title: Atelier — `/grapheur` passe par l'atelier (phase 0)
 date: 2026-10-04
-status: phase 0 — À VALIDER par David avant tout code
+status: phase 0 VALIDÉE par David le 2026-10-04 (Q1, Q2 tranchées, reprise abandonnée)
 ---
 
 # `/grapheur` passe par l'atelier — phase 0
@@ -112,7 +112,7 @@ status: phase 0 — À VALIDER par David avant tout code
 | A2  | Action sans objet (Variations, Résoudre, Tabuler)                   | Une ligne dans Calcul ; **pas de changement de vue**                                                           |
 | A3  | Une ligne arrive dans Calcul pendant qu'on est ailleurs             | L'onglet Calcul signale **« nouveau résultat »** (sinon la ligne passe inaperçue) ; annoncé au lecteur d'écran |
 | A4  | « Image d'un nombre »                                               | Petit champ dans la carte : `f( 2 ) = −1` ; la ligne va aussi dans Calcul                                      |
-| A5  | Tracer, Nuage, Diagramme                                            | ⚠️ **à confirmer** — voir Q2                                                                                   |
+| A5  | Tracer, Nuage, Diagramme                                            | Gardent leur bascule vers Graphe / Données ; **pas** de ligne dans Calcul (Q2)                                 |
 
 ---
 
@@ -140,30 +140,35 @@ status: phase 0 — À VALIDER par David avant tout code
 
 ## §6 — La bascule de `/grapheur`
 
-| #   | Cas                               | Attendu                                                                                                                      |
-| --- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| B1  | Navigation                        | Une seule entrée « Atelier » dans la Sidebar **et** le Header (aujourd'hui le Header n'a même pas l'atelier)                 |
-| B2  | `/grapheur`                       | L'atelier personnel, vue Graphe active, « Mes objets » ouvert                                                                |
-| B3  | `/grapheur`, atelier vide         | Une carte `f` vide, ouverte, curseur dans le champ — **pas de `x^2` d'office**                                               |
-| B4  | `/grapheur?f=x^2-3x+1`            | **Mode éphémère** : cette courbe seule, tracée ; l'atelier personnel n'est ni lu ni écrit (même mécanisme que `/atelier?a=`) |
-| B5  | `/grapheur?f=…&f=…`               | Plusieurs courbes : `f`, `g`, `h`…                                                                                           |
-| B6  | `?f=` illisible                   | On le dit, et on ouvre l'atelier personnel (comme §6 E1 de la v1)                                                            |
-| B7  | « Repartir de zéro »              | Vide l'atelier **après confirmation**                                                                                        |
-| B8  | Premier passage après la bascule  | Les courbes de l'ancien grapheur sont reprises dans l'atelier (`adoptGrapheurState`, à brancher)                             |
-| L1  | Atelier déjà non vide à ce moment | Les courbes du grapheur sont **ajoutées** (pas ignorées), noms en collision renommés (mécanisme de `merge.ts`)               |
-| L2  | Reprise faite une fois            | Pas de seconde reprise aux visites suivantes                                                                                 |
+| #   | Cas                       | Attendu                                                                                                                      |
+| --- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| B1  | Navigation                | Une seule entrée « Atelier » dans la Sidebar **et** le Header (aujourd'hui le Header n'a même pas l'atelier)                 |
+| B2  | `/grapheur`               | L'atelier personnel, vue Graphe active, « Mes objets » ouvert                                                                |
+| B3  | `/grapheur`, atelier vide | Une carte `f` vide, ouverte, curseur dans le champ — **pas de `x^2` d'office**                                               |
+| B4  | `/grapheur?f=x^2-3x+1`    | **Mode éphémère** : cette courbe seule, tracée ; l'atelier personnel n'est ni lu ni écrit (même mécanisme que `/atelier?a=`) |
+| B5  | `/grapheur?f=…&f=…`       | Plusieurs courbes : `f`, `g`, `h`…                                                                                           |
+| B6  | `?f=` illisible           | On le dit, et on ouvre l'atelier personnel (comme §6 E1 de la v1)                                                            |
+| B7  | « Repartir de zéro »      | Vide l'atelier **après confirmation**                                                                                        |
 
 ---
 
-## Questions encore ouvertes
+> **Reprise des courbes de l'ancien grapheur : ABANDONNÉE** (David, 2026-10-04).
+> Les courbes que l'ancien `/grapheur` a rangées dans le navigateur
+> (`chiphre-grapheur-state`) ne sont pas reprises : elles se retapent en
+> quelques secondes, et cette mémoire était plutôt un défaut en classe. La clé
+> reste intacte dans le navigateur — la reprise pourra s'ajouter si quelqu'un la
+> réclame. `adoptGrapheurState` (`persistence.ts`, jamais appelée) devient du
+> code mort : à retirer au lot 6.
 
-**Q1 — La case « f′ » du grapheur fait doublon avec « Dériver ».** Dans le
+## Questions tranchées (2026-10-04)
+
+**Q1 — La case « f′ » du grapheur fait doublon avec « Dériver ».** ✅ **Tranché : la case est supprimée.** Dans le
 grapheur, cocher f′ trace la courbe dérivée sans créer d'objet. Avec G6,
 « Dériver » crée `f′` et la trace : même courbe, deux gestes.
 **Reco : supprimer la case**, « Dériver » la remplace (une seule façon de
 faire). Nuance avec G4 (« tout garder ») : la fonction est gardée, pas la case.
 
-**Q2 — Tracer, Nuage, Diagramme changent-ils de vue ?** Aujourd'hui « Tracer »
+**Q2 — Tracer, Nuage, Diagramme changent-ils de vue ?** ✅ **Tranché : ils gardent leur bascule, sans ligne dans Calcul.** Aujourd'hui « Tracer »
 bascule vers Graphe, « Nuage » vers Graphe, « Diagramme » vers Données.
 G7 interdit d'aller dans **Calcul** sans le vouloir ; il ne dit rien des autres
 vues. **Reco : garder ces bascules** — sinon on clique « Tracer » depuis Calcul
