@@ -4,7 +4,7 @@
 > ⚠️ **Ce fichier ne fait plus foi une fois le niveau amorcé** : la page **Programme** (`/dashboard/teacher/programme`) prend le relais. Le corriger ici ne produit plus rien — cf. le référentiel de 1ʳᵉ, même règle.
 > **Source** : « Programme d'enseignement optionnel de mathématiques expertes de terminale générale » — PDF fourni par David le 2026-10-03.
 >
-> **Statut** : relu par David le 2026-10-04 (recommandations suivies : « Problèmes possibles » en `[SF+]`, découpage des parties 2 et 3 en trois objectifs chacune). Formules reconstruites depuis une extraction texte du PDF, puis revues contre le texte du BO.
+> **Statut** : **amorcé en production** (#758) — la page Programme fait foi désormais. Relu par David le 2026-10-04 (recommandations suivies : « Problèmes possibles » en `[SF+]`, découpage des parties 2 et 3 en trois objectifs chacune). Formules reconstruites depuis une extraction texte du PDF, puis revues contre le texte du BO.
 >
 > L'ordre suit celui du sommaire du BO. Les rubriques **« Préambule »**, **« Intentions majeures »**, **« Quelques lignes directrices pour l'enseignement »**, **« Organisation du programme »**, les textes d'introduction de chaque partie et les encarts **« Histoire des mathématiques »** sont des textes destinés au professeur : ils ne donnent **aucun point**. Le programme ne comporte pas de partie « Automatismes » ni « Algorithmique et programmation ».
 >
