@@ -1,0 +1,224 @@
+{
+	"title": "Intégration par parties",
+	"description": "∫ₐᵇ u v′ = [uv]ₐᵇ − ∫ₐᵇ u′v : x eˣ, ln x, x ln x, x e⁻ˣ en valeur exacte (spécialité seulement)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-209", "TSPE-212"],
+	"theme": "Intégration",
+	"domain": "Calcul intégral",
+	"subdomain": "Intégration par parties",
+	"level": 3,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{{{a}}}x\\,e^{x}\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|1|{{if:a==2|e^{2}+1|{{eval:a-1}}e^{ {{a}} }+1}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)=x$, $v'(x)=e^{x}$ : $u'(x)=1$, $v(x)=e^{x}$.",
+					"$\\displaystyle\\int_{0}^{{{a}}}x\\,e^{x}\\,\\mathrm{d}x=\\big[x\\,e^{x}\\big]_0^{ {{a}} }-\\displaystyle\\int_{0}^{{{a}}}e^{x}\\,\\mathrm{d}x={{if:a==1|e|{{a}}e^{ {{a}} }}}-\\left({{if:a==1|e|e^{ {{a}} }}}-1\\right)=\\textcolor{{{color:primary.0}}}{{{if:a==1|1|{{if:a==2|e^{2}+1|{{eval:a-1}}e^{ {{a}} }+1}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{1}^{e}\\ln(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)=\\ln(x)$, $v'(x)=1$ : $u'(x)=\\dfrac{1}{x}$, $v(x)=x$.",
+					"$\\displaystyle\\int_{1}^{e}\\ln(x)\\,\\mathrm{d}x=\\big[x\\ln(x)\\big]_1^{e}-\\displaystyle\\int_{1}^{e}1\\,\\mathrm{d}x=e-(e-1)=\\textcolor{{{color:primary.0}}}{1}$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{1}^{e}x\\ln(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{e^2+1}{4}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)=\\ln(x)$, $v'(x)=x$ : $u'(x)=\\dfrac{1}{x}$, $v(x)=\\dfrac{x^2}{2}$.",
+					"$\\displaystyle\\int_{1}^{e}x\\ln(x)\\,\\mathrm{d}x=\\left[\\dfrac{x^2}{2}\\ln(x)\\right]_1^{e}-\\displaystyle\\int_{1}^{e}\\dfrac{x}{2}\\,\\mathrm{d}x=\\dfrac{e^2}{2}-\\dfrac{e^2-1}{4}=\\textcolor{{{color:primary.0}}}{\\dfrac{e^2+1}{4}}$."
+				]
+			}
+		},
+		{
+			"statement": "À l'aide d'une intégration par parties, calcule la valeur exacte de $\\displaystyle\\int_{0}^{1}x\\,e^{-x}\\,\\mathrm{d}x$.\n\n$?$",
+			"blanks": [
+				{
+					"expectedAnswer": "1-\\frac{2}{e}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On pose $u(x)=x$, $v'(x)=e^{-x}$ : $u'(x)=1$, $v(x)=-e^{-x}$.",
+					"$\\displaystyle\\int_{0}^{1}x\\,e^{-x}\\,\\mathrm{d}x=\\big[-x\\,e^{-x}\\big]_0^1+\\displaystyle\\int_{0}^{1}e^{-x}\\,\\mathrm{d}x=-e^{-1}+\\left(1-e^{-1}\\right)=\\textcolor{{{color:primary.0}}}{1-\\dfrac{2}{e}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : a=1 → 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a=1, oubli de −∫u′v",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1"
+			},
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a=2 → e² + 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["e^2+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a=2, signe du crochet",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["3e^2-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : crochet seul",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : e − 1",
+			"variationIndex": 1,
+			"variables": {},
+			"answers": ["e-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (e²+1)/4",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{e^2+1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : forme développée",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{e^2}{4}+\\frac{1}{4}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : crochet seul e²/2",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{e^2}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : signe faux",
+			"variationIndex": 2,
+			"variables": {},
+			"answers": ["\\frac{3e^2-1}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 1 − 2/e",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1-\\frac{2}{e}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 1 − 2e^{−1}",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1-2e^{-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : v = e^{−x} (signe)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{2}{e}-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off",
+			"form": "off"
+		}
+	}
+}

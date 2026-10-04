@@ -1,0 +1,229 @@
+{
+	"title": "Relation de Chasles pour les intégrales",
+	"description": "Ajouter, retrancher ou inverser les bornes : ∫ₐᶜ = ∫ₐᵇ + ∫ᵇᶜ, ∫ᵇᵃ = −∫ₐᵇ (pièges : soustraire, oublier le signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-068", "TSPE-207"],
+	"theme": "Intégration",
+	"domain": "Propriétés de l'intégrale",
+	"subdomain": "Relation de Chasles",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$f$ est une fonction continue sur $\\mathbb{R}$ telle que $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$ et $\\displaystyle\\int_{{{b}}}^{{{c}}}f(x)\\,\\mathrm{d}x={{q}}$.\n\n$\\displaystyle\\int_{{{a}}}^{{{c}}}f(x)\\,\\mathrm{d}x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..-1"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "3..6"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "q",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["p+q != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p+q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Relation de Chasles : $\\displaystyle\\int_{{{a}}}^{{{c}}}f(x)\\,\\mathrm{d}x=\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x+\\displaystyle\\int_{{{b}}}^{{{c}}}f(x)\\,\\mathrm{d}x={{p}}+{{q;()}}=\\textcolor{{{color:primary.0}}}{{{eval:p+q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction continue sur $\\mathbb{R}$ telle que $\\displaystyle\\int_{{{a}}}^{{{c}}}f(x)\\,\\mathrm{d}x={{r}}$ et $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$.\n\n$\\displaystyle\\int_{{{b}}}^{{{c}}}f(x)\\,\\mathrm{d}x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..-1"
+				},
+				{
+					"name": "b",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "3..6"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..9;±"
+				}
+			],
+			"conditions": ["r != p", "r != -p"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r-p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chasles : $\\displaystyle\\int_{{{a}}}^{{{c}}}f(x)\\,\\mathrm{d}x=\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x+\\displaystyle\\int_{{{b}}}^{{{c}}}f(x)\\,\\mathrm{d}x$.",
+					"Donc $\\displaystyle\\int_{{{b}}}^{{{c}}}f(x)\\,\\mathrm{d}x={{r}}-{{p;()}}=\\textcolor{{{color:primary.0}}}{{{eval:r-p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$f$ est une fonction continue sur $\\mathbb{R}$ telle que $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x={{p}}$.\n\n$\\displaystyle\\int_{{{b}}}^{{{a}}}f(x)\\,\\mathrm{d}x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-3..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "p",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chasles : $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x+\\displaystyle\\int_{{{b}}}^{{{a}}}f(x)\\,\\mathrm{d}x=\\displaystyle\\int_{{{a}}}^{{{a}}}f(x)\\,\\mathrm{d}x=0$.",
+					"Donc $\\displaystyle\\int_{{{b}}}^{{{a}}}f(x)\\,\\mathrm{d}x=\\textcolor{{{color:primary.0}}}{{{eval:-p}}}$ : échanger les bornes change le signe."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 5 + (−2) = 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "4",
+				"p": "5",
+				"q": "-2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : soustraction",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "4",
+				"p": "5",
+				"q": "-2"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 7 − 3 = 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "4",
+				"p": "3",
+				"r": "7"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : addition",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "4",
+				"p": "3",
+				"r": "7"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : p − r",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"b": "1",
+				"c": "4",
+				"p": "3",
+				"r": "7"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : −6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "0",
+				"b": "3",
+				"p": "6"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

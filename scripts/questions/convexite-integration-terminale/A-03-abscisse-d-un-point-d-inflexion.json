@@ -1,0 +1,278 @@
+{
+	"title": "Abscisse d'un point d'inflexion",
+	"description": "f″ s'annule EN CHANGEANT DE SIGNE (piège : racine double de f″, sans changement de signe)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-064", "TCOMP-066", "TSPE-141", "TSPE-149"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Point d'inflexion",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x{{d;+}}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/(3*a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$ et $f''(x)={{eval:6*a}}x{{eval:2*b;+}}$.",
+					"$f''$ est affine : elle s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:-b/(3*a)}}}$, abscisse du point d'inflexion."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ une fonction deux fois dérivable sur $\\mathbb{R}$ telle que, pour tout réel $x$, $f''(x)=(x{{eval:-p;+}})^2(x{{eval:-q;+}})$.\n\nLa courbe de $f$ admet un unique point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-5..5"
+				},
+				{
+					"name": "q",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(x{{eval:-p;+}})^2\\geqslant 0$ : $f''(x)$ est du signe de $x{{eval:-q;+}}$ (et nul en ${{p}}$).",
+					"En $x={{p}}$, $f''$ s'annule **sans changer de signe** : pas d'inflexion.",
+					"En $x={{q}}$, $f''$ change de signe : l'abscisse du point d'inflexion est $\\textcolor{{{color:primary.0}}}{{{q}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{b;+}})e^{-x}$.\n\nLa courbe de $f$ admet un point d'inflexion. Quelle est son abscisse ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["a-b != 0", "2*a-b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(2*a-b)/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $(uv)'=u'v+uv'$ et $(e^{-x})'=-e^{-x}$ : $f'(x)={{a}}e^{-x}-({{a}}x{{b;+}})e^{-x}$, soit $f'(x)=({{eval:-a}}x{{eval:a-b;+}})e^{-x}$.",
+					"De même : $f''(x)={{eval:-a}}e^{-x}-({{eval:-a}}x{{eval:a-b;+}})e^{-x}$, soit $f''(x)=({{a}}x{{eval:b-2*a;+}})e^{-x}$, du signe de ${{a}}x{{eval:b-2*a;+}}$ car $e^{-x}>0$.",
+					"$f''$ s'annule en changeant de signe en $x=\\textcolor{{{color:primary.0}}}{{{eval:(2*a-b)/a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : x³−6x²+… → 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-6",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : racine de f′ (extremum)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-6",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : −b/a sans le 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-6",
+				"c": "0",
+				"d": "1"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : fraction 2x³+x² → −1/6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "0",
+				"d": "0"
+			},
+			"answers": ["-\\frac{1}{6}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : fraction non simplifiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "1",
+				"c": "0",
+				"d": "0"
+			},
+			"answers": ["-\\frac{2}{12}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v1 : (x−1)²(x+2) → −2",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "-2"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : racine double (pas de changement de signe)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "-2"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : signe de la racine faux",
+			"variationIndex": 1,
+			"variables": {
+				"p": "1",
+				"q": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (x+1)e^{−x} → 1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : racine de ax+b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : racine de f′",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2x+1 → 3/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : décimal",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "1"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

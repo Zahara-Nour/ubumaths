@@ -1,0 +1,307 @@
+{
+	"title": "Calculer une dérivée seconde",
+	"description": "Dériver deux fois : polynôme, (ax+b)eˣ, ax² + b·ln x, k·eᵃˣ (piège : donner f′ au lieu de f″)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-060", "TSPE-138"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Dérivée seconde",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{b;+}}x^2{{c;+}}x{{d;+}}$.\n\nDétermine la dérivée seconde $f''$.\n\n$f''(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "c",
+					"expression": "-9..9"
+				},
+				{
+					"name": "d",
+					"expression": "-9..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:6*a}}x{{eval:2*b;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:3*a}}x^2{{eval:2*b;+}}x{{c;+}}$.",
+					"On dérive une seconde fois : $f''(x)=\\textcolor{{{color:primary.0}}}{{{eval:6*a}}x{{eval:2*b;+}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{b;+}})e^{x}$.\n\nDétermine la dérivée seconde $f''$.\n\n$f''(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..5;±"
+				}
+			],
+			"conditions": ["a+b != 0", "2*a+b != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "({{a}}x{{eval:2*a+b;+}})e^{x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Avec $(uv)'=u'v+uv'$ : $f'(x)={{a}}e^{x}+({{a}}x{{b;+}})e^{x}$, soit $f'(x)=({{a}}x{{eval:a+b;+}})e^{x}$.",
+					"De même : $f''(x)={{a}}e^{x}+({{a}}x{{eval:a+b;+}})e^{x}$, soit $f''(x)=\\textcolor{{{color:primary.0}}}{({{if:a==1|x|{{if:a==-1|-x|{{a}}x}}}}{{eval:2*a+b;+}})e^{x}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)={{a}}x^2+{{b}}ln(x)$.\n\nDétermine la dérivée seconde $f''$.\n\n$f''(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*a}}-\\frac{ {{b}} }{x^2}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f'(x)={{eval:2*a}}x+\\dfrac{ {{b}} }{x}$.",
+					"La dérivée de $x\\mapsto\\dfrac{1}{x}$ est $x\\mapsto-\\dfrac{1}{x^2}$, donc $f''(x)=\\textcolor{{{color:primary.0}}}{{{eval:2*a}}-\\dfrac{ {{b}} }{x^2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}e^{ {{a}}x}$.\n\nDétermine la dérivée seconde $f''$.\n\n$f''(x)=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "a",
+					"expression": "2..4;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*a^2}}e^{ {{a}}x}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(e^{u})'=u'e^{u}$ : $f'(x)={{eval:k*a}}e^{ {{a}}x}$.",
+					"$f''(x)={{eval:k*a}}\\times{{a;()}}e^{ {{a}}x}=\\textcolor{{{color:primary.0}}}{{{eval:k*a^2}}e^{ {{a}}x}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2x³−3x²+x+5 → 12x−6",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["12x-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : f′ donnée à la place de f″",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["6x^2-6x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : exposant non abaissé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"d": "5"
+			},
+			"answers": ["12x^2-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : (x+1)eˣ → (x+3)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["(x+3)e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : forme développée acceptée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["xe^{x}+3e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : f′ = (x+2)eˣ",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["(x+2)e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : dérivée de eˣ oubliée (produit mal dérivé)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : x² + 3 ln x → 2 − 3/x²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["2-\\frac{3}{x^2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe de (1/x)′ oublié",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["2+\\frac{3}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : f′ donnée",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "3"
+			},
+			"answers": ["2x+\\frac{3}{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 2e^{3x} → 18e^{3x}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["18e^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : a non élevé au carré",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"a": "3"
+			},
+			"answers": ["6e^{3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : −e^{−2x} → −4e^{−2x}",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-1",
+				"a": "-2"
+			},
+			"answers": ["-4e^{-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : signe de a² faux",
+			"variationIndex": 3,
+			"variables": {
+				"k": "-1",
+				"a": "-2"
+			},
+			"answers": ["4e^{-2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off",
+			"form": "off"
+		}
+	}
+}

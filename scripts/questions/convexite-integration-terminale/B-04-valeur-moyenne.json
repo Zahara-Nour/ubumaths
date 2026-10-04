@@ -1,0 +1,271 @@
+{
+	"title": "Valeur moyenne d'une fonction sur un intervalle",
+	"description": "μ = 1/(b − a) × ∫ₐᵇ f(x) dx en valeur exacte (piège : oubli du facteur 1/(b − a), on donne l'intégrale)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-069", "TCOMP-077", "TSPE-208"],
+	"theme": "Intégration",
+	"domain": "Valeur moyenne",
+	"subdomain": "Calcul",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{m}}x{{p;+}}$. Calcule sa valeur moyenne $\\mu$ sur l'intervalle $\\left[{{a}}\\,;{{b}}\\right]$.\n\n$\\mu=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-2..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				},
+				{
+					"name": "m",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "p",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["m*(a+b)/2+p != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:m*(a+b)/2+p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mu=\\dfrac{1}{ {{b}}-{{a;()}} }\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x$.",
+					"Une primitive de $f$ est $F(x)={{eval:m/2}}x^2{{p;+}}x$, donc $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x=F({{b}})-F({{a}})={{eval:(m*(b^2-a^2)/2+p*(b-a))}}$.",
+					"$\\mu=\\dfrac{ {{eval:(m*(b^2-a^2)/2+p*(b-a))}} }{ {{eval:b-a}} }=\\textcolor{{{color:primary.0}}}{{{eval:m*(a+b)/2+p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}x^2$. Calcule sa valeur moyenne $\\mu$ sur l'intervalle $\\left[0\\,;{{b}}\\right]$.\n\n$\\mu=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k*b^2/3}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $f$ est $F(x)={{eval:k/3}}x^3$, donc $\\displaystyle\\int_{0}^{{{b}}}f(x)\\,\\mathrm{d}x=F({{b}})-F(0)={{eval:k*b^3/3}}$.",
+					"$\\mu=\\dfrac{1}{ {{b}} }\\times{{eval:k*b^3/3}}=\\textcolor{{{color:primary.0}}}{{{eval:k*b^2/3}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la valeur moyenne $\\mu$ de la fonction exponentielle sur l'intervalle $\\left[0\\,;{{b}}\\right]$.\n\n$\\mu=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{e^{ {{b}} }-1}{ {{b}} }"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\int_{0}^{{{b}}}e^{x}\\,\\mathrm{d}x=\\left[e^{x}\\right]_0^{ {{b}} }=e^{ {{b}} }-1$.",
+					"$\\mu=\\dfrac{1}{ {{b}}-0}\\left(e^{ {{b}} }-1\\right)=\\textcolor{{{color:primary.0}}}{\\dfrac{e^{ {{b}} }-1}{ {{b}} }}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule la valeur moyenne $\\mu$ de la fonction $f:x\\mapsto\\dfrac{1}{x}$ sur l'intervalle $\\left[1\\,;e\\right]$.\n\n$\\mu=?$",
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{e-1}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\int_{1}^{e}\\dfrac{1}{x}\\,\\mathrm{d}x=\\left[\\ln(x)\\right]_1^{e}=1-0=1$.",
+					"$\\mu=\\dfrac{1}{e-1}\\times 1=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{e-1}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 2x+1 sur [0;4] → 5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : intégrale donnée (1/(b−a) oublié)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : moyenne des bornes de l'intervalle",
+			"variationIndex": 0,
+			"variables": {
+				"a": "0",
+				"b": "4",
+				"m": "2",
+				"p": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : x² sur [0;3] → 3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"b": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : intégrale 9",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1",
+				"b": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2x² sur [0;2] → 8/3",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"b": "2"
+			},
+			"answers": ["\\frac{8}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : fraction non simplifiée",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"b": "2"
+			},
+			"answers": ["\\frac{16}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v2 : (e²−1)/2",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2"
+			},
+			"answers": ["\\frac{e^2-1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : intégrale e²−1",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2"
+			},
+			"answers": ["e^2-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : F(0) oublié",
+			"variationIndex": 2,
+			"variables": {
+				"b": "2"
+			},
+			"answers": ["\\frac{e^2}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 1/(e−1)",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["\\frac{1}{e-1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : intégrale 1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : multiplié par e−1",
+			"variationIndex": 3,
+			"variables": {},
+			"answers": ["e-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off",
+			"form": "off"
+		}
+	}
+}

@@ -1,0 +1,217 @@
+{
+	"title": "Intégrale d'une fonction de signe quelconque : aire algébrique",
+	"description": "Les aires sous l'axe comptent négativement dans l'intégrale ; l'aire géométrique les compte positivement (piège : confondre les deux)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-072", "TSPE-205"],
+	"theme": "Intégration",
+	"domain": "Intégrale et aire",
+	"subdomain": "Aire algébrique",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La fonction $f:x\\mapsto x-{{c}}$ est représentée ci-dessous sur $\\left[0\\,;{{eval:c+d}}\\right]$ (repère orthonormé).\n\n```courbe\nx: -1 ; {{eval:c+d+1}}\ny: {{eval:-c-1}} ; {{eval:d+1}}\ngrille: 1 ; 1\nf(x) = x-{{c}} sur [0 ; {{eval:c+d}}]   bleu   nom=C_f\naire: f ; 0 ; {{eval:c+d}}\ntaille: moyenne\ndescription: Segment qui coupe l'axe des abscisses : un triangle sous l'axe puis un triangle au-dessus.\n```\n\nCalcule $\\displaystyle\\int_{0}^{{{eval:c+d}}}f(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["c != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d^2-c^2)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $\\left[0\\,;{{c}}\\right]$, $f\\leqslant 0$ : le triangle sous l'axe, d'aire $\\dfrac{ {{c}}\\times{{c}} }{2}={{eval:c^2/2}}$, compte **négativement**.",
+					"Sur $\\left[{{c}}\\,;{{eval:c+d}}\\right]$, $f\\geqslant 0$ : le triangle au-dessus, d'aire $\\dfrac{ {{d}}\\times{{d}} }{2}={{eval:d^2/2}}$, compte positivement.",
+					"$\\displaystyle\\int_{0}^{{{eval:c+d}}}f(x)\\,\\mathrm{d}x={{eval:d^2/2}}-{{eval:c^2/2}}=\\textcolor{{{color:primary.0}}}{{{eval:(d^2-c^2)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La fonction $f:x\\mapsto x-{{c}}$ est représentée ci-dessous sur $\\left[0\\,;{{eval:c+d}}\\right]$ (repère orthonormé).\n\n```courbe\nx: -1 ; {{eval:c+d+1}}\ny: {{eval:-c-1}} ; {{eval:d+1}}\ngrille: 1 ; 1\nf(x) = x-{{c}} sur [0 ; {{eval:c+d}}]   bleu   nom=C_f\naire: f ; 0 ; {{eval:c+d}}\ntaille: moyenne\ndescription: Segment qui coupe l'axe des abscisses : un triangle sous l'axe puis un triangle au-dessus.\n```\n\nCalcule l'**aire**, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x=0$ et $x={{eval:c+d}}$.\n\n$?$",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..4"
+				}
+			],
+			"conditions": ["c != d"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(d^2+c^2)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une aire est toujours positive : on additionne les aires des deux triangles.",
+					"Triangle sous l'axe : $\\dfrac{ {{c}}\\times{{c}} }{2}={{eval:c^2/2}}$ ; triangle au-dessus : $\\dfrac{ {{d}}\\times{{d}} }{2}={{eval:d^2/2}}$.",
+					"Aire $={{eval:c^2/2}}+{{eval:d^2/2}}=\\textcolor{{{color:primary.0}}}{{{eval:(d^2+c^2)/2}}}$ unités d'aire (alors que l'intégrale vaut ${{eval:(d^2-c^2)/2}}$)."
+				]
+			}
+		},
+		{
+			"statement": "$f$ est la fonction constante égale à ${{eval:-h}}$ sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x$.\n\n$?$",
+			"variables": [
+				{
+					"name": "h",
+					"expression": "1..5"
+				},
+				{
+					"name": "a",
+					"expression": "-3..1"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-h*(b-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est négative : le rectangle de largeur ${{eval:b-a}}$ et de hauteur ${{h}}$ est sous l'axe des abscisses, son aire compte négativement.",
+					"$\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x=-{{eval:b-a}}\\times{{h}}=\\textcolor{{{color:primary.0}}}{{{eval:-h*(b-a)}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : c=1, d=3 → 4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : aire géométrique",
+			"variationIndex": 0,
+			"variables": {
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : c=3, d=1 → −4",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : valeur absolue",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"d": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : c=1, d=3 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : intégrale (aire algébrique)",
+			"variationIndex": 1,
+			"variables": {
+				"c": "1",
+				"d": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : c=2, d=1 → 5/2",
+			"variationIndex": 1,
+			"variables": {
+				"c": "2",
+				"d": "1"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −2 sur [0;3] → −6",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"a": "0",
+				"b": "3"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe oublié",
+			"variationIndex": 2,
+			"variables": {
+				"h": "2",
+				"a": "0",
+				"b": "3"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
