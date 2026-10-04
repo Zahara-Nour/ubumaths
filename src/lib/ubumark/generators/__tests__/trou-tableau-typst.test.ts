@@ -52,3 +52,14 @@ describe('case à remplir dans une cellule de tableau (PDF)', () => {
 		);
 	});
 });
+
+describe('gras dans une cellule de tableau (PDF)', () => {
+	it('le gras markdown d’une cellule (réponse d’une case texte au corrigé) est rendu en gras', () => {
+		expect(processTableCellContent('**0,3**')).toBe('#strong[0,3]');
+		expect(processTableCellContent('soit **12** cm')).toBe('soit #strong[12] cm');
+	});
+
+	it('un astérisque seul reste échappé', () => {
+		expect(processTableCellContent('a * b')).toBe('a \\* b');
+	});
+});
