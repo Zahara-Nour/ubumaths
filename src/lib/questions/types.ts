@@ -1020,6 +1020,7 @@ export type ConfigurableConstraintId =
 	| 'factorZero'
 	| 'signs'
 	| 'reducedFractions'
+	| 'reducedRadicals'
 	| 'percent'
 	| 'unit'
 	| 'intervalForm';

@@ -216,8 +216,8 @@
 			},
 			"answers": ["2", "-3", "\\sqrt{16}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{

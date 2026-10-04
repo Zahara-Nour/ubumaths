@@ -218,8 +218,8 @@
 			},
 			"answers": ["3", "0", "\\sqrt{12}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{

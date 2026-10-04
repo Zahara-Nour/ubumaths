@@ -333,8 +333,8 @@
 			},
 			"answers": ["\\sqrt{20}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{

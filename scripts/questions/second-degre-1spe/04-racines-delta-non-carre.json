@@ -177,7 +177,7 @@
 			"answers": ["\\frac{2-\\sqrt{12}}{2}", "\\frac{2+\\sqrt{12}}{2}"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": ["form", "form"]
+				"constraintViolations": ["reducedRadicals", "form", "reducedRadicals", "form"]
 			}
 		},
 		{
@@ -241,8 +241,8 @@
 			},
 			"answers": ["-2-\\sqrt{8}", "-2+\\sqrt{8}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form", "form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals", "reducedRadicals"]
 			}
 		},
 		{
@@ -387,8 +387,8 @@
 			},
 			"answers": ["\\frac{1-\\sqrt{45}}{2}", "\\frac{1+\\sqrt{45}}{2}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form", "form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals", "reducedRadicals"]
 			}
 		}
 	]

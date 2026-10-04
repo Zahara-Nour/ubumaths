@@ -114,6 +114,7 @@ export const constraintIdSchema = z.enum([
 	'factorZero',
 	'signs',
 	'reducedFractions',
+	'reducedRadicals',
 	'percent',
 	'unit',
 	'intervalForm',
@@ -349,6 +350,7 @@ export const constraintsSchema = z.object({
 	factorZero: constraintModeSchema.optional(),
 	signs: constraintModeSchema.optional(),
 	reducedFractions: constraintModeSchema.optional(),
+	reducedRadicals: constraintModeSchema.optional(),
 	percent: constraintModeSchema.optional(),
 	unit: constraintModeSchema.optional(),
 	intervalForm: constraintModeSchema.optional()

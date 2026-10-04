@@ -118,6 +118,27 @@ distinct. Seul le `+` collé à `\infty` est absorbé : `++\infty` garde un `+` 
 `intervalles` ne passent pas par ce pipeline. Défaut de la sonde du 2026-10-04 ; plus besoin de
 `constraints.signs: "off"` dans une carte pour accepter `+\infty`.
 
+## Racine simplifiable : forme perfectible (contrainte `reducedRadicals`)
+
+Décision de David du 2026-10-04 : une racine carrée d'entier à facteur carré est jugée comme une
+fraction simplifiable. `reduceRadicalsAST` (pipeline de `checkForm`, juste avant
+`reduceFractionsAST`) réécrit `\sqrt{12}` → `2\sqrt{3}`, `3\sqrt{12}` → `6\sqrt{3}`,
+`\sqrt{49}` → `7` ; la contrainte `reducedRadicals` (défaut `warn`) donne ½ avec « La racine peut
+être simplifiée. » (`strict` : 0 point ; `off` : ni message ni pénalité, la forme est comparée après
+réduction). `\frac{\sqrt{12}}{2}` pour `\sqrt{3}` cumule `reducedRadicals` et `reducedFractions`.
+Une attendue écrite `\sqrt{12}` est réduite elle aussi (`2\sqrt{3}` juste). Restent : `\sqrt[3]{16}`,
+`\sqrt{x}`, un radicande décimal ou au-delà de 10⁹ ; une valeur fausse reste fausse (`\sqrt{13}`).
+⚠️ Un exercice dont l'objet est de réduire une racine ou de trouver une racine (« Réduire une
+racine carrée », « Trouver une racine carrée ») doit poser `constraints.reducedRadicals: "strict"`,
+sinon recopier `\sqrt{12}` vaut ½. Mesure (dépôt + `REAL_TEMPLATES` + 920 modèles de prod en lecture +
+synthétiques ; specs, attendue sur tirages, variantes `k\sqrt{m}` ↔ `\sqrt{k^2m}`, `n` ↔
+`\sqrt{n^2}`, valeur fausse) : 34 226 verdicts, 1 238 modèles, 3 709 changés, tous sur une racine
+simplifiable : 3 459 variantes `bad_form` → `unoptimal_form`, 42 `correct` → `unoptimal_form`
+(cases `form: "off"`), 150 messages ou listes de contraintes, 40 specs (17 dans le dépôt, mises à
+jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carrée », « Trouver une
+racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
+racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
+
 ## Exposants littéraux (#521)
 
 La forme normale ne porte que des exposants **rationnels** (`SymbolicFactor.exponent: Rational`).

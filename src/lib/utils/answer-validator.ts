@@ -92,6 +92,7 @@ function buildConstraintSeverities(
 		'factorZero',
 		'signs',
 		'reducedFractions',
+		'reducedRadicals',
 		'percent'
 	];
 

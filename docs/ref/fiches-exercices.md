@@ -465,6 +465,10 @@ Règles d'écriture qui évitent un défaut :
   par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
   (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
   `precision`, seul un nombre simple reste admis.
+- Racine simplifiable (`\sqrt{12}` pour `2\sqrt{3}`, `\sqrt{49}` pour 7) : `unoptimal_form`
+  (½, contrainte `reducedRadicals`, « La racine peut être simplifiée. », décision du 2026-10-04 ;
+  avant : `bad_form` / `form`). Spec : `constraintViolations: ["reducedRadicals"]`. Exercice dont
+  l'objet est de réduire ou de trouver la racine : `"constraints": { "reducedRadicals": "strict" }`.
 - Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).

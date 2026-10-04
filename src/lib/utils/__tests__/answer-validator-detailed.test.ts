@@ -328,3 +328,25 @@ describe('case ordinaire — +\\infty est l’écriture du lycée', () => {
 		expect(globalStatus([answer], instanceWith([math(expected)]))).toBe(status);
 	});
 });
+
+describe('case ordinaire — racine simplifiable (décision du 2026-10-04)', () => {
+	it.each([
+		['\\sqrt{12}', '2\\sqrt{3}', 'unoptimal_form'],
+		['\\sqrt{4}', '2', 'unoptimal_form'],
+		['2\\sqrt{3}', '2\\sqrt{3}', 'correct'],
+		['\\sqrt{13}', '2\\sqrt{3}', 'incorrect'],
+		['\\sqrt{3}', '2\\sqrt{3}', 'incorrect']
+	] as const)('réponse %s, attendue %s : %s', (answer, expected, status) => {
+		expect(globalStatus([answer], instanceWith([math(expected)]))).toBe(status);
+	});
+
+	it('message et contrainte reducedRadicals', () => {
+		const result = validateAnswer(['\\sqrt{12}'], instanceWith([math('2\\sqrt{3}')]), [
+			'\\sqrt{12}'
+		]);
+		expect(result.isCorrect).toBe(true);
+		expect(result.constraintViolations?.map((v) => v.constraint)).toEqual(['reducedRadicals']);
+		expect(JSON.stringify(result)).toContain(CONSTRAINT_FEEDBACK.reducedRadicals.single);
+		expect(CONSTRAINT_FEEDBACK.reducedRadicals.single).toBe('La racine peut être simplifiée.');
+	});
+});
