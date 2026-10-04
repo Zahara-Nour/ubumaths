@@ -183,6 +183,28 @@ moteur n'est donc pas touché).
   avertissements eslint des fichiers touchés sont antérieurs (aucun dans
   les lignes modifiées, vérifié).
 
+## Lot 3b — une action ne change pas de vue
+
+Branche `feat/atelier-actions-sans-bascule`, worktree `../ubumaths-wt-actions`.
+Lot 3a mergé (#798).
+
+- [x] Une action écrit sa ligne dans Calcul SANS y emmener (G7, A1/A2) ;
+      « Tracer », « Nuage », « Diagramme » gardent leur bascule (A5, Q2).
+- [x] Repère « • » sur l'onglet Calcul tant qu'un résultat n'a pas été vu
+      (A3), avec texte pour lecteur d'écran et annonce ; ce qu'on calcule
+      sous ses yeux dans Calcul ne compte pas comme nouveau.
+- [x] « Image d'un nombre » : n'est plus un bouton qui prépare `f(` dans
+      Calcul, mais un champ `f( x ) = …` dans la carte (A4) ; la ligne va
+      aussi dans Calcul ; ⚠️ ne passe pas par `submit`, qui VIDAIT le
+      brouillon de Calcul.
+- [x] L1 : dériver une seconde fois sélectionne la carte `f′` existante.
+- Choix à signaler à David : « Tableau croisé » et « Comparer » PRÉPARENT
+  une commande à compléter au clavier → elles emmènent toujours dans Calcul
+  (y aller est le geste lui-même).
+- Tests : 10 navigateur (8 rouges avant, 2 garde-fous) ; un ancien test
+  (« Image prépare la saisie ») remplacé — il assertait le comportement que
+  A4 supprime. Suites : 338 navigateur, 1 171 serveur ; `check:incremental` 0.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

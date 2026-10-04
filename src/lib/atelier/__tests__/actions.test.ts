@@ -150,7 +150,9 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 	it('ne fait plus attendre les actions de la vue Calcul', () => {
 		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
-		for (const id of ['derive', 'solve', 'variations', 'image']) {
+		// « image » n'est plus une action : c'est un champ de la carte (lot 3b)
+		for (const id of ['derive', 'solve', 'variations']) {
+			expect(action('f', id), id).toBeDefined();
 			expect(action('f', id)?.disabledReason, id).toBeUndefined();
 		}
 	});

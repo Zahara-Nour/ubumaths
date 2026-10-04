@@ -116,6 +116,25 @@ export class CalcDesk {
 		this.entries = [...this.entries, { id: this.#nextId++, ...entry }];
 	}
 
+	/**
+	 * L'image d'un nombre, calculée depuis la CARTE (phase 0 `/grapheur` §3 A4).
+	 *
+	 * ⚠️ Ne passe PAS par `submit`, qui vide le brouillon de Calcul : l'élève
+	 * pouvait y être en train de taper autre chose. La ligne va dans
+	 * l'historique comme toute action (G7) ; la carte affiche le résultat.
+	 */
+	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
+		const outcome = runAction(this.session, 'image', name, value.trim());
+		const text = outcome.ok ? outcome.output : outcome.message;
+		this.#push({
+			label: `${displayName(name)}(${value.trim()})`,
+			text,
+			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
+			failed: !outcome.ok
+		});
+		return { text, failed: !outcome.ok };
+	}
+
 	/** Traiter ce que l'élève vient de taper. */
 	submit(text: string): void {
 		const result = runInput(this.session, text, 'text');

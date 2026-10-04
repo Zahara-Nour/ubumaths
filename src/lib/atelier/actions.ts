@@ -52,8 +52,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		// un objet — donc quelque chose de traçable et de citable.
 		{ id: 'table', label: 'Tabuler' },
 		{ id: 'solve', label: 'Résoudre f(x) = 0' },
-		{ id: 'variations', label: 'Variations' },
-		{ id: 'image', label: 'Image d’un nombre' }
+		{ id: 'variations', label: 'Variations' }
+		// « Image d'un nombre » n'est plus un bouton : c'est un petit champ de la
+		// carte, qui calcule sans envoyer dans Calcul (phase 0 `/grapheur` §3 A4)
 	],
 	sequence: [
 		{ id: 'plot-points', label: 'Tracer en nuage' },

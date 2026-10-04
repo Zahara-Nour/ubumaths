@@ -16,9 +16,11 @@
 		selected?: string | null;
 		onSelect?: (name: string) => void;
 		onAction?: (action: ObjectAction, object: AtelierObject) => void;
+		/** L'image d'un nombre, calculée depuis une carte (phase 0 `/grapheur` §3 A4). */
+		onImage?: (name: string, value: string) => { text: string; failed: boolean };
 	}
 
-	let { selected = $bindable(null), onSelect, onAction }: Props = $props();
+	let { selected = $bindable(null), onSelect, onAction, onImage }: Props = $props();
 
 	const atelier = useAtelier();
 
@@ -55,7 +57,13 @@
 
 	<div class="liste">
 		{#each atelier.objects as object (object.name)}
-			<ObjectCard {object} selected={object.name === selected} onSelect={select} {onAction} />
+			<ObjectCard
+				{object}
+				selected={object.name === selected}
+				onSelect={select}
+				{onAction}
+				{onImage}
+			/>
 		{:else}
 			<p class="vide">Rien encore. Crée un objet pour commencer à chercher.</p>
 		{/each}

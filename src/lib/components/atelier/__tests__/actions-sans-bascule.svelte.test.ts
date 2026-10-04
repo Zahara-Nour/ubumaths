@@ -98,8 +98,10 @@ describe('une action ne change pas de vue', () => {
 		await clickAction(container, 'f', 'Dériver');
 
 		await vi.waitFor(() => expect(hasMarker(container)).toBe(true));
-		const announced = container.querySelector('[data-annonce]')?.textContent ?? '';
-		expect(announced).toContain('Calcul');
+		// L'annonce est écrite au tour suivant (`announce` vide puis réécrit)
+		await vi.waitFor(() =>
+			expect(container.querySelector('[data-annonce]')?.textContent ?? '').toContain('Calcul')
+		);
 	});
 
 	it('le repère s’efface quand on va dans Calcul', async () => {

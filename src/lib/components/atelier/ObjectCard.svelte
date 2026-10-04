@@ -26,9 +26,21 @@
 		selected?: boolean;
 		onSelect?: (name: string) => void;
 		onAction?: (action: ObjectAction, object: AtelierObject) => void;
+		onImage?: (name: string, value: string) => { text: string; failed: boolean };
 	}
 
-	let { object, selected = false, onSelect, onAction }: Props = $props();
+	let { object, selected = false, onSelect, onAction, onImage }: Props = $props();
+
+	/** La valeur de x tapée pour l'image (A4), et ce qu'elle a donné. */
+	let imageInput = $state('');
+	let imageResult = $state<{ text: string; failed: boolean; at: string } | null>(null);
+
+	function handleImageSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		if (!onImage || imageInput.trim() === '') return;
+		const value = imageInput.trim();
+		imageResult = { ...onImage(object.name, value), at: value };
+	}
 
 	const atelier = useAtelier();
 
@@ -177,6 +189,26 @@
 		<p class="derivee">
 			dérivée de {displayName(derivative.base)} — elle suit {displayName(derivative.base)}
 		</p>
+	{/if}
+
+	<!-- A4 : l'image d'un nombre se calcule ICI, sans envoyer dans Calcul -->
+	{#if selected && object.kind === 'function' && onImage}
+		<form class="image" onsubmit={handleImageSubmit}>
+			<span class="image-prefixe" aria-hidden="true">{displayName(object.name)}(</span>
+			<input
+				class="image-x"
+				type="text"
+				inputmode="decimal"
+				autocomplete="off"
+				bind:value={imageInput}
+				aria-label={`Image par ${displayName(object.name)} : valeur de x`}
+				placeholder="x"
+			/>
+			<span class="image-prefixe" aria-hidden="true">) =</span>
+			<span class="image-resultat" class:refus={imageResult?.failed} aria-live="polite">
+				{imageResult ? imageResult.text : '…'}
+			</span>
+		</form>
 	{/if}
 
 	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->
@@ -371,6 +403,32 @@
 		color: var(--color-muted-foreground);
 	}
 
+	.image {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+	}
+	.image-prefixe {
+		font-family: var(--font-serif, serif);
+		font-style: italic;
+	}
+	.image-x {
+		width: 4rem;
+		/* Cible d'au moins 28 px (WCAG 2.5.8), comme les actions */
+		min-height: 1.75rem;
+		padding: 0 0.375rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+	}
+	.image-resultat {
+		font-variant-numeric: tabular-nums;
+	}
+	.image-resultat.refus {
+		color: var(--color-destructive);
+	}
 	.derivee {
 		margin: 0;
 		font-size: 0.8125rem;

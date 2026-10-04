@@ -11,6 +11,7 @@
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
+	import { derivativeName } from '$lib/atelier/names';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
@@ -160,15 +161,31 @@
 		}
 		if (action.id === 'plot') {
 			atelier.setPlotted(object.name, !object.plotted);
-			activeView = 'graphe';
+			showView('graphe');
 			return;
 		}
 
-		// Les actions de calcul et de données répondent dans la vue Calcul : on y
-		// bascule, sans quoi l'élève cliquerait et ne verrait jamais la réponse
-		// arriver. `graph` suit, parce que « Nuage de points » écrit dedans.
+		// L1 : dériver une seconde fois sélectionne la carte f′ qui existe déjà
+		const derivative = derivativeName(object.name);
+		const derivativeExisted = action.id === 'derive' && atelier.get(derivative) !== undefined;
+
+		// ⚠️ Décision G7 de David : une action écrit sa ligne dans Calcul SANS y
+		// emmener l'élève — il y va quand il le décide ; l'onglet signale le
+		// nouveau résultat. `graph` suit, parce que « Nuage de points » écrit dedans.
+		const before = desk.entries.length;
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
+		if (derivativeExisted) selected = derivative;
+
+		// Une commande PRÉPARÉE (« Tableau croisé », « Comparer ») se termine au
+		// clavier, dans Calcul : y aller est le geste lui-même, pas une bascule
+		if (outcome === 'needs-argument') {
+			showView('calcul');
+			return;
+		}
+		if (desk.entries.length > before && activeView !== 'calcul') {
+			announce('Résultat ajouté dans l’onglet Calcul.');
+		}
 
 		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
 		// que l'élève doit regarder. ⚠️ Comparer la RACINE : les actions portent
@@ -180,9 +197,9 @@
 		const isChart = root === 'chart' || root === 'pie';
 		// Retirer un diagramme ne mène nulle part : on reste où l'on est
 		const chartShown = isChart && atelier.chartOf(object.name) !== undefined;
-		if (root === 'scatter') activeView = 'graphe';
-		else if (chartShown) activeView = 'donnees';
-		else if (!isChart) activeView = 'calcul';
+		// A5 : ce qui se VOIT ailleurs (nuage, diagramme) y emmène, comme « Tracer »
+		if (root === 'scatter') showView('graphe');
+		else if (chartShown) showView('donnees');
 
 		if (isChart) {
 			announce(
@@ -195,6 +212,29 @@
 		}
 	}
 
+	/**
+	 * Les lignes de Calcul que l'élève a déjà eues sous les yeux.
+	 *
+	 * Mis à jour en ENTRANT dans Calcul et en en SORTANT : ce qu'on calcule
+	 * sous ses yeux n'est pas « nouveau » quand on part vers le Graphe.
+	 */
+	let seen = $state(0);
+
+	/** Les résultats arrivés dans Calcul pendant qu'on regardait ailleurs (A3). */
+	const unseen = $derived(activeView === 'calcul' ? 0 : desk.entries.length - seen);
+
+	function showView(next: ViewId) {
+		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
+		activeView = next;
+	}
+
+	/** L'image d'un nombre, demandée depuis une carte (A4). */
+	function handleImage(name: string, value: string) {
+		const result = desk.image(name, value);
+		if (activeView !== 'calcul') announce('Résultat ajouté dans l’onglet Calcul.');
+		return result;
+	}
+
 	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	function announce(message: string) {
 		announcement = '';
@@ -203,7 +243,7 @@
 </script>
 
 <div class="atelier">
-	<ObjectPanel bind:selected onAction={handleAction} />
+	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
 
 	<main class="zone">
 		<ShareBar {received} {notice} />
@@ -213,9 +253,18 @@
 					type="button"
 					class="onglet"
 					aria-current={activeView === item.id ? 'page' : undefined}
-					onclick={() => (activeView = item.id)}
+					onclick={() => showView(item.id)}
 				>
 					{item.label}
+					{#if item.id === 'calcul' && unseen > 0}
+						<!-- A3 : un résultat attend dans Calcul -->
+						<span class="nouveau">
+							<span aria-hidden="true">•</span>
+							<span class="sr-only">
+								— {unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}
+							</span>
+						</span>
+					{/if}
 				</button>
 			{/each}
 		</nav>
@@ -281,6 +330,11 @@
 		color: var(--color-muted-foreground);
 		cursor: pointer;
 		white-space: nowrap;
+	}
+	.nouveau {
+		margin-left: 0.25rem;
+		font-weight: 700;
+		color: var(--color-primary);
 	}
 	.onglet[aria-current='page'] {
 		background: var(--color-background);
