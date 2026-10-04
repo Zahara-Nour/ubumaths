@@ -61,7 +61,7 @@ import {
 	DEFAULT_INTERVAL_FORM_MODE
 } from '$lib/questions/intervals/interval-answer';
 import { judgeEquationAnswer } from '$lib/questions/equations/equation-answer';
-import { judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
+import { coordinateTexts, judgeVectorAnswer } from '$lib/questions/vectors/vector-answer';
 import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/questions/rounding';
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
@@ -1046,16 +1046,51 @@ function equationBlankResult(
 
 /**
  * Case « vecteur » : verdict de `judgeVectorAnswer` dans la forme de
- * `validateSingleBlank`. Juste ou faux (valeur seule, pas de contrainte d'écriture).
+ * `validateSingleBlank`. Un vecteur juste voit ensuite l'écriture de ses
+ * coordonnées jugée (cf. vectorCoordinatesForm).
  */
 function vectorBlankResult(
 	answer: string,
-	blank: InstanceBlank
+	blank: InstanceBlank,
+	instance: QuestionInstance
 ): ReturnType<typeof validateSingleBlank> {
 	const { status, feedback } = judgeVectorAnswer(answer, blank.expectedAnswer, blank.vectorMode);
-	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	if (status === 'correct') return vectorCoordinatesForm(answer, blank, instance);
 	if (status === 'empty') return { isCorrect: false, status: 'empty' };
 	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+}
+
+/**
+ * Écriture des coordonnées d'un vecteur JUSTE, chacune jugée comme une case
+ * ordinaire (`\frac{2}{4}` pour ½ : même verdict que dans une case seule). Le
+ * pire verdict l'emporte : mauvaise forme, sinon forme non optimale, sinon juste.
+ *
+ * Colinéaire : la valeur de chaque coordonnée est libre (comme une case à
+ * plusieurs bonnes réponses) ; elle est comparée à elle-même, il ne reste donc
+ * que les contraintes d'écriture (fraction simplifiable…).
+ */
+function vectorCoordinatesForm(
+	answer: string,
+	blank: InstanceBlank,
+	instance: QuestionInstance
+): ReturnType<typeof validateSingleBlank> {
+	const correct = { isCorrect: true, status: 'correct' as const };
+	const answers = coordinateTexts(answer);
+	const expected = coordinateTexts(blank.expectedAnswer);
+	if (!answers || !expected || answers.length !== expected.length) return correct;
+
+	let verdict: ReturnType<typeof validateSingleBlank> = correct;
+	for (const [i, coordinate] of answers.entries()) {
+		const coordinateBlank: InstanceBlank = {
+			expectedAnswer: blank.vectorMode === 'colineaire' ? coordinate : expected[i],
+			type: 'math'
+		};
+		const result = validateSingleBlank(coordinate, coordinateBlank, coordinate, instance);
+		if (result.status === 'bad_form') return result;
+		if (result.status === 'unoptimal_form' && verdict.status === 'correct') verdict = result;
+		// Autre verdict (valeur lue autrement qu'en vecteur) : celui du vecteur fait foi
+	}
+	return verdict;
 }
 
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
@@ -1100,7 +1135,7 @@ function validateSingleBlank(
 
 	// Vecteur dans une case : chaîne à part, cf. vectors/vector-answer.ts
 	if (blank.answerKind === 'vecteur') {
-		return vectorBlankResult(userAnswerLatex || userAnswer, blank);
+		return vectorBlankResult(userAnswerLatex || userAnswer, blank, instance);
 	}
 
 	// 1. Validation rules (pre-condition)
@@ -1682,10 +1717,10 @@ function matchedAnswerForm(
 		const result = equationBlankResult(blankLatex || userAnswer, blank);
 		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
-	// Case « vecteur » appariée (valeur déjà juste) : aucune contrainte d'écriture
+	// Case « vecteur » appariée : même jugement que seule (écriture des coordonnées)
 	if (blank.answerKind === 'vecteur') {
-		const result = vectorBlankResult(blankLatex || userAnswer, blank);
-		return { status: result.status ?? 'incorrect', violations: [] };
+		const result = vectorBlankResult(blankLatex || userAnswer, blank, instance);
+		return { status: result.status ?? 'incorrect', violations: result.constraintViolations ?? [] };
 	}
 
 	// Grandeur appariée (valeur déjà juste) : même jugement qu'en mode positionnel

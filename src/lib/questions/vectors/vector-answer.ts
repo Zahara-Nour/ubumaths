@@ -135,7 +135,7 @@ function parenthesizedContent(text: string): string | null {
 }
 
 /** Coordonnées écrites : texte de chaque coordonnée, ou `null` si ce n'est pas un vecteur */
-function coordinateTexts(text: string): string[] | null {
+export function coordinateTexts(text: string): string[] | null {
 	const body = cleaned(text).replace(NAME_PREFIX_REGEX, '');
 	const column = COLUMN_REGEX.exec(body);
 	if (column) {
