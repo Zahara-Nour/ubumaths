@@ -349,4 +349,12 @@ describe('case ordinaire — racine simplifiable (décision du 2026-10-04)', () 
 		expect(JSON.stringify(result)).toContain(CONSTRAINT_FEEDBACK.reducedRadicals.single);
 		expect(CONSTRAINT_FEEDBACK.reducedRadicals.single).toBe('La racine peut être simplifiée.');
 	});
+
+	it('option du modèle reducedRadicals: strict → mauvaise forme (exercice « réduire une racine »)', () => {
+		const instance = instanceWith([math('2\\sqrt{3}')], {
+			constraints: { reducedRadicals: 'strict' }
+		});
+		expect(globalStatus(['\\sqrt{12}'], instance)).toBe('bad_form');
+		expect(globalStatus(['2\\sqrt{3}'], instance)).toBe('correct');
+	});
 });
