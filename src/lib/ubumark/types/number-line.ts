@@ -60,7 +60,7 @@ export interface NumberLinePoint {
 	label: string;
 	/** Position on the line */
 	value: NumberLineValue;
-	/** Optional CSS color */
+	/** Couleur de la palette (français ou anglais) ou hex ; résolue par `resolveNumberLineColors` */
 	color?: string;
 }
 
@@ -88,7 +88,7 @@ export interface NumberLineSegment {
 	startOpen: boolean;
 	/** true = open endpoint ([ in French notation) */
 	endOpen: boolean;
-	/** Optional CSS color */
+	/** Couleur de la palette (français ou anglais) ou hex ; résolue par `resolveNumberLineColors` */
 	color?: string;
 }
 

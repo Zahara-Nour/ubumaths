@@ -345,6 +345,9 @@ export interface TrigCircleBlockRange {
 // CONSTANTS
 // ============================================================================
 
+/** Couleur d'un cercle sans couleur ou de couleur inconnue : le bleu de la palette */
+export const TRIG_DEFAULT_COLOR = 'bleu' as const;
+
 /**
  * Default configuration for trigonometric circle
  */

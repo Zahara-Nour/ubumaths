@@ -26,6 +26,7 @@ import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
+import { exponentialCommand, geometricCommand, uniformCommand } from './law-commands';
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps } from './solve-steps';
@@ -256,7 +257,11 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Comparer deux séries (Q112) : lit des NOMS de listes, pas de hasard
 	compare: (atelier, argument) => compareCommand(atelier, argument),
 	// Loi binomiale (Q142) : la scène du bloc ```loi, sans liste créée
-	binomial: (atelier, argument) => binomialCommand(atelier, argument)
+	binomial: (atelier, argument) => binomialCommand(atelier, argument),
+	// Lois de maths complémentaires (manche 13, PR c) : même chemin que `.binomiale`
+	geometric: (atelier, argument) => geometricCommand(atelier, argument),
+	uniform: (atelier, argument) => uniformCommand(atelier, argument),
+	exponential: (atelier, argument) => exponentialCommand(atelier, argument)
 };
 
 /** Une graine neuve, à 4 chiffres : facile à lire et à recopier (Q76) */

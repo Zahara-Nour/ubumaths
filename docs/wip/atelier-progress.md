@@ -161,6 +161,45 @@ grille** ? Seulement saisir → A. Formules → B, qui mérite sa propre phase 0
 c'est de fait une version de plus, au même rang que la géométrie (v2) et
 Python (v3).
 
+### 4. Chantier `/grapheur` repris — décisions de David
+
+**Objectif (David)** : l'atelier est **l'entrée unique** du site pour le
+grapheur. Modifie la décision figée n° 5, qui gardait l'entrée « Grapheur »
+dans la Sidebar.
+
+**Pas de panneau supplémentaire dans la vue Graphe** (David) : tout passe par
+les cartes de « Mes objets », qui deviennent modifiables et portent les
+réglages d'affichage du grapheur (couleur, style, f′, tangente, aire, cercle
+osculateur, curseurs, suites).
+
+**Actions des cartes — tranché par David :**
+
+1. **Dériver** sur la carte de `f` crée une carte nommée **`f′`** — jamais
+   `g`. Elle suit `f` (dérivée vivante : le parseur lit déjà `f'` comme la
+   dérivée de `f` partout). Il faut que l'atelier accepte ce nom (refusé
+   aujourd'hui à cause de l'apostrophe, `desk.svelte.ts` `#keepDerivative`).
+2. **`.dériver f`** dans Calcul fait la même chose : il crée la carte `f′`.
+3. **Règle générale** : une action qui crée des objets crée **une carte par
+   objet** ; toute action écrit **une ligne de feedback dans l'historique de
+   Calcul**, sans changer de vue. On va dans Calcul **seulement si on le
+   décide**.
+
+Conséquences notées (à écrire en phase 0) :
+
+- « Garder la dérivée » disparaît, puisque « Dériver » fait son travail ;
+- l'ajustement affine et `.simuler` suivent déjà la règle (ils créent un objet) ;
+- Variations, Résoudre, Tabuler : seulement la ligne dans Calcul ;
+- `.dériver x^2 + 1` (une expression, pas un objet) : pas de carte, seulement la ligne.
+
+**Encore ouvert** :
+
+- la courbe suit la frappe (reco : oui, avec un délai de ~0,3 s) ;
+- `/grapheur` continue de marcher en ouvrant l'atelier sur le Graphe ;
+- tout garder du grapheur ;
+- MathLive dans la carte (à vérifier : ce que MathLive produit pour `'`) ;
+- « Mes objets » ouvert à l'arrivée sur `/grapheur` ;
+- piste pour plus tard : une vue Graphe + Calcul côte à côte en projection.
+
 ---
 
 ## Fait

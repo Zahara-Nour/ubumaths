@@ -14,22 +14,25 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
-import { buildStatChartScene, type StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import {
+	lawOptions,
+	lawUsageError,
+	normalizeLawArgument,
+	runLawBlock,
+	type LawCommandResult
+} from './law-commands';
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export type BinomialResult =
-	| { readonly ok: true; readonly text: string; readonly chart: StatChartScene }
-	| { readonly ok: false; readonly message: string };
+export type BinomialResult = LawCommandResult;
 
 // =============================================================================
 // Constantes
 // =============================================================================
 
-const USAGE = 'Écris la commande ainsi : .binomiale X 10 0,3';
+const EXAMPLE = '.binomiale X 10 0,3';
 
 /** `X 10 0,3` puis, éventuellement, les options séparées par « ; » */
 const HEAD = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
@@ -40,30 +43,21 @@ const HEAD = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
 
 /** `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil P(X > k) ⩽ 0,05]` */
 export function binomialCommand(_atelier: Atelier, argument: string): BinomialResult {
-	// « 30 % » et « 1 / 2 » avec des espaces : comme le bloc les accepte (revue)
-	const written = argument
-		.trim()
-		.replace(/(\d)\s+%/g, '$1%')
-		.replace(/(\d)\s*\/\s*(\d)/g, '$1/$2');
+	const written = normalizeLawArgument(argument);
+	// Un saut de ligne glisserait une ligne dans le bloc (revue : injection)
+	if (written === null) return { ok: false, message: 'Écris la commande sur une seule ligne' };
 	const head = HEAD.exec(written);
-	if (!head) {
-		// Une lettre minuscule : dire pourquoi, pas seulement l'usage (revue)
-		if (/^[a-z]\s+\S+\s+\S+/.test(written)) {
-			return {
-				ok: false,
-				message: `La variable s’écrit en majuscule : ${USAGE.slice(USAGE.indexOf('.'))}`
-			};
-		}
-		return { ok: false, message: USAGE };
-	}
+	if (!head) return lawUsageError(written, EXAMPLE);
 	const [, variable, n, p, rest] = head;
 
 	const queries: string[] = [];
-	const lines = [`${variable} ~ B(${n} ; ${p})`, 'indicateurs: espérance ; variance ; écart type'];
-	for (const option of (rest ?? '')
-		.split(';')
-		.map((o) => o.trim())
-		.filter((o) => o !== '')) {
+	// Le diagramme en bâtons, comme les autres lois discrètes (accord de David, 2026-10-04)
+	const lines = [
+		`${variable} ~ B(${n} ; ${p})`,
+		'indicateurs: espérance ; variance ; écart type',
+		'diagramme: oui'
+	];
+	for (const option of lawOptions(rest)) {
 		// Une option sans valeur : dire ce qui manque (revue)
 		if (/^(intervalle|seuil)$/i.test(option)) {
 			const example = /^i/i.test(option) ? 'intervalle 0,95' : `seuil P(${variable} > k) ⩽ 0,05`;
@@ -82,15 +76,6 @@ export function binomialCommand(_atelier: Atelier, argument: string): BinomialRe
 	}
 	if (queries.length > 0) lines.push(`probabilités: ${queries.join(' ; ')}`);
 
-	// Le bloc d'une fiche, analysé et dessiné comme tel : mêmes messages, mêmes valeurs
-	const node = parseStatChartContent('loi', lines.join('\n'));
-	if (node.spec === null) {
-		const message = node.errors[0]?.message ?? USAGE;
-		return { ok: false, message: message.replace(/^Ligne \d+ : /, '') };
-	}
-	return {
-		ok: true,
-		text: `${variable} suit B(${n} ; ${p})`,
-		chart: buildStatChartScene(node.spec, { locale: 'fr' })
-	};
+	// Le texte reste « X suit B(n ; p) », même pour B(1 ; p) (le titre dit « Bernoulli »)
+	return runLawBlock(lines, variable, `${variable} suit B(${n} ; ${p})`, EXAMPLE);
 }

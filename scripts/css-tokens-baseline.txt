@@ -6,7 +6,6 @@ src/lib/components/JsonViewer.svelte 1
 src/lib/components/markdown/MarkdownRaw.svelte 2
 src/lib/components/markdown/nodes/ImageDisplay.svelte 1
 src/lib/components/markdown/nodes/MathPrompt.svelte 2
-src/lib/components/markdown/nodes/NumberLine.svelte 4
 src/lib/components/markdown/nodes/ParagraphNode.svelte 1
 src/lib/components/python/PythonSplitter.svelte 1
 src/lib/components/question-inputs/FillBlanksInput.svelte 1

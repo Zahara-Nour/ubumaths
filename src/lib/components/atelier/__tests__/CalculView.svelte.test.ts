@@ -311,3 +311,14 @@ describe('.croiser dessine le tableau sous la ligne', () => {
 		expect(tableEl!.textContent).toContain('lignes : L, colonnes : M');
 	});
 });
+
+describe('les lois dans l’historique (manche 13, PR c)', () => {
+	it('`.exponentielle` montre la courbe de densité et son aire hachurée', async () => {
+		const { submit, container } = await open();
+
+		await submit('.exponentielle T 0,5 P(T ⩽ 2)');
+
+		expect(container.querySelector('polyline.stat-densite')).not.toBeNull();
+		expect(container.querySelector('polygon.stat-aire')).not.toBeNull();
+	});
+});

@@ -328,3 +328,12 @@ Manche 13 (2026-10-04), lois de maths complémentaires — recommandations suivi
      exponentielle coupée à 99 % ; P(X ⩽ x), P(X ⩾ x), P(c ⩽ X ⩽ d), répartition, E, V ;
      arrondi par `arrondi:` + forme exacte (« 1 − e^(−0,5×2) ≈ 0,632 »).
 157. Anglais : textes traduits, notation Geo(p), U(1, n), Exp(λ).
+
+- **Manche 13 TERMINÉE** (2026-10-04) : (a) lois discrètes G(p), U(a ; b), « (loi de
+  Bernoulli) » #762 ; Q158 (avertissement hors support pour U) et Q159 (`indicateurs: aucun`)
+  #764 ; (b) lois à densité U([a ; b]), E(λ), courbe + aire hachurée, vrais exposants, titre
+  gardé avec sa figure dans les fiches #769 ; (c) atelier `.geometrique`, `.uniforme`,
+  `.exponentielle`, diagramme pour `.binomiale` #775. Revues : conditionnelle avec condition
+  négative (q^(⌊a⌋ − max(⌊b⌋, 1)) pour G, forme de P(X > a) pour E) ; calcul BigInt sans
+  réduction (3,2 s → 3 ms). Hors périmètre, à proposer si besoin : simulation de G et des
+  densités ; densité définie par une fonction de l'auteur ; `seuil:` pour G.
