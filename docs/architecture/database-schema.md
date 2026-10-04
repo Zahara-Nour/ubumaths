@@ -1045,7 +1045,9 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
 
 - **`execute_trade`** : corps inchangé, plus un verrou — refus (`success:false`) tant que
   `validated_by_initiator`, `validated_by_partner`, `confirmed_by_initiator` et
-  `confirmed_by_partner` ne sont pas tous vrais. Aucune exception.
+  `confirmed_by_partner` ne sont pas tous vrais. Aucune exception. EXECUTE : `authenticated` et
+  `service_role` seulement (jamais `anon` : la garde « participant » laisse passer
+  `auth.uid()` NULL).
 - **`accept_proposal_atomic`** : corps inchangé, mais l'échange `'marketplace'` naît avec les
   4 drapeaux à `true` (l'accord des deux parties est l'annonce plus la proposition acceptée).
 - **Trigger `guard_marketplace_trade_update_trg`** (BEFORE UPDATE, passe avant
@@ -1059,7 +1061,7 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
     validations sont vraies ;
   - `current_offer` : seule sa moitié (`from_initiator` / `from_partner`) change, une moitié
     absente valant `{cards: [], gidouilles: 0}` ; cartes = liste de chaînes, gidouilles = entier
-    ≥ 0 ; si l'offre change, la validation de l'autre et les deux confirmations repassent à
+    ≥ 0 écrit sans point (`5.0` casserait le `::INTEGER` d'`execute_trade`) ; si l'offre change, la validation de l'autre et les deux confirmations repassent à
     `false` ;
   - une validation retirée (refus, expiration) remet les deux confirmations à `false`.
 - **Policy RESTRICTIVE `marketplace_trades_insert_friend_rules`** : création directe = échange

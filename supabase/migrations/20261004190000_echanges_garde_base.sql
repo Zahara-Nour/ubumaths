@@ -56,6 +56,11 @@
 --   posé en prod par 20261003210000), suivis de :
 --   ALTER FUNCTION public.execute_trade(uuid) SET search_path = public, pg_temp;
 --   ALTER FUNCTION public.accept_proposal_atomic(uuid, uuid) SET search_path = public, pg_temp;
+--   Droits d'execute_trade : le REVOKE / GRANT de la section 1 ne fait que
+--   rendre explicite l'état déjà en place (anon et PUBLIC sans EXECUTE,
+--   vérifié en local) ; il n'y a rien à rétablir. Ne PAS rendre EXECUTE à
+--   anon : la garde « participant » d'execute_trade laisse passer
+--   auth.uid() NULL.
 --
 -- ── Corps précédent d'execute_trade (baseline 20260616220000) ──────────────
 -- CREATE OR REPLACE FUNCTION "public"."execute_trade"("p_trade_id" "uuid") RETURNS "jsonb"
@@ -829,6 +834,15 @@ EXCEPTION
 END;
 $$;
 
+
+-- Personne n'appelle execute_trade sans session : routes /confirm et /accept
+-- (client élève, authenticated) ; l'acceptation automatique passe par
+-- auto_accept_exact_proposal (client service) puis accept_proposal_atomic,
+-- qui l'appelle en tant que postgres. anon refusé explicitement : la garde
+-- « participant » laisse passer auth.uid() NULL.
+REVOKE EXECUTE ON FUNCTION public.execute_trade(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.execute_trade(uuid) TO authenticated, service_role;
+
 -- -----------------------------------------------------------------------------
 -- 2. accept_proposal_atomic : corps identique, 4 drapeaux posés à l'insertion.
 -- -----------------------------------------------------------------------------
@@ -1079,10 +1093,12 @@ BEGIN
            SELECT 1 FROM jsonb_array_elements(COALESCE(v_own_half -> 'cards', '[]'::jsonb)) AS e(carte)
            WHERE jsonb_typeof(e.carte) IS DISTINCT FROM 'string'
          )
+         -- Entier écrit sans point ni signe : execute_trade fait
+         -- `->> 'gidouilles')::INTEGER`, qui échoue sur « 5.0 » (jsonb garde
+         -- l'échelle ; « 5e0 », lui, est rangé en « 5 »).
+         -- 9 chiffres au plus : reste dans un INTEGER.
          AND jsonb_typeof(COALESCE(v_own_half -> 'gidouilles', '0'::jsonb)) = 'number'
-         AND (COALESCE(v_own_half ->> 'gidouilles', '0'))::numeric >= 0
-         AND (COALESCE(v_own_half ->> 'gidouilles', '0'))::numeric
-             = trunc((COALESCE(v_own_half ->> 'gidouilles', '0'))::numeric)
+         AND (COALESCE(v_own_half ->> 'gidouilles', '0')) ~ '^[0-9]{1,9}$'
        ) THEN
       RAISE EXCEPTION 'Offre mal formée : cartes = liste d''identifiants, gidouilles = entier positif.'
         USING ERRCODE = '22023';

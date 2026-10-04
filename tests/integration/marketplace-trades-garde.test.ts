@@ -478,6 +478,96 @@ describe('échanges de cartes : garde en base', () => {
 		refusee(await ecrireMonOffre(a, id, 'initiator', { cards: [], gidouilles: -10 }));
 	});
 
+	it('vider la moitié de l’autre, clé en trop, moitié JSON null : refusés', async () => {
+		const id = await creerEchange(a, aId, bId);
+		const mb = { cards: ['b-v'], gidouilles: 3 };
+		acceptee(await ecrireMonOffre(b, id, 'partner', mb));
+		const avant = (await lireEchange(id))?.current_offer;
+
+		const essais: Json[] = [
+			// moitié de B vidée
+			{ from_initiator: VIDE, from_partner: VIDE },
+			// moitié de B qui vaut JSON null
+			{ from_initiator: VIDE, from_partner: null },
+			// clé de premier niveau en trop
+			{ from_initiator: VIDE, from_partner: mb, bonus: { gidouilles: 100 } },
+			// SA moitié qui vaut JSON null
+			{ from_initiator: null, from_partner: mb }
+		];
+		for (const offre of essais) {
+			refusee(
+				await a
+					.from('marketplace_trades')
+					.update({ current_offer: offre })
+					.eq('id', id)
+					.select('id')
+			);
+		}
+		// current_offer passée à NULL : vide aussi la moitié de B.
+		refusee(
+			await a.from('marketplace_trades').update({ current_offer: null }).eq('id', id).select('id')
+		);
+		expect((await lireEchange(id))?.current_offer).toEqual(avant);
+
+		// Moitié de l'autre absente en base : la mettre à JSON null est refusé aussi.
+		const id2 = await creerEchange(a, aId, bId);
+		refusee(
+			await a
+				.from('marketplace_trades')
+				.update({ current_offer: { from_initiator: VIDE, from_partner: null } })
+				.eq('id', id2)
+				.select('id')
+		);
+		expect((await lireEchange(id2))?.current_offer).toBeNull();
+	});
+
+	it('gidouilles : seul un entier écrit sans point passe (« 5.0 » casserait ::INTEGER)', async () => {
+		const id = await creerEchange(a, aId, bId);
+		const { data: session } = await a.auth.getSession();
+		const jeton = session.session!.access_token;
+
+		// supabase-js sérialise 5.0 en « 5 » : corps JSON écrit à la main.
+		const patchBrut = (gidouilles: string) =>
+			fetch(`${SUPABASE_URL}/rest/v1/marketplace_trades?id=eq.${id}`, {
+				method: 'PATCH',
+				headers: {
+					apikey: ANON_KEY,
+					Authorization: `Bearer ${jeton}`,
+					'Content-Type': 'application/json',
+					Prefer: 'return=representation'
+				},
+				body: `{"current_offer":{"from_initiator":{"cards":[],"gidouilles":${gidouilles}},"from_partner":{"cards":[],"gidouilles":0}}}`
+			});
+
+		// (« 5e0 » n'y figure pas : jsonb le range en « 5 », que ::INTEGER lit.)
+		for (const valeur of ['5.0', '5.5', '-1', '"5"', '10000000000']) {
+			const res = await patchBrut(valeur);
+			const corps = (await res.json()) as unknown;
+			const refus = !res.ok || (Array.isArray(corps) && corps.length === 0);
+			expect(refus, `gidouilles ${valeur} accepté`).toBe(true);
+		}
+		expect((await lireEchange(id))?.current_offer).toBeNull();
+
+		// Témoin : l'entier 5 passe, et execute_trade saurait le lire.
+		const ok = await patchBrut('5');
+		expect(ok.status).toBe(200);
+		expect((await lireEchange(id))?.current_offer).toEqual({
+			from_initiator: { cards: [], gidouilles: 5 },
+			from_partner: VIDE
+		});
+	});
+
+	it('execute_trade est refusé à un appel anonyme', async () => {
+		const id = await creerEchange(a, aId, bId);
+		const anon = createClient<Database>(SUPABASE_URL, ANON_KEY, {
+			auth: { persistSession: false, autoRefreshToken: false }
+		});
+		const { data, error } = await anon.rpc('execute_trade', { p_trade_id: id });
+		expect(error, 'anon a pu appeler execute_trade').not.toBeNull();
+		expect(data).toBeNull();
+		expect((await lireEchange(id))?.status).toBe('negotiating');
+	});
+
 	it('A ne peut changer ni partner_id, ni status (sauf cancelled), ni trade_type, ni listing_id', async () => {
 		const id = await creerEchange(a, aId, bId);
 		const essais: Database['public']['Tables']['marketplace_trades']['Update'][] = [
