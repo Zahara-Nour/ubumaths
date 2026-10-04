@@ -106,6 +106,10 @@
 	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';
 	import ValidationOptionsEditor from './ValidationOptionsEditor.svelte';
 	import SharedFieldsEditor from './SharedFieldsEditor.svelte';
+	import {
+		calculusBlankDefaults,
+		calculusEditorState
+	} from '$lib/questions/calculus/calculus-editor';
 	import TestSpecEditor from './questions/TestSpecEditor.svelte';
 	import AnswerAssumptionsEditor from './questions/AnswerAssumptionsEditor.svelte';
 	import { choiceAnswerCountErrors } from '$lib/questions/validators/choice-answer-count';
@@ -394,6 +398,8 @@
 	let sharedBlankVectorCollinear = $state(
 		initialTemplate?.shared?.blankDefaults?.vectorMode === 'colineaire'
 	);
+	// Primitive, solution d'équation différentielle : nature et champs de la case
+	let sharedBlankCalculus = $state(calculusEditorState(initialTemplate?.shared?.blankDefaults));
 	let sharedValidationRulesJson = $state(
 		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
@@ -789,6 +795,10 @@
 			blankDefaults.answerKind = 'vecteur';
 			// Colinéaire : tout vecteur colinéaire non nul est juste
 			if (sharedBlankVectorCollinear) blankDefaults.vectorMode = 'colineaire';
+		} else {
+			// Primitive ou solution d'équation différentielle, avec leurs champs
+			const calculus = calculusBlankDefaults(sharedBlankCalculus);
+			if (calculus) Object.assign(blankDefaults, calculus);
 		}
 		if (Object.keys(blankDefaults).length > 0) shared.blankDefaults = blankDefaults;
 		try {
@@ -951,6 +961,7 @@
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
+		sharedBlankCalculus = calculusEditorState(t.shared?.blankDefaults);
 		sharedValidationRulesJson = JSON.stringify(t.shared?.validationRules || [], null, 2);
 		sharedAnswerFormatsJson = JSON.stringify(t.shared?.answerFormats || {}, null, 2);
 		genericFunctionsText = formatGenericFunctionNames(t.shared?.genericFunctions);
@@ -1649,6 +1660,7 @@
 			bind:sharedBlankEquation
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear
+			bind:sharedBlankCalculus
 			bind:sharedValidationRulesJson
 			bind:sharedAnswerFormatsJson
 			bind:sharedVariableHelpOpen

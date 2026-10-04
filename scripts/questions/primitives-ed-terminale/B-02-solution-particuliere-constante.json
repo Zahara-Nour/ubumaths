@@ -1,0 +1,276 @@
+{
+	"title": "Solution constante de y′ = ay + b",
+	"description": "Trouver la fonction constante solution de y′ = ay + b (c = −b/a), y compris sous les formes y′ + ay = b et py′ = ay + b",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-055", "TSPE-195"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Équations différentielles",
+	"subdomain": "Équation y′ = ay + b",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$.\n\nDétermine la fonction constante $x\\mapsto c$ solution de cette équation.\n\n$c=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction constante $x\\mapsto c$ a une dérivée nulle : elle est solution si et seulement si $0={{if:a==1|c}}{{if:a==-1|-c}}{{if:a!=1 && a!=-1|{{eval:a}}c}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$.",
+					"Donc $c=-\\dfrac{b}{a}$ avec $a={{eval:a}}$ et $b={{eval:b}}$ : $c=\\textcolor{{{color:primary.0}}}{{{eval:-b/a}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}={{eval:b}}$.\n\nDétermine la fonction constante $x\\mapsto c$ solution de cette équation.\n\n$c=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction constante $x\\mapsto c$ a une dérivée nulle : elle est solution si et seulement si ${{if:a==1|c}}{{if:a==-1|-c}}{{if:a!=1 && a!=-1|{{eval:a}}c}}={{eval:b}}$.",
+					"Donc $c=\\textcolor{{{color:primary.0}}}{{{eval:b/a}}}$.",
+					"Attention : écrite sous la forme $y'=ay+b$, l'équation est $y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$, et l'on retrouve bien $-\\dfrac{b}{a}={{eval:b/a}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : {{eval:p}}y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$.\n\nDétermine la fonction constante $x\\mapsto c$ solution de cette équation.\n\n$c=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "p",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-b/a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une fonction constante $x\\mapsto c$ a une dérivée nulle : ${{eval:p}}\\times 0={{if:a==1|c}}{{if:a==-1|-c}}{{if:a!=1 && a!=-1|{{eval:a}}c}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}$. Le coefficient de $y'$ ne joue aucun rôle.",
+					"Donc $c=-\\dfrac{b}{a}$ avec $a={{eval:a}}$ et $b={{eval:b}}$ : $c=\\textcolor{{{color:primary.0}}}{{{eval:-b/a}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : y'=2y-6 → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : b/a au lieu de −b/a",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : b recopié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-6"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : y'=-4y+6 → 3/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"b": "6"
+			},
+			"answers": ["\\frac{3}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : décimal 1.5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"b": "6"
+			},
+			"answers": ["1.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : −a/b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"b": "6"
+			},
+			"answers": ["\\frac{2}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : fraction non simplifiée (½)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-4",
+				"b": "6"
+			},
+			"answers": ["\\frac{6}{4}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v0 : y'=3y+5 → −5/3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["-\\frac{5}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : signe oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["\\frac{5}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y'+2y=8 → 4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "8"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : −b/a appliqué sans isoler y'",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "8"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y'-3y=7 → −7/3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"b": "7"
+			},
+			"answers": ["-\\frac{7}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 3y'=2y-8 → 4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-8",
+				"p": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : divisé par p à tort",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "-8",
+				"p": "3"
+			},
+			"answers": ["\\frac{4}{3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,302 @@
+{
+	"title": "Primitive de sinus et cosinus vérifiant une condition",
+	"description": "Primitives de a·cos x, a·sin x, cos(ωx) et sin(ωx), rendues uniques par F(0) = y₀ (spécialité seulement)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-191", "TSPE-194", "TSPE-190"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Primitives de sinus et cosinus",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\cos(x)}}{{if:a==-1|-\\cos(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\cos(x)}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $\\cos$ est $\\sin$ (car $\\sin'=\\cos$) : $F(x)={{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}+k$.",
+					"$F(0)=k={{eval:y0}}$ car $\\sin(0)=0$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-5..5"
+				}
+			],
+			"conditions": ["y0+a != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:-a==1|\\cos(x)}}{{if:-a==-1|-\\cos(x)}}{{if:-a!=1 && -a!=-1|{{eval:-a}}\\cos(x)}}{{if:y0+a>0|+{{eval:y0+a}}}}{{if:y0+a<0|{{eval:y0+a}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $\\sin$ est $-\\cos$ (car $\\cos'=-\\sin$) : $F(x)={{if:-a==1|\\cos(x)}}{{if:-a==-1|-\\cos(x)}}{{if:-a!=1 && -a!=-1|{{eval:-a}}\\cos(x)}}+k$.",
+					"$F(0)={{eval:-a}}+k={{eval:y0}}$ car $\\cos(0)=1$, donc $k={{eval:y0+a}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:-a==1|\\cos(x)}}{{if:-a==-1|-\\cos(x)}}{{if:-a!=1 && -a!=-1|{{eval:-a}}\\cos(x)}}{{if:y0+a>0|+{{eval:y0+a}}}}{{if:y0+a<0|{{eval:y0+a}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{eval:w}}}\\sin({{eval:w}}x)"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto\\sin({{eval:w}}x)$ est $x\\mapsto {{eval:w}}\\cos({{eval:w}}x)$ : il faut donc diviser par ${{eval:w}}$.",
+					"$F(x)=\\dfrac{1}{{{eval:w}}}\\sin({{eval:w}}x)+k$ et $F(0)=k=0$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{{{eval:w}}}\\sin({{eval:w}}x)}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "2..6"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{{{eval:w}}}\\cos({{eval:w}}x)+\\frac{1}{{{eval:w}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $x\\mapsto\\cos({{eval:w}}x)$ est $x\\mapsto -{{eval:w}}\\sin({{eval:w}}x)$ : une primitive de $f$ est $x\\mapsto -\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)$.",
+					"$F(x)=-\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)+k$ et $F(0)=-\\dfrac{1}{{{eval:w}}}+k=0$, donc $k=\\dfrac{1}{{{eval:w}}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{{{eval:w}}}\\cos({{eval:w}}x)+\\dfrac{1}{{{eval:w}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3cos, F(0)=2 → 3sin x + 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\sin(x)+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : sans parenthèses",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\sin x+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : −sin (dérivée)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["-3\\sin(x)+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : condition oubliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"y0": "2"
+			},
+			"answers": ["3\\sin(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2sin, F(0)=1 → −2cos x + 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "1"
+			},
+			"answers": ["-2\\cos(x)+3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe oublié",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "1"
+			},
+			"answers": ["2\\cos(x)-1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : cos(0) pris égal à 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "1"
+			},
+			"answers": ["-2\\cos(x)+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : écrit 3 − 2cos x",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"y0": "1"
+			},
+			"answers": ["3-2\\cos(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : cos(3x) → sin(3x)/3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3"
+			},
+			"answers": ["\\frac{1}{3}\\sin(3x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : écrit en fraction",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3"
+			},
+			"answers": ["\\frac{\\sin(3x)}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : multiplié par 3",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3"
+			},
+			"answers": ["3\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : sans le facteur",
+			"variationIndex": 2,
+			"variables": {
+				"w": "3"
+			},
+			"answers": ["\\sin(3x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : sin(2x) → −cos(2x)/2 + 1/2",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"answers": ["-\\frac{1}{2}\\cos(2x)+\\frac{1}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : forme factorisée",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"answers": ["\\frac{1-\\cos(2x)}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : condition oubliée",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"answers": ["-\\frac{1}{2}\\cos(2x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : signe oublié",
+			"variationIndex": 3,
+			"variables": {
+				"w": "2"
+			},
+			"answers": ["\\frac{1}{2}\\cos(2x)-\\frac{1}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}

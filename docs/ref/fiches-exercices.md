@@ -453,6 +453,38 @@ exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ;
 - attendue illisible, de dimension ≠ 2 ou 3, ou nulle en mode `colineaire` → specs rouges.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « vecteur »).
 
+**Cases « primitive » et « solution-ed » (2026-10-04).** Une primitive, ou une solution d'équation
+différentielle, dans UNE case, jugée par le calcul et jamais par comparaison au texte attendu ;
+champs dans la case ou dans `blankDefaults` (éditeur : cases « Réponse : primitive d'une
+fonction » et « Réponse : solution d'une équation différentielle », avec leurs champs) ; les
+variables tirées sont résolues dans `integrand`, `interval`, `equation`, `initial` :
+
+```json
+{ "expectedAnswer": "x^{{n}}", "answerKind": "primitive", "integrand": "{{n}}x^{{eval:{{n}}-1}}" }
+{ "expectedAnswer": "\\ln(x)", "answerKind": "primitive", "integrand": "\\frac{1}{x}", "interval": "]0;+\\infty[" }
+{ "expectedAnswer": "Ce^{2x}+3", "answerKind": "solution-ed", "equation": "y'=2y-6", "solutionMode": "generale" }
+{ "expectedAnswer": "e^{2x}+3", "answerKind": "solution-ed", "equation": "y'=2y-6", "initial": "y(0)=4" }
+```
+
+- primitive : juste si la dérivée de la réponse vaut `integrand` ; à une constante près (`x^3+5`,
+  `x^3+C`, `x^3+\lambda` : toute lettre autre que `variable`, sauf e, i, π, est une constante) ;
+  la dérivée de f au lieu d'une primitive est fausse avec « C'est la dérivée de f, pas une
+  primitive. » ; `interval` (facultatif) : la réponse doit y être définie (`\ln(-x)` pour 1/x sur
+  ]0;+∞[ est faux, `\ln|x|` juste) ; `variable` : défaut `x` ;
+- solution-ed : `y` ← réponse, `y'` ← sa dérivée, les deux membres de `equation` doivent être
+  égaux pour tout x (1er ordre seulement ; `y'`, `y'(x)`, `y(x)` lus ; `function` : défaut `y`) ;
+  une constante écrite est essayée avec 3 valeurs ; `solutionMode: "generale"` exige une
+  constante qui compte (`5e^{2x}` pour y' = 2y : faux, « C'est une solution particulière : il
+  manque la constante. ») ; `"une"` (défaut) accepte toute solution ; `initial` (mode `une`
+  seulement) doit être vérifiée ; préfixe `y=` / `F(x)=` toléré ;
+- réponse juste : écriture jugée comme une case ordinaire comparée à elle-même (`\frac{3x^3}{3}` :
+  « La fraction peut être simplifiée », `unoptimal_form`) ; specs : `correct`, `incorrect`,
+  `unoptimal_form`, `bad_form` ;
+- `integrand` ou `equation` absent → la génération échoue ; attendue qui n'est pas une primitive
+  (ou une solution, générale en mode `generale`), équation illisible ou du 2d ordre, condition
+  initiale en mode `generale` → specs rouges. Règle complète :
+  `docs/ref/convention-equivalence.md` (§ Réponse « primitive » / « solution-ed »).
+
 Corrigés dans le moteur (ne plus contourner) : `\frac{x^3}{3}` et `\frac{1}{3}x^3` (et
 `\frac{-x^2}{4}`, `-\frac{1}{4}x^2`) sont une seule forme dans une case ordinaire, une fraction
 simplifiable restant perfectible (2026-10-04) ; `\ln|x|` a la forme de `\ln(x)` quand
