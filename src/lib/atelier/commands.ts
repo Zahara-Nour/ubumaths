@@ -111,6 +111,36 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		'geometric',
+		{
+			french: 'géométrique',
+			description: 'Loi géométrique G(p) : tableau, E, V, σ, diagramme, probabilités',
+			example: '.geometrique X 0,2 P(X ⩽ 3)',
+			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
+			exampleSetup: {}
+		}
+	],
+	[
+		'uniform',
+		{
+			french: 'uniforme',
+			description: 'Loi uniforme sur {a, …, b} ou à densité sur [a ; b] : E, V, σ, diagramme',
+			example: '.uniforme X 1 6',
+			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
+			exampleSetup: {}
+		}
+	],
+	[
+		'exponential',
+		{
+			french: 'exponentielle',
+			description: 'Loi exponentielle E(λ) : courbe, E, V, σ, F(x), probabilités',
+			example: '.exponentielle T 0,5 P(T ⩽ 2)',
+			// Aucune liste à citer : un décor VIDE (Q79, Q80), comme `.binomiale`
+			exampleSetup: {}
+		}
+	],
+	[
 		'compare',
 		{
 			french: 'comparer',
@@ -320,7 +350,10 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'cross',
 	'filter',
 	'compare',
-	'binomial'
+	'binomial',
+	'geometric',
+	'uniform',
+	'exponential'
 ]);
 
 /**
