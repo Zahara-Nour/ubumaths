@@ -16,6 +16,8 @@ import { getQuestionType, isCourseCard } from './types';
 import { readExpectedIntervals } from './intervals/interval-answer';
 import { readExpectedEquation } from './equations/equation-answer';
 import { readExpectedVector } from './vectors/vector-answer';
+import { readExpectedPrimitive } from './calculus/primitive-answer';
+import { readExpectedSolution } from './calculus/differential-equation-answer';
 
 export interface TestSpecResult {
 	spec: TestSpec;
@@ -58,9 +60,22 @@ export function runTestSpec(template: QuestionTemplate, spec: TestSpec): TestSpe
 	const questionType = getQuestionType(instance);
 
 	// Case « intervalles », « équation » ou « vecteur » : une réponse attendue illisible est une erreur du MODÈLE
-	// (côté élève, elle rendrait toute réponse fausse sans le dire)
+	// (côté élève, elle rendrait toute réponse fausse sans le dire). Case « primitive » ou
+	// « solution-ed » : de même pour une attendue qui ne vérifie pas elle-même la règle.
 	for (const [index, blank] of (instance.blanks ?? []).entries()) {
 		if (blank.answerKind === undefined) continue;
+		if (blank.answerKind === 'primitive' || blank.answerKind === 'solution-ed') {
+			const checked =
+				blank.answerKind === 'primitive'
+					? readExpectedPrimitive(blank.expectedAnswer, blank)
+					: readExpectedSolution(blank.expectedAnswer, blank);
+			if (!checked.ok) {
+				return makeError(
+					`Réponse attendue invalide (case ${index + 1}) : ${blank.expectedAnswer} — ${checked.error}`
+				);
+			}
+			continue;
+		}
 		const expected =
 			blank.answerKind === 'intervalles'
 				? readExpectedIntervals(blank.expectedAnswer)
