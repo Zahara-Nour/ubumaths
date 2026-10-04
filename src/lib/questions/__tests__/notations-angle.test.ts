@@ -90,10 +90,12 @@ describe('notations d’un angle en π : même valeur, même forme', () => {
 	});
 });
 
-describe('hors π : jugement inchangé', () => {
-	it('\\frac{x}{3} attendu : \\frac{1}{3}x et x/3 gardent leur verdict', () => {
+describe('hors π', () => {
+	// \\frac{1}{3}x : même notation que \\frac{x}{3} depuis le 2026-10-04
+	// (notations-fraction-monome.test.ts) ; l'écriture en ligne x/3 garde son verdict
+	it('\\frac{x}{3} attendu : \\frac{1}{3}x juste, x/3 mauvaise forme', () => {
 		expect(verdicts('\\frac{x}{3}', ['\\frac{1}{3}x', 'x/3'])).toEqual({
-			'\\frac{1}{3}x': 'bad_form',
+			'\\frac{1}{3}x': 'correct',
 			'x/3': 'bad_form'
 		});
 	});

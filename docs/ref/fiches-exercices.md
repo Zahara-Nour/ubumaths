@@ -234,6 +234,10 @@ Absente ou `false` : rien ne change. Les étapes générées (`generatedSteps`) 
 nettoyée (`x = 5`, pas `1x + 0 = 5`) ; une parenthèse devenue inutile disparaît (`(x+0)^2` →
 `x^2`, `2(x+0)` → `2x` ; `C(x)` et `2(3)` restent) ; une réponse attendue écrite en LaTeX
 (`x^2+{{b}}x\leqslant 2`) est nettoyée et reste en LaTeX (`x^2 + x \leqslant 2`).
+Autour d'une exponentielle aussi (2026-10-04) : `{{k}}e^{{{a}}x}{{b;+}}` tiré avec k = 1, a = −1,
+b = −3 donne `e^{-x}-3` (l'attendue nettoyée écrivait `\euler`, illisible pour le validateur :
+la bonne réponse était jugée fausse). Plus besoin de `{{if:k==1|…}}` pour éviter `1e^{…}`. Une
+puissance nulle n'est pas réduite : `e^{0x}` devient `e^0`, comme `x^0` reste `x^0`.
 
 ⚠️ `{{c;+}}` avec c = 0 écrit `0` sans `+` (« 1y0 », lu comme un produit) : l'option ne le
 répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
@@ -481,7 +485,10 @@ variables tirées sont résolues dans `integrand`, `interval`, `equation`, `init
   initiale en mode `generale` → specs rouges. Règle complète :
   `docs/ref/convention-equivalence.md` (§ Réponse « primitive » / « solution-ed »).
 
-Corrigés dans le moteur (ne plus contourner) : notations `\exp`, `\exponentialE`, `\mathrm{e}`
+Corrigés dans le moteur (ne plus contourner) : `\frac{x^3}{3}` et `\frac{1}{3}x^3` (et
+`\frac{-x^2}{4}`, `-\frac{1}{4}x^2`) sont une seule forme dans une case ordinaire, une fraction
+simplifiable restant perfectible (2026-10-04) ; `\ln|x|` a la forme de `\ln(x)` quand
+`options.answerAssumptions` déclare x > 0 (2026-10-04) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
 et liste dans l'énoncé d'une question à trous (#607).
