@@ -239,6 +239,48 @@ function parseNumberToRational(value: string): Rational {
  * @param depth - Recursion depth for stack overflow protection
  * @param base - Optional root index for nth roots (e.g., base=3 for cube root)
  */
+/**
+ * Plus grand entier rendu par `factorial` / `binom` : au-delà, la valeur numérique (un
+ * `number` JavaScript) n'est plus un entier exact et la réponse attendue serait fausse.
+ */
+const MAX_EXACT_INTEGER = BigInt(Number.MAX_SAFE_INTEGER);
+
+/** Argument entier naturel de `factorial` / `binom` (premier argument) */
+function naturalArgument(value: Rational, name: string): bigint {
+	if (!isIntegerRational(value)) throw new Error(`${name} requires integer arguments`);
+	if (value.n < 0n) throw new Error(`${name} requires a non-negative argument`);
+	return value.n;
+}
+
+/** Garde-fou : résultat entier exactement représentable */
+function exactIntegerResult(value: bigint, name: string): bigint {
+	if (value > MAX_EXACT_INTEGER) throw new Error(`${name}: result too large to stay exact`);
+	return value;
+}
+
+/** n! en entiers exacts (18! est le dernier qui reste exact) */
+function exactFactorial(n: bigint): bigint {
+	let result = 1n;
+	for (let i = 2n; i <= n; i++) {
+		result *= i;
+		exactIntegerResult(result, 'factorial');
+	}
+	return result;
+}
+
+/** Coefficient binomial (n parmi k) ; 0 hors de 0 ⩽ k ⩽ n, comme au tableau */
+function exactBinomial(n: bigint, k: bigint): bigint {
+	if (k < 0n || k > n) return 0n;
+	const smaller = k < n - k ? k : n - k;
+	let result = 1n;
+	// Produit des quotients successifs : chaque étape reste un coefficient binomial entier
+	for (let i = 1n; i <= smaller; i++) {
+		result = (result * (n - smaller + i)) / i;
+		exactIntegerResult(result, 'binom');
+	}
+	return result;
+}
+
 function evaluateFunctionToRational(
 	name: string,
 	args: readonly MathNode[],
@@ -405,6 +447,17 @@ function evaluateFunctionToRational(
 			if (numArgs.length !== 1) throw new Error('tanh requires exactly 1 argument');
 			result = Math.tanh(numArgs[0]);
 			break;
+		case 'factorial': {
+			if (numArgs.length !== 1) throw new Error('factorial requires exactly 1 argument');
+			return fromInteger(exactFactorial(naturalArgument(rationalArgs[0], 'factorial')));
+		}
+		case 'binom': {
+			if (numArgs.length !== 2) throw new Error('binom requires exactly 2 arguments');
+			const binomN = naturalArgument(rationalArgs[0], 'binom');
+			const binomK = rationalArgs[1];
+			if (!isIntegerRational(binomK)) throw new Error('binom requires integer arguments');
+			return fromInteger(exactBinomial(binomN, binomK.n));
+		}
 		case 'gcd': {
 			if (numArgs.length !== 2) throw new Error('gcd requires exactly 2 arguments');
 			const gcdA = rationalArgs[0],
@@ -706,7 +759,9 @@ const KNOWN_FUNCTIONS = new Set([
 	'variance',
 	'stdev',
 	'gcd',
-	'mod'
+	'mod',
+	'factorial',
+	'binom'
 ]);
 
 /**
@@ -818,8 +873,12 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 // Post-processing for Exact Mode
 // =============================================================================
 
+/** Fonctions à résultat entier, calculées dès que leurs arguments se calculent */
+const INTEGER_RESULT_FUNCTIONS = new Set(['gcd', 'mod', 'sign', 'factorial', 'binom']);
+
 /**
- * Réduit `min`, `max`, `gcd`, `mod` et `sign` quand leurs arguments se calculent.
+ * Réduit `min`, `max`, `gcd`, `mod`, `sign`, `factorial` et `binom` quand leurs arguments
+ * se calculent.
  *
  * Sans cela, le mode exact rendait `\min(12, 18)` au lieu de 12. `min`/`max`
  * gardent l'argument choisi sous sa forme exacte (`\dfrac{2}{9}`, `\sqrt{3}`) ;
@@ -831,7 +890,7 @@ function reduceMultiArgFunctions(node: MathNode): MathNode {
 		if (!isFunction(n)) return n;
 		const funcName = n.name.toLowerCase();
 
-		if (funcName === 'gcd' || funcName === 'mod' || funcName === 'sign') {
+		if (INTEGER_RESULT_FUNCTIONS.has(funcName)) {
 			try {
 				const result = evaluateToRational(n);
 				if (result.d !== 1n) return n;

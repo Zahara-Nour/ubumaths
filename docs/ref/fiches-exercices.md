@@ -372,6 +372,19 @@ mais garde cette numérotation), Tab passe à la case suivante, états juste /
 faux par case, case « ? » en flash, réponse affichée en correction ; sur téléphone le tableau défile
 dans son cadre. Au PDF, la cellule montre « …… » et le corrigé la réponse en gras.
 
+Corrigés dans le moteur le 2026-10-04 (branche `fix/eval-puissance-binomial`), ne plus
+contourner : **puissance d'une fraction à exposant calculé** — `{{eval:(2/3)^(n-k)}}`,
+`{{eval:(1-1/q)^(n-1)}}`, `{{eval:((n-1)/n)^(n-1)}}` sortaient non calculés
+(`\left(\dfrac{2}{3}\right)^{4-3}`) ; ils rendent la fraction exacte (`\dfrac{8}{27}`), un
+exposant négatif aussi (`(1/2)^(1-n)` → `8`). Plus besoin d'une variable d'exposant (`h = n-k`).
+Un exposant non entier reste tel quel (`(2/3)^(1/2)` → `\sqrt{\dfrac{2}{3}}`). **`factorial(n)`
+et `binom(n, k)`** dans `eval` et dans une condition (noms anglais, comme `gcd`, `mod`, `sign`) :
+`{{eval:factorial(5)}}` = 120, `{{eval:binom(n,k)*(2/3)^k*(1/3)^(n-k)}}` = `\dfrac{8}{81}`
+(n = 4, k = 1) — plus de chaîne de `{{if}}` pour un coefficient binomial. `n` entier naturel
+(sinon le tirage est relancé, puis échec explicite) ; `binom(n, k)` vaut 0 hors de 0 ⩽ k ⩽ n ;
+résultat limité aux entiers exacts (≤ 2⁵³ − 1 : `factorial(18)` au plus, `binom(50,25)` passe,
+`binom(60,30)` est refusé). Dans l'énoncé, `\binom{ {{n}} }{ {{k}} }` reste l'écriture LaTeX.
+
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en

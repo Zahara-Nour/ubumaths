@@ -196,7 +196,10 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'sum',
 	// Number theory functions
 	'gcd',
-	'mod'
+	'mod',
+	// Combinatorics
+	'factorial',
+	'binom'
 ]);
 
 /**
@@ -209,6 +212,7 @@ const KEYWORDS_BY_LENGTH: readonly string[] = ['false', 'true'];
  * This ensures that "sqrt" is matched before "s" when checking prefixes.
  */
 const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
+	'factorial', // 9 chars
 	'variance', // 8 chars
 	'arcsinh', // 7 chars
 	'arccosh', // 7 chars
@@ -218,6 +222,7 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'arctan', // 6 chars
 	'median', // 6 chars
 	'stdev', // 5 chars
+	'binom', // 5 chars
 	'floor', // 5 chars
 	'round', // 5 chars
 	'sign', // 4 chars
