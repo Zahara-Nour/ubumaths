@@ -4,7 +4,7 @@
 > ⚠️ **Ce fichier ne fait plus foi une fois le niveau amorcé** : la page **Programme** (`/dashboard/teacher/programme`) prend le relais. Le corriger ici ne produit plus rien — cf. le référentiel de 1ʳᵉ, même règle.
 > **Source** : « Programme d'enseignement optionnel de mathématiques complémentaires de terminale générale » — PDF fourni par David le 2026-10-03.
 >
-> **Statut** : relu par David le 2026-10-04 (recommandations suivies : `[D+]` pour les démonstrations « possibles », coupe de TCOMP-012/013 et 055/056, formules vérifiées sur le BO).
+> **Statut** : **amorcé en production** (#754) — la page Programme fait foi désormais. Relu par David le 2026-10-04 (recommandations suivies : `[D+]` pour les démonstrations « possibles », coupe de TCOMP-012/013 et 055/056, formules vérifiées sur le BO).
 >
 > L'ordre suit celui du sommaire du BO. Le référentiel est bâti sur la seule partie **« Contenus »** du BO (décision Q149). Les **neuf « thèmes d'étude »** (premier volet du programme, qui mettent en situation les contenus du second volet), ainsi que les rubriques **« Objectifs »** et **« Histoire des mathématiques »**, sont des textes destinés au professeur : ils ne donnent **aucun point**. Le programme ne comporte pas de partie « Automatismes ».
 >

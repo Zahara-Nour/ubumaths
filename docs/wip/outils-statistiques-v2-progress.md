@@ -296,3 +296,11 @@ Manche 12 (2026-10-03), référentiel de Terminale — recommandations suivies :
   `20261004090000` déjà pris en prod par `realtime_chat_prive` → `20261004100000`) ;
   `db:migrate` fait, prod vérifiée : 5 thèmes · 18 objectifs · 262 points TSPE-001 → 262.
   Reste : T_COMP (sur « Contenus », Q149), puis T_EXP ; lois de maths complémentaires à part.
+
+- **Référentiel T_COMP LIVRÉ** (2026-10-04) : markdown relu par David (recos suivies : tag
+  `[D+]` = démonstration en approfondissement pour les « Démonstrations possibles » du BO ;
+  coupe solution particulière / générale TCOMP-012/013 et 055/056 ; formules reconstruites
+  vérifiées sur le BO ; orthographe du BO conservée) ; #754, 9 tests rouges sans la
+  migration ; `db:migrate` fait, prod vérifiée : 3 thèmes · 10 objectifs · 139 points
+  (TCOMP-001 → 139), 14 démonstrations en approfondissement. Reste : T_EXP ; lois de maths
+  complémentaires à part.
