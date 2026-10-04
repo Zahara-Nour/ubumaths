@@ -124,6 +124,7 @@ describe('VarsCommand', () => {
 			const result = command.execute(ctx);
 			// Sortie colorée selon le terminal : les codes ANSI (`\x1b[32m`) contiennent
 			// un « m » — chercher une lettre dans la ligne brute trouvait « m » partout
+			// eslint-disable-next-line no-control-regex -- c'est justement ce caractère qu'on retire
 			const stripAnsi = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
 			const names = stripAnsi(result.output)
 				.split('\n')
