@@ -274,7 +274,7 @@
 
 	:global(math-field[readonly] .ML__prompt:focus-within) {
 		background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
-		outline: 2px solid hsl(var(--ring));
+		outline: 2px solid var(--color-ring);
 		outline-offset: 1px;
 	}
 
@@ -292,6 +292,6 @@
 	/* Incorrect state */
 	:global(math-field[readonly] .ML__prompt.ML__incorrect) {
 		background-color: color-mix(in srgb, var(--color-destructive) 20%, transparent);
-		border: 1px solid hsl(var(--destructive) / 0.5);
+		border: 1px solid color-mix(in srgb, var(--color-destructive) 50%, transparent);
 	}
 </style>

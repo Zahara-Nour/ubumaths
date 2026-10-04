@@ -118,6 +118,6 @@
 	}
 
 	.challenge-question :global(strong) {
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 	}
 </style>

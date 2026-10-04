@@ -213,7 +213,7 @@
 	.flip-face.scrollable {
 		overflow-y: auto;
 		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--muted)) transparent;
+		scrollbar-color: var(--color-muted) transparent;
 	}
 
 	.flip-face.scrollable::-webkit-scrollbar {
@@ -242,7 +242,7 @@
 		height: calc(3rem * var(--font-scale, 1));
 		border-radius: 50%;
 		background: var(--color-primary);
-		color: hsl(var(--primary-foreground));
+		color: var(--color-primary-foreground);
 		border: none;
 		cursor: pointer;
 		box-shadow:

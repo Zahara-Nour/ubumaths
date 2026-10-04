@@ -84,6 +84,7 @@
 		MAJOR_TICK_HEIGHT,
 		LABEL_Y_OFFSET,
 		POINT_Y_OFFSET,
+		SEGMENT_Y_OFFSET,
 		ARROW_SIZE
 	} = NL_LAYOUT;
 
@@ -232,6 +233,26 @@
 	});
 
 	// =========================================================================
+	// FIXED SEGMENTS
+	// =========================================================================
+
+	// Segments fournis par la question : même rendu que le bloc statique NumberLine
+	let renderedFixedSegments = $derived.by(() => {
+		if (!parsedNode) return [];
+		const startN = numVal(parsedNode.config.start);
+		const endN = numVal(parsedNode.config.end);
+		const colors = resolveNumberLineColors(parsedNode);
+		return parsedNode.segments.map((s, i) => ({
+			x1: valueToX(numVal(s.start), startN, endN),
+			x2: valueToX(numVal(s.end), startN, endN),
+			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
+			startOpen: s.startOpen,
+			endOpen: s.endOpen,
+			color: colors.segments[i].screen
+		}));
+	});
+
+	// =========================================================================
 	// BORDER COLOR FOR FEEDBACK
 	// =========================================================================
 
@@ -321,14 +342,39 @@
 				{/if}
 			{/each}
 
+			<!-- Fixed segments : un point ouvert prend la couleur du fond, un fermé celle du segment -->
+			{#each renderedFixedSegments as seg, i (i)}
+				<line
+					class="nl-segment"
+					x1={seg.x1}
+					y1={seg.y}
+					x2={seg.x2}
+					y2={seg.y}
+					style:stroke={seg.color}
+					stroke-width="3"
+				/>
+				{#each [{ x: seg.x1, open: seg.startOpen }, { x: seg.x2, open: seg.endOpen }] as end, k (k)}
+					<circle
+						class="nl-endpoint"
+						class:nl-endpoint-open={end.open}
+						cx={end.x}
+						cy={seg.y}
+						r="4"
+						style:fill={end.open ? undefined : seg.color}
+						style:stroke={seg.color}
+						stroke-width="2"
+					/>
+				{/each}
+			{/each}
+
 			<!-- Fixed points -->
 			{#each renderedFixedPoints as point (point.label)}
 				<circle
+					class="nl-point"
 					cx={point.x}
 					cy={point.y}
 					r={POINT_RADIUS - 1}
 					style:fill={point.color}
-					style:stroke="var(--color-background)"
 					stroke-width="1.5"
 				/>
 				<foreignObject x={point.x - 20} y={point.y - 22} width="40" height="18">
@@ -343,8 +389,7 @@
 					cx={px}
 					cy={LINE_Y + POINT_Y_OFFSET}
 					r={POINT_RADIUS}
-					fill={feedbackColor}
-					stroke="var(--number-line-bg, white)"
+					style:fill={feedbackColor}
 					stroke-width="2"
 					class="placed-point"
 				/>
@@ -401,7 +446,7 @@
 
 	.hidden-mark {
 		font-weight: bold;
-		color: var(--number-line-hidden, #e74c3c);
+		color: var(--color-destructive);
 		font-size: 0.85rem;
 	}
 
@@ -410,6 +455,16 @@
 		font-weight: 600;
 		font-size: 0.75rem;
 		line-height: 1;
+	}
+
+	/* Halo des points et point ouvert : la couleur du fond (token light-dark(), bascule seul) */
+	.nl-point,
+	.placed-point {
+		stroke: var(--color-background);
+	}
+
+	.nl-endpoint-open {
+		fill: var(--color-background);
 	}
 
 	.placed-point {
@@ -427,12 +482,5 @@
 		display: flex;
 		justify-content: center;
 		margin-top: 0.5rem;
-	}
-
-	/* Dark mode */
-	:global(.dark) .number-line-input {
-		--number-line-bg: hsl(var(--background));
-		--number-line-point: #e74c3c;
-		--number-line-hidden: #e74c3c;
 	}
 </style>

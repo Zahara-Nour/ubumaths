@@ -232,7 +232,7 @@
 	/* Figure caption styling */
 	:global(.exercise-figcaption) {
 		font-size: 0.9em;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		margin-top: 0.5em;
 		text-align: center;
 		font-style: italic;

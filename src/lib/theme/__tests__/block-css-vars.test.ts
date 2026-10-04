@@ -6,18 +6,81 @@
  * et ne tenaient que par leurs couleurs de repli codées en dur.
  */
 
+import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 const appCss = readFileSync(resolve(root, 'src/app.css'), 'utf8');
+// Thème par défaut de Tailwind 4 (`--color-green-700`, `--font-mono`, `--spacing`…) :
+// déclaré par `@import 'tailwindcss'`, donc légitime
+const tailwindTheme = readFileSync(resolve(root, 'node_modules/tailwindcss/theme.css'), 'utf8');
+
+/** Variables posées par une bibliothèque sur ses propres éléments (vérifié à la source) */
+const LIBRARY_PREFIXES = ['--bits-'];
+
+/**
+ * Crochets de personnalisation avec repli valide : jamais posés, ils retombent
+ * proprement sur leur repli (`var(--slide-padding, 2rem)`, `rgba(var(--primary-rgb,
+ * 59, 130, 246), 0.05)`). Pas une couleur jetée en silence.
+ */
+const HOOKS_WITH_FALLBACK = [
+	'--slide-background',
+	'--slide-padding',
+	'--slide-color',
+	'--primary-rgb'
+];
 
 const COMPONENTS = [
 	'src/lib/components/markdown/nodes/NumberLine.svelte',
 	'src/lib/components/markdown/nodes/TrigCircle.svelte',
 	'src/lib/components/markdown/nodes/VariationTable.svelte',
-	'src/lib/components/markdown/nodes/ProbabilityTree.svelte'
+	'src/lib/components/markdown/nodes/ProbabilityTree.svelte',
+	// Restes du lot 3 : éditeurs des blocs, saisie élève, blocs de contenu, questions
+	'src/lib/extensions/NumberLineNodeView.svelte',
+	'src/lib/extensions/VariationTableNodeView.svelte',
+	'src/lib/extensions/ImageNodeView.svelte',
+	'src/lib/components/question-inputs/NumberLineInput.svelte',
+	'src/lib/components/question-inputs/FillBlanksInput.svelte',
+	'src/lib/components/question-inputs/MathInput.svelte',
+	'src/lib/components/question-inputs/OrderingInput.svelte',
+	'src/lib/components/markdown/MarkdownRaw.svelte',
+	'src/lib/components/markdown/nodes/ImageDisplay.svelte',
+	'src/lib/components/markdown/nodes/MathPrompt.svelte',
+	'src/lib/components/markdown/nodes/ParagraphNode.svelte',
+	'src/lib/components/questions/CorrectionCard.svelte',
+	'src/lib/components/questions/FlashCard.svelte',
+	'src/lib/components/questions/GeneratedStepsCorrection.svelte',
+	'src/lib/components/srs/CustomFlashCard.svelte',
+	'src/lib/components/srs/TemplateSelector.svelte',
+	'src/lib/components/test/TestTimer.svelte',
+	'src/lib/components/game/challenges/ChallengeContainer.svelte'
+];
+
+/**
+ * Dette connue, reportée (docs/wip/couleurs-lot3-progress.md, « Reste ») : des
+ * `hsl(var(--x))` d'écrans prof / admin / outils. Un fichier corrigé en sort ; un
+ * fichier NOUVEAU qui lit une variable inexistante fait échouer le balayage.
+ */
+const KNOWN_DEBT = [
+	'src/lib/components/JsonViewer.svelte',
+	'src/lib/components/calculator/UnifiedInput.svelte',
+	'src/lib/components/cas/HistoryEntry.svelte',
+	'src/lib/components/cas/ReplInput.svelte',
+	'src/lib/components/python/PythonSplitter.svelte',
+	'src/lib/components/rich-text/RichTextEditor.svelte',
+	'src/lib/whiteboard/components/AnnotationToolbar.svelte',
+	'src/lib/whiteboard/components/TemplatePickerModal.svelte',
+	'src/routes/(protected)/dashboard/admin/docs/+page.svelte',
+	'src/routes/(protected)/dashboard/admin/docs/[...path]/+page.svelte',
+	'src/routes/(protected)/messages/archived/+page.svelte',
+	'src/routes/(protected)/messages/drafts/+page.svelte',
+	'src/routes/(protected)/messages/inbox/+page.svelte',
+	'src/routes/(protected)/messages/sent/+page.svelte',
+	'src/routes/(protected)/spreadsheet/+page.svelte',
+	'src/routes/(public)/games/mathemo/+page.svelte',
+	'src/routes/(public)/pere-ubu/+page.svelte'
 ];
 
 /** Retire les commentaires CSS, HTML et JS (`//` en début de ligne ou après un blanc) */
@@ -83,10 +146,16 @@ function used(source: string): string[] {
 /** Variables lues mais jamais déclarées (ni dans app.css, ni localement) */
 function missingIn(source: string): string[] {
 	const local = declared(source);
-	return used(source).filter((name) => !global.has(name) && !local.has(name));
+	return used(source).filter(
+		(name) =>
+			!global.has(name) &&
+			!local.has(name) &&
+			!LIBRARY_PREFIXES.some((prefix) => name.startsWith(prefix)) &&
+			!HOOKS_WITH_FALLBACK.includes(name)
+	);
 }
 
-const global = declared(appCss);
+const global = new Set([...declared(appCss), ...declared(tailwindTheme)]);
 
 describe('analyse des variables (garde-fous du test lui-même)', () => {
 	it('une variable déclarée SEULEMENT sous .dark est manquante', () => {
@@ -123,4 +192,27 @@ describe('variables CSS des blocs du lot 3', () => {
 			expect(source).not.toMatch(/hsl\(var\(--/);
 		});
 	}
+});
+
+describe('balayage de src/lib et src/routes', () => {
+	const files = execSync("git ls-files 'src/lib/**/*.svelte' 'src/routes/**/*.svelte'", {
+		cwd: root,
+		encoding: 'utf8'
+	})
+		.trim()
+		.split('\n')
+		.filter((file) => !file.includes('__tests__'));
+
+	const offenders = files.filter((file) => {
+		const source = readFileSync(resolve(root, file), 'utf8');
+		return missingIn(source).length > 0 || /hsl\(var\(--/.test(source);
+	});
+
+	it('aucun composant hors dette connue ne lit de variable inexistante', () => {
+		expect(offenders.filter((file) => !KNOWN_DEBT.includes(file))).toEqual([]);
+	});
+
+	it('la dette connue est à jour (un fichier corrigé en sort)', () => {
+		expect(KNOWN_DEBT.filter((file) => !offenders.includes(file))).toEqual([]);
+	});
 });

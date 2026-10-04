@@ -640,7 +640,7 @@
 		height: calc(3rem * var(--font-scale, 1));
 		border-radius: 50%;
 		background: var(--color-primary);
-		color: hsl(var(--primary-foreground));
+		color: var(--color-primary-foreground);
 		border: none;
 		cursor: pointer;
 		box-shadow:
@@ -664,7 +664,7 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 		background: var(--color-muted);
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	/* ============================================================================

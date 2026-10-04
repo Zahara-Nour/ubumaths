@@ -97,14 +97,14 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		border-left: 3px solid hsl(var(--primary) / 0.5);
+		border-left: 3px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
 		background: color-mix(in srgb, var(--color-muted) 30%, transparent);
 		border-radius: 0 0.375rem 0.375rem 0;
 	}
 
 	.generated-step.nested {
 		margin-left: 1.25rem;
-		border-left-color: hsl(var(--muted-foreground) / 0.4);
+		border-left-color: color-mix(in srgb, var(--color-muted-foreground) 40%, transparent);
 	}
 
 	.step-header {
@@ -116,7 +116,7 @@
 
 	.step-number {
 		font-weight: 600;
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 		font-size: 0.875rem;
 	}
 
@@ -137,7 +137,7 @@
 
 	.step-explanation {
 		font-size: 0.875rem;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		font-style: italic;
 	}
 

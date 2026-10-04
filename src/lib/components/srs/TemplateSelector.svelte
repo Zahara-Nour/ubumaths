@@ -274,7 +274,7 @@
 
 	.templates-list {
 		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--muted)) transparent;
+		scrollbar-color: var(--color-muted) transparent;
 	}
 
 	.templates-list::-webkit-scrollbar {
