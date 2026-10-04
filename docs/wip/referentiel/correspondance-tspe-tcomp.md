@@ -2,7 +2,7 @@
 
 - **Date** : 2026-10-04
 - **Source** : référentiels en production — `T_COMP` (139 points, `TCOMP-001` → `TCOMP-139`) et `T_SPE` (262 points, `TSPE-001` → `TSPE-262`) ; référentiel de 1re spé (`docs/wip/referentiel/1re-spe-programme.md`) pour les acquis antérieurs.
-- **Statut** : **brouillon à relire par David**.
+- **Statut** : **relu par David le 2026-10-04** — les 8 recommandations sont retenues (voir la fin du document).
 - **But** : décider quelles cartes de révision espacée porteront `grades: ["T_SPE","T_COMP"]`, rattachées au point TCOMP et au(x) point(s) TSPE de la colonne « TSPE ».
 
 ## Légende des catégories
@@ -296,6 +296,8 @@ Deux nuances :
 ---
 
 ## Questions à trancher par David
+
+> **Tranché par David le 2026-10-04 : les 8 recommandations sont retenues telles quelles.**
 
 1. **Gestes TCOMP pratiqués en spé sans point TSPE littéral** — sommes géométriques (TCOMP-005, 009), suites arithmético-géométriques (TCOMP-006, 012, 013), inéquation par tableau de variation (TCOMP-033), diagramme de la binomiale (TCOMP-090). Partager en rattachant au point TSPE le plus proche, ou garder `T_COMP` seul ?
    _Recommandation_ : partager 005/009 → TSPE-111 et 006/012/013 → TSPE-115 (ce sont les exercices-types de spé) ; garder 033 et 090 en `T_COMP` seul (rattachement trop lâche).
