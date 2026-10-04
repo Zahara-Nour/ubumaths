@@ -9,7 +9,7 @@
 	import { actionsFor, defaultPartner, partnersOf, type ObjectAction } from '$lib/atelier/actions';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { useAtelier } from '$lib/atelier/context';
-	import { isFunction } from '$lib/atelier/types';
+	import { isFunction, isSequence } from '$lib/atelier/types';
 	import { astOf } from '$lib/atelier/parse';
 	import { toLatex } from '$lib/mathAST/latex-generator';
 	import { curveColorValue } from '$lib/grapheur/colors';
@@ -21,6 +21,7 @@
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
 	import ValueSlider from './ValueSlider.svelte';
+	import SequenceSettings from './SequenceSettings.svelte';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 
 	interface Props {
@@ -128,17 +129,19 @@
 
 	/** La couleur de la courbe, si la fonction est tracée (C1, C2). */
 	const curveColor = $derived(
-		isFunction(object) && object.plotted && object.display
+		(isFunction(object) || isSequence(object)) && object.plotted && object.display
 			? curveColorValue(object.display.color)
 			: null
 	);
 
 	/**
 	 * Les objets dont on saisit la définition dans la carte (C11 : pas les
-	 * listes ; les suites au lot 5 ; pas une dérivée, qui se calcule — §2 L2).
+	 * listes ; pas une dérivée, qui se calcule — §2 L2). Les suites depuis le
+	 * lot 5b.
 	 */
 	const editable = $derived(
-		derivative === null && (object.kind === 'function' || object.kind === 'value')
+		derivative === null &&
+			(object.kind === 'function' || object.kind === 'value' || object.kind === 'sequence')
 	);
 
 	/** Ce que l'élève lit quand l'objet ne peut rien produire. */
@@ -158,7 +161,7 @@
 
 <article class="objet" class:selected data-status={object.status}>
 	<div class="tete">
-		{#if object.kind === 'function'}
+		{#if object.kind === 'function' || object.kind === 'sequence'}
 			<span
 				class="pastille"
 				style={curveColor ? `background: ${curveColor}; border-color: ${curveColor}` : undefined}
@@ -183,7 +186,7 @@
 				<span class="etat">{stateLabel}</span>
 			{/if}
 		</button>
-		{#if object.kind === 'function'}
+		{#if object.kind === 'function' || object.kind === 'sequence'}
 			<!-- C3 : tracer en un clic, sans ouvrir la carte ni changer de vue -->
 			<button
 				type="button"
@@ -256,6 +259,11 @@
 		{:else if object.slider}
 			<ValueSlider {object} slider={object.slider} />
 		{/if}
+	{/if}
+
+	<!-- Une suite : mode, rang, premier terme, et son tracé (§5 U1, U2) -->
+	{#if selected && isSequence(object)}
+		<SequenceSettings {object} />
 	{/if}
 
 	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->

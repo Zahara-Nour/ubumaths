@@ -57,7 +57,10 @@
 		object.kind === 'function'
 			? `${object.name}(x) =`
 			: object.kind === 'sequence'
-				? `${object.name}(n) =`
+				? // Une récurrence donne le terme SUIVANT (décision S3)
+					object.mode === 'recurrence'
+					? `${object.name}(n+1) =`
+					: `${object.name}(n) =`
 				: `${object.name} =`
 	);
 

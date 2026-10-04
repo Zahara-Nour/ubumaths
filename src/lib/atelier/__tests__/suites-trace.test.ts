@@ -12,6 +12,7 @@ import { Atelier } from '../atelier.svelte';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { syncPlots } from '../plot-sync';
 import { CalcDesk } from '../desk.svelte';
+import { termsOf } from '../engine';
 import { actionsFor } from '../actions';
 import { isSequence } from '../types';
 import type { SequencePlottable } from '$lib/grapheur/types';
@@ -230,5 +231,22 @@ describe('« Premiers termes »', () => {
 		expect(ids).toContainEqual(['terms', undefined]);
 		expect(ids.map(([id]) => id)).not.toContain('plot-points');
 		expect(ids.map(([id]) => id)).not.toContain('plot-cobweb');
+	});
+});
+
+// Ce que MathLive écrit quand on tape `0,5u(n) + 3` dans la carte
+describe('saisie MathLive d’une récurrence', () => {
+	it('`0{,}5u\\left(n\\right)+3` donne les bons termes', () => {
+		const atelier = new Atelier();
+		atelier.create(
+			{ kind: 'sequence', name: 'u', definition: '0{,}5u\\left(n\\right)+3' },
+			'keyboard'
+		);
+		atelier.setSequence('u', { firstTerm: '2' });
+
+		const terms = termsOf(atelier, 'u', 2);
+
+		expect(atelier.get('u')).toMatchObject({ mode: 'recurrence', status: 'ok' });
+		expect(terms.ok && terms.terms.map((t) => t.value)).toEqual([2, 4, 5]);
 	});
 });

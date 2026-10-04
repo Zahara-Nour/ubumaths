@@ -148,7 +148,7 @@ const sequencePatchSchema = z
 	.strict();
 
 /** Pourquoi une suite ne peut pas se tracer en escalier, ou `null`. */
-function cobwebRefusal(sequence: SequenceObject): string | null {
+export function cobwebRefusal(sequence: SequenceObject): string | null {
 	if (sequence.mode !== 'recurrence') {
 		return `L'escalier demande une récurrence : « ${sequence.name} » est une suite explicite.`;
 	}
