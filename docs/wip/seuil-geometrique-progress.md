@@ -17,4 +17,4 @@ l'événement ;`⩽`, `⩾` dans la comparaison), exact (fractions, BigInt sans 
 
 ## Étapes
 
-- [x] Tests rouges · [x] Implémentation · [x] Revue Opus (plus grand k au-delà de 1 000 : « tous les k … vérifient », sens écrits en dur, dichotomie = linéaire pour la binomiale) · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation · [x] Revue Opus (plus grand k au-delà de 1 000 : « tous les k … vérifient », sens écrits en dur, dichotomie = linéaire pour la binomiale) · [x] PR, CI, merge

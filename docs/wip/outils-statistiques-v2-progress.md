@@ -350,3 +350,10 @@ Manche 14 (2026-10-04), suites des lois — recommandations suivies :
      G(0,2) : P(X > k) ⩽ 0,05 → k = 14.
 165. Atelier : `seuil` pour `.geometrique` ; pas de simulation de ces lois (Q142).
      Découpage : PR (a) `seuil:` pour G ; PR (b) simulation des quatre lois.
+
+- **Manche 14 TERMINÉE** (2026-10-04) : (a) `seuil:` pour G(p), bloc + `.geometrique` #790 —
+  plus grand k au-delà de 1 000 : « tous les k de 0 à 1 000 vérifient … » (jamais un faux
+  k = 1 000) ; `findThreshold` dichotomique partagée (`statistics/threshold.ts`), binomiale
+  identique (test de propriété). (b) simulation de G, U, U([a ; b]), E dans ```simulation #794 —
+  inversion du générateur à graine, histogramme en densité + courbe, tests « or » figeant les
+  simulations de main (bloc et atelier), en-têtes du tableau de simulation sans césure.

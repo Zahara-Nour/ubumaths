@@ -23,7 +23,7 @@ résumé « 1 000 tirages ; moyenne observée ≈ … (E(X) = 2) » puis la grai
 ## Étapes
 
 - [x] Tests rouges · [x] Implémentation · [x] Fiche compilée et regardée (en-têtes sans césure corrigés) · [x] Revue ·
-      [ ] PR, CI, merge
+      [x] PR, CI, merge
 
 ## Décisions prises en implémentant (à valider à la revue)
 
