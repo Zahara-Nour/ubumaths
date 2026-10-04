@@ -232,3 +232,42 @@ describe('15 — specs de test du modèle', () => {
 		expect(result.error).toMatch(/illisible/);
 	});
 });
+
+describe('espace : plan et sphère dans toute la chaîne (2026-10-04)', () => {
+	const PLANE = '2x-y+3z-4=0';
+	const SPHERE = '(x-1)^2+(y+2)^2+(z-3)^2=16';
+
+	it.each([
+		['4x-2y+6z-8=0', equationBlank(PLANE), 'correct', 1],
+		['2x-y+3z=4', equationBlank(PLANE, 'cartesienne'), 'bad_form', 0],
+		['x^2+y^2+z^2-2x+4y-6z-2=0', equationBlank(SPHERE), 'correct', 1],
+		['2x^2+2y^2+2z^2-4x+8y-12z-4=0', equationBlank(SPHERE), 'unoptimal_form', 0.5],
+		['2x-y+z+1=0', equationBlank(LINE), 'incorrect', 0]
+	] as const)('%s : %s', (answer, blank, status, points) => {
+		const instance = instanceWith([blank]);
+		const browser = validateAnswer([answer], instance, [answer]);
+		expect(browser.status ?? (browser.isCorrect ? 'correct' : 'incorrect')).toBe(status);
+		const server = gradeQuestion(instance, { values: [answer] });
+		expect(server.status).toBe(status);
+		expect(server.points).toBe(points);
+	});
+
+	it('réponse en z dans une case du plan repéré : message', () => {
+		const result = validateAnswer(['2x-y+z+1=0'], instanceWith([equationBlank(LINE)]), [
+			'2x-y+z+1=0'
+		]);
+		expect(result.isCorrect).toBe(false);
+		expect(JSON.stringify(result)).toContain('ne doit pas contenir z');
+	});
+
+	it('spec : attendue en x, y, z lisible', () => {
+		const result = runTestSpec(lineTemplate('{{a}}x-y+3z-{{b}}=0'), {
+			description: 'plan',
+			variables: { a: '2', b: '4' },
+			answers: ['4x-2y+6z-8=0'],
+			expected: { status: 'correct' }
+		});
+		expect(result.error).toBeUndefined();
+		expect(result.passed).toBe(true);
+	});
+});

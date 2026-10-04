@@ -232,3 +232,104 @@ describe('15 — réponse attendue du modèle', () => {
 		expect(statusOf('2x=8', '2x-y+1')).toBe('incorrect');
 	});
 });
+
+// Espace (x, y, z) : plan jugé comme une droite, sphère comme un cercle
+// (décision de David du 2026-10-04)
+const PLANE = '2x-y+3z-4=0';
+const SPHERE = '(x-1)^2+(y+2)^2+(z-3)^2=16';
+
+describe('16 — plan : tout multiple non nul est juste', () => {
+	it('attendue lisible', () => {
+		expect(readExpectedEquation(PLANE).ok).toBe(true);
+		expect(readExpectedEquation('z=2').ok).toBe(true);
+	});
+
+	it.each([PLANE, '2x-y+3z=4', '-2x+y-3z+4=0', '4x-2y+6z-8=0', 'z=\\frac{4-2x+y}{3}', '4=2x-y+3z'])(
+		'%s : juste',
+		(answer) => {
+			expect(statusOf(answer, PLANE)).toBe('correct');
+		}
+	);
+
+	it.each(['2x-y+3z+4=0', '2x-y-3z-4=0', '2x-y-4=0', '2x-y+3z-4', 'x^2+y^2+z^2=4'])(
+		'%s : incorrect',
+		(answer) => {
+			expect(statusOf(answer, PLANE)).toBe('incorrect');
+		}
+	);
+
+	it('forme cartésienne exigée : membre droit 0, message de l’espace', () => {
+		expect(statusOf('4x-2y+6z-8=0', PLANE, 'cartesienne')).toBe('correct');
+		const verdict = judgeEquationAnswer('2x-y+3z=4', PLANE, 'cartesienne');
+		expect(verdict.status).toBe('bad_form');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.spaceForms.cartesienne);
+	});
+
+	it('pas une équation : message en x, y et z', () => {
+		expect(judgeEquationAnswer('2x-y+3z-4', PLANE).feedback).toBe(
+			EQUATION_FEEDBACK.notEquationSpace
+		);
+	});
+});
+
+describe('17 — sphère : coefficient 1 exigé', () => {
+	it.each([
+		SPHERE,
+		'x^2+y^2+z^2-2x+4y-6z-2=0',
+		'(z-3)^2+(x-1)^2+(y+2)^2=4^2',
+		'16=(x-1)^2+(y+2)^2+(z-3)^2',
+		'-x^2-y^2-z^2+2x-4y+6z+2=0'
+	])('%s : juste', (answer) => {
+		expect(statusOf(answer, SPHERE)).toBe('correct');
+	});
+
+	it('multiple → ½ avec message', () => {
+		const verdict = judgeEquationAnswer('2x^2+2y^2+2z^2-4x+8y-12z-4=0', SPHERE);
+		expect(verdict.status).toBe('unoptimal_form');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.scaledSquare);
+	});
+
+	it.each(['(x-1)^2+(y+2)^2+(z-3)^2=4', '(x+1)^2+(y+2)^2+(z-3)^2=16', '(x-1)^2+(y+2)^2=16'])(
+		'%s : incorrect',
+		(answer) => {
+			expect(statusOf(answer, SPHERE)).toBe('incorrect');
+		}
+	);
+
+	it('forme centre-rayon exigée', () => {
+		expect(statusOf('(x-1)^2+(y+2)^2+(z-3)^2=4^2', SPHERE, 'centre-rayon')).toBe('correct');
+		expect(statusOf('x^2+(y+2)^2+(z-3)^2=16', 'x^2+(y+2)^2+(z-3)^2=16', 'centre-rayon')).toBe(
+			'correct'
+		);
+		const verdict = judgeEquationAnswer('x^2+y^2+z^2-2x+4y-6z-2=0', SPHERE, 'centre-rayon');
+		expect(verdict.status).toBe('bad_form');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.spaceForms['centre-rayon']);
+	});
+
+	it('deux fois la même variable : pas la forme centre-rayon', () => {
+		expect(statusOf('(x-1)^2+(x-1)^2+z^2=2', '2(x-1)^2+z^2=2', 'centre-rayon')).toBe('bad_form');
+	});
+});
+
+describe('18 — case du plan repéré : une réponse en z est fausse, avec un message', () => {
+	it.each(['2x-y+z+1=0', 'y=2x+1+z'])('%s pour 2x-y+1=0', (answer) => {
+		const verdict = judgeEquationAnswer(answer, LINE);
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.unexpectedZ);
+	});
+
+	it('cercle : réponse sphère fausse, avec le message', () => {
+		const verdict = judgeEquationAnswer('(x-1)^2+(y+2)^2+z^2=9', CIRCLE);
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toBe(EQUATION_FEEDBACK.unexpectedZ);
+	});
+
+	it('z qui s’annule : lu comme une droite', () => {
+		expect(statusOf('2x-y+z-z+1=0', LINE)).toBe('correct');
+	});
+
+	it('autre lettre que x, y, z : toujours illisible', () => {
+		expect(statusOf('2x-y+t+1=0', LINE)).toBe('incorrect');
+		expect(readExpectedEquation('2x-y+t=0').ok).toBe(false);
+	});
+});

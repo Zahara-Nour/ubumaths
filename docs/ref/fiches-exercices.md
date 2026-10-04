@@ -486,7 +486,11 @@ de l'éditeur) :
 - forme exigée (`requiredForm`) : `reduite` (y = mx + p, ou x = c ; `x+1=y` refusée),
   `cartesienne` (ax + by + c = 0, membre droit 0), `centre-rayon` ; juste mais autre forme →
   `bad_form` (spec : `constraintViolations: ["form"]`, comme pour un cercle à simplifier) ;
-- une attendue qui n'est pas une équation polynomiale en x et y fait échouer les specs du modèle.
+- espace (2026-10-04) : attendue en x, y, z → plan jugé comme une droite (`2x-y+3z=4` juste pour
+  `2x-y+3z-4=0`, `cartesienne` = membre droit 0), sphère comme un cercle
+  (`(x-a)^2+(y-b)^2+(z-c)^2=r^2` avec `centre-rayon`, multiple → ½) ; une réponse en z dans une
+  case du plan repéré est fausse, avec un message ;
+- une attendue qui n'est pas une équation polynomiale en x, y (et z) fait échouer les specs du modèle.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « équation »).
 
 **Case « vecteur » (2026-10-03).** Le vecteur dans UNE case, coordonnées exactes comparées

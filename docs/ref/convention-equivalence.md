@@ -289,6 +289,21 @@ l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coe
 (signe libre : membres échangés, tout changé de signe), ½ sinon. L'écriture de l'attendue
 (`2x^2+2y^2=8`) n'est donc jamais imposée à l'élève.
 
+**Espace : plan et sphère** (décision de David du 2026-10-04). La lecture accepte x, y et z :
+un plan (degré 1 en x, y, z) est jugé comme une droite (tout multiple non nul juste,
+`2x-y+3z=4` pour `2x-y+3z-4=0`), une sphère comme un cercle (coefficient ±1 de x², sinon y²,
+sinon z² ; multiple → ½). Formes exigeables : `cartesienne` (membre droit 0, message
+« ax + by + cz + d = 0 »), `centre-rayon` (`(x-a)^2+(y-b)^2+(z-c)^2=r^2`, un carré par
+variable, trois carrés pour une sphère). Une attendue sans z garde exactement le jugement du plan
+repéré ; une réponse en z y est fausse avec « L’équation attendue est en x et y : ta réponse ne
+doit pas contenir z. ». Mesure (dépôt + `REAL_TEMPLATES` + 920 modèles de prod en lecture +
+synthétiques ; specs, attendue sur tirages, 7 variantes par équation : membres échangés, ×2, tout
+à gauche, `+z`, `-()`, faux, sans `=`) : 31 185 verdicts, 1 241 modèles, 0 statut changé hors
+synthétiques ; 212 messages ajoutés sur la variante `+z` (fausse avant comme après) des
+14 modèles réels à case équation ; 168 changements synthétiques (plans et sphères :
+faux → juste / ½ / mauvaise forme ; une case ORDINAIRE `requiredForm: "centre-rayon"` reçoit
+désormais une sphère centre-rayon comme bien formée).
+
 ## Réponse « vecteur » : coordonnées exactes, ou colinéaire (case `answerKind: "vecteur"`)
 
 `areEquivalent` ne lit pas un couple `(2;-3)`. Une case marquée `answerKind: "vecteur"`
