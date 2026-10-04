@@ -242,10 +242,10 @@ function defineObject(
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
-		// Une fonction CRÉÉE dans Calcul est tracée d'office (retour de David) :
-		// on la définit pour la voir. Une fonction redéfinie garde son état —
-		// retirée du graphique, elle ne revient pas en douce.
-		if (created.object.kind === 'function') atelier.setPlotted(name, true);
+		// Ce qui se trace (fonction, suite) et qu'on CRÉE dans Calcul est tracé
+		// d'office (décisions de David) : on le définit pour le voir. Redéfini, il
+		// garde son état — retiré du graphique, il ne revient pas en douce.
+		if (tracedOnCreation(created.object.kind)) atelier.setPlotted(name, true);
 		// Relu APRÈS le tracé : l'objet rendu doit dire qu'il est tracé (revue)
 		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
 	}
@@ -688,8 +688,17 @@ export function promote(
 	}
 
 	const created = atelier.create({ kind, name: chosen, definition });
-	if (created.ok) syncEngine(atelier, session.engine);
-	return created;
+	if (!created.ok) return created;
+	syncEngine(atelier, session.engine);
+	// « Garder… » suit la même règle que la frappe : une fonction ou une suite
+	// gardée se voit tout de suite (décision de David, 2026-10-04)
+	if (tracedOnCreation(kind)) atelier.setPlotted(chosen, true);
+	return { ...created, object: atelier.get(chosen) ?? created.object };
+}
+
+/** Ce qui se trace : une fonction ou une suite — pas une valeur ni une liste. */
+function tracedOnCreation(kind: ObjectKind): boolean {
+	return kind === 'function' || kind === 'sequence';
 }
 
 // =============================================================================
