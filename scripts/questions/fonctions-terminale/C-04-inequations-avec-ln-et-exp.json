@@ -20,7 +20,7 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "0..4"
+					"expression": "-3..4"
 				}
 			],
 			"blanks": [
@@ -40,7 +40,7 @@
 			"variables": [
 				{
 					"name": "a",
-					"expression": "0..4"
+					"expression": "-3..4"
 				}
 			],
 			"blanks": [
@@ -333,6 +333,50 @@
 			"answers": ["]-\\infty;\\ln\\frac{1}{2}]"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a = −2, borne 1/e² au lieu de e⁻², juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["\\left]0;\\frac{1}{e^2}\\right["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a = −2, borne e⁻², juste",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2"
+			},
+			"answers": ["\\left]0;e^{-2}\\right["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : a = −1, borne 1/e, juste",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1"
+			},
+			"answers": ["\\left[\\frac{1}{e};+\\infty\\right["],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : a = −1, borne e au lieu de 1/e, faux",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1"
+			},
+			"answers": ["\\left[e;+\\infty\\right["],
+			"expected": {
+				"status": "incorrect"
 			}
 		}
 	],

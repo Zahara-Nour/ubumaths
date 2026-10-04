@@ -363,7 +363,7 @@ Située hors des Six Provinces, **L'Isle de la Réunion Pataphysique** est un te
 
 #### Fête possible (proposition pour l'Almanach)
 
-🚧 **Idée à canoniser** : une **journée annuelle de L'Isle de la Réunion Pataphysique** pourrait être ajoutée à l'Almanach des Chiphres (Section VIII). Date possible : le **20 décembre** (date réelle de l'abolition de l'esclavage à La Réunion, ce qui ferait un clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants). Décision à prendre.
+✅ **Adoptée le 2026-10-04** : la **Journée de L'Isle de la Réunion Pataphysique**, le **20 décembre** (16 Glaglavose), date réelle de l'abolition de l'esclavage à La Réunion — clin d'œil au principe d'équivalence : tous les Galopins y sont également libres et également étudiants. Voir Section VIII.
 
 ### Fiches détaillées des Provinces
 
@@ -604,7 +604,7 @@ Chiphre revendique une **généalogie pataphysique** explicite : les patanautes 
 
 #### Le Père fondateur
 
-- **Alfred Jarry** (1873-1907) 🟢 — voir Section I (Manifeste) et Section XV (Annexe sources canon). **Patron canonique** de Chiphre. La Nativité d'Alfred Jarry ( 8 septembre) est la fête transversale du Royaume.
+- **Alfred Jarry** (1873-1907) 🟢 — voir Section I (Manifeste) et Section XV (Annexe sources canon). **Patron canonique** de Chiphre.
 
 #### Les influences déclarées contemporaines
 
@@ -1037,7 +1037,7 @@ Cette cérémonie est **un moment partageable** (export image / vidéo pour rés
 À chaque rentrée scolaire (1ᵉʳ septembre civil = passage automatique), une cinématique solennelle distincte de la cérémonie de grade :
 
 - Père Ubu en majesté, sceptre à phynances en main
-- Voix grave : _« Cornegidouille ! Mes chers Galopins, en ce premier Absolu de l'an [N+1] E.P., vous êtes désormais Galopins de la [Niveau] ! »_
+- Voix grave : _« Cornegidouille ! Mes chers Galopins, en ce 1 Ambraire de l'An [N+1] E.R., vous êtes désormais Galopins de la [Niveau] ! »_
 - Pour la **rupture collège/lycée** (passage Troyz'esme → Secondre), cinématique enrichie avec **adoubement chevaleresque** : _« Notre Majesté vous adoube Galopins de Secondre ! Cessez d'être écholiers, devenez bretteurs ! »_
 
 ### Quêtes principales et secondaires
@@ -1209,44 +1209,40 @@ Les deux jours hors-mois complètent les 7 × 52 = 364 jours numérotés : la Cl
 
 ### Les fêtes de l'Almanach
 
-L'Almanach des Chiphres comporte **une fête transversale** (célébrée par tout le Royaume), **six fêtes provinciales** (une par province) et **plusieurs événements transversaux** datés.
+L'Almanach des Chiphres comporte des **fêtes provinciales** (une par province) et des **événements transversaux** datés.
 
-**Toutes les dates pataphysiques sont calculées à partir des dates grégoriennes existantes** et **redatées en jours pataphysiques** dans le nouveau système. Les dates grégoriennes des fêtes sont préservées dans toute la mesure du possible.
-
-#### 🟢 La Nativité d'Alfred Jarry — 17 Ambraire (8 septembre)
-
-**Statut** : canon Jarry strict 🟢 (fait historique : Jarry est né le 8 septembre 1873).
-
-**Position pataphysique** : 17 Ambraire (8 septembre = 17 jours après le début d'Ambraire le 23 août).
-
-**Esprit** : c'est la **rentrée pataphysique du Royaume**, le jour symbolique d'ouverture de l'année scolaire de Chiphre. La rentrée scolaire française réelle (1ᵉʳ septembre) tombe le 10 Ambraire, et la Nativité de Jarry tombe une semaine plus tard.
-
-**Tradition Chiphre** : le 17 Ambraire, tous les Galopins lisent à voix haute la première phrase d'_Ubu Roi_ (_« Merdre ! »_) en signe d'allégeance pataphysique. Bonus de gidouilles d'inscription, décret du Père Ubu. Toutes les provinces participent.
+> ⛔ **Règle d'or — rien du Collège de 'Pataphysique** (rappel du 2026-10-04, décision de David). Les fêtes de l'Almanach sont **toutes des créations Chiphre**, avec des noms, des dates et des histoires propres. Aucune fête, aucun nom de mois, aucune date ne doit venir du calendrier du Collège (13 mois, Fêtes Suprêmes, Vacuations, hunyadi, Ère Pataphysique E.P.). Les **personnages** de Jarry (Bosse-de-Nage, Faustroll, Achras…) restent libres : seules les **fêtes** du Collège qui les célèbrent sont exclues.
+>
+> **Retiré le 2026-10-04** : la Nativité d'Alfred Jarry, la Résurrection de Bosse-de-Nage, la Navigation du Dr Faustroll et la Fête des Polyèdres, qui étaient des fêtes du calendrier du Collège (leurs dates venaient de « 1ᵉʳ Absolu », « 22 Haha », « 15 As » et « 13 Clinamen »). L'ancienne règle « dates calculées à partir des dates grégoriennes existantes » est abandonnée : c'est elle qui avait fait entrer ces dates.
 
 #### Les six Fêtes Provinciales
 
-Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢 (les personnages célébrés sont strictement canoniques chez Jarry). **Trois sont des inventions Chiphre** 🟡.
+Chaque province a sa fête annuelle, **toutes inventions Chiphre** 🟡 (calendrier validé par David le 2026-10-04). Les personnages viennent de Jarry et sont libres ; les fêtes, leurs noms et leurs dates sont propres à Chiphre. **Chaque mois de l'Almanach porte au moins un événement.**
 
-| #   | Province                              | Fête                                | Date pataphysique | Date grégorienne                             | Statut         |
-| --- | ------------------------------------- | ----------------------------------- | ----------------- | -------------------------------------------- | -------------- |
-| 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Résurrection de Bosse-de-Nage**   | 14 Givraire       | 27 octobre                                   | 🟢 canon Jarry |
-| 2   | **Patatovie** _(Faustroll)_           | **Navigation du Dr Faustroll**      | 35 Givraire       | 17 novembre                                  | 🟢 canon Jarry |
-| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre                                  | 🟡 Chiphre     |
-| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars (29 février les années bissextiles) | 🟡 Chiphre     |
-| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril                                      | 🟡 Chiphre     |
-| 6   | **Bedonstan** _(Achras)_              | **Fête des Polyèdres**              | 26 Auroral        | 13 avril                                     | 🟢 canon Jarry |
+| #   | Province                              | Fête                                | Date pataphysique | Date grégorienne                             | Statut     |
+| --- | ------------------------------------- | ----------------------------------- | ----------------- | -------------------------------------------- | ---------- |
+| 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Le Grand Redémarrage**            | 10 Ambraire       | 1ᵉʳ septembre                                | 🟡 Chiphre |
+| 2   | **Patatovie** _(Faustroll)_           | **La Régate de la Passoire**        | 26 Givraire       | 8 novembre                                   | 🟡 Chiphre |
+| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre                                  | 🟡 Chiphre |
+| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars (29 février les années bissextiles) | 🟡 Chiphre |
+| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 37 Auroral        | 24 avril                                     | 🟡 Chiphre |
+| 6   | **Bedonstan** _(Achras)_              | **La Foire aux Polyèdres**          | 12 Lumenal        | 21 mai                                       | 🟡 Chiphre |
 
-##### 🟢 Résurrection de Bosse-de-Nage — 14 Givraire (27 octobre)
+##### 🟡 Le Grand Redémarrage — 10 Ambraire (1ᵉʳ septembre)
 
 **Province** : Glitchistan.
 
-**Tradition Chiphre** : tous les Galopins de Glitchistan exécutent un programme qui ne fait que `print('ha ha')` en boucle. Le jour célèbre **la résurrection** des programmes plantés, c'est-à-dire le **Reset hebdomadaire universel de Glitchistan** : tous les compteurs de bugs sont effacés pour la journée. L'UI affiche des « ha ha » qui glitchent partout. **Bonus de gidouilles** pour quiconque parvient à faire planter intentionnellement son code de la manière la plus créative.
+**Date** : le jour de la **rentrée scolaire réelle**. Turingrad redémarre toutes ses machines pour l'An nouveau.
 
-##### 🟢 Navigation du Dr Faustroll — 35 Givraire (17 novembre)
+**Tradition Chiphre** : Bosse-de-Nage, qui n'articule que « ha ha », accueille chaque Galopin à son retour. Les compteurs de bugs de Glitchistan repartent de zéro, et les Galopins écrivent leur premier programme de l'An. **Bonus de gidouilles** pour le premier programme qui tourne sans planter.
+
+##### 🟡 La Régate de la Passoire — 26 Givraire (8 novembre)
 
 **Province** : Patatovie.
 
-**Tradition Chiphre** : tous les Galopins de Patatovie classent dix objets dans des patates-diagrammes. Faustroll préside et juge l'élégance des partitions. **Bonus de gidouilles** pour la classification la plus pataphysique. En arrière-plan UI, Faustroll navigue dans son bateau-passoire qui fuit doucement.
+**Date** : le milieu du mois de Givraire (52 ÷ 2 = 26).
+
+**Tradition Chiphre** : le docteur Faustroll mène sa flottille de bateaux-passoires sur la Vistule. Les Galopins classent dans des patates-diagrammes ce qui flotte et ce qui coule, ce qui passe à travers la passoire et ce qui reste. **Bonus de gidouilles** pour la partition la plus élégante.
 
 ##### 🟡 La Grande Empochaille — 18 Glaglavose (22 décembre)
 
@@ -1266,46 +1262,68 @@ Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢
 
 **Tradition Chiphre** : tous les Galopins de Yoyolande tracent une fonction qui monte et descend en signe de restauration cyclique. **Bonus de gidouilles** pour la fonction la plus harmonique. Bougrelas apparaît brièvement en majesté printanière.
 
-##### 🟡 Le Jubilé du Cheval à Phynances — 17 Auroral (4 avril)
+##### 🟡 Le Jubilé du Cheval à Phynances — 37 Auroral (24 avril)
 
 **Province** : Pifométrie.
 
+**Date** : le 37ᵉ jour d'Auroral, comme les **37 cases de la Roulette Royale** de Bonneteau-sur-Vistule. (L'ancienne date, le 4 avril, venait d'un mois du calendrier du Collège ; redatée le 2026-10-04.)
+
 **Tradition Chiphre** : tous les Galopins de Pifométrie nourrissent le Cheval à Phynances avec une gidouille. **Le Cheval** parade dans Bonneteau-sur-Vistule. **Bonus de gidouilles** pour qui résout l'énigme probabiliste du jour.
 
-##### 🟢 Fête des Polyèdres — 26 Auroral (13 avril)
+##### 🟡 La Foire aux Polyèdres — 12 Lumenal (21 mai)
 
 **Province** : Bedonstan.
 
-**Tradition Chiphre** : le Professeur Achras présente sa collection de polyèdres au Royaume. Tous les Galopins de Bedonstan construisent ou identifient un polyèdre. **Bonus de gidouilles** pour le polyèdre le plus rare identifié.
+**Date** : le 12, comme les **12 faces du dodécaèdre**, la forme des murailles de Lobatchevsk.
+
+**Tradition Chiphre** : le Professeur Achras, qui élève ses polyèdres comme du bétail, les mène à la foire de Lobatchevsk. Les Galopins construisent, identifient et « achètent » des polyèdres en comptant faces, arêtes et sommets. **Bonus de gidouilles** pour le polyèdre le plus rare identifié.
 
 ### Les événements transversaux
 
-En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événements transversaux** qui rythment l'année du Galopin.
+En plus des six fêtes provinciales, l'Almanach comporte **plusieurs événements transversaux** qui rythment l'année du Galopin.
 
-#### 🟡 La Phynanche Pataphysique — 14 Auroral (1ᵉʳ avril)
+#### 🟡 La Journée de L'Isle de la Réunion Pataphysique — 16 Glaglavose (20 décembre)
+
+**Statut** : invention Chiphre 🟡, adoptée le 2026-10-04 (voir Section II, L'Isle de la Réunion Pataphysique).
+
+**Date** : le **20 décembre**, date réelle de l'abolition de l'esclavage à La Réunion (1848) — fait historique libre de droit.
+
+**Esprit** : l'Isle est l'outre-mer du Royaume où s'étudie l'**équivalence des contraires** ; ce jour-là, tous les Galopins y sont également libres et également étudiants. Tradition à préciser.
+
+#### 🟡 Le Poisson à Phynances — 14 Auroral (1ᵉʳ avril)
 
 **Statut** : invention Chiphre assumée 🟡 (détournement pataphysique du « poisson d'avril »).
 
+**Nom** (décision de David, 2026-10-04) : construit comme le _croc à phynances_ et le _cheval à phynances_ de Jarry. Remplace l'ancien nom « Phynanche Pataphysique », qui n'existe pas chez Jarry (lui n'emploie que _phynance_). Ce jour-là, le Père Ubu taxe tous les nombres du Royaume en les multipliant par π.
+
 **Tradition Chiphre** : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 heures. À midi pile, restitution. Père Ubu apparaît grimé en mathématicien fou. _« Cornegidouille ! Nos Mathres ont rencontré le nombre transcendant. »_
 
-#### 🟡 La Mobilisation Royale — mois de Lumenal (mi-mai à fin juin)
+#### 🟡 La Mobilisation Royale — mois de Lumenal (10 mai → 14 juin)
 
 **Statut** : invention Chiphre assumée 🟡, mode permanent du mois.
 
-**Esprit** : tout le mois de Lumenal, le Père Ubu déclare la **Mobilisation Générale** contre le Czar Alexis. C'est la période de **préparation intensive aux examens** (brevet en fin de Troyz'esme, bac en fin de Phinalle). Le site bascule en mode révisions :
+**Esprit** : tout le mois de Lumenal, jusqu'au Décervelage Suprême, le Père Ubu déclare la **Mobilisation Générale** contre le Czar Alexis. C'est la période de **préparation intensive aux examens** (brevet en fin de Troyz'esme, bac en fin de Phinalle). Le site bascule en mode révisions :
 
 - Entraînements ciblés sur le programme
 - Bouton « Mobilisation Royale » mis en avant
-- Compte à rebours sur la home
+- Compte à rebours sur la home, calculé sur les **dates officielles** du bac et du brevet de l'année (publiées par le ministère ; à tenir à jour chaque année)
 - **Apparitions plus fréquentes du Czar Alexis** : _« Da, Galopinski. Par Saint Georges, vous aurez à m'affronter. »_
 
-#### 🟡 Le Décervelage Suprême — mois d'Auguste (juillet)
+#### 🟡 Le Décervelage Suprême — 37 Lumenal (15 juin)
 
 **Statut** : événement majeur déjà canonisé en Section VII.
 
-**Esprit** : le mois d'Auguste est canoniquement le **mois du Décervelage Suprême** — bac (épreuves de Phinalle) et brevet (Petit Décervelage, épreuves de Troyz'esme). La culmination de l'année se situe au cœur d'Auguste, avant la grande pause estivale qui occupe la seconde moitié du mois.
+**Date** (décision de David, 2026-10-04) : **fixe**, le 37 Lumenal, vers l'ouverture du bac en France (mi-juin). La fête de l'Almanach ne bouge pas d'une année sur l'autre ; les **dates officielles** des épreuves servent seulement au compte à rebours de la Mobilisation.
 
-**Tradition Chiphre** : cinématique solennelle de fin d'examens, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
+**Esprit** : l'épreuve suprême — bac (épreuves de Phinalle) et brevet (Petit Décervelage, épreuves de Troyz'esme). Point d'orgue de la Mobilisation Royale.
+
+#### 🟡 La Proclamation Royale — 1 Auguste (1ᵉʳ juillet)
+
+**Statut** : invention Chiphre 🟡 (2026-10-04), seconde moitié de l'ancienne tradition du Décervelage Suprême.
+
+**Esprit** : après l'épreuve, la récompense. Le premier jour d'Auguste, le mois solaire et majestueux, le Royaume proclame ses lauréats.
+
+**Tradition Chiphre** : cinématique solennelle, podium des Maîtres Phynanciers de l'An, distribution des cartes légendaires, intronisation des nouveaux Pataphysiciens Royaux.
 
 ### Tableau de synthèse des dates pataphysiques
 
@@ -1314,22 +1332,22 @@ Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'ann�
 | Date grégorienne                    | Jour pataphysique   | Événement                                                   |
 | ----------------------------------- | ------------------- | ----------------------------------------------------------- |
 | 23 août                             | 1 Ambraire          | Début de l'An E.R.                                          |
-| 1ᵉʳ septembre                       | 10 Ambraire         | Rentrée scolaire française réelle                           |
-| **8 septembre**                     | **17 Ambraire**     | **Nativité d'Alfred Jarry** 🟢                              |
+| **1ᵉʳ septembre**                   | **10 Ambraire**     | **Le Grand Redémarrage** 🟡 (rentrée réelle)                |
 | 14 octobre                          | 1 Givraire          | Début de Givraire                                           |
-| **27 octobre**                      | **14 Givraire**     | **Résurrection de Bosse-de-Nage** 🟢                        |
-| **17 novembre**                     | **35 Givraire**     | **Navigation du Dr Faustroll** 🟢                           |
+| **8 novembre**                      | **26 Givraire**     | **La Régate de la Passoire** 🟡                             |
 | 5 décembre                          | 1 Glaglavose        | Début de Glaglavose                                         |
+| **20 décembre**                     | **16 Glaglavose**   | **La Journée de L'Isle de la Réunion Pataphysique** 🟡      |
 | **22 décembre**                     | **18 Glaglavose**   | **La Grande Empochaille** 🟡                                |
 | 26 janvier                          | 1 Déglaçose         | Début de Déglaçose                                          |
 | **1ᵉʳ mars** _(29 fév. bissextile)_ | **35 Déglaçose**    | **La Restauration de Bougrelas** 🟡                         |
-| 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
 | **18 mars** _(bissextile)_          | **Le Surnuméraire** | **Jour hors-mois quadriennal** (équivalence des contraires) |
-| **1ᵉʳ avril**                       | **14 Auroral**      | **La Phynanche Pataphysique** 🟡                            |
-| **4 avril**                         | **17 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
-| **13 avril**                        | **26 Auroral**      | **Fête des Polyèdres** 🟢                                   |
+| 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
+| **1ᵉʳ avril**                       | **14 Auroral**      | **Le Poisson à Phynances** 🟡                               |
+| **24 avril**                        | **37 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
 | 10 mai                              | 1 Lumenal           | Début de Lumenal — début de la Mobilisation Royale 🟡       |
-| 1ᵉʳ juillet                         | 1 Auguste           | Début d'Auguste — début du Décervelage Suprême 🟡           |
+| **21 mai**                          | **12 Lumenal**      | **La Foire aux Polyèdres** 🟡                               |
+| **15 juin**                         | **37 Lumenal**      | **Le Décervelage Suprême** 🟡                               |
+| **1ᵉʳ juillet**                     | **1 Auguste**       | **La Proclamation Royale** 🟡                               |
 | 22 août                             | —                   | **La Cloche du Grand Reset** 🟡                             |
 
 ### Vocabulaire de l'Almanach
@@ -1631,10 +1649,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 
 ### Datés
 
-- **8 septembre** (Nativité d'Alfred Jarry, 1ᵉʳ Absolu) : tout le site passe en **sépia 1896**, polices néogothiques, fond sonore de gramophone, citation cachée. **Rentrée pataphysique du Royaume** — voir Section VIII pour la cinématique complète.
-- **1ᵉʳ avril** (la Phynanche Pataphysique, 9 Clinamen) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
-- **31 octobre** : Père Ubu apparaît grimé en squelette polonais. **Synchronisation possible** avec la Résurrection de Bosse-de-Nage (27 octobre, voir Section VIII) — festival étendu Halloween-Résurrection.
-- **15 Clinamen** (6 avril, **Invention de la Pataphysique**) : journée silencieuse où la voix de Père Ubu disparaît. Seules les voix de Conscience et de Tristan Bernard restent. Easter egg méditatif.
+- **1ᵉʳ avril** (le Poisson à Phynances) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
 - **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : la mascotte Lovelace du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
 
 ### Pages secrètes
@@ -1913,7 +1928,7 @@ Trois niveaux décrits plus haut. Récurrence = stabilité.
 
 #### 2. Cartes saisonnières (achat one-shot) — _moteur viral_
 
-Sets thématiques limités dans le temps : Saint-Décervelage, Anniv Jarry, Phynanche Pataphysique. 4,99 €–9,99 € le set. Cosmétique pur. **Effet collection**.
+Sets thématiques limités dans le temps : Saint-Décervelage, Poisson à Phynances. 4,99 €–9,99 € le set. Cosmétique pur. **Effet collection**.
 
 #### 3. Cours particuliers IA Premium — _upsell ciblé_
 
@@ -2208,10 +2223,8 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 ### 🟠 Sprint 6 — Calendrier et événements (continu)
 
 30. Système d'événements datés activés/désactivés via config (section VIII).
-31. **Nativité d'Alfred Jarry** (1ᵉʳ Absolu / 8 septembre) : mode visuel sépia 1896 + cinématique de rentrée pataphysique.
-32. La Phynanche Pataphysique (1ᵉʳ avril / 9 Clinamen) : multiplicateur π pendant 24 h.
-33. Premier événement saisonnier : la **Résurrection de Bosse-de-Nage** (22 Haha / 27 octobre) — set de 4 cartes thématiques.
-34. Autres fêtes provinciales selon planning (voir section VIII).
+31. Le Poisson à Phynances (1ᵉʳ avril) : multiplicateur π pendant 24 h.
+32. Autres fêtes provinciales selon planning (voir section VIII).
 
 ### 🟠 Sprint 7 — Identité visuelle complète (2-3 semaines)
 
@@ -2383,20 +2396,15 @@ Pour le détail complet des jurons (registre, fréquence recommandée, locuteur)
 
 ### Lieux et événements canon Jarry / patanautes yllustres 🟢
 
-| Élément                           | Source                                                                                  | Note                                                                                                |
-| --------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Pologne** comme royaume         | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
-| **Théâtre des Phynances**         | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphre                                                         |
-| **Roi Venceslas**                 | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                      |
-| **L'Aigle Rouge de Pologne**      | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                 |
-| **Moscou (palais du Czar)**       | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
-| **Sandomir**                      | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
-| **Calendrier pataphysique**       | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
-| **Nativité d'Alfred Jarry**       | 1ᵉʳ Absolu An 1 E.P. = 8 septembre 1873 (date réelle de naissance de Jarry)             | Fête transversale du Royaume                                                                        |
-| **Résurrection de Bosse-de-Nage** | Calendrier pataphysique du Collège, 22 Haha = 27 octobre                                | Fête provinciale de Glitchistan                                                                     |
-| **Navigation du Dr Faustroll**    | Calendrier pataphysique du Collège, 15 As = 17 novembre                                 | Fête provinciale de Patatovie                                                                       |
-| **Fête des Polyèdres**            | Calendrier pataphysique du Collège, 13 Clinamen = 13 avril                              | Fête provinciale de Bedonstan                                                                       |
-| **Invention de la Pataphysique**  | Calendrier pataphysique du Collège, 15 Clinamen = 6 avril                               | Easter egg méditatif (Section X)                                                                    |
+| Élément                      | Source                                                                                  | Note                                                                                                |
+| ---------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Pologne** comme royaume    | _Ubu Roi_ — lieu officiel de l'action                                                   | Adoptée comme lieu canonique de Chiphre (« la scène se passe en Pologne, c'est-à-dire nulle part ») |
+| **Théâtre des Phynances**    | Origine 1888, marionnettes du grenier des frères Morin                                  | Ancêtre historique direct du projet Chiphre                                                         |
+| **Roi Venceslas**            | _Ubu Roi_ — assassiné par Ubu                                                           | Disponible pour usage narratif                                                                      |
+| **L'Aigle Rouge de Pologne** | _Ubu Roi_ — décoration officielle d'Ubu                                                 | Disponible pour badge ou récompense                                                                 |
+| **Moscou (palais du Czar)**  | _Ubu Roi_ — siège du Czar Alexis                                                        | Lieu canonique de l'antagoniste, à représenter visuellement                                         |
+| **Sandomir**                 | _Ubu Roi_, acte IV — bataille perdue par Ubu                                            | Métaphore canonique des échecs aux examens (dédramatisation)                                        |
+| **Calendrier pataphysique**  | _L'Almanach du Père Ubu_ (1899, 1901) ; codifié par le Collège de 'Pataphysique en 1948 | 13 mois de 28 jours. Codification 🏛️ partiellement non libre.                                       |
 
 ### Inventions Chiphre assumées (NON canon Jarry)
 
@@ -2435,4 +2443,4 @@ Les sources secondaires fiables : Wikipédia (FR/EN), Britannica, BnF/Gallica, P
 
 > _« Cornegidouille ! Voilà la fin de Notre Édit. Que tout Galopin qui le viole soit décervelé sur l'heure. »_
 >
-> — Père Ubu, en sa Guérite Royale, l'an de grâce pataphysique 153 E.P.
+> — Père Ubu, en sa Guérite Royale, l'An 130 de l'Ère du Royaume (E.R.)

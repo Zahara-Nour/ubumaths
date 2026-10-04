@@ -201,6 +201,25 @@ Limite de VALEUR (hors périmètre, `simplify` non touché) : `areEquivalent` ne
 1 711 modèles (dépôt + prod du 2026-10-04 en lecture), 0 changement réel ; 20 changements, tous
 sur des modèles synthétiques `a\ln(n)` (bad_form → correct).
 
+**La forme : `\frac{1}{e^a}` et `e^{-a}`** (décision de David, 2026-10-04). Dans une case
+ordinaire, l'inverse d'une exponentielle et l'exponentielle d'exposant négatif sont une seule
+écriture (`unifyNegativeExponentialNotationAST`, `cosmetic-transforms.ts`, placée après les
+contraintes comme la règle des logarithmes) : `\frac{1}{e^2}` ≡ `e^{-2}`, `\frac{3}{e^2}` ≡
+`3e^{-2}`, `-\frac{3}{e^2}` ≡ `-3e^{-2}`, `\frac{1}{e}` ≡ `e^{-1}`, `\frac{1}{e^{2x}}` ≡ `e^{-2x}`,
+`\frac{1}{e^{\frac{1}{2}}}` ≡ `e^{-\frac{1}{2}}`, y compris dans une expression (`2-\frac{1}{e^3}`,
+`\frac{\frac{1}{e^2}-1}{3}`). Numérateur : un nombre ; exposant : entier, fraction de nombres,
+lettre ou monôme. `\exp(-2)` était déjà `e^{-2}` (`unifyEulerNotationAST`). Exclus, jugés comme
+avant : écriture développée / combinée (`\frac{e^3}{2}-\frac{1}{2}` / `\frac{e^3-1}{2}`), quotient
+d'exponentielles (`\frac{e^3}{e^5}` / `e^{-2}` : un calcul non fait, deux formes), dénominateur
+produit (`\frac{1}{2e^3}`), exposant somme (`\frac{1}{e^{x+1}}` / `e^{-x-1}`) ou déjà négatif ;
+une forme imposée (`requiredForm`, ex. `{ "pattern": "e^u" }`) distingue toujours. Valeur et
+`simplify` inchangés. ⚠️ Un énoncé qui demande « sous la forme $e^{\cdots}$ » SANS `requiredForm`
+accepte désormais `\frac{1}{e^3}` (carte `exponentielle-1spe/A-02-produit`, en attente d'arbitrage).
+Mesure : 27 395 verdicts sur 1 797 modèles (dépôt + prod du 2026-10-04 en lecture + synthétiques ;
+specs, attendue sur tirages, variantes `\frac{k}{e^a}` ↔ `ke^{-a}`), 30 changements, tous dans la
+classe et vers `correct` : 10 synthétiques, 10 dans le dépôt (cartes C-03, B-06, A-02), 10 sur
+leurs copies en brouillon en prod ; aucun modèle publié touché.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

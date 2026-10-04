@@ -539,7 +539,9 @@ simplifiable restant perfectible (2026-10-04) ; `\ln|x|` a la forme de `\ln(x)` 
 `options.answerAssumptions` déclare x > 0 (2026-10-04) ; `\ln 9` et `2\ln 3` (et `\ln 8` /
 `3\ln 2`, `\ln\frac{1}{2}` / `-\ln 2`, `3\ln 4` / `\ln 64`) sont une seule forme : plus besoin
 de `form: "off"` pour eux (2026-10-04 ; `\ln 6` / `\ln 2+\ln 3` et `\ln\frac{4}{3}` /
-`\ln 4-\ln 3` restent deux formes) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
+`\ln 4-\ln 3` restent deux formes) ; `\frac{1}{e^2}` et `e^{-2}` (et `\frac{3}{e^2}` /
+`3e^{-2}`, `\frac{1}{e}` / `e^{-1}`, `\frac{1}{e^{2x}}` / `e^{-2x}`) sont une seule forme : plus
+besoin de `form: "warn"` pour eux (2026-10-04 ; `\frac{e^3}{e^5}` / `e^{-2}` restent deux formes) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
 et liste dans l'énoncé d'une question à trous (#607).

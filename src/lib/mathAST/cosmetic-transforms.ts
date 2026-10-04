@@ -1276,6 +1276,64 @@ function unifyLogPowerNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/** La lettre `e` (après `unifyEulerNotationAST`, qui y ramène `\exponentialE`) */
+function isEulerLetter(node: MathNode): boolean {
+	return node.type === 'variable' && node.name === 'e';
+}
+
+/**
+ * Opposé d'un exposant « simple », écrit comme le parseur lit `e^{-a}` : nombre
+ * (`2` → `-2`), fraction de nombres, partie littérale (`x`), monôme (`2x` → `(-2)·x`,
+ * lu ainsi par le parseur), monôme sur un nombre (`\frac{x}{2}`). Sinon null : une
+ * somme (`x+1`) ou un exposant déjà négatif gardent leur jugement.
+ */
+function negatedSimpleExponent(exponent: MathNode): MathNode | null {
+	if (isNumber(exponent) || isNumberFraction(exponent) || isLiteralPart(exponent)) {
+		return opposite(exponent);
+	}
+	if (isMultiplication(exponent) && isMonomialWithCoefficient(exponent)) {
+		return multiply(opposite(exponent.left), exponent.right, 'implicit');
+	}
+	if (
+		isDivision(exponent) &&
+		exponent.displayStyle === 'fraction' &&
+		isNumber(exponent.denominator) &&
+		(isLiteralPart(exponent.numerator) || isMonomialWithCoefficient(exponent.numerator))
+	) {
+		return opposite(exponent);
+	}
+	return null;
+}
+
+/**
+ * Une seule écriture de l'inverse d'une exponentielle pour comparer les formes :
+ * `\frac{1}{e^a}` devient `e^{-a}`, `\frac{k}{e^a}` devient `ke^{-a}`, `\frac{1}{e}`
+ * devient `e^{-1}` (a entier, fraction ou monôme : `\frac{1}{e^{2x}}` → `e^{-2x}`). Ce
+ * sont des notations, pas des formes (décision de David du 2026-10-04, sœur de la règle
+ * du logarithme d'une puissance). Placée APRÈS les contraintes, comme elle. Exclus
+ * (gardent leur jugement) : numérateur autre qu'un nombre (`\frac{e^3}{e^5}` / `e^{-2}`,
+ * calcul non fait), dénominateur produit (`\frac{1}{2e^3}`), exposant somme ou déjà
+ * négatif, développé / combiné (`\frac{e^3}{2}-\frac12` / `\frac{e^3-1}{2}`). Une forme
+ * imposée (`requiredForm`) ne passe pas par ici.
+ */
+function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (!isDivision(node) || node.displayStyle !== 'fraction' || !isNumber(node.numerator)) {
+			return node;
+		}
+		const denominator = node.denominator;
+		let negated: MathNode | null = null;
+		if (isEulerLetter(denominator)) {
+			negated = opposite(number('1'));
+		} else if (denominator.type === 'superscript' && isEulerLetter(denominator.base)) {
+			negated = negatedSimpleExponent(denominator.superscript);
+		}
+		if (negated === null) return node;
+		const power = superscript(variable('e'), negated);
+		return node.numerator.value === '1' ? power : multiply(node.numerator, power, 'implicit');
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
@@ -1295,6 +1353,7 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
 		{ transform: removeMultOperatorAST, constraintId: 'products' },
 		{ transform: unifyLogPowerNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: unifyNegativeExponentialNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
 	];
 }

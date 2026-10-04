@@ -37,6 +37,7 @@ import { factorSteps } from './factor-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeVariations } from '$lib/mathAST/variations';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { tidyTerms } from './tidy-terms';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
@@ -241,7 +242,12 @@ function defineObject(
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
-		return { kind: 'definition', name, object: created.object };
+		// Une fonction CRÉÉE dans Calcul est tracée d'office (retour de David) :
+		// on la définit pour la voir. Une fonction redéfinie garde son état —
+		// retirée du graphique, elle ne revient pas en douce.
+		if (created.object.kind === 'function') atelier.setPlotted(name, true);
+		// Relu APRÈS le tracé : l'objet rendu doit dire qu'il est tracé (revue)
+		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
 	}
 
 	const updated = atelier.update(name, body.trim(), provenance);
@@ -727,7 +733,8 @@ function variationTableOf(
 		const table = variationTableNode(variations, name);
 		if (table === null) return null;
 
-		return { table, derivative: `${name}'(x) = ${toLatex(variations.derivative)}` };
+		// `tidy` : comme la carte f′ et « Dériver » (retour de David, `3 3 x^2`)
+		return { table, derivative: `${name}'(x) = ${toLatex(tidyTerms(variations.derivative))}` };
 	} catch {
 		return null;
 	}
