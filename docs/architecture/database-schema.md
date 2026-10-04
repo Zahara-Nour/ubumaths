@@ -1037,3 +1037,37 @@ prouvé par test sur une conversation et un échange de même uuid). Ne s'appliq
 **privés** ; le client (`src/lib/stores/tradeRealtime.svelte.ts`) passe en privé dans une PR
 séparée. Suivi : `docs/wip/realtime-trade-prive-progress.md`. Tests :
 `tests/integration/realtime-trade-prive.test.ts`.
+
+## Échanges de cartes — la base garde l'échange (2026-10-04)
+
+Migration `20261004190000_echanges_garde_base` (faille : un élève pouvait écrire la moitié de
+l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gidouilles).
+
+- **`execute_trade`** : corps inchangé, plus un verrou — refus (`success:false`) tant que
+  `validated_by_initiator`, `validated_by_partner`, `confirmed_by_initiator` et
+  `confirmed_by_partner` ne sont pas tous vrais. Aucune exception.
+- **`accept_proposal_atomic`** : corps inchangé, mais l'échange `'marketplace'` naît avec les
+  4 drapeaux à `true` (l'accord des deux parties est l'annonce plus la proposition acceptée).
+- **Trigger `guard_marketplace_trade_update_trg`** (BEFORE UPDATE, passe avant
+  `set_trade_validation_timestamp_trigger` par ordre alphabétique). Confiance : `current_user`
+  hors `authenticated`/`anon` (fonction SECURITY DEFINER, client service) ; aucun réglage de
+  session lu. Pour un élève participant d'un échange `negotiating` :
+  - figés : `id`, `trade_type`, `initiator_id`, `partner_id`, `listing_id`, `proposal_id`,
+    `conversation_id`, `last_offer_by`, `final_trade`, `completed_at`, `created_at`, `validated_at` ;
+  - `status` : seul le passage à `cancelled` (avec `cancelled_at`) ;
+  - drapeaux de l'autre : remise à `false` seulement ; sa confirmation : seulement si les deux
+    validations sont vraies ;
+  - `current_offer` : seule sa moitié (`from_initiator` / `from_partner`) change, une moitié
+    absente valant `{cards: [], gidouilles: 0}` ; cartes = liste de chaînes, gidouilles = entier
+    ≥ 0 ; si l'offre change, la validation de l'autre et les deux confirmations repassent à
+    `false` ;
+  - une validation retirée (refus, expiration) remet les deux confirmations à `false`.
+- **Policy RESTRICTIVE `marketplace_trades_insert_friend_rules`** : création directe = échange
+  `friend` vierge (`negotiating`, offre NULL, 4 drapeaux à false), entre deux élèves amis
+  (amitié acceptée) de la même école (`same_school`). Marché activé et quotas : route
+  `POST /api/marketplace/trades`.
+- **Policy RESTRICTIVE `marketplace_trades_delete_never`** (`USING (false)`) : les élèves ne
+  suppriment plus d'échange. Le rollback interne d'`accept_proposal_atomic` (postgres) passe.
+
+Tests : `tests/integration/marketplace-trades-garde.test.ts`. Suivi :
+`docs/wip/echanges-garde-base-progress.md`.
