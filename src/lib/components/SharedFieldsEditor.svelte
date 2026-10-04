@@ -30,6 +30,7 @@
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
 	import { ACCEPTABLE_PLACEHOLDER, REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
+	import type { CalculusEditorState } from '$lib/questions/calculus/calculus-editor';
 
 	interface Props {
 		open: boolean;
@@ -56,6 +57,8 @@
 		sharedBlankEquation: boolean;
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
+		/** Case « primitive » ou « solution-ed » et ses champs */
+		sharedBlankCalculus: CalculusEditorState;
 		sharedValidationRulesJson: string;
 		sharedAnswerFormatsJson: string;
 		sharedVariableHelpOpen: boolean;
@@ -88,6 +91,7 @@
 		sharedBlankEquation = $bindable(),
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
+		sharedBlankCalculus = $bindable(),
 		sharedValidationRulesJson = $bindable(),
 		sharedAnswerFormatsJson = $bindable(),
 		sharedVariableHelpOpen = $bindable()
@@ -350,6 +354,72 @@
 									bind:checked={sharedBlankVectorCollinear}
 									label="Vecteur : tout vecteur colinéaire non nul est juste"
 								/>
+							{/if}
+							<!-- Primitive de f : x^3+C juste pour 3x^2 (dérivée de la réponse comparée à f) -->
+							<MyCheckbox
+								bind:checked={sharedBlankCalculus.primitive}
+								label="Réponse : primitive d'une fonction"
+							/>
+							{#if sharedBlankCalculus.primitive}
+								<div class="space-y-2 pl-6">
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.integrand}
+										placeholder="Fonction f à intégrer (ex: {'{{a}}'}x^2)"
+										aria-label="Fonction à intégrer"
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.interval}
+										placeholder="Intervalle facultatif (ex: ]0;+\infty[)"
+										aria-label="Intervalle"
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.variable}
+										placeholder="Variable (défaut : x)"
+										aria-label="Variable"
+									/>
+								</div>
+							{/if}
+							<!-- Solution d'équation différentielle : vérifiée par substitution -->
+							<MyCheckbox
+								bind:checked={sharedBlankCalculus.solution}
+								label="Réponse : solution d'une équation différentielle"
+							/>
+							{#if sharedBlankCalculus.solution}
+								<div class="space-y-2 pl-6">
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.equation}
+										placeholder="Équation du 1er ordre (ex: y'=2y-6)"
+										aria-label="Équation différentielle"
+									/>
+									<MyCheckbox
+										bind:checked={sharedBlankCalculus.general}
+										label="Solution générale attendue (avec une constante)"
+									/>
+									{#if !sharedBlankCalculus.general}
+										<Input
+											type="text"
+											bind:value={sharedBlankCalculus.initial}
+											placeholder="Condition initiale facultative (ex: y(0)=4)"
+											aria-label="Condition initiale"
+										/>
+									{/if}
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.functionName}
+										placeholder="Fonction inconnue (défaut : y)"
+										aria-label="Fonction inconnue"
+									/>
+									<Input
+										type="text"
+										bind:value={sharedBlankCalculus.variable}
+										placeholder="Variable (défaut : x)"
+										aria-label="Variable"
+									/>
+								</div>
 							{/if}
 						</Collapsible.Content>
 					</Collapsible.Root>

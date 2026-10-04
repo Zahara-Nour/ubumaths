@@ -7,5 +7,5 @@ Branche `feat/case-primitive-ed`, worktree `ubumaths-wt-casepr`. Comportements v
       sur l'intervalle ; solution-ed : substitution, 3 valeurs de chaque constante)
 - [x] Câblage comme la case vecteur : validateur, barème, orderIndependent, générateur,
       Zod, specs de test, verdicts par case
-- [ ] Éditeur admin
-- [ ] Docs : `docs/ref/fiches-exercices.md`, `docs/ref/convention-equivalence.md`
+- [x] Éditeur admin (valeurs par défaut des cases : `questions/calculus/calculus-editor.ts`)
+- [x] Docs : `docs/ref/fiches-exercices.md`, `docs/ref/convention-equivalence.md`
