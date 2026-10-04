@@ -18,8 +18,8 @@ d'un autre ne le pourra plus. »
   **événement broadcast** (heartbeat de 30 s), PAS la Presence Realtime : aucun `track()`, aucun
   `on('presence')`. Pas de `postgres_changes` non plus.
 - Canal créé par `supabaseRealtimeManager.createChannel(channelName)` sans `private` : public.
-- Table : `marketplace_trades`, élèves = `initiator_id` et `partner_id` (fixés à la création,
-  `CHECK initiator_id <> partner_id`). Policy SELECT `marketplace_trades_select_participants`
+- Table : `marketplace_trades`, élèves = `initiator_id` et `partner_id` (`CHECK initiator_id <>
+partner_id`, mais **modifiables** après création, cf. Limites connues). Policy SELECT `marketplace_trades_select_participants`
   → l'appelant voit sa propre ligne → pas de SECURITY DEFINER. Le prof et l'admin voient aussi
   la ligne (`_select_teacher` via `is_my_student`, `_select_admin`) : la policy Realtime exige
   donc l'égalité avec `auth.uid()`, pas la visibilité de la ligne.
@@ -47,6 +47,24 @@ this Channel topic`) ou, au niveau SQL, `42501` sur le cas autorisé.
 ## Limites connues
 
 - Un canal déjà ouvert le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h).
-  Les deux élèves d'un échange ne changent pas ; ne joue que si la ligne est supprimée.
+- ⚠️ **Les participants ne sont PAS figés** (finding I1 de l'audit, non bloquant) : la policy
+  `marketplace_trades_update_participants` (baseline:41565) exige seulement que l'appelant reste
+  initiateur ou partenaire APRÈS l'UPDATE ; aucun trigger ni droit par colonne ne protège
+  `initiator_id` / `partner_id`. Scénario : A pose `partner_id = O`, O rejoint `trade:<id>`, A
+  remet `partner_id = B` → O reste abonné (reçoit et diffuse) jusqu'au rafraîchissement de son
+  JWT (~1 h). Même chose si la ligne est supprimée.
+- **Correctif de fond à décider (PR séparée, question d'accès à poser à David)** : figer les
+  deux colonnes, soit par un trigger `BEFORE UPDATE` qui refuse leur changement, soit par
+  `REVOKE UPDATE (initiator_id, partner_id)` — ⚠️ sans effet tant que `authenticated` garde
+  l'UPDATE sur TOUTE la table : il faut `REVOKE UPDATE ON marketplace_trades` puis
+  `GRANT UPDATE (<autres colonnes>)`. Vérifier d'abord qu'aucun code légitime ne modifie ces
+  colonnes : `grep -rn "partner_id\|initiator_id" src`.
 - La comparaison texte du topic n'utilise pas l'index de clé primaire (évaluée à la jonction
   et au rafraîchissement du JWT seulement).
+
+## Preuve clause par clause (M2, audit)
+
+Seule la clause `realtime.messages.extension = 'broadcast'` retirée des deux policies (copie dans le
+scratchpad, restauration vérifiée par `cmp`), `db:reset` → le test 6 (présence) tombe :
+`AssertionError: expected [ 'a' ] to not include 'a'` (B voit le `track()` de A). Restauré +
+`db:reset` → 10/10. Le test 6 prouve donc bien la clause `extension`, sans renfort.

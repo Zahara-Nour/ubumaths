@@ -11,9 +11,14 @@
 --
 -- LIMITE CONNUE : Realtime ne vérifie la policy qu'à la jonction du canal et au
 -- rafraîchissement du JWT. Un canal déjà ouvert le reste jusqu'à la reconnexion
--- ou au rafraîchissement du jeton (~1 h). Ici l'ensemble des deux élèves d'un
--- échange ne change jamais (initiator_id / partner_id fixés à la création) ;
--- la limite ne joue que si la ligne de l'échange est supprimée.
+-- ou au rafraîchissement du jeton (~1 h). ⚠️ initiator_id / partner_id ne sont
+-- PAS figés : la policy marketplace_trades_update_participants exige seulement
+-- que l'appelant reste initiateur ou partenaire APRÈS l'UPDATE, et aucun
+-- trigger ni droit par colonne ne protège ces deux colonnes. Un élève A peut
+-- donc poser partner_id = O, laisser O rejoindre le canal, puis remettre B :
+-- O reste abonné (reçoit et diffuse) jusqu'au rafraîchissement de son JWT.
+-- Correctif de fond à décider dans une PR séparée (trigger ou
+-- REVOKE UPDATE (initiator_id, partner_id)). Idem si la ligne est supprimée.
 --
 -- La policy INSERT n'inspecte PAS le payload : chacun des deux élèves peut
 -- diffuser un `from` / `senderId` forgé. Le client (PR 2) ne doit pas croire le
