@@ -1,0 +1,276 @@
+{
+	"title": "Deux primitives d'une même fonction diffèrent d'une constante",
+	"description": "Utiliser G = F + k : retrouver une autre primitive, calculer G(t) − F(t) ou la constante k entre deux expressions",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-049", "TSPE-190"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Notion de primitive",
+	"level": 1,
+	"status": "draft",
+	"delay": 45,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "La fonction $F$ définie sur $\\mathbb{R}$ par $F(x)={{if:a==1|x^2}}{{if:a==-1|-x^2}}{{if:a!=1 && a!=-1|{{eval:a}}x^2}}{{if:b==1|+x}}{{if:b==-1|-x}}{{if:b>0 && b!=1|+{{eval:b}}x}}{{if:b<0 && b!=-1|{{eval:b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G(0)={{eval:y0}}$. Détermine $G(x)$.\n\n$G(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "c",
+					"expression": "-6..6"
+				},
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["y0 != c"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|x^2}}{{if:a==-1|-x^2}}{{if:a!=1 && a!=-1|{{eval:a}}x^2}}{{if:b==1|+x}}{{if:b==-1|-x}}{{if:b>0 && b!=1|+{{eval:b}}x}}{{if:b<0 && b!=-1|{{eval:b}}x}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Deux primitives d'une même fonction sur un intervalle diffèrent d'une constante : $G(x)=F(x)+k$.",
+					"$G(0)=F(0)+k={{eval:c}}+k={{eval:y0}}$, donc $k={{eval:y0-c}}$.",
+					"$G(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x^2}}{{if:a==-1|-x^2}}{{if:a!=1 && a!=-1|{{eval:a}}x^2}}{{if:b==1|+x}}{{if:b==-1|-x}}{{if:b>0 && b!=1|+{{eval:b}}x}}{{if:b<0 && b!=-1|{{eval:b}}x}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}}$ : seule la constante change."
+				]
+			}
+		},
+		{
+			"statement": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F(1)={{eval:p}}$ et $G(1)={{eval:q}}$.\n\nCalcule $G({{eval:t}})-F({{eval:t}})$.\n\n$G({{eval:t}})-F({{eval:t}})=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "-9..9"
+				},
+				{
+					"name": "q",
+					"expression": "-9..9"
+				},
+				{
+					"name": "t",
+					"expression": "2..9"
+				}
+			],
+			"conditions": ["p != q"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:q-p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F$ et $G$ sont deux primitives de $f$ sur un intervalle : il existe une constante $k$ telle que $G(x)-F(x)=k$ pour tout réel $x$.",
+					"En $x=1$ : $k=G(1)-F(1)={{eval:q}}-{{eval:p;()}}={{eval:q-p}}$.",
+					"La différence est la même partout : $G({{eval:t}})-F({{eval:t}})=\\textcolor{{{color:primary.0}}}{{{eval:q-p}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F(x)=(x{{if:p>0|+{{eval:p}}}}{{if:p<0|{{eval:p}}}})^2$ et $G(x)=x^2{{if:2*p==1|+x}}{{if:2*p==-1|-x}}{{if:2*p>0 && 2*p!=1|+{{eval:2*p}}x}}{{if:2*p<0 && 2*p!=-1|{{eval:2*p}}x}}$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G(x)=F(x)+k$ pour tout réel $x$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-p^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On développe : $F(x)=(x{{if:p>0|+{{eval:p}}}}{{if:p<0|{{eval:p}}}})^2=x^2{{if:2*p==1|+x}}{{if:2*p==-1|-x}}{{if:2*p>0 && 2*p!=1|+{{eval:2*p}}x}}{{if:2*p<0 && 2*p!=-1|{{eval:2*p}}x}}+{{eval:p^2}}$.",
+					"Donc $G(x)-F(x)=-{{eval:p^2}}$ pour tout $x$ : $k=\\textcolor{{{color:primary.0}}}{{{eval:-p^2}}}$.",
+					"On peut aussi calculer $k=G(0)-F(0)=0-{{eval:p^2}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : F=2x²−3x+1, G(0)=5 → 2x²−3x+5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"y0": "5"
+			},
+			"answers": ["2x^2-3x+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : constante ajoutée à celle de F",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"y0": "5"
+			},
+			"answers": ["2x^2-3x+6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : F recopiée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"y0": "5"
+			},
+			"answers": ["2x^2-3x+1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : f calculée au lieu de G",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "1",
+				"y0": "5"
+			},
+			"answers": ["4x-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : G(0)=0 → x²+x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "-2",
+				"y0": "0"
+			},
+			"answers": ["x^2+x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : F(1)=2, G(1)=7 → 5",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"t": "4"
+			},
+			"answers": ["5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : F − G",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"t": "4"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : on ne peut pas savoir → 0",
+			"variationIndex": 1,
+			"variables": {
+				"p": "2",
+				"q": "7",
+				"t": "4"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : F(1) négatif",
+			"variationIndex": 1,
+			"variables": {
+				"p": "-3",
+				"q": "4",
+				"t": "6"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : (x+3)² et x²+6x → −9",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["-9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : signe faux",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (x−2)² et x²−4x → −4",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2"
+			},
+			"answers": ["-4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : oubli du carré",
+			"variationIndex": 2,
+			"variables": {
+				"p": "-2"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}
