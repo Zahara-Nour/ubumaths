@@ -35,7 +35,8 @@ describe('panneau d’objets', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		expect(cardFor(container, 'f')).toBeTruthy();
-		expect(container.textContent).toContain('x^2');
+		// Rendue en écriture mathématique depuis le lot 2a (`/grapheur` §1 C1)
+		expect(cardFor(container, 'f')?.querySelector('.definition .ML__latex')).toBeTruthy();
 	});
 
 	// §3 N1 — la progressivité doit SE VOIR, pas seulement se calculer

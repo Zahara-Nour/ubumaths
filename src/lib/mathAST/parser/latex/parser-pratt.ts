@@ -697,6 +697,16 @@ class PrattParser {
 			}
 		}
 
+		// `f^\prime` sans accolades : une seule marque, comme `f'`
+		if (allowDerivatives && this.check('CARET')) {
+			const afterCaret = this.peekNextNonWhitespace();
+			if (afterCaret.type === 'COMMAND' && afterCaret.value === 'prime') {
+				this.advance(); // consume ^
+				this.advance(); // consume \prime
+				derivativeOrder++;
+			}
+		}
+
 		// Check for ^{-1} (inverse) or ^{(n)} (higher derivative notation)
 		let isInverse = false;
 		if (this.check('CARET')) {
@@ -710,6 +720,8 @@ class PrattParser {
 					isInverse = true;
 				} else if (result.type === 'higherDerivative') {
 					derivativeOrder = result.order;
+				} else if (result.type === 'primes') {
+					derivativeOrder += result.count;
 				}
 				// If result.type === 'none', don't consume the ^ - it might be a power
 			}
@@ -805,7 +817,11 @@ class PrattParser {
 	private tryParseInverseOrHigherDerivative(
 		allowInverse: boolean,
 		allowDerivatives: boolean
-	): { type: 'inverse' } | { type: 'higherDerivative'; order: number } | { type: 'none' } {
+	):
+		| { type: 'inverse' }
+		| { type: 'higherDerivative'; order: number }
+		| { type: 'primes'; count: number }
+		| { type: 'none' } {
 		// Save state in case we need to backtrack
 		// We'll peek ahead to check the pattern without committing
 
@@ -840,6 +856,18 @@ class PrattParser {
 				this.currentToken.length,
 				'INVALID_SUPERSCRIPT'
 			);
+		}
+
+		// ^{\prime}, ^{\prime\prime} : c'est ce que MathLive écrit quand on tape
+		// f' (mesuré dans Chromium le 2026-10-04, `atelier/__tests__/saisie-mathlive`)
+		if (allowDerivatives && this.check('COMMAND') && this.currentToken.value === 'prime') {
+			let count = 0;
+			while (this.check('COMMAND') && this.currentToken.value === 'prime') {
+				this.advance(); // consume \prime
+				count++;
+			}
+			this.expect('RBRACE', "Expected '}' after ^{\\prime}");
+			return { type: 'primes', count };
 		}
 
 		// Check for (n) (higher derivative notation)

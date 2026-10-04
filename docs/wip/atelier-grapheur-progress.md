@@ -44,7 +44,64 @@ Branche `feat/atelier-reglages-affichage`, worktree `../ubumaths-wt-reglages`.
     si une courbe de l'atelier l'a déjà ; les fonctions retirées gardent la
     leur et comptent dans le choix de la suivante. À revoir si ça gêne à
     l'usage.
-- [ ] PR, CI, merge.
+- [x] PR #779, CI verte (un job relancé : port Postgres occupé sur le runner), mergée.
+
+## Lot 2a — la carte modifiable
+
+Branche `feat/atelier-carte-modifiable`, worktree `../ubumaths-wt-carte`.
+Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
+2b = « Sur le graphique ».
+
+### Mesure préalable — ce que MathLive écrit (Chromium, frappe réelle)
+
+| Tapé       | MathLive rend                                         |
+| ---------- | ----------------------------------------------------- |
+| `f'(x)+1`  | `f^{\prime}\left(x\right)+1`                          |
+| `x^2-3x+1` | `x^2-3x+1` (sort seul de l'exposant après un chiffre) |
+| `sin(x)`   | `\sin\left(x\right)`                                  |
+| `a*x`      | `a\cdot x`                                            |
+| `1/2x`     | `\frac{1}{2x}` ⚠️ = 1/(2x)                            |
+
+- [x] `f^{\prime}` était **refusé** par le parseur LaTeX → accepté
+      (`^{\prime}`, `^{\prime\prime}`, `^\prime`), tests au niveau du
+      parseur, preuve rouge (5 rouges avec l'ancien parseur).
+- [x] En LaTeX, l'atelier ne transmettait pas ses noms de fonctions :
+      `k(x)` tapé dans la carte se lisait k·x → corrigé (`parse.ts`).
+- Suites mathAST + atelier + grapheur + questions : 21 145 verts.
+- [x] Secours « unité » : MathLive écrit `12\operatorname{\mathrm{km}}`
+      (refusé) ; `normalizeStudentQuantity` (questions) le ramène à
+      `12\unit{km}` mais ferait de `2b` « 2 unité b » (mesuré) → appliqué
+      SEULEMENT si la saisie brute ne se lit pas et que le résultat est une
+      grandeur (`atelier/mathfield.ts`). 10 tests, 4 rouges sur stub.
+- [x] Carte : `DefinitionField.svelte` (préfixe `f(x) =`, MathLive, écriture
+      0,3 s après la dernière touche, provenance `keyboard`, suit une
+      modification faite ailleurs, prête à taper si vide, flush à la
+      fermeture) ; `ObjectCard` : pastille de couleur, définition rendue par
+      `toLatex` (jamais le texte saisi dans `{@html}`), 👁 sans changer de vue.
+      14 tests navigateur (11 rouges avant) ; 2 anciens tests qui cherchaient
+      le texte brut `x^2` adaptés (rendu mathématique voulu, C1).
+- Suites client atelier + grapheur : 322 verts ; `check:incremental` 0 ;
+  eslint des fichiers touchés propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` : rien de bloquant
+      côté sécurité (sonde XSS : `\href`, `\htmlData`, `<img onerror>`…,
+      tout refusé ou dépouillé). Corrigé, tests d'abord (rouges vus) :
+  - A ouvrir puis fermer une carte réécrivait la définition traduite
+    (drapeau `dirty` ; preuve par neutralisation) ;
+  - B MathLive ne connaît pas `\unit` (« 12 \unitkm ») → `forMathlive`
+    réécrit en `\operatorname{\mathrm{km}}`, sa propre forme ;
+  - C définition vidée ailleurs : champ vidé (correctif LOCAL — `MathField`
+    est partagé avec les réponses aux questions, on n'y touche pas) ;
+  - a11y : définition rendue `aria-hidden` + texte lisible
+    (`convertLatexToSpeakableText`) ; 👁 à étiquette constante + `aria-pressed` ;
+    focus visible ; pastille neutre = cercle vide lisible en projection.
+  - Fermer une carte = en ouvrir une autre (re-cliquer ne referme pas :
+    comportement existant, noté).
+- Noté, hors lot (revue D/E) : un nom de fonction suivi d'un exposant entre
+  accolades (`u^{2}`, `h^{10}`) ne se lit pas en LaTeX (limite antérieure,
+  désormais atteignable depuis la carte) ; `F`, `G`, `H` ne sont plus des
+  fonctions par défaut en lecture LaTeX (cohérent avec la lecture texte).
+- Noté pour le lot 3 : l'action « Tracer » (qui bascule vers Graphe) fait
+  maintenant doublon avec 👁 — à trancher avec la règle des actions.
 
 ## Lots suivants
 
