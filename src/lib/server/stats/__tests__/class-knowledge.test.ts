@@ -25,7 +25,12 @@ type MockSpec = Record<string, TableHandler>;
  */
 function buildMock(tableHandlers: MockSpec) {
 	const fromMock = vi.fn().mockImplementation((table: string) => {
-		const handler = tableHandlers[table];
+		// `classes` (niveau de la classe) : sans niveau par défaut, ce qui garde
+		// tous les points des cartes — les tests qui ne parlent pas du niveau
+		// n'ont pas à le déclarer.
+		const handler =
+			tableHandlers[table] ??
+			(table === 'classes' ? () => ({ data: { grade: null }, error: null }) : undefined);
 		if (!handler) {
 			throw new Error(`Unexpected table in mock: ${table}`);
 		}
@@ -232,6 +237,85 @@ describe('getClassCapacityGrid', () => {
 		});
 		const grid = await getClassCapacityGrid(supabase, 'class-1');
 		expect(grid.students[0].display_name).toBe('Élève sans nom');
+	});
+	describe('carte partagée entre deux référentiels', () => {
+		function tag(templateId: string, pointId: string, grade: string) {
+			return {
+				template_id: templateId,
+				point_id: pointId,
+				curriculum_points: {
+					id: pointId,
+					name: `Point ${pointId}`,
+					curriculum_objectives: {
+						theme_id: `th-${grade}`,
+						curriculum_themes: { name: `Thème ${grade}`, code: grade, grade }
+					}
+				}
+			};
+		}
+
+		/**
+		 * `t-partagee` : un point T_SPE ET un point T_COMP (le cas visé).
+		 * `t-seule` : un seul point, de T_COMP (non-régression : une carte d'un
+		 * autre niveau retravaillée par la classe garde sa colonne).
+		 */
+		function fixture(classGrade: string | null) {
+			const past = new Date(Date.now() - 7 * 86400000).toISOString();
+			return buildMock({
+				class_members: () => ({
+					data: [{ student_id: 's1', profiles: { id: 's1', firstname: 'Alice', lastname: 'Z' } }],
+					error: null
+				}),
+				classes: () => ({ data: { grade: classGrade }, error: null }),
+				skill_attempts: () => ({
+					data: [
+						{ student_id: 's1', template_id: 't-partagee' },
+						{ student_id: 's1', template_id: 't-seule' }
+					],
+					error: null
+				}),
+				question_template_points: () => ({
+					data: [
+						tag('t-partagee', 'p-spe', 'T_SPE'),
+						tag('t-partagee', 'p-comp', 'T_COMP'),
+						tag('t-seule', 'p-comp-seul', 'T_COMP')
+					],
+					error: null
+				}),
+				srs_card_stats: () => ({
+					data: [
+						{
+							user_id: 's1',
+							card_reference_id: 't-partagee',
+							state: 'relearning',
+							next_review: past
+						}
+					],
+					error: null
+				})
+			});
+		}
+
+		it('classe de T_SPE : pas de colonne T_COMP pour la carte partagée', async () => {
+			const grid = await getClassCapacityGrid(fixture('T_SPE'), 'class-1');
+			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp-seul', 'p-spe']);
+			expect(grid.cells['s1:p-comp']).toBeUndefined();
+		});
+
+		it('classe de T_COMP : la carte partagée ne compte que sous son point T_COMP', async () => {
+			const grid = await getClassCapacityGrid(fixture('T_COMP'), 'class-1');
+			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul']);
+		});
+
+		it('classe sans niveau : tous les points, comme avant', async () => {
+			const grid = await getClassCapacityGrid(fixture(null), 'class-1');
+			expect(grid.capacities.map((c) => c.id).sort()).toEqual(['p-comp', 'p-comp-seul', 'p-spe']);
+		});
+
+		it('top à remédier : la capacité de l’autre programme n’y figure pas', async () => {
+			const top = await getClassTopCapacitiesToRemediate(fixture('T_SPE'), 'class-1');
+			expect(top.map((r) => r.point_id)).toEqual(['p-spe']);
+		});
 	});
 });
 

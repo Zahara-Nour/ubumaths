@@ -15,6 +15,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { fetchInChunks } from '$lib/server/utils/chunked-in';
+import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
 import {
 	templateToBadge,
 	BADGE_PRIORITY,
@@ -129,6 +130,23 @@ export async function getClassCapacityGrid(
 
 	const studentIds = students.map((s) => s.id);
 
+	// Niveau de la classe, lu une seule fois : il sert à la fois à filtrer les
+	// points des cartes partagées entre deux référentiels, et à l'option « Tout
+	// le cycle ». Sans lui, le bouton « Tout le cycle » n'étendrait rien : le
+	// professeur croirait avoir tout affiché alors qu'il ne voit que les
+	// capacités déjà travaillées.
+	const { data: classRow, error: classRowError } = await supabase
+		.from('classes')
+		.select('grade')
+		.eq('id', classId)
+		.maybeSingle();
+
+	if (classRowError) {
+		console.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
+		throw new Error(classRowError.message);
+	}
+	const classGrade = classRow?.grade ?? null;
+
 	const { data: attemptsRaw, error: attErr } = await supabase
 		.from('skill_attempts')
 		.select('student_id, template_id')
@@ -153,7 +171,7 @@ export async function getClassCapacityGrid(
 			supabase
 				.from('question_template_points')
 				.select(
-					'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code)))'
+					'template_id, point_id, curriculum_points!inner(id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade)))'
 				)
 				.in('template_id', batch)
 		);
@@ -170,11 +188,17 @@ export async function getClassCapacityGrid(
 				name: string;
 				curriculum_objectives: {
 					theme_id: string;
-					curriculum_themes: { name: string; code: string | null } | null;
+					curriculum_themes: { name: string; code: string | null; grade: string } | null;
 				} | null;
 			} | null;
 		};
-		const tagged = (tagRows ?? []) as unknown as TagRow[];
+		// Carte partagée entre deux référentiels (ex. T_SPE et T_COMP) : seuls
+		// les points du niveau de la classe font une colonne. Sinon la même
+		// capacité apparaît deux fois, une fois par programme.
+		const tagged = keepLinksOfGrade((tagRows ?? []) as unknown as TagRow[], classGrade, (r) => ({
+			template_id: r.template_id,
+			grade: r.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
+		}));
 
 		const capById = new Map<string, ClassCapacity>();
 		for (const r of tagged) {
@@ -195,21 +219,7 @@ export async function getClassCapacityGrid(
 	if (opts.includeAllCycle) {
 		// Toggle "Tout le cycle" : on étend aux capacités du même niveau scolaire
 		// que la classe, même non touchées. Cf. plan §Phase 0 #2.
-		const { data: classRow, error: classRowError } = await supabase
-			.from('classes')
-			.select('grade')
-			.eq('id', classId)
-			.maybeSingle();
-
-		// Sans le niveau de la classe, le bouton « Tout le cycle » n'étend rien :
-		// le professeur croit avoir tout affiché alors qu'il ne voit que les
-		// capacités déjà travaillées.
-		if (classRowError) {
-			console.error('[getClassCapacityGrid] Niveau de classe illisible :', classRowError);
-			throw new Error(classRowError.message);
-		}
-
-		if (classRow?.grade) {
+		if (classGrade) {
 			// Le grade vit désormais sur le thème, en code canonique — le même que
 			// `classes.grade`. (Avant la refonte, `skills.niveau_scolaire` valait
 			// '6e' alors que `classes.grade` vaut '6' : le filtre ne matchait jamais.)
@@ -218,7 +228,7 @@ export async function getClassCapacityGrid(
 				.select(
 					'id, name, curriculum_objectives!inner(theme_id, curriculum_themes!inner(name, code, grade))'
 				)
-				.eq('curriculum_objectives.curriculum_themes.grade', classRow.grade)
+				.eq('curriculum_objectives.curriculum_themes.grade', classGrade)
 				.is('archived_at', null);
 
 			if (cyclePointsError) {
