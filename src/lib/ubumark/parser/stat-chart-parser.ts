@@ -77,6 +77,8 @@ import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { readListValue } from '$lib/statistics/read-value';
 import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
+import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
+import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
 import { carreauGrid, usesCarreaux } from '../utils/stat-chart-carreaux';
 
 // ============================================================================
@@ -126,6 +128,8 @@ interface Options {
 	binomialChart: boolean;
 	binomialLevel: Fraction | null;
 	binomialThreshold: string | null;
+	/** Loi géométrique : `jusqu'à:` (dernière valeur du tableau) */
+	upTo: number | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -156,7 +160,8 @@ const BLOCK_START_REGEX =
 const BLOCK_END_REGEX = /^```\s*$/;
 
 /** `titre: …` — clé en lettres (accents compris), puis deux-points */
-const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
+// Apostrophe permise : `jusqu'à:` (loi géométrique, manche 13)
+const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ'’]+)\s*:\s*(.*)$/;
 
 /** `12`, `12,5`, `-3`, `35 %`, `12.5%` */
 const NUMBER_REGEX = /^(-?\d+(?:[.,]\d+)?)\s*(%?)$/;
@@ -201,7 +206,8 @@ const OPTION_KEYS = [
 	'probabilites',
 	'diagramme',
 	'intervalle',
-	'seuil'
+	'seuil',
+	'jusqua'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -244,6 +250,7 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	diagramme: ['loi'],
 	intervalle: ['loi'],
 	seuil: ['loi'],
+	jusqua: ['loi'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
@@ -254,7 +261,8 @@ const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	echantillons: 'échantillons',
 	serie: 'série',
 	frequences: 'fréquences',
-	probabilites: 'probabilités'
+	probabilites: 'probabilités',
+	jusqua: "jusqu'à"
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -293,6 +301,20 @@ const BINOMIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*B\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.
 
 const BINOMIAL_ALONE = 'une loi binomiale se donne seule : pas de ligne « X = » ni « P = »';
 
+/** `X ~ G(0,2)`, `X suit G(1/5)` : la variable, p (manche 13) */
+const GEOMETRIC_REGEX = /^([A-Z])\s*(?:~|suit)\s*G\s*\(\s*(.+?)\s*\)$/;
+
+/** `X ~ U(1 ; 6)`, `X ~ U(1, 6)` : la variable, a, b (manche 13) */
+const UNIFORM_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
+
+/** `X ~ U([0 ; 1])` : la loi uniforme À DENSITÉ, pas encore (manche 13, PR b) */
+const UNIFORM_DENSITY_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[/;
+
+/** Tableau d'une loi géométrique : k = 1 à 10 par défaut, puis « … » */
+const GEOMETRIC_TABLE_VALUES = 10;
+
+const NAMED_ALONE = 'une loi G(p) ou U(a ; b) se donne seule : pas de ligne « X = » ni « P = »';
+
 const RAW_AND_COUNTS = 'soit les données, soit les effectifs (catégorie = effectif), pas les deux';
 
 /** Nom réservé à la ligne et à la colonne des totaux */
@@ -330,7 +352,7 @@ function looksLikeStatChartLine(line: string): boolean {
 	const trimmed = line.trim();
 	if (trimmed.includes('=')) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
-	return kv !== null && isOptionKey(normalizeKey(kv[1]));
+	return kv !== null && isOptionKey(optionKeyOf(kv[1]));
 }
 
 /**
@@ -382,6 +404,11 @@ class LineError extends Error {}
 
 function normalizeKey(raw: string): string {
 	return raw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+/** Clé d'option : sans accent, ni majuscule, ni apostrophe (`jusqu'à` → `jusqua`) */
+function optionKeyOf(raw: string): string {
+	return normalizeKey(raw).replace(/['’]/g, '');
 }
 
 function isOptionKey(key: string): key is OptionKey {
@@ -601,6 +628,14 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			return;
 		case 'seuil':
 			options.binomialThreshold = value.trim();
+			return;
+		case 'jusqua':
+			options.upTo = parseWhole(
+				value,
+				1,
+				STAT_CHART_LIMITS.binomialTableValues,
+				`jusqu'à : un entier de 1 à ${STAT_CHART_LIMITS.binomialTableValues}`
+			);
 			return;
 		case 'frequences': {
 			const written = normalizeKey(value.trim());
@@ -1355,6 +1390,56 @@ const QUERY_TWO_SIDES = new RegExp(
 );
 
 /**
+ * Une ligne de `probabilités:` traduite en bornes entières P(low ⩽ X ⩽ high),
+ * `low` et `high` valant par défaut les bornes de la loi (`high` infini pour
+ * une loi géométrique). Rend le message d'erreur, sans « Ligne n : ».
+ */
+function parseQuery(
+	text: string,
+	name: string,
+	first: number,
+	last: number
+): { display: string; low: number; high: number } | string {
+	const one = QUERY_ONE_SIDE.exec(text);
+	const two = one ? null : QUERY_TWO_SIDES.exec(text);
+	const variable = one?.[1] ?? two?.[3];
+	if (variable === undefined) {
+		return 'probabilités : écrire P(X = 3), P(X ⩽ 4) ou P(2 ⩽ X ⩽ 5)';
+	}
+	if (variable !== name) {
+		return `probabilités : « ${text} » parle de ${variable}, la variable est ${name}`;
+	}
+	const bound = (raw: string) => toNumber(raw);
+	let low = first;
+	let high = last;
+	let display: string;
+	if (one) {
+		const op = QUERY_OPERATORS[one[2]];
+		const k = bound(one[3]);
+		if (op === '=') [low, high] = Number.isInteger(k) ? [k, k] : [1, 0];
+		else if (op === '⩽') high = Math.floor(k);
+		else if (op === '<') high = Math.ceil(k) - 1;
+		else if (op === '⩾') low = Math.ceil(k);
+		else low = Math.floor(k) + 1;
+		display = `P(${variable} ${op} ${one[3]})`;
+	} else {
+		const [left, right] = [QUERY_OPERATORS[two![2]], QUERY_OPERATORS[two![4]]];
+		if (!['<', '⩽'].includes(left) || !['<', '⩽'].includes(right)) {
+			return 'probabilités : écrire P(2 ⩽ X ⩽ 5), les bornes dans l’ordre';
+		}
+		const a = bound(two![1]);
+		const b = bound(two![5]);
+		low = left === '⩽' ? Math.ceil(a) : Math.floor(a) + 1;
+		high = right === '⩽' ? Math.floor(b) : Math.ceil(b) - 1;
+		if (a > b) {
+			return `probabilités : « ${text} » : les bornes dans l’ordre (la plus petite d’abord)`;
+		}
+		display = `P(${two![1]} ${left} ${variable} ${right} ${two![5]})`;
+	}
+	return { display, low, high };
+}
+
+/**
  * Une loi binomiale `X ~ B(n ; p)` (manche 11) : n entier de 1 à 1 000, p
  * entre 0 et 1 ; `masquer:`, `indicateurs:` comme une loi écrite à la main ;
  * `probabilités:` traduites en bornes entières P(low ⩽ X ⩽ high).
@@ -1407,49 +1492,9 @@ function checkBinomial(
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
 	for (const text of written) {
-		const one = QUERY_ONE_SIDE.exec(text);
-		const two = one ? null : QUERY_TWO_SIDES.exec(text);
-		const variable = one?.[1] ?? two?.[3];
-		if (variable === undefined) {
-			return at(queriesLine, 'probabilités : écrire P(X = 3), P(X ⩽ 4) ou P(2 ⩽ X ⩽ 5)');
-		}
-		if (variable !== binomial.name) {
-			return at(
-				queriesLine,
-				`probabilités : « ${text} » parle de ${variable}, la variable est ${binomial.name}`
-			);
-		}
-		const bound = (raw: string) => toNumber(raw);
-		let low = 0;
-		let high = n;
-		let display: string;
-		if (one) {
-			const op = QUERY_OPERATORS[one[2]];
-			const k = bound(one[3]);
-			if (op === '=') [low, high] = Number.isInteger(k) ? [k, k] : [1, 0];
-			else if (op === '⩽') high = Math.floor(k);
-			else if (op === '<') high = Math.ceil(k) - 1;
-			else if (op === '⩾') low = Math.ceil(k);
-			else low = Math.floor(k) + 1;
-			display = `P(${variable} ${op} ${one[3]})`;
-		} else {
-			const [left, right] = [QUERY_OPERATORS[two![2]], QUERY_OPERATORS[two![4]]];
-			if (!['<', '⩽'].includes(left) || !['<', '⩽'].includes(right)) {
-				return at(queriesLine, 'probabilités : écrire P(2 ⩽ X ⩽ 5), les bornes dans l’ordre');
-			}
-			const a = bound(two![1]);
-			const b = bound(two![5]);
-			low = left === '⩽' ? Math.ceil(a) : Math.floor(a) + 1;
-			high = right === '⩽' ? Math.floor(b) : Math.ceil(b) - 1;
-			if (a > b) {
-				return at(
-					queriesLine,
-					`probabilités : « ${text} » : les bornes dans l’ordre (la plus petite d’abord)`
-				);
-			}
-			display = `P(${two![1]} ${left} ${variable} ${right} ${two![5]})`;
-		}
-		queries.push({ display, low, high });
+		const query = parseQuery(text, binomial.name, 0, n);
+		if (typeof query === 'string') return at(queriesLine, query);
+		queries.push(query);
 	}
 
 	let threshold: NonNullable<LawData['binomial']>['threshold'] = null;
@@ -1495,8 +1540,205 @@ function checkBinomial(
 				chart: options.binomialChart,
 				interval: options.binomialLevel === null ? null : options.binomialLevel.toString(),
 				threshold
-			}
+			},
+			geometric: null,
+			uniform: null
 		}
+	};
+}
+
+/** `P(X > 5 | X > 2)` : la loi géométrique est sans mémoire (manche 13) */
+const QUERY_CONDITIONAL = new RegExp(
+	`^P\\(\\s*([A-Za-z])\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\|\\s*([A-Za-z])\\s*${OPERATOR}\\s*(${PLAIN_NUMBER})\\s*\\)$`
+);
+
+/** Bornes d'une loi nommée, lues après coup : `masquer:` entier dans [first ; last] */
+function maskedIndices(
+	options: Options,
+	first: number,
+	last: number,
+	missing: string
+): number[] | string {
+	const masked: number[] = [];
+	for (const raw of options.lawMasked) {
+		const k = /^-?\d+$/.test(raw.replace('−', '-')) ? Number(raw.replace('−', '-')) : NaN;
+		if (!(k >= first && k <= last)) return `masquer : la valeur « ${raw} » ${missing}`;
+		if (!masked.includes(k - first)) masked.push(k - first);
+	}
+	return masked;
+}
+
+/**
+ * Une loi géométrique `X ~ G(p)` (manche 13) : p dans ]0 ; 1] ; tableau de 1 à
+ * `jusqu'à:` (10 par défaut) ; `probabilités:` exactes jusqu'à k = 1 000, et
+ * P(X > a | X > b). Une probabilité hors des valeurs de X (P(X = 0)) vaut 0,
+ * avec un avertissement.
+ */
+function checkGeometric(
+	geometric: { name: string; p: string; line: number },
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { law: LawData; warnings: StatChartIssue[] } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const p = Fraction.parse(geometric.p);
+	if (p === null || p.isNegative() || p.equals(Fraction.ZERO) || p.greaterThan(Fraction.ONE)) {
+		return at(geometric.line, 'G(p) : p est un nombre strictement positif, au plus 1');
+	}
+	const upTo = options.upTo ?? GEOMETRIC_TABLE_VALUES;
+	const masked = maskedIndices(options, 1, upTo, "n'est pas dans le tableau");
+	if (typeof masked === 'string') return at(optionLines.masquer ?? 0, masked);
+
+	const name = geometric.name;
+	const queriesLine = optionLines.probabilites ?? 0;
+	const queries: NonNullable<LawData['geometric']>['queries'] = [];
+	const warnings: StatChartIssue[] = [];
+	const written = (options.binomialQueries ?? '')
+		.split(';')
+		.map((q) => q.trim())
+		.filter((q) => q !== '');
+	for (const text of written) {
+		if (text.includes('|')) {
+			const form = `probabilités : « ${text} » : écrire P(${name} > a | ${name} > b) avec a > b`;
+			const conditional = QUERY_CONDITIONAL.exec(text);
+			if (
+				!conditional ||
+				conditional[1] !== name ||
+				conditional[4] !== name ||
+				QUERY_OPERATORS[conditional[2]] !== '>' ||
+				QUERY_OPERATORS[conditional[5]] !== '>'
+			) {
+				return at(queriesLine, form);
+			}
+			const [a, b] = [toNumber(conditional[3]), toNumber(conditional[6])];
+			if (!(a > b)) return at(queriesLine, form);
+			if (a > GEOMETRIC_MAX_K) {
+				return at(queriesLine, `probabilités : « ${text} » : bornes au plus 1 000`);
+			}
+			const given = Math.floor(b) + 1;
+			// G(1) : P(X > b) = 0 dès b ⩾ 1, rien à conditionner
+			if (p.equals(Fraction.ONE) && given > 1) {
+				return at(
+					queriesLine,
+					`probabilités : « ${text} » : P(${name} > ${conditional[6]}) = 0, la probabilité conditionnelle n'existe pas`
+				);
+			}
+			queries.push({
+				display: `P(${name} > ${conditional[3]} | ${name} > ${conditional[6]})`,
+				low: Math.floor(a) + 1,
+				high: null,
+				given
+			});
+			continue;
+		}
+		const query = parseQuery(text, name, 1, Infinity);
+		if (typeof query === 'string') return at(queriesLine, query);
+		if (
+			(query.high !== Infinity && query.high > GEOMETRIC_MAX_K) ||
+			query.low > GEOMETRIC_MAX_K + 1
+		) {
+			return at(queriesLine, `probabilités : « ${text} » : bornes au plus 1 000`);
+		}
+		// P(X = 0), P(X ⩽ 0) : la borne ÉCRITE est sous 1 (P(X = 2,5) vaut 0
+		// aussi, mais pour une autre raison : pas d'avertissement, revue)
+		const one = QUERY_ONE_SIDE.exec(text);
+		const writtenHigh = toNumber(one ? one[3] : (QUERY_TWO_SIDES.exec(text)?.[5] ?? '1'));
+		if (query.high < 1 && writtenHigh < 1) {
+			warnings.push({
+				message: `Ligne ${queriesLine} : probabilités : « ${text} » : ${name} prend ses valeurs à partir de 1`,
+				line: queriesLine
+			});
+		}
+		queries.push({
+			display: query.display,
+			low: query.low,
+			high: query.high === Infinity ? null : query.high,
+			given: null
+		});
+	}
+
+	return {
+		law: {
+			variable: name,
+			values: Array.from({ length: upTo }, (_, i) => String(i + 1)),
+			probabilities: [],
+			masked,
+			// L'espérance par défaut (spécification du 2026-10-04)
+			indicators: options.lawIndicators.length > 0 ? options.lawIndicators : ['esperance'],
+			binomial: null,
+			geometric: {
+				p: geometric.p,
+				places: options.places ?? 3,
+				upTo,
+				queries,
+				chart: options.binomialChart
+			},
+			uniform: null
+		},
+		warnings
+	};
+}
+
+/**
+ * Une loi uniforme `X ~ U(a ; b)` (manche 13) : a et b entiers, a < b, au plus
+ * 1 000 valeurs ; le reste comme la loi binomiale.
+ */
+function checkUniform(
+	uniform: { name: string; a: string; b: string; line: number },
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { law: LawData; warnings: StatChartIssue[] } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const integer = (raw: string) => {
+		const text = raw.replace('−', '-');
+		return /^-?\d{1,9}$/.test(text) ? Number(text) : NaN;
+	};
+	const [a, b] = [integer(uniform.a), integer(uniform.b)];
+	if (Number.isNaN(a) || Number.isNaN(b)) {
+		return at(uniform.line, 'U(a ; b) : a et b sont des entiers');
+	}
+	if (a > b) return at(uniform.line, 'U(a ; b) : les bornes dans l’ordre (a < b)');
+	if (a === b) return at(uniform.line, 'U(a ; b) : a et b distincts (a < b)');
+	const count = b - a + 1;
+	if (count > UNIFORM_MAX_VALUES) {
+		return at(uniform.line, 'U(a ; b) : au plus 1 000 valeurs');
+	}
+	if (options.lawMasked.length > 0 && count > STAT_CHART_LIMITS.binomialTableValues) {
+		return at(
+			optionLines.masquer ?? 0,
+			`masquer : pas de tableau au-delà de ${STAT_CHART_LIMITS.binomialTableValues} valeurs`
+		);
+	}
+	const masked = maskedIndices(options, a, b, "n'est pas dans la loi");
+	if (typeof masked === 'string') return at(optionLines.masquer ?? 0, masked);
+
+	const queriesLine = optionLines.probabilites ?? 0;
+	const queries: { display: string; low: number; high: number }[] = [];
+	const written = (options.binomialQueries ?? '')
+		.split(';')
+		.map((q) => q.trim())
+		.filter((q) => q !== '');
+	for (const text of written) {
+		const query = parseQuery(text, uniform.name, a, b);
+		if (typeof query === 'string') return at(queriesLine, query);
+		queries.push(query);
+	}
+
+	return {
+		law: {
+			variable: uniform.name,
+			values: Array.from({ length: count }, (_, i) => String(a + i)),
+			probabilities: [],
+			masked,
+			indicators: options.lawIndicators.length > 0 ? options.lawIndicators : ['esperance'],
+			binomial: null,
+			geometric: null,
+			uniform: { a, b, places: options.places ?? 3, queries, chart: options.binomialChart }
+		},
+		warnings: []
 	};
 }
 
@@ -1572,7 +1814,9 @@ function checkLaw(
 			probabilities: probabilities.texts,
 			masked,
 			indicators: options.lawIndicators,
-			binomial: null
+			binomial: null,
+			geometric: null,
+			uniform: null
 		}
 	};
 }
@@ -1817,11 +2061,17 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		binomialQueries: null,
 		binomialChart: false,
 		binomialLevel: null,
-		binomialThreshold: null
+		binomialThreshold: null,
+		upTo: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
 	let lawBinomial = null as { name: string; n: string; p: string; line: number } | null;
+	// `X ~ G(p)`, `X ~ U(a ; b)` (manche 13) : seulement dans le bloc ```loi
+	let lawNamed = null as
+		| { family: 'geometric'; name: string; p: string; line: number }
+		| { family: 'uniform'; name: string; a: string; b: string; line: number }
+		| null;
 	let lawProbabilities = null as LawLine | null;
 	// Une simulation écrit sa loi comme le bloc ```loi
 	const isSimulation = kind === 'simulation';
@@ -1847,7 +2097,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		if (content === '') return;
 		try {
 			const kv = KEY_LINE_REGEX.exec(content);
-			const key = kv ? normalizeKey(kv[1]) : null;
+			const key = kv ? optionKeyOf(kv[1]) : null;
 			const series = NAMED_SERIES_REGEX.exec(content);
 			if (series) {
 				if (kind === 'circulaire') throw new LineError('une seule série par diagramme circulaire');
@@ -1903,11 +2153,39 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			// Loi binomiale : `X ~ B(10 ; 0,3)`, `X suit B(10 ; 3/10)` (pas en simulation : PR b)
 			const binomial = isLaw ? BINOMIAL_REGEX.exec(content) : null;
 			if (binomial) {
-				if (lawVariable !== null || lawProbabilities !== null || lawBinomial !== null) {
+				if (
+					lawVariable !== null ||
+					lawProbabilities !== null ||
+					lawBinomial !== null ||
+					lawNamed !== null
+				) {
 					throw new LineError(BINOMIAL_ALONE);
 				}
 				lawBinomial = { name: binomial[1], n: binomial[2], p: binomial[3], line };
 				return;
+			}
+
+			// Lois géométrique et uniforme (manche 13) : `X ~ G(0,2)`, `X ~ U(1 ; 6)`
+			if (kind === 'loi') {
+				if (UNIFORM_DENSITY_REGEX.test(content)) {
+					throw new LineError('U([a ; b]) : loi à densité : bientôt disponible');
+				}
+				const geometric = GEOMETRIC_REGEX.exec(content);
+				const uniform = geometric ? null : UNIFORM_REGEX.exec(content);
+				if (geometric || uniform) {
+					if (
+						lawVariable !== null ||
+						lawProbabilities !== null ||
+						lawBinomial !== null ||
+						lawNamed !== null
+					) {
+						throw new LineError(NAMED_ALONE);
+					}
+					lawNamed = geometric
+						? { family: 'geometric', name: geometric[1], p: geometric[2], line }
+						: { family: 'uniform', name: uniform![1], a: uniform![2], b: uniform![3], line };
+					return;
+				}
 			}
 
 			const separator = content.lastIndexOf('=');
@@ -1933,6 +2211,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			// Loi : `X = 1 ; 2 ; 3` (la variable) et `P = 1/2 ; 1/4 ; 1/4`
 			if (isLaw) {
 				if (lawBinomial !== null) throw new LineError(BINOMIAL_ALONE);
+				if (lawNamed !== null) throw new LineError(NAMED_ALONE);
 				const texts = content
 					.slice(separator + 1)
 					.split(';')
@@ -2135,11 +2414,31 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		if (problem) errors.push(problem);
 	}
 	// `arrondi:` et `probabilités:` n'ont de sens qu'avec une loi binomiale
-	for (const key of ['probabilites', 'arrondi', 'diagramme', 'intervalle', 'seuil'] as const) {
-		if (errors.length === 0 && seenOptions.has(key) && lawBinomial === null) {
+	// `intervalle:` et `seuil:` : la loi binomiale seulement (manche 13)
+	for (const key of ['intervalle', 'seuil'] as const) {
+		if (errors.length === 0 && seenOptions.has(key) && lawNamed !== null) {
 			const line = optionLines[key] ?? 0;
+			errors.push({ message: `Ligne ${line} : ${key} : option réservée à la loi binomiale`, line });
+		}
+	}
+	// `jusqu'à:` : le tableau d'une loi géométrique
+	if (errors.length === 0 && seenOptions.has('jusqua') && lawNamed?.family !== 'geometric') {
+		const line = optionLines.jusqua ?? 0;
+		errors.push({
+			message: `Ligne ${line} : jusqu'à : seulement avec une loi géométrique (X ~ G(p))`,
+			line
+		});
+	}
+	for (const key of ['probabilites', 'arrondi', 'diagramme', 'intervalle', 'seuil'] as const) {
+		if (errors.length === 0 && seenOptions.has(key) && lawBinomial === null && lawNamed === null) {
+			const line = optionLines[key] ?? 0;
+			// `probabilités:`, `arrondi:`, `diagramme:` : les trois lois nommées (manche 13)
+			const laws =
+				key === 'intervalle' || key === 'seuil'
+					? 'une loi binomiale (X ~ B(n ; p))'
+					: 'une loi binomiale, géométrique ou uniforme (X ~ B(n ; p), G(p) ou U(a ; b))';
 			errors.push({
-				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec une loi binomiale (X ~ B(n ; p))`,
+				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec ${laws}`,
 				line
 			});
 		}
@@ -2181,6 +2480,23 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					// Le diagramme suit le tableau : le dire s'il était demandé (revue)
 					message: `Ligne ${lawBinomial.line} : ${count} valeurs : tableau non affiché (au plus ${STAT_CHART_LIMITS.binomialTableValues})${options.binomialChart ? ', diagramme non plus' : ''} ; les probabilités demandées restent données`,
 					line: lawBinomial.line
+				});
+			}
+		}
+	} else if (errors.length === 0 && lawNamed !== null) {
+		const checked =
+			lawNamed.family === 'geometric'
+				? checkGeometric(lawNamed, options, optionLines)
+				: checkUniform(lawNamed, options, optionLines);
+		if ('error' in checked) errors.push(checked.error);
+		else {
+			law = checked.law;
+			warnings.push(...checked.warnings);
+			const count = checked.law.values.length;
+			if (lawNamed.family === 'uniform' && count > STAT_CHART_LIMITS.binomialTableValues) {
+				warnings.push({
+					message: `Ligne ${lawNamed.line} : ${count} valeurs : tableau non affiché (au plus ${STAT_CHART_LIMITS.binomialTableValues})${options.binomialChart ? ', diagramme non plus' : ''} ; les probabilités demandées restent données`,
+					line: lawNamed.line
 				});
 			}
 		}

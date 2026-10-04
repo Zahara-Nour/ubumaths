@@ -258,9 +258,14 @@ describe('X ~ B(n ; p) — erreurs situées', () => {
 		);
 	});
 
-	it('`probabilités:` et `arrondi:` : seulement avec une loi binomiale', () => {
+	it('`probabilités:`, `arrondi:`, `diagramme:` : seulement avec une loi nommée', () => {
+		const named =
+			'seulement avec une loi binomiale, géométrique ou uniforme (X ~ B(n ; p), G(p) ou U(a ; b))';
 		expect(errorOf('X = 0 ; 1\nP = 1/2 ; 1/2\nprobabilités: P(X = 1)')).toBe(
-			'Ligne 3 : probabilités : seulement avec une loi binomiale (X ~ B(n ; p))'
+			`Ligne 3 : probabilités : ${named}`
+		);
+		expect(errorOf('X = 0 ; 1\nP = 1/2 ; 1/2\ndiagramme: oui')).toBe(
+			`Ligne 3 : diagramme : ${named}`
 		);
 	});
 

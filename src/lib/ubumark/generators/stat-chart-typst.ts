@@ -588,10 +588,13 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 		case 'tableau-croise':
 			return crossTableTypst(scene);
 		case 'loi':
-			// `diagramme: oui` (loi binomiale) : les bâtons sous le tableau
-			return scene.chart === undefined
-				? lawTypst(scene)
-				: `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}`;
+			// `diagramme: oui` : les bâtons sous le tableau ; loi géométrique : la mention dessous
+			if (scene.chart === undefined) return lawTypst(scene);
+			return `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}${
+				scene.chartNote === undefined
+					? ''
+					: `\n#align(center, text(size: 8pt, style: "italic")${textContent(scene.chartNote)})`
+			}`;
 		case 'simulation':
 			return simulationTypst(scene);
 		case 'comparaison':

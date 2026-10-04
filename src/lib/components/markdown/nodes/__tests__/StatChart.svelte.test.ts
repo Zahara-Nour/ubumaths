@@ -577,6 +577,40 @@ describe('StatChart — loi binomiale (manche 11)', () => {
 	});
 });
 
+describe('StatChart — lois de maths complémentaires (manche 13)', () => {
+	it('loi géométrique : la colonne « … », les bâtons coupés et la mention sous le diagramme', async () => {
+		const node = parseStatChartContent('loi', "X ~ G(0,2)\njusqu'à: 4\ndiagramme: oui");
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const table = screen.container.querySelector('table')!;
+
+		expect(table.querySelector('caption')?.textContent).toBe('Loi de X : G(0,2)');
+		expect(table.textContent).toContain('…');
+		expect(screen.container.querySelectorAll('rect.stat-barre')).toHaveLength(4);
+		const note = screen.container.querySelector<HTMLElement>('.stat-mention')!;
+		expect(note.textContent).toBe('valeurs suivantes non représentées');
+		// Pas un <p> : `main p { font-size … !important }` (app.css) annulerait sa petite taille
+		expect(note.tagName).not.toBe('P');
+		const paragraph = document.createElement('p');
+		paragraph.textContent = 'x';
+		screen.container.append(paragraph);
+		expect(parseFloat(getComputedStyle(note).fontSize)).toBeLessThan(
+			parseFloat(getComputedStyle(paragraph).fontSize)
+		);
+	});
+
+	it('loi uniforme : le titre, l’espérance par défaut', async () => {
+		const node = parseStatChartContent('loi', 'X ~ U(1 ; 6)');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('caption')?.textContent).toBe(
+			'Loi de X : loi uniforme sur {1, …, 6}'
+		);
+		expect(screen.container.querySelector('.stat-indicateurs li')?.textContent).toBe(
+			'E(X) = 7/2 = 3,5'
+		);
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

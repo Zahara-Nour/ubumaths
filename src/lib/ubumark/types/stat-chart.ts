@@ -110,6 +110,31 @@ export interface LawData {
 			alpha: string;
 		} | null;
 	} | null;
+	/**
+	 * Loi géométrique (`X ~ G(p)`, manche 13) : valeurs 1 à `upTo` dans le
+	 * tableau, puis « … » ; probabilités exactes, affichées arrondies ; sinon null.
+	 */
+	geometric: {
+		/** p tel qu'écrit (`0,2`, `1/5`, `20 %`) */
+		p: string;
+		places: number;
+		/** `jusqu'à:` : dernière valeur du tableau (10 par défaut) */
+		upTo: number;
+		/**
+		 * P(low ⩽ X ⩽ high), `high` null : pas de borne haute ; `given` :
+		 * conditionnée par X ⩾ given (P(X > a | X > b)), sinon null
+		 */
+		queries: { display: string; low: number; high: number | null; given: number | null }[];
+		chart: boolean;
+	} | null;
+	/** Loi uniforme discrète (`X ~ U(a ; b)`, manche 13) : valeurs a à b ; sinon null */
+	uniform: {
+		a: number;
+		b: number;
+		places: number;
+		queries: { display: string; low: number; high: number }[];
+		chart: boolean;
+	} | null;
 }
 
 /** Lignes d'un tableau d'effectifs (Q128), dans l'ordre de l'auteur */
