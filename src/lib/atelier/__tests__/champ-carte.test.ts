@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { fieldLatexOf, definitionFromField } from '../mathfield';
+import { fieldLatexOf, definitionFromField, forMathlive } from '../mathfield';
 import { astOf, parseDefinition } from '../parse';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { Atelier } from '../atelier.svelte';
@@ -90,5 +90,34 @@ describe('du champ à la définition', () => {
 
 	it('laisse une saisie illisible telle quelle, pour que l’erreur la cite', () => {
 		expect(definitionFromField('value', '2+*')).toBe('2+*');
+	});
+});
+
+// Revue du lot 2a, B : MathLive ne connaît pas `\unit`, il affichait « \unitkm »
+describe('grandeurs et MathLive', () => {
+	it('une grandeur arrive dans le champ sous la forme que MathLive écrit lui-même', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '12[km]' }, 'url');
+
+		const latex = fieldLatexOf(atelier.get('a')!, atelier.functionNames);
+
+		expect(latex).not.toContain('\\unit');
+		expect(latex).toContain('km');
+	});
+
+	it('et se relit en grandeur au retour du champ', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '90[km/h]' }, 'url');
+
+		const back = definitionFromField(
+			'value',
+			fieldLatexOf(atelier.get('a')!, atelier.functionNames)
+		);
+
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'km/h' });
+	});
+
+	it('forMathlive réécrit chaque \\unit', () => {
+		expect(forMathlive('12~\\unit{km}+3\\unit{m}')).not.toContain('\\unit');
 	});
 });

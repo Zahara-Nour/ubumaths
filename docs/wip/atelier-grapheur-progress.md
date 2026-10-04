@@ -82,6 +82,24 @@ Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
       le texte brut `x^2` adaptés (rendu mathématique voulu, C1).
 - Suites client atelier + grapheur : 322 verts ; `check:incremental` 0 ;
   eslint des fichiers touchés propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` : rien de bloquant
+      côté sécurité (sonde XSS : `\href`, `\htmlData`, `<img onerror>`…,
+      tout refusé ou dépouillé). Corrigé, tests d'abord (rouges vus) :
+  - A ouvrir puis fermer une carte réécrivait la définition traduite
+    (drapeau `dirty` ; preuve par neutralisation) ;
+  - B MathLive ne connaît pas `\unit` (« 12 \unitkm ») → `forMathlive`
+    réécrit en `\operatorname{\mathrm{km}}`, sa propre forme ;
+  - C définition vidée ailleurs : champ vidé (correctif LOCAL — `MathField`
+    est partagé avec les réponses aux questions, on n'y touche pas) ;
+  - a11y : définition rendue `aria-hidden` + texte lisible
+    (`convertLatexToSpeakableText`) ; 👁 à étiquette constante + `aria-pressed` ;
+    focus visible ; pastille neutre = cercle vide lisible en projection.
+  - Fermer une carte = en ouvrir une autre (re-cliquer ne referme pas :
+    comportement existant, noté).
+- Noté, hors lot (revue D/E) : un nom de fonction suivi d'un exposant entre
+  accolades (`u^{2}`, `h^{10}`) ne se lit pas en LaTeX (limite antérieure,
+  désormais atteignable depuis la carte) ; `F`, `G`, `H` ne sont plus des
+  fonctions par défaut en lecture LaTeX (cohérent avec la lecture texte).
 - Noté pour le lot 3 : l'action « Tracer » (qui bascule vers Graphe) fait
   maintenant doublon avec 👁 — à trancher avec la règle des actions.
 

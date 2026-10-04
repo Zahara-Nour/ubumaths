@@ -32,10 +32,22 @@ export function fieldLatexOf(object: AtelierObject, functionNames: readonly stri
 	const definition = object.definition;
 	if (definition.trim() === '') return '';
 	const provenance = object.provenance ?? 'url';
-	if (readingMode(provenance) === 'latex') return definition;
+	if (readingMode(provenance) === 'latex') return forMathlive(definition);
 
 	const ast = astOf(definition, provenance, functionNames);
-	return ast === null ? definition : toLatex(ast);
+	return ast === null ? definition : forMathlive(toLatex(ast));
+}
+
+/**
+ * Du LaTeX que MathLive sait afficher.
+ *
+ * ⚠️ MathLive ne connaît pas `\unit{km}` (notre écriture des grandeurs) : il
+ * affichait « \unitkm » en toutes lettres (revue du lot 2a). On lui donne la
+ * forme qu'il écrit lui-même quand on tape `12 km` — que `definitionFromField`
+ * sait relire en grandeur.
+ */
+export function forMathlive(latex: string): string {
+	return latex.replace(/\\unit\{([^{}]*)\}/g, '\\operatorname{\\mathrm{$1}}');
 }
 
 /**

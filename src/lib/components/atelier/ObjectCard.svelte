@@ -13,7 +13,8 @@
 	import { astOf } from '$lib/atelier/parse';
 	import { toLatex } from '$lib/mathAST/latex-generator';
 	import { curveColorValue } from '$lib/grapheur/colors';
-	import { convertLatexToMarkup } from 'mathlive';
+	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
+	import { forMathlive } from '$lib/atelier/mathfield';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 
@@ -71,7 +72,12 @@
 		if (object.definition.trim() === '' || object.kind === 'list') return null;
 		const ast = astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
 		if (ast === null) return null;
-		return convertLatexToMarkup(toLatex(ast), { defaultMode: 'inline-math' });
+		const latex = forMathlive(toLatex(ast));
+		return {
+			markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
+			// Le rendu est fait de glyphes : un lecteur d'écran lit ceci à la place
+			spoken: convertLatexToSpeakableText(latex)
+		};
 	});
 
 	/** La couleur de la courbe, si la fonction est tracée (C1, C2). */
@@ -104,7 +110,7 @@
 		{#if object.kind === 'function'}
 			<span
 				class="pastille"
-				style={curveColor ? `background: ${curveColor}` : undefined}
+				style={curveColor ? `background: ${curveColor}; border-color: ${curveColor}` : undefined}
 				aria-hidden="true"
 			></span>
 		{/if}
@@ -112,8 +118,11 @@
 			<span class="nom">{object.name}</span>
 			<span class="definition">
 				{#if rendered}
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
-					{@html rendered}
+					<span aria-hidden="true">
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
+						{@html rendered.markup}
+					</span>
+					<span class="sr-only">{rendered.spoken}</span>
 				{:else}
 					{object.definition || '…'}
 				{/if}
@@ -129,10 +138,8 @@
 				type="button"
 				class="oeil"
 				aria-pressed={object.plotted === true}
-				aria-label={object.plotted
-					? `Retirer ${object.name} du graphique`
-					: `Tracer ${object.name}`}
-				title={object.plotted ? 'Retirer du graphique' : 'Tracer'}
+				aria-label={`Tracer ${object.name}`}
+				title="Tracer sur le graphique"
 				onclick={() => atelier.setPlotted(object.name, !object.plotted)}
 			>
 				{#if object.plotted}
@@ -265,9 +272,10 @@
 		height: 0.625rem;
 		margin-top: 0.4375rem;
 		border-radius: 9999px;
-		/* Neutre tant que la fonction n'est pas tracée (C2) */
-		background: var(--color-muted);
-		border: 1px solid var(--color-border);
+		/* Cercle VIDE tant que la fonction n'est pas tracée (C2) : forme et
+		   couleur s'opposent à la pastille pleine, lisible en projection */
+		background: transparent;
+		border: 1.5px solid var(--color-muted-foreground);
 	}
 	.oeil {
 		flex-shrink: 0;
@@ -285,6 +293,13 @@
 	}
 	.oeil[aria-pressed='true'] {
 		color: var(--color-foreground);
+		/* Une marque visible indépendante du dessin de l'icône */
+		background: var(--color-muted);
+	}
+	.oeil:focus-visible,
+	.entete:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
 	}
 	.oeil:hover {
 		background: var(--color-muted);

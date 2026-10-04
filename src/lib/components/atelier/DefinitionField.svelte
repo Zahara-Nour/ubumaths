@@ -43,6 +43,16 @@
 
 	let timer: ReturnType<typeof setTimeout> | null = null;
 
+	/**
+	 * L'élève a-t-il tapé depuis la dernière écriture ?
+	 *
+	 * ⚠️ Sans lui, ouvrir puis fermer une carte réécrivait la définition : le
+	 * champ montre une TRADUCTION en LaTeX (`sqrt(x)` → `\sqrt{x}`), différente
+	 * du texte rangé, et la fermeture l'écrivait comme si on l'avait tapée
+	 * (revue du lot 2a, A).
+	 */
+	let dirty = false;
+
 	const prefix = $derived(
 		object.kind === 'function'
 			? `${object.name}(x) =`
@@ -55,6 +65,8 @@
 	function flush() {
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
+		if (!dirty) return;
+		dirty = false;
 		const definition = definitionFromField(object.kind, latex);
 		if (definition === object.definition) return;
 		lastWritten = definition;
@@ -62,6 +74,7 @@
 	}
 
 	function handleInput() {
+		dirty = true;
 		if (timer !== null) clearTimeout(timer);
 		timer = setTimeout(flush, TYPING_DELAY_MS);
 	}
@@ -71,8 +84,14 @@
 		const definition = object.definition;
 		if (definition === lastWritten) return;
 		lastWritten = definition;
-		// `MathField` recopie `value` dans le champ : rien d'autre à faire
+		// La version venue d'ailleurs l'emporte sur une frappe encore en attente
+		if (timer !== null) clearTimeout(timer);
+		timer = null;
+		dirty = false;
 		latex = fieldLatexOf(object, atelier.functionNames);
+		// ⚠️ `MathField` ne recopie pas une valeur VIDE (`if (value)`) ; on ne
+		// touche pas à ce composant partagé avec les réponses aux questions
+		if (latex === '' && element) element.value = '';
 	});
 
 	onMount(() => {
@@ -105,6 +124,10 @@
 		font-family: var(--font-serif, serif);
 		font-style: italic;
 		white-space: nowrap;
+	}
+	.champ :global(.saisie:focus-within) {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 1px;
 	}
 	.champ :global(.saisie) {
 		flex: 1;

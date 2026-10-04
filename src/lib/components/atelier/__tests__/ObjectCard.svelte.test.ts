@@ -236,3 +236,80 @@ describe('carte fermée', () => {
 		expect(cardFor(container, 'L').querySelector('.oeil')).toBeNull();
 	});
 });
+
+// =============================================================================
+// Revue du lot 2a
+// =============================================================================
+
+describe('revue du lot 2a', () => {
+	// A : ouvrir puis fermer réécrivait la définition traduite en LaTeX
+	it('ouvrir puis fermer une carte ne touche pas à la définition', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'sqrt(x) + 2x^2' }, 'text');
+		atelier.create({ kind: 'value', name: 'a', definition: '2' });
+		const { container } = await render(WithAtelier, { atelier });
+		const revision = atelier.revision;
+
+		await open(container, 'f');
+		// Une carte se ferme quand on en ouvre une autre
+		await open(container, 'a');
+		await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('math-field')).toBeNull());
+		await new Promise((r) => setTimeout(r, 400));
+
+		expect(atelier.get('f')).toMatchObject({ definition: 'sqrt(x) + 2x^2', provenance: 'text' });
+		expect(atelier.revision).toBe(revision);
+	});
+
+	// C : vidée ailleurs, la définition doit vider le champ
+	it('une définition effacée ailleurs vide le champ', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'f');
+
+		atelier.update('f', '', 'text');
+
+		await vi.waitFor(() => expect(fieldOf(card).value).toBe(''));
+	});
+
+	// B : la carte fermée affichait « 12 \unitkm »
+	it('une grandeur s’affiche sans commande \\unit', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '12[km]' }, 'url');
+		const { container } = await render(WithAtelier, { atelier });
+
+		const text = cardFor(container, 'a').querySelector('.definition')?.textContent ?? '';
+
+		expect(text).not.toContain('unit');
+		expect(text).toContain('km');
+	});
+
+	// A11y 1 : le rendu MathLive est fait de glyphes ; le bouton doit porter un
+	// texte lisible par un lecteur d'écran
+	it('la définition rendue a un équivalent lisible', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2+1' }, 'text');
+		const { container } = await render(WithAtelier, { atelier });
+		const definition = cardFor(container, 'f').querySelector('.definition') as HTMLElement;
+
+		const visual = definition.querySelector('.ML__latex')?.closest('[aria-hidden="true"]');
+		const spoken = definition.querySelector('.sr-only')?.textContent?.trim() ?? '';
+
+		expect(visual).toBeTruthy();
+		expect(spoken).not.toBe('');
+		expect(spoken).not.toContain('\\');
+	});
+
+	// A11y 2 : étiquette CONSTANTE, l'état est porté par aria-pressed seul
+	it('le 👁 garde la même étiquette, tracé ou non', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x' });
+		const { container } = await render(WithAtelier, { atelier });
+		const eye = cardFor(container, 'f').querySelector('.oeil') as HTMLButtonElement;
+
+		expect(eye.getAttribute('aria-label')).toBe('Tracer f');
+		eye.click();
+		await vi.waitFor(() => expect(eye.getAttribute('aria-pressed')).toBe('true'));
+		expect(eye.getAttribute('aria-label')).toBe('Tracer f');
+	});
+});
