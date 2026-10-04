@@ -122,16 +122,15 @@ describe('VarsCommand', () => {
 			};
 
 			const result = command.execute(ctx);
-			const lines = result.output.split('\n');
-			const varLines = lines.filter((line) => line.includes('='));
+			// Sortie colorée selon le terminal : les codes ANSI (`\x1b[32m`) contiennent
+			// un « m » — chercher une lettre dans la ligne brute trouvait « m » partout
+			const stripAnsi = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
+			const names = stripAnsi(result.output)
+				.split('\n')
+				.map((line) => /^\s*([a-z])\s*=/.exec(line)?.[1])
+				.filter((name) => name !== undefined);
 
-			// Check order
-			const aIndex = varLines.findIndex((line) => line.includes('a'));
-			const mIndex = varLines.findIndex((line) => line.includes('m'));
-			const zIndex = varLines.findIndex((line) => line.includes('z'));
-
-			expect(aIndex).toBeLessThan(mIndex);
-			expect(mIndex).toBeLessThan(zIndex);
+			expect(names).toEqual(['a', 'm', 'z']);
 		});
 
 		it('displays variable values in custom syntax', () => {
