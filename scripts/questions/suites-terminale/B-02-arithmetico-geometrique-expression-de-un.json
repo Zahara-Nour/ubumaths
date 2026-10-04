@@ -1,0 +1,335 @@
+{
+	"title": "Suite arithmético-géométrique : expression de uₙ en fonction de n",
+	"description": "Suite auxiliaire vₙ = uₙ − ℓ géométrique de raison a, puis uₙ = (u₀ − ℓ)aⁿ + ℓ (pièges : u₀·aⁿ + ℓ, (u₀ − ℓ)aⁿ − ℓ, oubli de + ℓ)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-006", "TCOMP-012", "TCOMP-013", "TSPE-115"],
+	"theme": "Suites",
+	"domain": "Suites arithmético-géométriques",
+	"subdomain": "Suite auxiliaire",
+	"level": 3,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"options": {
+		"constraints": {
+			"form": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:10*m+d}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$.\n\nOn pose $v_n=u_n-{{eval:10*m;()}}$ et on admet que $(v_n)$ est géométrique de raison ${{eval:k/10;d}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..20;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}\\times{{eval:k/10;d}}^{n}{{eval:10*m;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$v_0=u_0-{{eval:10*m;()}}={{d}}$, et $(v_n)$ est géométrique de raison ${{eval:k/10;d}}$ : $v_n={{d}}\\times{{eval:k/10;d}}^{n}$.",
+					"$u_n=v_n+{{eval:10*m;()}}$, donc $u_n=\\textcolor{{{color:primary.0}}}{ {{d}}\\times{{eval:k/10;d}}^{n}{{eval:10*m;+}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:10*m+d}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$.\n\nExprime $u_n$ en fonction de $n$ (on pourra chercher le réel $\\ell$ tel que $\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}$, puis étudier $v_n=u_n-\\ell$).\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..20;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}\\times{{eval:k/10;d}}^{n}{{eval:10*m;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}\\iff{{eval:1-k/10;d}}\\ell={{eval:m*(10-k)}}\\iff\\ell={{eval:10*m}}$.",
+					"$v_{n+1}=u_{n+1}-\\ell={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}-\\left({{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}\\right)={{eval:k/10;d}}v_n$ : $(v_n)$ est géométrique de raison ${{eval:k/10;d}}$, de premier terme $v_0={{eval:10*m+d}}-{{eval:10*m;()}}={{d}}$.",
+					"$u_n=v_n+\\ell=\\textcolor{{{color:primary.0}}}{ {{d}}\\times{{eval:k/10;d}}^{n}{{eval:10*m;+}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:2*b+d}}$ et, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{1}{2}u_n{{b;+}}$.\n\nExprime $u_n$ en fonction de $n$ (on pourra chercher le réel $\\ell$ tel que $\\ell=\\dfrac{1}{2}\\ell{{b;+}}$, puis étudier $v_n=u_n-\\ell$).\n\n$u_n=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "2..12;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{d}}\\left(\\frac{1}{2}\\right)^{n}{{eval:2*b;+}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ell=\\dfrac{1}{2}\\ell{{b;+}}\\iff\\dfrac{1}{2}\\ell={{b}}\\iff\\ell={{eval:2*b}}$.",
+					"$(v_n)$, avec $v_n=u_n-{{eval:2*b;()}}$, est géométrique de raison $\\dfrac{1}{2}$ et de premier terme $v_0={{d}}$.",
+					"$u_n=v_n+\\ell=\\textcolor{{{color:primary.0}}}{ {{d}}\\left(\\dfrac{1}{2}\\right)^{n}{{eval:2*b;+}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : u0=60, 0,8uₙ+10 → 10×0,8ⁿ+50",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["10\\times0.8^{n}+50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ordre inversé",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["50+10\\times0.8^{n}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : (4/5)ⁿ accepté",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["10\\left(\\frac{4}{5}\\right)^{n}+50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : u0·aⁿ + ℓ",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["60\\times0.8^{n}+50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : (u0 − ℓ)aⁿ − ℓ",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["10\\times0.8^{n}-50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : + ℓ oublié (vₙ)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["10\\times0.8^{n}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : u0=−35, 0,5uₙ−15 (ℓ=−30) → −5×0,5ⁿ−30",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"m": "-3",
+				"d": "-5"
+			},
+			"answers": ["-5\\times0.5^{n}-30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : 0,5ⁿ écrit 1/2ⁿ",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"m": "-3",
+				"d": "-5"
+			},
+			"answers": ["-\\frac{5}{2^{n}}-30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u0=17, 0,9uₙ+2 (ℓ=20) → −3×0,9ⁿ+20",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9",
+				"m": "2",
+				"d": "-3"
+			},
+			"answers": ["-3\\times0.9^{n}+20"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 20 − 3×0,9ⁿ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9",
+				"m": "2",
+				"d": "-3"
+			},
+			"answers": ["20-3\\times0.9^{n}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : (u0 + ℓ)aⁿ + ℓ",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9",
+				"m": "2",
+				"d": "-3"
+			},
+			"answers": ["37\\times0.9^{n}+20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : raison prise égale à b",
+			"variationIndex": 1,
+			"variables": {
+				"k": "9",
+				"m": "2",
+				"d": "-3"
+			},
+			"answers": ["-3\\times2^{n}+20"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : u0=11, uₙ/2+4 (ℓ=8) → 3(1/2)ⁿ+8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["3\\left(\\frac{1}{2}\\right)^{n}+8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : × superflu devant la parenthèse",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["3\\times\\left(\\frac{1}{2}\\right)^{n}+8"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["products"]
+			}
+		},
+		{
+			"description": "v2 : 3/2ⁿ + 8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["\\frac{3}{2^{n}}+8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 3×0,5ⁿ + 8",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["3\\times0.5^{n}+8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : u0·(1/2)ⁿ + ℓ",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["11\\left(\\frac{1}{2}\\right)^{n}+8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ℓ = b (4)",
+			"variationIndex": 2,
+			"variables": {
+				"b": "4",
+				"d": "3"
+			},
+			"answers": ["7\\left(\\frac{1}{2}\\right)^{n}+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

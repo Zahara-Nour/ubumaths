@@ -1,0 +1,302 @@
+{
+	"title": "uₙ₊₁ = f(uₙ) : conjecturer la limite sur l'escalier",
+	"description": "Lecture de la construction en escalier pour des fonctions non affines : la limite conjecturée est l'abscisse d'un point d'intersection de 𝒞f et de y = x, celui vers lequel l'escalier se resserre (piège : l'autre point fixe, u₀)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-010", "TCOMP-011", "TSPE-160"],
+	"theme": "Suites",
+	"domain": "Suites récurrentes",
+	"subdomain": "Escalier",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)=\\sqrt{x+{{eval:L*(L-1)}}}$. On a tracé la courbe $\\mathcal{C}_f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:L+2}}\ny: -1 ; {{eval:L+2}}\nu(0) = {{u0}} ; u(n+1) = sqrt(u(n)+{{eval:L*(L-1)}}) pour n de 0 à 6   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nLa suite $(u_n)$ semble converger. Vers quel réel $\\ell$ ?\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "2..4"
+				},
+				{
+					"name": "u0",
+					"expression": "0"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les marches de l'escalier se resserrent vers le point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$, d'abscisse ${{L}}$.",
+					"```courbe\nx: -1 ; {{eval:L+2}}\ny: -1 ; {{eval:L+2}}\nu(0) = {{u0}} ; u(n+1) = sqrt(u(n)+{{eval:L*(L-1)}}) pour n de 0 à 6   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Vérification : $f({{L}})=\\sqrt{ {{L}}+{{eval:L*(L-1)}} }=\\sqrt{ {{eval:L^2}} }={{L}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{L}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)=\\dfrac{x^{2}+{{eval:p*q}}}{ {{eval:p+q}} }$. On a tracé la courbe $\\mathcal{C}_f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -0.5 ; {{eval:q+1.5}}\ny: -0.5 ; {{eval:q+1.5}}\nu(0) = {{u0}} ; u(n+1) = (u(n)^2+{{eval:p*q}})/{{eval:p+q}} pour n de 0 à 8   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nLa suite $(u_n)$ semble converger. Vers quel réel $\\ell$ ?\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:floor(j/3)+1"
+				},
+				{
+					"name": "q",
+					"expression": "eval:j+2-floor(j/3)"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:q-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ coupe la droite $y=x$ en deux points, d'abscisses ${{p}}$ et ${{q}}$. Partant de $u_0={{u0}}$, l'escalier descend et se resserre vers le point d'abscisse ${{p}}$ ; il s'éloigne de celui d'abscisse ${{q}}$.",
+					"```courbe\nx: -0.5 ; {{eval:q+1.5}}\ny: -0.5 ; {{eval:q+1.5}}\nu(0) = {{u0}} ; u(n+1) = (u(n)^2+{{eval:p*q}})/{{eval:p+q}} pour n de 0 à 8   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Vérification : $f({{p}})=\\dfrac{ {{eval:p^2}}+{{eval:p*q}} }{ {{eval:p+q}} }={{p}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{p}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)=\\dfrac{ {{eval:L*(L+1)}} }{x+1}$. On a tracé la courbe $\\mathcal{C}_f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -0.5 ; {{eval:L+2.5}}\ny: -0.5 ; {{eval:L+2.5}}\nu(0) = {{u0}} ; u(n+1) = {{eval:L*(L+1)}}/(u(n)+1) pour n de 0 à 10   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nLa suite $(u_n)$ semble converger. Vers quel réel $\\ell$ ?\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "2..3"
+				},
+				{
+					"name": "u0",
+					"expression": "eval:L-1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'escalier tourne en spirale autour du point d'intersection de $\\mathcal{C}_f$ et de la droite $y=x$, d'abscisse ${{L}}$, et s'en rapproche : les termes sont alternativement au-dessus et au-dessous de ${{L}}$.",
+					"```courbe\nx: -0.5 ; {{eval:L+2.5}}\ny: -0.5 ; {{eval:L+2.5}}\nu(0) = {{u0}} ; u(n+1) = {{eval:L*(L+1)}}/(u(n)+1) pour n de 0 à 10   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Vérification : $f({{L}})=\\dfrac{ {{eval:L*(L+1)}} }{ {{eval:L+1}} }={{L}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{L}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{u0}}$ et $u_{n+1}=f(u_n)$, où $f(x)={{k}}\\sqrt{x}$. On a tracé la courbe $\\mathcal{C}_f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -0.5 ; {{eval:k^2+2}}\ny: -0.5 ; {{eval:k^2+2}}\nu(0) = {{u0}} ; u(n+1) = {{k}}*sqrt(u(n)) pour n de 0 à 8   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nLa suite $(u_n)$ semble converger. Vers quel réel $\\ell$ ?\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "2..3"
+				},
+				{
+					"name": "u0",
+					"expression": "1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:k^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\mathcal{C}_f$ coupe la droite $y=x$ en $O$ et au point d'abscisse ${{eval:k^2}}$. Partant de $u_0=1$, l'escalier monte et se resserre vers le point d'abscisse ${{eval:k^2}}$.",
+					"```courbe\nx: -0.5 ; {{eval:k^2+2}}\ny: -0.5 ; {{eval:k^2+2}}\nu(0) = {{u0}} ; u(n+1) = {{k}}*sqrt(u(n)) pour n de 0 à 8   rouge   escalier termes   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```",
+					"Vérification : $f({{eval:k^2}})={{k}}\\sqrt{ {{eval:k^2}} }={{eval:k^2}}$. La suite semble converger vers $\\ell=\\textcolor{{{color:primary.0}}}{ {{eval:k^2}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 L=2 → 2",
+			"variationIndex": 0,
+			"variables": {
+				"L": "2",
+				"u0": "0"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : u0",
+			"variationIndex": 0,
+			"variables": {
+				"L": "2",
+				"u0": "0"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : +∞",
+			"variationIndex": 0,
+			"variables": {
+				"L": "2",
+				"u0": "0"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 L=3 → 3",
+			"variationIndex": 0,
+			"variables": {
+				"L": "3",
+				"u0": "0"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 (x²+4)/5, u0=3 → 1",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"p": "1",
+				"q": "4",
+				"u0": "3"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : l'autre point fixe (4)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"p": "1",
+				"q": "4",
+				"u0": "3"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : u0 (3)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"p": "1",
+				"q": "4",
+				"u0": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 (x²+8)/6, u0=3 → 2",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3",
+				"p": "2",
+				"q": "4",
+				"u0": "3"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : u0 (3)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "3",
+				"p": "2",
+				"q": "4",
+				"u0": "3"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 6/(x+1) → 2",
+			"variationIndex": 2,
+			"variables": {
+				"L": "2",
+				"u0": "1"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : −3 (autre solution de ℓ²+ℓ−6=0)",
+			"variationIndex": 2,
+			"variables": {
+				"L": "2",
+				"u0": "1"
+			},
+			"answers": ["-3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 2√x → 4",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"u0": "1"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 0 (l'autre point fixe)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "2",
+				"u0": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 3√x → 9",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3",
+				"u0": "1"
+			},
+			"answers": ["9"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
