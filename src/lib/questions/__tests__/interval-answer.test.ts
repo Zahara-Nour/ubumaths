@@ -438,7 +438,11 @@ describe('constante e dans une borne (sonde du 2026-10-04)', () => {
 		[']0;e^{\\frac{1}{2}}[', ']0;\\sqrt{e}['],
 		[']\\frac{1}{e};e[', ']e^{-1};e['],
 		['[e^{-1};e^2]', '[\\frac{1}{e};e^{2}]'],
-		[']-\\infty;\\frac{1}{e}[\\cup]e;+\\infty[', ']-\\infty;e^{-1}[\\cup]e;+\\infty[']
+		[']-\\infty;\\frac{1}{e}[\\cup]e;+\\infty[', ']-\\infty;e^{-1}[\\cup]e;+\\infty['],
+		['[\\exp(2);+\\infty[', '[e^{ 2 };+\\infty['],
+		[']0;\\exp(3)[', ']0;e^3['],
+		[']0;e^{3}[', ']0;\\exp(3)['],
+		['[\\frac{1}{\\exp(2)};+\\infty[', '[e^{-2};+\\infty[']
 	])('%s pour %s : juste', (answer, expected) => {
 		expect(judgeIntervalAnswer(answer, expected).status).toBe('correct');
 	});
