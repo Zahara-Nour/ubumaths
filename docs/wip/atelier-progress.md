@@ -104,6 +104,65 @@ la 7 la v3.
 
 ---
 
+## 💬 Discussion du 2026-10-04 — à reprendre
+
+Rien n'est tranché ici : c'est le point où la discussion s'est arrêtée.
+
+### 1. `/grapheur` : outil intégré confirmé, mais pas encore essayé
+
+- David **privilégie l'outil intégré** (décision figée n° 5 maintenue), sans
+  avoir encore fait d'essai en classe.
+- Le gain réel, dit honnêtement : le grapheur sait déjà tracer f′, la tangente
+  (avec la pente), l'aire, le cercle osculateur. Ce qu'il n'a pas, c'est la
+  **formule** de f′ avec ses étapes, les tableaux de variations et de signes,
+  résoudre, simplifier, factoriser — tout cela est dans l'atelier. Intégrer
+  évite de retaper la fonction d'un outil à l'autre.
+- ⚠️ **La plus grosse pièce du chantier** : la vue Graphe de l'atelier affiche
+  le grapheur **sans panneau de saisie** (`GrapheurContainer panel={false}`).
+  Pour que `/grapheur` = « l'atelier ouvert sur le graphique » marche en
+  projection, il faut pouvoir taper une fonction depuis la vue Graphe.
+- Question laissée en suspens : existe-t-il des liens `/grapheur` avec
+  paramètres déjà distribués, qu'il faudrait continuer à servir ?
+
+### 2. La saisie de l'atelier, telle qu'elle est
+
+- Vue Calcul : un **champ texte ordinaire** (pas MathLive — MathLive ne sert
+  qu'à afficher les résultats), façon `/cas` : définitions, calculs, commandes
+  en français commençant par un point.
+- Panneau « Mes objets » : boutons de création et actions par carte. Encore
+  désactivés : Renommer, Régler le curseur, Convertir, et pour une suite
+  Tracer en nuage, en escalier, Premiers termes.
+- Vue Données : un champ par liste, valeurs séparées par `;`.
+
+### 3. Données : intégrer le tableur ? — question ouverte
+
+David veut un vrai outil intégré, donc une **grille** pour les données plutôt
+que `12 ; 15 ; 9`. Accord sur la grille ; reste à choisir **comment** :
+
+| Option | Ce que c'est                                                                                                                                                                  | Pour                                                                | Contre                                                               |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **A**  | La vue Données devient une grille dont chaque colonne **est** une liste de l'atelier ; on reprend le composant de grille de `src/lib/components/spreadsheet/`, pas son moteur | une seule vérité de calcul ; stats, nuage, ajustement marchent déjà | pas de formules de cellule (au mieux une colonne calculée `M = 2*L`) |
+| **B**  | Le vrai tableur, formules comprises (`=A2*2`, recopie, références relatives/absolues) branché sur l'atelier                                                                   | la compétence « tableur » du programme                              | deux moteurs de calcul dans un même outil ; à réconcilier            |
+
+Faits mesurés sur le tableur actuel (`src/lib/spreadsheet/`, ~12 500 lignes) :
+
+- son propre moteur de formules, sans `mathAST` ;
+- `ÉCARTTYPE` / `VAR` sont déclarés dans `functions/aliases.ts` mais **aucune
+  implémentation** dans `functions/math.ts` ;
+- dans les formules, la virgule sépare les arguments et le point fait les
+  décimales — l'atelier lit `3,14` à la française ;
+- route `(protected)/spreadsheet`, sauvegarde **en base** — l'atelier est
+  public et rien n'y quitte le navigateur (décision figée n° 2) ;
+- grille plafonnée à 20 × 20.
+
+**La question qui tranche** : les élèves doivent-ils **écrire des formules de
+tableur** dans l'atelier, ou seulement **saisir et lire des données en
+grille** ? Seulement saisir → A. Formules → B, qui mérite sa propre phase 0 :
+c'est de fait une version de plus, au même rang que la géométrie (v2) et
+Python (v3).
+
+---
+
 ## Fait
 
 ### Phase 0 — spécification (validée le 2026-09-15)
