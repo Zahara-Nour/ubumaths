@@ -12,7 +12,7 @@
  */
 
 import { Fraction } from './fraction';
-import { findThreshold, type ThresholdEvent } from './binomial';
+import { findThreshold, type ThresholdEvent, type ThresholdResult } from './threshold';
 import type { RandomVariableLaw } from './random-variable';
 
 // =============================================================================
@@ -86,7 +86,7 @@ export function geometricThreshold(
 	event: ThresholdEvent,
 	comparison: '⩽' | '⩾',
 	alpha: Fraction
-): { k: number | null; smallest: boolean; num: bigint; den: bigint } {
+): ThresholdResult {
 	const probability = (k: number) => {
 		switch (event) {
 			case '>':
@@ -99,5 +99,6 @@ export function geometricThreshold(
 				return geometricProbability(p, 1, k);
 		}
 	};
-	return findThreshold(GEOMETRIC_MAX_K, probability, event, comparison, alpha);
+	// Le support continue après 1 000 : un « plus grand k » peut être au-delà (revue)
+	return findThreshold(GEOMETRIC_MAX_K, true, probability, event, comparison, alpha);
 }

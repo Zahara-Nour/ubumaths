@@ -70,9 +70,11 @@ import {
 import {
 	geometricConditional,
 	geometricMoments,
+	GEOMETRIC_MAX_K,
 	geometricProbability,
 	geometricThreshold
 } from '$lib/statistics/geometric';
+import type { ThresholdResult } from '$lib/statistics/threshold';
 import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
 import {
 	exponentialDensity,
@@ -1498,13 +1500,19 @@ function thresholdLines(
 	return [thresholdLine(threshold, result, String(binomial.n), variable, binomial.places, locale)];
 }
 
+/** Un entier avec séparateur de milliers : « 1 000 » / « 1,000 » (espace ordinaire) */
+function thousands(value: number, locale: ContentLocale): string {
+	const text = value.toLocaleString('en-US');
+	return locale === 'en' ? text : text.replace(/,/g, ' ');
+}
+
 /**
  * La ligne d'un seuil, toutes lois (binomiale, géométrique) : « plus petit k
  * tel que … : k = 14 (P(X > 14) ≈ 0,044) », ou « aucun k de 0 à `last` … »
  */
 function thresholdLine(
 	threshold: LawThreshold,
-	{ k, smallest, num, den }: { k: number | null; smallest: boolean; num: bigint; den: bigint },
+	{ k, smallest, num, den, beyond }: ThresholdResult,
 	last: string,
 	variable: string,
 	places: number,
@@ -1512,6 +1520,12 @@ function thresholdLine(
 ): string {
 	const shownAlpha = asWritten(threshold.alpha, locale);
 	const condition = `P(${variable} ${threshold.event} k) ${threshold.comparison} ${shownAlpha}`;
+	// Tous les k cherchés conviennent : le plus grand est au-delà (loi géométrique, revue)
+	if (beyond) {
+		return locale === 'en'
+			? `every k from 0 to ${last} satisfies ${condition} (the largest is beyond ${last})`
+			: `tous les k de 0 à ${last} vérifient ${condition} (le plus grand est au-delà de ${last})`;
+	}
 	if (k === null) {
 		return locale === 'en'
 			? `no k from 0 to ${last} satisfies ${condition}`
@@ -1772,7 +1786,7 @@ function buildGeometricScene(spec: StatChartSpec, law: LawData, locale: ContentL
 								geometric.threshold.comparison,
 								Fraction.parse(geometric.threshold.alpha) ?? Fraction.ZERO
 							),
-							locale === 'en' ? '1,000' : '1 000',
+							thousands(GEOMETRIC_MAX_K, locale),
 							law.variable,
 							geometric.places,
 							locale

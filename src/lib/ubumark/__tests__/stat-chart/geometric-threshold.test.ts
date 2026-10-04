@@ -14,6 +14,7 @@ import { parseStatChartContent } from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type LawScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
 import { geometricThreshold } from '$lib/statistics/geometric';
+import { binomialDistribution, binomialThreshold } from '$lib/statistics/binomial';
 import { Fraction } from '$lib/statistics/fraction';
 
 // =============================================================================
@@ -42,6 +43,21 @@ function errorOf(source: string) {
 // Module statistique
 // =============================================================================
 
+/**
+ * Le sens attendu des huit formes : P(X > k), P(X ⩾ k) décroissent avec k,
+ * P(X < k), P(X ⩽ k) croissent (true : plus petit k ; false : plus grand k)
+ */
+const SMALLEST: Record<string, boolean> = {
+	'>⩽': true,
+	'>⩾': false,
+	'⩾⩽': true,
+	'⩾⩾': false,
+	'<⩽': false,
+	'<⩾': true,
+	'⩽⩽': false,
+	'⩽⩾': true
+};
+
 describe('geometricThreshold — les huit formes contre une boucle de référence', () => {
 	const events = ['>', '⩾', '<', '⩽'] as const;
 	const comparisons = ['⩽', '⩾'] as const;
@@ -64,9 +80,8 @@ describe('geometricThreshold — les huit formes contre une boucle de référenc
 	for (const event of events) {
 		for (const comparison of comparisons) {
 			it(`P(X ${event} k) ${comparison} α`, () => {
-				// La monotonie décide : P(X > k), P(X ⩾ k) décroissent ; P(X < k), P(X ⩽ k) croissent
-				const decreasing = event === '>' || event === '⩾';
-				const smallest = decreasing === (comparison === '⩽');
+				// Écrit EN DUR (revue) : pas la formule de l'implémentation
+				const smallest = SMALLEST[`${event}${comparison}`];
 				for (const alpha of alphas) {
 					const fits = Array.from({ length: 51 }, (_, k) => k).filter((k) =>
 						comparison === '⩽' ? reference(event, k) <= alpha : reference(event, k) >= alpha
@@ -162,5 +177,68 @@ describe('X ~ G(p) — `seuil:` : erreurs situées', () => {
 				'Ligne 2 : seuil : option réservée aux lois binomiale et géométrique'
 			);
 		}
+	});
+});
+
+describe('revue : borne de recherche, dichotomie, message', () => {
+	it('plus grand k au-delà de 1 000 : ne pas annoncer k = 1 000', () => {
+		const source = 'X ~ G(0,000001)\nindicateurs: aucun\nseuil: P(X > k) ⩾ 0,5';
+		expect(linesOf(source)).toEqual([
+			'tous les k de 0 à 1 000 vérifient P(X > k) ⩾ 0,5 (le plus grand est au-delà de 1 000)'
+		]);
+		expect(linesOf(source, 'en')).toEqual([
+			'every k from 0 to 1,000 satisfies P(X > k) ⩾ 0.5 (the largest is beyond 1,000)'
+		]);
+		const result = geometricThreshold(new Fraction(1n, 1000000n), '>', '⩾', new Fraction(1n, 2n));
+		expect(result.k).toBeNull();
+		expect(result.beyond).toBe(true);
+	});
+
+	it('binomiale : la dichotomie donne le k de la recherche linéaire', () => {
+		const events = ['>', '⩾', '<', '⩽'] as const;
+		const comparisons = ['⩽', '⩾'] as const;
+		const alphas = ['0', '1/100', '1/20', '1/4', '1/2', '3/4', '19/20', '99/100', '1'];
+		for (const p of [Fraction.ZERO, Fraction.ONE, new Fraction(1n, 2n)]) {
+			for (const n of [1, 10]) {
+				const law = binomialDistribution(n, p);
+				const den = law.denominator;
+				const cumulative = [0n];
+				for (const value of law.numerators) cumulative.push(cumulative.at(-1)! + value);
+				const total = cumulative[n + 1];
+				// Référence linéaire, écrite ici : P(X ⋄ k) · den
+				const scaled = (event: (typeof events)[number], k: number) =>
+					event === '>'
+						? total - cumulative[k + 1]
+						: event === '⩾'
+							? total - cumulative[k]
+							: event === '<'
+								? cumulative[k]
+								: cumulative[k + 1];
+				for (const event of events) {
+					for (const comparison of comparisons) {
+						for (const written of alphas) {
+							const alpha = Fraction.parse(written)!;
+							const fits = Array.from({ length: n + 1 }, (_, k) => k).filter((k) => {
+								const left = scaled(event, k) * alpha.den;
+								const right = alpha.num * den;
+								return comparison === '⩽' ? left <= right : left >= right;
+							});
+							const smallest = SMALLEST[`${event}${comparison}`];
+							const expected = fits.length === 0 ? null : smallest ? fits[0] : fits.at(-1)!;
+							expect(
+								binomialThreshold(law, event, comparison, alpha).k,
+								`B(${n} ; ${p}) P(X ${event} k) ${comparison} ${written}`
+							).toBe(expected);
+						}
+					}
+				}
+			}
+		}
+	});
+
+	it('une loi écrite à la main : seuil seulement avec une loi binomiale ou géométrique', () => {
+		expect(errorOf('X = 0 ; 1\nP = 1/2 ; 1/2\nseuil: P(X > k) ⩽ 0,05')).toBe(
+			'Ligne 3 : seuil : seulement avec une loi binomiale ou géométrique (X ~ B(n ; p) ou G(p))'
+		);
 	});
 });
