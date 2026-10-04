@@ -104,33 +104,6 @@ export const EXTRA_DAY_NAMES: Record<ExtraDay, string> = {
 /** Fêtes datées de l'Almanach (section VIII), dans l'ordre de l'An */
 export const FEASTS: readonly Feast[] = [
 	{
-		id: 'nativite-jarry',
-		name: 'La Nativité d’Alfred Jarry',
-		monthIndex: 0,
-		day: 17,
-		gregorian: '8 septembre',
-		province: null,
-		canon: true
-	},
-	{
-		id: 'bosse-de-nage',
-		name: 'La Résurrection de Bosse-de-Nage',
-		monthIndex: 1,
-		day: 14,
-		gregorian: '27 octobre',
-		province: 'Glitchistan',
-		canon: true
-	},
-	{
-		id: 'faustroll',
-		name: 'La Navigation du Dr Faustroll',
-		monthIndex: 1,
-		day: 35,
-		gregorian: '17 novembre',
-		province: 'Patatovie',
-		canon: true
-	},
-	{
 		id: 'empochaille',
 		name: 'La Grande Empochaille',
 		monthIndex: 2,
@@ -165,15 +138,6 @@ export const FEASTS: readonly Feast[] = [
 		gregorian: '4 avril',
 		province: 'Pifométrie',
 		canon: false
-	},
-	{
-		id: 'polyedres',
-		name: 'La Fête des Polyèdres',
-		monthIndex: 4,
-		day: 26,
-		gregorian: '13 avril',
-		province: 'Bedonstan',
-		canon: true
 	}
 ];
 

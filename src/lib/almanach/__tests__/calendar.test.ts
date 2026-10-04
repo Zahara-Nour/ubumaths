@@ -222,14 +222,10 @@ describe('fêtes', () => {
 	}
 
 	it.each([
-		['nativite-jarry', 2025, 9, 8],
-		['bosse-de-nage', 2025, 10, 27],
-		['faustroll', 2025, 11, 17],
 		['empochaille', 2025, 12, 22],
 		['bougrelas', 2026, 3, 1],
 		['phynanche', 2026, 4, 1],
-		['cheval-a-phynances', 2026, 4, 4],
-		['polyedres', 2026, 4, 13]
+		['cheval-a-phynances', 2026, 4, 4]
 	])('%s tombe à sa date grégorienne', (id, y, m, d) => {
 		expect(feastAt(y, m, d)).toBe(id);
 	});
@@ -243,19 +239,33 @@ describe('fêtes', () => {
 	it('la table reprend les dates pataphysiques du Compendium', () => {
 		const table = FEASTS.map((f) => `${f.id}:${f.day} ${MONTH_NAMES[f.monthIndex]}`);
 		expect(table).toEqual([
-			'nativite-jarry:17 Ambraire',
-			'bosse-de-nage:14 Givraire',
-			'faustroll:35 Givraire',
 			'empochaille:18 Glaglavose',
 			'bougrelas:35 Déglaçose',
 			'phynanche:14 Auroral',
-			'cheval-a-phynances:17 Auroral',
-			'polyedres:26 Auroral'
+			'cheval-a-phynances:17 Auroral'
 		]);
 	});
 
 	it('un jour ordinaire n’a pas de fête', () => {
 		expect(feastAt(2026, 5, 22)).toBeNull();
+	});
+
+	// Règle du lore (David, 2026-10-04) : rien n'est repris du calendrier du Collège de 'Pataphysique
+	it('aucune fête reprise du Collège de ’Pataphysique', () => {
+		const ids = FEASTS.map((f) => f.id);
+		for (const id of ['nativite-jarry', 'bosse-de-nage', 'faustroll', 'polyedres']) {
+			expect(ids).not.toContain(id);
+		}
+		for (const name of ['Nativité d’Alfred Jarry', 'Bosse-de-Nage', 'Faustroll', 'Polyèdres']) {
+			expect(FEASTS.filter((f) => f.name.includes(name))).toEqual([]);
+		}
+	});
+
+	it('les anciennes dates du Collège n’ont plus de fête', () => {
+		expect(feastAt(2025, 9, 8)).toBeNull();
+		expect(feastAt(2025, 10, 27)).toBeNull();
+		expect(feastAt(2025, 11, 17)).toBeNull();
+		expect(feastAt(2026, 4, 13)).toBeNull();
 	});
 });
 
