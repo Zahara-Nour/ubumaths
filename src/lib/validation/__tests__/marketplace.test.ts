@@ -14,8 +14,6 @@ import {
 	createProposalSchema,
 	updateProposalSchema,
 	createTradeSchema,
-	createOfferSchema,
-	acceptTradeSchema,
 	updateConfigSchema,
 	chatMessageSchema,
 	adminTradesQuerySchema,
@@ -511,94 +509,6 @@ describe('createTradeSchema', () => {
 			expect(result.data.initial_offer.cards).toEqual([]);
 			expect(result.data.initial_offer.gidouilles).toBe(0);
 		}
-	});
-});
-
-describe('createOfferSchema', () => {
-	test('validates valid counter-offer', () => {
-		const data = {
-			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			initiator_cards: ['550e8400-e29b-41d4-a716-446655440001'],
-			initiator_gidouilles: 100,
-			partner_cards: ['550e8400-e29b-41d4-a716-446655440002'],
-			partner_gidouilles: 200,
-			message: 'How about this instead?'
-		};
-
-		const result = createOfferSchema.safeParse(data);
-		expect(result.success).toBe(true);
-	});
-
-	test('validates card UUIDs for both sides', () => {
-		// Invalid initiator card UUID
-		let result = createOfferSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			initiator_cards: ['not-a-uuid'],
-			partner_cards: []
-		});
-		expect(result.success).toBe(false);
-
-		// Invalid partner card UUID
-		result = createOfferSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			initiator_cards: [],
-			partner_cards: ['not-a-uuid']
-		});
-		expect(result.success).toBe(false);
-	});
-
-	test('validates gidouilles bounds for both sides', () => {
-		// Negative initiator gidouilles
-		let result = createOfferSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			initiator_gidouilles: -1
-		});
-		expect(result.success).toBe(false);
-
-		// Above max partner gidouilles
-		result = createOfferSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			partner_gidouilles: 10001
-		});
-		expect(result.success).toBe(false);
-	});
-
-	test('allows empty offers', () => {
-		const result = createOfferSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000'
-			// All other fields will use defaults
-		});
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.data.initiator_cards).toEqual([]);
-			expect(result.data.initiator_gidouilles).toBe(0);
-			expect(result.data.partner_cards).toEqual([]);
-			expect(result.data.partner_gidouilles).toBe(0);
-		}
-	});
-});
-
-describe('acceptTradeSchema', () => {
-	test('validates valid trade acceptance', () => {
-		const result = acceptTradeSchema.safeParse({
-			trade_id: '550e8400-e29b-41d4-a716-446655440000'
-		});
-		expect(result.success).toBe(true);
-	});
-
-	test('rejects invalid UUID', () => {
-		const result = acceptTradeSchema.safeParse({
-			trade_id: 'not-a-uuid'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toBe("ID d'échange invalide");
-		}
-	});
-
-	test('requires trade_id', () => {
-		const result = acceptTradeSchema.safeParse({});
-		expect(result.success).toBe(false);
 	});
 });
 

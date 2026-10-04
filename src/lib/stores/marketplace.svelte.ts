@@ -14,7 +14,6 @@ import type {
 	MarketplaceStats,
 	CreateListingData,
 	CreateProposalData,
-	CreateTradeOfferData,
 	ListingsFilter,
 	VipCardWithLockStatus,
 	MarketplaceTradeChatMessage
@@ -24,7 +23,6 @@ import {
 	createListingSchema,
 	createProposalSchema,
 	createTradeSchema,
-	createOfferSchema,
 	// chatMessageSchema, // TODO Phase 6: Uncomment when trade chat is implemented
 	updateProposalSchema
 } from '$lib/validation/marketplace';
@@ -42,7 +40,6 @@ class MarketplaceStore {
 
 	// Selected items for details view
 	selectedListing = $state<MarketplaceListing | null>(null);
-	selectedTrade = $state<MarketplaceTrade | null>(null);
 
 	// Pending actions count for badges
 	pendingActions = $state({
@@ -780,120 +777,6 @@ class MarketplaceStore {
 		}
 	}
 
-	// Submit trade offer
-	async submitTradeOffer(tradeId: string, offer: CreateTradeOfferData): Promise<boolean> {
-		// Validate data with Zod (adding trade_id)
-		const validationData = {
-			trade_id: tradeId,
-			initiator_cards: offer.initiator_card_ids || [],
-			initiator_gidouilles: offer.initiator_gidouilles || 0,
-			partner_cards: offer.partner_card_ids || [],
-			partner_gidouilles: offer.partner_gidouilles || 0
-		};
-		const validation = createOfferSchema.safeParse(validationData);
-		if (!validation.success) {
-			toaster.error(validation.error.issues[0].message);
-			return false;
-		}
-
-		try {
-			const response = await fetch(`/api/marketplace/trades/${tradeId}/offers`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(validation.data)
-			});
-
-			if (response.ok) {
-				const updatedTrade = await response.json();
-				this.activeTrades = this.activeTrades.map((t) => (t.id === tradeId ? updatedTrade : t));
-				if (this.selectedTrade?.id === tradeId) {
-					this.selectedTrade = updatedTrade;
-				}
-				toaster.success('Offre envoyée');
-				return true;
-			} else {
-				const error = await response.text();
-				toaster.error(error || "Erreur lors de l'envoi de l'offre");
-				return false;
-			}
-		} catch (_error) {
-			toaster.error("Erreur lors de l'envoi de l'offre");
-			return false;
-		}
-	}
-
-	/**
-	 * Accept the current offer in a friend trade
-	 *
-	 * CACHE UPDATE STRATEGY (same as acceptProposal):
-	 *
-	 * 1. GIDOUILLES - Predictive optimistic update:
-	 *    - Delta calculated based on role (initiator vs partner)
-	 *    - Initiator gives initiator_gidouilles, receives partner_gidouilles
-	 *    - Partner gives partner_gidouilles, receives initiator_gidouilles
-	 *    - Update BEFORE API, rollback on error
-	 *
-	 * 2. VIP CARDS - Server-confirmed update:
-	 *    - Cards in offer belong to the other user (partner's cards for me to receive)
-	 *    - We don't have their template_id in our local cache
-	 *    - Must invalidate and refetch after success to get complete card data
-	 *
-	 * @see acceptProposal for detailed pattern explanation
-	 */
-	async acceptTradeOffer(tradeId: string): Promise<boolean> {
-		const trade = this.activeTrades.find((t) => t.id === tradeId);
-		const offer = trade?.latest_offer;
-		const amInitiator = trade?.initiator_id === this._userId;
-
-		// Calculate gidouilles delta based on my role in the trade
-		// Initiator gives initiator_*, receives partner_*
-		// Partner gives partner_*, receives initiator_*
-		const gidouillesIGive = amInitiator
-			? offer?.initiator_gidouilles || 0
-			: offer?.partner_gidouilles || 0;
-		const gidouillesIReceive = amInitiator
-			? offer?.partner_gidouilles || 0
-			: offer?.initiator_gidouilles || 0;
-		const gidouillesDelta = gidouillesIReceive - gidouillesIGive;
-
-		// GIDOUILLES: Predictive optimistic update BEFORE API call
-		if (gidouillesDelta !== 0) {
-			studentCache.updateGidouillesOptimistic(gidouillesDelta);
-		}
-
-		try {
-			const response = await fetch(`/api/marketplace/trades/${tradeId}/accept`, {
-				method: 'POST'
-			});
-
-			if (response.ok) {
-				toaster.success('Échange accepté et complété!');
-
-				// VIP CARDS: Server-confirmed pattern - invalidate to force refetch
-				studentCache.invalidateRewards();
-
-				// Refresh marketplace UI state
-				await Promise.all([this.fetchMyTrades(), this.fetchMyVipCards()]);
-				return true;
-			} else {
-				// ROLLBACK: Reverse gidouilles delta on error
-				if (gidouillesDelta !== 0) {
-					studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-				}
-				const error = await response.text();
-				toaster.error(error || "Erreur lors de l'acceptation");
-				return false;
-			}
-		} catch (_error) {
-			// ROLLBACK: Reverse gidouilles delta on error
-			if (gidouillesDelta !== 0) {
-				studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-			}
-			toaster.error("Erreur lors de l'acceptation");
-			return false;
-		}
-	}
-
 	// Cancel trade
 	async cancelTrade(tradeId: string): Promise<boolean> {
 		try {
@@ -903,9 +786,6 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				this.activeTrades = this.activeTrades.filter((t) => t.id !== tradeId);
-				if (this.selectedTrade?.id === tradeId) {
-					this.selectedTrade = null;
-				}
 				toaster.info('Échange annulé');
 				// Refresh card locks (cards are now unlocked)
 				await this.fetchMyVipCards();
@@ -978,16 +858,6 @@ class MarketplaceStore {
 		this.selectedListing = listing;
 	}
 
-	// Select trade for negotiation
-	async selectTrade(trade: MarketplaceTrade | null) {
-		this.selectedTrade = trade;
-		// TODO Phase 6: Uncomment when trade chat is implemented
-		// if (trade) {
-		// 	await this.subscribeToTradeChat(trade.id);
-		// 	await this.fetchTradeChatMessages(trade.id);
-		// }
-	}
-
 	// Cleanup
 	cleanup() {
 		// Reset state
@@ -997,7 +867,6 @@ class MarketplaceStore {
 		this.myProposals = [];
 		this.receivedProposals = [];
 		this.selectedListing = null;
-		this.selectedTrade = null;
 		this.tradeChatMessages.clear();
 
 		// Reset cache timestamps
