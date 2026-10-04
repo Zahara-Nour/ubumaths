@@ -415,8 +415,13 @@ exactement (fractions, racines) ; option `vectorMode` (case ou `blankDefaults` ;
   suivante) ; dimension 2 ou 3 ;
 - `exact` (défaut) : mêmes coordonnées ; `colineaire` : tout multiple non nul est juste
   (`(-4;6)` pour `(2;-3)`, sans ½), le vecteur nul est faux avec un message ;
-- seule la valeur compte (`(\frac{2}{4};1)` juste) ; pas de `requiredForm` ni de contrainte
-  d'écriture ; specs : `correct` / `incorrect` seulement ;
+- vecteur juste : chaque coordonnée est ensuite jugée comme une case ordinaire (2026-10-04) —
+  en `exact`, contre la coordonnée attendue (`(\frac{2}{4};3)` pour `(\frac{1}{2};3)` : juste avec
+  « La fraction peut être simplifiée », `unoptimal_form` ; `(0.5;3)` : `bad_form`) ; en
+  `colineaire`, la valeur est libre, seules les contraintes d'écriture restent (fraction
+  simplifiable). Écrire l'attendue en LaTeX (`\frac{1}{2}`, pas `1/2`, sinon `\frac{1}{2}` est
+  jugé de mauvaise forme, comme dans une case) ; pas de `requiredForm` ; specs : `correct`,
+  `incorrect`, `unoptimal_form`, `bad_form` ;
 - attendue illisible, de dimension ≠ 2 ou 3, ou nulle en mode `colineaire` → specs rouges.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « vecteur »).
 

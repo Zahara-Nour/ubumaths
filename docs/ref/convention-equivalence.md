@@ -207,8 +207,10 @@ l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coe
   préfixe `\vec{u}=` / `\overrightarrow{AB}=` est ignoré ;
 - coordonnées constantes (fractions, racines, π, virgule décimale `0,5`) réduites par `normalize`
   et comparées EXACTEMENT, aucun flottant : `\frac{2}{\sqrt2}` = `\sqrt2`, `1,414` ≠ `\sqrt2` ;
-- seule la VALEUR est jugée : `(\frac{2}{4};1)` est juste pour `(\frac12;1)`, sans ½ ni contrainte
-  d'écriture.
+- la VALEUR décide du juste / faux ; un vecteur juste voit ensuite chaque coordonnée jugée comme
+  une case ordinaire (2026-10-04) : `(\frac{2}{4};1)` pour `(\frac12;1)` est juste avec « La
+  fraction peut être simplifiée » (`unoptimal_form`), `(0.5;1)` est de mauvaise forme ; en
+  `colineaire`, seule l'écriture compte (fraction simplifiable), la valeur étant libre.
 
 | `vectorMode`     | Attendue  | Réponse                                                  | Verdict                 |
 | ---------------- | --------- | -------------------------------------------------------- | ----------------------- |
