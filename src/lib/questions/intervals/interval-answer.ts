@@ -53,6 +53,12 @@ export interface IntervalVerdict {
 
 export type ExpectedIntervals = { ok: true; domain: Domain } | { ok: false; error: string };
 
+/** Réglages d'une case « intervalles » (voir `TemplateBlank.openableBounds`) */
+export interface IntervalJudgeOptions {
+	/** L'élève peut ouvrir une borne finie que l'attendu ferme, jamais l'inverse */
+	openableBounds?: boolean;
+}
+
 // Constantes
 
 /** Messages figés (français, tutoiement) */
@@ -229,6 +235,37 @@ function mistakeFeedback(student: Domain, expected: Domain): string | undefined 
 	return undefined;
 }
 
+/**
+ * Borne de l'élève acceptable pour une borne attendue, bornes ouvrables : même
+ * valeur, et ouverte dès que l'attendue l'est (une borne fermée attendue peut
+ * être ouverte, une borne ouverte attendue ne peut pas être fermée).
+ */
+function boundFits(student: Interval['lower'], expected: Interval['lower']): boolean {
+	return (
+		compareNumericNodes(student.value, expected.value) === 0 &&
+		(student.type === 'open' || expected.type === 'closed')
+	);
+}
+
+/**
+ * Option `openableBounds` : l'ensemble de l'élève est celui de l'attendu, à des
+ * bornes OUVERTES près. Appariement une à une, sur les composantes connexes
+ * (rangées) : même nombre d'intervalles, mêmes valeurs de bornes. Un attendu
+ * écrit `[a;b]∪[b;c]` EST `[a;c]` : `b` n'en est pas une borne, l'ouvrir
+ * (`]a;b[∪]b;c[`) retire un point intérieur → faux. ℝ et ∅ n'ont rien à ouvrir.
+ */
+function opensOnlyClosedBounds(student: Domain, expected: Domain): boolean {
+	const studentSet = expandExcludedPoints(student);
+	const expectedSet = expandExcludedPoints(expected);
+	if (studentSet.kind !== 'interval_set' || expectedSet.kind !== 'interval_set') return false;
+	const pairs = expectedSet.intervals;
+	if (pairs.length === 0 || studentSet.intervals.length !== pairs.length) return false;
+	return studentSet.intervals.every(
+		(interval, i) =>
+			boundFits(interval.lower, pairs[i].lower) && boundFits(interval.upper, pairs[i].upper)
+	);
+}
+
 function incorrect(feedback?: string): IntervalVerdict {
 	return feedback ? { status: 'incorrect', feedback } : { status: 'incorrect' };
 }
@@ -262,24 +299,31 @@ function readExpected(expected: string): ExpectedIntervals {
  * @param answer - réponse de l'élève (LaTeX de MathLive)
  * @param expected - réponse attendue du modèle, résolue
  * @param mode - réglage `intervalForm` du modèle (défaut `warn` = ½)
+ * @param options - réglages de la case (`openableBounds`)
  */
 export function judgeIntervalAnswer(
 	answer: string,
 	expected: string,
-	mode: ConstraintMode = DEFAULT_INTERVAL_FORM_MODE
+	mode: ConstraintMode = DEFAULT_INTERVAL_FORM_MODE,
+	options: IntervalJudgeOptions = {}
 ): IntervalVerdict {
 	const written = withoutSetName(answer);
 	if (!written) return { status: 'empty' };
 	if (isAnswerTooComplex(written)) return incorrect(INTERVAL_FEEDBACK.tooComplex);
 	try {
-		return judgeWritten(written, expected, mode);
+		return judgeWritten(written, expected, mode, options);
 	} catch {
 		// `SecurityError` du parseur (imbrication), erreur d'évaluation : jamais un plantage
 		return incorrect(INTERVAL_FEEDBACK.unreadable);
 	}
 }
 
-function judgeWritten(written: string, expected: string, mode: ConstraintMode): IntervalVerdict {
+function judgeWritten(
+	written: string,
+	expected: string,
+	mode: ConstraintMode,
+	options: IntervalJudgeOptions
+): IntervalVerdict {
 	// Modèle fautif : jamais une exception devant l'élève
 	const target = readExpectedIntervals(expected);
 	if (!target.ok) return incorrect();
@@ -293,7 +337,10 @@ function judgeWritten(written: string, expected: string, mode: ConstraintMode): 
 	const invalid = parsed.pieces.map(pieceError).find((error) => error !== undefined);
 	if (invalid) return incorrect(invalid);
 
-	if (!domainsAreEqual(parsed.domain, target.domain)) {
+	const sameSet =
+		domainsAreEqual(parsed.domain, target.domain) ||
+		(options.openableBounds === true && opensOnlyClosedBounds(parsed.domain, target.domain));
+	if (!sameSet) {
 		return incorrect(mistakeFeedback(parsed.domain, target.domain));
 	}
 

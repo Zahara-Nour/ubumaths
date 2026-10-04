@@ -359,3 +359,62 @@ describe('corrigé : pas de parenthèses en trop', () => {
 		);
 	});
 });
+
+describe('bornes ouvrables (option openableBounds, validée par David le 2026-10-04)', () => {
+	const judge = (answer: string, expected: string, openableBounds = true) =>
+		judgeIntervalAnswer(answer, expected, 'warn', { openableBounds }).status;
+
+	it('ouvrir une borne finie que l’attendu ferme : juste', () => {
+		expect(judge(']2;+\\infty[', '[2;+\\infty[')).toBe('correct');
+		expect(judge(']-1;3[', '[-1;3]')).toBe('correct');
+		expect(judge('[-1;3[', '[-1;3]')).toBe('correct');
+		expect(judge(']-\\infty;\\frac{1}{2}[', ']-\\infty;\\frac{1}{2}]')).toBe('correct');
+	});
+
+	it('l’écriture de l’attendu reste juste', () => {
+		expect(judge('[2;+\\infty[', '[2;+\\infty[')).toBe('correct');
+	});
+
+	it('fermer une borne que l’attendu ouvre : faux, avec le message du crochet', () => {
+		const verdict = judgeIntervalAnswer('[0;+\\infty[', ']0;+\\infty[', 'warn', {
+			openableBounds: true
+		});
+		expect(verdict.status).toBe('incorrect');
+		expect(verdict.feedback).toBeDefined();
+		expect(judge('[-1;3]', ']-1;3]')).toBe('incorrect');
+	});
+
+	it('valeur de borne fausse : faux, même ouverte', () => {
+		expect(judge(']3;+\\infty[', '[2;+\\infty[')).toBe('incorrect');
+		expect(judge('[1;3]', '[-1;3]')).toBe('incorrect');
+	});
+
+	it('réunion : bornes appariées une à une', () => {
+		const expected = ']-\\infty;-1]\\cup[1;+\\infty[';
+		expect(judge(']-\\infty;-1[\\cup]1;+\\infty[', expected)).toBe('correct');
+		expect(judge(']1;+\\infty[\\cup]-\\infty;-1]', expected)).toBe('correct');
+		expect(judge(']-\\infty;-1[', expected)).toBe('incorrect');
+		expect(judge(']-\\infty;+\\infty[', expected)).toBe('incorrect');
+	});
+
+	it('ouvrir un point intérieur de l’attendu : faux ([a;b]∪[b;c] = [a;c])', () => {
+		// L'attendu écrit en deux morceaux contigus EST l'intervalle [0;2] : 1 n'en est pas une borne
+		expect(judge(']0;1[\\cup]1;2[', '[0;1]\\cup[1;2]')).toBe('incorrect');
+		expect(judge(']0;1[\\cup]1;2[', '[0;2]')).toBe('incorrect');
+		expect(judge(']0;2[', '[0;1]\\cup[1;2]')).toBe('correct');
+	});
+
+	it('ℝ et l’ensemble vide : rien à ouvrir', () => {
+		expect(judge('\\mathbb{R}', '\\mathbb{R}')).toBe('correct');
+		expect(judge(']0;+\\infty[', '\\mathbb{R}')).toBe('incorrect');
+	});
+
+	it('écriture à reprendre : toujours ½ (morceaux contigus non réunis)', () => {
+		expect(judge(']0;1]\\cup[1;2[', '[0;2]')).toBe('unoptimal_form');
+	});
+
+	it('sans l’option : une borne ouverte à tort reste fausse', () => {
+		expect(judge(']2;+\\infty[', '[2;+\\infty[', false)).toBe('incorrect');
+		expect(judgeIntervalAnswer(']2;+\\infty[', '[2;+\\infty[').status).toBe('incorrect');
+	});
+});

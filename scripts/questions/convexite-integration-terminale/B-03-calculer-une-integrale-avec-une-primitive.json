@@ -294,6 +294,30 @@
 			}
 		},
 		{
+			"description": "v2 : a=2, n=3 → 2 ln 3",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["2\\ln(3)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : a=2, n=3 → ln 9 accepté",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"n": "3"
+			},
+			"answers": ["\\ln(9)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
 			"description": "v2 : a/n − a (primitive confondue)",
 			"variationIndex": 2,
 			"variables": {

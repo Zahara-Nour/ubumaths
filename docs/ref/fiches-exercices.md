@@ -428,7 +428,12 @@ Règles d'écriture qui évitent un défaut :
 - Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
-  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
+  de décroissance, de convexité : ajouter `"openableBounds": true` (case ou `blankDefaults`) —
+  l'élève peut OUVRIR une borne finie fermée (`]2;+\infty[` pour `[2;+\infty[`), jamais fermer
+  une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
+  « borne ouverte → correct » et « borne fermée à tort → incorrect »
+  (`docs/ref/convention-equivalence.md`, § Réponse « intervalles »).
 - Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
   `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`).
   `isPrime(expr)` y vaut 1 si expr est un entier premier, 0 sinon (non entier, < 2) : contre-exemple
@@ -531,7 +536,10 @@ variables tirées sont résolues dans `integrand`, `interval`, `equation`, `init
 Corrigés dans le moteur (ne plus contourner) : `\frac{x^3}{3}` et `\frac{1}{3}x^3` (et
 `\frac{-x^2}{4}`, `-\frac{1}{4}x^2`) sont une seule forme dans une case ordinaire, une fraction
 simplifiable restant perfectible (2026-10-04) ; `\ln|x|` a la forme de `\ln(x)` quand
-`options.answerAssumptions` déclare x > 0 (2026-10-04) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
+`options.answerAssumptions` déclare x > 0 (2026-10-04) ; `\ln 9` et `2\ln 3` (et `\ln 8` /
+`3\ln 2`, `\ln\frac{1}{2}` / `-\ln 2`, `3\ln 4` / `\ln 64`) sont une seule forme : plus besoin
+de `form: "off"` pour eux (2026-10-04 ; `\ln 6` / `\ln 2+\ln 3` et `\ln\frac{4}{3}` /
+`\ln 4-\ln 3` restent deux formes) ; notations `\exp`, `\exponentialE`, `\mathrm{e}`
 (#616) ; `(x+1)/e^x`, `e×e`, `(e²)ⁿ` (#618) ; `\textcolor{#…}` dans le PDF (#602) ; tableau à
 cellules `{{…}}` dans un énoncé, `\dots`, bloc de code sous « 10. » (#609) ; courbe, tableau, code
 et liste dans l'énoncé d'une question à trous (#607).
