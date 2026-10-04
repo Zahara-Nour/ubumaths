@@ -132,3 +132,54 @@ describe('validateAlgebraic', () => {
 		expect(validateAlgebraic('x^{a+b}', 'x^{a}x^{b}').isCorrect).toBe(false);
 	});
 });
+
+// ============================================================================
+// Forme : |u| et u sont la même écriture quand l'énoncé déclare u ≥ 0
+// ============================================================================
+
+describe('forme sous hypothèse : |u| s’écrit u quand u ≥ 0 est déclaré', () => {
+	const status = (expected: string, answer: string, options?: QuestionInstance['options']) => {
+		const instance = createInstance([{ expectedAnswer: expected, type: 'math' }], options);
+		const result = validateAnswer([answer], instance, [answer]);
+		return result.status ?? (result.isCorrect ? 'correct' : 'incorrect');
+	};
+
+	it('\\ln|x|+2 pour \\ln(x)+2 : juste avec x > 0 (pas « forme demandée »)', () => {
+		const options = { answerAssumptions: X_POSITIVE };
+		expect(status('\\ln(x)+2', '\\ln|x|+2', options)).toBe('correct');
+		expect(status('\\ln(x)+2', '\\ln\\left|x\\right|+2', options)).toBe('correct');
+		expect(status('\\ln|x|+2', '\\ln(x)+2', options)).toBe('correct');
+	});
+
+	it('|x|+2 pour x+2 et 3|x| pour 3x : juste avec x > 0 ou x ≥ 0', () => {
+		expect(status('x+2', '|x|+2', { answerAssumptions: X_POSITIVE })).toBe('correct');
+		// `3|x|` nu ne se lit pas (parseur LaTeX) : écriture `\left|…\right|` de MathLive
+		expect(status('3x', '3\\left|x\\right|', { answerAssumptions: { x: 'nonnegative' } })).toBe(
+			'correct'
+		);
+		expect(status('2(x+1)', '2\\left|x+1\\right|', { answerAssumptions: X_POSITIVE })).toBe(
+			'correct'
+		);
+	});
+
+	it('sans hypothèse : \\ln|x| reste faux (ln|x| ≠ ln x sur ℝ*)', () => {
+		expect(status('\\ln(x)+2', '\\ln|x|+2')).toBe('incorrect');
+	});
+
+	it('hypothèse sur une autre variable, ou |x-1| : rien ne change', () => {
+		expect(status('\\ln(x)+2', '\\ln|x|+2', { answerAssumptions: { y: 'positive' } })).toBe(
+			'incorrect'
+		);
+		expect(status('\\ln(x-1)', '\\ln|x-1|', { answerAssumptions: X_POSITIVE })).toBe('incorrect');
+	});
+
+	it('valeur fausse sous hypothèse : reste fausse', () => {
+		expect(status('\\ln(x)+2', '\\ln|x|+3', { answerAssumptions: X_POSITIVE })).toBe('incorrect');
+	});
+
+	it('une autre forme non réduite reste refusée', () => {
+		expect(status('2\\ln(x)', '\\ln|x|+\\ln|x|', { answerAssumptions: X_POSITIVE })).toBe(
+			'bad_form'
+		);
+	});
+});

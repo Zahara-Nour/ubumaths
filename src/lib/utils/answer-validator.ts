@@ -156,11 +156,14 @@ function extractNumericLatexPart(latex: string): string {
  */
 function formOptionsOf(
 	constraints: ConstraintOptions,
-	genericFunctions: GenericFunctionConfig | undefined
+	genericFunctions: GenericFunctionConfig | undefined,
+	assumptions?: AnswerAssumptions
 ): CheckFormOptions {
 	return {
 		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true,
-		...(genericFunctions && { genericFunctions })
+		...(genericFunctions && { genericFunctions }),
+		// Hypothèses de l'énoncé (ADR 0012) : `|x|` s'écrit `x` quand x > 0 est déclaré
+		...(assumptions && { assumptions })
 	};
 }
 
@@ -181,14 +184,15 @@ function applyConstraints(
 	answersLatex: string[],
 	expectedAnswers: string[],
 	constraints: ConstraintOptions,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	assumptions?: AnswerAssumptions
 ): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
 	const violations: NonNullable<ValidationResult['constraintViolations']> = [];
 	let worstStatus: ValidationStatus = 'correct';
 	const isMultiple = answers.length > 1;
 	const severities = buildConstraintSeverities(constraints);
 	const formMode = (constraints.form as ConstraintMode | undefined) ?? DEFAULT_FORM_CONSTRAINT_MODE;
-	const formOptions = formOptionsOf(constraints, genericFunctions);
+	const formOptions = formOptionsOf(constraints, genericFunctions, assumptions);
 
 	// Apply unified checkForm for each answer/expected pair
 	for (let i = 0; i < answersLatex.length; i++) {
@@ -1354,7 +1358,8 @@ function validateSingleBlank(
 		[effectiveLatex],
 		[blank.expectedAnswer],
 		constraints,
-		genericFunctions
+		genericFunctions,
+		instance.options?.answerAssumptions
 	);
 
 	return {
@@ -1767,7 +1772,8 @@ function matchedAnswerForm(
 						[blankLatex],
 						[blank.expectedAnswer],
 						instance.options?.constraints ?? {},
-						genericFunctions
+						genericFunctions,
+						instance.options?.answerAssumptions
 					);
 		if (status === 'bad_form') worstStatus = 'bad_form';
 		else if (status === 'unoptimal_form' && worstStatus === 'correct')

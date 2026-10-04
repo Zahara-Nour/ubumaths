@@ -20,6 +20,7 @@ import {
 	opposite,
 	multiply,
 	divide,
+	parentheses,
 	add,
 	subtract,
 	percentage,
@@ -36,8 +37,14 @@ import {
 	isPiConstant
 } from './guards';
 import { areEquivalent } from './equivalence';
+import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { extractRational } from './common/numeric';
-import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
+import {
+	mapNode,
+	mapNodeTopDown,
+	stripUnnecessaryBrackets,
+	removeNullTermsAST
+} from './transforms';
 import {
 	flattenSumShallow,
 	flattenProductShallow,
@@ -837,6 +844,11 @@ export interface CheckFormOptions {
 	 * déclaré par un modèle de question). Absent : défauts du parseur, rien ne change.
 	 */
 	genericFunctions?: GenericFunctionConfig;
+	/**
+	 * Hypothèses de l'énoncé (ADR 0012), `x > 0` : `|x|` et `x` y sont la même écriture.
+	 * Absent ou vide : rien ne change.
+	 */
+	assumptions?: AnswerAssumptions;
 }
 
 /**
@@ -1064,11 +1076,47 @@ function unifyMonomialFractionNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/** `|u|` : la valeur absolue (lue `abs(u)`) */
+function isAbsolute(node: MathNode): node is MathNode & { type: 'function' } {
+	return node.type === 'function' && node.name === 'abs' && node.args.length === 1;
+}
+
+/**
+ * Sous l'hypothèse de l'énoncé `u ≥ 0` (ADR 0012), `|u|` et `u` sont la même écriture :
+ * `\ln|x|` pour `\ln(x)` avec x > 0 (défaut validé par David le 2026-10-04). Même
+ * oracle que la normalisation (`|u| → u`, normalize.ts), et même garde que
+ * `areEquivalent` : algèbre simple seulement, variable déclarée mentionnée. Argument
+ * d'une fonction (`\ln|x+1|`) : la barre disparaît ; ailleurs, une somme garde ses
+ * parenthèses (`2|x+1|` → `2(x+1)`).
+ */
+function absoluteUnderAssumptionsAST(assumptions: AnswerAssumptions | undefined) {
+	const oracle = assumptionOracle(assumptions);
+	return (ast: MathNode): MathNode => {
+		if (!oracle || !isPlainAlgebra(ast)) return ast;
+		const unsigned = (node: MathNode): MathNode | null =>
+			isAbsolute(node) && oracle.isNonNegative(node.args[0]) ? node.args[0] : null;
+		return mapNodeTopDown(ast, (node) => {
+			if (node.type === 'function' && !isAbsolute(node)) {
+				const args = node.args.map((arg) => unsigned(arg) ?? arg);
+				return args.some((arg, i) => arg !== node.args[i]) ? { ...node, args } : node;
+			}
+			const content = unsigned(node);
+			if (content === null) return node;
+			const atomic =
+				content.type !== 'addition' &&
+				content.type !== 'subtraction' &&
+				content.type !== 'opposite';
+			return atomic ? content : parentheses(content);
+		});
+	};
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyMonomialFractionNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: absoluteUnderAssumptionsAST(options.assumptions), constraintId: null }, // hypothèse, pas forme
 		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
