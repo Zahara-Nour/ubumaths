@@ -1022,3 +1022,18 @@ refusé, jamais d'erreur de cast). Ne s'appliquent qu'aux canaux **privés**
 (`config: { private: true }`) ; le client passe en privé dans une PR séparée, après application de
 la migration. Suivi : `docs/wip/realtime-chat-prive-progress.md`. Tests :
 `tests/integration/realtime-chat-prive.test.ts`.
+
+## Échanges de cartes — canal temps réel privé (2026-10-04)
+
+Migration `20261004120000_realtime_trade_prive`. Deux policies sur `realtime.messages`,
+`TO authenticated`, extension `broadcast` : `trade_realtime_participants_receive` (SELECT =
+recevoir) et `trade_realtime_participants_send` (INSERT = diffuser). Condition : une ligne
+`marketplace_trades` avec `'trade:' || id::text = realtime.topic()` et
+`initiator_id = auth.uid() OR partner_id = auth.uid()`. Le prof et l'admin, qui lisent la ligne
+de l'échange, n'entrent **pas** sur le canal (décision de David du 2026-10-04). Pas de
+SECURITY DEFINER : `marketplace_trades_select_participants` laisse chaque élève voir sa ligne.
+Les policies `chat-*` et `trade:*` se combinent en OU sans se croiser (préfixes disjoints,
+prouvé par test sur une conversation et un échange de même uuid). Ne s'appliquent qu'aux canaux
+**privés** ; le client (`src/lib/stores/tradeRealtime.svelte.ts`) passe en privé dans une PR
+séparée. Suivi : `docs/wip/realtime-trade-prive-progress.md`. Tests :
+`tests/integration/realtime-trade-prive.test.ts`.
