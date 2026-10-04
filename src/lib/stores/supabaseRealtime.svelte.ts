@@ -38,6 +38,8 @@ class SupabaseRealtimeManager {
 	private supabase: SupabaseClient<Database> | null = null;
 	private userId: string | null = null;
 	private channels = new Map<string, RealtimeChannel>();
+	/** Canal privé ou public, par nom (un canal en cache ne change pas de nature). */
+	private channelPrivacy = new Map<string, boolean>();
 
 	/**
 	 * Current connection status
@@ -91,16 +93,25 @@ class SupabaseRealtimeManager {
 		}
 
 		// Return existing channel if already created
+		const isPrivate = options.private === true;
 		if (this.channels.has(channelName)) {
+			// Rendre un canal public à qui demande un canal privé (ou l'inverse)
+			// rouvrirait en silence ce que les policies ferment.
+			if (this.channelPrivacy.get(channelName) !== isPrivate) {
+				throw new Error(
+					`Channel "${channelName}" already exists as ${isPrivate ? 'public' : 'private'}; remove it before recreating it as ${isPrivate ? 'private' : 'public'}.`
+				);
+			}
 			logger.info(`Channel "${channelName}" already exists, returning existing instance`);
 			return this.channels.get(channelName)!;
 		}
 
 		// Create new channel
-		const channel = options.private
+		const channel = isPrivate
 			? this.supabase.channel(channelName, { config: { private: true } })
 			: this.supabase.channel(channelName);
 		this.channels.set(channelName, channel);
+		this.channelPrivacy.set(channelName, isPrivate);
 
 		logger.info(`Channel "${channelName}" created`);
 		return channel;
@@ -125,7 +136,7 @@ class SupabaseRealtimeManager {
 		}
 
 		return new Promise((resolve, reject) => {
-			channel.subscribe((status) => {
+			channel.subscribe((status, err) => {
 				logger.info(`Channel "${channelName}" status:`, status);
 
 				switch (status) {
@@ -145,7 +156,12 @@ class SupabaseRealtimeManager {
 					case 'CHANNEL_ERROR':
 						this.connectionStatus = 'disconnected';
 						logger.error(`Channel "${channelName}" error`);
-						reject(new Error(`Failed to subscribe to channel "${channelName}"`));
+						// La raison du serveur (ex. refus d'autorisation d'un canal privé)
+						reject(
+							new Error(
+								`Failed to subscribe to channel "${channelName}"${err ? `: ${err.message}` : ''}`
+							)
+						);
 						break;
 
 					case 'TIMED_OUT':
@@ -178,6 +194,7 @@ class SupabaseRealtimeManager {
 		// Remove channel from Supabase
 		await this.supabase.removeChannel(channel);
 		this.channels.delete(channelName);
+		this.channelPrivacy.delete(channelName);
 
 		logger.info(`Unsubscribed from channel "${channelName}"`);
 
@@ -221,6 +238,7 @@ class SupabaseRealtimeManager {
 
 		// Clear channels map
 		this.channels.clear();
+		this.channelPrivacy.clear();
 
 		// Update status
 		this.connectionStatus = 'disconnected';

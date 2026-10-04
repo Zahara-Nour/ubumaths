@@ -14,53 +14,43 @@ const logger = createLogger('tradeRealtime.svelte.ts');
 // =============================================================================
 
 /**
- * Schema for offer update payload
- */
-const offerUpdatedPayloadSchema = z.object({
-	from: z.enum(['initiator', 'partner']),
-	cards: z.array(z.string().uuid()),
-	gidouilles: z.number().int().min(0)
-});
-
-/**
- * Schema for validation change payload
- */
-const validationChangedPayloadSchema = z.object({
-	from: z.enum(['initiator', 'partner']),
-	validated: z.boolean()
-});
-
-/**
- * Schema for confirmation payload
- */
-const confirmationPayloadSchema = z.object({
-	from: z.enum(['initiator', 'partner']),
-	confirmed: z.boolean()
-});
-
-/**
- * Schema for chat message payload
+ * Message de chat éphémère reçu sur le canal privé `trade:<id>`.
+ *
+ * ⚠️ Seul le TEXTE est gardé : l'auteur, l'identifiant et l'horodatage du
+ * payload (`senderId`, `id`, `createdAt`, envoyés par les anciens clients)
+ * sont ignorés par Zod. Le chat d'échange n'est pas stocké en base : l'auteur
+ * affiché est « l'autre élève de l'échange », lu dans la ligne de l'échange.
  */
 const chatMessagePayloadSchema = z.object({
-	id: z.string().uuid(),
-	senderId: z.string().uuid(),
-	message: z.string().max(500),
-	createdAt: z.string()
+	message: z.string().trim().min(1).max(500)
 });
 
 /**
- * Schema for trade cancelled payload
- */
-const tradeCancelledPayloadSchema = z.object({
-	by: z.enum(['initiator', 'partner'])
-});
-
-/**
- * Schema for presence payload
+ * Heartbeat de présence (événement broadcast, pas la Presence Realtime).
+ * Aucune source en base : sur le canal privé, seul l'autre élève peut l'émettre.
  */
 const presencePayloadSchema = z.object({
 	online: z.boolean()
 });
+
+/**
+ * Colonnes relues en base à chaque signal (offre, validations, confirmations,
+ * statut). Ce sont elles, jamais le payload, qui s'affichent.
+ */
+const TRADE_SNAPSHOT_COLUMNS =
+	'status, current_offer, validated_by_initiator, validated_by_partner, confirmed_by_initiator, confirmed_by_partner, completed_at, cancelled_at' as const;
+
+/**
+ * Événements broadcast traités comme simples SIGNAUX « l'échange a changé,
+ * relis la base » : leur payload n'est pas lu.
+ */
+const TRADE_SIGNAL_EVENTS = [
+	'offer_updated',
+	'validation_changed',
+	'confirmation',
+	'trade_cancelled',
+	'trade_completed'
+] as const;
 
 // =============================================================================
 // TYPES
@@ -85,14 +75,82 @@ export interface TradeChatMessage {
 }
 
 /**
- * Broadcast event types
+ * Payloads broadcast (les signaux d'échange n'en ont pas)
  */
-type BroadcastOfferUpdatedPayload = z.infer<typeof offerUpdatedPayloadSchema>;
-type BroadcastValidationChangedPayload = z.infer<typeof validationChangedPayloadSchema>;
-type BroadcastConfirmationPayload = z.infer<typeof confirmationPayloadSchema>;
 type BroadcastChatMessagePayload = z.infer<typeof chatMessagePayloadSchema>;
-type BroadcastTradeCancelledPayload = z.infer<typeof tradeCancelledPayloadSchema>;
 type BroadcastPresencePayload = z.infer<typeof presencePayloadSchema>;
+
+/**
+ * Ligne de l'échange relue en base à chaque signal
+ */
+type TradeSnapshotRow = Pick<
+	Database['public']['Tables']['marketplace_trades']['Row'],
+	| 'status'
+	| 'current_offer'
+	| 'validated_by_initiator'
+	| 'validated_by_partner'
+	| 'confirmed_by_initiator'
+	| 'confirmed_by_partner'
+	| 'completed_at'
+	| 'cancelled_at'
+>;
+
+/**
+ * Offres des deux élèves, lues dans `current_offer`
+ */
+interface ParsedOffers {
+	initiator: TradeOffer;
+	partner: TradeOffer;
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+
+/**
+ * Lit `current_offer` (nouveau format `from_initiator`/`from_partner` ou
+ * ancien format `initiator_cards`…). Ce qui n'a pas la bonne forme est ignoré.
+ *
+ * @param raw - Valeur jsonb de la base
+ * @returns Les offres des deux élèves (vides par défaut)
+ */
+function parseCurrentOffer(raw: unknown): ParsedOffers {
+	const offer = (raw && typeof raw === 'object' ? raw : {}) as {
+		from_initiator?: { cards?: unknown; gidouilles?: unknown };
+		from_partner?: { cards?: unknown; gidouilles?: unknown };
+		initiator_cards?: unknown;
+		initiator_gidouilles?: unknown;
+		partner_cards?: unknown;
+		partner_gidouilles?: unknown;
+	};
+	const toCards = (v: unknown): string[] =>
+		Array.isArray(v) ? v.filter((c): c is string => typeof c === 'string') : [];
+	const toAmount = (v: unknown): number =>
+		typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : 0;
+
+	const hasNewFormat = Boolean(offer.from_initiator || offer.from_partner);
+	return hasNewFormat
+		? {
+				initiator: {
+					cards: toCards(offer.from_initiator?.cards),
+					gidouilles: toAmount(offer.from_initiator?.gidouilles)
+				},
+				partner: {
+					cards: toCards(offer.from_partner?.cards),
+					gidouilles: toAmount(offer.from_partner?.gidouilles)
+				}
+			}
+		: {
+				initiator: {
+					cards: toCards(offer.initiator_cards),
+					gidouilles: toAmount(offer.initiator_gidouilles)
+				},
+				partner: {
+					cards: toCards(offer.partner_cards),
+					gidouilles: toAmount(offer.partner_gidouilles)
+				}
+			};
+}
 
 // =============================================================================
 // TRADE REALTIME STORE
@@ -266,6 +324,48 @@ class TradeRealtimeStore {
 	private visibilityHandler: (() => void) | null = null;
 	private idleTimer: ReturnType<typeof setTimeout> | null = null;
 	private idleActivityHandler: (() => void) | null = null;
+
+	// ANTI-SATURATION DES SIGNAUX (l'autre élève peut diffuser en rafale ;
+	// chaque signal coûte une relecture de l'échange en base)
+
+	/** Regroupement des signaux d'échange avant relecture (ms). */
+	private readonly SIGNAL_REFETCH_DEBOUNCE_MS = 300;
+
+	/** Relectures autorisées par fenêtre glissante. */
+	private readonly SIGNAL_REFETCH_LIMIT = 20;
+
+	/** Durée de la fenêtre glissante des relectures (ms). */
+	private readonly SIGNAL_REFETCH_WINDOW_MS = 10_000;
+
+	/** Messages de chat éphémères acceptés par fenêtre glissante. */
+	private readonly CHAT_MESSAGE_LIMIT = 20;
+
+	/** Durée de la fenêtre glissante du chat (ms). */
+	private readonly CHAT_MESSAGE_WINDOW_MS = 10_000;
+
+	/** Messages de chat gardés en mémoire (les plus récents). */
+	private readonly MAX_CHAT_MESSAGES = 200;
+
+	/** Relecture en attente (regroupement ou plafond). */
+	private refetchTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/** Relecture en cours. */
+	private refetchInFlight = false;
+
+	/** Un signal est arrivé pendant la relecture en cours : relire après. */
+	private refetchRequestedDuringFlight = false;
+
+	/** Horodatages des relectures récentes. */
+	private refetchTimes: number[] = [];
+
+	/** Horodatages des messages de chat reçus récemment (valides ou non). */
+	private chatMessageTimes: number[] = [];
+
+	/**
+	 * Compteur de MES écritures de validation abouties. Une relecture lancée
+	 * avant la dernière peut rendre une validation périmée (pas un refus).
+	 */
+	private myValidationWrites = 0;
 
 	/**
 	 * Max cards per offer
@@ -458,57 +558,11 @@ class TradeRealtimeStore {
 		this.partnerValidation =
 			this.myRole === 'initiator' ? trade.validated_by_partner : trade.validated_by_initiator;
 
-		// Parse current offer if exists
+		// Offres enregistrées (même lecture que les relectures sur signal)
 		if (trade.current_offer) {
-			// Support both formats:
-			// - New format: { from_initiator: {cards, gidouilles}, from_partner: {cards, gidouilles} }
-			// - Legacy format: { initiator_cards, initiator_gidouilles, partner_cards, partner_gidouilles }
-			const offer = trade.current_offer as {
-				// New format
-				from_initiator?: { cards?: string[]; gidouilles?: number };
-				from_partner?: { cards?: string[]; gidouilles?: number };
-				// Legacy format
-				initiator_cards?: string[];
-				initiator_gidouilles?: number;
-				partner_cards?: string[];
-				partner_gidouilles?: number;
-			};
-
-			// Determine which format we're dealing with
-			const hasNewFormat = offer.from_initiator || offer.from_partner;
-
-			const initiatorCards = hasNewFormat
-				? (offer.from_initiator?.cards ?? [])
-				: (offer.initiator_cards ?? []);
-			const initiatorGidouilles = hasNewFormat
-				? (offer.from_initiator?.gidouilles ?? 0)
-				: (offer.initiator_gidouilles ?? 0);
-			const partnerCards = hasNewFormat
-				? (offer.from_partner?.cards ?? [])
-				: (offer.partner_cards ?? []);
-			const partnerGidouilles = hasNewFormat
-				? (offer.from_partner?.gidouilles ?? 0)
-				: (offer.partner_gidouilles ?? 0);
-
-			if (this.myRole === 'initiator') {
-				this.myOffer = {
-					cards: initiatorCards,
-					gidouilles: initiatorGidouilles
-				};
-				this.partnerOffer = {
-					cards: partnerCards,
-					gidouilles: partnerGidouilles
-				};
-			} else {
-				this.myOffer = {
-					cards: partnerCards,
-					gidouilles: partnerGidouilles
-				};
-				this.partnerOffer = {
-					cards: initiatorCards,
-					gidouilles: initiatorGidouilles
-				};
-			}
+			const offers = parseCurrentOffer(trade.current_offer);
+			this.myOffer = this.myRole === 'initiator' ? offers.initiator : offers.partner;
+			this.partnerOffer = this.myRole === 'initiator' ? offers.partner : offers.initiator;
 		}
 
 		// Check if confirmation modal should be shown
@@ -528,70 +582,45 @@ class TradeRealtimeStore {
 
 	/**
 	 * Subscribe to the broadcast channel
+	 *
+	 * Canal PRIVÉ (migration `20261004120000_realtime_trade_prive.sql`) : seuls
+	 * les deux élèves de l'échange le rejoignent et y diffusent. C'est le SEUL
+	 * endroit qui ouvre `trade:<id>` ; une réouverture (page rechargée, retour
+	 * après « Quitter ») repasse par `init()` puis ici.
+	 *
+	 * ⚠️ La policy vérifie QUI diffuse, pas CE QU'IL diffuse : l'autre élève peut
+	 * forger n'importe quel payload. Les événements d'échange ne sont donc que
+	 * des SIGNAUX (relecture de la ligne en base, sous RLS) ; seuls le texte du
+	 * chat éphémère et le heartbeat de présence, sans source en base, sont lus.
 	 */
 	private async subscribeToChannel(): Promise<void> {
-		if (!this.tradeId) {
+		if (!this.tradeId || !this.supabase) {
 			throw new Error('Trade ID not set');
 		}
 
 		const channelName = `trade:${this.tradeId}`;
 
 		try {
-			const channel = supabaseRealtimeManager.createChannel(channelName);
+			const channel = supabaseRealtimeManager.createChannel(channelName, { private: true });
 
-			// Subscribe to offer updates
-			channel.on('broadcast', { event: 'offer_updated' }, ({ payload }) => {
-				const validation = offerUpdatedPayloadSchema.safeParse(payload);
-				if (!validation.success) {
-					logger.warn('Invalid offer_updated payload:', validation.error.issues);
-					return;
-				}
-				this.handleOfferUpdated(validation.data);
-			});
+			// Offre, validation, confirmation, annulation, fin : signal → relecture.
+			for (const event of TRADE_SIGNAL_EVENTS) {
+				channel.on('broadcast', { event }, () => {
+					this.scheduleTradeRefetch();
+				});
+			}
 
-			// Subscribe to validation changes
-			channel.on('broadcast', { event: 'validation_changed' }, ({ payload }) => {
-				const validation = validationChangedPayloadSchema.safeParse(payload);
-				if (!validation.success) {
-					logger.warn('Invalid validation_changed payload:', validation.error.issues);
-					return;
-				}
-				this.handleValidationChanged(validation.data);
-			});
-
-			// Subscribe to confirmations
-			channel.on('broadcast', { event: 'confirmation' }, ({ payload }) => {
-				const validation = confirmationPayloadSchema.safeParse(payload);
-				if (!validation.success) {
-					logger.warn('Invalid confirmation payload:', validation.error.issues);
-					return;
-				}
-				this.handleConfirmation(validation.data);
-			});
-
-			// Subscribe to chat messages
+			// Chat éphémère : seul le texte est lu (cf. chatMessagePayloadSchema)
 			channel.on('broadcast', { event: 'chat_message' }, ({ payload }) => {
+				// Plafond AVANT validation : une rafale de payloads invalides ne
+				// doit pas non plus inonder la console.
+				if (!this.acquireChatSlot()) return;
 				const validation = chatMessagePayloadSchema.safeParse(payload);
 				if (!validation.success) {
 					logger.warn('Invalid chat_message payload:', validation.error.issues);
 					return;
 				}
 				this.handleChatMessage(validation.data);
-			});
-
-			// Subscribe to trade cancellation
-			channel.on('broadcast', { event: 'trade_cancelled' }, ({ payload }) => {
-				const validation = tradeCancelledPayloadSchema.safeParse(payload);
-				if (!validation.success) {
-					logger.warn('Invalid trade_cancelled payload:', validation.error.issues);
-					return;
-				}
-				this.handleTradeCancelled(validation.data);
-			});
-
-			// Subscribe to trade completion
-			channel.on('broadcast', { event: 'trade_completed' }, () => {
-				this.handleTradeCompleted();
 			});
 
 			// Subscribe to presence updates
@@ -603,6 +632,11 @@ class TradeRealtimeStore {
 				}
 				this.handlePresence(validation.data);
 			});
+
+			// Canal privé : Realtime doit connaître l'élève (jeton de session, pas
+			// la clé publique) au moment de la jonction. Les rafraîchissements
+			// suivants sont transmis par supabase-js lui-même.
+			await this.supabase.realtime.setAuth();
 
 			await supabaseRealtimeManager.subscribeChannel(channelName);
 
@@ -642,6 +676,15 @@ class TradeRealtimeStore {
 			clearTimeout(this.confirmationTimer);
 			this.confirmationTimer = null;
 		}
+
+		// Relectures sur signal
+		if (this.refetchTimer) {
+			clearTimeout(this.refetchTimer);
+			this.refetchTimer = null;
+		}
+		this.refetchRequestedDuringFlight = false;
+		this.refetchTimes = [];
+		this.chatMessageTimes = [];
 
 		// Clear presence interval
 		if (this.presenceInterval) {
@@ -715,8 +758,8 @@ class TradeRealtimeStore {
 		// Reset validation when offer changes
 		if (this.myValidation) {
 			this.myValidation = false;
-			// Broadcast validation reset
-			this.broadcastValidationChanged(false);
+			// L'autre élève relit la base : la remise à zéro y est écrite AVANT le signal.
+			void this.saveMyValidationReset().then(() => this.broadcastSignal('validation_changed'));
 		}
 
 		// Debounce broadcast and DB save
@@ -725,10 +768,40 @@ class TradeRealtimeStore {
 		}
 
 		this.debounceTimer = setTimeout(() => {
-			this.broadcastOfferUpdated();
-			// Also persist to database so partner sees it when they open the trade
-			this.saveOfferToDatabase();
+			// Signal APRÈS l'écriture : l'autre élève relit l'offre en base.
+			void this.saveOfferToDatabase().then(() => this.broadcastSignal('offer_updated'));
 		}, this.DEBOUNCE_DELAY);
+	}
+
+	/**
+	 * Écrit en base la remise à zéro de MA validation (offre modifiée).
+	 */
+	private async saveMyValidationReset(): Promise<void> {
+		if (!this.supabase || !this.tradeId || !this.myRole) return;
+
+		// `.select()` : un refus RLS rend zéro ligne, sans erreur.
+		const { data, error } =
+			this.myRole === 'initiator'
+				? await this.supabase
+						.from('marketplace_trades')
+						.update({ validated_by_initiator: false, updated_at: new Date().toISOString() })
+						.eq('id', this.tradeId)
+						.select('id')
+				: await this.supabase
+						.from('marketplace_trades')
+						.update({ validated_by_partner: false, updated_at: new Date().toISOString() })
+						.eq('id', this.tradeId)
+						.select('id');
+
+		if (error) {
+			logger.error('Failed to reset validation in DB:', error);
+			return;
+		}
+		if (!data || data.length === 0) {
+			logger.error('Validation reset affected 0 row (RLS or trade gone):', this.tradeId);
+			return;
+		}
+		this.myValidationWrites++;
 	}
 
 	/**
@@ -912,9 +985,10 @@ class TradeRealtimeStore {
 
 			// Update local state
 			this.myValidation = newValidation;
+			this.myValidationWrites++;
 
-			// Broadcast change
-			this.broadcastValidationChanged(newValidation);
+			// Signal (après l'écriture en base)
+			this.broadcastSignal('validation_changed');
 
 			// Check if both validated - show confirmation modal
 			if (newValidation && this.partnerValidation) {
@@ -1004,8 +1078,8 @@ class TradeRealtimeStore {
 			// Update local state
 			this.myConfirmation = true;
 
-			// Broadcast confirmation
-			this.broadcastConfirmation(true);
+			// Signal (la confirmation est écrite en base par l'API)
+			this.broadcastSignal('confirmation');
 
 			logger.info('Trade confirmed by:', this.myRole);
 
@@ -1018,17 +1092,8 @@ class TradeRealtimeStore {
 					completed_at: new Date().toISOString()
 				};
 
-				// Broadcast trade completion so partner's page also updates
-				const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
-				if (channel) {
-					channel
-						.send({
-							type: 'broadcast',
-							event: 'trade_completed',
-							payload: { tradeId: this.tradeId }
-						})
-						.catch((err) => logger.error('Failed to broadcast trade completion:', err));
-				}
+				// Signal de fin : l'autre élève relit le statut en base
+				this.broadcastSignal('trade_completed');
 			}
 		} catch (err) {
 			logger.error('Failed to confirm trade:', err);
@@ -1075,8 +1140,8 @@ class TradeRealtimeStore {
 				this.confirmationTimer = null;
 			}
 
-			// Broadcast refusal
-			this.broadcastConfirmation(false);
+			// Signal du refus (validations remises à zéro en base ci-dessus)
+			this.broadcastSignal('confirmation');
 
 			logger.info('Confirmation refused, validations reset');
 		} catch (err) {
@@ -1130,16 +1195,17 @@ class TradeRealtimeStore {
 		};
 
 		// Add to local state immediately (optimistic)
-		this.messages = [...this.messages, chatMessage];
+		this.messages = [...this.messages, chatMessage].slice(-this.MAX_CHAT_MESSAGES);
 
-		// Broadcast message
+		// Diffuse le TEXTE seulement : l'auteur est déduit par le destinataire.
 		const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
 		if (channel) {
+			const payload: BroadcastChatMessagePayload = { message: trimmedMessage };
 			channel
 				.send({
 					type: 'broadcast',
 					event: 'chat_message',
-					payload: chatMessage
+					payload
 				})
 				.catch((err) => logger.error('Failed to broadcast chat message:', err));
 		}
@@ -1172,17 +1238,8 @@ class TradeRealtimeStore {
 				throw new Error(data.message);
 			}
 
-			// Broadcast cancellation
-			const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
-			if (channel) {
-				channel
-					.send({
-						type: 'broadcast',
-						event: 'trade_cancelled',
-						payload: { by: this.myRole }
-					})
-					.catch((err) => logger.error('Failed to broadcast cancellation:', err));
-			}
+			// Signal d'annulation : l'autre élève relit le statut en base
+			this.broadcastSignal('trade_cancelled');
 
 			logger.info('Trade cancelled by:', this.myRole);
 		} catch (err) {
@@ -1196,72 +1253,19 @@ class TradeRealtimeStore {
 	// =========================================================================
 
 	/**
-	 * Broadcast offer update
+	 * Diffuse un SIGNAL d'échange, sans contenu : le destinataire relit la base.
+	 * À appeler APRÈS l'écriture en base qu'il annonce.
+	 *
+	 * @param event - Événement d'échange
 	 */
-	private broadcastOfferUpdated(): void {
-		if (!this.tradeId || !this.myRole) return;
+	private broadcastSignal(event: (typeof TRADE_SIGNAL_EVENTS)[number]): void {
+		if (!this.tradeId) return;
 
 		const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
 		if (channel) {
-			const payload: BroadcastOfferUpdatedPayload = {
-				from: this.myRole,
-				cards: this.myOffer.cards,
-				gidouilles: this.myOffer.gidouilles
-			};
-
 			channel
-				.send({
-					type: 'broadcast',
-					event: 'offer_updated',
-					payload
-				})
-				.catch((err) => logger.error('Failed to broadcast offer update:', err));
-		}
-	}
-
-	/**
-	 * Broadcast validation change
-	 */
-	private broadcastValidationChanged(validated: boolean): void {
-		if (!this.tradeId || !this.myRole) return;
-
-		const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
-		if (channel) {
-			const payload: BroadcastValidationChangedPayload = {
-				from: this.myRole,
-				validated
-			};
-
-			channel
-				.send({
-					type: 'broadcast',
-					event: 'validation_changed',
-					payload
-				})
-				.catch((err) => logger.error('Failed to broadcast validation change:', err));
-		}
-	}
-
-	/**
-	 * Broadcast confirmation
-	 */
-	private broadcastConfirmation(confirmed: boolean): void {
-		if (!this.tradeId || !this.myRole) return;
-
-		const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
-		if (channel) {
-			const payload: BroadcastConfirmationPayload = {
-				from: this.myRole,
-				confirmed
-			};
-
-			channel
-				.send({
-					type: 'broadcast',
-					event: 'confirmation',
-					payload
-				})
-				.catch((err) => logger.error('Failed to broadcast confirmation:', err));
+				.send({ type: 'broadcast', event, payload: {} })
+				.catch((err) => logger.error(`Failed to broadcast ${event}:`, err));
 		}
 	}
 
@@ -1401,161 +1405,209 @@ class TradeRealtimeStore {
 	// =========================================================================
 
 	/**
-	 * Handle offer update from partner
+	 * Signal d'échange reçu : programme une relecture de la ligne en base.
+	 *
+	 * Anti-saturation : les signaux d'une rafale sont regroupés (fenêtre fixe
+	 * de 300 ms ouverte par le premier), une
+	 * seule relecture à la fois (un signal reçu pendant la relecture en
+	 * déclenche UNE autre après), et au plus SIGNAL_REFETCH_LIMIT relectures par
+	 * fenêtre glissante — au-delà, la relecture est reportée, jamais perdue.
 	 */
-	private handleOfferUpdated(payload: BroadcastOfferUpdatedPayload): void {
-		// Ignore our own updates
-		if (payload.from === this.myRole) {
+	private scheduleTradeRefetch(): void {
+		if (this.refetchInFlight) {
+			this.refetchRequestedDuringFlight = true;
 			return;
 		}
-
-		// Update partner's offer
-		this.partnerOffer = {
-			cards: payload.cards,
-			gidouilles: payload.gidouilles
-		};
-
-		// Reset partner validation when their offer changes
-		this.partnerValidation = false;
-
-		logger.trace('Partner offer updated:', payload);
+		// Fenêtre FIXE : un minuteur déjà posé (regroupement ou report du
+		// plafond) n'est jamais relancé ni effacé — sinon un signal toutes les
+		// 250 ms repousserait la relecture sans fin.
+		if (this.refetchTimer) return;
+		this.refetchTimer = setTimeout(() => {
+			this.refetchTimer = null;
+			void this.runTradeRefetch();
+		}, this.SIGNAL_REFETCH_DEBOUNCE_MS);
 	}
 
 	/**
-	 * Handle validation change from partner
+	 * Relit l'échange si le plafond le permet, sinon reporte à la libération
+	 * d'une place dans la fenêtre glissante.
 	 */
-	private handleValidationChanged(payload: BroadcastValidationChangedPayload): void {
-		// Ignore our own updates
-		if (payload.from === this.myRole) {
+	private async runTradeRefetch(): Promise<void> {
+		const now = Date.now();
+		this.refetchTimes = this.refetchTimes.filter((t) => now - t < this.SIGNAL_REFETCH_WINDOW_MS);
+		if (this.refetchTimes.length >= this.SIGNAL_REFETCH_LIMIT) {
+			const wait = this.refetchTimes[0] + this.SIGNAL_REFETCH_WINDOW_MS - now;
+			logger.warn('Trop de signaux sur l’échange, relecture reportée de', wait, 'ms');
+			if (!this.refetchTimer) {
+				this.refetchTimer = setTimeout(() => {
+					this.refetchTimer = null;
+					void this.runTradeRefetch();
+				}, wait);
+			}
 			return;
 		}
+		this.refetchTimes.push(now);
 
-		// Update partner's validation
-		this.partnerValidation = payload.validated;
-
-		// Check if both validated - show confirmation modal
-		if (payload.validated && this.myValidation && !this.showConfirmationModal) {
-			this.startConfirmationPhase();
+		this.refetchInFlight = true;
+		try {
+			await this.refetchTradeState();
+		} finally {
+			this.refetchInFlight = false;
+			if (this.refetchRequestedDuringFlight) {
+				this.refetchRequestedDuringFlight = false;
+				this.scheduleTradeRefetch();
+			}
 		}
-
-		logger.trace('Partner validation changed:', payload);
 	}
 
 	/**
-	 * Handle confirmation from partner
+	 * Relit la ligne de l'échange (sous RLS) et applique ce que la base rend.
+	 * Zéro ligne (échange supprimé, ou illisible) → rien ne change.
 	 */
-	private handleConfirmation(payload: BroadcastConfirmationPayload): void {
-		// Ignore our own updates
-		if (payload.from === this.myRole) {
+	private async refetchTradeState(): Promise<void> {
+		if (!this.supabase || !this.tradeId) return;
+		const tradeId = this.tradeId;
+		const writesBeforeRead = this.myValidationWrites;
+
+		const { data, error } = await this.supabase
+			.from('marketplace_trades')
+			.select(TRADE_SNAPSHOT_COLUMNS)
+			.eq('id', tradeId)
+			.maybeSingle();
+
+		if (error) {
+			logger.error('Failed to refetch trade:', error);
+			return;
+		}
+		if (!data) {
+			logger.warn('Trade not readable on refetch (0 row):', tradeId);
+			return;
+		}
+		// Store détruit ou passé à un autre échange pendant la lecture
+		if (this.tradeId !== tradeId) return;
+
+		// Une de MES validations a été écrite pendant la lecture : la ligne peut
+		// être antérieure, sa valeur pour moi ne prouve pas un refus.
+		const staleForMe = this.myValidationWrites !== writesBeforeRead;
+		this.applyTradeSnapshot(data, staleForMe);
+	}
+
+	/**
+	 * Applique la ligne relue : offre, validation et confirmation de l'AUTRE
+	 * élève, statut de l'échange, refus de confirmation.
+	 *
+	 * Mes propres offre/validation restent locales (je suis leur seule source),
+	 * sauf la remise à zéro par un refus de confirmation.
+	 *
+	 * @param row - Ligne `marketplace_trades` lue en base
+	 * @param staleForMe - Lecture lancée avant ma dernière écriture de validation
+	 */
+	private applyTradeSnapshot(row: TradeSnapshotRow, staleForMe = false): void {
+		if (!this.myRole || !this.trade) return;
+		const partnerIsInitiator = this.myRole === 'partner';
+
+		const offers = parseCurrentOffer(row.current_offer);
+		this.partnerOffer = partnerIsInitiator ? offers.initiator : offers.partner;
+		this.partnerValidation = partnerIsInitiator
+			? row.validated_by_initiator
+			: row.validated_by_partner;
+		this.partnerConfirmation =
+			(partnerIsInitiator ? row.confirmed_by_initiator : row.confirmed_by_partner) === true;
+
+		// Échange terminé ou annulé : seul le statut EN BASE fait foi.
+		if (row.status === 'completed' || row.status === 'cancelled') {
+			this.trade = {
+				...this.trade,
+				status: row.status,
+				completed_at: row.completed_at,
+				cancelled_at: row.cancelled_at
+			};
+			this.closeConfirmation();
 			return;
 		}
 
-		// Handle refusal (confirmed = false)
-		if (!payload.confirmed) {
+		// Refus de confirmation par l'autre élève : il a remis MA validation à
+		// zéro en base (refuseConfirmation).
+		const myDbValidation = partnerIsInitiator
+			? row.validated_by_partner
+			: row.validated_by_initiator;
+		if (this.showConfirmationModal && !myDbValidation && !staleForMe) {
 			this.myValidation = false;
 			this.partnerValidation = false;
-			this.showConfirmationModal = false;
-			this.myConfirmation = false;
-			this.partnerConfirmation = false;
-			this.confirmationDeadline = null;
-
-			if (this.confirmationTimer) {
-				clearTimeout(this.confirmationTimer);
-				this.confirmationTimer = null;
-			}
-
-			// Sync database state when partner refuses
-			if (this.supabase && this.tradeId) {
-				this.supabase
-					.from('marketplace_trades')
-					.update({
-						validated_by_initiator: false,
-						validated_by_partner: false,
-						confirmation_started_at: null,
-						updated_at: new Date().toISOString()
-					})
-					.eq('id', this.tradeId)
-					.then(({ error }) => {
-						if (error) {
-							logger.error('Failed to reset confirmation in DB:', error);
-						}
-					});
-			}
-
+			this.closeConfirmation();
 			logger.info('Partner refused confirmation');
 			return;
 		}
 
-		// Update partner's confirmation
-		this.partnerConfirmation = true;
-
-		// If we also confirmed, trade is complete
-		if (this.myConfirmation) {
-			logger.info('Trade completed - both parties confirmed');
+		// Les deux élèves ont validé : ouvrir la confirmation
+		if (this.partnerValidation && this.myValidation && !this.showConfirmationModal) {
+			void this.startConfirmationPhase();
 		}
-
-		logger.trace('Partner confirmed:', payload);
 	}
 
 	/**
-	 * Handle chat message from partner
+	 * Ferme la fenêtre de confirmation et remet son état à zéro.
+	 */
+	private closeConfirmation(): void {
+		this.showConfirmationModal = false;
+		this.myConfirmation = false;
+		this.partnerConfirmation = false;
+		this.confirmationDeadline = null;
+		if (this.confirmationTimer) {
+			clearTimeout(this.confirmationTimer);
+			this.confirmationTimer = null;
+		}
+	}
+
+	/**
+	 * Réserve une place dans la fenêtre glissante du chat (messages reçus,
+	 * valides ou non). Au-delà du plafond : ignoré, un seul avertissement.
+	 *
+	 * @returns false si le plafond est atteint
+	 */
+	private acquireChatSlot(): boolean {
+		const now = Date.now();
+		this.chatMessageTimes = this.chatMessageTimes.filter(
+			(t) => now - t < this.CHAT_MESSAGE_WINDOW_MS
+		);
+		if (this.chatMessageTimes.length >= this.CHAT_MESSAGE_LIMIT) {
+			if (this.chatMessageTimes.length === this.CHAT_MESSAGE_LIMIT) {
+				logger.warn('Trop de messages de chat reçus, ignorés');
+				// Marqueur : l'avertissement n'est émis qu'une fois par saturation
+				this.chatMessageTimes.push(now);
+			}
+			return false;
+		}
+		this.chatMessageTimes.push(now);
+		return true;
+	}
+
+	/**
+	 * Message de chat éphémère reçu sur le canal privé.
+	 *
+	 * Le chat d'échange n'a pas de source en base (aucune écriture dans
+	 * `marketplace_chat_messages` côté store). Sur le canal privé, l'émetteur
+	 * est forcément l'AUTRE élève (on ne reçoit pas ses propres broadcasts) :
+	 * l'auteur affiché est donc lu dans la ligne de l'échange, jamais dans le
+	 * payload ; l'identifiant et l'heure sont locaux (un id forgé en double
+	 * casserait la liste à clés).
+	 *
+	 * @param payload - Texte validé par Zod
 	 */
 	private handleChatMessage(payload: BroadcastChatMessagePayload): void {
-		// Ignore our own messages
-		if (payload.senderId === this.userId) {
-			return;
-		}
+		if (!this.trade || !this.myRole) return;
+		const otherStudentId =
+			this.myRole === 'initiator' ? this.trade.partner_id : this.trade.initiator_id;
 
-		// Add message to state
-		this.messages = [
-			...this.messages,
-			{
-				id: payload.id,
-				senderId: payload.senderId,
-				message: payload.message,
-				createdAt: payload.createdAt
-			}
-		];
+		const message: TradeChatMessage = {
+			id: crypto.randomUUID(),
+			senderId: otherStudentId,
+			message: payload.message,
+			createdAt: new Date().toISOString()
+		};
+		this.messages = [...this.messages, message].slice(-this.MAX_CHAT_MESSAGES);
 
-		logger.trace('Chat message received:', payload.id);
-	}
-
-	/**
-	 * Handle trade cancellation
-	 */
-	private handleTradeCancelled(payload: BroadcastTradeCancelledPayload): void {
-		logger.info('Trade cancelled by:', payload.by);
-
-		// Update trade status
-		if (this.trade) {
-			this.trade = {
-				...this.trade,
-				status: 'cancelled',
-				cancelled_at: new Date().toISOString()
-			};
-		}
-
-		// Close confirmation modal if open
-		this.showConfirmationModal = false;
-	}
-
-	/**
-	 * Handle trade completion broadcast from partner
-	 */
-	private handleTradeCompleted(): void {
-		logger.info('Trade completed - received broadcast');
-
-		// Update trade status
-		if (this.trade) {
-			this.trade = {
-				...this.trade,
-				status: 'completed',
-				completed_at: new Date().toISOString()
-			};
-		}
-
-		// Close confirmation modal
-		this.showConfirmationModal = false;
+		logger.trace('Chat message received:', message.id);
 	}
 
 	/**

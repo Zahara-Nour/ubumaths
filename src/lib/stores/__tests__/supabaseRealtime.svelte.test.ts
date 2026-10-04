@@ -212,6 +212,22 @@ describe('Channel Reuse', () => {
 		expect(supabase.channel).toHaveBeenCalledTimes(1); // Only called once
 	});
 
+	it('refuse de rendre en cache un canal public à qui demande un canal privé, et l’inverse', () => {
+		supabaseRealtimeManager.createChannel('public-channel');
+		expect(() =>
+			supabaseRealtimeManager.createChannel('public-channel', { private: true })
+		).toThrow(/already exists as public/);
+
+		supabaseRealtimeManager.createChannel('private-channel', { private: true });
+		expect(() => supabaseRealtimeManager.createChannel('private-channel')).toThrow(
+			/already exists as private/
+		);
+		// Même nature : le cache sert toujours
+		expect(supabaseRealtimeManager.createChannel('private-channel', { private: true })).toBe(
+			supabaseRealtimeManager.getChannel('private-channel')
+		);
+	});
+
 	it('should return existing channel via getChannel', () => {
 		const created = supabaseRealtimeManager.createChannel('test-channel');
 		const retrieved = supabaseRealtimeManager.getChannel('test-channel');

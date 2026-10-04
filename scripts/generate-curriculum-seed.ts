@@ -14,6 +14,7 @@
  *   pnpm tsx scripts/generate-curriculum-seed.ts 2
  *   pnpm tsx scripts/generate-curriculum-seed.ts T_SPE
  *   pnpm tsx scripts/generate-curriculum-seed.ts T_COMP
+ *   pnpm tsx scripts/generate-curriculum-seed.ts T_EXP
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -63,6 +64,15 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		prefixe: 'TCOMP',
 		source: [
 			"« Programme d'enseignement optionnel de mathématiques complémentaires",
+			'de terminale générale » (PDF fourni par David le 2026-10-03).'
+		]
+	},
+	T_EXP: {
+		md: 'docs/wip/referentiel/terminale-exp-programme.md',
+		out: 'supabase/migrations/20261004170000_seed_curriculum_terminale_exp.sql',
+		prefixe: 'TEXP',
+		source: [
+			"« Programme d'enseignement optionnel de mathématiques expertes",
 			'de terminale générale » (PDF fourni par David le 2026-10-03).'
 		]
 	}

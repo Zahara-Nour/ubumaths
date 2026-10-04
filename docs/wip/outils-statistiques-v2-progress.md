@@ -304,3 +304,10 @@ Manche 12 (2026-10-03), référentiel de Terminale — recommandations suivies :
   migration ; `db:migrate` fait, prod vérifiée : 3 thèmes · 10 objectifs · 139 points
   (TCOMP-001 → 139), 14 démonstrations en approfondissement. Reste : T_EXP ; lois de maths
   complémentaires à part.
+
+- **Référentiel T_EXP LIVRÉ** (2026-10-04) : markdown relu par David (recos suivies :
+  « Problèmes possibles » en `[SF+]` ; Arithmétique et Graphes et matrices découpées en trois
+  objectifs chacune ; démonstrations exigées en `[D]` ; $\frac{c-a}{b-a}$ vérifié) ; #758,
+  9 tests rouges sans la migration ; `db:migrate` fait, prod vérifiée : 3 thèmes · 11
+  objectifs · 153 points (TEXP-001 → 153). **Manche 12 TERMINÉE** : T_SPE 262, T_COMP 139,
+  T_EXP 153 en production. Reste à part : lois de maths complémentaires (sa propre manche).
