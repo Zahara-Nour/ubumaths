@@ -162,6 +162,21 @@ moteur n'est donc pas touché).
 - [x] Carte `f′` : nom `f′`, formule calculée, pas de champ, « dérivée de f ».
 - Trouvé en route : sur une fonction en attente, « Dériver » ajoutait « ne
   se lit pas » (faux) → la carte n'est tentée que si le calcul aboutit.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (7 rouges vus) :
+  - **B1 (bloquant)** : `differentiate` lève sur |x| ; la carte `f′` qui suit
+    `f` le rencontrait dès que `f` devenait `abs(x)` → carte, moteur et tracés
+    tombaient. `expressionOf` rattrape l'échec, la carte `f′` passe en erreur
+    (« La dérivée de « f » ne se calcule pas. »), aucune carte n'est créée
+    pour une fonction non dérivable.
+  - B2 : renommer `g` en `f` alors qu'une `f′` orpheline existe faisait deux
+    `f′` → refusé. C3 : renommer `f′` elle-même → refusé (« c'est f qu'on
+    renomme »). C1 : la fusion traite les fonctions avant leurs dérivées.
+    C2 : `.dériver f` dit « existe déjà » / « ne se calcule pas » comme le
+    bouton (`derivativeNote`, partagé).
+  - Noté, non traité : C4 (une `f′` orpheline peut arriver par sauvegarde ou
+    lien — sans danger, aucune saisie élève ne l'atteint) ; M1 (`f″` de x³
+    s'affiche `3*2x` : `differentiate` ne simplifie pas) ; M5 (L1 : la carte
+    existante n'est pas SÉLECTIONNÉE — avec le lot 3b, qui gère l'écran).
 - ⚠️ La bascule vers Calcul après « Dériver » reste jusqu'au lot 3b.
 - Tests : 32 serveur (27 rouges avant) + 3 navigateur ; suites atelier
   236 navigateur, 2 120 serveur ; `check:incremental` 0 ; les 18

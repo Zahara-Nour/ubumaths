@@ -17,7 +17,14 @@
 
 import type { Atelier } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { runInput, runAction, promote, type CalcResult, type CalcSession } from './calcul';
+import {
+	runInput,
+	runAction,
+	promote,
+	derivativeNote,
+	type CalcResult,
+	type CalcSession
+} from './calcul';
 import { summarizeList, summarizeTable } from '$lib/statistics/describe';
 import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/statistics/format';
 import { categoryCounts } from './chart';
@@ -445,18 +452,11 @@ export class CalcDesk {
 		const derivative =
 			actionId === 'derive' && outcome.ok ? this.atelier.createDerivative(name) : null;
 		// L1 : déjà là, on le dit ; E3 : impossible, on dit pourquoi
-		const already =
-			derivative === null
-				? ''
-				: derivative.ok
-					? derivative.existed
-						? ` — ${displayName(derivative.object.name)} existe déjà`
-						: ''
-					: ` — ${derivative.message}`;
+		const note = derivativeNote(derivative);
 
 		this.#push({
 			label: `${label} ${displayName(name)}`,
-			text: (outcome.ok ? outcome.output : outcome.message) + already,
+			text: (outcome.ok ? outcome.output : outcome.message) + note,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),

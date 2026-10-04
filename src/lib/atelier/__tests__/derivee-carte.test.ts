@@ -310,3 +310,97 @@ describe('cas repris de « Garder la dérivée »', () => {
 		expect(expression(atelier, "f'")).toBe('0');
 	});
 });
+
+// =============================================================================
+// Revue du lot 3a
+// =============================================================================
+
+describe('revue du lot 3a', () => {
+	// B1 : `differentiate` lève sur |x| — la dérivée qui SUIT f le rencontrait
+	it('une f devenue non dérivable met f′ en erreur, sans rien faire planter', () => {
+		const atelier = withF('x^2');
+		atelier.createDerivative('f');
+
+		expect(() => atelier.update('f', 'abs(x)', 'text')).not.toThrow();
+
+		expect(() => expressionOf(atelier, "f'")).not.toThrow();
+		expect(expressionOf(atelier, "f'").ok).toBe(false);
+		expect(atelier.get("f'")?.status).toBe('error');
+		expect(atelier.get("f'")?.message).toContain('ne se calcule pas');
+		expect(() => runInput({ atelier, engine: new WebReplEngine() }, 'f(2)')).not.toThrow();
+	});
+
+	it('dériver une fonction non dérivable ne crée pas de carte', () => {
+		const atelier = withF('abs(x)');
+
+		const result = atelier.createDerivative('f');
+
+		expect(result.ok).toBe(false);
+		expect(atelier.names).toEqual(['f']);
+	});
+
+	// B2 : un nom est unique (D1 de la v1)
+	it('refuse un renommage qui ferait deux f′', () => {
+		const atelier = withF('x^2');
+		atelier.createDerivative('f');
+		atelier.remove('f');
+		atelier.create({ kind: 'function', name: 'g', definition: 'x^3' }, 'text');
+		atelier.createDerivative('g');
+
+		const result = atelier.rename('g', 'f');
+
+		expect(result.ok).toBe(false);
+		expect(atelier.names.filter((n) => n === "f'")).toHaveLength(1);
+		expect(atelier.names).toContain('g');
+	});
+
+	// C3 : f′ suit f — on renomme f, pas sa dérivée
+	it('refuse de renommer la carte f′ elle-même', () => {
+		const atelier = withF();
+		atelier.createDerivative('f');
+
+		expect(atelier.rename("f'", 'k').ok).toBe(false);
+		expect(atelier.names).toContain("f'");
+	});
+
+	// C1 : supprimer puis recréer f range f′ AVANT f
+	it('une fusion rattache f′ à SA fonction, même rangée avant elle', () => {
+		const target = new Atelier();
+		target.create({ kind: 'function', name: 'f', definition: 'x' }, 'text');
+		const state = {
+			version: 1,
+			objects: [
+				{ name: "f'", kind: 'function' as const, definition: "f'(x)" },
+				{ name: 'f', kind: 'function' as const, definition: 'x^5' }
+			]
+		};
+
+		mergeInto(target, state);
+
+		const arrived = target.names.find((n) => n !== 'f' && !n.includes("'"))!;
+		expect(target.names).toContain(`${arrived}'`);
+		expect(expression(target, `${arrived}'`)).toBe('5x^4');
+		// La f locale n'a pas reçu la dérivée de la f entrante
+		expect(target.names).not.toContain("f'");
+	});
+
+	// C2 : la commande dit ce que dit le bouton (D3 = D1)
+	it('`.dériver f` dit quand f′ existe déjà', () => {
+		const atelier = withF();
+		const session = { atelier, engine: new WebReplEngine() };
+		runInput(session, '.dériver f');
+
+		const again = runInput(session, '.dériver f');
+
+		expect(JSON.stringify(again)).toContain('existe déjà');
+	});
+
+	it('`.dériver f` dit quand la dérivée ne se calcule pas, et ne crée rien', () => {
+		const atelier = withF('abs(x)');
+
+		const result = runInput({ atelier, engine: new WebReplEngine() }, '.dériver f');
+
+		expect(atelier.names).toEqual(['f']);
+		expect(JSON.stringify(result)).toContain('ne se calcule pas');
+	});
+});

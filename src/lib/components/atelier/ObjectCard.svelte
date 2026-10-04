@@ -63,6 +63,9 @@
 		list: 'liste'
 	};
 
+	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
+	const derivative = $derived(derivativeOf(object.name));
+
 	/**
 	 * La définition en écriture mathématique (C1), ou `null` si elle ne se lit
 	 * pas — elle s'affiche alors en texte, telle que l'élève l'a tapée.
@@ -97,9 +100,6 @@
 			? curveColorValue(object.display.color)
 			: null
 	);
-
-	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
-	const derivative = $derived(derivativeOf(object.name));
 
 	/**
 	 * Les objets dont on saisit la définition dans la carte (C11 : pas les

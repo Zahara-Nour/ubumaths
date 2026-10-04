@@ -49,7 +49,12 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// Les fonctions renommées à l'arrivée : leurs dérivées doivent les suivre
 	const arrivedAs = new Map<string, string>();
 
-	for (const stored of state.objects) {
+	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
+	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
+	const order = (name: string) => derivativeOf(name)?.order ?? 0;
+	const ordered = [...state.objects].sort((a, b) => order(a.name) - order(b.name));
+
+	for (const stored of ordered) {
 		const taken = atelier.names;
 		const wanted = stored.name;
 		const derivative = derivativeOf(wanted);

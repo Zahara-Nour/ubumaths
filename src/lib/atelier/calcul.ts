@@ -119,6 +119,17 @@ export type ActionOutcome =
  */
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
 
+/**
+ * Ce que la ligne de Calcul ajoute après « Dériver » : rien si la carte `f′`
+ * vient d'être créée, « existe déjà » (§2 L1), ou pourquoi elle ne l'a pas été
+ * (E3). Partagé par le bouton et `.dériver`, qui doivent dire la même chose.
+ */
+export function derivativeNote(result: Created | Refused | null): string {
+	if (result === null) return '';
+	if (!result.ok) return ` — ${result.message}`;
+	return result.existed ? ` — ${displayName(result.object.name)} existe déjà` : '';
+}
+
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
 const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\))?\s*=(?!=)/;
 
@@ -365,22 +376,25 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Ici il n'y a pas d'objet à nommer, donc la dérivée est rendue seule.
 	if (name === 'diff') {
 		// `.dériver f` sur une fonction de l'atelier crée la carte `f′`, comme le
-		// bouton (phase 0 `/grapheur` §2 D3). Sur une expression, rien à créer (L4).
+		// bouton, et le DIT comme lui (phase 0 `/grapheur` §2 D3 ; revue 3a, C2).
+		// Sur une expression, rien à créer (L4).
 		const typed = space === -1 ? '' : resolved.slice(space + 1).trim();
 		const target = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typed)?.[1] ?? typed;
-		if (session.atelier.get(target)?.kind === 'function') {
-			session.atelier.createDerivative(target);
-		}
+		const note =
+			session.atelier.get(target)?.kind === 'function'
+				? derivativeNote(session.atelier.createDerivative(target))
+				: '';
 		const derived = deriveSteps(argument);
 		if (derived !== null) {
 			return {
 				kind: 'commande',
 				input,
-				output: rendered.text,
+				output: rendered.text + note,
 				latex: derived.answer,
 				steps: derived.steps
 			};
 		}
+		if (note !== '') return { kind: 'commande', input, output: rendered.text + note };
 	}
 
 	// ⚠️ Même forme que `.dériver`, pour la même raison : le moteur ne SAIT pas

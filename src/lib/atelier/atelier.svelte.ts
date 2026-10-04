@@ -38,6 +38,7 @@ import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
+import { expressionOf } from './engine';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -305,7 +306,8 @@ export class Atelier {
 		);
 		if (!created.ok) return created;
 		// E3 : une dérivée qui ne se calcule pas ne laisse pas de carte en erreur
-		if (created.object.status !== 'ok') {
+		// (`recomputeAll` l'a passée en erreur : voir `#underivable`)
+		if (this.get(derived)?.status !== 'ok') {
 			this.remove(derived);
 			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
 		}
@@ -340,6 +342,28 @@ export class Atelier {
 	rename(from: string, to: string): Renamed | Refused {
 		const index = this.items.findIndex((o) => o.name === from);
 		if (index === -1) return { ok: false, message: `« ${from} » n'existe pas.` };
+
+		// Revue du lot 3a, C3 : `f′` suit `f`, elle n'a pas de nom à elle
+		const ownDerivative = derivativeOf(from);
+		if (ownDerivative !== null) {
+			return {
+				ok: false,
+				message: `${displayName(from)} suit ${ownDerivative.base} : c'est ${ownDerivative.base} qu'on renomme, et sa dérivée suit.`
+			};
+		}
+		// Revue du lot 3a, B2 : les dérivées de `from` prennent le nom de `to` —
+		// jamais celui d'un objet qui existe déjà (une `f′` restée orpheline)
+		for (const o of this.items) {
+			const derivative = derivativeOf(o.name);
+			if (derivative?.base !== from) continue;
+			const target = `${to}${"'".repeat(derivative.order)}`;
+			if (this.names.includes(target)) {
+				return {
+					ok: false,
+					message: `${displayName(target)} existe déjà : renommer « ${from} » en « ${to} » en ferait deux.`
+				};
+			}
+		}
 
 		const others = this.names.filter((n) => n !== from);
 		const rejection = validateName(to, others);
@@ -855,6 +879,26 @@ export class Atelier {
 				next.status = 'ok';
 			}
 			return next;
+		});
+
+		this.#underivable();
+	}
+
+	/**
+	 * Une carte `f′` dont la dérivée ne se calcule pas (`f` = |x|) passe en
+	 * erreur, avec le message de `expressionOf` (revue du lot 3a, B1).
+	 *
+	 * ⚠️ APRÈS les statuts : `expressionOf` refuse un objet qui n'est pas « ok »,
+	 * il faut donc que le statut de lecture soit posé. On ne remplace que les
+	 * objets qui changent, pour ne pas re-rendre toute la liste.
+	 */
+	#underivable(): void {
+		this.items.forEach((o, i) => {
+			if (o.status !== 'ok' || derivativeOf(o.name) === null) return;
+			const read = expressionOf(this, o.name);
+			if (!read.ok) {
+				this.items[i] = { ...o, status: 'error', message: read.message } as AtelierObject;
+			}
 		});
 	}
 
