@@ -16,8 +16,8 @@ const ONE_DAY_PER_MONTH: [number, number, number][] = [
 	[2026, 7, 10]
 ];
 
-function renderWith(almanach: PataphysicalDate) {
-	return render(Page, { props: { data: { almanach } } as never });
+async function renderWith(almanach: PataphysicalDate) {
+	return await render(Page, { props: { data: { almanach } } as never });
 }
 
 /** Valeur calculée d'une couleur CSS, pour comparer sans dépendre de l'écriture */
@@ -101,7 +101,7 @@ describe('/+page.svelte', () => {
 			expect(getComputedStyle(halo).backgroundColor).toBe(
 				computedColor(MONTH_PALETTES[month].light.h1)
 			);
-			screen.unmount();
+			await screen.unmount();
 		}
 	});
 

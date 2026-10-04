@@ -31,4 +31,27 @@ Branche `feat/almanach-accueil`, worktree `ubumaths-wt-almanach`. Source de vér
 `+page.svelte` : halo + traits en variables `--halo-1..3` / `--ubu-stroke`, date
 moyenne en lien vers `/almanach`, halo fixe sous `prefers-reduced-motion`.
 
-## C. Page `/almanach` — en cours
+## C. Page `/almanach` — FAIT
+
+`src/routes/(public)/almanach/` : `+page.server.ts` (`prerender = false`, testé),
+`+page.svelte` (date du jour dans l'ambiance du mois, « Un Almanach, pas un
+Calendrier », sept mois avec le mois en cours en `aria-current="date"`, deux jours
+hors-mois, table des fêtes, convertisseur), `AlmanachConverter.svelte`.
+
+- Voix : explications en voix de Tristan Bernard (vous, flegme) ; seules les
+  citations en `figure` signées « — Père Ubu » sont dans la voix d'Ubu.
+- Saisie de date : composant `Input` de shadcn (`type="date"`). La règle n°2 ne vise
+  que select et case à cocher ; d'autres pages du dépôt saisissent déjà les dates
+  ainsi.
+- Pas d'élément `<header>` ni de `<p>` pour la grande date : `app.css` force la
+  taille de police de `header *` et de `main p` en `!important`.
+- Sitemap : `/almanach` ajouté (`changefreq: 'daily'`).
+- Tests navigateur verts du premier coup → neutralisation (aria-current retiré,
+  bandeau en rouge, convertisseur figé) : 7 rouges sur les cas visés, puis
+  restauration depuis une copie.
+
+## Reste
+
+- Revue visuelle sur le serveur de dev (non faite).
+- Décors propres aux jours de fête (planche : « plus tard »).
+- Conversion inverse (date pataphysique → grégorienne), évoquée par le Compendium.
