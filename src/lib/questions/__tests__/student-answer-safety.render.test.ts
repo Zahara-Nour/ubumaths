@@ -39,7 +39,11 @@ const CHARGES = [
 	String.raw`\enclose{box}[mathbackground="red;position:fixed"]{3}`,
 	// Un retrait ne doit pas fabriquer une commande en accolant deux morceaux
 	String.raw`\text\foo[x]color{url(https://e.x)}{x}`,
-	String.raw`\mathrm\x[y]bbox[position:fixed]{x}`
+	String.raw`\mathrm\x[y]bbox[position:fixed]{x}`,
+	// Vecteur en colonne : option d'espacement derrière un blanc, lignes en masse (audit 2026-10-04)
+	'\\begin{pmatrix}1\\\\\t[999em]2\\end{pmatrix}',
+	'\\begin{pmatrix}1\\\\\u00a0[999em]2\\end{pmatrix}',
+	`\\begin{pmatrix}${'\\\\'.repeat(1000)}\\end{pmatrix}`
 ];
 
 describe('réponse élève neutralisée rendue par MathLive', () => {
@@ -51,6 +55,12 @@ describe('réponse élève neutralisée rendue par MathLive', () => {
 		expect(html).not.toMatch(/<a[\s>]/i);
 		expect(html).not.toMatch(/data-(?!ML)/);
 		expect(html).not.toMatch(/999em/);
+		// Dimension démesurée calculée par MathLive (`\\\\[999em]` rend `height:1001.41em`)
+		const largestEm = Math.max(
+			0,
+			...[...html.matchAll(/(-?\d+(?:\.\d+)?)em/g)].map((m) => Math.abs(Number(m[1])))
+		);
+		expect(largestEm).toBeLessThan(50);
 	});
 
 	it('une réponse ordinaire reste rendue', () => {

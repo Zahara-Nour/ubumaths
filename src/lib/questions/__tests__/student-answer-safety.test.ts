@@ -95,3 +95,59 @@ describe('escapeStudentText', () => {
 		expect(escapeStudentText('3,5 cm')).toBe('3,5 cm');
 	});
 });
+
+// Vecteur en colonne saisi avec l'onglet « Vecteur » du clavier (case « vecteur », #745)
+describe('neutralizeStudentLatex — vecteur en colonne', () => {
+	it('vecteur en colonne intact (2 ou 3 coordonnées, fractions, nom du vecteur)', () => {
+		for (const latex of [
+			'\\begin{pmatrix}2\\\\-3\\end{pmatrix}',
+			'\\begin{pmatrix}1\\\\0\\\\-4\\end{pmatrix}',
+			'\\begin{pmatrix}\\frac{1}{2}\\\\-\\sqrt{3}\\end{pmatrix}',
+			'\\vec{n}\\begin{pmatrix}2\\\\-3\\end{pmatrix}'
+		]) {
+			expect(neutralizeStudentLatex(latex)).toBe(latex);
+		}
+	});
+
+	it('passage à la ligne : son option d’espacement `[…]` est retirée', () => {
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\\\[999em]2\\end{pmatrix}')).toBe(
+			'\\begin{pmatrix}1\\\\2\\end{pmatrix}'
+		);
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\\\ [999em]2\\end{pmatrix}')).toBe(
+			'\\begin{pmatrix}1\\\\2\\end{pmatrix}'
+		);
+	});
+
+	it('option d’espacement retirée derrière tout blanc (tabulation, insécable, saut de page…)', () => {
+		for (const blank of ['\t', '\u00a0', '\f', '\v', '\u2028', ' \t ']) {
+			expect(
+				neutralizeStudentLatex(`\\begin{pmatrix}1\\\\${blank}[999em]2\\end{pmatrix}`)
+			).not.toContain('999em');
+		}
+	});
+
+	it('trois coordonnées au plus : les passages à la ligne en masse sont retirés', () => {
+		const many = `\\begin{pmatrix}${'1\\\\'.repeat(500)}1\\end{pmatrix}`;
+		expect(neutralizeStudentLatex(many).match(/\\\\/g)).toHaveLength(2);
+	});
+
+	it('passage à la ligne hors d’une colonne : toujours retiré', () => {
+		expect(neutralizeStudentLatex('2\\\\3')).toBe('23');
+		expect(neutralizeStudentLatex('\\begin{pmatrix}1\\end{pmatrix}\\\\3')).toBe(
+			'\\begin{pmatrix}1\\end{pmatrix}3'
+		);
+	});
+
+	it('autre environnement ou forme étoilée : retiré (texte inerte)', () => {
+		for (const raw of [
+			'\\begin{array}{c}1\\end{array}',
+			'\\begin{pmatrix*}[r]1\\\\2\\end{pmatrix*}',
+			'\\begin {pmatrix}1\\end {pmatrix}',
+			'\\begin{bmatrix}1\\end{bmatrix}'
+		]) {
+			const safe = neutralizeStudentLatex(raw);
+			expect(safe).not.toMatch(/\\begin|\\end(?![a-zA-Z])/);
+			expect(safe).not.toContain('[r]');
+		}
+	});
+});
