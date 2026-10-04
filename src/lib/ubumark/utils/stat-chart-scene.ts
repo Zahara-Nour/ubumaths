@@ -20,6 +20,7 @@
 import type {
 	DensityQuery,
 	LawData,
+	LawThreshold,
 	StatChartDatum,
 	StatChartDirection,
 	StatChartLabels,
@@ -69,7 +70,8 @@ import {
 import {
 	geometricConditional,
 	geometricMoments,
-	geometricProbability
+	geometricProbability,
+	geometricThreshold
 } from '$lib/statistics/geometric';
 import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
 import {
@@ -1492,28 +1494,34 @@ function thresholdLines(
 	const threshold = binomial.threshold;
 	if (threshold === null) return [];
 	const alpha = Fraction.parse(threshold.alpha) ?? Fraction.ZERO;
-	const { k, smallest, num, den } = binomialThreshold(
-		distribution,
-		threshold.event,
-		threshold.comparison,
-		alpha
-	);
+	const result = binomialThreshold(distribution, threshold.event, threshold.comparison, alpha);
+	return [thresholdLine(threshold, result, String(binomial.n), variable, binomial.places, locale)];
+}
+
+/**
+ * La ligne d'un seuil, toutes lois (binomiale, géométrique) : « plus petit k
+ * tel que … : k = 14 (P(X > 14) ≈ 0,044) », ou « aucun k de 0 à `last` … »
+ */
+function thresholdLine(
+	threshold: LawThreshold,
+	{ k, smallest, num, den }: { k: number | null; smallest: boolean; num: bigint; den: bigint },
+	last: string,
+	variable: string,
+	places: number,
+	locale: ContentLocale
+): string {
 	const shownAlpha = asWritten(threshold.alpha, locale);
 	const condition = `P(${variable} ${threshold.event} k) ${threshold.comparison} ${shownAlpha}`;
 	if (k === null) {
-		return [
-			locale === 'en'
-				? `no k from 0 to ${binomial.n} satisfies ${condition}`
-				: `aucun k de 0 à ${binomial.n} ne vérifie ${condition}`
-		];
+		return locale === 'en'
+			? `no k from 0 to ${last} satisfies ${condition}`
+			: `aucun k de 0 à ${last} ne vérifie ${condition}`;
 	}
-	const { text, exact } = roundedText(num, den, binomial.places, locale);
+	const { text, exact } = roundedText(num, den, places, locale);
 	const reached = `P(${variable} ${threshold.event} ${k}) ${exact ? '=' : '≈'} ${text}`;
-	return [
-		locale === 'en'
-			? `${smallest ? 'smallest' : 'largest'} k such that ${condition}: k = ${k} (${reached})`
-			: `plus ${smallest ? 'petit' : 'grand'} k tel que ${condition} : k = ${k} (${reached})`
-	];
+	return locale === 'en'
+		? `${smallest ? 'smallest' : 'largest'} k such that ${condition}: k = ${k} (${reached})`
+		: `plus ${smallest ? 'petit' : 'grand'} k tel que ${condition} : k = ${k} (${reached})`;
 }
 
 /**
@@ -1752,6 +1760,24 @@ function buildGeometricScene(spec: StatChartSpec, law: LawData, locale: ContentL
 		pixelSize: { width: 0, height: 0 },
 		indicators: [
 			...namedMomentLines(law, geometricMoments(p), /[.,%]/.test(geometric.p), locale),
+			// `seuil:` (manche 14) : k cherché de 0 à 1 000
+			...(geometric.threshold === null
+				? []
+				: [
+						thresholdLine(
+							geometric.threshold,
+							geometricThreshold(
+								p,
+								geometric.threshold.event,
+								geometric.threshold.comparison,
+								Fraction.parse(geometric.threshold.alpha) ?? Fraction.ZERO
+							),
+							locale === 'en' ? '1,000' : '1 000',
+							law.variable,
+							geometric.places,
+							locale
+						)
+					]),
 			...queries
 		],
 		variable: law.variable,

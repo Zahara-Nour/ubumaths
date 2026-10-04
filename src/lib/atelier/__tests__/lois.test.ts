@@ -79,7 +79,7 @@ describe('.geometrique', () => {
 			'G(p) : p est un nombre strictement positif, au plus 1'
 		);
 		expect(refusal('.geometrique X 0,2 diagramme oui')).toBe(
-			"« diagramme oui » : écrire P(X ⩽ 3) ou jusqu'à 15"
+			"« diagramme oui » : écrire P(X ⩽ 3), jusqu'à 15 ou seuil P(X > k) ⩽ 0,05"
 		);
 	});
 });
@@ -174,6 +174,18 @@ describe('revue : crochets, sauts de ligne, texte de l’historique', () => {
 	it('.binomiale x 10 : la majuscule expliquée', () => {
 		expect(refusal('.binomiale x 10')).toBe(
 			'La variable s’écrit en majuscule : .binomiale X 10 0,3'
+		);
+	});
+});
+
+describe('.geometrique … seuil (manche 14)', () => {
+	it('la ligne du bloc ; `seuil` sans valeur expliqué', () => {
+		const { scene } = law('.geometrique X 0,2 seuil P(X > k) ⩽ 0,05');
+		expect(scene.indicators).toContain(
+			'plus petit k tel que P(X > k) ⩽ 0,05 : k = 14 (P(X > 14) ≈ 0,044)'
+		);
+		expect(refusal('.geometrique X 0,2 seuil')).toBe(
+			'« seuil » sans valeur : écrire par exemple seuil P(X > k) ⩽ 0,05'
 		);
 	});
 });

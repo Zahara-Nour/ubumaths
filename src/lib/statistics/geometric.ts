@@ -12,6 +12,7 @@
  */
 
 import { Fraction } from './fraction';
+import { findThreshold, type ThresholdEvent } from './binomial';
 import type { RandomVariableLaw } from './random-variable';
 
 // =============================================================================
@@ -74,4 +75,29 @@ export function geometricMoments(p: Fraction): RandomVariableLaw {
 		deviation: Math.sqrt(variance.toNumber()),
 		exactDeviation: variance.sqrt()
 	};
+}
+
+/**
+ * Seuil (manche 14) : le k de 0 à 1 000 qui vérifie « P(X `event` k)
+ * `comparison` α », exact. P(X < k) = P(X ⩽ k − 1).
+ */
+export function geometricThreshold(
+	p: Fraction,
+	event: ThresholdEvent,
+	comparison: '⩽' | '⩾',
+	alpha: Fraction
+): { k: number | null; smallest: boolean; num: bigint; den: bigint } {
+	const probability = (k: number) => {
+		switch (event) {
+			case '>':
+				return geometricProbability(p, k + 1, null);
+			case '⩾':
+				return geometricProbability(p, k, null);
+			case '<':
+				return geometricProbability(p, 1, k - 1);
+			case '⩽':
+				return geometricProbability(p, 1, k);
+		}
+	};
+	return findThreshold(GEOMETRIC_MAX_K, probability, event, comparison, alpha);
 }

@@ -275,12 +275,9 @@ describe('X ~ G(p) — erreurs situées', () => {
 		);
 	});
 
-	it('`intervalle:` et `seuil:` sont réservés à la loi binomiale', () => {
+	it('`intervalle:` est réservé à la loi binomiale', () => {
 		expect(errorOf(`${G}\nintervalle: 0,95`)).toBe(
 			'Ligne 2 : intervalle : option réservée à la loi binomiale'
-		);
-		expect(errorOf(`${G}\nseuil: P(X > k) ⩽ 0,05`)).toBe(
-			'Ligne 2 : seuil : option réservée à la loi binomiale'
 		);
 	});
 

@@ -121,6 +121,8 @@ const BLOCKS: [string, StatChartKind, string][] = [
 		'loi',
 		'X ~ G(0,2)\nindicateurs: espérance ; variance ; écart type\ndiagramme: oui\nprobabilités: P(X > 5 | X > 2) ; P(X = 0)\nmasquer: 2'
 	],
+	['loi géométrique, seuil', 'loi', 'X ~ G(0,2)\nseuil: P(X ⩽ k) ⩽ 0,5'],
+	['loi géométrique, seuil impossible', 'loi', 'X ~ G(0,000001)\nseuil: P(X > k) ⩽ 0,05'],
 	['loi uniforme', 'loi', 'X ~ U(1 ; 6)\ndiagramme: oui\nprobabilités: P(X ⩾ 5)'],
 	['loi uniforme, grande', 'loi', 'X ~ U(1 ; 100)\nindicateurs: variance'],
 	['simulation binomiale', 'simulation', 'X ~ B(10 ; 0,3)\ntirages: 20'],

@@ -17,4 +17,4 @@ l'événement ;`⩽`, `⩾` dans la comparaison), exact (fractions, BigInt sans 
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Revue · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation (non commitée) · [ ] Revue · [ ] PR, CI, merge
