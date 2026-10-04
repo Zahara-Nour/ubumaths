@@ -11,7 +11,7 @@
 	"delay": 40,
 	"variations": [
 		{
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{p}} }\\times e^{ {{q}} }$\n\n$A=?$",
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{p}} }\\times e^{ {{q}} }$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "p",
@@ -36,7 +36,7 @@
 			}
 		},
 		{
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "x",
@@ -69,7 +69,7 @@
 			}
 		},
 		{
-			"statement": "Écris $A$ sous la forme $e^{\\cdots}$, l'exposant étant réduit.\n\n$A=e^{ {{eval:a*x+b}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+			"statement": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x+b}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
 			"variables": [
 				{
 					"name": "x",
@@ -145,7 +145,7 @@
 			}
 		},
 		{
-			"description": "1/e³ : pas sous la forme e^…",
+			"description": "1/e³ : même forme que e⁻³, juste",
 			"variationIndex": 0,
 			"variables": {
 				"p": "2",
@@ -153,8 +153,7 @@
 			},
 			"answers": ["\\frac{1}{e^3}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "correct"
 			}
 		},
 		{
