@@ -481,6 +481,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				// this lookup silently returns undefined.
 				const expressionName = blankResult.expressionNameByIndex?.[i];
 				const vectorMode = blank.vectorMode ?? resolvedVariation.blankDefaults?.vectorMode;
+				const openableBounds =
+					blank.openableBounds ?? resolvedVariation.blankDefaults?.openableBounds;
 				const calculusFields = resolveCalculusFields(
 					answerKind,
 					blank,
@@ -512,6 +514,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					}),
 					...(answerKind && { answerKind }),
 					...(answerKind === 'vecteur' && vectorMode && { vectorMode }),
+					...(answerKind === 'intervalles' && openableBounds && { openableBounds: true }),
 					...calculusFields,
 					pool: blank.pool,
 					...(expressionName !== undefined && { expressionName })

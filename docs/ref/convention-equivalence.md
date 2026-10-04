@@ -177,6 +177,29 @@ faux positifs), 3 680 faux → vrai (tous vérifiés numériquement). Échantill
 0 écart. Seconde passe après la revue de #524 (exposants, `log_b(b^u)`) : 70 194 paires, 0 faux
 positif ; 177 vrai → faux (exactement les 177 faux positifs de `main`), 4 051 faux → vrai.
 
+## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
+
+Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :
+`]2;+\infty[` pour `[2;+\infty[` est faux, ce qui est juste pour l'ensemble de solutions d'une
+inéquation. Pour un intervalle de croissance ou de convexité, la borne fermée n'est qu'une
+convention : option de case `openableBounds: true` (case ou `blankDefaults` ; éditeur : « Intervalles :
+une borne fermée peut être ouverte »), spécification de David du 2026-10-04.
+
+| Attendue                   | Réponse                    | Verdict                                                 |
+| -------------------------- | -------------------------- | ------------------------------------------------------- |
+| `[2;+\infty[`              | `]2;+\infty[`              | juste                                                   |
+| `[-1;3]`                   | `]-1;3[`, `[-1;3[`         | juste                                                   |
+| `]0;+\infty[`              | `[0;+\infty[`              | faux (on ne FERME jamais une borne ouverte)             |
+| `[2;+\infty[`              | `]3;+\infty[`              | faux (valeur de borne)                                  |
+| `]-\infty;-1]∪[1;+\infty[` | `]-\infty;-1[∪]1;+\infty[` | juste (bornes appariées une à une)                      |
+| `[0;1]∪[1;2]`              | `]0;1[∪]1;2[`              | faux : l'attendue EST `[0;2]`, 1 n'en est pas une borne |
+| `[0;2]`                    | `]0;1]∪[1;2[`              | ½ (morceaux contigus non réunis, `intervalForm`)        |
+
+Appariement : sur les composantes connexes de l'ensemble attendu (rangées), même nombre
+d'intervalles, mêmes valeurs de bornes, chaque borne de l'élève ouverte dès que l'attendue l'est.
+ℝ et ∅ n'ont rien à ouvrir. Sans l'option, rien ne change (mesure du 2026-10-04 : 0 verdict
+changé sur 1 711 modèles, dont 418 réponses « bornes ouvertes » sur des cases intervalles réelles).
+
 ## Réponse « équation » : même ensemble de points (case `answerKind: "equation"`)
 
 `areEquivalent` compare deux équations comme deux relations : `2x-y+1=0` et `y=2x+1` ne sont pas

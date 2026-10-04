@@ -315,6 +315,7 @@ export const blankDefaultsSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
+	openableBounds: z.boolean().optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -331,6 +332,7 @@ export const blankSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
+	openableBounds: z.boolean().optional(),
 	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
@@ -560,6 +562,7 @@ const blankDefaultsStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
+		openableBounds: z.boolean().optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
@@ -578,6 +581,7 @@ const blankStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
+		openableBounds: z.boolean().optional(),
 		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})

@@ -70,4 +70,10 @@ describe('QuestionTemplateForm — cases de calcul', () => {
 		const saved = await saveRoundTrip(blankDefaults);
 		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
 	});
+
+	it('intervalles : bornes ouvrables conservées', async () => {
+		const blankDefaults: BlankDefaults = { answerKind: 'intervalles', openableBounds: true };
+		const saved = await saveRoundTrip(blankDefaults);
+		expect(saved.shared?.blankDefaults).toEqual(blankDefaults);
+	});
 });

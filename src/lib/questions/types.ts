@@ -303,6 +303,8 @@ export interface BlankDefaults extends CalculusBlankFields {
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` */
 	vectorMode?: VectorMode;
+	/** Voir `TemplateBlank.openableBounds` */
+	openableBounds?: boolean;
 	unit?: {
 		/** true = the student must provide the unit */
 		expected: boolean;
@@ -369,6 +371,14 @@ export interface TemplateBlank extends CalculusBlankFields {
 	 * NON NUL à l'attendue est juste (vecteur normal, directeur), le vecteur nul est faux.
 	 */
 	vectorMode?: VectorMode;
+	/**
+	 * Case `answerKind: 'intervalles'` seulement (ignoré sinon) : `true` = l'élève
+	 * peut OUVRIR une borne finie que l'attendue ferme (`]2;+\infty[` juste pour
+	 * `[2;+\infty[` : intervalle de croissance, de convexité), jamais FERMER une
+	 * borne que l'attendue ouvre. Bornes appariées une à une, sur les composantes
+	 * de l'ensemble attendu. Jamais pour un ensemble de solutions d'inéquation.
+	 */
+	openableBounds?: boolean;
 
 	/** Unit config (overrides blankDefaults.unit) */
 	unit?: {
@@ -753,6 +763,8 @@ export interface InstanceBlank extends CalculusBlankFields {
 	answerKind?: AnswerKind;
 	/** Voir `TemplateBlank.vectorMode` (fusionné avec blankDefaults) */
 	vectorMode?: VectorMode;
+	/** Voir `TemplateBlank.openableBounds` (fusionné avec blankDefaults, case intervalles seulement) */
+	openableBounds?: boolean;
 
 	/** Unit config (merged) */
 	unit?: {

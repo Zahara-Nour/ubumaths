@@ -54,6 +54,8 @@
 		sharedBlankUnitRequired: string;
 		sharedBlankAcceptDecimal: boolean;
 		sharedBlankIntervals: boolean;
+		/** Case intervalles : une borne fermée attendue peut être ouverte */
+		sharedBlankOpenableBounds: boolean;
 		sharedBlankEquation: boolean;
 		sharedBlankVector: boolean;
 		sharedBlankVectorCollinear: boolean;
@@ -88,6 +90,7 @@
 		sharedBlankUnitRequired = $bindable(),
 		sharedBlankAcceptDecimal = $bindable(),
 		sharedBlankIntervals = $bindable(),
+		sharedBlankOpenableBounds = $bindable(),
 		sharedBlankEquation = $bindable(),
 		sharedBlankVector = $bindable(),
 		sharedBlankVectorCollinear = $bindable(),
@@ -338,6 +341,13 @@
 								bind:checked={sharedBlankIntervals}
 								label="Réponse : ensemble en intervalles"
 							/>
+							{#if sharedBlankIntervals}
+								<!-- Croissance, convexité : ]2;+∞[ juste pour [2;+∞[ (jamais l'inverse) -->
+								<MyCheckbox
+									bind:checked={sharedBlankOpenableBounds}
+									label="Intervalles : une borne fermée peut être ouverte (pas pour une inéquation)"
+								/>
+							{/if}
 							<!-- Équation de droite ou de cercle : y=2x+1 juste pour 2x-y+1=0 -->
 							<MyCheckbox
 								bind:checked={sharedBlankEquation}

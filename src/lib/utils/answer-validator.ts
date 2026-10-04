@@ -843,7 +843,12 @@ function validateBlankValue(
 ): boolean {
 	// Ensemble en notation intervalle : jugé sur l'ensemble (ni règles ni expression)
 	if (blank.answerKind === 'intervalles') {
-		const { status } = judgeIntervalAnswer(userAnswer, blank.expectedAnswer);
+		const { status } = judgeIntervalAnswer(
+			userAnswer,
+			blank.expectedAnswer,
+			DEFAULT_INTERVAL_FORM_MODE,
+			{ openableBounds: blank.openableBounds }
+		);
 		return status !== 'incorrect' && status !== 'empty';
 	}
 
@@ -998,7 +1003,9 @@ function intervalBlankResult(
 	instance: QuestionInstance
 ): ReturnType<typeof validateSingleBlank> {
 	const mode = instance.options?.constraints?.intervalForm ?? DEFAULT_INTERVAL_FORM_MODE;
-	const { status, feedback } = judgeIntervalAnswer(answer, blank.expectedAnswer, mode);
+	const { status, feedback } = judgeIntervalAnswer(answer, blank.expectedAnswer, mode, {
+		openableBounds: blank.openableBounds
+	});
 	switch (status) {
 		case 'correct':
 			return { isCorrect: true, status: 'correct' };

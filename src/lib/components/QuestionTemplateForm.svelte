@@ -391,6 +391,10 @@
 	let sharedBlankIntervals = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'intervalles'
 	);
+	// Intervalle de croissance, de convexité : une borne fermée attendue peut être ouverte
+	let sharedBlankOpenableBounds = $state(
+		initialTemplate?.shared?.blankDefaults?.openableBounds === true
+	);
 	let sharedBlankEquation = $state(
 		initialTemplate?.shared?.blankDefaults?.answerKind === 'equation'
 	);
@@ -789,8 +793,10 @@
 		if (sharedBlankRulesSuffice) blankDefaults.rulesSuffice = true;
 		if (sharedBlankAcceptDecimal) blankDefaults.acceptDecimal = true;
 		// Une seule nature de réponse : « intervalles » l'emporte si les deux sont cochées
-		if (sharedBlankIntervals) blankDefaults.answerKind = 'intervalles';
-		else if (sharedBlankEquation) blankDefaults.answerKind = 'equation';
+		if (sharedBlankIntervals) {
+			blankDefaults.answerKind = 'intervalles';
+			if (sharedBlankOpenableBounds) blankDefaults.openableBounds = true;
+		} else if (sharedBlankEquation) blankDefaults.answerKind = 'equation';
 		else if (sharedBlankVector) {
 			blankDefaults.answerKind = 'vecteur';
 			// Colinéaire : tout vecteur colinéaire non nul est juste
@@ -958,6 +964,7 @@
 		sharedBlankRulesSuffice = t.shared?.blankDefaults?.rulesSuffice ?? false;
 		sharedBlankAcceptDecimal = t.shared?.blankDefaults?.acceptDecimal ?? false;
 		sharedBlankIntervals = t.shared?.blankDefaults?.answerKind === 'intervalles';
+		sharedBlankOpenableBounds = t.shared?.blankDefaults?.openableBounds === true;
 		sharedBlankEquation = t.shared?.blankDefaults?.answerKind === 'equation';
 		sharedBlankVector = t.shared?.blankDefaults?.answerKind === 'vecteur';
 		sharedBlankVectorCollinear = t.shared?.blankDefaults?.vectorMode === 'colineaire';
@@ -1657,6 +1664,7 @@
 			bind:sharedBlankUnitRequired
 			bind:sharedBlankAcceptDecimal
 			bind:sharedBlankIntervals
+			bind:sharedBlankOpenableBounds
 			bind:sharedBlankEquation
 			bind:sharedBlankVector
 			bind:sharedBlankVectorCollinear

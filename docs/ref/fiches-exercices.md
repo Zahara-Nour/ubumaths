@@ -428,7 +428,12 @@ Règles d'écriture qui évitent un défaut :
 - Une spec `bad_form` / `unoptimal_form` liste ses `constraintViolations`, sinon elle est rouge.
 - Case de l'énoncé : `$x=?$` (le `?` devient la case).
 - Décimal exact accepté (3,5 pour 7/2) : option de case `acceptDecimal` (pas d'équivalent dans
-  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`.
+  TinyMath). Ensemble de solutions : case `answerKind: "intervalles"`. Intervalle de croissance,
+  de décroissance, de convexité : ajouter `"openableBounds": true` (case ou `blankDefaults`) —
+  l'élève peut OUVRIR une borne finie fermée (`]2;+\infty[` pour `[2;+\infty[`), jamais fermer
+  une borne ouverte ; JAMAIS pour l'ensemble de solutions d'une inéquation. Specs conseillées :
+  « borne ouverte → correct » et « borne fermée à tort → incorrect »
+  (`docs/ref/convention-equivalence.md`, § Réponse « intervalles »).
 - Plusieurs bonnes réponses (contre-exemple à « pour tout réel x, x² > x ») : case
   `rulesSuffice: true` + règle (`{ "type": "custom", "expression": "answer^2 <= answer" }`).
   `isPrime(expr)` y vaut 1 si expr est un entier premier, 0 sinon (non entier, < 2) : contre-exemple
