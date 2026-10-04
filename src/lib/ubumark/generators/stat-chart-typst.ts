@@ -503,7 +503,10 @@ function crossTableTypst(scene: CrossTableScene): string {
 	}
 
 	const columns = scene.columnHeaders.length + 1;
-	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${columns},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+	return keptWithTitle(
+		titleBlock(scene.title),
+		`#align(center)[#table(\n  columns: ${columns},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
+	);
 }
 
 // ============================================================================
@@ -530,7 +533,10 @@ function lawTypst(scene: LawScene): string {
 	for (const p of scene.probabilities)
 		push(p.hidden ? '[#box(width: 1.2cm)]' : textContent(p.text));
 
-	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.values.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+	return keptWithTitle(
+		titleBlock(scene.title),
+		`#align(center)[#table(\n  columns: ${scene.values.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
+	);
 }
 
 /**
@@ -546,7 +552,10 @@ function binomialTypst(scene: LawScene, letter: string): string {
 		? [...head, ...scene.values.flatMap((v, i) => [textContent(v), cell(scene.probabilities[i])])]
 		: [head[0], ...scene.values.map(textContent), head[1], ...scene.probabilities.map(cell)];
 	const columns = scene.vertical ? 2 : scene.values.length + 1;
-	return `${titleBlock(scene.title ?? scene.accessibleTitle)}#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${columns},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`;
+	return keptWithTitle(
+		titleBlock(scene.title ?? scene.accessibleTitle),
+		`#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${columns},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`
+	);
 }
 
 /**
@@ -571,7 +580,10 @@ function simulationTypst(scene: SimulationScene): string {
 	}
 
 	const caption = `#align(center, text(size: 8pt)${textContent(scene.caption)})\n`;
-	return `${titleBlock(scene.title)}${caption}#align(center)[#table(\n  columns: 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+	return keptWithTitle(
+		`${titleBlock(scene.title)}${caption}`,
+		`#align(center)[#table(\n  columns: 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
+	);
 }
 
 /** Comparaison de deux séries (atelier) : une ligne par indicateur, une colonne par série */
@@ -584,7 +596,10 @@ function comparisonTypst(scene: ComparisonScene): string {
 		cells.push(`  text(weight: "bold")${textContent(row.header)}`);
 		for (const cell of row.cells) cells.push(`  ${textContent(cell)}`);
 	}
-	return `${titleBlock(scene.title)}#align(center)[#table(\n  columns: ${scene.columns.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`;
+	return keptWithTitle(
+		titleBlock(scene.title),
+		`#align(center)[#table(\n  columns: ${scene.columns.length + 1},\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
+	);
 }
 
 /**
@@ -620,7 +635,10 @@ function frequencyTableTypst(scene: FrequencyTableScene): string {
 	const caption = `#align(center, text(weight: "bold", size: 9pt)${textContent(scene.caption)})\n`;
 	// Colonnes à la largeur de leur contenu, sans césure : des colonnes égales
 	// écrasaient « Effectif » en « Ef-fec-tif » (fiche compilée)
-	return `${caption}#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${count},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`;
+	const table = `#align(center)[#set text(size: 8.5pt, hyphenate: false)\n#table(\n  columns: (auto,) * ${count},\n  align: center + horizon,\n  inset: 4pt,\n  stroke: 0.5pt + luma(110),\n${cells.map((c) => `  ${c}`).join(',\n')}\n)]`;
+	// Le titre avec son tableau : 30 valeurs au plus (31 lignes à la verticale)
+	// tiennent dans une colonne de fiche
+	return keptWithTitle(caption, table);
 }
 
 /** Ligne d'indicateurs sous la figure (Q28) */

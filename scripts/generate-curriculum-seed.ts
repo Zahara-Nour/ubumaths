@@ -44,8 +44,8 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 		out: 'supabase/migrations/20260903090000_seed_curriculum_2de.sql',
 		prefixe: '2',
 		source: [
-			'« Programme de mathématiques de seconde générale et technologique »',
-			'(PDF fourni par David).'
+			'« Programme de mathématiques de la classe de seconde générale et',
+			'technologique » (PDF fourni par David le 2026-08-31).'
 		]
 	},
 	T_SPE: {
