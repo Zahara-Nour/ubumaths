@@ -68,9 +68,10 @@ on:
       - 'src/lib/exercises/types.ts'
       - 'src/lib/exercises/validation.ts'
       - 'src/lib/games/leaderboards.ts'
-      # Chat : le store client tourne contre Realtime local (canal privé)
+      # Chat et échanges : les stores clients tournent contre Realtime local (canal privé)
       - 'src/lib/stores/chat.svelte.ts'
       - 'src/lib/stores/supabaseRealtime.svelte.ts'
+      - 'src/lib/stores/tradeRealtime.svelte.ts'
       - 'src/lib/types/evaluation.ts'
       - 'src/lib/types/question-template.ts'
       - 'src/lib/validation/series.ts'
