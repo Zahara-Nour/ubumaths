@@ -13,6 +13,7 @@ export const CONSTRAINT_IDS: ConfigurableConstraintId[] = [
 	'factorZero',
 	'signs',
 	'reducedFractions',
+	'reducedRadicals',
 	'percent',
 	'unit',
 	'intervalForm'
@@ -29,6 +30,7 @@ export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
 	factorZero: 'Facteur 0 (0 * x)',
 	signs: 'Signes (-- = +)',
 	reducedFractions: 'Fractions irréductibles',
+	reducedRadicals: 'Racines simplifiées',
 	percent: 'Pourcentage',
 	unit: 'Unité',
 	intervalForm: 'Écriture d’un ensemble (intervalles)',

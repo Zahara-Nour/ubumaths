@@ -1020,6 +1020,7 @@ export type ConfigurableConstraintId =
 	| 'factorZero'
 	| 'signs'
 	| 'reducedFractions'
+	| 'reducedRadicals'
 	| 'percent'
 	| 'unit'
 	| 'intervalForm';
@@ -1072,6 +1073,8 @@ export interface ConstraintOptions {
 	factorZero?: ConstraintMode;
 	signs?: ConstraintMode;
 	reducedFractions?: ConstraintMode;
+	/** Racine carrée simplifiable (√12 pour 2√3), décision du 2026-10-04 */
+	reducedRadicals?: ConstraintMode;
 	/** Pourcentage attendu, réponse de même valeur sans le symbole (`0,2` pour `20 %`) */
 	percent?: ConstraintMode;
 	// Unit matching (numerical_with_unit questions)

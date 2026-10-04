@@ -68,6 +68,7 @@
 		{ value: 'factorOne', label: 'factorOne' },
 		{ value: 'factorZero', label: 'factorZero' },
 		{ value: 'reducedFractions', label: 'reducedFractions' },
+		{ value: 'reducedRadicals', label: 'reducedRadicals' },
 		{ value: 'unit', label: 'unit' },
 		{ value: 'intervalForm', label: 'intervalForm' },
 		{ value: 'rounding', label: 'rounding' }

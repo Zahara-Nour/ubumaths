@@ -886,3 +886,48 @@ describe('checkForm — le + devant \\infty est une écriture, pas un signe supe
 		expect(checkForm(answer, expected, {}).valid).toBe(false);
 	});
 });
+
+describe('checkForm — racine simplifiable : forme perfectible (reducedRadicals, 2026-10-04)', () => {
+	it.each([
+		['\\sqrt{12}', '2\\sqrt{3}'],
+		['\\sqrt{8}', '2\\sqrt{2}'],
+		['\\sqrt{4}', '2'],
+		['3\\sqrt{12}', '6\\sqrt{3}'],
+		['-\\sqrt{12}', '-2\\sqrt{3}'],
+		['\\sqrt{50}+1', '5\\sqrt{2}+1'],
+		['\\sqrt{72}', '6\\sqrt{2}']
+	])('%s attendu %s : ½, reducedRadicals', (answer, expected) => {
+		const result = checkForm(answer, expected, {});
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.violations.map((v) => v.id)).toEqual(['reducedRadicals']);
+	});
+
+	it('mode strict : mauvaise forme ; off : rien de signalé, forme comparée après réduction', () => {
+		expect(checkForm('\\sqrt{12}', '2\\sqrt{3}', { reducedRadicals: 'strict' }).status).toBe(
+			'bad_form'
+		);
+		expect(checkForm('\\sqrt{12}', '2\\sqrt{3}', { reducedRadicals: 'off' }).status).toBe(
+			'correct'
+		);
+	});
+
+	it.each([
+		['2\\sqrt{3}', '2\\sqrt{3}'],
+		['2\\sqrt{3}', '\\sqrt{12}'],
+		['\\sqrt{3}', '\\sqrt{3}'],
+		['\\sqrt{2}', '\\sqrt{2}'],
+		['\\sqrt[3]{16}', '\\sqrt[3]{16}'],
+		['\\sqrt{x}', '\\sqrt{x}']
+	])('%s attendu %s : juste sans réserve', (answer, expected) => {
+		const result = checkForm(answer, expected, {});
+		expect(result.status).toBe('correct');
+		expect(result.violations).toEqual([]);
+	});
+
+	it.each([
+		['\\sqrt{12}', '3\\sqrt{2}'],
+		['\\sqrt{13}', '2\\sqrt{3}']
+	])('%s attendu %s : forme différente, pas une racine à simplifier', (answer, expected) => {
+		expect(checkForm(answer, expected, {}).valid).toBe(false);
+	});
+});

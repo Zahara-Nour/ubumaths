@@ -67,6 +67,40 @@ function exactLatexToCustom(content: string): string {
 }
 
 /**
+ * Nom d'une courbe, d'une droite, d'un plan devant sa formule : `P :`, `(P) :`, `d :`,
+ * `\\mathcal{P} :`, `\\Delta :`, `\\mathcal{P}\\colon` (décision de David du 2026-10-04).
+ * Une lettre (indice, prime), une lettre calligraphiée ou une commande, éventuellement
+ * entre parenthèses.
+ */
+const FORMULA_NAME_CORE = String.raw`(?:\\math(?:cal|scr|bb|bf|rm|frak)\{[A-Za-z]\}|\\[A-Za-z]+|[A-Za-z]'?)(?:_\{?[A-Za-z0-9]+\}?)?`;
+const NAMED_FORMULA_REGEX = new RegExp(
+	String.raw`^\s*(\(\s*${FORMULA_NAME_CORE}\s*\)|${FORMULA_NAME_CORE})\s*(:|\\colon)\s*(\S[\s\S]*)$`
+);
+
+/**
+ * `P : -1x+(0)y+(1)z+(0)=0` nettoyé en `P : -x + z = 0`, le nom gardé tel qu'écrit.
+ * Lue d'un bloc, la formule devenait `P : (-1)·x…` (le −1 n'était plus un coefficient
+ * de tête), `(P)` perdait ses parenthèses et `\\mathcal{P}` la rendait illisible. Seule
+ * une RELATION après le nom est concernée ; rien à nettoyer → `null` (lecture d'un bloc,
+ * comme avant).
+ */
+function cleanNamedFormula(
+	content: string,
+	genericFunctions?: GenericFunctionConfig
+): string | null {
+	const match = NAMED_FORMULA_REGEX.exec(content);
+	if (!match) return null;
+	const [, name, separator, formula] = match;
+	const ast =
+		parseCustomSafe(formula, { genericFunctions }).ast ??
+		parseCustomSafe(latexRelationsToCustom(exactLatexToCustom(formula)), { genericFunctions }).ast;
+	if (!ast || ast.type !== 'relation') return null;
+	const cleaned = cleanCoefficientsAst(ast);
+	if (cleaned === ast) return null;
+	return `${name} ${separator} ${toLatex(cleaned, { preserveHoles: true })}`;
+}
+
+/**
  * Formule maison → LaTeX. Si elle ne se lit pas telle quelle, second essai après
  * réécriture des nombres exacts ; sinon `null` (formule LaTeX, laissée intacte).
  * `genericFunctions` : fonctions déclarées par le modèle (absent : défauts du parseur).
@@ -79,6 +113,9 @@ function customToLatex(
 ): string | null {
 	const render = (ast: MathNode) =>
 		toLatex(cleanCoefficients ? cleanCoefficientsAst(ast) : ast, { preserveHoles: true });
+	// Nom devant la formule (`\\mathcal{P} : …`) : gardé, la formule seule est nettoyée
+	const named = cleanCoefficients ? cleanNamedFormula(content, genericFunctions) : null;
+	if (named !== null) return named;
 	const direct = parseCustomSafe(content, { genericFunctions });
 	if (direct.ast) return render(direct.ast);
 	if (cleanCoefficients && latexRelationsToCustom(content) !== content) {

@@ -1,6 +1,6 @@
 /**
- * Réponse « équation » : jugement d'une équation de droite ou de cercle
- * =====================================================================
+ * Réponse « équation » : jugement d'une équation de droite, de cercle, de plan, de sphère
+ * ===================================================================================
  *
  * Case marquée `answerKind: 'equation'` (géométrie repérée). Une équation est
  * jugée sur l'ENSEMBLE DE POINTS qu'elle décrit, pas sur son écriture
@@ -8,19 +8,22 @@
  *
  * - P = membre gauche − membre droit, développé et réduit par mathAST
  *   (`normalize` : coefficients rationnels et radicaux EXACTS, aucun flottant) ;
- *   P doit être un polynôme non constant en x et y ;
+ *   P doit être un polynôme non constant en x et y (plan repéré), ou en x, y et z
+ *   (espace : plan jugé comme une droite, sphère comme un cercle — décision de
+ *   David du 2026-10-04) ;
  * - la réponse est juste si P_rép = k·P_att, k constante non nulle
  *   (proportionnalité vérifiée par produits en croix, exacts) ;
  * - degré 1 (droite) : tout k → `correct` (`y = 2x + 1`, `4x − 2y + 2 = 0`…) ;
- * - degré ≥ 2 (cercle) : l'équation ramenée au coefficient 1 du terme de
- *   référence (x², sinon y², sinon le premier terme de plus haut degré dans
+ * - degré ≥ 2 (cercle, sphère) : l'équation ramenée au coefficient 1 du terme de
+ *   référence (x², sinon y², sinon z², sinon le premier terme de plus haut degré dans
  *   l'ordre canonique de mathAST) ; réponse de coefficient ±1 → `correct` (forme
  *   centre-rayon ou développée, `3^2` ou `9`, membres échangés) ; |k| ≠ 1 →
  *   `unoptimal_form` (½), à simplifier (décision du 2026-10-03) ;
  * - forme exigée (`requiredForm` : `reduite`, `cartesienne`, `centre-rayon`) non
  *   respectée par une équation juste → `bad_form` ;
  * - pas une équation, non polynomiale, autres variables, illisible → `incorrect`,
- *   jamais d'exception ; rien d'écrit → `empty`.
+ *   jamais d'exception ; rien d'écrit → `empty` ; réponse en z pour une attendue
+ *   en x et y → `incorrect`, avec un message.
  *
  * @module questions/equations/equation-answer
  */
@@ -56,8 +59,10 @@ interface EquationPolynomial {
 	degree: number;
 	/** P contient un terme en x² */
 	hasXSquared: boolean;
+	/** P contient z : équation de l'espace (plan, sphère) */
+	hasZ: boolean;
 	/**
-	 * Terme de référence du coefficient 1 (degré ≥ 2) : x², sinon y², sinon le
+	 * Terme de référence du coefficient 1 (degré ≥ 2) : x², sinon y², sinon z², sinon le
 	 * premier terme de plus haut degré dans l'ordre canonique de mathAST
 	 */
 	referenceIndex: number;
@@ -72,22 +77,33 @@ type ReadEquation =
 /** Messages figés (français, tutoiement) */
 export const EQUATION_FEEDBACK = {
 	notEquation: 'Écris une équation (avec le signe =) en x et y.',
+	notEquationSpace: 'Écris une équation (avec le signe =) en x, y et z.',
+	unexpectedZ: 'L’équation attendue est en x et y : ta réponse ne doit pas contenir z.',
 	scaledSquare: 'Simplifie l’équation : le coefficient de x² doit valoir 1.',
 	scaled: 'Simplifie l’équation : divise-la par le facteur commun de ses coefficients.',
 	forms: {
 		reduite: 'Donne l’équation réduite : y = mx + p (ou x = c pour une droite verticale).',
 		cartesienne: 'Donne une équation cartésienne : ax + by + c = 0.',
 		'centre-rayon': 'Donne l’équation sous la forme (x − a)² + (y − b)² = r².'
+	},
+	// Espace (attendue en x, y et z) ; pas d'équation réduite pour un plan
+	spaceForms: {
+		reduite: 'Donne l’équation réduite : y = mx + p (ou x = c pour une droite verticale).',
+		cartesienne: 'Donne une équation cartésienne : ax + by + cz + d = 0.',
+		'centre-rayon': 'Donne l’équation sous la forme (x − a)² + (y − b)² + (z − c)² = r².'
 	}
 } as const satisfies {
 	notEquation: string;
+	notEquationSpace: string;
+	unexpectedZ: string;
 	scaledSquare: string;
 	scaled: string;
 	forms: Record<EquationForm, string>;
+	spaceForms: Record<EquationForm, string>;
 };
 
-/** Variables d'une équation du plan repéré */
-const PLANE_VARIABLES = new Set(['x', 'y']);
+/** Variables d'une équation : plan repéré (x, y) ou espace (x, y, z) */
+const EQUATION_VARIABLES = new Set(['x', 'y', 'z']);
 
 /**
  * Plus grand exposant entier écrit : une droite ou un cercle n'en demande que 2.
@@ -144,7 +160,7 @@ function isRealCoefficient(coefficient: AlgebraicCoefficient): boolean {
 }
 
 /**
- * P = gauche − droite réduit : un polynôme non constant en x et y, à
+ * P = gauche − droite réduit : un polynôme non constant en x, y (et z), à
  * dénominateur constant. `null` sinon (racine de y, 1/x, autre lettre…).
  */
 function polynomialOf(relation: RelationNode): EquationPolynomial | null {
@@ -160,18 +176,22 @@ function polynomialOf(relation: RelationNode): EquationPolynomial | null {
 	let degree = 0;
 	let xSquaredIndex = -1;
 	let ySquaredIndex = -1;
+	let zSquaredIndex = -1;
 	let topIndex = -1;
+	let hasZ = false;
 	for (const [index, term] of form.numerator.entries()) {
 		if (!isRealCoefficient(term.coefficient)) return null;
 		let termDegree = 0;
 		for (const factor of term.monomial) {
 			const { base, exponent } = factor;
-			if (base.type !== 'variable' || !PLANE_VARIABLES.has(base.name)) return null;
+			if (base.type !== 'variable' || !EQUATION_VARIABLES.has(base.name)) return null;
 			if (exponent.d !== 1n || exponent.n < 1n) return null;
 			termDegree += Number(exponent.n);
+			if (base.name === 'z') hasZ = true;
 			if (exponent.n === 2n && term.monomial.length === 1) {
 				if (base.name === 'x') xSquaredIndex = index;
-				else ySquaredIndex = index;
+				else if (base.name === 'y') ySquaredIndex = index;
+				else zSquaredIndex = index;
 			}
 		}
 		if (termDegree > degree) {
@@ -187,12 +207,12 @@ function polynomialOf(relation: RelationNode): EquationPolynomial | null {
 		denominator: denominatorTerm.coefficient,
 		degree,
 		hasXSquared: xSquaredIndex !== -1,
-		referenceIndex:
-			xSquaredIndex !== -1 ? xSquaredIndex : ySquaredIndex !== -1 ? ySquaredIndex : topIndex
+		hasZ,
+		referenceIndex: [xSquaredIndex, ySquaredIndex, zSquaredIndex].find((i) => i !== -1) ?? topIndex
 	};
 }
 
-/** Lecture d'une équation polynomiale en x et y ; jamais d'exception */
+/** Lecture d'une équation polynomiale en x, y (et z) ; jamais d'exception */
 function readEquation(text: string): ReadEquation {
 	if (isAnswerTooComplex(text)) return { ok: false, error: 'écriture trop complexe' };
 	const node = parseAnswer(text);
@@ -205,7 +225,7 @@ function readEquation(text: string): ReadEquation {
 	try {
 		const polynomial = polynomialOf(relation);
 		if (!polynomial) {
-			return { ok: false, error: 'pas une équation polynomiale non triviale en x et y' };
+			return { ok: false, error: 'pas une équation polynomiale non triviale en x, y (et z)' };
 		}
 		return { ok: true, relation, polynomial };
 	} catch {
@@ -216,7 +236,7 @@ function readEquation(text: string): ReadEquation {
 
 /**
  * Réponse attendue écrite par l'auteur : une équation polynomiale non triviale
- * en x et y. Sert aux specs de test (une attendue illisible est une erreur du
+ * en x et y, ou en x, y et z. Sert aux specs de test (une attendue illisible est une erreur du
  * MODÈLE, pas de l'élève).
  */
 export function readExpectedEquation(text: string): { ok: true } | { ok: false; error: string } {
@@ -260,7 +280,7 @@ function hasUnitReferenceCoefficient(answer: EquationPolynomial, referenceIndex:
 
 // --- Formes exigées -----------------------------------------------------------
 
-/** Une expression sans x ni y (nombre, fraction, radical, π…) */
+/** Une expression sans variable (nombre, fraction, radical, π…) */
 function isConstant(node: MathNode): boolean {
 	return getVariables(node).size === 0;
 }
@@ -331,7 +351,7 @@ function centeredVariable(base: MathNode): string | null {
 	const variables = getVariables(inner);
 	if (variables.size !== 1) return null;
 	const [name] = [...variables];
-	if (!PLANE_VARIABLES.has(name)) return null;
+	if (!EQUATION_VARIABLES.has(name)) return null;
 	const terms = flattenSumShallow(inner);
 	if (terms.length > 2) return null;
 	let variableTerms = 0;
@@ -343,11 +363,14 @@ function centeredVariable(base: MathNode): string | null {
 	return variableTerms === 1 ? name : null;
 }
 
-/** `(x − a)² + (y − b)² = r²` (ordre des carrés indifférent, `r²` ou sa valeur) */
+/**
+ * `(x − a)² + (y − b)² = r²`, ou `(x − a)² + (y − b)² + (z − c)² = r²` pour une
+ * sphère (ordre des carrés indifférent, `r²` ou sa valeur ; une variable par carré)
+ */
 function isCenterRadiusForm(relation: RelationNode): boolean {
 	if (!isConstant(relation.right)) return false;
 	const terms = flattenSumShallow(relation.left);
-	if (terms.length !== 2) return false;
+	if (terms.length !== 2 && terms.length !== 3) return false;
 	const names = new Set<string>();
 	for (const { sign, term } of terms) {
 		if (sign !== '+' || term.type !== 'superscript' || writtenInteger(term.superscript) !== 2) {
@@ -357,7 +380,7 @@ function isCenterRadiusForm(relation: RelationNode): boolean {
 		if (!name) return false;
 		names.add(name);
 	}
-	return names.size === 2;
+	return names.size === terms.length;
 }
 
 /**
@@ -398,13 +421,20 @@ export function judgeEquationAnswer(
 	const expectedRead = readEquation(expected);
 	if (!expectedRead.ok) return { status: 'incorrect' };
 
+	const inSpace = expectedRead.polynomial.hasZ;
 	const answerRead = readEquation(answer);
 	if (!answerRead.ok) {
 		const relation = parseAnswer(answer);
 		const isEquation = relation !== null && unwrap(relation).type === 'relation';
-		return isEquation
-			? { status: 'incorrect' }
-			: { status: 'incorrect', feedback: EQUATION_FEEDBACK.notEquation };
+		const notEquation = inSpace
+			? EQUATION_FEEDBACK.notEquationSpace
+			: EQUATION_FEEDBACK.notEquation;
+		return isEquation ? { status: 'incorrect' } : { status: 'incorrect', feedback: notEquation };
+	}
+
+	// Case du plan repéré : une réponse en z ne peut pas être juste
+	if (!inSpace && answerRead.polynomial.hasZ) {
+		return { status: 'incorrect', feedback: EQUATION_FEEDBACK.unexpectedZ };
 	}
 
 	if (!isProportional(answerRead.polynomial, expectedRead.polynomial)) {
@@ -412,10 +442,11 @@ export function judgeEquationAnswer(
 	}
 
 	if (isEquationForm(requiredForm) && !matchesEquationForm(answerRead.relation, requiredForm)) {
-		return { status: 'bad_form', feedback: EQUATION_FEEDBACK.forms[requiredForm] };
+		const forms = inSpace ? EQUATION_FEEDBACK.spaceForms : EQUATION_FEEDBACK.forms;
+		return { status: 'bad_form', feedback: forms[requiredForm] };
 	}
 
-	// Cercle (degré ≥ 2) : coefficient ±1 pour x² (sinon y², sinon le terme de référence)
+	// Cercle, sphère (degré ≥ 2) : coefficient ±1 pour x² (sinon y², z², le terme de référence)
 	const { degree, referenceIndex } = expectedRead.polynomial;
 	if (degree >= 2 && !hasUnitReferenceCoefficient(answerRead.polynomial, referenceIndex)) {
 		const feedback = expectedRead.polynomial.hasXSquared

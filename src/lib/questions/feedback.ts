@@ -60,6 +60,11 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 		single: 'La fraction peut être simplifiée.',
 		multiple: 'Une ou plusieurs fractions peuvent être simplifiées.'
 	},
+	// Racine carrée à facteur carré (√12 pour 2√3), décision du 2026-10-04
+	reducedRadicals: {
+		single: 'La racine peut être simplifiée.',
+		multiple: 'Une ou plusieurs racines peuvent être simplifiées.'
+	},
 	// Pourcentage attendu, réponse de même valeur sans le symbole
 	percent: {
 		single: 'Écris le résultat en pourcentage.',

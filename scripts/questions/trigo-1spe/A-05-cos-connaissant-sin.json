@@ -449,8 +449,8 @@
 			},
 			"answers": ["\\frac{\\sqrt{5}}{\\sqrt{9}}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{
@@ -549,8 +549,8 @@
 			"variables": {},
 			"answers": ["-\\frac{\\sqrt{8}}{3}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{

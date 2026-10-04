@@ -272,8 +272,8 @@
 			},
 			"answers": ["\\sqrt{24}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
 			}
 		},
 		{

@@ -118,6 +118,27 @@ distinct. Seul le `+` collé à `\infty` est absorbé : `++\infty` garde un `+` 
 `intervalles` ne passent pas par ce pipeline. Défaut de la sonde du 2026-10-04 ; plus besoin de
 `constraints.signs: "off"` dans une carte pour accepter `+\infty`.
 
+## Racine simplifiable : forme perfectible (contrainte `reducedRadicals`)
+
+Décision de David du 2026-10-04 : une racine carrée d'entier à facteur carré est jugée comme une
+fraction simplifiable. `reduceRadicalsAST` (pipeline de `checkForm`, juste avant
+`reduceFractionsAST`) réécrit `\sqrt{12}` → `2\sqrt{3}`, `3\sqrt{12}` → `6\sqrt{3}`,
+`\sqrt{49}` → `7` ; la contrainte `reducedRadicals` (défaut `warn`) donne ½ avec « La racine peut
+être simplifiée. » (`strict` : 0 point ; `off` : ni message ni pénalité, la forme est comparée après
+réduction). `\frac{\sqrt{12}}{2}` pour `\sqrt{3}` cumule `reducedRadicals` et `reducedFractions`.
+Une attendue écrite `\sqrt{12}` est réduite elle aussi (`2\sqrt{3}` juste). Restent : `\sqrt[3]{16}`,
+`\sqrt{x}`, un radicande décimal ou au-delà de 10⁹ ; une valeur fausse reste fausse (`\sqrt{13}`).
+⚠️ Un exercice dont l'objet est de réduire une racine ou de trouver une racine (« Réduire une
+racine carrée », « Trouver une racine carrée ») doit poser `constraints.reducedRadicals: "strict"`,
+sinon recopier `\sqrt{12}` vaut ½. Mesure (dépôt + `REAL_TEMPLATES` + 920 modèles de prod en lecture +
+synthétiques ; specs, attendue sur tirages, variantes `k\sqrt{m}` ↔ `\sqrt{k^2m}`, `n` ↔
+`\sqrt{n^2}`, valeur fausse) : 34 226 verdicts, 1 238 modèles, 3 709 changés, tous sur une racine
+simplifiable : 3 459 variantes `bad_form` → `unoptimal_form`, 42 `correct` → `unoptimal_form`
+(cases `form: "off"`), 150 messages ou listes de contraintes, 40 specs (17 dans le dépôt, mises à
+jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carrée », « Trouver une
+racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
+racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
+
 ## Exposants littéraux (#521)
 
 La forme normale ne porte que des exposants **rationnels** (`SymbolicFactor.exponent: Rational`).
@@ -288,6 +309,21 @@ référence avant de mesurer k : x², sinon y², sinon le premier terme de plus 
 l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coefficient vaut ±1
 (signe libre : membres échangés, tout changé de signe), ½ sinon. L'écriture de l'attendue
 (`2x^2+2y^2=8`) n'est donc jamais imposée à l'élève.
+
+**Espace : plan et sphère** (décision de David du 2026-10-04). La lecture accepte x, y et z :
+un plan (degré 1 en x, y, z) est jugé comme une droite (tout multiple non nul juste,
+`2x-y+3z=4` pour `2x-y+3z-4=0`), une sphère comme un cercle (coefficient ±1 de x², sinon y²,
+sinon z² ; multiple → ½). Formes exigeables : `cartesienne` (membre droit 0, message
+« ax + by + cz + d = 0 »), `centre-rayon` (`(x-a)^2+(y-b)^2+(z-c)^2=r^2`, un carré par
+variable, trois carrés pour une sphère). Une attendue sans z garde exactement le jugement du plan
+repéré ; une réponse en z y est fausse avec « L’équation attendue est en x et y : ta réponse ne
+doit pas contenir z. ». Mesure (dépôt + `REAL_TEMPLATES` + 920 modèles de prod en lecture +
+synthétiques ; specs, attendue sur tirages, 7 variantes par équation : membres échangés, ×2, tout
+à gauche, `+z`, `-()`, faux, sans `=`) : 31 185 verdicts, 1 241 modèles, 0 statut changé hors
+synthétiques ; 212 messages ajoutés sur la variante `+z` (fausse avant comme après) des
+14 modèles réels à case équation ; 168 changements synthétiques (plans et sphères :
+faux → juste / ½ / mauvaise forme ; une case ORDINAIRE `requiredForm: "centre-rayon"` reçoit
+désormais une sphère centre-rayon comme bien formée).
 
 ## Réponse « vecteur » : coordonnées exactes, ou colinéaire (case `answerKind: "vecteur"`)
 

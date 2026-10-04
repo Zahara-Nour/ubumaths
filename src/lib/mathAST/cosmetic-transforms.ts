@@ -26,7 +26,8 @@ import {
 	percentage,
 	variable,
 	superscript,
-	func
+	func,
+	sqrt
 } from './factory';
 import {
 	isDivision,
@@ -351,6 +352,52 @@ export function reduceFractionsAST(ast: MathNode): MathNode {
 		}
 
 		return node;
+	});
+}
+
+/** Plus grand radicande examiné : au-delà, la racine est laissée telle quelle */
+const MAX_REDUCIBLE_RADICAND = 1_000_000_000;
+
+/**
+ * Racine carrée d'un entier à facteur carré : √n = k√m (k > 1 maximal). `null` pour
+ * une autre racine (indice ≠ 2, radicande non entier ou sans facteur carré).
+ */
+function squareFactorOf(node: MathNode): { k: number; m: number } | null {
+	if (node.type !== 'function' || node.name !== 'sqrt' || node.args.length !== 1) return null;
+	if (node.base && !(node.base.type === 'number' && node.base.value === '2')) return null;
+	const [radicand] = node.args;
+	if (radicand.type !== 'number' || !/^\d+$/.test(radicand.value)) return null;
+	const n = Number(radicand.value);
+	if (n < 4 || n > MAX_REDUCIBLE_RADICAND) return null;
+	for (let k = Math.floor(Math.sqrt(n)); k >= 2; k--) {
+		if (n % (k * k) === 0) return { k, m: n / (k * k) };
+	}
+	return null;
+}
+
+/** k√m, ou k si m = 1 */
+function radicalNode(k: number, m: number): MathNode {
+	const coefficient = number(String(k));
+	return m === 1 ? coefficient : multiply(coefficient, sqrt(number(String(m))), 'implicit');
+}
+
+/**
+ * Racines simplifiables (décision de David du 2026-10-04, comme une fraction
+ * simplifiable) : √12 → 2√3, √4 → 2, 3√12 → 6√3 (coefficient entier écrit devant).
+ * Seules les racines carrées d'un entier ; `\sqrt[3]{16}`, `\sqrt{x}` restent.
+ */
+export function reduceRadicalsAST(ast: MathNode): MathNode {
+	return mapNodeTopDown(ast, (node) => {
+		if (
+			node.type === 'multiplication' &&
+			node.left.type === 'number' &&
+			/^\d+$/.test(node.left.value)
+		) {
+			const factor = squareFactorOf(node.right);
+			if (factor) return radicalNode(Number(node.left.value) * factor.k, factor.m);
+		}
+		const factor = squareFactorOf(node);
+		return factor ? radicalNode(factor.k, factor.m) : node;
 	});
 }
 
@@ -1341,6 +1388,7 @@ function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyMonomialFractionNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: absoluteUnderAssumptionsAST(options.assumptions), constraintId: null }, // hypothèse, pas forme
+		{ transform: reduceRadicalsAST, constraintId: 'reducedRadicals' },
 		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },

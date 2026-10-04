@@ -282,6 +282,13 @@ b = −3 donne `e^{-x}-3` (l'attendue nettoyée écrivait `\euler`, illisible po
 la bonne réponse était jugée fausse). Plus besoin de `{{if:k==1|…}}` pour éviter `1e^{…}`. Une
 puissance nulle n'est pas réduite : `e^{0x}` devient `e^0`, comme `x^0` reste `x^0`.
 
+Nom devant la formule (2026-10-04) : `$\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{d}})=0$`, et de
+même `P :`, `(P) :`, `(E) :`, `d :`, `\Delta :`, `\mathcal{P}\colon`, garde le nom tel qu'écrit et
+nettoie la formule qui suit (`\mathcal{P} : -x + z = 0`) ; avant, `P : -1 x…` restait, `(P)`
+perdait ses parenthèses et `\mathcal{P}` n'était pas nettoyé du tout. Plus besoin d'écrire le nom
+hors de la formule (`$\mathcal{P}$ : $…$`). Seule une relation (`=`, `<`…) après le nom est
+concernée ; mesure : 0 formule réelle changée (dépôt + 920 modèles de prod), 42 synthétiques.
+
 ⚠️ `{{c;+}}` avec c = 0 écrit `0` sans `+` (« 1y0 », lu comme un produit) : l'option ne le
 répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
 
@@ -458,6 +465,10 @@ Règles d'écriture qui évitent un défaut :
   par les règles ; fraction à simplifier (`\frac{2}{4}`, `\frac{-3}{4}`) → `unoptimal_form`
   (`reducedFractions`), calcul non effectué (`1-1`) → `bad_form` (décision du 2026-10-03). Avec
   `precision`, seul un nombre simple reste admis.
+- Racine simplifiable (`\sqrt{12}` pour `2\sqrt{3}`, `\sqrt{49}` pour 7) : `unoptimal_form`
+  (½, contrainte `reducedRadicals`, « La racine peut être simplifiée. », décision du 2026-10-04 ;
+  avant : `bad_form` / `form`). Spec : `constraintViolations: ["reducedRadicals"]`. Exercice dont
+  l'objet est de réduire ou de trouver la racine : `"constraints": { "reducedRadicals": "strict" }`.
 - Commande LaTeX suivie de `e` : laisser l'espace (`\geqslant e^{…}`) ; collé, `\geqslante` fait
   échouer tout le PDF.
 - Titre de modèle = texte brut : pas de `e^(kx)`, écrire en mots ou en exposants Unicode (`eᵏˣ`).
@@ -486,7 +497,11 @@ de l'éditeur) :
 - forme exigée (`requiredForm`) : `reduite` (y = mx + p, ou x = c ; `x+1=y` refusée),
   `cartesienne` (ax + by + c = 0, membre droit 0), `centre-rayon` ; juste mais autre forme →
   `bad_form` (spec : `constraintViolations: ["form"]`, comme pour un cercle à simplifier) ;
-- une attendue qui n'est pas une équation polynomiale en x et y fait échouer les specs du modèle.
+- espace (2026-10-04) : attendue en x, y, z → plan jugé comme une droite (`2x-y+3z=4` juste pour
+  `2x-y+3z-4=0`, `cartesienne` = membre droit 0), sphère comme un cercle
+  (`(x-a)^2+(y-b)^2+(z-c)^2=r^2` avec `centre-rayon`, multiple → ½) ; une réponse en z dans une
+  case du plan repéré est fausse, avec un message ;
+- une attendue qui n'est pas une équation polynomiale en x, y (et z) fait échouer les specs du modèle.
   Règle complète : `docs/ref/convention-equivalence.md` (§ Réponse « équation »).
 
 **Case « vecteur » (2026-10-03).** Le vecteur dans UNE case, coordonnées exactes comparées

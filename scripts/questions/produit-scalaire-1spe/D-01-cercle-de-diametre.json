@@ -229,8 +229,8 @@
 			},
 			"answers": ["3", "-1", "\\frac{\\sqrt{20}}{2}"],
 			"expected": {
-				"status": "bad_form",
-				"constraintViolations": ["form"]
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals", "reducedFractions"]
 			}
 		},
 		{

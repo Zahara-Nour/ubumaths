@@ -83,7 +83,7 @@
 				"answers": ["\\sqrt{75}"],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": ["reducedRadicals", "form"]
 				}
 			},
 			{
@@ -126,6 +126,11 @@
 					"status": "incorrect"
 				}
 			}
-		]
+		],
+		"options": {
+			"constraints": {
+				"reducedRadicals": "strict"
+			}
+		}
 	}
 }

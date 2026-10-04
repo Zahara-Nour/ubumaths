@@ -90,9 +90,14 @@
 				"answers": ["\\sqrt{81}"],
 				"expected": {
 					"status": "bad_form",
-					"constraintViolations": ["form"]
+					"constraintViolations": ["reducedRadicals", "form"]
 				}
 			}
-		]
+		],
+		"options": {
+			"constraints": {
+				"reducedRadicals": "strict"
+			}
+		}
 	}
 }
