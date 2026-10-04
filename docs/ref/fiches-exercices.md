@@ -179,10 +179,33 @@ sur un modèle déjà en base (brouillon), `--mettre-a-jour` ajoute les liens ma
 du fichier n'est **jamais** supprimé, sauf `--mettre-a-jour --remplacer-points`. Sans champ `points`,
 aucun lien n'est lu ni touché.
 
+**Changer de niveau un brouillon** : `--mettre-a-jour` réécrit aussi ses `grades` (comparés comme un
+ensemble, l'ordre ne compte pas), avant ses liens. Un brouillon `["1_SPE"]` passé à `["2"]` avec des
+points `2-…` reçoit ses nouveaux liens ; les anciens `1SPE-…` restent, signalés « en base absents du
+fichier, gardés » — `--remplacer-points` pour les retirer. Les `grades` d'un modèle publié ne sont
+jamais touchés.
+
 Modèle **publié** : refusé, sauf `--mettre-a-jour --liens-publies`, qui **ajoute** seulement ses liens
 manquants — contenu jamais touché, aucun lien retiré (incompatible avec `--remplacer-points`). Une
 carte publiée rattachée entre dans le paquet de révision « Programme » des élèves dès qu'ils la
-travaillent : simuler d'abord, montrer la simulation à David (décidé le 2026-10-04).
+travaillent : simuler d'abord, montrer la simulation à David (décidé le 2026-10-04). Ses points sont
+alors contrôlés contre les `grades` **lus en base**, pas ceux du fichier.
+
+**Modèle sans fichier dans le dépôt** (écrit dans l'éditeur, importé) : `link-template-points.ts`.
+
+```bash
+pnpm tsx scripts/link-template-points.ts --mapping liens.json            # simulation
+pnpm tsx scripts/link-template-points.ts --mapping liens.json --publier  # écrit
+```
+
+```json
+[{ "id": "<uuid du modèle>", "points": ["1SPE-050", "1SPE-051"] }]
+```
+
+Au plus 500 entrées, 1 à 20 codes chacune, sans doublon ni id répété. **Ajout seulement** : aucun
+lien retiré, aucun contenu touché. Avant toute écriture : id inexistant, code inconnu ou archivé,
+niveau du point absent des `grades` **en base** du modèle → erreur, rien d'écrit. Un modèle publié
+est refusé sans `--liens-publies` (même règle que ci-dessus). Chaque ajout est relu.
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
 
