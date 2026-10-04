@@ -277,6 +277,90 @@ describe('```nuage — scène, valeurs de référence', () => {
 });
 
 // =============================================================================
+// Graduations et milliers (fiche compilée, 2026-10-04)
+// =============================================================================
+
+/** Largeur estimée d'une étiquette de graduation (écran 11 px, PDF 6,5 pt) */
+const CHAR_PX = 6.5;
+
+/** Deux étiquettes x voisines ne se chevauchent pas (avec un peu d'air) */
+function expectNoOverlap(scene: ScatterScene) {
+	const perUnit = scene.pixelSize.width / (scene.xMax - scene.xMin);
+	for (let i = 1; i < scene.xTicks.length; i++) {
+		const [a, b] = [scene.xTicks[i - 1], scene.xTicks[i]];
+		const room = (b.value - a.value) * perUnit;
+		const needed = ((a.label.length + b.label.length) / 2) * CHAR_PX + 4;
+		expect(room, `${a.label} / ${b.label}`).toBeGreaterThanOrEqual(needed);
+	}
+}
+
+const YEARS =
+	'x: 2015 ; 2016 ; 2017 ; 2018 ; 2019 ; 2020\ny: 12000 ; 11800 ; 11350 ; 11100 ; 10900 ; 10500\najustement: affine\nindicateurs: point moyen ; r\nprévoir: x = 2025 ; y = 10000';
+
+describe('```nuage — graduations lisibles', () => {
+	it('des années : pas de 1, étiquettes entières, sans chevauchement', () => {
+		// Le nuage de la fiche, sans prévision : gradué tous les 0,5 avant le correctif
+		const scene = sceneOf(YEARS.replace(/\nprévoir:.*$/, ''));
+		expect(scene.xTicks.map((t) => t.label)).toContain('2016');
+		for (const tick of scene.xTicks) expect(tick.label).toMatch(/^\d{4}$/);
+		expectNoOverlap(scene);
+	});
+
+	it('petites valeurs décimales : pas assez large pour ne pas serrer', () => {
+		const scene = sceneOf('x: 0,5 ; 1,2 ; 2 ; 3,1\ny: -2 ; 1,5 ; 3 ; 7\norigine: oui');
+		expectNoOverlap(scene);
+		const step = scene.xTicks[1].value - scene.xTicks[0].value;
+		expect(step).toBeGreaterThanOrEqual(0.5);
+	});
+
+	it('toutes tailles, grandes valeurs : jamais de chevauchement', () => {
+		for (const size of ['petite', 'moyenne', 'grande']) {
+			expectNoOverlap(sceneOf(`taille: ${size}\n${YEARS}`));
+			expectNoOverlap(sceneOf(`taille: ${size}\nx: 10000 ; 25000 ; 41000\ny: 1 ; 2 ; 4`));
+			expectNoOverlap(sceneOf(`taille: ${size}\nx: 0,01 ; 0,02 ; 0,07\ny: 1 ; 2 ; 4`));
+		}
+	});
+
+	it('axe y : graduations espacées d’au moins une hauteur de texte', () => {
+		const scene = sceneOf(YEARS);
+		const perUnit = scene.pixelSize.height / (scene.yMax - scene.yMin);
+		expect((scene.ticks[1].value - scene.ticks[0].value) * perUnit).toBeGreaterThanOrEqual(20);
+	});
+});
+
+describe('```nuage — séparateur de milliers (à partir de 10 000)', () => {
+	it('français : espace insécable ; les années (4 chiffres) jamais groupées', () => {
+		const scene = sceneOf(YEARS);
+		expect(scene.indicators).toEqual([
+			'Droite des moindres carrés : y = −298,571x + 613\u00a0642,857',
+			'Point moyen : G(2017,5 ; 11\u00a0275)',
+			'Coefficient de corrélation : r ≈ −0,994',
+			'Pour x = 2025 : y ≈ 9035,714 (extrapolation)',
+			'Pour y = 10\u00a0000 : x ≈ 2021,770 (extrapolation)'
+		]);
+		const big = scene.ticks.filter((t) => t.value >= 10000);
+		expect(big.length).toBeGreaterThan(0);
+		for (const tick of big) expect(tick.label).toMatch(/^\d{2}\u00a0\d{3}$/);
+		expect(scene.description).toContain('613\u00a0642,857');
+		expect(scene.description).toContain('G(2017,5 ; 11\u00a0275)');
+	});
+
+	it('anglais : virgule', () => {
+		const scene = sceneOf(YEARS, 'en');
+		expect(scene.indicators[0]).toBe('Least squares line: y = −298.571x + 613,642.857');
+		expect(scene.indicators[1]).toBe('Mean point: G(2017.5, 11,275)');
+		expect(scene.indicators[4]).toBe('For y = 10,000: x ≈ 2021.770 (extrapolation)');
+		expect(scene.ticks.find((t) => t.value >= 10000)!.label).toMatch(/^\d{2},\d{3}$/);
+	});
+
+	it('Typst : les étiquettes groupées arrivent telles quelles', () => {
+		const typst = generateStatChartTypst(parseStatChartContent('nuage', YEARS));
+		expect(typst).toMatch(/\[1\d\u00a0\d{3}\]/);
+		expect(typst).toContain('[2016]');
+	});
+});
+
+// =============================================================================
 // Typst
 // =============================================================================
 
