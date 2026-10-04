@@ -40,9 +40,13 @@
 		}
 	}
 
+	/**
+	 * Ouvrir une carte, ou la REFERMER si elle l'est déjà (retour de David :
+	 * re-cliquer ne faisait rien, il fallait ouvrir une autre carte).
+	 */
 	function select(name: string) {
-		selected = name;
-		onSelect?.(name);
+		selected = selected === name ? null : name;
+		if (selected !== null) onSelect?.(name);
 	}
 </script>
 

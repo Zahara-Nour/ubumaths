@@ -104,3 +104,16 @@ describe('une fonction créée dans Calcul est tracée', () => {
 		expect(atelier.get('a')?.plotted).toBeFalsy();
 	});
 });
+
+// Trouvé en vérifiant les autres sorties qui affichent une dérivée
+describe('la ligne « Variations »', () => {
+	it('affiche la dérivée simplifiée', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: '3x^3-x^2+1' }, 'text');
+		const desk = new CalcDesk(atelier);
+
+		desk.runFromPanel('variations', 'f');
+
+		expect((desk.entries[0]?.latex ?? '').replace(/\s/g, '')).toBe("f'(x)=9x^2-2x");
+	});
+});

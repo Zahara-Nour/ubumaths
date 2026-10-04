@@ -18,6 +18,7 @@ import {
 	PedagogicalDifferentiationRenderer
 } from '$lib/mathAST/pedagogical-differentiation';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { tidyTerms } from './tidy-terms';
 import { astOf } from './parse';
 
 // =============================================================================
@@ -73,10 +74,30 @@ export function deriveSteps(expression: string, name?: string): DerivedSteps | n
 		});
 		if (steps.length === 0) return null;
 
-		const derivative = toLatex(result.derivative);
+		// La dérivée MISE AU PROPRE : la règle de dérivation laisse `3 \cdot 3x^2`
+		// (retour de David). Si `tidy` a quelque chose à faire, c'est une étape de
+		// plus — la réponse ne tombe pas du ciel.
+		const raw = toLatex(result.derivative);
+		const derivative = toLatex(tidyTerms(result.derivative));
 		if (derivative.trim() === '') return null;
+		const allSteps: readonly RenderedStep[] =
+			derivative === raw
+				? steps
+				: [
+						...steps,
+						{
+							id: steps.length + 1,
+							rule: 'simplify',
+							title: 'On simplifie',
+							explanation: 'On calcule les produits et on regroupe les termes.',
+							expressionLatex: `${raw} = ${derivative}`
+						}
+					];
 
-		return { steps, answer: name === undefined ? derivative : `${name}'(x) = ${derivative}` };
+		return {
+			steps: allSteps,
+			answer: name === undefined ? derivative : `${name}'(x) = ${derivative}`
+		};
 	} catch {
 		// `PedagogicalDifferentiationNotImplemented` (valeur absolue, par
 		// exemple), expression illisible, ou un renderer qui refuse ce qu'on lui
