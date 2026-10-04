@@ -87,6 +87,18 @@ interface StatText {
 		uniform: (set: string) => string;
 		/** Sous les bâtons d'une loi géométrique, coupés au dernier k du tableau */
 		notShown: string;
+		/** Lois à densité (PR b) : `[a ; b]` déjà écrit selon la langue */
+		uniformDensity: (interval: string) => string;
+		exponential: (lambda: string) => string;
+		/** Après « P(X = 3) = 0 » */
+		pointZero: (variable: string) => string;
+		/** Axe vertical et description de la courbe */
+		density: string;
+		densityCurve: string;
+		shadedArea: (event: string) => string;
+		/** Fonction de répartition */
+		cdfUniform: (formula: string, interval: string) => string;
+		cdfExponential: (exponent: string) => string;
 	};
 }
 
@@ -158,7 +170,16 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			bernoulli: 'loi de Bernoulli',
 			geometric: (p) => `G(${p})`,
 			uniform: (set) => `loi uniforme sur ${set}`,
-			notShown: 'valeurs suivantes non représentées'
+			notShown: 'valeurs suivantes non représentées',
+			uniformDensity: (interval) => `loi uniforme sur ${interval}`,
+			exponential: (lambda) => `E(${lambda})`,
+			pointZero: (variable) => `loi à densité : P(${variable} = x) = 0`,
+			density: 'Densité',
+			densityCurve: 'Courbe de densité',
+			shadedArea: (event) => `aire hachurée : ${event}`,
+			cdfUniform: (formula, interval) =>
+				`F(x) = ${formula} pour x ∈ ${interval} ; 0 avant, 1 après`,
+			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) pour x ⩾ 0`
 		}
 	},
 	en: {
@@ -230,7 +251,15 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			// « Geo(p) » : la notation des manuels anglais (G seul y est rare)
 			geometric: (p) => `Geo(${p})`,
 			uniform: (set) => `uniform distribution on ${set}`,
-			notShown: 'following values not shown'
+			notShown: 'following values not shown',
+			uniformDensity: (interval) => `uniform distribution on ${interval}`,
+			exponential: (lambda) => `Exp(${lambda})`,
+			pointZero: (variable) => `continuous distribution: P(${variable} = x) = 0`,
+			density: 'Density',
+			densityCurve: 'Density curve',
+			shadedArea: (event) => `shaded area: ${event}`,
+			cdfUniform: (formula, interval) => `F(x) = ${formula} for x ∈ ${interval}; 0 before, 1 after`,
+			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) for x ⩾ 0`
 		}
 	}
 };

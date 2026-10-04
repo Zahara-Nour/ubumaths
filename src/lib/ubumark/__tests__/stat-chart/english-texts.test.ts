@@ -23,7 +23,7 @@ import type { StatChartKind } from '../../types/stat-chart';
 // `\p{L}` et le drapeau `u` : sans eux, `\b` ignore les lettres accentuées et
 // « Écart », « Étendue », « Probabilité » passaient inaperçus (revue)
 const FRENCH =
-	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie|uniforme|suivantes|représentées|valeurs)(?!\p{L})/iu;
+	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie|uniforme|suivantes|représentées|valeurs|densité|pour|avant|après)(?!\p{L})/iu;
 
 /** Valeurs internes, jamais affichées : le genre, le sens, les couleurs, le mode */
 const INTERNAL_KEYS = new Set(['kind', 'direction', 'mode', 'color', 'secondColor', 'hatchColor']);
@@ -106,6 +106,16 @@ const BLOCKS: [string, StatChartKind, string][] = [
 	],
 	['loi binomiale, seuil impossible', 'loi', 'X ~ B(10 ; 0,3)\nseuil: P(X ⩽ k) ⩽ 0,01'],
 	['loi de Bernoulli', 'loi', 'X ~ B(1 ; 0,3)'],
+	[
+		'loi uniforme à densité',
+		'loi',
+		'X ~ U([0 ; 10])\nindicateurs: espérance ; variance ; écart type\nrépartition: oui\ndiagramme: oui\nprobabilités: P(2 ⩽ X ⩽ 5) ; P(X = 3) ; P(X ⩾ 12)'
+	],
+	[
+		'loi exponentielle',
+		'loi',
+		'X ~ E(0,5)\nrépartition: oui\ndiagramme: oui\nprobabilités: P(X ⩽ 2) ; P(X > 5 | X > 2)\naire: P(X > 5 | X > 2)'
+	],
 	[
 		'loi géométrique',
 		'loi',

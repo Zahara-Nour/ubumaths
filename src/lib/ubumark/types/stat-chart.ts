@@ -127,6 +127,22 @@ export interface LawData {
 		queries: { display: string; low: number; high: number | null; given: number | null }[];
 		chart: boolean;
 	} | null;
+	/**
+	 * Loi à densité (`X ~ U([a ; b])`, `X ~ E(λ)`, manche 13, PR b) : pas de
+	 * tableau ; sinon null
+	 */
+	density: {
+		/** Paramètres tels qu'écrits (`0,5`, `1/3`) */
+		law: { family: 'uniform'; a: string; b: string } | { family: 'exponential'; lambda: string };
+		places: number;
+		queries: DensityQuery[];
+		/** `diagramme: oui` : la courbe de densité */
+		chart: boolean;
+		/** L'aire hachurée : la première probabilité, ou `aire:` ; null sans probabilité */
+		area: DensityQuery | null;
+		/** `répartition: oui` : la fonction de répartition F */
+		cdf: boolean;
+	} | null;
 	/** Loi uniforme discrète (`X ~ U(a ; b)`, manche 13) : valeurs a à b ; sinon null */
 	uniform: {
 		a: number;
@@ -135,6 +151,20 @@ export interface LawData {
 		queries: { display: string; low: number; high: number }[];
 		chart: boolean;
 	} | null;
+}
+
+/**
+ * Une probabilité d'une loi à densité, bornes TELLES QU'ÉCRITES (`null` : pas
+ * de borne de ce côté) ; < et ⩽ donnent la même valeur.
+ */
+export interface DensityQuery {
+	display: string;
+	low: string | null;
+	high: string | null;
+	/** P(X > low | X > given), sinon null */
+	given: string | null;
+	/** P(X = x) : vaut 0 (loi à densité) */
+	point: boolean;
 }
 
 /** Lignes d'un tableau d'effectifs (Q128), dans l'ordre de l'auteur */

@@ -41,6 +41,7 @@ import {
 	CROSS_TABLE_DISPLAYS,
 	type CrossTableData,
 	type CrossTableDisplay,
+	type DensityQuery,
 	type LawData,
 	type LawIndicator,
 	SERIES_MODES,
@@ -130,6 +131,9 @@ interface Options {
 	binomialThreshold: string | null;
 	/** Loi géométrique : `jusqu'à:` (dernière valeur du tableau) */
 	upTo: number | null;
+	/** Loi à densité : `répartition: oui`, `aire:` tel qu'écrit */
+	cdf: boolean;
+	areaQuery: string | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -207,7 +211,9 @@ const OPTION_KEYS = [
 	'diagramme',
 	'intervalle',
 	'seuil',
-	'jusqua'
+	'jusqua',
+	'repartition',
+	'aire'
 ] as const;
 type OptionKey = (typeof OPTION_KEYS)[number];
 
@@ -251,6 +257,8 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	intervalle: ['loi'],
 	seuil: ['loi'],
 	jusqua: ['loi'],
+	repartition: ['loi'],
+	aire: ['loi'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
 };
 
@@ -262,7 +270,8 @@ const OPTION_SPELLING: Partial<Record<OptionKey, string>> = {
 	serie: 'série',
 	frequences: 'fréquences',
 	probabilites: 'probabilités',
-	jusqua: "jusqu'à"
+	jusqua: "jusqu'à",
+	repartition: 'répartition'
 };
 
 const KIND_NAME: Record<StatChartKind, string> = {
@@ -307,8 +316,14 @@ const GEOMETRIC_REGEX = /^([A-Z])\s*(?:~|suit)\s*G\s*\(\s*(.+?)\s*\)$/;
 /** `X ~ U(1 ; 6)`, `X ~ U(1, 6)` : la variable, a, b (manche 13) */
 const UNIFORM_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
 
-/** `X ~ U([0 ; 1])` : la loi uniforme À DENSITÉ, pas encore (manche 13, PR b) */
-const UNIFORM_DENSITY_REGEX = /^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[/;
+/** `X ~ U([0 ; 10])` : la loi uniforme À DENSITÉ, a et b (manche 13, PR b) */
+const UNIFORM_DENSITY_REGEX =
+	/^([A-Z])\s*(?:~|suit)\s*U\s*\(\s*\[\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\]\s*\)$/;
+
+/** `X ~ E(0,5)`, `X ~ Exp(0.5)` : la loi exponentielle, λ (manche 13, PR b) */
+const EXPONENTIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*(?:E|Exp)\s*\(\s*(.+?)\s*\)$/;
+
+const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]) ou E(λ))';
 
 /** Tableau d'une loi géométrique : k = 1 à 10 par défaut, puis « … » */
 const GEOMETRIC_TABLE_VALUES = 10;
@@ -628,6 +643,12 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			return;
 		case 'seuil':
 			options.binomialThreshold = value.trim();
+			return;
+		case 'repartition':
+			options.cdf = yesNo(value, 'répartition');
+			return;
+		case 'aire':
+			options.areaQuery = value.trim();
 			return;
 		case 'jusqua':
 			options.upTo = parseWhole(
@@ -1547,7 +1568,8 @@ function checkBinomial(
 				threshold
 			},
 			geometric: null,
-			uniform: null
+			uniform: null,
+			density: null
 		}
 	};
 }
@@ -1679,7 +1701,8 @@ function checkGeometric(
 				queries,
 				chart: options.binomialChart
 			},
-			uniform: null
+			uniform: null,
+			density: null
 		},
 		warnings
 	};
@@ -1751,7 +1774,162 @@ function checkUniform(
 			indicators: optionLines.indicateurs !== undefined ? options.lawIndicators : ['esperance'],
 			binomial: null,
 			geometric: null,
-			uniform: { a, b, places: options.places ?? 3, queries, chart: options.binomialChart }
+			uniform: { a, b, places: options.places ?? 3, queries, chart: options.binomialChart },
+			density: null
+		},
+		warnings
+	};
+}
+
+/**
+ * Une probabilité d'une loi à densité (PR b) : bornes TELLES QU'ÉCRITES ; les
+ * contrôles de forme et de variable sont ceux de `parseQuery`.
+ */
+function parseDensityQuery(text: string, name: string): DensityQuery | string {
+	if (text.includes('|')) {
+		const form = `probabilités : « ${text} » : écrire P(${name} > a | ${name} > b) avec a > b`;
+		const conditional = QUERY_CONDITIONAL.exec(text);
+		const strict = (op: string) => ['>', '⩾'].includes(QUERY_OPERATORS[op]);
+		if (
+			!conditional ||
+			conditional[1] !== name ||
+			conditional[4] !== name ||
+			!strict(conditional[2]) ||
+			!strict(conditional[5]) ||
+			!(toNumber(conditional[3]) > toNumber(conditional[6]))
+		) {
+			return form;
+		}
+		return {
+			display: `P(${name} ${QUERY_OPERATORS[conditional[2]]} ${conditional[3]} | ${name} ${QUERY_OPERATORS[conditional[5]]} ${conditional[6]})`,
+			low: conditional[3],
+			high: null,
+			given: conditional[6],
+			point: false
+		};
+	}
+	const checked = parseQuery(text, name, -Infinity, Infinity);
+	if (typeof checked === 'string') return checked;
+	const one = QUERY_ONE_SIDE.exec(text);
+	if (one) {
+		const op = QUERY_OPERATORS[one[2]];
+		const x = one[3];
+		return {
+			display: checked.display,
+			low: op === '=' || op === '>' || op === '⩾' ? x : null,
+			high: op === '=' || op === '<' || op === '⩽' ? x : null,
+			given: null,
+			point: op === '='
+		};
+	}
+	const two = QUERY_TWO_SIDES.exec(text)!;
+	return { display: checked.display, low: two[1], high: two[5], given: null, point: false };
+}
+
+/**
+ * Une loi à densité `X ~ U([a ; b])` ou `X ~ E(λ)` (manche 13, PR b) : pas de
+ * tableau ; `probabilités:`, `aire:`, `répartition:` ; E par défaut. Un
+ * événement hors du support, d'après ses bornes ÉCRITES, vaut 0 et avertit (Q158).
+ */
+function checkDensity(
+	density:
+		| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
+		| { family: 'exponential'; name: string; lambda: string; line: number },
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { law: LawData; warnings: StatChartIssue[] } | { error: StatChartIssue } {
+	const at = (line: number, message: string) => ({
+		error: { message: `Ligne ${line} : ${message}`, line }
+	});
+	const name = density.name;
+	let law: NonNullable<LawData['density']>['law'];
+	// Support [low ; high] (high infini pour l'exponentielle) et son écriture
+	let support: { low: number; high: number; text: string };
+	if (density.family === 'uniform-density') {
+		const a = Fraction.parse(density.a);
+		const b = Fraction.parse(density.b);
+		if (a === null || b === null) return at(density.line, 'U([a ; b]) : a et b sont des nombres');
+		if (!b.greaterThan(a)) {
+			return at(density.line, 'U([a ; b]) : les bornes dans l’ordre (a < b)');
+		}
+		law = { family: 'uniform', a: density.a, b: density.b };
+		support = {
+			low: a.toNumber(),
+			high: b.toNumber(),
+			text: `dans [${density.a} ; ${density.b}]`
+		};
+	} else {
+		const lambda = Fraction.parse(density.lambda);
+		if (lambda === null || lambda.isNegative() || lambda.equals(Fraction.ZERO)) {
+			return at(density.line, 'E(λ) : λ est un nombre strictement positif');
+		}
+		law = { family: 'exponential', lambda: density.lambda };
+		support = { low: 0, high: Infinity, text: 'à partir de 0' };
+	}
+	if (options.lawMasked.length > 0) {
+		return at(optionLines.masquer ?? 0, 'masquer : pas de tableau pour une loi à densité');
+	}
+	if (options.areaQuery !== null && !options.binomialChart) {
+		return at(optionLines.aire ?? 0, 'aire : seulement avec diagramme: oui');
+	}
+
+	const queriesLine = optionLines.probabilites ?? 0;
+	const queries: DensityQuery[] = [];
+	const warnings: StatChartIssue[] = [];
+	const written = (options.binomialQueries ?? '')
+		.split(';')
+		.map((q) => q.trim())
+		.filter((q) => q !== '');
+	for (const text of written) {
+		const query = parseDensityQuery(text, name);
+		if (typeof query === 'string') return at(queriesLine, query);
+		// Loi uniforme : P(X > b) = 0 dès b ⩾ sup, rien à conditionner
+		if (query.given !== null && toNumber(query.given) >= support.high) {
+			return at(
+				queriesLine,
+				`probabilités : « ${text} » : P(${name} > ${query.given}) = 0, la probabilité conditionnelle n'existe pas`
+			);
+		}
+		const low = query.low === null ? -Infinity : toNumber(query.low);
+		const high = query.high === null ? Infinity : toNumber(query.high);
+		if (high < support.low || low > support.high) {
+			warnings.push({
+				message: `Ligne ${queriesLine} : probabilités : « ${text} » : ${name} prend ses valeurs ${support.text}`,
+				line: queriesLine
+			});
+		}
+		queries.push(query);
+	}
+	let area = queries[0] ?? null;
+	if (options.areaQuery !== null) {
+		const chosen = parseDensityQuery(options.areaQuery, name);
+		if (typeof chosen === 'string') {
+			return at(
+				optionLines.aire ?? 0,
+				`aire : écrire P(${name} ⩽ 2), P(1 ⩽ ${name} ⩽ 3) ou P(${name} > a | ${name} > b)`
+			);
+		}
+		area = chosen;
+	}
+
+	return {
+		law: {
+			variable: name,
+			values: [],
+			probabilities: [],
+			masked: [],
+			indicators: optionLines.indicateurs !== undefined ? options.lawIndicators : ['esperance'],
+			binomial: null,
+			geometric: null,
+			uniform: null,
+			density: {
+				law,
+				places: options.places ?? 3,
+				queries,
+				chart: options.binomialChart,
+				area,
+				cdf: options.cdf
+			}
 		},
 		warnings
 	};
@@ -1831,7 +2009,8 @@ function checkLaw(
 			indicators: options.lawIndicators,
 			binomial: null,
 			geometric: null,
-			uniform: null
+			uniform: null,
+			density: null
 		}
 	};
 }
@@ -2077,7 +2256,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		binomialChart: false,
 		binomialLevel: null,
 		binomialThreshold: null,
-		upTo: null
+		upTo: null,
+		cdf: false,
+		areaQuery: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
@@ -2086,6 +2267,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	let lawNamed = null as
 		| { family: 'geometric'; name: string; p: string; line: number }
 		| { family: 'uniform'; name: string; a: string; b: string; line: number }
+		| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
+		| { family: 'exponential'; name: string; lambda: string; line: number }
 		| null;
 	let lawProbabilities = null as LawLine | null;
 	// Une simulation écrit sa loi comme le bloc ```loi
@@ -2182,12 +2365,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 
 			// Lois géométrique et uniforme (manche 13) : `X ~ G(0,2)`, `X ~ U(1 ; 6)`
 			if (kind === 'loi') {
-				if (UNIFORM_DENSITY_REGEX.test(content)) {
-					throw new LineError('U([a ; b]) : loi à densité : bientôt disponible');
-				}
-				const geometric = GEOMETRIC_REGEX.exec(content);
-				const uniform = geometric ? null : UNIFORM_REGEX.exec(content);
-				if (geometric || uniform) {
+				// Lois à densité (PR b) : `U([a ; b])` AVANT `U(a ; b)`, qui la lirait aussi
+				const density = UNIFORM_DENSITY_REGEX.exec(content);
+				const exponential = density ? null : EXPONENTIAL_REGEX.exec(content);
+				const geometric = density || exponential ? null : GEOMETRIC_REGEX.exec(content);
+				const uniform = density || exponential || geometric ? null : UNIFORM_REGEX.exec(content);
+				if (density || exponential || geometric || uniform) {
 					if (
 						lawVariable !== null ||
 						lawProbabilities !== null ||
@@ -2196,9 +2379,26 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 					) {
 						throw new LineError(NAMED_ALONE);
 					}
-					lawNamed = geometric
-						? { family: 'geometric', name: geometric[1], p: geometric[2], line }
-						: { family: 'uniform', name: uniform![1], a: uniform![2], b: uniform![3], line };
+					if (density) {
+						lawNamed = {
+							family: 'uniform-density',
+							name: density[1],
+							a: density[2],
+							b: density[3],
+							line
+						};
+					} else if (exponential) {
+						lawNamed = {
+							family: 'exponential',
+							name: exponential[1],
+							lambda: exponential[2],
+							line
+						};
+					} else {
+						lawNamed = geometric
+							? { family: 'geometric', name: geometric[1], p: geometric[2], line }
+							: { family: 'uniform', name: uniform![1], a: uniform![2], b: uniform![3], line };
+					}
 					return;
 				}
 			}
@@ -2436,6 +2636,17 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			errors.push({ message: `Ligne ${line} : ${key} : option réservée à la loi binomiale`, line });
 		}
 	}
+	// `répartition:` et `aire:` : les lois à densité (PR b)
+	const isDensity = lawNamed?.family === 'uniform-density' || lawNamed?.family === 'exponential';
+	for (const key of ['repartition', 'aire'] as const) {
+		if (errors.length === 0 && seenOptions.has(key) && !isDensity) {
+			const line = optionLines[key] ?? 0;
+			errors.push({
+				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : ${DENSITY_CDF_ONLY}`,
+				line
+			});
+		}
+	}
 	// `jusqu'à:` : le tableau d'une loi géométrique
 	if (errors.length === 0 && seenOptions.has('jusqua') && lawNamed?.family !== 'geometric') {
 		const line = optionLines.jusqua ?? 0;
@@ -2502,7 +2713,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		const checked =
 			lawNamed.family === 'geometric'
 				? checkGeometric(lawNamed, options, optionLines)
-				: checkUniform(lawNamed, options, optionLines);
+				: lawNamed.family === 'uniform'
+					? checkUniform(lawNamed, options, optionLines)
+					: checkDensity(lawNamed, options, optionLines);
 		if ('error' in checked) errors.push(checked.error);
 		else {
 			law = checked.law;

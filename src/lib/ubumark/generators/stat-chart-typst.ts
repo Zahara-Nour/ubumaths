@@ -32,6 +32,7 @@ import {
 	type HistogramScene,
 	type ComparisonScene,
 	type FrequencyTableScene,
+	type DensityScene,
 	type LawScene,
 	type SimulationScene,
 	type MeanScene,
@@ -401,6 +402,39 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 }
 
 /**
+ * Courbe de densité (lois à densité, manche 13, PR b) : l'aire de la
+ * probabilité choisie hachurée (`tiling`, comme la seconde série des barres),
+ * puis la courbe ; les mêmes points qu'à l'écran.
+ */
+function densityTypst(scene: DensityScene, size: CourbeSize): string {
+	const { W, H, X, Y } = frame(size, scene.xMin, scene.xMax, scene.yMax);
+	const color = TYPST_COLORS[scene.color];
+	const path = (points: readonly ScenePoint[]) =>
+		points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+	const lines: string[] = [
+		'  import cetz.draw: *',
+		'  // graduations',
+		...valueTicks(scene.ticks, W, Y)
+	];
+	if (scene.area !== null) {
+		lines.push('  // aire hachurée');
+		lines.push(
+			`  line(${path(scene.area)}, close: true, fill: hachures, stroke: 0.5pt + ${color})`
+		);
+	}
+	lines.push('  // courbe de densité');
+	lines.push(
+		`  line(${path(scene.points)}, stroke: (paint: ${color}, thickness: 1.1pt, join: "round"))`
+	);
+	lines.push(
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	);
+	const hatch = `#let hachures = tiling(size: (4pt, 4pt))[#place(line(start: (0pt, 4pt), end: (4pt, 0pt), stroke: 0.8pt + ${color}))]\n`;
+	return `${CETZ_IMPORT}\n${hatch}\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+}
+
+/**
  * Moyenne des tirages selon n (atelier, Q81). Aucun bloc ne la produit : elle
  * est rendue pour qu'une scène de ce genre ne fasse jamais échouer une fiche.
  */
@@ -588,6 +622,10 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 		case 'tableau-croise':
 			return crossTableTypst(scene);
 		case 'loi':
+			// Loi à densité (PR b) : la courbe sous le nom de la loi
+			if (scene.densityChart !== undefined) {
+				return `${lawTypst(scene)}\n${densityTypst(scene.densityChart, size)}`;
+			}
 			// `diagramme: oui` : les bâtons sous le tableau ; loi géométrique : la mention dessous
 			if (scene.chart === undefined) return lawTypst(scene);
 			return `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}${
@@ -603,6 +641,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return frequencyTableTypst(scene);
 		case 'moyenne-selon-n':
 			return meanTypst(scene, size);
+		case 'densite':
+			return densityTypst(scene, size);
 	}
 }
 

@@ -31,5 +31,5 @@ P(X > 5 | X > 2) ≈ 0,223 ; E 2 ; V 4 ; σ 2 ; quantile 99 % ≈ 9,21.
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
+- [x] Tests rouges · [x] Implémentation (non commitée) · [ ] Fiche compilée et regardée · [ ] Revue ·
       [ ] PR, CI, merge
