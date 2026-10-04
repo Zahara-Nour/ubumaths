@@ -246,7 +246,8 @@ function defineObject(
 		// on la définit pour la voir. Une fonction redéfinie garde son état —
 		// retirée du graphique, elle ne revient pas en douce.
 		if (created.object.kind === 'function') atelier.setPlotted(name, true);
-		return { kind: 'definition', name, object: created.object };
+		// Relu APRÈS le tracé : l'objet rendu doit dire qu'il est tracé (revue)
+		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
 	}
 
 	const updated = atelier.update(name, body.trim(), provenance);

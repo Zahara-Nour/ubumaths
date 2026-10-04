@@ -117,3 +117,50 @@ describe('la ligne « Variations »', () => {
 		expect((desk.entries[0]?.latex ?? '').replace(/\s/g, '')).toBe("f'(x)=9x^2-2x");
 	});
 });
+
+// =============================================================================
+// Revue des retours
+// =============================================================================
+
+describe('revue : simplifier sans perdre l’ordre ni les regroupements', () => {
+	// 3 : les termes semblables se regroupent — le regroupement l'emporte sur l'ordre
+	it.each([
+		['x^2+3x+2x', '2x+5'],
+		['3x^3+2x^3', '15x^2'],
+		['x^3-x^3+x', '1'],
+		['(x+1)(x-2)', '2x-1']
+	])('la carte f′ de %s vaut %s', (definition, expected) => {
+		expect(derivativeOf(definition)).toBe(expected);
+	});
+
+	// 2 : l'ordre u′v − uv′ de la règle du quotient reste
+	it('la dérivée d’un quotient garde u′v − uv′', () => {
+		const answer = deriveSteps('(2x+1)/(x-1)', 'f')?.answer ?? '';
+
+		expect(answer.replace(/\s/g, '')).not.toMatch(/-\\left\(2x\+1\\right\)\+2/);
+		expect(deriveSteps('(2x+1)/(x-1)', 'f')?.steps.at(-1)?.title).not.toBe('On simplifie');
+	});
+
+	// 1 : l'étape « On simplifie » montrait « 3 3 x^2 », lu 33x²
+	it('l’étape « On simplifie » ne colle jamais deux nombres', () => {
+		const last = deriveSteps('3x^3-x^2+1', 'f')?.steps.at(-1);
+
+		expect(last?.title).toBe('On simplifie');
+		expect(last?.expressionLatex ?? '').not.toMatch(/\d\s+\d/);
+	});
+
+	// 4 : pas d'étape quand rien ne se simplifie (un simple déplacement de facteurs)
+	it('pas d’étape « On simplifie » quand rien ne se simplifie', () => {
+		expect(deriveSteps('x^2*sin(x)', 'f')?.steps.at(-1)?.title).not.toBe('On simplifie');
+	});
+});
+
+describe('revue : la fonction créée renvoyée par Calcul', () => {
+	it('le résultat de `f(x) = …` porte l’état tracé', () => {
+		const atelier = new Atelier();
+
+		const result = runInput({ atelier, engine: new WebReplEngine() }, 'f(x) = x^2');
+
+		expect(result.kind === 'definition' && result.object.plotted).toBe(true);
+	});
+});

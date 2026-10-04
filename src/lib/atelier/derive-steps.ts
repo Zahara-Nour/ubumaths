@@ -18,7 +18,7 @@ import {
 	PedagogicalDifferentiationRenderer
 } from '$lib/mathAST/pedagogical-differentiation';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { tidyTerms } from './tidy-terms';
+import { nodeCount, tidyTerms, withExplicitNumberProducts } from './tidy-terms';
 import { astOf } from './parse';
 
 // =============================================================================
@@ -77,11 +77,15 @@ export function deriveSteps(expression: string, name?: string): DerivedSteps | n
 		// La dérivée MISE AU PROPRE : la règle de dérivation laisse `3 \cdot 3x^2`
 		// (retour de David). Si `tidy` a quelque chose à faire, c'est une étape de
 		// plus — la réponse ne tombe pas du ciel.
-		const raw = toLatex(result.derivative);
-		const derivative = toLatex(tidyTerms(result.derivative));
+		// Le membre de gauche avec un × entre deux nombres : `3 3 x^2` se lisait
+		// « 33x² » (revue). L'étape n'apparaît que si la forme se SIMPLIFIE (moins
+		// de nœuds), pas pour un simple déplacement de facteurs.
+		const tidied = tidyTerms(result.derivative);
+		const raw = toLatex(withExplicitNumberProducts(result.derivative));
+		const derivative = toLatex(tidied);
 		if (derivative.trim() === '') return null;
 		const allSteps: readonly RenderedStep[] =
-			derivative === raw
+			nodeCount(tidied) >= nodeCount(result.derivative) || derivative === toLatex(result.derivative)
 				? steps
 				: [
 						...steps,
