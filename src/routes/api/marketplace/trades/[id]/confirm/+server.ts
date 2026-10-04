@@ -5,7 +5,12 @@ import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
 import { executeTradeSchema } from '$lib/server/validation/marketplace-rpc';
 
 /**
- * Confirmation timeout in milliseconds (5 minutes)
+ * Délai de confirmation : 5 minutes après confirmation_started_at.
+ *
+ * ⚠️ Même valeur côté base : le trigger guard_marketplace_trade_update refuse
+ * une confirmation après `interval '5 minutes'` (migration
+ * 20261004233000_echanges_delai_confirmation.sql). Changer l'un, c'est
+ * changer l'autre.
  */
 const CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
 
@@ -72,8 +77,10 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const confirmationStartedAt = new Date(trade.confirmation_started_at).getTime();
 	const now = Date.now();
 	if (now - confirmationStartedAt > CONFIRMATION_TIMEOUT) {
-		// Reset validations and confirmations since confirmation expired
-		await supabase
+		// Délai dépassé : validations et confirmations remises à zéro.
+		// Un refus de la RLS rend zéro ligne sans erreur : on relit les lignes
+		// écrites, sinon on annoncerait une remise à zéro qui n'a pas eu lieu.
+		const { data: resetRows, error: resetError } = await supabase
 			.from('marketplace_trades')
 			.update({
 				validated_by_initiator: false,
@@ -83,7 +90,16 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 				confirmation_started_at: null,
 				updated_at: new Date().toISOString()
 			})
-			.eq('id', tradeId);
+			.eq('id', tradeId)
+			.select('id');
+
+		if (resetError || !resetRows || resetRows.length === 0) {
+			console.error('Remise a zero de l echange expire impossible :', resetError ?? '0 ligne');
+			throw error(
+				500,
+				"La confirmation a expire, mais l'echange n'a pas pu etre reinitialise. Reessayez."
+			);
+		}
 
 		throw error(410, 'La confirmation a expire. Veuillez revalider.');
 	}

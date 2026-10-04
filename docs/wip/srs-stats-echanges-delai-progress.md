@@ -56,3 +56,35 @@ heure déjà posée : c'est ce que bloque la migration (preuve rouge ci-dessous)
 ## Reste à faire
 
 - PR, `security-auditor`, puis `db:migrate` (session principale).
+
+## Suite (branche `fix/echanges-delai-confirmation`) — délai de confirmation en base
+
+Deux défauts de la phase de confirmation des échanges.
+
+1. **Délai vérifié par la seule route `/confirm`.** Un élève écrivait `confirmed_by_<lui> = true`
+   par PostgREST après les 5 minutes, puis appelait `rpc/execute_trade`. Décision de David
+   (2026-10-04) : plus de confirmation après l'expiration. Migration
+   `20261004233000_echanges_delai_confirmation` : `guard_marketplace_trade_update` (corps exact
+   de `20261004230000`, un bloc ajouté) refuse (42501), pour les rôles de l'API, de passer SA
+   confirmation à `true` si `confirmation_started_at` est NULL ou date de plus de
+   `interval '5 minutes'`. Constante de la route (`CONFIRMATION_TIMEOUT = 5 * 60 * 1000`)
+   vérifiée : même valeur, renvoi croisé en commentaire des deux côtés.
+   `execute_trade` inchangée : ses 4 drapeaux ne passent à `true` (rôles de l'API) qu'à
+   travers le trigger ; une garde de délai y devrait excepter le flux marché
+   (`accept_proposal_atomic` insère sans heure) et refuserait un échange confirmé à temps
+   mais exécuté juste après la limite.
+2. **Remise à zéro de l'expiration non vérifiée** (route `/confirm`) : `.select('id')`,
+   erreur ou 0 ligne → 500 explicite (« l'échange n'a pas pu être réinitialisé ») ; nominal
+   inchangé (410).
+
+Preuves :
+
+- Intégration `tests/integration/echanges-delai-confirmation.test.ts` (8 tests). Rouge
+  (migration retirée sur copie, `db:reset`) : 4 échecs / 8 — les 4 refus (`expected undefined
+to be '42501'`) ; les 4 témoins (confirmation à 4 min, route `/confirm` jusqu'à l'exécution,
+  expiration 410, flux marché) passent. Vert (restaurée, `db:reset`) : 8/8 ; suite complète
+  169 fichiers, 2443 tests verts.
+- Serveur `src/routes/api/marketplace/trades/[id]/confirm/__tests__/confirm-expiration.test.ts`
+  (3 tests). Ancienne route : 2 échecs (`expected 410 to be 500`) ; nouvelle : 3/3.
+
+Reste : PR, `security-auditor`, `db:migrate` (session principale).
