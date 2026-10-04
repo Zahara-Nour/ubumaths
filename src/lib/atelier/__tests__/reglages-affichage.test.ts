@@ -363,3 +363,118 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 		expect(onlyCurve(graph).color).toBe(color);
 	});
 });
+
+// =============================================================================
+// Revue du lot 1
+// =============================================================================
+
+describe('réglages d’affichage — revue du lot 1', () => {
+	// Finding 1 : zod 4 garde la clé `undefined` d'un `.partial()`. Le spread
+	// posait alors `integral: undefined`, et `serialize()` jetait sur `.from`.
+	it('une clé valant undefined ne touche pas au réglage', () => {
+		const atelier = withPlotted();
+		atelier.setDisplay('f', { integral: { from: 0, to: 2 }, tangentAt: 1 });
+
+		atelier.setDisplay('f', { integral: undefined, tangentAt: undefined });
+
+		expect(displayOf(atelier, 'f')).toMatchObject({ integral: { from: 0, to: 2 }, tangentAt: 1 });
+		expect(() => structuredClone(atelier.serialize())).not.toThrow();
+	});
+
+	// Finding 8 : `plainDisplay` sur un `integral` réel, dans `structuredClone`
+	it('une aire posée se range sans proxy', () => {
+		const atelier = withPlotted();
+		atelier.setDisplay('f', { integral: { from: -1, to: 1 } });
+
+		const cloned = structuredClone(atelier.serialize());
+
+		expect(cloned.objects[0].display?.integral).toEqual({ from: -1, to: 1 });
+	});
+
+	// Finding 2 : mêmes bornes que le grapheur, sinon le jour où il range ce
+	// réglage, sa relecture refuse TOUT son état
+	it.each([
+		['une tangente au-delà de 1e9', { tangentAt: 1e10 }],
+		['une borne d’aire au-delà de 1e9', { integral: { from: 0, to: -1e10 } }]
+	])('refuse %s, comme le grapheur', (_, patch) => {
+		const atelier = withPlotted();
+
+		expect(atelier.setDisplay('f', patch).ok).toBe(false);
+	});
+
+	// Finding 8
+	it('renommer garde les réglages', () => {
+		const atelier = withPlotted();
+		atelier.setDisplay('f', { color: 'curve-3' });
+
+		atelier.rename('f', 'h');
+
+		expect(displayOf(atelier, 'h')?.color).toBe('curve-3');
+	});
+
+	// Finding 9 : rien à changer, donc rien à sauvegarder
+	it('un réglage vide ne compte pas comme une modification', () => {
+		const atelier = withPlotted();
+		const before = atelier.revision;
+
+		expect(atelier.setDisplay('f', {}).ok).toBe(true);
+
+		expect(atelier.revision).toBe(before);
+	});
+
+	// Finding 4 : un nom qui pointait vers un nuage et désigne maintenant une
+	// fonction doit redevenir une COURBE, pas rester un nuage invisible
+	it('un nuage remplacé par une fonction du même nom est retracé en courbe', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5 ; 6' });
+		atelier.setPlotted('L', true, 'M');
+		const graph = new GrapheurStore(null);
+		syncPlots(atelier, graph);
+		expect(graph.functions.some((f) => f.type === 'scatter')).toBe(true);
+
+		// Supprimée puis recréée en fonction AVANT que la synchro repasse
+		atelier.remove('L');
+		atelier.create({ kind: 'function', name: 'L', definition: 'x+1' });
+		atelier.setPlotted('L', true);
+		syncPlots(atelier, graph);
+
+		expect(graph.functions.map((f) => f.type)).toEqual(['explicit']);
+		expect(onlyCurve(graph).latex).toBe('x+1');
+	});
+});
+
+// Finding 7, mesuré : sans compression (Safari < 16.4), 8 fonctions avec leurs
+// réglages complets pesaient 2 332 caractères, au-delà de `MAX_URL_PAYLOAD`
+describe('réglages d’affichage — rangement compact', () => {
+	it('ne range que la couleur et le style d’un réglage par défaut', () => {
+		const atelier = withPlotted();
+
+		const stored = atelier.serialize().objects[0].display;
+
+		expect(Object.keys(stored ?? {}).sort()).toEqual(['color', 'lineStyle']);
+	});
+
+	it('range aussi ce qui s’écarte du défaut', () => {
+		const atelier = withPlotted();
+		atelier.setDisplay('f', { tangentAt: 0, showArcLength: true });
+
+		const stored = atelier.serialize().objects[0].display;
+
+		expect(stored).toMatchObject({ tangentAt: 0, showArcLength: true });
+		expect(stored).not.toHaveProperty('integral');
+	});
+
+	it('se relit à l’identique', () => {
+		const atelier = withPlotted();
+		atelier.setDisplay('f', { lineWidth: 3, integral: { from: 0, to: 1 } });
+
+		const storage = memoryStorage();
+		saveAtelier(storage, atelier.serialize());
+		const loaded = loadAtelier(storage);
+		const fresh = new Atelier();
+		if (loaded.kind === 'loaded') fresh.restore(loaded.state);
+
+		expect(displayOf(fresh, 'f')).toEqual(displayOf(atelier, 'f'));
+	});
+});

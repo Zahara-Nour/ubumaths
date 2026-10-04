@@ -31,7 +31,13 @@ import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
-import { newDisplay, plainDisplay, readDisplayPatch } from './display';
+import {
+	compactDisplay,
+	fullDisplay,
+	newDisplay,
+	readDisplayPatch,
+	type StoredDisplay
+} from './display';
 
 // =============================================================================
 // Types de retour
@@ -432,7 +438,7 @@ export class Atelier {
 			...(o.plotted ? { plotted: true } : {}),
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
-			...(isFunction(o) && o.display ? { display: plainDisplay(o.display) } : {})
+			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {})
 		}));
 		return { version: ATELIER_STATE_VERSION, objects };
 	}
@@ -517,10 +523,15 @@ export class Atelier {
 		}
 		const read = readDisplayPatch(patch);
 		if (!read.ok) return { ok: false, message: read.message };
+		// Rien à changer, rien à sauvegarder
+		if (Object.keys(read.patch).length === 0) return { ok: true };
 
 		const base = current.display ?? newDisplay(this.#displays());
 		this.items[index] = { ...current, display: { ...base, ...read.patch } };
-		this.recomputeAll();
+		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
+		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
+		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
+		this.revision++;
 		return { ok: true };
 	}
 
@@ -528,11 +539,11 @@ export class Atelier {
 	 * Poser des réglages relus (sauvegarde, lien) sans recalcul : l'appelant
 	 * recalcule une fois à la fin.
 	 */
-	adoptDisplay(name: string, display: CurveDisplay): void {
+	adoptDisplay(name: string, stored: StoredDisplay): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isFunction(current)) return;
-		this.items[index] = { ...current, display };
+		this.items[index] = { ...current, display: fullDisplay(stored) };
 	}
 
 	/** Les réglages déjà pris par les autres fonctions — pour ne pas les doubler. */

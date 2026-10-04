@@ -13,7 +13,7 @@
 
 import { z } from 'zod';
 import { CURVE_COLORS, getNextSlot } from '$lib/grapheur/colors';
-import { LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
+import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
 import type { CurveDisplay } from './types';
 
 // =============================================================================
@@ -26,16 +26,15 @@ const DEFAULT_LINE_WIDTH = 2;
 /**
  * Un nombre utilisable comme abscisse. zod 4 refuse déjà `Infinity` et `NaN`
  * dans `z.number()` (mesuré le 2026-10-04) — `.finite()` y est obsolète.
+ * Mêmes bornes que le grapheur (`COORDINATE_LIMIT`), pour la raison dite là-bas.
  */
-const finite = z.number();
+const finite = z.number().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT);
 
 /** Ce qu'un réglage complet doit valoir — pour la relecture. */
 export const curveDisplaySchema = z.object({
 	color: z.enum(CURVE_COLORS),
 	lineStyle: z.enum(LINE_STYLES),
-	lineWidth: z
-		.number()
-		.refine((w) => (LINE_WIDTHS as readonly number[]).includes(w), 'Épaisseur inconnue.'),
+	lineWidth: z.number().refine((w) => (LINE_WIDTHS as readonly number[]).includes(w)),
 	tangentAt: finite.nullable(),
 	integral: z.object({ from: finite, to: finite }).nullable(),
 	showOsculating: z.boolean(),
@@ -44,6 +43,30 @@ export const curveDisplaySchema = z.object({
 
 /** Ce qu'une modification peut changer : n'importe quel sous-ensemble. */
 const patchSchema = curveDisplaySchema.partial().strict();
+
+/**
+ * Ce qu'on range : couleur et style toujours, le reste seulement s'il s'écarte
+ * du défaut (`compactDisplay`).
+ *
+ * ⚠️ Mesuré le 2026-10-04 : sans compression (repli Safari < 16.4), 8 fonctions
+ * aux réglages complets pesaient 2 332 caractères de lien, au-delà de
+ * `MAX_URL_PAYLOAD` (1 800) ; compactés, on retombe près du poids d'avant.
+ */
+export const storedDisplaySchema = curveDisplaySchema
+	.partial()
+	.required({ color: true, lineStyle: true });
+
+/** Un réglage tel qu'il est rangé. */
+export type StoredDisplay = Pick<CurveDisplay, 'color' | 'lineStyle'> & Partial<CurveDisplay>;
+
+/** Les valeurs d'une courbe neuve, hors couleur et style (attribués à part). */
+const DEFAULTS: Omit<CurveDisplay, 'color' | 'lineStyle'> = {
+	lineWidth: DEFAULT_LINE_WIDTH,
+	tangentAt: null,
+	integral: null,
+	showOsculating: false,
+	showArcLength: false
+};
 
 // =============================================================================
 // Fonctions
@@ -58,15 +81,29 @@ const patchSchema = curveDisplaySchema.partial().strict();
  */
 export function newDisplay(others: readonly CurveDisplay[]): CurveDisplay {
 	const slot = getNextSlot(others);
-	return {
-		color: slot.color,
-		lineStyle: slot.lineStyle,
-		lineWidth: DEFAULT_LINE_WIDTH,
-		tangentAt: null,
-		integral: null,
-		showOsculating: false,
-		showArcLength: false
-	};
+	return { color: slot.color, lineStyle: slot.lineStyle, ...DEFAULTS };
+}
+
+/** Le réglage complet d'un réglage rangé : ce qui manque vaut le défaut. */
+export function fullDisplay(stored: StoredDisplay): CurveDisplay {
+	return { ...DEFAULTS, ...stored };
+}
+
+/**
+ * Ce qu'on range d'un réglage : couleur, style, et les seuls champs qui
+ * s'écartent du défaut. Fait de valeurs ordinaires, sans proxy (clonable).
+ */
+export function compactDisplay(display: CurveDisplay): StoredDisplay {
+	const plain = plainDisplay(display);
+	const stored: StoredDisplay = { color: plain.color, lineStyle: plain.lineStyle };
+	for (const key of Object.keys(DEFAULTS) as (keyof typeof DEFAULTS)[]) {
+		const value = plain[key];
+		const fallback = DEFAULTS[key];
+		// `integral` est un objet ou `null` ; le défaut est `null`, une comparaison
+		// d'identité suffit donc à dire « s'écarte du défaut »
+		if (value !== fallback) Object.assign(stored, { [key]: value });
+	}
+	return stored;
 }
 
 /**
@@ -82,7 +119,14 @@ export function readDisplayPatch(
 	if (!parsed.success) {
 		return { ok: false, message: 'Ce réglage d’affichage n’est pas valable.' };
 	}
-	return { ok: true, patch: parsed.data };
+	// ⚠️ zod 4 GARDE une clé présente valant `undefined` (mesuré). Étalée sur le
+	// réglage, elle effaçait la valeur — `integral: undefined` faisait ensuite
+	// jeter `serialize()`. `undefined` veut dire « pas de changement » : on
+	// l'écarte. Pour retirer une tangente ou une aire, c'est `null`.
+	const patchOut = Object.fromEntries(
+		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
+	) as Partial<CurveDisplay>;
+	return { ok: true, patch: patchOut };
 }
 
 /** Une copie faite de valeurs ordinaires, sans proxy `$state` (clonable). */

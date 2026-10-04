@@ -30,7 +30,21 @@ Branche `feat/atelier-reglages-affichage`, worktree `../ubumaths-wt-reglages`.
   - Preuves rouges par neutralisation (copie de sauvegarde, pas de
     `git checkout`) : sans `.catch` → « réglage illisible » rougit ; diff
     forcé → « n'écrit rien » rougit.
-- [ ] Revue, PR, CI, merge.
+- [x] Revue `code-reviewer` : rien de bloquant ; corrigé, tests d'abord (rouges vus) :
+  - F1 une clé `undefined` (zod 4 la garde) effaçait le réglage et faisait
+    jeter `serialize()` → écartée dans `readDisplayPatch` ;
+  - F2 bornes ±1e9 partagées avec le grapheur (`COORDINATE_LIMIT`) ;
+  - F3 `setDisplay` ne relance plus `recomputeAll` (seulement `revision++`) ;
+  - F4 un nom qui pointait vers un nuage est retracé en courbe ;
+  - F5 `settingsDiff` recopie sans proxy ; F9 patch vide = rien ;
+  - F7 mesuré : sans compression, 8 fonctions aux réglages complets = 2 332
+    caractères de lien (plafond 1 800) → rangement compact (couleur, style,
+    écarts au défaut) : 1 351.
+  - F6 **accepté, noté** : une fonction reçue par lien garde sa couleur même
+    si une courbe de l'atelier l'a déjà ; les fonctions retirées gardent la
+    leur et comptent dans le choix de la suivante. À revoir si ça gêne à
+    l'usage.
+- [ ] PR, CI, merge.
 
 ## Lots suivants
 

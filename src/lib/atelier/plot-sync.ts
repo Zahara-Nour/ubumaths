@@ -17,6 +17,7 @@ import type { AtelierObject, CurveDisplay } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/grapheur/types';
 import { expressionOf } from './engine';
+import { plainDisplay } from './display';
 import { isFunction, isList } from './types';
 
 /**
@@ -84,7 +85,9 @@ type CurveSettings = Pick<
  * par l'action « Dériver » (phase 0 `/grapheur`, Q1).
  */
 function settingsDiff(current: ExplicitFunction, display: CurveDisplay): Partial<CurveSettings> {
-	const wanted: CurveSettings = { ...display, showDerivative: false };
+	// `plainDisplay` : `integral` est un proxy `$state` de l'atelier ; tel quel,
+	// le grapheur garderait un objet partagé avec lui.
+	const wanted: CurveSettings = { ...plainDisplay(display), showDerivative: false };
 	const diff: Partial<CurveSettings> = {};
 	for (const key of Object.keys(wanted) as (keyof CurveSettings)[]) {
 		const a = current[key];
@@ -212,7 +215,11 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 			continue;
 		}
 
-		const current = id === undefined ? undefined : graph.getFunction(id);
+		const found = id === undefined ? undefined : graph.getFunction(id);
+		// Le nom pointait vers autre chose qu'une courbe (un nuage dont la liste a
+		// été remplacée par une fonction du même nom) : on retire l'ancien tracé.
+		if (found !== undefined && !isExplicitFunction(found)) graph.removeFunction(id!);
+		const current = found !== undefined && isExplicitFunction(found) ? found : undefined;
 		// Pas encore posée, ou disparue du grapheur (effacement manuel) : on la
 		// (re)pose, puis la suite de la boucle lui applique visibilité et réglages.
 		const curveId = current === undefined ? graph.addFunction(target.definition) : id!;
