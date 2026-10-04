@@ -28,4 +28,4 @@ y = 50 → x ≈ 7,950.
 ## Étapes
 
 - [x] Tests rouges · [x] Implémentation · [x] Fiche compilée et regardée · [x] Revue Opus (valeurs trop grandes, domaine avant pente, arrondi décimal exact, coupe aux pôles) ·
-      [ ] PR, CI, merge
+      [x] PR, CI, merge (#810)
