@@ -121,11 +121,11 @@ describe('« Sur le graphique »', () => {
 		check(card(), 'Afficher l’aire sous la courbe');
 		await vi.waitFor(() => expect(displayOf(atelier).integral).not.toBeNull());
 
-		setInput(card(), 'Borne inférieure de l’aire', '0');
-		setInput(card(), 'Borne supérieure de l’aire', '1');
+		setInput(card(), 'de, borne inférieure de l’aire', '0');
+		setInput(card(), 'à, borne supérieure de l’aire', '1');
 
 		await vi.waitFor(() => expect(displayOf(atelier).integral).toEqual({ from: 0, to: 1 }));
-		await vi.waitFor(() => expect(text(card(), '.aire')).toBe('aire = 0.3333'));
+		await vi.waitFor(() => expect(text(card(), '.aire')).toBe('aire = 0,3333'));
 	});
 
 	it('la longueur se lit sur les bornes de l’aire', async () => {
@@ -135,7 +135,7 @@ describe('« Sur le graphique »', () => {
 		await vi.waitFor(() => check(card(), 'Afficher la longueur de la courbe'));
 
 		// y = x de 0 à 3 : 3√2 ≈ 4.243
-		await vi.waitFor(() => expect(text(card(), '.longueur')).toBe('longueur = 4.243'));
+		await vi.waitFor(() => expect(text(card(), '.longueur')).toBe('longueur = 4,243'));
 	});
 
 	// S5 : un réglage n'est pas une action, il n'écrit rien dans Calcul
@@ -155,5 +155,65 @@ describe('« Sur le graphique »', () => {
 		const { card } = await openPlotted();
 
 		expect(card().querySelector('[aria-label="Afficher la courbe dérivée"]')).toBeNull();
+	});
+});
+
+// =============================================================================
+// Revues du lot 2b
+// =============================================================================
+
+describe('revues du lot 2b', () => {
+	// Revue de code 1 : `posted` n'est pas réactif — la carte restait sur
+	// « pente non définie » après un retrait puis un nouveau tracé
+	it('retrouve la pente après avoir retiré puis retracé la courbe', async () => {
+		const { atelier, container, card } = await openPlotted('x^2');
+		atelier.setDisplay('f', { tangentAt: 1 });
+		await vi.waitFor(() => expect(text(card(), '.pente')).toBe('f′(x₀) = 2'));
+
+		const eye = cardFor(container, 'f').querySelector('.oeil') as HTMLButtonElement;
+		eye.click();
+		await vi.waitFor(() => expect(card().querySelector('.reglages')).toBeNull());
+		eye.click();
+
+		await vi.waitFor(() => expect(text(card(), '.pente')).toBe('f′(x₀) = 2'));
+	});
+
+	// Revue de code 2 : une borne refusée laissait le champ contredire l'aire
+	it('dit qu’une borne est refusée, puis remet la valeur retenue', async () => {
+		const { atelier, card } = await openPlotted('x^2');
+		atelier.setDisplay('f', { integral: { from: 0, to: 1 } });
+		await vi.waitFor(() => expect(card().querySelector('.aire')).toBeTruthy());
+
+		setInput(card(), 'à, borne supérieure de l’aire', '2e9');
+
+		await vi.waitFor(() => expect(text(card(), '.refus')).not.toBe(''));
+		const input = card().querySelector(
+			'input[aria-label="à, borne supérieure de l’aire"]'
+		) as HTMLInputElement;
+		expect(input.getAttribute('aria-invalid')).toBe('true');
+
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+		await vi.waitFor(() => expect(input.value).toBe('1'));
+		expect(text(card(), '.refus')).toBe('');
+	});
+
+	// A11y 1 : le curseur est piloté en crans ; il doit annoncer l'abscisse
+	it('le curseur annonce x₀, pas un numéro de cran', async () => {
+		const { atelier, card } = await openPlotted('x^2');
+		atelier.setDisplay('f', { tangentAt: 1.5 });
+
+		await vi.waitFor(() => {
+			const thumb = card().querySelector('[role="slider"]');
+			expect(thumb?.getAttribute('aria-valuetext')).toBe('x₀ = 1,5, pente 3');
+		});
+	});
+
+	it('les bornes forment un groupe nommé', async () => {
+		const { atelier, card } = await openPlotted('x^2');
+		atelier.setDisplay('f', { integral: { from: 0, to: 1 } });
+
+		await vi.waitFor(() =>
+			expect(card().querySelector('[role="group"][aria-label="Bornes de l’aire"]')).toBeTruthy()
+		);
 	});
 });

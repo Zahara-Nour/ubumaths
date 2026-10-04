@@ -38,14 +38,34 @@
 	const atelier = useAtelier();
 	const graph = useGrapheurStore();
 
-	/** La courbe dessinée pour cet objet — en lecture seule. */
-	const curve = $derived(curveOf(atelier, graph, object.name));
+	/**
+	 * La courbe dessinée pour cet objet — en lecture seule.
+	 *
+	 * ⚠️ `curveOf` lit une table NON réactive : quand la courbe n'y est pas
+	 * encore (retirée puis retracée), il rend la main sans rien lire du
+	 * grapheur, et le `$derived` ne se recalculait jamais — la carte restait sur
+	 * « pente non définie » (revue du lot 2b). Lire `functions` l'abonne à la pose.
+	 */
+	const curve = $derived.by(() => {
+		void graph.functions;
+		return curveOf(atelier, graph, object.name);
+	});
 
-	/** Quatre chiffres significatifs, comme le grapheur : assez pour lire, court à afficher. */
+	/**
+	 * Quatre chiffres significatifs, comme le grapheur, mais avec la virgule :
+	 * la carte est en français (règle d'affichage des décimaux, #448).
+	 */
+	const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', {
+		maximumSignificantDigits: 4,
+		useGrouping: false
+	});
 	function formatNumber(n: number): string {
 		if (!Number.isFinite(n)) return '—';
-		return Number.parseFloat(n.toPrecision(4)).toString();
+		return NUMBER_FORMAT.format(n);
 	}
+
+	/** Pourquoi la dernière borne saisie n'a pas été retenue. */
+	let boundRefusal = $state<{ edge: 'from' | 'to'; message: string } | null>(null);
 
 	function round(n: number): number {
 		return Math.round(n * 100) / 100;
@@ -105,13 +125,53 @@
 			const current = atelier.get(object.name);
 			const integral = current && isFunction(current) ? current.display?.integral : null;
 			if (!Number.isFinite(parsed) || !integral) return;
-			update({ integral: { ...integral, [edge]: parsed } });
+			const result = atelier.setDisplay(object.name, { integral: { ...integral, [edge]: parsed } });
+			// Refusée (au-delà de ±1e9) : on le DIT — sinon le champ contredit l'aire
+			boundRefusal = result.ok
+				? null
+				: {
+						edge,
+						message: 'Cette borne est trop grande : l’aire reste calculée sur la précédente.'
+					};
 		};
 	}
+
+	/**
+	 * Quand on quitte le champ, il reprend la valeur RETENUE : une saisie vide,
+	 * « - » ou refusée ne doit pas rester affichée à côté d'une aire qui ne la
+	 * prend pas en compte.
+	 */
+	function handleBoundChange(edge: 'from' | 'to') {
+		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			const current = atelier.get(object.name);
+			const integral = current && isFunction(current) ? current.display?.integral : null;
+			if (integral) event.currentTarget.value = String(integral[edge]);
+			if (boundRefusal?.edge === edge) boundRefusal = null;
+		};
+	}
+
+	/** Ce que le curseur annonce : l'abscisse et la pente, pas un numéro de cran. */
+	const sliderValueText = $derived(
+		display.tangentAt === null
+			? ''
+			: `x₀ = ${formatNumber(display.tangentAt)}` +
+					(tangent ? `, pente ${formatNumber(tangent.slope)}` : '')
+	);
+
+	let sliderZone = $state<HTMLElement>();
+
+	// ⚠️ Le curseur partagé (`ui/slider`) ne transmet rien à son pouce : on pose
+	// `aria-valuetext` sur l'élément `role="slider"` qu'il rend. Effet de bord
+	// DOM, d'où l'`$effect`.
+	$effect(() => {
+		const thumb = sliderZone?.querySelector('[role="slider"]');
+		if (thumb) thumb.setAttribute('aria-valuetext', sliderValueText);
+	});
 </script>
 
 <section class="reglages" aria-label={`Sur le graphique : ${object.name}`}>
-	<h3 class="titre">Sur le graphique</h3>
+	<!-- Pas de titre de section (h3) : le panneau n'a pas de h2, l'ordre sauterait -->
+	<p class="titre">Sur le graphique</p>
 
 	<div class="ligne">
 		<ColorPicker
@@ -144,7 +204,7 @@
 
 	{#if display.tangentAt !== null}
 		<div class="encadre">
-			<div class="ligne">
+			<div class="ligne curseur" bind:this={sliderZone}>
 				<span class="symbole">x₀</span>
 				<!--
 					Curseur piloté en entiers, comme dans le grapheur : bits-ui compare la
@@ -197,26 +257,33 @@
 	<!-- L'aire est SIGNÉE : sous l'axe elle compte négativement, ce qu'un remplissage ne dit pas -->
 	{#if display.integral}
 		<div class="encadre">
-			<div class="ligne">
-				<span class="symbole">de</span>
+			<!-- Le nom de chaque champ COMMENCE par le mot visible (« de », « à ») :
+			     une commande vocale qui le dit atteint le champ (WCAG 2.5.3) -->
+			<div class="ligne" role="group" aria-label="Bornes de l’aire">
+				<span class="symbole" aria-hidden="true">de</span>
 				<Input
 					type="number"
 					step="any"
 					value={display.integral.from}
 					oninput={handleBoundInput('from')}
-					class="h-7 w-20 text-xs"
-					aria-label="Borne inférieure de l’aire"
+					onchange={handleBoundChange('from')}
+					class="h-8 w-20 text-sm"
+					aria-label="de, borne inférieure de l’aire"
+					aria-invalid={boundRefusal?.edge === 'from'}
 				/>
-				<span class="symbole">à</span>
+				<span class="symbole" aria-hidden="true">à</span>
 				<Input
 					type="number"
 					step="any"
 					value={display.integral.to}
 					oninput={handleBoundInput('to')}
-					class="h-7 w-20 text-xs"
-					aria-label="Borne supérieure de l’aire"
+					onchange={handleBoundChange('to')}
+					class="h-8 w-20 text-sm"
+					aria-label="à, borne supérieure de l’aire"
+					aria-invalid={boundRefusal?.edge === 'to'}
 				/>
 			</div>
+			<p class="refus" role="alert">{boundRefusal?.message ?? ''}</p>
 			<div class="ligne">
 				<span class="nombre aire">aire = {area ? formatNumber(area.value) : '—'}</span>
 				<MyCheckbox
@@ -243,9 +310,17 @@
 		padding-top: 0.375rem;
 		border-top: 1px solid var(--color-border);
 	}
+	.refus {
+		margin: 0;
+		font-size: 0.75rem;
+		color: var(--color-destructive);
+	}
+	.refus:empty {
+		display: none;
+	}
 	.titre {
 		margin: 0;
-		font-size: 0.625rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -256,7 +331,8 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.25rem 0.75rem;
-		font-size: 0.75rem;
+		/* Lisible en projection (audit a11y du lot 2b) */
+		font-size: 0.8125rem;
 	}
 	.encadre {
 		display: flex;

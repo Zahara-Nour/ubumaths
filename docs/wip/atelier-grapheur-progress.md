@@ -121,6 +121,21 @@ Lot 2a mergé (#784) ; pied de page limité à l'accueil (#787, hors chantier).
   la prop périmée et effaçait la première → lecture de l'état courant de
   l'atelier.
 - Suites : 335 navigateur, 1 379 serveur ; `check:incremental` 0 ; eslint propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` : rien de bloquant ;
+      corrigé, tests d'abord (rouges vus) :
+  - réactivité : retirer puis retracer laissait « pente non définie »
+    (`posted` non réactif) → le `$derived` lit `graph.functions` ; preuve par
+    neutralisation ;
+  - borne > 1e9 refusée en silence → message (`role="alert"`,
+    `aria-invalid`), et le champ reprend la valeur retenue en le quittant ;
+  - curseur x₀ : `aria-valuetext` « x₀ = 1,5, pente 3 » (le curseur partagé ne
+    transmet rien à son pouce → posé sur l'élément `role="slider"`) ;
+  - bornes : groupe nommé, noms qui commencent par le mot visible (WCAG 2.5.3) ;
+    tailles lisibles en projection ; pas de `h3` orphelin ;
+  - nombres avec la virgule (règle #448) — ⚠️ le grapheur, lui, affiche
+    encore un point : écart assumé, à aligner lors de la bascule (lot 6).
+- Noté, à trancher (revue) : des bornes inversées (de 0 à −3) donnent une
+  aire POSITIVE (`integralUnder` trie les bornes, comme le grapheur).
 
 ## Lots suivants
 
