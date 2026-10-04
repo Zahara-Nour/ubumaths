@@ -22,7 +22,8 @@ import { tidy } from '../tidy';
 import { parseCustom } from '../parser/custom';
 import type { EvalValue, ComplexValueResult } from './types';
 import type { Rational } from '../normal/types';
-import { divide, number, withUnit } from '../factory';
+import { divide, number, opposite, withUnit } from '../factory';
+import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
 import { decimalString } from '../tidy/decimal';
@@ -231,6 +232,29 @@ function schoolExactWriting(source: MathNode, exact: MathNode): MathNode {
 }
 
 /**
+ * Exposant calculable et entier (`4 - 3`, `{4} - {1}`) remplacé par sa valeur.
+ *
+ * `normalize` ne réduit une puissance de fraction que si l'exposant est un nombre écrit :
+ * `(2/3)^{n-k}` restait `\left(\dfrac{2}{3}\right)^{4-3}` en réponse attendue, alors que
+ * `(2/3)^n` donnait `\dfrac{16}{81}`. Un exposant non entier (`1/2`) reste tel quel.
+ */
+function foldIntegerExponents(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isSuperscript(n) || isNumber(n.superscript)) return n;
+		if (getVariables(n.superscript).size > 0) return n;
+		let exponent: number;
+		try {
+			exponent = evaluateNodeToApproximatedNumber(n.superscript);
+		} catch {
+			return n;
+		}
+		if (!Number.isSafeInteger(exponent)) return n;
+		const folded = exponent < 0 ? opposite(number(-exponent)) : number(exponent);
+		return { ...n, superscript: folded };
+	});
+}
+
+/**
  * Résultat exact : `\dfrac{9}{7}`, `-\dfrac{3}{4}`, `2 \sqrt{2}`, entier s'il tombe juste.
  *
  * Décimal si le calcul contient un décimal, ou si la forme exacte ne se calcule
@@ -239,7 +263,7 @@ function schoolExactWriting(source: MathNode, exact: MathNode): MathNode {
 function formatExact(ast: MathNode, numValue: number): string {
 	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue);
 	try {
-		const exact = evaluate(ast, { mode: 'exact' });
+		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
 		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
 		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue);
 		return toLatex(schoolExactWriting(ast, exact.value));
