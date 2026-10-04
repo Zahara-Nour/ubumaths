@@ -29,4 +29,4 @@ y = 25 → x ≈ 4,630 (interpolation).
 ## Étapes
 
 - [x] Tests rouges · [x] Implémentation · [x] Fiche compilée et regardée (graduations 1-2-5 sans chevauchement, milliers groupés ⩾ 10 000, marge écran) · [x] Revue Opus (boucle des graduations, fractions ⩽ 1000 au dénominateur, lecteur strict, équation sans ajustement refusée) ·
-      [ ] PR, CI, merge
+      [x] PR, CI, merge (#804)
