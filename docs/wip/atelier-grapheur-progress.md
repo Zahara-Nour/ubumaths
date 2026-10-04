@@ -353,6 +353,52 @@ Lot 5a mergé (#805).
     bordure pour l'état choisi ; 44 px au doigt ; focus visible.
 - Suites : 368 navigateur, 1 269 serveur ; `check:incremental` 0 ; lint propre.
 
+## Lot 6 — la bascule de `/grapheur`
+
+Branche `feat/grapheur-par-atelier`, worktree `../ubumaths-wt-bascule`.
+Lot 5b mergé (#809). Reprise des courbes de l'ancien grapheur : ABANDONNÉE
+(décision du 2026-10-04).
+
+- [x] `/grapheur` ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
+      visible (B2) ; un atelier vide reçoit une carte `f` vide, tracée, prête à
+      taper — plus de x² d'office (B3, option `startWith` du conteneur).
+- [x] `/grapheur?f=…` (B4, B5) : courbes validées par Zod (1 à 8, 200
+      caractères chacune — pas `MAX_DEFINITION_LENGTH`, taillé pour une liste),
+      atelier ÉPHÉMÈRE (`grapheur-link.ts`), bandeau « ton atelier n'est pas
+      touché » ; lien abîmé → on le dit et on ouvre l'atelier personnel (B6).
+- [x] « Repartir de zéro » avec confirmation (B7), absent d'un atelier reçu
+      par lien.
+- [x] Navigation (B1) : plus d'entrée « Grapheur » ; la barre latérale garde
+      « Atelier », le menu du haut le gagne (il ne l'avait pas).
+- [x] `adoptGrapheurState` (jamais appelée) retirée, avec ses tests.
+- `GrapheurContainer` et le singleton restent : `/calc` s'en sert.
+- Vérifié hors tests : `/grapheur`, `/grapheur?f=…`, `/atelier` répondent 200
+  sur le serveur de dev, sans erreur au journal (pas d'outil navigateur dans
+  la session : rendu à l'écran NON vérifié à la main).
+- Tests : 8 serveur (7 rouges sur stub) + 5 navigateur (2 rouges ; les 3
+  autres garde-fous) ; test de la barre latérale mis en accord (G1). Suites :
+  393 + 123 navigateur, 1 270 + 1 195 serveur ; `check:incremental` 0 ;
+  lint propre.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord :
+  - **B1 (bloquant)** : « Partager » depuis `/grapheur` fabriquait
+    `/grapheur?a=…`, que la page ne lisait pas (le camarade voyait son propre
+    atelier, sans un mot) → porte unique `openLink` (`?a=` et `?f=`) pour
+    `/atelier` et `/grapheur`, relue quand l'adresse change (M1) ;
+  - C1 : « Garder dans mon atelier » versait dans l'atelier ÉPHÉMÈRE (copies
+    renommées, rien d'enregistré) → `keepReceived` verse dans l'atelier
+    PERSONNEL et l'enregistre ; 2 anciens tests qui assertaient le défaut
+    réécrits ;
+  - C2 : la simple visite enregistrait la carte vide → n'est enregistrée que
+    si l'élève y touche ; C3 : « Repartir de zéro » vide aussi l'historique et
+    retrouve l'écran d'arrivée ; C4 : `?f=y=2x` (courbe en attente) refusé ;
+  - a11y : `h1` (« Grapheur » / « Atelier ») ; `section` au lieu d'un `main`
+    imbriqué ; notice d'un lien abîmé écrite APRÈS le montage (annoncée) ;
+    « Repartir de zéro » plus grand, désactivé sur un atelier vide ;
+  - décision n° 5 du cadrage marquée « remplacée par G1/G2/B2 ».
+  - Gardé, signalé : le curseur dans le champ à l'arrivée (B3 validé par
+    David ; clavier virtuel MathLive en mode `manual`, il ne s'ouvre pas seul).
+- Suites : 454 navigateur, 2 474 serveur ; `check:incremental` 0 ; lint propre.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

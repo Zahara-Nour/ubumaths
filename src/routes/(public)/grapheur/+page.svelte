@@ -1,120 +1,85 @@
 <script lang="ts">
 	/**
-	 * Grapheur Page
+	 * `/grapheur` — l'atelier, ouvert sur le graphique.
 	 *
-	 * Interactive graphing calculator for students and teachers.
-	 * Features:
-	 * - Multiple function plotting with color-coded curves
-	 * - Pan and zoom interactions
-	 * - Real-time coordinate tracking
-	 * - Function editor with MathLive
-	 * - localStorage persistence
+	 * Décisions de David (phase 0 `docs/wip/atelier-grapheur-phase0.md`, G1/G2) :
+	 * l'atelier est l'entrée unique, et cette adresse continue de marcher (favoris,
+	 * liens notés). Elle ouvre l'atelier PERSONNEL sur la vue Graphe, « Mes objets »
+	 * visible ; un atelier vide reçoit une carte `f` prête à taper (B3).
 	 *
-	 * Access: Students, Teachers, Admins only
+	 * `/grapheur?f=x^2-3x+1` est l'entrée « projection » (B4, B5) et
+	 * `/grapheur?a=…` un atelier partagé depuis cette page (revue du lot 6, B1) :
+	 * tous deux ÉPHÉMÈRES — l'atelier personnel n'est ni lu ni écrit. Un lien
+	 * abîmé le dit et ouvre l'atelier personnel (B6).
 	 */
+	import { page } from '$app/state';
+	import AtelierContainer from '$lib/components/atelier/AtelierContainer.svelte';
+	import { Atelier } from '$lib/atelier/atelier.svelte';
+	import { openLink } from '$lib/atelier/grapheur-link';
+	import type { AtelierState } from '$lib/atelier/persistence';
 
-	import { onMount } from 'svelte';
-	import { GrapheurContainer } from '$lib/components/grapheur';
-	import { grapheurStore } from '$lib/stores/grapheur.svelte';
+	interface Opened {
+		atelier: Atelier;
+		received: AtelierState | null;
+		notice: string | null;
+	}
 
 	/**
-	 * Add a default function on first visit if store is empty
+	 * Ce que l'adresse ouvre — relu quand elle change : passer d'un lien à un
+	 * autre sans recharger la page doit changer l'écran (revue du lot 6, M1).
+	 * Navigateur seulement : le décodage d'un lien `?a=` est asynchrone.
 	 */
-	onMount(() => {
-		// Add a sample function if none exist (for first-time users)
-		if (grapheurStore.functions.length === 0) {
-			grapheurStore.addFunction('x^2');
-		}
+	let opened = $state<Opened | null>(null);
+
+	$effect(() => {
+		const search = page.url.search;
+		let cancelled = false;
+		openLink(new URLSearchParams(search)).then((link) => {
+			if (cancelled) return;
+			if (link.kind === 'received') {
+				opened = { atelier: link.atelier, received: link.state, notice: link.notice };
+			} else {
+				// Un lien abîmé ne donne pas une page morte : on le dit, et SON
+				// atelier s'ouvre (§6 E1, B6)
+				opened = {
+					atelier: new Atelier(),
+					received: null,
+					notice: link.kind === 'invalid' ? `${link.message} Voici ton atelier.` : null
+				};
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
 	});
 </script>
 
 <svelte:head>
-	<title>Grapheur - Calculatrice graphique | Chiphre</title>
+	<title>Grapheur | Chiphre</title>
 	<meta
 		name="description"
-		content="Calculatrice graphique interactive pour tracer et analyser des fonctions mathématiques"
+		content="Tracer des fonctions et des suites, les dériver, étudier leurs variations : le grapheur de l’atelier."
 	/>
 </svelte:head>
 
-<div class="grapheur-page">
-	<!-- Page Header -->
-	<header class="page-header">
-		<div class="header-content">
-			<div>
-				<h1 class="text-2xl font-bold">Grapheur</h1>
-				<p class="subtitle text-sm text-muted-foreground">Calculatrice graphique interactive</p>
-			</div>
-
-			<!-- Instructions (Desktop Only) -->
-			<div class="instructions hidden gap-6 text-xs text-muted-foreground lg:flex">
-				<div class="flex items-center gap-2">
-					<span class="font-semibold">Glisser-déposer</span>
-					<span>Déplacer</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span class="font-semibold">Molette</span>
-					<span>Zoom</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span class="font-semibold">Survol</span>
-					<span>Coordonnées</span>
-				</div>
-			</div>
-		</div>
-	</header>
-
-	<!-- Main Grapheur Container -->
-	<div class="grapheur-content">
-		<GrapheurContainer />
-	</div>
+<div class="page">
+	{#if opened}
+		{#key opened}
+			<AtelierContainer
+				atelier={opened.atelier}
+				ephemeral={opened.received !== null}
+				received={opened.received}
+				notice={opened.notice}
+				view="graphe"
+				startWith={opened.received === null ? 'function' : undefined}
+				heading="Grapheur"
+			/>
+		{/key}
+	{/if}
 </div>
 
 <style>
-	/* ==========================================================================
-     Page Layout
-     ========================================================================== */
-
-	.grapheur-page {
-		display: flex;
-		flex-direction: column;
-		height: calc(100vh - 4rem); /* Account for navbar height */
-		padding: 1rem;
-		gap: 1rem;
-	}
-
-	.page-header {
-		flex-shrink: 0;
-	}
-
-	.header-content {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 2rem;
-	}
-
-	.grapheur-content {
-		flex: 1;
-		min-height: 0; /* Important for flex child overflow */
-		overflow: hidden;
-	}
-
-	/* ==========================================================================
-     Responsive: Mobile
-     ========================================================================== */
-
-	@media (max-width: 768px) {
-		.grapheur-page {
-			padding: 0.5rem;
-			gap: 0.75rem;
-		}
-
-		.page-header h1 {
-			font-size: 1.25rem;
-		}
-
-		.subtitle {
-			font-size: 0.75rem;
-		}
+	.page {
+		height: calc(100vh - 4rem);
 	}
 </style>

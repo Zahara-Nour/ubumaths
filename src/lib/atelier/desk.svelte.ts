@@ -145,6 +145,12 @@ export class CalcDesk {
 		return { text, failed: !outcome.ok };
 	}
 
+	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
+	clear(): void {
+		this.entries = [];
+		this.notice = null;
+	}
+
 	/** Traiter ce que l'élève vient de taper. */
 	submit(text: string): void {
 		const result = runInput(this.session, text, 'text');

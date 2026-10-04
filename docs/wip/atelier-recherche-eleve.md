@@ -236,7 +236,11 @@ Ce que le collège fait remonter dans la liste :
    opposée dans les deux cas. On les rend invocables depuis le même conteneur.
 4. **Pas de sélecteur de niveau.** La progressivité passe par les actions
    attachées aux objets (§6).
-5. **`/grapheur` reste une porte sur l'atelier, sous deux garanties.**
+5. ⚠️ **Remplacée le 2026-10-04 par G1/G2/B2** (`atelier-grapheur-phase0.md`) :
+   l'atelier est l'ENTRÉE UNIQUE (plus d'entrée « Grapheur » dans la navigation) ;
+   `/grapheur` ouvre l'atelier sur le Graphe, « Mes objets » OUVERT (et non
+   replié, sans onglets, comme ci-dessous). Texte d'origine conservé :
+   **`/grapheur` reste une porte sur l'atelier, sous deux garanties.**
    (Tranché par David le 2026-09-15, après comparaison détaillée de l'approche
    « porte d'entrée » et de l'approche « instance autonome ».) La route survit et
    l'entrée de la Sidebar ne bouge pas ; `/grapheur` ouvre l'atelier sur la vue

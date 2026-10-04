@@ -11,7 +11,6 @@ import {
 	ATELIER_STATE_VERSION,
 	loadAtelier,
 	saveAtelier,
-	adoptGrapheurState,
 	readForeignWrite
 } from '../persistence';
 import type { AtelierState } from '../persistence';
@@ -139,67 +138,6 @@ describe('cas limites', () => {
 // §5 L5 — reprendre un atelier venu du grapheur
 // =============================================================================
 
-describe('reprise de l’ancien état du grapheur', () => {
-	const GRAPHEUR_KEY = 'chiphre-grapheur-state';
-
-	function grapheurState(functions: { latex: string }[]) {
-		return JSON.stringify({ version: 2, functions, viewport: { xMin: -10, xMax: 10 } });
-	}
-
-	it('nomme les fonctions anonymes du grapheur', () => {
-		const s = fakeStorage();
-		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: 'x^2' }, { latex: '2x+1' }]));
-
-		const out = adoptGrapheurState(s);
-		expect(out.kind).toBe('adopted');
-		if (out.kind !== 'adopted') return;
-		expect(out.state.objects.map((o) => o.name)).toEqual(['f', 'g']);
-		expect(out.state.objects.map((o) => o.definition)).toEqual(['x^2', '2x+1']);
-	});
-
-	// L'ancienne clé est CONSERVÉE : /grapheur continue de vivre sa vie.
-	it('ne touche pas à l’état du grapheur', () => {
-		const s = fakeStorage();
-		const original = grapheurState([{ latex: 'x^2' }]);
-		s.setItem(GRAPHEUR_KEY, original);
-
-		adoptGrapheurState(s);
-		expect(s.getItem(GRAPHEUR_KEY)).toBe(original);
-	});
-
-	it('ne reprend rien quand l’atelier a déjà son état', () => {
-		const s = fakeStorage();
-		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: 'x^2' }]));
-		saveAtelier(s, state);
-
-		expect(adoptGrapheurState(s).kind).toBe('skipped');
-	});
-
-	it('ne reprend rien quand le grapheur est vide', () => {
-		expect(adoptGrapheurState(fakeStorage()).kind).toBe('nothing');
-	});
-
-	it('écarte une fonction sans expression sans tout perdre', () => {
-		const s = fakeStorage();
-		s.setItem(GRAPHEUR_KEY, grapheurState([{ latex: '' }, { latex: 'x^3' }]));
-
-		const out = adoptGrapheurState(s);
-		expect(out.kind).toBe('adopted');
-		if (out.kind !== 'adopted') return;
-		expect(out.state.objects.map((o) => o.definition)).toEqual(['x^3']);
-	});
-
-	it('survit à un état de grapheur illisible', () => {
-		const s = fakeStorage();
-		s.setItem(GRAPHEUR_KEY, 'pas du json');
-		expect(adoptGrapheurState(s).kind).toBe('nothing');
-	});
-});
-
-// =============================================================================
-// §5 L4 — un autre onglet a écrit
-// =============================================================================
-
 describe('un autre onglet écrit', () => {
 	/** Fabrique l'événement que le navigateur émet quand une AUTRE page écrit. */
 	function storageEvent(key: string, newValue: string | null): StorageEvent {
@@ -243,22 +181,5 @@ describe('un autre onglet écrit', () => {
 		expect(out.kind).toBe('changed');
 		if (out.kind !== 'changed') return;
 		expect(out.state.objects).toHaveLength(1);
-	});
-});
-
-describe('reprise du grapheur — les courbes arrivent tracées', () => {
-	it('marque comme tracées les courbes reprises', () => {
-		const s = fakeStorage();
-		s.setItem(
-			'chiphre-grapheur-state',
-			JSON.stringify({ version: 2, functions: [{ latex: 'x^2' }] })
-		);
-
-		const out = adoptGrapheurState(s);
-		expect(out.kind).toBe('adopted');
-		if (out.kind !== 'adopted') return;
-		// Elles étaient visibles dans /grapheur : elles doivent l'être ici aussi,
-		// sinon la vue Graphe s'ouvre vide sans que l'élève comprenne.
-		expect(out.state.objects[0].plotted).toBe(true);
 	});
 });
