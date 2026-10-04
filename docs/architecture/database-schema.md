@@ -675,6 +675,17 @@ Le trigger `skill_attempts_after_insert` ne touche **pas** à `srs_card_stats` (
 - `20260610220000_app_config_table.sql` — table générique `app_config` (clé/valeur) + helper `app_is_anti_fraud_enabled()`. Premier usage : feature flag `anti_fraud_enabled='false'`.
 - `20260610220100_srs_anti_fraud_flags.sql` — table `srs_anti_fraud_flags` (élève × capacité × type signal), RLS prof-via-class_members, dédoublonnage côté app.
 
+### `get_deck_stats` — paquet lisible exigé (2026-10-04)
+
+`get_deck_stats(p_user_id, p_deck_id)` (SECURITY DEFINER) garde deux contrôles : le compte
+(`p_user_id = auth.uid()` ou prof/admin, lot 4) PUIS le paquet, qui doit être lisible par
+l'appelant selon les deux policies SELECT de `srs_decks`, recopiées : son paquet
+(`owner_id = auth.uid()`), ou une copie `is_assigned` d'un élève qu'il a lui-même assignée
+(`srs_deck_assignments.assigned_by = auth.uid()`). Sinon 42501 (identifiant inexistant
+compris). Client service (`auth.uid()` NULL) inchangé. Migration
+`20261004230000_srs_stats_echanges_delai` ; tests
+`tests/integration/srs-stats-echanges-delai.test.ts`.
+
 ### Anti-fraud SRS (livré 2026-06-10)
 
 Table `srs_anti_fraud_flags` — drapeaux de suspicion générés par le runner TS `runAntiFraudJob` :
@@ -1063,7 +1074,12 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
     absente valant `{cards: [], gidouilles: 0}` ; cartes = liste de chaînes, gidouilles = entier
     ≥ 0 écrit sans point (`5.0` casserait le `::INTEGER` d'`execute_trade`) ; si l'offre change, la validation de l'autre et les deux confirmations repassent à
     `false` ;
-  - une validation retirée (refus, expiration) remet les deux confirmations à `false`.
+  - une validation retirée (refus, expiration) remet les deux confirmations à `false` ;
+  - `confirmation_started_at` (depuis `20261004230000_srs_stats_echanges_delai`) : posée par
+    la base — passage de NULL à non NULL → `now()`, valeur envoyée ignorée ; une fois posée,
+    une nouvelle valeur est écrasée par l'ancienne (sans erreur : le store envoie encore la
+    sienne) ; remise à NULL permise (refus, expiration de `/confirm`). L'élève ne peut donc
+    plus repousser le délai de 5 minutes.
 - **Policy RESTRICTIVE `marketplace_trades_insert_friend_rules`** : création directe = échange
   `friend` vierge (`negotiating`, offre NULL, 4 drapeaux à false), entre deux élèves amis
   (amitié acceptée) de la même école (`same_school`). Marché activé et quotas : route

@@ -212,7 +212,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	},
 	'get_deck_stats(p_user_id uuid, p_deck_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
-		justification: 'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4)'
+		justification:
+			'garde auth.uid() = p_user_id ou is_teacher_or_admin (lot 4), puis paquet lisible selon les policies SELECT de srs_decks (20261004230000)'
 	},
 	'get_message_details(p_message_id uuid, p_user_id uuid)': {
 		categorie: 'compte-appelant-ou-prof',
