@@ -13,6 +13,7 @@
 
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { filterGalleryTemplates } from '$lib/server/notebook-template-gallery';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile } = locals;
@@ -45,7 +46,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			updated_at,
 			profiles!python_notebooks_author_id_fkey (
 				firstname,
-				lastname
+				lastname,
+				role
 			)
 		`
 		)
@@ -59,7 +61,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		templates: templates ?? [],
+		// Un template partagé n'est montré que si son auteur est prof ou admin.
+		templates: filterGalleryTemplates(templates ?? [], user.id),
 		currentUserId: user.id
 	};
 };
