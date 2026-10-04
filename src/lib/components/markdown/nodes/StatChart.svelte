@@ -872,6 +872,14 @@
 							/>
 						</g>
 					{/each}
+					{#each scatter.curve ?? [] as segment, i (i)}
+						<!-- Changement de variable (PR b) : la relation retrouvée, morceau par morceau -->
+						<polyline
+							class="stat-polygone stat-courbe-nuage"
+							points={segment.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`).join(' ')}
+							style:stroke={COLOR_VAR[scatter.color]}
+						/>
+					{/each}
 					{#if scatter.line}
 						<line
 							class="stat-droite"

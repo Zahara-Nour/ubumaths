@@ -523,6 +523,13 @@ function scatterTypst(scene: ScatterScene, size: CourbeSize): string {
 			`  line((0, ${y}), (${x}, ${y}), (${x}, 0), stroke: (paint: luma(90), thickness: 0.5pt, dash: "dashed"))`
 		);
 	}
+	// Changement de variable (PR b) : la relation retrouvée, morceau par morceau
+	for (const segment of scene.curve ?? []) {
+		lines.push('  // courbe');
+		lines.push(
+			`  line(${segment.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ')}, stroke: (paint: ${color}, thickness: 1pt, join: "round"))`
+		);
+	}
 	if (scene.line !== null) {
 		const [from, to] = scene.line;
 		lines.push('  // droite');

@@ -733,6 +733,30 @@ describe('StatChart — nuage de points (manche 15)', () => {
 		}
 	});
 
+	it('changement de variable : la courbe VISIBLE, de vrais exposants lus « puissance »', async () => {
+		const node = parseStatChartContent(
+			'nuage',
+			'x: 0 ; 1 ; 2 ; 3 ; 4 ; 5\ny: 2,1 ; 3 ; 4,6 ; 6,9 ; 10,2 ; 15,4\najustement: z = ln(y)\nprévoir: x = 7'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]')!;
+		const curves = [...svg.querySelectorAll<SVGPolylineElement>('polyline.stat-courbe-nuage')];
+		const relation = [...screen.container.querySelectorAll('.stat-indicateurs li')][1];
+
+		expect(curves).toHaveLength(1);
+		expect(curves[0].points.length).toBeGreaterThan(40);
+		expect(getComputedStyle(curves[0]).stroke).not.toBe('none');
+		expect(getComputedStyle(curves[0]).fill).toBe('none');
+		expect(svg.querySelector('line.stat-droite')).toBeNull();
+		expect(svg.querySelectorAll('.stat-nuage-point')).toHaveLength(6);
+		expect([...relation.querySelectorAll('sup')].map((sup) => sup.textContent)).toEqual([
+			'0,723',
+			'0,401x',
+			'0,401x'
+		]);
+		expect(relation.querySelector('.sr-only')?.textContent).toContain('e puissance 0,723');
+	});
+
 	it('accessible : titre et description (nombre de points, G, équation)', async () => {
 		const node = parseStatChartContent('nuage', NUAGE);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

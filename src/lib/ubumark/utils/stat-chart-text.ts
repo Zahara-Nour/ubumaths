@@ -134,6 +134,19 @@ interface StatText {
 		/** Pente nulle, y ≠ b : aucun x ; y = b : tous */
 		noSolution: (given: string) => string;
 		everyX: (given: string) => string;
+		/** Changement de variable (PR b) : « Relation entre x et y : y = … » */
+		relationLine: (relation: string) => string;
+		relationSpoken: (relation: string) => string;
+		/** « changement de variable z = ln(y) » */
+		changeSpoken: (change: string) => string;
+		/** Prévision hors de l'image de la relation */
+		noSolutionPlain: (given: string) => string;
+		/** Prévision hors du domaine de la relation (ln x pour x ⩽ 0) */
+		notDefined: (given: string) => string;
+		/** Prévision définie mais trop grande (e^4001) */
+		tooLarge: (given: string) => string;
+		/** Vue d'origine : G est celui du nuage transformé, `pair` = « x ; z » */
+		meanLineOf: (pair: string, point: string) => string;
 	};
 }
 
@@ -239,7 +252,14 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			prediction: (given, result, interpolation) =>
 				`Pour ${given} : ${result} (${interpolation ? 'interpolation' : 'extrapolation'})`,
 			noSolution: (given) => `Pour ${given} : aucune solution (pente nulle)`,
-			everyX: (given) => `Pour ${given} : tout x convient (pente nulle)`
+			everyX: (given) => `Pour ${given} : tout x convient (pente nulle)`,
+			relationLine: (relation) => `Relation entre x et y : ${relation}`,
+			relationSpoken: (relation) => `relation entre x et y ${relation}`,
+			changeSpoken: (change) => `changement de variable ${change}`,
+			noSolutionPlain: (given) => `Pour ${given} : aucune solution`,
+			notDefined: (given) => `Pour ${given} : relation non définie`,
+			tooLarge: (given) => `Pour ${given} : valeur trop grande pour être calculée`,
+			meanLineOf: (pair, point) => `Point moyen du nuage (${pair}) : ${point}`
 		}
 	},
 	en: {
@@ -344,7 +364,14 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			prediction: (given, result, interpolation) =>
 				`For ${given}: ${result} (${interpolation ? 'interpolation' : 'extrapolation'})`,
 			noSolution: (given) => `For ${given}: no solution (zero slope)`,
-			everyX: (given) => `For ${given}: every x works (zero slope)`
+			everyX: (given) => `For ${given}: every x works (zero slope)`,
+			relationLine: (relation) => `Relation between x and y: ${relation}`,
+			relationSpoken: (relation) => `relation between x and y ${relation}`,
+			changeSpoken: (change) => `change of variable ${change}`,
+			noSolutionPlain: (given) => `For ${given}: no solution`,
+			notDefined: (given) => `For ${given}: relation not defined`,
+			tooLarge: (given) => `For ${given}: value too large to compute`,
+			meanLineOf: (pair, point) => `Mean point of the (${pair}) scatter plot: ${point}`
 		}
 	}
 };
