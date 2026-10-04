@@ -16,9 +16,10 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isList } from './types';
+import { MAX_LISTS, isFunction, isList } from './types';
 import type {
 	AtelierObject,
+	CurveDisplay,
 	MissingReference,
 	ObjectKind,
 	ObjectStatus,
@@ -30,6 +31,7 @@ import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
+import { newDisplay, plainDisplay, readDisplayPatch } from './display';
 
 // =============================================================================
 // Types de retour
@@ -321,9 +323,11 @@ export class Atelier {
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
 		const rebuilt = this.build(name, previous.kind, definition, provenance);
-		this.items[index] = (
-			previous.plotted ? { ...rebuilt, plotted: true } : rebuilt
-		) as AtelierObject;
+		this.items[index] = {
+			...rebuilt,
+			...(previous.plotted && { plotted: true }),
+			...(isFunction(previous) && previous.display && { display: previous.display })
+		} as AtelierObject;
 		this.recomputeAll();
 
 		return { ok: true, object: this.get(name)!, recomputed: dependents };
@@ -425,7 +429,10 @@ export class Atelier {
 			definition: o.definition,
 			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
 			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
-			...(o.plotted ? { plotted: true } : {})
+			...(o.plotted ? { plotted: true } : {}),
+			// Recopié champ par champ : `display` est un objet, donc un proxy
+			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
+			...(isFunction(o) && o.display ? { display: plainDisplay(o.display) } : {})
 		}));
 		return { version: ATELIER_STATE_VERSION, objects };
 	}
@@ -452,8 +459,14 @@ export class Atelier {
 				name: stored.name,
 				definition: stored.definition
 			});
-			if (!result.ok) skipped.push({ name: stored.name, reason: result.message });
-			else if (stored.plotted) this.setPlotted(stored.name, true);
+			if (!result.ok) {
+				skipped.push({ name: stored.name, reason: result.message });
+				continue;
+			}
+			// Les réglages AVANT le tracé : sinon `setPlotted` attribuerait une
+			// couleur neuve à une courbe qui avait déjà la sienne.
+			if (stored.display) this.adoptDisplay(stored.name, stored.display);
+			if (stored.plotted) this.setPlotted(stored.name, true);
 		}
 
 		this.recomputeAll();
@@ -472,12 +485,59 @@ export class Atelier {
 		if (index === -1) return;
 		// `plottedWith` ne vaut que pour une liste ; posé ici pour que la
 		// synchronisation n'ait rien à redeviner.
+		const current = this.items[index];
+		// Une fonction reçoit ses réglages à son PREMIER tracé, et les garde
+		// ensuite, retirée ou non (phase 0 `/grapheur` §1 L1).
+		const display =
+			plotted && isFunction(current) && current.display === undefined
+				? newDisplay(this.#displays())
+				: undefined;
 		this.items[index] = {
-			...this.items[index],
+			...current,
 			plotted,
-			...(withList !== undefined && { plottedWith: withList })
+			...(withList !== undefined && { plottedWith: withList }),
+			...(display && { display })
 		} as AtelierObject;
 		this.recomputeAll();
+	}
+
+	/**
+	 * Modifier les réglages d'affichage d'une fonction (couleur, tangente, aire…).
+	 *
+	 * Le patch est validé ici et non par l'appelant : la carte, une relecture et
+	 * un lien passent tous par cette porte, et doivent obéir à la même règle.
+	 * Une fonction jamais tracée reçoit d'abord les réglages d'une courbe neuve.
+	 */
+	setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
+		const current = this.items[index];
+		if (!isFunction(current)) {
+			return { ok: false, message: 'Seule une fonction a des réglages de courbe.' };
+		}
+		const read = readDisplayPatch(patch);
+		if (!read.ok) return { ok: false, message: read.message };
+
+		const base = current.display ?? newDisplay(this.#displays());
+		this.items[index] = { ...current, display: { ...base, ...read.patch } };
+		this.recomputeAll();
+		return { ok: true };
+	}
+
+	/**
+	 * Poser des réglages relus (sauvegarde, lien) sans recalcul : l'appelant
+	 * recalcule une fois à la fin.
+	 */
+	adoptDisplay(name: string, display: CurveDisplay): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isFunction(current)) return;
+		this.items[index] = { ...current, display };
+	}
+
+	/** Les réglages déjà pris par les autres fonctions — pour ne pas les doubler. */
+	#displays(): CurveDisplay[] {
+		return this.items.flatMap((o) => (isFunction(o) && o.display ? [o.display] : []));
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */

@@ -13,8 +13,9 @@
  */
 
 import { z } from 'zod';
-import type { ObjectKind } from './types';
+import type { CurveDisplay, ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH } from './types';
+import { curveDisplaySchema } from './display';
 
 // =============================================================================
 // Constantes
@@ -53,7 +54,13 @@ const storedObjectSchema = z.object({
 	kind: z.enum(['value', 'function', 'sequence', 'list']),
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
-	plotted: z.boolean().optional()
+	plotted: z.boolean().optional(),
+	/**
+	 * Réglages d'affichage d'une fonction. ⚠️ `.catch(undefined)` : un réglage
+	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
+	 * serait disproportionné. Tracée, elle recevra une couleur neuve.
+	 */
+	display: curveDisplaySchema.optional().catch(undefined)
 });
 
 /**
@@ -70,6 +77,7 @@ export interface StoredObject {
 	readonly kind: ObjectKind;
 	readonly definition: string;
 	readonly plotted?: boolean;
+	readonly display?: CurveDisplay;
 }
 
 export interface AtelierState {
