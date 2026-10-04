@@ -2970,6 +2970,21 @@ export function escapeTypst(text: string): string {
 	return text.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match);
 }
 
+/** Formule réduite à une case en pointillés : `\text{……}` (points de suspension ou points) */
+const TABLE_CELL_BLANK = /^\s*\\text\{\s*([….]+)\s*\}\s*$/;
+
+/**
+ * Texte d'une cellule : échappé, sauf le gras markdown `**…**` rendu en
+ * `#strong[…]` (la réponse d'une case texte au corrigé, `**0,3**`, s'affichait
+ * avec ses astérisques).
+ */
+function escapeTableCellText(text: string): string {
+	return text
+		.split(/\*\*([^*\n]+)\*\*/)
+		.map((part, i) => (i % 2 === 1 ? `#strong[${escapeTypstBrackets(part)}]` : escapeTypst(part)))
+		.join('');
+}
+
 /**
  * Process table cell content that may contain inline math
  *
@@ -2994,12 +3009,23 @@ export function processTableCellContent(content: string, language?: string): str
 	while ((match = mathRegex.exec(content)) !== null) {
 		// Add text before this math segment (escaped)
 		if (match.index > lastIndex) {
-			parts.push(escapeTypst(content.slice(lastIndex, match.index)));
+			parts.push(escapeTableCellText(content.slice(lastIndex, match.index)));
+		}
+
+		// Case à remplir seule dans sa formule (`$\text{……}$`, cf. buildSerie) : en
+		// texte. Une formule Typst seule sur sa ligne prend la hauteur serrée de ses
+		// glyphes ; des points n'en ont presque pas et la cellule, alignée en haut,
+		// les collait au bord supérieur au lieu de la ligne de base des voisines.
+		const mathContent = match[1];
+		const pointilles = TABLE_CELL_BLANK.exec(mathContent);
+		if (pointilles) {
+			parts.push(escapeTypst(pointilles[1]));
+			lastIndex = match.index + match[0].length;
+			continue;
 		}
 
 		// Convert and add the math segment
 		// Nombres selon la langue du document (virgule en français, point en anglais)
-		const mathContent = match[1];
 		const typstMath = convertLatexToTypstMath(toLocaleDecimal(mathContent, language));
 		parts.push(`$${typstMath}$`);
 
@@ -3008,7 +3034,7 @@ export function processTableCellContent(content: string, language?: string): str
 
 	// Add remaining text after last math segment (escaped)
 	if (lastIndex < content.length) {
-		parts.push(escapeTypst(content.slice(lastIndex)));
+		parts.push(escapeTableCellText(content.slice(lastIndex)));
 	}
 
 	return parts.join('');
