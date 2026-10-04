@@ -969,10 +969,106 @@ function unifyPiAngleNotationAST(ast: MathNode): MathNode {
 	});
 }
 
+/** Facteur littéral d'un monôme : lettre, constante, ou puissance de l'une d'elles (`x^3`, `e^{2x}`) */
+function isLiteralFactor(node: MathNode): boolean {
+	const letter = (n: MathNode): boolean =>
+		n.type === 'variable' || n.type === 'greek' || n.type === 'constant';
+	return letter(node) || (node.type === 'superscript' && letter(node.base));
+}
+
+/** Partie littérale d'un monôme : produit IMPLICITE de facteurs littéraux (`x`, `x^2y`) */
+function isLiteralPart(node: MathNode): boolean {
+	if (isMultiplication(node)) {
+		return (
+			node.displayStyle === 'implicit' && isLiteralPart(node.left) && isLiteralPart(node.right)
+		);
+	}
+	return isLiteralFactor(node);
+}
+
+/** Fraction de deux nombres écrite `\frac{a}{b}` */
+function isNumberFraction(node: MathNode): node is MathNode & { type: 'division' } {
+	return (
+		isDivision(node) &&
+		node.displayStyle === 'fraction' &&
+		isNumber(node.numerator) &&
+		isNumber(node.denominator)
+	);
+}
+
+/**
+ * Numérateur négatif d'un monôme (`-x^2`, `-3x`, lu `(-3)·x`) : le monôme sans son
+ * signe, ou `null`.
+ */
+function negatedMonomial(node: MathNode): MathNode | null {
+	if (
+		isOpposite(node) &&
+		(isLiteralPart(node.operand) || isMonomialWithCoefficient(node.operand))
+	) {
+		return node.operand;
+	}
+	if (
+		isMultiplication(node) &&
+		node.displayStyle === 'implicit' &&
+		isOpposite(node.left) &&
+		isNumber(node.left.operand) &&
+		isLiteralPart(node.right)
+	) {
+		return multiply(node.left.operand, node.right, 'implicit');
+	}
+	return null;
+}
+
+/** `3x`, `2e^{x}` : un nombre suivi (implicitement) d'une partie littérale */
+function isMonomialWithCoefficient(node: MathNode): boolean {
+	return (
+		isMultiplication(node) &&
+		node.displayStyle === 'implicit' &&
+		isNumber(node.left) &&
+		isLiteralPart(node.right)
+	);
+}
+
+/**
+ * Une seule écriture d'un monôme à coefficient fractionnaire pour comparer les formes :
+ * `\frac{1}{3}x^3` devient `\frac{x^3}{3}`, `\frac{2}{5}x` devient `\frac{2x}{5}`, et le
+ * signe d'un numérateur sort de la fraction (`\frac{-x^2}{4}` → `-\frac{x^2}{4}`). Ce sont
+ * des notations, pas des formes : aucune pénalité (défaut validé par David le 2026-10-04,
+ * sœur de la règle des angles en π). Limité aux produits IMPLICITES d'une partie
+ * littérale : une somme (`\frac{x}{3}+\frac{x}{3}`), une parenthèse (`\frac{1}{3}(x+1)`),
+ * un produit explicite (`\frac{1}{3}\times x`) ou une fraction de nombres seuls
+ * (`\frac{-10}{10}`) gardent leur jugement ; une fraction simplifiable (`\frac{2x}{4}`)
+ * reste signalée par `reducedFractions`.
+ */
+function unifyMonomialFractionNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		// \frac{a}{b}M → \frac{aM}{b} (a = 1 : \frac{M}{b}) ; -\frac{a}{b}M → -\frac{aM}{b}
+		if (isMultiplication(node) && node.displayStyle === 'implicit' && isLiteralPart(node.right)) {
+			const negated = isOpposite(node.left);
+			const coef = isOpposite(node.left) ? node.left.operand : node.left;
+			if (isNumberFraction(coef) && isNumber(coef.numerator) && isNumber(coef.denominator)) {
+				const numerator =
+					coef.numerator.value === '1'
+						? node.right
+						: multiply(coef.numerator, node.right, 'implicit');
+				const fraction = divide(numerator, coef.denominator, 'fraction');
+				return negated ? opposite(fraction) : fraction;
+			}
+		}
+		// \frac{-M}{b} → -\frac{M}{b}
+		if (isDivision(node) && node.displayStyle === 'fraction' && isNumber(node.denominator)) {
+			const positive = negatedMonomial(node.numerator);
+			if (positive) return opposite(divide(positive, node.denominator, 'fraction'));
+		}
+		return node;
+	});
+}
+
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: unifyMonomialFractionNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
 		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
 		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
