@@ -435,63 +435,6 @@ export class NotebookStore {
 	// ===========================================================================
 
 	/**
-	 * Create a new notebook with a single empty code cell.
-	 *
-	 * @param title - The notebook title
-	 * @param description - Optional description
-	 * @param isPublic - Whether the notebook is public (default: false)
-	 * @returns The created notebook or null on error
-	 */
-	async createNotebook(
-		title: string,
-		description?: string,
-		isPublic = false
-	): Promise<PythonNotebook | null> {
-		if (!browser) return null;
-
-		this.isSaving = true;
-		this.cloudError = null;
-
-		try {
-			const response = await fetch('/api/notebooks', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					title,
-					description: description ?? null,
-					is_public: isPublic
-				})
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				this.cloudError = errorData.message || `Erreur lors de la creation (${response.status})`;
-				return null;
-			}
-
-			const data = await response.json();
-			const notebook = data.notebook as PythonNotebook;
-
-			// Set the notebook
-			this.notebook = notebook;
-			this.isModified = false;
-			this.executionCounter = 0;
-			this.lastSavedTime = new Date(notebook.updated_at);
-
-			// Create executor for this notebook — none when execution is locked
-			this._executor = this._executionLocked ? null : new NotebookExecutor(notebook.id);
-
-			return notebook;
-		} catch (err) {
-			console.error('[NotebookStore] Error creating notebook:', err);
-			this.cloudError = err instanceof Error ? err.message : 'Erreur inconnue lors de la creation';
-			return null;
-		} finally {
-			this.isSaving = false;
-		}
-	}
-
-	/**
 	 * Load a notebook from the server.
 	 *
 	 * @param id - The notebook ID
