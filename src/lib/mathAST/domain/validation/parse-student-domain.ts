@@ -11,10 +11,11 @@
  */
 
 import type { MathNode } from '../../types';
-import { number } from '$lib/mathAST/factory';
+import { number, euler } from '$lib/mathAST/factory';
 import { parseLatexSafe } from '../../parser';
 import { parseCustom } from '../../parser/custom';
 import { evaluate } from '../../eval';
+import { substitute } from '../../eval/substitute';
 import type { Domain, Interval } from '../types';
 import type {
 	ParseStudentDomainResult,
@@ -714,8 +715,19 @@ function parseEndpointValue(input: string): MathNode | null {
 		.trim();
 	if (latex.length === 0) return null;
 
-	const node = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
+	const parsed = latex.includes('\\') ? parseLatexBound(latex) : parseCustomBound(latex);
+	const node = parsed && withEulerConstant(parsed);
 	return node && isRealConstant(node) ? node : null;
+}
+
+/**
+ * Une borne est un nombre : la lettre `e` y est toujours la constante d'Euler.
+ * Le parseur LaTeX la lit comme une variable (`\\frac{1}{e}`), le parseur maison
+ * comme la constante (`e^-1`) : sans cette unification, la comparaison exacte
+ * ne reconnaît pas `\\frac{1}{e}` = `e^{-1}` (sonde du 2026-10-04).
+ */
+function withEulerConstant(node: MathNode): MathNode {
+	return substitute(node, { e: euler() });
 }
 
 /** Longueur maximale d'une borne (la plus longue utile : `\\dfrac{-3-\\sqrt{13}}{4}`, 22) */
@@ -755,7 +767,7 @@ function parseCustomBound(text: string): MathNode | null {
 	}
 }
 
-/** Nombre réel calculable (aucune variable libre, hors constantes comme e) */
+/** Nombre réel calculable (aucune variable libre) */
 function isRealConstant(node: MathNode): boolean {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });
