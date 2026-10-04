@@ -315,3 +315,16 @@ describe('Revue PR #643', () => {
 		expect(v.status).toBe(r.status ?? (r.isCorrect ? 'correct' : 'incorrect'));
 	});
 });
+
+describe('case ordinaire — +\\infty est l’écriture du lycée', () => {
+	it.each([
+		['+\\infty', '+\\infty', 'correct'],
+		['+\\infty', '\\infty', 'correct'],
+		['\\infty', '+\\infty', 'correct'],
+		['-\\infty', '-\\infty', 'correct'],
+		['++\\infty', '+\\infty', 'unoptimal_form'],
+		['-\\infty', '+\\infty', 'incorrect']
+	] as const)('réponse %s, attendue %s : %s', (answer, expected, status) => {
+		expect(globalStatus([answer], instanceWith([math(expected)]))).toBe(status);
+	});
+});

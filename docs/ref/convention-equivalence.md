@@ -108,6 +108,16 @@ MathLive n'a pas de `decimalSeparator` réglé : une virgule tapée au clavier p
 3,5 entre parenthèses. Écrire un décimal avec `{,}` ou un point (`3{,}5`, `3.5`), jamais une
 virgule nue entre délimiteurs. Aucun des 640 modèles n'était concerné au 2026-09-29.
 
+## Signes superflus : le `+` devant l'infini n'en est pas un
+
+La contrainte `signs` (`removeSignsAST`, pipeline de `checkForm`) signale un `+` unaire : `+3`,
+`+x`, `++\infty`, `-(-\infty)` restent « forme perfectible ». **Exception** : `+\infty` est
+l'écriture standard au lycée. `+\infty` et `\infty` sont une seule notation
+(`unifyInfinityNotationAST`, sans pénalité), qu'on attende l'une ou l'autre ; `-\infty` reste
+distinct. Seul le `+` collé à `\infty` est absorbé : `++\infty` garde un `+` signalé. Les cases
+`intervalles` ne passent pas par ce pipeline. Défaut de la sonde du 2026-10-04 ; plus besoin de
+`constraints.signs: "off"` dans une carte pour accepter `+\infty`.
+
 ## Exposants littéraux (#521)
 
 La forme normale ne porte que des exposants **rationnels** (`SymbolicFactor.exponent: Rational`).

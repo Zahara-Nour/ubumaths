@@ -35,7 +35,9 @@ import {
 	isNumber,
 	isOpposite,
 	isPercentage,
-	isPiConstant
+	isPiConstant,
+	isPositive,
+	isSymbol
 } from './guards';
 import { areEquivalent } from './equivalence';
 import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
@@ -919,6 +921,20 @@ function unifyEulerNotationAST(ast: MathNode): MathNode {
 }
 
 /**
+ * `+\infty` et `\infty` sont la même écriture : le `+` devant l'infini est la
+ * notation standard du lycée, pas un signe superflu (sonde du 2026-10-04 :
+ * `+\infty` valait « signes superflus »). Parcours DESCENDANT : seul le `+`
+ * collé à `\infty` disparaît, `++\infty` garde un `+` que `signs` signale.
+ */
+function unifyInfinityNotationAST(ast: MathNode): MathNode {
+	return mapNodeTopDown(ast, (node) =>
+		isPositive(node) && isSymbol(node.operand) && node.operand.symbol === 'infinity'
+			? node.operand
+			: node
+	);
+}
+
+/**
  * Une seule écriture d'un angle en π pour comparer les formes : `\frac{a}{b}\pi`,
  * `a\frac{\pi}{b}`, `\pi/b` et `\frac{-\pi}{b}` deviennent `\frac{a\pi}{b}` (ou
  * son opposé). Ce sont des notations, pas des calculs inachevés : aucune pénalité
@@ -1263,6 +1279,7 @@ function unifyLogPowerNotationAST(ast: MathNode): MathNode {
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
+		{ transform: unifyInfinityNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyMonomialFractionNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: absoluteUnderAssumptionsAST(options.assumptions), constraintId: null }, // hypothèse, pas forme

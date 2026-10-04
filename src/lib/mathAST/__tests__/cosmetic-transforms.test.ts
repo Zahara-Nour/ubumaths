@@ -853,3 +853,36 @@ describe('removeZeros — une virgule entre chiffres ne sépare pas deux nombres
 		expect(removeZeros(latex)).toBe(expected);
 	});
 });
+
+describe('checkForm — le + devant \\infty est une écriture, pas un signe superflu', () => {
+	it.each([
+		['+\\infty', '+\\infty'],
+		['+\\infty', '\\infty'],
+		['\\infty', '+\\infty'],
+		['\\infty', '\\infty'],
+		['-\\infty', '-\\infty']
+	])('%s attendu %s : juste sans réserve', (answer, expected) => {
+		const result = checkForm(answer, expected, {});
+		expect(result.status).toBe('correct');
+		expect(result.violations).toEqual([]);
+	});
+
+	it.each([
+		['++\\infty', '+\\infty'],
+		['-(-\\infty)', '+\\infty'],
+		['+3', '3'],
+		['+x', 'x']
+	])('%s attendu %s : le signe superflu reste signalé', (answer, expected) => {
+		const result = checkForm(answer, expected, {});
+		expect(result.status).toBe('unoptimal_form');
+		expect(result.violations.map((v) => v.id)).toContain('signs');
+	});
+
+	it.each([
+		['-\\infty', '+\\infty'],
+		['+\\infty', '-\\infty'],
+		['-\\infty', '\\infty']
+	])('%s attendu %s : faux', (answer, expected) => {
+		expect(checkForm(answer, expected, {}).valid).toBe(false);
+	});
+});
