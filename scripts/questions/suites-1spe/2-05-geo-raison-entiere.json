@@ -2,6 +2,7 @@
 	"title": "Déterminer la raison d'une suite géométrique",
 	"description": "À partir de deux termes consécutifs",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-027"],
 	"theme": "Suites",
 	"domain": "Suites géométriques",
 	"subdomain": "Déterminer la raison",

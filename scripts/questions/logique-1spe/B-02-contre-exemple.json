@@ -2,6 +2,7 @@
 	"title": "Donner un contre-exemple",
 	"description": "Prouver qu'une proposition universelle est fausse en donnant un contre-exemple ; tout contre-exemple valable est accepté",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-007", "1SPE-012"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Connecteurs et contre-exemples",

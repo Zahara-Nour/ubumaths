@@ -2,6 +2,7 @@
 	"title": "Trouver le taux d'évolution réciproque",
 	"description": "Évolution qui ramène à la valeur initiale",
 	"grades": ["1_SPE"],
+	"points": [],
 	"theme": "Proportionnalité",
 	"domain": "Pourcentages",
 	"subdomain": "Variations",

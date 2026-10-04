@@ -2,6 +2,7 @@
 	"title": "Angles associés : simplifier une somme",
 	"description": "Somme de cosinus et sinus d'angles associés, à réduire en a cos x + b sin x",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-114"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Propriétés",

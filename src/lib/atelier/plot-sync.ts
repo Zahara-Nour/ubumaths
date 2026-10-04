@@ -13,11 +13,12 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { AtelierObject } from './types';
+import type { AtelierObject, CurveDisplay } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction, isScatter } from '$lib/grapheur/types';
+import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/grapheur/types';
 import { expressionOf } from './engine';
-import { isList } from './types';
+import { plainDisplay } from './display';
+import { isFunction, isList } from './types';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -53,6 +54,57 @@ interface Wanted {
 	 * ferait changer la courbe de couleur. Seul un retrait VOULU la supprime.
 	 */
 	readonly visible: boolean;
+	/**
+	 * Les réglages de l'objet, recopiés tels quels. Absents si l'objet n'en a
+	 * pas (ne devrait pas arriver : le tracé les attribue) — la courbe garde
+	 * alors ceux que le grapheur lui a donnés.
+	 */
+	readonly display?: CurveDisplay;
+}
+
+/** Ce que le grapheur reçoit d'un réglage d'atelier. */
+type CurveSettings = Pick<
+	ExplicitFunction,
+	| 'color'
+	| 'lineStyle'
+	| 'lineWidth'
+	| 'tangentAt'
+	| 'integral'
+	| 'showOsculating'
+	| 'showArcLength'
+	| 'showDerivative'
+>;
+
+/**
+ * Les champs de la courbe à réécrire pour qu'elle corresponde à l'objet.
+ *
+ * ⚠️ Seulement ceux qui DIFFÈRENT : l'effet qui appelle `syncPlots` lit ce
+ * qu'il écrit, et une écriture inconditionnelle le ferait boucler.
+ *
+ * `showDerivative` est toujours ramené à `false` : la case « f′ » est remplacée
+ * par l'action « Dériver » (phase 0 `/grapheur`, Q1).
+ */
+function settingsDiff(current: ExplicitFunction, display: CurveDisplay): Partial<CurveSettings> {
+	// `plainDisplay` : `integral` est un proxy `$state` de l'atelier ; tel quel,
+	// le grapheur garderait un objet partagé avec lui.
+	const wanted: CurveSettings = { ...plainDisplay(display), showDerivative: false };
+	const diff: Partial<CurveSettings> = {};
+	for (const key of Object.keys(wanted) as (keyof CurveSettings)[]) {
+		const a = current[key];
+		const b = wanted[key];
+		const same =
+			key === 'integral'
+				? a === b ||
+					(a !== null &&
+						b !== null &&
+						typeof a === 'object' &&
+						typeof b === 'object' &&
+						a.from === b.from &&
+						a.to === b.to)
+				: a === b;
+		if (!same) Object.assign(diff, { [key]: b });
+	}
+	return diff;
 }
 
 function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
@@ -74,7 +126,8 @@ function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	const substituted = expressionOf(atelier, object.name);
 	return {
 		definition: substituted.ok ? substituted.expression : object.definition,
-		visible: object.status === 'ok'
+		visible: object.status === 'ok',
+		...(isFunction(object) && object.display && { display: object.display })
 	};
 }
 
@@ -162,29 +215,26 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 			continue;
 		}
 
-		if (id === undefined) {
-			const fresh = graph.addFunction(target.definition);
-			if (!target.visible) graph.updateFunction(fresh, { visible: false });
-			mine.set(name, fresh);
-			continue;
-		}
-
-		const current = graph.getFunction(id);
-		if (current === undefined) {
-			// La courbe a disparu du grapheur (effacement manuel) : on la repose.
-			const fresh = graph.addFunction(target.definition);
-			if (!target.visible) graph.updateFunction(fresh, { visible: false });
-			mine.set(name, fresh);
-			continue;
-		}
+		const found = id === undefined ? undefined : graph.getFunction(id);
+		// Le nom pointait vers autre chose qu'une courbe (un nuage dont la liste a
+		// été remplacée par une fonction du même nom) : on retire l'ancien tracé.
+		if (found !== undefined && !isExplicitFunction(found)) graph.removeFunction(id!);
+		const current = found !== undefined && isExplicitFunction(found) ? found : undefined;
+		// Pas encore posée, ou disparue du grapheur (effacement manuel) : on la
+		// (re)pose, puis la suite de la boucle lui applique visibilité et réglages.
+		const curveId = current === undefined ? graph.addFunction(target.definition) : id!;
+		if (current === undefined) mine.set(name, curveId);
+		const curve = graph.getFunction(curveId);
+		if (curve === undefined) continue;
 
 		// N'écrire que ce qui diffère : c'est cette condition qui rend la
 		// synchronisation idempotente, donc l'effet qui l'appelle non bouclant.
-		const changes: { latex?: string; visible?: boolean } = {};
-		if (isExplicitFunction(current) && current.latex !== target.definition) {
-			changes.latex = target.definition;
+		const changes: Partial<CurveSettings> & { latex?: string; visible?: boolean } = {};
+		if (isExplicitFunction(curve)) {
+			if (curve.latex !== target.definition) changes.latex = target.definition;
+			if (target.display) Object.assign(changes, settingsDiff(curve, target.display));
 		}
-		if (current.visible !== target.visible) changes.visible = target.visible;
-		if (Object.keys(changes).length > 0) graph.updateFunction(id, changes);
+		if (curve.visible !== target.visible) changes.visible = target.visible;
+		if (Object.keys(changes).length > 0) graph.updateFunction(curveId, changes);
 	}
 }

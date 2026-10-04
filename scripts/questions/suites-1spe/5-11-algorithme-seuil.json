@@ -2,6 +2,7 @@
 	"title": "Valeur renvoyée par une fonction Python de seuil",
 	"description": "Boucle while : premier rang où la condition devient fausse",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-044"],
 	"theme": "Suites",
 	"domain": "Seuil et algorithmes",
 	"subdomain": "Algorithmes",

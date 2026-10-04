@@ -2,6 +2,7 @@
 	"title": "Dériver une exponentielle de fonction affine",
 	"description": "Dérivée de l'exponentielle d'une fonction affine : (e^(ax+b))′ = a·e^(ax+b)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-102"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

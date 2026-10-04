@@ -2,6 +2,7 @@
 	"title": "Jeu favorable, équitable ou défavorable",
 	"description": "Calculer l'espérance du gain algébrique d'un jeu et en déduire s'il est favorable au joueur, équitable ou défavorable",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-166", "1SPE-165"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Jeux et gains",

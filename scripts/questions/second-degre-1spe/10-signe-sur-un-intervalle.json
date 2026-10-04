@@ -2,6 +2,7 @@
 	"title": "Signe d'un trinôme sur un intervalle",
 	"description": "Du signe de a à l'extérieur des racines, du signe contraire entre",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-058", "1SPE-056"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

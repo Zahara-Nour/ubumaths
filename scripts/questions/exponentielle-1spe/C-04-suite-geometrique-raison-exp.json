@@ -2,6 +2,7 @@
 	"title": "Suite géométrique de raison exponentielle",
 	"description": "La suite (e^{na}) est géométrique de raison e^a ; terme général v_0 e^{na}",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-100"],
 	"theme": "Fonctions",
 	"domain": "Fonction exponentielle",
 	"status": "draft",

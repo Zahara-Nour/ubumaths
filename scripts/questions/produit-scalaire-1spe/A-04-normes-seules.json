@@ -2,6 +2,7 @@
 	"title": "Produit scalaire avec les normes",
 	"description": "Calculer un produit scalaire à partir de normes seulement, avec les identités de polarisation",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-122", "1SPE-128"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Calculer un produit scalaire",

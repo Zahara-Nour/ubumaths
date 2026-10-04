@@ -2,6 +2,7 @@
 	"title": "Lire un terme sur l'escalier",
 	"description": "Construction en escalier d'une suite u(n+1) = f(u(n)) : lire u_1 ou u_2 sur l'axe des abscisses",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-032", "1SPE-035"],
 	"theme": "Suites",
 	"domain": "Représentation graphique",
 	"subdomain": "Escalier",

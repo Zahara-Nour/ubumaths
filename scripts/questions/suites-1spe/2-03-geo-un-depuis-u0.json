@@ -2,6 +2,7 @@
 	"title": "Calculer un terme d'une suite géométrique",
 	"description": "Calculer u_n à partir de u_0 et de la raison",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-036"],
 	"theme": "Suites",
 	"domain": "Suites géométriques",
 	"subdomain": "Calculer un terme",

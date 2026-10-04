@@ -10,6 +10,8 @@
  */
 
 import type { Provenance } from './parse';
+import type { CurveColor } from '$lib/grapheur/colors';
+import type { LineStyle } from '$lib/grapheur/types';
 
 // =============================================================================
 // Types
@@ -102,10 +104,40 @@ export interface ValueObject extends AtelierObjectBase {
 	readonly slider?: Slider;
 }
 
+/**
+ * Comment une fonction est dessinée — repris du panneau du grapheur.
+ *
+ * ⚠️ Vit SUR l'objet, et pas dans le grapheur : c'est l'atelier qui détient
+ * l'état (décision figée n° 1). Le grapheur n'en reçoit qu'une copie
+ * (`plot-sync`) ; un réglage qu'il garderait seul serait écrasé à la
+ * synchronisation suivante. Phase 0 `/grapheur` §1, S1 à S4.
+ *
+ * Pas de `showDerivative` : la case « f′ » du grapheur est remplacée par
+ * l'action « Dériver », qui crée la carte `f′` (phase 0, Q1).
+ */
+export interface CurveDisplay {
+	readonly color: CurveColor;
+	readonly lineStyle: LineStyle;
+	readonly lineWidth: number;
+	/** Abscisse du point de tangence, ou `null` sans tangente. */
+	readonly tangentAt: number | null;
+	/** Bornes de l'aire signée sous la courbe, ou `null` sans aire. */
+	readonly integral: { readonly from: number; readonly to: number } | null;
+	/** Cercle osculateur au point de tangence. */
+	readonly showOsculating: boolean;
+	/** Longueur de la courbe, sur les bornes de l'aire. */
+	readonly showArcLength: boolean;
+}
+
 export interface FunctionObject extends AtelierObjectBase {
 	readonly kind: 'function';
 	/** Décision D2 : `x` seulement en v1 — `createEvaluator` la code en dur. */
 	readonly variable: 'x';
+	/**
+	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
+	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).
+	 */
+	readonly display?: CurveDisplay;
 }
 
 export interface SequenceObject extends AtelierObjectBase {

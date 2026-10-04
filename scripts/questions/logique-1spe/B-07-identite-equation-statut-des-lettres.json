@@ -2,6 +2,7 @@
 	"title": "Identité, équation, statut des lettres",
 	"description": "Reconnaître une identité (égalité vraie pour tout x) et le statut d'une lettre : variable, inconnue ou paramètre",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-011"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Quantificateurs et négation",

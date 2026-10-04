@@ -2,6 +2,7 @@
 	"title": "Valeur renvoyée par une fonction Python qui calcule un terme",
 	"description": "Boucle for : compter les tours, puis calculer les termes",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-035", "1SPE-044"],
 	"theme": "Suites",
 	"domain": "Seuil et algorithmes",
 	"subdomain": "Algorithmes",

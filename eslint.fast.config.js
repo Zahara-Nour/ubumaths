@@ -1,5 +1,5 @@
 /**
- * Config eslint « rapide » : uniquement les deux règles maison.
+ * Config eslint « rapide » : les deux règles maison, plus `no-irregular-whitespace`.
  *
  * Le coût d'eslint vient de `projectService: true`, qui construit tout le
  * programme TypeScript. Or `require-zod-validation` et
@@ -47,6 +47,13 @@ export default defineConfig(
 	{
 		// Enregistrés pour leurs noms seulement : aucune de leurs règles n'est activée.
 		plugins: { '@typescript-eslint': ts.plugin }
+	},
+	{
+		// Règle de jeton, sans service TypeScript : une espace insécable écrite
+		// telle quelle (souvent dans une regex de test) a fait rougir la CI de #762
+		// alors que ce lint rapide était vert.
+		files: ['**/*.ts', '**/*.svelte'],
+		rules: { 'no-irregular-whitespace': 'error' }
 	},
 	{
 		files: ['src/routes/api/**/*.ts'],

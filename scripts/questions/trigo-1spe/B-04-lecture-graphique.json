@@ -2,6 +2,7 @@
 	"title": "Lecture graphique sur la courbe d'une fonction trigonométrique",
 	"description": "Lire une image en π/2 ou en π, un maximum ou un minimum sur la courbe de a sin x + b ou a cos x + b",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-112"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Fonctions cosinus et sinus",

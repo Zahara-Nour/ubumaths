@@ -2,6 +2,7 @@
 	"title": "Un point appartient-il à un cercle ?",
 	"description": "Vérifier si les coordonnées d’un point satisfont l’équation d’un cercle, ou situer le point en comparant ΩM² et r²",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-140", "1SPE-137"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Équation de cercle",

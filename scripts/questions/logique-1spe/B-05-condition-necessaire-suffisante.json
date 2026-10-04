@@ -2,6 +2,7 @@
 	"title": "Condition nécessaire, condition suffisante",
 	"description": "Décider si une condition est nécessaire, suffisante, nécessaire et suffisante, ou ni l'une ni l'autre",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-010"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Implication et équivalence",

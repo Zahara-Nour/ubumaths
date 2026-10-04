@@ -2,6 +2,7 @@
 	"title": "Vecteurs orthogonaux",
 	"description": "Utiliser la caractérisation de l'orthogonalité par le produit scalaire en repère orthonormé",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-118", "1SPE-125", "1SPE-120"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Propriétés",

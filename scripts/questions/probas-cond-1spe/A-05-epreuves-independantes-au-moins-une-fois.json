@@ -2,6 +2,7 @@
 	"title": "Deux épreuves indépendantes : « au moins une fois »",
 	"description": "Répéter deux fois une épreuve de façon indépendante : probabilité d'une issue, puis d'un événement « au moins une fois » par l'événement contraire",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-147", "1SPE-151"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Indépendance",

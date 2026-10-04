@@ -2,6 +2,7 @@
 	"title": "Tester l'indépendance de deux événements",
 	"description": "Comparer P(A∩B) et P(A)×P(B) pour décider si deux événements sont indépendants",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-145", "1SPE-150"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Indépendance",

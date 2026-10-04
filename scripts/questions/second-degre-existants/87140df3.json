@@ -3,6 +3,7 @@
 	"title": "Déterminer la forme canonique.",
 	"description": "Graphiquement",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-052", "1SPE-054"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"subdomain": "Apprivoiser",

@@ -3,6 +3,7 @@
 	"title": "Calculer un terme d'une suite arithmétique",
 	"description": "Calculer un terme éloigné, ou un terme de rang inférieur",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-024", "1SPE-036"],
 	"theme": "Suites",
 	"domain": "Suites arithmétiques",
 	"subdomain": "Calculer un terme",

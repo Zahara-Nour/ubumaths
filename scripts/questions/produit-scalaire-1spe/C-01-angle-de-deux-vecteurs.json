@@ -2,6 +2,7 @@
 	"title": "Angle de deux vecteurs",
 	"description": "Calculer le cosinus de l'angle de deux vecteurs à partir de leurs coordonnées ou de leurs normes, puis une mesure de l'angle",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-126", "1SPE-120"],
 	"theme": "Géométrie",
 	"domain": "Produit scalaire",
 	"subdomain": "Angles et longueurs",

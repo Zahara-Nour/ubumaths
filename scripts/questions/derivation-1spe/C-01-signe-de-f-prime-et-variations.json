@@ -2,6 +2,7 @@
 	"title": "Du signe de f′ au sens de variation de f",
 	"description": "Lire un tableau de signes de f′ et en déduire les variations de f (QCM)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-089"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"status": "draft",

@@ -2,6 +2,7 @@
 	"title": "Lire un vecteur normal sur une équation de droite",
 	"description": "Lire les coordonnées d'un vecteur normal sur une équation cartésienne ou réduite, compléter un vecteur normal (colinéarité, orthogonalité avec un vecteur directeur), ou en donner un (case vecteur, tout vecteur colinéaire accepté)",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-135"],
 	"theme": "Géométrie",
 	"domain": "Géométrie repérée",
 	"subdomain": "Vecteur normal et équation de droite",

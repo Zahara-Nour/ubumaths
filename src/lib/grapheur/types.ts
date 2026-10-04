@@ -401,6 +401,15 @@ export interface SnappedPoint {
 // Zod Schemas (grapheur-specific)
 // =============================================================================
 
+/**
+ * Plus grande abscisse rangée (tangente, bornes d'aire).
+ *
+ * ⚠️ Partagée avec l'atelier (`atelier/display.ts`) : si l'un acceptait ce que
+ * l'autre refuse, un réglage passé de l'un à l'autre ferait échouer la
+ * relecture de TOUT l'état du grapheur (`loadFromStorage` abandonne en bloc).
+ */
+export const COORDINATE_LIMIT = 1e9;
+
 const lineStyleSchema = z.enum(SHARED_LINE_STYLES);
 
 const explicitFunctionStateSchema = z.object({
@@ -417,11 +426,17 @@ const explicitFunctionStateSchema = z.object({
 	lineStyle: lineStyleSchema.default('solid'),
 	// Absents des états écrits avant la courbe dérivée et la tangente.
 	showDerivative: z.boolean().default(false),
-	tangentAt: z.number().finite().min(-1e9).max(1e9).nullable().default(null),
+	tangentAt: z
+		.number()
+		.finite()
+		.min(-COORDINATE_LIMIT)
+		.max(COORDINATE_LIMIT)
+		.nullable()
+		.default(null),
 	integral: z
 		.object({
-			from: z.number().finite().min(-1e9).max(1e9),
-			to: z.number().finite().min(-1e9).max(1e9)
+			from: z.number().finite().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT),
+			to: z.number().finite().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT)
 		})
 		.nullable()
 		.default(null),

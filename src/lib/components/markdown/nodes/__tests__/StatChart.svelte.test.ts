@@ -424,6 +424,15 @@ describe('StatChart — deux séries en classes (v2 lot 5 PR c)', () => {
 		expect(
 			[...screen.container.querySelectorAll('.stat-nom-serie')].map((p) => p.textContent)
 		).toEqual(['2de A', '2de B']);
+		// Pas un <p> : `main p { font-size … !important }` (app.css) annulerait ses 0,875 rem
+		const name = screen.container.querySelector<HTMLElement>('.stat-nom-serie')!;
+		const paragraph = document.createElement('p');
+		paragraph.textContent = 'x';
+		screen.container.append(paragraph);
+		expect(parseFloat(getComputedStyle(name).fontSize)).toBeLessThan(
+			parseFloat(getComputedStyle(paragraph).fontSize)
+		);
+		paragraph.remove();
 		expect(hatched).toHaveLength(4);
 		expect(svgs[1].contains(hatched[0])).toBe(true);
 		expect(getComputedStyle(hatched[0]).fill).toContain(svgs[1].querySelector('pattern')!.id);

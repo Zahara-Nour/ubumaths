@@ -3,6 +3,7 @@
 	"title": "Calculer une dérivée",
 	"description": "Fonctions usuelles avec coefficient",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-072", "1SPE-074", "1SPE-082"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Apprivoiser",

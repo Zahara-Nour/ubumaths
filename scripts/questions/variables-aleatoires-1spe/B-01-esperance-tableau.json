@@ -2,6 +2,7 @@
 	"title": "Espérance à partir de la loi",
 	"description": "Calculer l'espérance d'une variable aléatoire dont la loi est donnée par un tableau",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-165", "1SPE-158"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Espérance",

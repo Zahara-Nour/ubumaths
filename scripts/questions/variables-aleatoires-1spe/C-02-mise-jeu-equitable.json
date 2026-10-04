@@ -2,6 +2,7 @@
 	"title": "Mise rendant un jeu équitable",
 	"description": "Exprimer l'espérance du gain algébrique en fonction de la mise m, puis trouver m pour que le jeu soit équitable",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-166"],
 	"theme": "Probabilités",
 	"domain": "Variables aléatoires",
 	"subdomain": "Jeux et gains",

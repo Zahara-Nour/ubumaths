@@ -2,6 +2,7 @@
 	"title": "Terme général d'une suite géométrique",
 	"description": "À partir de u_0 et de la raison",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-036", "1SPE-027"],
 	"theme": "Suites",
 	"domain": "Suites géométriques",
 	"subdomain": "Terme général",

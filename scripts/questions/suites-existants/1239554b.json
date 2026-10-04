@@ -3,6 +3,7 @@
 	"title": "Calculer un terme",
 	"description": "A l'aide d'une formule de récurrence, deuxième terme",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-035"],
 	"theme": "Suites",
 	"domain": "Apprivoiser",
 	"subdomain": "Calculer un terme",

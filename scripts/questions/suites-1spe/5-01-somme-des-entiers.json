@@ -2,6 +2,7 @@
 	"title": "Somme des premiers entiers",
 	"description": "1 + 2 + … + n par la formule n(n+1)/2",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-026"],
 	"theme": "Suites",
 	"domain": "Sommes",
 	"subdomain": "Somme des entiers",

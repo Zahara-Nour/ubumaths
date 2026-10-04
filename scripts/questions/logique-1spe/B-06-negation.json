@@ -2,6 +2,7 @@
 	"title": "Nier une proposition",
 	"description": "Choisir la négation d'une proposition quantifiée (« pour tout », « il existe ») ou d'une proposition avec « et », « ou »",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-013", "1SPE-006"],
 	"theme": "Logique",
 	"domain": "Logique et raisonnement",
 	"subdomain": "Quantificateurs et négation",

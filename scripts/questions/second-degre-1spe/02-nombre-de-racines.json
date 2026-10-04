@@ -2,6 +2,7 @@
 	"title": "Nombre de racines selon le signe du discriminant",
 	"description": "Δ donné, puis Δ à calculer",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-053", "1SPE-055"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

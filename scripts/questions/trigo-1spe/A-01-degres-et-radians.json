@@ -2,6 +2,7 @@
 	"title": "Convertir des degrés en radians",
 	"description": "Degrés ↔ radians pour les angles usuels (30°, 45°, 60°, 90°… et leurs multiples), fraction de π réduite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-110"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Cercle et radians",

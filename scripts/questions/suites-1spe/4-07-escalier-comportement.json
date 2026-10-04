@@ -2,6 +2,7 @@
 	"title": "Comportement d'une suite sur l'escalier",
 	"description": "Construction en escalier : sens de variation et convergence ou divergence de la suite",
 	"grades": ["1_SPE"],
+	"points": ["1SPE-040", "1SPE-030", "1SPE-032"],
 	"theme": "Suites",
 	"domain": "Représentation graphique",
 	"subdomain": "Escalier",
