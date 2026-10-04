@@ -146,6 +146,14 @@ ailleurs) : base déclarée strictement positive → `exp(u·ln base)` (`rules/g
 négative et un exposant entier pair en variables déclarées entières (`foldEvenIntegerPower`).
 Revue adverse, tirages dans le domaine déclaré seul : 11 533 paires, 0 faux positif (2026-09-29).
 
+**La forme aussi** (2026-10-04) : sous l'hypothèse `u ≥ 0`, la comparaison de forme d'une case
+ordinaire lit `|u|` comme `u` (`absoluteUnderAssumptionsAST`, `cosmetic-transforms.ts`, même
+oracle et même garde « algèbre simple » que `areEquivalent`). `\ln|x|+2` pour `\ln(x)+2` avec
+x > 0 est **juste**, sans remarque (avant : juste en valeur, puis « pas sous la forme demandée ») ;
+`2\left|x+1\right|` pour `2(x+1)` aussi. Sans hypothèse, `\ln|x|` pour `\ln(x)` reste faux
+(les deux existent en x = −1 et y diffèrent). Limite connue, hors hypothèses : `3|x|` nu ne se
+lit pas dans le parseur LaTeX (`3\left|x\right|` se lit).
+
 ## Logarithmes de base quelconque
 
 **`\log` sans base est décimal** (convention du dépôt : `normalize`, l'évaluateur, la dérivation).
