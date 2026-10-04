@@ -10,7 +10,7 @@
  * scénarios séquentiels (lookup → INSERT → lookup race).
  *
  * Couverture :
- *   - ensureProgrammeDeck : lookup hit / insert success / retry 23505 / non-23505 / error
+ *   - ensureProgrammeDeck : lookup hit / création par le client SERVICE / retry 23505 / non-23505 / error
  *   - ensureProgrammeDeckCard : carte écrite par le client SERVICE (jamais celui
  *     de l'élève) / 23505 silent no-op / 0 ligne rendue = erreur / propagation
  *
@@ -23,14 +23,23 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Client service simulé : `from('srs_cards').insert(...).select('id')` rend le
-// prochain résultat de la file `serviceInsertResults`.
+// Client service simulé :
+//   - `from('srs_cards').insert(...).select('id')` rend le prochain résultat de
+//     la file `results` ;
+//   - `from('srs_decks').insert(...).select('id').single()` (création du paquet
+//     Programme) rend le prochain résultat de la file `deckResults`.
 const service = vi.hoisted(() => {
 	const results: Array<{ data: unknown; error: unknown }> = [];
+	const deckResults: Array<{ data: unknown; error: unknown }> = [];
 	const select = vi.fn(async () => results.shift() ?? { data: [{ id: 'card-uuid' }], error: null });
 	const insert = vi.fn(() => ({ select }));
-	const from = vi.fn(() => ({ insert }));
-	return { results, select, insert, from };
+	const deckSingle = vi.fn(async () => deckResults.shift() ?? { data: null, error: null });
+	const deckSelect = vi.fn(() => ({ single: deckSingle }));
+	const deckInsert = vi.fn(() => ({ select: deckSelect }));
+	const from = vi.fn((table: string) =>
+		table === 'srs_decks' ? { insert: deckInsert } : { insert }
+	);
+	return { results, deckResults, select, insert, deckInsert, from };
 });
 
 vi.mock('$lib/server/serviceRoleClient', () => ({
@@ -46,13 +55,14 @@ import { ensureProgrammeDeck, ensureProgrammeDeckCard } from '../programme-deck'
 interface MockState {
 	/** Queue of responses for `.maybeSingle()` calls (in order). */
 	maybeSingleResults: Array<{ data: unknown; error: unknown }>;
-	/** Queue of responses for `.single()` calls (in order). */
-	singleResults: Array<{ data: unknown; error: unknown }>;
+	/** Réponses de la création du paquet par le client SERVICE (dans l'ordre). */
+	deckInsertResults: Array<{ data: unknown; error: unknown }>;
 }
 
 function buildMockSupabase(state: Partial<MockState> = {}) {
 	const ms = [...(state.maybeSingleResults ?? [])];
-	const ss = [...(state.singleResults ?? [])];
+	service.deckResults.length = 0;
+	service.deckResults.push(...(state.deckInsertResults ?? []));
 
 	const chain = {
 		select: vi.fn().mockReturnThis(),
@@ -62,17 +72,9 @@ function buildMockSupabase(state: Partial<MockState> = {}) {
 		maybeSingle: vi.fn().mockImplementation(async () => {
 			return ms.shift() ?? { data: null, error: null };
 		}),
-		single: vi.fn().mockImplementation(async () => {
-			return ss.shift() ?? { data: null, error: null };
-		}),
-		// Création du paquet : `.insert(...).select('id').single()` (client de l'élève).
-		// La carte, elle, passe par le client service simulé plus haut.
-		insert: vi.fn().mockImplementation(() => ({
-			select: vi.fn().mockReturnThis(),
-			single: vi.fn().mockImplementation(async () => {
-				return ss.shift() ?? { data: null, error: null };
-			})
-		}))
+		// Le client de l'élève n'écrit JAMAIS : paquet et carte passent par le
+		// client service simulé plus haut. Espionné pour le prouver.
+		insert: vi.fn()
 	};
 
 	const supabase = {
@@ -104,14 +106,17 @@ describe('ensureProgrammeDeck', () => {
 	it('creates a new deck when none exists (lookup miss + insert success)', async () => {
 		const { supabase, chain } = buildMockSupabase({
 			maybeSingleResults: [{ data: null, error: null }], // lookup miss
-			singleResults: [{ data: { id: 'deck-new' }, error: null }] // insert success
+			deckInsertResults: [{ data: { id: 'deck-new' }, error: null }] // insert success
 		});
 
 		const result = await ensureProgrammeDeck(supabase, 'student-uuid');
 
 		expect(result).toBe('deck-new');
-		// Vérifie que l insert a bien été appelé avec les bons champs
-		expect(chain.insert).toHaveBeenCalledWith(
+		// Créé par le client SERVICE, pour le userId reçu de la session…
+		expect(service.from).toHaveBeenCalledWith('srs_decks');
+		// … jamais par le client de l'élève
+		expect(chain.insert).not.toHaveBeenCalled();
+		expect(service.deckInsert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				owner_id: 'student-uuid',
 				name: 'Programme',
@@ -128,7 +133,7 @@ describe('ensureProgrammeDeck', () => {
 				{ data: null, error: null }, // 1er lookup : miss
 				{ data: { id: 'deck-race-winner' }, error: null } // refresh après 23505
 			],
-			singleResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
+			deckInsertResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
 		});
 
 		const result = await ensureProgrammeDeck(supabase, 'student-uuid');
@@ -139,7 +144,7 @@ describe('ensureProgrammeDeck', () => {
 	it('throws on non-23505 insert errors', async () => {
 		const { supabase } = buildMockSupabase({
 			maybeSingleResults: [{ data: null, error: null }],
-			singleResults: [{ data: null, error: { code: '42501', message: 'permission denied' } }]
+			deckInsertResults: [{ data: null, error: { code: '42501', message: 'permission denied' } }]
 		});
 
 		await expect(ensureProgrammeDeck(supabase, 'student-uuid')).rejects.toMatchObject({
@@ -153,7 +158,7 @@ describe('ensureProgrammeDeck', () => {
 				{ data: null, error: null }, // 1er lookup : miss
 				{ data: null, error: null } // refresh après 23505 : toujours rien
 			],
-			singleResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
+			deckInsertResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
 		});
 
 		await expect(ensureProgrammeDeck(supabase, 'student-uuid')).rejects.toMatchObject({
@@ -167,7 +172,7 @@ describe('ensureProgrammeDeck', () => {
 				{ data: null, error: null }, // 1er lookup : miss
 				{ data: null, error: { code: '08006', message: 'connection failure' } } // refresh fail
 			],
-			singleResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
+			deckInsertResults: [{ data: null, error: { code: '23505', message: 'unique_violation' } }]
 		});
 
 		await expect(ensureProgrammeDeck(supabase, 'student-uuid')).rejects.toMatchObject({
@@ -287,14 +292,15 @@ describe('ensureProgrammeDeckCard', () => {
 	it('chains ensureProgrammeDeck and INSERT (deck created → card added)', async () => {
 		const { supabase, chain } = buildMockSupabase({
 			maybeSingleResults: [{ data: null, error: null }], // deck lookup miss
-			singleResults: [{ data: { id: 'deck-fresh' }, error: null }] // deck created
+			deckInsertResults: [{ data: { id: 'deck-fresh' }, error: null }] // deck created
 		});
 
 		await ensureProgrammeDeckCard(supabase, 'student-uuid', 'template-uuid');
 
-		// Le paquet est créé par le client de l'élève…
-		expect(chain.insert).toHaveBeenCalledTimes(1);
-		expect(chain.insert).toHaveBeenCalledWith(
+		// Le paquet est créé par le client SERVICE (jamais celui de l'élève)…
+		expect(chain.insert).not.toHaveBeenCalled();
+		expect(service.deckInsert).toHaveBeenCalledTimes(1);
+		expect(service.deckInsert).toHaveBeenCalledWith(
 			expect.objectContaining({ owner_id: 'student-uuid', is_auto_managed: true })
 		);
 		// … la carte par le client service, dans le paquet créé
@@ -318,7 +324,7 @@ describe('Regression : sequence of calls preserves idempotence', () => {
 				{ data: null, error: null }, // 1er deck lookup miss
 				{ data: { id: 'deck-1' }, error: null } // 2e deck lookup hit
 			],
-			singleResults: [{ data: { id: 'deck-1' }, error: null }] // 1er deck créé
+			deckInsertResults: [{ data: { id: 'deck-1' }, error: null }] // 1er deck créé
 		});
 		service.results.push(
 			{ data: [{ id: 'card-1' }], error: null },

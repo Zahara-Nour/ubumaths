@@ -13,6 +13,9 @@
  * @module server/srs/deck-copy
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+
 /** Une section telle qu'elle existe dans le deck source. */
 export type SourceSection = { id: string; name: string; description: string | null };
 
@@ -113,4 +116,38 @@ export function planDeckCopies(
 		// obligeait à apparier sur le nom du deck.
 		source_deck_id: sourceDeckId
 	}));
+}
+
+/** La copie d'un élève, telle que l'écran du professeur l'affiche. */
+export type AssignedDeckCopy = { id: string; name: string; created_at: string | null };
+
+/**
+ * La copie qu'un élève possède d'un deck source, ou `null`.
+ *
+ * ⚠️ Retrouvée par `source_deck_id`, JAMAIS par le nom : deux decks sources de
+ * même nom assignés au même élève, ou un deck de l'élève portant le nom du
+ * deck du professeur, feraient afficher au professeur la mauvaise copie (et
+ * ses statistiques). `source_deck_id` est posé par `planDeckCopies`, à
+ * l'assignation, avec le client service.
+ */
+export async function findAssignedDeckCopy(
+	supabase: SupabaseClient<Database>,
+	studentId: string,
+	sourceDeckId: string
+): Promise<AssignedDeckCopy | null> {
+	const { data, error } = await supabase
+		.from('srs_decks')
+		.select('id, name, created_at')
+		.eq('owner_id', studentId)
+		.eq('source_deck_id', sourceDeckId)
+		.eq('is_assigned', true)
+		.order('created_at', { ascending: false })
+		.limit(1);
+
+	if (error) {
+		console.error('Copie du deck illisible :', error);
+		return null;
+	}
+
+	return data && data.length > 0 ? data[0] : null;
 }
