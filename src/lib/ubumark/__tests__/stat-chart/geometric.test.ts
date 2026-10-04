@@ -242,7 +242,7 @@ describe('X ~ G(p) — diagramme', () => {
 describe('X ~ G(p) — Typst', () => {
 	it('les mêmes cases qu’à l’écran, la colonne « … », la mention sous le diagramme', () => {
 		const source = `${G}\ndiagramme: oui\nprobabilités: P(X > 5 | X > 2)`;
-		const typst = generateStatChartTypst(nodeOf(source)).replace(/ /g, ' ');
+		const typst = generateStatChartTypst(nodeOf(source)).replace(/\u00a0/g, ' ');
 		const scene = lawOf(source);
 
 		for (const p of scene.probabilities) expect(typst).toContain(`[#"${p.text}"]`);

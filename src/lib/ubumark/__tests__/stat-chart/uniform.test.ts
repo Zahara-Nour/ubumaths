@@ -109,7 +109,7 @@ describe('X ~ U(a ; b) — le tableau de la loi', () => {
 
 describe('X ~ U(a ; b) — Typst', () => {
 	it('les mêmes cases et le même titre qu’à l’écran', () => {
-		const typst = generateStatChartTypst(nodeOf(U)).replace(/ /g, ' ');
+		const typst = generateStatChartTypst(nodeOf(U)).replace(/\u00a0/g, ' ');
 		for (const p of lawOf(U).probabilities) expect(typst).toContain(`[#"${p.text}"]`);
 		expect(typst).toContain('Loi de X : loi uniforme sur {1, …, 6}');
 	});
