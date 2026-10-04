@@ -380,11 +380,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			createdDecks: createdDecks.map((d) => d.id)
 		};
 
-		// Mark source deck as assigned if assignment was successful
-		if (results.successCount > 0) {
-			await supabase.from('srs_decks').update({ is_assigned: true }).eq('id', deckId);
-		}
-
+		// Le paquet source n'est PAS marqué `is_assigned` : ce drapeau désigne les
+		// copies d'élèves. La RLS refuse cette écriture (policy UPDATE et
+		// `srs_decks_paquets_serveur_update`, 20261004213000) ; l'ancien appel
+		// échouait en silence et avait marqué un paquet de prof (« essai deck »).
 		console.log('Assignment complete:', results);
 		console.log(`✓ Successfully assigned to ${results.successCount} students`);
 		console.log(`✗ Failed for ${results.failedStudents.length} students`);
