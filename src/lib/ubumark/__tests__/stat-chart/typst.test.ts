@@ -92,3 +92,50 @@ describe('Typst des diagrammes statistiques', () => {
 		expect(typst).toContain('#"Moyenne = 11"');
 	});
 });
+
+// =============================================================================
+// Titre gardé avec son tableau (2026-10-04)
+// =============================================================================
+
+describe('blocs à tableau : le titre ne reste pas seul en bas de colonne', () => {
+	const KEPT = '#block(breakable: false, width: 100%)[';
+	/** Le bloc insécable s'ouvre avant le titre et se ferme après le tableau */
+	const keptAround = (typst: string, title: string) => {
+		const start = typst.indexOf(KEPT);
+		return (
+			start >= 0 &&
+			start < typst.indexOf(title) &&
+			typst.lastIndexOf(')]\n]') > typst.indexOf('#table(')
+		);
+	};
+
+	it('loi écrite à la main, loi binomiale verticale, tableau croisé, simulation', () => {
+		expect(keptAround(typstOf('loi', 'titre: Dé\nX = 1 ; 2\nP = 1/2 ; 1/2'), 'Dé')).toBe(true);
+		expect(keptAround(typstOf('loi', 'X ~ B(20 ; 0,3)'), 'B(20 ; 0,3)')).toBe(true);
+		const cross = [
+			'titre: Élèves',
+			'lignes: Fille ; Garçon',
+			'colonnes: Externe ; Demi-pensionnaire',
+			'Fille = 45 ; 120',
+			'Garçon = 50 ; 110'
+		].join('\n');
+		expect(keptAround(typstOf('tableau-croise', cross), 'Élèves')).toBe(true);
+		expect(
+			keptAround(
+				typstOf('simulation', 'titre: Lancers\nX ~ B(10 ; 0,3)\ntirages: 500\ngraine: 7'),
+				'Lancers'
+			)
+		).toBe(true);
+	});
+
+	it('tableau d’effectifs, jusqu’au plus grand permis (30 valeurs, vertical)', () => {
+		expect(
+			keptAround(typstOf('effectifs', 'titre: Notes\ndonnées: 12 ; 15 ; 12 ; 8'), 'Notes')
+		).toBe(true);
+		const most = Array.from({ length: 30 }, (_, i) => i + 1).join(' ; ');
+		const typst = typstOf('effectifs', `titre: Notes\ndonnées: ${most}`);
+		// Le tableau est bien là : un bloc en erreur ne prouverait rien
+		expect(typst).toContain('#table(');
+		expect(keptAround(typst, 'Notes')).toBe(true);
+	});
+});

@@ -4,9 +4,8 @@
 -- GÉNÉRÉ par scripts/generate-curriculum-seed.ts depuis
 -- docs/wip/referentiel/2de-programme.md — ne pas éditer à la main.
 --
--- Source : « Programme de spécialité de mathématiques de la classe de première
--- de la voie générale » (programme en vigueur, avec la partie transversale
--- « Automatismes » ; ce n'est PAS l'arrêté du 17 janvier 2019).
+-- Source : « Programme de mathématiques de la classe de seconde générale et
+-- technologique » (PDF fourni par David le 2026-08-31).
 --
 --   6 thèmes · 14 objectifs · 185 points
 --   kind        : 68 connaissance · 105 savoir_faire · 12 demonstration
