@@ -291,3 +291,14 @@ describe('simulation — dans un document', () => {
 		]);
 	});
 });
+
+describe('simulation — tableau Typst', () => {
+	// « Fréquence ob-servée », « fre-quency » : vus sur la fiche compilée (2026-10-04)
+	it('en-têtes sans césure ni justification, colonnes à la largeur du contenu', () => {
+		const node = parseStatChartContent('simulation', 'X ~ B(10 ; 0,3)\ntirages: 500\ngraine: 7');
+		const typst = generateStatChartTypst(node);
+		expect(typst).toContain('#set text(hyphenate: false)');
+		expect(typst).toContain('#set par(justify: false)');
+		expect(typst).toContain('columns: (auto,) * 4');
+	});
+});

@@ -591,9 +591,10 @@ function simulationTypst(scene: SimulationScene): string {
 	}
 
 	const caption = `#align(center, text(size: 8pt)${textContent(scene.caption)})\n`;
+	// En-têtes sans césure ni justification : « Fréquence ob-servée » (fiche compilée)
 	return keptWithTitle(
 		`${titleBlock(scene.title)}${caption}`,
-		`#align(center)[#table(\n  columns: 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
+		`#align(center)[#set text(hyphenate: false)\n#set par(justify: false)\n#table(\n  columns: (auto,) * 4,\n  align: center + horizon,\n  inset: 5pt,\n  stroke: 0.5pt + luma(110),\n${cells.join(',\n')}\n)]`
 	);
 }
 
