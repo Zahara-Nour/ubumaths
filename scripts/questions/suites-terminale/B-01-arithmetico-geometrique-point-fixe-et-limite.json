@@ -1,0 +1,441 @@
+{
+	"title": "Suite arithmético-géométrique : solution constante et limite",
+	"description": "uₙ₊₁ = a·uₙ + b : ℓ = aℓ + b donc ℓ = b/(1 − a) ; limite de (uₙ) selon a (pièges : b/(1 + a), b/a, limite 0 car aⁿ → 0, limite u₀)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-006", "TCOMP-008", "TCOMP-012", "TCOMP-013", "TSPE-111", "TSPE-115"],
+	"theme": "Suites",
+	"domain": "Suites arithmético-géométriques",
+	"subdomain": "Solution constante et limite",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"signs": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$.\n\nDétermine le réel $\\ell$ tel que $\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}$ (la suite constante égale à $\\ell$ vérifie la même relation).\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}\\iff\\ell-{{eval:k/10;d}}\\ell={{eval:m*(10-k)}}\\iff{{eval:1-k/10;d}}\\ell={{eval:m*(10-k)}}$.",
+					"$\\ell=\\dfrac{ {{eval:m*(10-k)}} }{ {{eval:1-k/10;d}} }=\\textcolor{{{color:primary.0}}}{ {{eval:10*m}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+1}=\\dfrac{ {{j}} }{ {{eval:j+1}} }u_n{{b;+}}$.\n\nDétermine le réel $\\ell$ tel que $\\ell=\\dfrac{ {{j}} }{ {{eval:j+1}} }\\ell{{b;+}}$ (la suite constante égale à $\\ell$ vérifie la même relation).\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b*(j+1)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ell-\\dfrac{ {{j}} }{ {{eval:j+1}} }\\ell={{b}}\\iff\\dfrac{1}{ {{eval:j+1}} }\\ell={{b}}$.",
+					"$\\ell={{eval:j+1}}\\times{{b;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:b*(j+1)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ vérifie, pour tout entier naturel $n$, $u_{n+1}={{a}}u_n{{b;+}}$.\n\nDétermine le réel $\\ell$ tel que $\\ell={{a}}\\ell{{b;+}}$ (la suite constante égale à $\\ell$ vérifie la même relation).\n\n$\\ell=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:b/(1-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\ell={{a}}\\ell{{b;+}}\\iff\\ell-{{a}}\\ell={{b}}\\iff\\ell\\left(1-{{a}}\\right)={{b}}$.",
+					"$\\ell=\\dfrac{ {{b}} }{ {{eval:1-a}} }=\\textcolor{{{color:primary.0}}}{ {{eval:b/(1-a)}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:10*m+d}}$ et, pour tout entier naturel $n$, $u_{n+1}={{eval:k/10;d}}u_n{{eval:m*(10-k);+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..9"
+				},
+				{
+					"name": "m",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..20;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*m}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La solution constante vérifie $\\ell={{eval:k/10;d}}\\ell{{eval:m*(10-k);+}}$, soit $\\ell=\\dfrac{ {{eval:m*(10-k)}} }{ {{eval:1-k/10;d}} }={{eval:10*m}}$.",
+					"La suite $v_n=u_n-{{eval:10*m;()}}$ est géométrique de raison ${{eval:k/10;d}}$ et $v_0={{d}}$, donc $u_n={{d}}\\times{{eval:k/10;d}}^{n}{{eval:10*m;+}}$.",
+					"$0<{{eval:k/10;d}}<1$ donc $\\displaystyle\\lim_{n\\to+\\infty}{{eval:k/10;d}}^{n}=0$ et $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{ {{eval:10*m}} }$."
+				]
+			}
+		},
+		{
+			"statement": "La suite $(u_n)$ est définie par $u_0={{eval:c+dd}}$ et, pour tout entier naturel $n$, $u_{n+1}={{a}}u_n{{eval:c*(1-a);+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..3"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "dd",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:dd>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La solution constante vérifie $\\ell={{a}}\\ell{{eval:c*(1-a);+}}$, soit $\\ell={{c}}$.",
+					"La suite $v_n=u_n-{{c;()}}$ est géométrique de raison ${{a}}$ et $v_0={{dd}}$, donc $u_n={{dd}}\\times{{a}}^{n}{{c;+}}$.",
+					"${{a}}>1$ donc $\\displaystyle\\lim_{n\\to+\\infty}{{a}}^{n}=+\\infty$ ; comme ${{dd}}{{if:dd>0|>|<}}0$, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{ {{if:dd>0|+\\infty|-\\infty}} }$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 0,8uₙ+10 → ℓ=50",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : b/(1+a) = 50/9",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5"
+			},
+			"answers": ["\\frac{50}{9}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : b/a = 12,5",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5"
+			},
+			"answers": ["12.5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : b(1−a) = 2",
+			"variationIndex": 0,
+			"variables": {
+				"k": "8",
+				"m": "5"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 0,5uₙ−15 → ℓ=−30",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5",
+				"m": "-3"
+			},
+			"answers": ["-30"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : (2/3)uₙ+4 → 12",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"b": "4"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : b/(1+a) = 12/5",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"b": "4"
+			},
+			"answers": ["\\frac{12}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : signe (−12)",
+			"variationIndex": 1,
+			"variables": {
+				"j": "2",
+				"b": "4"
+			},
+			"answers": ["-12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 3uₙ−4 → 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : b/(1−a) avec signe perdu (−2)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-4"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 2uₙ+5 → −5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "5"
+			},
+			"answers": ["-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 4uₙ+3 → −1",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "3"
+			},
+			"answers": ["-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 4uₙ+6 → −2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "4",
+				"b": "6"
+			},
+			"answers": ["-2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 3uₙ+5 → −5/2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["-\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 3uₙ+5 → −2,5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["-2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : u0=60, 0,8uₙ+10 → 50",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 0 (aⁿ → 0 donc uₙ → 0)",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : u0",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["60"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : b",
+			"variationIndex": 3,
+			"variables": {
+				"k": "8",
+				"m": "5",
+				"d": "10"
+			},
+			"answers": ["10"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : u0=5, 2uₙ−3 (ℓ=3) → +∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"dd": "2"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ℓ=3 donné comme limite",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"dd": "2"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : u0=1 < ℓ=3 → −∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"dd": "-2"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : +∞ (signe de u0 − ℓ ignoré)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "2",
+				"c": "3",
+				"dd": "-2"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

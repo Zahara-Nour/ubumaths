@@ -1,0 +1,389 @@
+{
+	"title": "Limite d'une suite par opérations, sans forme indéterminée",
+	"description": "Somme, produit, quotient de limites usuelles (1/n, 1/n², √n, n²) sans forme indéterminée (pièges : limite d'un seul terme, signe, quotient inversé)",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-001", "TCOMP-002", "TSPE-110", "TSPE-113"],
+	"theme": "Suites",
+	"domain": "Limites de suites",
+	"subdomain": "Opérations sur les limites",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"options": {
+		"constraints": {
+			"signs": "off"
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n={{a}}+\\dfrac{ {{b}} }{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{ {{b}} }{n}=0$ (un nombre divisé par une quantité qui tend vers $+\\infty$).",
+					"Par somme, $\\displaystyle\\lim_{n\\to+\\infty}u_n={{a}}+0=\\textcolor{{{color:primary.0}}}{ {{a}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier naturel $n$, on pose $u_n={{a}}n^{2}+{{eval:sign(a)*bb}}n{{c;+}}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "bb",
+					"expression": "1..9"
+				},
+				{
+					"name": "c",
+					"expression": "1..9;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}{{a}}n^{2}={{if:a>0|+\\infty|-\\infty}}$ et $\\displaystyle\\lim_{n\\to+\\infty}{{eval:sign(a)*bb}}n={{if:a>0|+\\infty|-\\infty}}$ : les deux termes tendent vers le **même** infini, pas de forme indéterminée.",
+					"Par somme, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n=\\left({{a}}+\\dfrac{1}{n}\\right)\\left({{b}}-\\dfrac{ {{d}} }{n^{2}}\\right)$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\left({{a}}+\\dfrac{1}{n}\\right)={{a}}$ et $\\displaystyle\\lim_{n\\to+\\infty}\\left({{b}}-\\dfrac{ {{d}} }{n^{2}}\\right)={{b}}$.",
+					"Par produit, $\\displaystyle\\lim_{n\\to+\\infty}u_n={{a}}\\times{{b;()}}=\\textcolor{{{color:primary.0}}}{ {{eval:a*b}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n=\\dfrac{ {{a}}+\\frac{1}{n} }{ {{b}}+\\frac{ {{d}} }{\\sqrt{n} } }$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "d",
+					"expression": "1..9"
+				}
+			],
+			"conditions": ["a != b"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a/b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le numérateur tend vers ${{a}}$ ; $\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{n}=+\\infty$, donc le dénominateur tend vers ${{b}}\\neq0$.",
+					"Par quotient, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\dfrac{ {{a}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{ {{eval:a/b}} }$."
+				]
+			}
+		},
+		{
+			"statement": "Pour tout entier $n\\geqslant1$, on pose $u_n={{a}}\\sqrt{n}+\\dfrac{ {{b}} }{n}$.\n\nDétermine la limite de la suite $(u_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}u_n=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..9;±"
+				},
+				{
+					"name": "b",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a>0|+\\infty|-\\infty}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\displaystyle\\lim_{n\\to+\\infty}\\sqrt{n}=+\\infty$, donc $\\displaystyle\\lim_{n\\to+\\infty}{{a}}\\sqrt{n}={{if:a>0|+\\infty|-\\infty}}$ ; et $\\displaystyle\\lim_{n\\to+\\infty}\\dfrac{ {{b}} }{n}=0$.",
+					"Par somme, $\\displaystyle\\lim_{n\\to+\\infty}u_n=\\textcolor{{{color:primary.0}}}{{{if:a>0|+\\infty|-\\infty}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 3 + 5/n → 3",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a + b",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : +∞",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 2n² + 3n − 1 → +∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"bb": "3",
+				"c": "-1"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : forme indéterminée crue → 0",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"bb": "3",
+				"c": "-1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : −3n² − 4n + 5 → −∞",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"bb": "4",
+				"c": "5"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : +∞ (signe)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-3",
+				"bb": "4",
+				"c": "5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : (3 + 1/n)(−2 − 4/n²) → −6",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"d": "4"
+			},
+			"answers": ["-6"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : a + b",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"d": "4"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 6 (signe)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"b": "-2",
+				"d": "4"
+			},
+			"answers": ["6"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : (5 + 1/n)/(2 + 3/√n) → 5/2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{5}{2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 2,5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"d": "3"
+			},
+			"answers": ["2.5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : quotient inversé 2/5",
+			"variationIndex": 3,
+			"variables": {
+				"a": "5",
+				"b": "2",
+				"d": "3"
+			},
+			"answers": ["\\frac{2}{5}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : (−4 + 1/n)/(6 + …) → −2/3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"d": "1"
+			},
+			"answers": ["-\\frac{2}{3}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : non simplifiée −4/6",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-4",
+				"b": "6",
+				"d": "1"
+			},
+			"answers": ["-\\frac{4}{6}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedFractions"]
+			}
+		},
+		{
+			"description": "v4 : −3√n + 2/n → −∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"b": "2"
+			},
+			"answers": ["-\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : 0",
+			"variationIndex": 4,
+			"variables": {
+				"a": "-3",
+				"b": "2"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 4√n + 5/n → +∞",
+			"variationIndex": 4,
+			"variables": {
+				"a": "4",
+				"b": "5"
+			},
+			"answers": ["+\\infty"],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	]
+}
