@@ -58,6 +58,7 @@ import {
 	predictY,
 	readExactValue,
 	roundFraction,
+	toSafeNumber,
 	type BivariateFit
 } from '$lib/statistics/bivariate';
 import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
@@ -2871,6 +2872,9 @@ const SCATTER_LABEL_CHAR_PX = 7;
 /** Air entre deux étiquettes voisines, en px */
 const SCATTER_LABEL_GAP_PX = 8;
 
+/** Au-delà, un pas est écarté sans générer ses graduations */
+const SCATTER_MAX_TICKS = 200;
+
 /** Hauteur d'une étiquette des ordonnées, en px */
 const SCATTER_LABEL_HEIGHT_PX = 14;
 
@@ -2908,13 +2912,20 @@ function scatterAxis(
 		let max = Math.ceil((high + margin) / step - 1e-9) * step;
 		if (low >= 0 && min < 0) min = 0;
 		if (high <= 0 && max > 0) max = 0;
-		const ticks: SceneTick[] = [];
-		for (let k = Math.round(min / step); k * step <= max + step * 1e-9; k++) {
-			ticks.push(scatterTick(Number((k * step).toPrecision(12)), locale));
-		}
-		return { min: Number(min.toPrecision(12)), max: Number(max.toPrecision(12)), ticks };
+		// ⚠️ Un compteur de graduations, pas `k++` sur min / step : à 10^15, k
+		// dépasse 2^53, `k++` ne bouge plus et la boucle ne finissait pas (revue)
+		const count = Math.round((max - min) / step);
+		const ticks =
+			count > SCATTER_MAX_TICKS
+				? []
+				: Array.from({ length: count + 1 }, (_, n) =>
+						scatterTick(Number((min + n * step).toPrecision(15)), locale)
+					);
+		return { min: Number(min.toPrecision(15)), max: Number(max.toPrecision(15)), ticks, count };
 	};
 	const fits = (step: number, laid: ReturnType<typeof layout>) => {
+		// Trop de graduations : écarté avant d'écrire la moindre étiquette
+		if (laid.count > SCATTER_MAX_TICKS || laid.ticks.length < 2) return false;
 		const spacing = (step * pixels) / (laid.max - laid.min);
 		const label =
 			axis === 'x'
@@ -2932,7 +2943,7 @@ function scatterAxis(
 			if (fits(step, laid)) return laid;
 		}
 	}
-	return layout(high - low);
+	return layout(high - low + 2 * margin);
 }
 
 function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterScene {
@@ -2944,7 +2955,7 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 	// Le parseur a vérifié chaque valeur
 	const xs = scatter.xs.map((t) => readExactValue(t)!);
 	const ys = scatter.ys.map((t) => readExactValue(t)!);
-	const points = xs.map((x, i) => ({ x: x.toNumber(), y: ys[i].toNumber() }));
+	const points = xs.map((x, i) => ({ x: toSafeNumber(x), y: toSafeNumber(ys[i]) }));
 	// Le parseur a refusé des abscisses toutes égales
 	const fit = bivariateFit(xs, ys)!;
 	const round = (value: Fraction) => scatterNumber(value, places, locale);
@@ -2991,7 +3002,7 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 		if (axis === 'x') {
 			const y = predictY(fit, known);
 			lines.push(text.prediction(given, `y ${relation(y)}`, isInterpolation(fit, known)));
-			predicted.push({ x: known.toNumber(), y: y.toNumber() });
+			predicted.push({ x: toSafeNumber(known), y: toSafeNumber(y) });
 			continue;
 		}
 		const x = predictX(fit, known);
@@ -3000,7 +3011,7 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 			continue;
 		}
 		lines.push(text.prediction(given, `x ${relation(x)}`, isInterpolation(fit, x)));
-		predicted.push({ x: x.toNumber(), y: known.toNumber() });
+		predicted.push({ x: toSafeNumber(x), y: toSafeNumber(known) });
 	}
 
 	// Axes : les données, les prévisions, puis la droite aux bords du cadre
@@ -3014,7 +3025,7 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 	const ends = scatter.fit
 		? [xAxis.min, xAxis.max].map((x) => ({
 				x,
-				y: fit.slope.toNumber() * x + fit.intercept.toNumber()
+				y: toSafeNumber(fit.slope) * x + toSafeNumber(fit.intercept)
 			}))
 		: [];
 	const yAxis = scatterAxis(
@@ -3046,7 +3057,7 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 		axisTitles: { x: scatter.names.x ?? 'x', y: scatter.names.y ?? 'y' },
 		color: spec.color,
 		line: scatter.fit ? [ends[0], ends[1]] : null,
-		mean: showMean ? { x: fit.meanX.toNumber(), y: fit.meanY.toNumber() } : null,
+		mean: showMean ? { x: toSafeNumber(fit.meanX), y: toSafeNumber(fit.meanY) } : null,
 		predictions: predicted,
 		indicators: lines
 	};

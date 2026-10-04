@@ -81,7 +81,7 @@ import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { readListValue } from '$lib/statistics/read-value';
-import { readExactValue } from '$lib/statistics/bivariate';
+import { invalidValueReason, readExactValue } from '$lib/statistics/bivariate';
 import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
 import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
@@ -384,6 +384,9 @@ const SCATTER_OPTIONS = [
 ] as const;
 type ScatterOptionKey = (typeof SCATTER_OPTIONS)[number];
 
+/** Options propres au nuage, refusées ailleurs avec un message situé */
+const SCATTER_ONLY_OPTIONS: readonly string[] = ['ajustement', 'prevoir', 'origine'];
+
 /** Indicateurs d'un nuage, tels que l'auteur les écrit */
 const SCATTER_INDICATOR_NAME: Record<ScatterIndicator, string> = {
 	'point-moyen': 'point moyen',
@@ -409,16 +412,20 @@ export function isStatChartKind(language: string | undefined): language is StatC
 	return (STAT_CHART_KINDS as readonly string[]).includes(language ?? '');
 }
 
-/** Ligne qui a la forme d'une ligne de bloc statistique */
-function looksLikeStatChartLine(line: string): boolean {
+/**
+ * Ligne qui a la forme d'une ligne de CE bloc statistique : `x: …`,
+ * `nom x: …` et les options du nuage seulement dans un ```nuage — sinon un
+ * ```barres non fermé avalait une ligne de texte « x: … » (revue)
+ */
+function looksLikeStatChartLine(kind: StatChartKind, line: string): boolean {
 	const trimmed = line.trim();
 	if (trimmed.includes('=')) return true;
-	// Nuage (manche 15) : `x: 1 ; 2`, `nom y: Prix`, ses options
-	if (SCATTER_DATA_REGEX.test(trimmed)) return true;
 	const kv = KEY_LINE_REGEX.exec(trimmed);
-	if (kv === null) return false;
-	const key = optionKeyOf(kv[1]);
-	return isOptionKey(key) || (SCATTER_OPTIONS as readonly string[]).includes(key);
+	if (kind === 'nuage') {
+		if (SCATTER_DATA_REGEX.test(trimmed)) return true;
+		return kv !== null && (SCATTER_OPTIONS as readonly string[]).includes(optionKeyOf(kv[1]));
+	}
+	return kv !== null && isOptionKey(optionKeyOf(kv[1]));
 }
 
 /**
@@ -444,7 +451,7 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 		// ⚠️ Un ``` plus loin ne ferme le bloc que si TOUT ce qui les sépare a la
 		// forme d'une ligne de bloc (Q25) : sinon il avalait le texte intermédiaire
 		const body = lines.slice(startIndex + 1, j);
-		const closes = !bodyOpensParagraph(body, looksLikeStatChartLine);
+		const closes = !bodyOpensParagraph(body, (line) => looksLikeStatChartLine(kind, line));
 		if (j < lines.length && BLOCK_END_REGEX.test(lines[j]) && closes) {
 			blocks.push({ kind, startIndex, endIndex: j, closed: true });
 			i = j + 1;
@@ -452,7 +459,7 @@ export function findStatChartBlocks(lines: string[]): StatChartBlockRange[] {
 		}
 		let end = startIndex;
 		for (let k = startIndex + 1; k < j; k++) {
-			if (lines[k].trim() === '' || !looksLikeStatChartLine(lines[k])) break;
+			if (lines[k].trim() === '' || !looksLikeStatChartLine(kind, lines[k])) break;
 			end = k;
 		}
 		blocks.push({ kind, startIndex, endIndex: end, closed: false });
@@ -2374,12 +2381,15 @@ function parsePredictions(raw: string): ScatterData['predictions'] {
 		.map((part) => part.trim())
 		.filter((part) => part !== '');
 	if (parts.length === 0) throw new LineError('prévoir : écrire x = … ou y = …');
+	if (parts.length > STAT_CHART_LIMITS.scatterPredictions) {
+		throw new LineError(`prévoir : au plus ${STAT_CHART_LIMITS.scatterPredictions} prévisions`);
+	}
 	return parts.map((part) => {
 		const match = PREDICTION_REGEX.exec(part);
 		if (!match) throw new LineError(`prévoir : écrire x = … ou y = … (pas « ${part} »)`);
 		const value = match[2].trim();
 		if (readExactValue(value) === null) {
-			throw new LineError(`prévoir : « ${value} » n’est pas un nombre`);
+			throw new LineError(`prévoir : ${invalidValueReason(value)}`);
 		}
 		return { axis: match[1].toLowerCase() as 'x' | 'y', value };
 	});
@@ -2424,7 +2434,7 @@ function parseScatterContent(source: string): StatChartNode {
 				}
 				for (const text of texts) {
 					if (text === '') throw new LineError('valeur vide (un « ; » de trop ?)');
-					if (readExactValue(text) === null) throw new LineError(`« ${text} » n’est pas un nombre`);
+					if (readExactValue(text) === null) throw new LineError(invalidValueReason(text));
 				}
 				columns[axis] = { texts, line };
 				return;
@@ -2500,6 +2510,8 @@ function parseScatterContent(source: string): StatChartNode {
 			fail(xs.line, 'toutes les abscisses sont égales : pas de droite y = ax + b');
 		} else if (predictions.length > 0 && !fit) {
 			fail(optionLines.prevoir ?? 0, 'prévoir : seulement avec ajustement: affine');
+		} else if (indicators.includes('equation') && !fit) {
+			fail(optionLines.indicateurs ?? 0, 'équation : demander « ajustement: affine »');
 		} else if (indicators.includes('r') && allEqual(ys.texts)) {
 			fail(optionLines.indicateurs ?? 0, 'r : non défini, toutes les ordonnées sont égales');
 		}
@@ -2641,6 +2653,12 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		try {
 			const kv = KEY_LINE_REGEX.exec(content);
 			const key = kv ? optionKeyOf(kv[1]) : null;
+			// `prévoir: x = 2` se lisait comme la catégorie « prévoir: x » (revue)
+			if (kv && key !== null && SCATTER_ONLY_OPTIONS.includes(key)) {
+				throw new LineError(
+					`l'option « ${kv[1]} » ne s'applique pas aux ${KIND_NAME[kind]} (réservée aux ${KIND_NAME.nuage})`
+				);
+			}
 			const series = NAMED_SERIES_REGEX.exec(content);
 			if (series) {
 				if (kind === 'circulaire') throw new LineError('une seule série par diagramme circulaire');

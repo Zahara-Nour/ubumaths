@@ -8,7 +8,16 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { bivariateFit, predictX, predictY, roundFraction, isInterpolation } from '../bivariate';
+import {
+	bivariateFit,
+	invalidValueReason,
+	predictX,
+	predictY,
+	readExactValue,
+	roundFraction,
+	isInterpolation,
+	toSafeNumber
+} from '../bivariate';
 import { fitAffine } from '../fit';
 import { Fraction } from '../fraction';
 
@@ -113,6 +122,53 @@ describe('cas limites', () => {
 			fractions([1, 2, 3])
 		)!;
 		expect(fit.meanX.toString()).toBe('19/90');
+	});
+});
+
+describe('readExactValue — nombres écrits (revue)', () => {
+	it('virgule, point, signe, fraction', () => {
+		expect(readExactValue('0,5')!.toString()).toBe('1/2');
+		expect(readExactValue('+3')!.toString()).toBe('3');
+		expect(readExactValue('−1/3')!.toString()).toBe('-1/3');
+	});
+
+	it('refuse ce que Number lirait en silence : hexadécimal, notation e', () => {
+		expect(readExactValue('0x1A')).toBeNull();
+		expect(readExactValue('1e3')).toBeNull();
+		expect(invalidValueReason('0x1A')).toBe('« 0x1A » n’est pas un nombre');
+	});
+
+	it('au plus 15 chiffres, dénominateur au plus 1000', () => {
+		expect(readExactValue('1234567890123456')).toBeNull();
+		expect(invalidValueReason('1234567890123456')).toBe(
+			'« 1234567890123456 » : au plus 15 chiffres'
+		);
+		expect(readExactValue('1/1000')).not.toBeNull();
+		expect(readExactValue('1/1001')).toBeNull();
+		expect(invalidValueReason('1/1001')).toBe('« 1/1001 » : dénominateur au plus 1000');
+		expect(invalidValueReason('25 %')).toBe('« 25 % » n’est pas un nombre');
+	});
+});
+
+describe('grandes fractions (revue)', () => {
+	const xs = Array.from({ length: 100 }, (_, i) => readExactValue(`${i + 1}/${1000 - 2 * i}`)!);
+	const ys = Array.from({ length: 100 }, (_, i) => readExactValue(`${7 * i + 3}/${999 - 2 * i}`)!);
+
+	it('100 points aux dénominateurs les plus grands permis : vite, et des décimaux finis', () => {
+		const start = performance.now();
+		const fit = bivariateFit(xs, ys)!;
+		expect(performance.now() - start).toBeLessThan(200);
+		for (const value of [fit.slope, fit.intercept, fit.meanX, fit.meanY]) {
+			expect(Number.isFinite(toSafeNumber(value))).toBe(true);
+		}
+		expect(Number.isFinite(fit.correlation!.value)).toBe(true);
+	});
+
+	it('toSafeNumber : sans débordement, signe compris', () => {
+		const huge = 10n ** 400n;
+		expect(toSafeNumber(new Fraction(3n * huge + 1n, 2n * huge))).toBeCloseTo(1.5, 12);
+		expect(toSafeNumber(new Fraction(-(3n * huge), 2n * huge + 7n))).toBeCloseTo(-1.5, 12);
+		expect(toSafeNumber(new Fraction(7n, 2n))).toBe(3.5);
 	});
 });
 

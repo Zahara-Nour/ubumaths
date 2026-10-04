@@ -439,6 +439,8 @@ export const STAT_CHART_LIMITS = {
 	binomialTableValues: 30,
 	/** Points d'un nuage (Q167) */
 	scatterPoints: { min: 2, max: 100 },
+	/** Prévisions d'un nuage (`prévoir:`) */
+	scatterPredictions: 20,
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
 	/** Caractères d'un nom de catégorie */

@@ -545,7 +545,7 @@ function scatterTypst(scene: ScatterScene, size: CourbeSize): string {
 		lines.push('  // point moyen');
 		lines.push(`  circle((${x}, ${y}), radius: 0.06, fill: black, stroke: none)`);
 		lines.push(
-			`  content((${fmt(Number(x) + 0.08)}, ${fmt(Number(y) + 0.06)}), anchor: "south-east", text(size: 7pt, weight: "bold")[G])`
+			`  content((${fmt(Number(x) - 0.08)}, ${fmt(Number(y) + 0.06)}), anchor: "south-east", text(size: 7pt, weight: "bold")[G])`
 		);
 	}
 	lines.push(

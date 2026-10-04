@@ -16,7 +16,6 @@
 
 import { roundExact } from './binomial';
 import { Fraction } from './fraction';
-import { readListValue } from './read-value';
 
 // =============================================================================
 // Types
@@ -40,8 +39,21 @@ export interface BivariateFit {
 // Constantes
 // =============================================================================
 
-/** Chiffres gardés pour passer de r² (fraction) à un décimal sans débordement */
-const DECIMAL_SCALE = 10n ** 18n;
+/**
+ * Plus grand dénominateur d'une fraction écrite (`2/7`) : au-delà, cent points
+ * aux dénominateurs distincts font des calculs exacts de milliers de chiffres
+ * (2,5 s pour des dénominateurs à 15 chiffres, revue) ; à 1000, ≈ 40 ms.
+ */
+export const MAX_WRITTEN_DENOMINATOR = 1000n;
+
+/** Chiffres d'un nombre écrit, comme `Fraction.parse` (au-delà : refusé) */
+const MAX_WRITTEN_DIGITS = 15;
+
+/** `12`, `-0,5`, `2.5`, `1/3` : la forme d'un nombre (avant de compter ses chiffres) */
+const NUMBER_SHAPE = /^[-+]?\d+(?:[.,]\d+)?$|^[-+]?\d+\s*\/\s*\d+$/;
+
+/** Chiffres gardés par `toSafeNumber` avant la conversion en décimal */
+const SAFE_DIGITS = 300;
 
 // =============================================================================
 // Fonctions
@@ -56,25 +68,53 @@ function sum(values: readonly Fraction[]): Fraction {
 }
 
 /**
- * Une fraction positive en décimal, sans passer par `Number(num)` : numérateur
- * et dénominateur peuvent dépasser 10^308 sur cent points à quinze chiffres.
+ * Une fraction en décimal, sans débordement : `Number(num) / Number(den)`
+ * donne Infinity / Infinity = NaN dès 309 chiffres (revue). Numérateur et
+ * dénominateur sont raccourcis ensemble, ce qui garde le rapport.
  */
-function toDecimal(value: Fraction): number {
-	return Number((value.num * DECIMAL_SCALE) / value.den) / Number(DECIMAL_SCALE);
+export function toSafeNumber(value: Fraction): number {
+	const length = (n: bigint) => (n < 0n ? -n : n).toString().length;
+	const digits = Math.max(length(value.num), length(value.den));
+	if (digits <= SAFE_DIGITS) return Number(value.num) / Number(value.den);
+	const cut = 10n ** BigInt(digits - SAFE_DIGITS);
+	return Number(value.num / cut) / Number(value.den / cut);
 }
 
 /**
- * Une valeur de série écrite par l'auteur, EXACTE : le lecteur de nombres
- * commun (`0,5`, `2.5`, `−3`, `1/3`) décide de ce qui est un nombre ; la
- * fraction vient de l'écriture, sinon du décimal (`1e3`). null : pas un nombre
- * (un pourcentage n'en est pas un ici).
+ * Une valeur de série écrite par l'auteur, EXACTE, lue comme les autres blocs
+ * (`Fraction.parse`) : `0,5`, `2.5`, `−3`, `+3`, `1/3`. null : pas un nombre
+ * (`0x1A`, `1e3`, un pourcentage), plus de 15 chiffres, ou un dénominateur
+ * écrit au-delà de 1000 — `invalidValueReason` dit lequel.
  */
 export function readExactValue(text: string): Fraction | null {
-	const written = text.trim().replaceAll('−', '-');
-	if (written.includes('%')) return null;
-	const value = readListValue(written);
+	const written = text.trim().replaceAll('−', '-').replace(/^\+/, '');
+	if (!NUMBER_SHAPE.test(written)) return null;
+	const value = Fraction.parse(written);
 	if (value === null) return null;
-	return Fraction.parse(written.replace(/^\+/, '')) ?? Fraction.fromNumber(value);
+	const slash = written.indexOf('/');
+	if (slash !== -1 && BigInt(written.slice(slash + 1).trim()) > MAX_WRITTEN_DENOMINATOR)
+		return null;
+	return value;
+}
+
+/** Pourquoi `readExactValue` a refusé ce texte, en français (message d'auteur) */
+export function invalidValueReason(text: string): string {
+	const written = text.trim().replaceAll('−', '-').replace(/^\+/, '');
+	if (NUMBER_SHAPE.test(written)) {
+		const parts = written
+			.replace('-', '')
+			.split('/')
+			.map((part) => part.trim());
+		if (parts.some((part) => part.replace(/[.,]/, '').length > MAX_WRITTEN_DIGITS)) {
+			return `« ${text.trim()} » : au plus ${MAX_WRITTEN_DIGITS} chiffres`;
+		}
+		if (parts.length === 2 && Number(parts[1]) === 0)
+			return `« ${text.trim()} » : dénominateur nul`;
+		if (parts.length === 2) {
+			return `« ${text.trim()} » : dénominateur au plus ${MAX_WRITTEN_DENOMINATOR}`;
+		}
+	}
+	return `« ${text.trim()} » n’est pas un nombre`;
 }
 
 /**
@@ -110,7 +150,8 @@ export function bivariateFit(
 		const root = squared.sqrt();
 		const sign = covariance.isNegative() ? -1n : 1n;
 		const exact = root === null ? null : new Fraction(sign * root.num, root.den);
-		const magnitude = exact === null ? Math.sqrt(toDecimal(squared)) : Math.abs(exact.toNumber());
+		const magnitude =
+			exact === null ? Math.sqrt(toSafeNumber(squared)) : Math.abs(toSafeNumber(exact));
 		correlation = { value: Number(sign) * magnitude, exact };
 	}
 

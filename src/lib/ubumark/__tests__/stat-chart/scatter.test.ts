@@ -7,7 +7,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseStatChartContent, isStatChartBlockStart } from '../../parser/stat-chart-parser';
+import {
+	findStatChartBlocks,
+	parseStatChartContent,
+	isStatChartBlockStart
+} from '../../parser/stat-chart-parser';
 import { buildStatChartScene, type ScatterScene } from '../../utils/stat-chart-scene';
 import { generateStatChartTypst } from '../../generators/stat-chart-typst';
 import { parseMarkdown } from '$lib/ubumark';
@@ -363,6 +367,102 @@ describe('```nuage — séparateur de milliers (à partir de 10 000)', () => {
 // =============================================================================
 // Typst
 // =============================================================================
+
+describe('```nuage — revue', () => {
+	it('abscisses à 15 chiffres : les graduations se calculent vite (plus de boucle sans fin)', () => {
+		const start = performance.now();
+		const scene = sceneOf('x: 999999999999990 ; 999999999999999\ny: 1 ; 2');
+		expect(performance.now() - start).toBeLessThan(500);
+		expect(scene.xTicks.length).toBeGreaterThan(1);
+		expect(scene.xTicks.length).toBeLessThanOrEqual(200);
+		for (const tick of scene.xTicks) expect(Number.isFinite(tick.value)).toBe(true);
+	});
+
+	it('nombres refusés avec leur raison', () => {
+		expect(errorsOf('x: 1 ; 0x1A\ny: 1 ; 2')).toEqual(['Ligne 1 : « 0x1A » n’est pas un nombre']);
+		expect(errorsOf('x: 1 ; 1e3\ny: 1 ; 2')).toEqual(['Ligne 1 : « 1e3 » n’est pas un nombre']);
+		expect(errorsOf('x: 1 ; 2\ny: 1 ; 1234567890123456')).toEqual([
+			'Ligne 2 : « 1234567890123456 » : au plus 15 chiffres'
+		]);
+		expect(errorsOf('x: 1 ; 1/1001\ny: 1 ; 2')).toEqual([
+			'Ligne 1 : « 1/1001 » : dénominateur au plus 1000'
+		]);
+		expect(errorsOf(`${DATA}\najustement: affine\nprévoir: x = 0x1A`)[0]).toBe(
+			'Ligne 4 : prévoir : « 0x1A » n’est pas un nombre'
+		);
+	});
+
+	it('100 points en fractions : aucune coordonnée NaN', () => {
+		const xs = Array.from({ length: 100 }, (_, i) => `${i + 1}/${1000 - 2 * i}`).join(' ; ');
+		const ys = Array.from({ length: 100 }, (_, i) => `${7 * i + 3}/${999 - 2 * i}`).join(' ; ');
+		const start = performance.now();
+		const scene = sceneOf(
+			`x: ${xs}\ny: ${ys}\najustement: affine\nindicateurs: point moyen ; r\nprévoir: x = 1 ; y = 1`
+		);
+		expect(performance.now() - start).toBeLessThan(500);
+		const coordinates = [
+			...scene.points,
+			...scene.line!,
+			scene.mean!,
+			...scene.predictions
+		].flatMap((p) => [p.x, p.y]);
+		for (const value of [...coordinates, scene.xMin, scene.xMax, scene.yMin, scene.yMax]) {
+			expect(Number.isFinite(value)).toBe(true);
+		}
+		expect(
+			generateStatChartTypst(parseStatChartContent('nuage', `x: ${xs}\ny: ${ys}`))
+		).not.toMatch(/NaN|Infinity/);
+	});
+
+	it('pente nulle et y = b : « tout x convient »', () => {
+		expect(
+			sceneOf('x: 1 ; 2 ; 3\ny: 5 ; 5 ; 5\najustement: affine\nprévoir: y = 5').indicators
+		).toEqual(['Droite des moindres carrés : y = 5', 'Pour y = 5 : tout x convient (pente nulle)']);
+	});
+
+	it('équation sans ajustement : refusée', () => {
+		expect(errorsOf(`${DATA}\nindicateurs: point moyen ; équation`)).toEqual([
+			'Ligne 3 : équation : demander « ajustement: affine »'
+		]);
+	});
+
+	it('au plus 20 prévisions', () => {
+		const many = Array.from({ length: 21 }, (_, i) => `x = ${i}`).join(' ; ');
+		expect(errorsOf(`${DATA}\najustement: affine\nprévoir: ${many}`)).toEqual([
+			'Ligne 4 : prévoir : au plus 20 prévisions'
+		]);
+	});
+
+	it('options du nuage dans un ```barres : message propre, situé', () => {
+		for (const [line, key] of [
+			['prévoir: x = 2', 'prévoir'],
+			['ajustement: affine', 'ajustement'],
+			['origine: oui', 'origine']
+		]) {
+			const node = parseStatChartContent('barres', `A = 3\n${line}`);
+			expect(node.spec).toBeNull();
+			expect(node.errors.map((e) => e.message)).toEqual([
+				`Ligne 2 : l'option « ${key} » ne s'applique pas aux diagrammes en barres (réservée aux nuages de points)`
+			]);
+		}
+	});
+
+	it('un ```barres non fermé n’avale pas une ligne « x: … » de texte', () => {
+		const lines = ['```barres', 'A = 3', 'x: une remarque du texte'];
+		expect(findStatChartBlocks(lines)).toEqual([
+			{ kind: 'barres', startIndex: 0, endIndex: 1, closed: false }
+		]);
+		const scatter = ['```nuage', 'x: 1 ; 2', 'y: 3 ; 4', 'origine: oui'];
+		expect(findStatChartBlocks(scatter)[0].endIndex).toBe(3);
+	});
+
+	it('Typst : « G » à gauche du point moyen, comme à l’écran', () => {
+		const typst = generateStatChartTypst(parseStatChartContent('nuage', FULL));
+		const disk = /circle\(\(([\d.]+), ([\d.]+)\), radius: 0\.06/.exec(typst)!;
+		const label = /content\(\(([\d.]+), ([\d.]+)\), anchor: "south-east"[^\n]*\[G\]/.exec(typst)!;
+		expect(Number(label[1])).toBeCloseTo(Number(disk[1]) - 0.08, 3);
+	});
+});
 
 describe('```nuage → Typst', () => {
 	it('un point dessiné par donnée, la droite, G, une prévision par pointillé', () => {
