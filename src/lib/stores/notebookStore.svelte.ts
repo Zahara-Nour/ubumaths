@@ -317,6 +317,25 @@ export class NotebookStore {
 	 */
 	previewMode = $state(false);
 
+	/**
+	 * Verrou d'exécution — carnet d'un ÉLÈVE ouvert par quelqu'un d'autre
+	 * (décision de David, 2026-10-04). Le worker Pyodide est de même origine
+	 * que l'application : le code de l'élève tournerait avec la session du
+	 * lecteur. Une fois posé, le verrou ne se lève plus (pas de setter) ; il
+	 * est vérifié ICI, pas seulement par les boutons.
+	 */
+	private _executionLocked = $state(false);
+
+	/** Le carnet est-il interdit d'exécution ? */
+	get executionLocked(): boolean {
+		return this._executionLocked;
+	}
+
+	/** Interdire toute exécution (définitif pour cette instance). */
+	lockExecution(): void {
+		this._executionLocked = true;
+	}
+
 	// ===========================================================================
 	// Cloud State
 	// ===========================================================================
@@ -388,6 +407,8 @@ export class NotebookStore {
 			console.warn('[NotebookStore] Cannot init Pyodide - no notebook loaded');
 			return;
 		}
+		// Carnet verrouillé : aucun worker, donc rien qui puisse s'exécuter
+		if (this._executionLocked) return;
 
 		if (!this._executor) {
 			this._executor = new NotebookExecutor(this.notebook.id);
@@ -457,8 +478,8 @@ export class NotebookStore {
 			this.executionCounter = 0;
 			this.lastSavedTime = new Date(notebook.updated_at);
 
-			// Create executor for this notebook
-			this._executor = new NotebookExecutor(notebook.id);
+			// Create executor for this notebook — none when execution is locked
+			this._executor = this._executionLocked ? null : new NotebookExecutor(notebook.id);
 
 			return notebook;
 		} catch (err) {
@@ -505,8 +526,8 @@ export class NotebookStore {
 				this._executor.destroy();
 			}
 
-			// Create new executor for this notebook
-			this._executor = new NotebookExecutor(notebook.id);
+			// Create new executor for this notebook — none when execution is locked
+			this._executor = this._executionLocked ? null : new NotebookExecutor(notebook.id);
 
 			return notebook;
 		} catch (err) {
@@ -788,6 +809,7 @@ export class NotebookStore {
 	 * @param cellId - The cell ID to execute
 	 */
 	async executeCell(cellId: string): Promise<void> {
+		if (this._executionLocked) return;
 		if (!this._executor || !this.notebook) {
 			console.warn('[NotebookStore] Cannot execute - executor or notebook not ready');
 			return;
@@ -824,7 +846,7 @@ export class NotebookStore {
 		// as "modified since last run" once the user edits it. Stored in
 		// cell metadata so it round-trips through autosave + load without
 		// needing a separate map. (Schema accepts arbitrary metadata keys.)
-		cell.metadata = { ...(cell.metadata ?? {}), last_executed_source: cell.source };
+		cell.metadata = { ...cell.metadata, last_executed_source: cell.source };
 
 		this.isModified = true;
 
@@ -842,7 +864,7 @@ export class NotebookStore {
 	 * Execute all cells sequentially.
 	 */
 	async executeAllCells(): Promise<void> {
-		if (!this.notebook) return;
+		if (this._executionLocked || !this.notebook) return;
 
 		// Clear queue and add all code cells
 		this.executionQueue = [];
@@ -924,7 +946,7 @@ export class NotebookStore {
 	 * @returns Promise resolving to an array of completion items
 	 */
 	requestCompletion(code: string, cursor: number): Promise<CompletionItem[]> {
-		if (!this._executor) {
+		if (this._executionLocked || !this._executor) {
 			return Promise.resolve([]);
 		}
 		return this._executor.requestCompletion(code, cursor);
@@ -1021,7 +1043,7 @@ export class NotebookStore {
 	 * error live in `checkpointStatus` / `checkpointError`.
 	 */
 	async runCheckpoint(cellId: string): Promise<void> {
-		if (!this._executor || !this.notebook) return;
+		if (this._executionLocked || !this._executor || !this.notebook) return;
 
 		// Re-entrant guard. The `disabled` attribute on the UI button is a
 		// hint, not a lock: Svelte 5 effect batching can let a second click

@@ -144,37 +144,6 @@ export const createTradeSchema = z.object({
 	})
 });
 
-/**
- * Schema for creating a counter-offer in a trade
- */
-export const createOfferSchema = z.object({
-	trade_id: z.string().uuid("ID d'échange invalide"),
-	initiator_cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
-	initiator_gidouilles: z
-		.number()
-		.int('Les gidouilles doivent être un nombre entier')
-		.min(0, 'Les gidouilles ne peuvent pas être négatives')
-		.max(10000, 'Maximum 10000 gidouilles')
-		.finite('La valeur doit être un nombre fini')
-		.default(0),
-	partner_cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
-	partner_gidouilles: z
-		.number()
-		.int('Les gidouilles doivent être un nombre entier')
-		.min(0, 'Les gidouilles ne peuvent pas être négatives')
-		.max(10000, 'Maximum 10000 gidouilles')
-		.finite('La valeur doit être un nombre fini')
-		.default(0),
-	message: z.string().max(500, 'Le message ne peut pas dépasser 500 caractères').optional()
-});
-
-/**
- * Schema for accepting a trade
- */
-export const acceptTradeSchema = z.object({
-	trade_id: z.string().uuid("ID d'échange invalide")
-});
-
 // ============================================================================
 // CONFIG SCHEMAS
 // ============================================================================

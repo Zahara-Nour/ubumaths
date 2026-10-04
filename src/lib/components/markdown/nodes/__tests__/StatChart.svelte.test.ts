@@ -611,6 +611,32 @@ describe('StatChart — lois de maths complémentaires (manche 13)', () => {
 	});
 });
 
+describe('StatChart — lois à densité (manche 13, PR b)', () => {
+	it('loi exponentielle : le nom, la courbe, l’aire hachurée, les lignes', async () => {
+		const node = parseStatChartContent('loi', 'X ~ E(0,5)\ndiagramme: oui\nprobabilités: P(X ⩽ 2)');
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+
+		expect(screen.container.querySelector('table')).toBeNull();
+		expect(screen.container.querySelector('.stat-titre')?.textContent).toBe('Loi de X : E(0,5)');
+		expect(screen.container.querySelector('polyline.stat-densite')).not.toBeNull();
+		const area = screen.container.querySelector<SVGPolygonElement>('polygon.stat-aire')!;
+		// Le navigateur normalise `url(#id)` en `url("#id")`
+		expect(getComputedStyle(area).fill).toMatch(/url\("?#.*hachures"?\)/);
+		// De vrais exposants (<sup>), et une lecture « e puissance … » pour le lecteur d'écran
+		const line = [...screen.container.querySelectorAll('.stat-indicateurs li')].find((li) =>
+			li.textContent?.includes('P(X ⩽ 2)')
+		)!;
+		expect([...line.querySelectorAll('sup')].map((sup) => sup.textContent)).toEqual([
+			'−0,5 × 2',
+			'−1'
+		]);
+		expect(line.textContent).not.toContain('^(');
+		expect(line.querySelector('.sr-only')?.textContent).toBe(
+			'P(X ⩽ 2) = 1 − e puissance (−0,5 × 2) = 1 − e puissance −1 ≈ 0,632'
+		);
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

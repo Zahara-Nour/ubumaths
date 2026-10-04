@@ -11,6 +11,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { uuidSchema } from '$lib/server/validation/common';
+import { isForeignStudentNotebook } from '$lib/utils/notebook-foreign-content';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user, profile } = locals;
@@ -39,7 +40,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 				updated_at,
 				profiles!python_notebooks_author_id_fkey (
 					firstname,
-					lastname
+					lastname,
+					role
 				)
 			`
 		)
@@ -79,9 +81,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(403, 'Accès interdit à ce notebook');
 	}
 
+	// Carnet d'élève lu par un autre : rendu restreint, exécution interdite
+	// (décision de David, 2026-10-04 ; cf. `notebook-foreign-content.ts`)
+	const foreignStudentNotebook = isForeignStudentNotebook({
+		isOwner,
+		viewerRole: profile.role,
+		authorRole: notebook.profiles?.role
+	});
+
 	return {
 		notebook,
 		isOwner,
+		foreignStudentNotebook,
 		userRole: profile.role
 	};
 };

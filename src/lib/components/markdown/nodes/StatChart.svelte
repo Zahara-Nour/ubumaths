@@ -125,10 +125,13 @@
 	let comparison = $derived(scene?.kind === 'comparaison' ? scene : null);
 	let frequencyTable = $derived(scene?.kind === 'effectifs' ? scene : null);
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
-	/** Histogramme, polygone ou moyenne selon n : abscisses continues, axe vertical gradué */
-	let classChart = $derived(histogram ?? cumulative ?? mean);
-	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne */
-	let classYMax = $derived(histogram ? histogram.yMax : mean ? mean.yMax : 100);
+	let density = $derived(scene?.kind === 'densite' ? scene : null);
+	/** Histogramme, polygone, moyenne selon n, densité : abscisses continues, axe vertical gradué */
+	let classChart = $derived(histogram ?? cumulative ?? mean ?? density);
+	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne, densité */
+	let classYMax = $derived(
+		histogram ? histogram.yMax : mean ? mean.yMax : density ? density.yMax : 100
+	);
 	/** Bas de l'axe vertical : 0, sauf la moyenne selon n (valeurs négatives possibles) */
 	let classYMin = $derived(mean ? mean.yMin : 0);
 	let classPadBottom = $derived(PAD_BOTTOM_FLAT + (classChart?.axisTitles.x ? AXIS_TITLE_PX : 0));
@@ -387,6 +390,10 @@
 						</tbody>
 					</table>
 				</div>
+			{/if}
+			{#if law.densityChart}
+				<!-- Loi à densité : la courbe et l'aire hachurée (manche 13, PR b) -->
+				<StatChart scene={law.densityChart} />
 			{/if}
 			{#if law.chart}
 				<!-- `diagramme: oui` : les bâtons de la loi -->
@@ -761,6 +768,45 @@
 					{/each}
 				{/if}
 
+				{#if density}
+					<!-- Loi à densité : l'aire de la probabilité hachurée, puis la courbe -->
+					{#if density.area}
+						<defs>
+							<pattern
+								id={hatchId}
+								width="6"
+								height="6"
+								patternUnits="userSpaceOnUse"
+								patternTransform="rotate(45)"
+							>
+								<line
+									x1="0"
+									y1="0"
+									x2="0"
+									y2="6"
+									stroke-width="2"
+									style:stroke={COLOR_VAR[density.color]}
+								/>
+							</pattern>
+						</defs>
+						<polygon
+							class="stat-aire"
+							points={density.area
+								.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`)
+								.join(' ')}
+							style:fill="url(#{hatchId})"
+							style:stroke={COLOR_VAR[density.color]}
+						/>
+					{/if}
+					<polyline
+						class="stat-polygone stat-densite"
+						points={density.points
+							.map((p) => `${cx(p.x).toFixed(2)},${cy(p.y).toFixed(2)}`)
+							.join(' ')}
+						style:stroke={COLOR_VAR[density.color]}
+					/>
+				{/if}
+
 				{#if mean}
 					<!-- Moyenne des tirages selon n (Q81), et la droite y = E(X) -->
 					<line
@@ -912,7 +958,19 @@
 		{#if scene.indicators.length > 0}
 			<ul class="stat-indicateurs">
 				{#each scene.indicators as indicator, i (i)}
-					<li>{indicator}</li>
+					{@const parts = scene.indicatorParts?.[i]}
+					{#if parts}
+						<!-- Lois à densité : de vrais exposants (e<sup>−1</sup>), lus « e puissance −1 » -->
+						<li>
+							<span aria-hidden="true"
+								>{#each parts.segments as segment, j (j)}{#if segment.exponent}<sup
+											>{segment.text}</sup
+										>{:else}{segment.text}{/if}{/each}</span
+							><span class="sr-only">{parts.spoken}</span>
+						</li>
+					{:else}
+						<li>{indicator}</li>
+					{/if}
 				{/each}
 			</ul>
 		{/if}
@@ -1157,6 +1215,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.35rem;
+	}
+
+	.stat-aire {
+		stroke-width: 0.75;
 	}
 
 	.stat-mention {

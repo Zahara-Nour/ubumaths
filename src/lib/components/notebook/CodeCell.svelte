@@ -21,12 +21,15 @@
 		cell = $bindable() as NotebookCell,
 		isActive = false,
 		isReadonly = false,
+		restricted = false,
 		notebook = null as NotebookStore | null,
 		onExecute = () => {}
 	}: {
 		cell: NotebookCell;
 		isActive?: boolean;
 		isReadonly?: boolean;
+		/** Rendu restreint des sorties (carnet d'élève lu par autrui) */
+		restricted?: boolean;
 		notebook?: NotebookStore | null;
 		onExecute?: () => void;
 	} = $props();
@@ -105,7 +108,7 @@
 	<!-- Cell outputs -->
 	{#if cell.outputs.length > 0}
 		<div class="mt-2 ml-4">
-			<CellOutputs outputs={cell.outputs} />
+			<CellOutputs outputs={cell.outputs} {restricted} />
 		</div>
 	{/if}
 </div>

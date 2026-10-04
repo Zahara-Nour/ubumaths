@@ -1,0 +1,537 @@
+{
+	"title": "Solution de y′ = ay vérifiant une condition initiale",
+	"description": "Résoudre y′ = ay (ou une forme équivalente : y′ + ay = 0, py′ = qy) avec une condition f(0) ou f(1) : réponse unique Ce^{ax}",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-054", "TSPE-192"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Équations différentielles",
+	"subdomain": "Équation y′ = ay",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, $C\\in\\mathbb{R}$. Ici $a={{eval:a}}$ : $f(x)=Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.",
+					"$f(0)=Ce^{0}=C$, donc $C={{eval:k}}$ : la condition initiale donne directement la constante.",
+					"$f(x)=\\textcolor{{{color:primary.0}}}{{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On isole $y'$ : $(E)\\iff y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}$, de la forme $y'=ay$ avec $a={{eval:-a}}$ (attention au signe).",
+					"Les solutions sont les fonctions $x\\mapsto Ce^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}$, et $f(0)=C={{eval:k}}$.",
+					"$f(x)=\\textcolor{{{color:primary.0}}}{{{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : {{eval:p}}y'={{if:p*a==1|y}}{{if:p*a==-1|-y}}{{if:p*a!=1 && p*a!=-1|{{eval:p*a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "p",
+					"expression": "2..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On divise par ${{eval:p}}$ : $(E)\\iff y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.",
+					"Les solutions sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$, et $f(0)=C={{eval:k}}$.",
+					"$f(x)=\\textcolor{{{color:primary.0}}}{{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(1)={{eval:k}}$.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "k",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de cette équation sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.",
+					"$f(1)=Ce^{{{eval:a}}}={{eval:k}}$, donc $C={{eval:k}}e^{{{eval:-a}}}$.",
+					"$f(x)={{eval:k}}e^{{{eval:-a}}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}=\\textcolor{{{color:primary.0}}}{{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}}$ (car $e^{{{eval:-a}}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}=e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}$)."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDonne toutes les solutions de l'équation $(E)$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}",
+					"answerKind": "solution-ed",
+					"solutionMode": "generale",
+					"equation": "y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les solutions de $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, $C\\in\\mathbb{R}$. Ici $a={{eval:a}}$.",
+					"$f(x)=\\textcolor{{{color:primary.0}}}{Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}$, $C\\in\\mathbb{R}$."
+				]
+			}
+		},
+		{
+			"statement": "On considère l'équation différentielle $(E) : y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}=0$.\n\nDonne toutes les solutions de l'équation $(E)$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..5;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "Ce^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}",
+					"answerKind": "solution-ed",
+					"solutionMode": "generale",
+					"equation": "y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}=0"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$(E)$ s'écrit $y'={{if:-a==1|y}}{{if:-a==-1|-y}}{{if:-a!=1 && -a!=-1|{{eval:-a}}y}}$ ; les solutions de $y'=ay$ sont les fonctions $x\\mapsto Ce^{ax}$, $C\\in\\mathbb{R}$.",
+					"$f(x)=\\textcolor{{{color:primary.0}}}{Ce^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}$, $C\\in\\mathbb{R}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : y'=3y, f(0)=2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["2e^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : exponentielle écrite \\exp",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["2\\exp(3x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : constante ajoutée au lieu de multipliée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["e^{3x}+2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a et C échangés",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["3e^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : condition oubliée (C=1)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["e^{3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : constante libre laissée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"k": "2"
+			},
+			"answers": ["Ce^{3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a=-1, k=1 → e^{-x}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"k": "1"
+			},
+			"answers": ["e^{-x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a=1, k=-4 → -4e^{x}",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"k": "-4"
+			},
+			"answers": ["-4e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a=-2, signe de a perdu",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-2",
+				"k": "5"
+			},
+			"answers": ["5e^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y'+2y=0, f(0)=3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["3e^{-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : signe non changé",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["3e^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y'-y=0, f(0)=-1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "-1",
+				"k": "-1"
+			},
+			"answers": ["-e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 2y'=6y, f(0)=4",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "4",
+				"p": "2"
+			},
+			"answers": ["4e^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : non divisé par 2",
+			"variationIndex": 2,
+			"variables": {
+				"a": "3",
+				"k": "4",
+				"p": "2"
+			},
+			"answers": ["4e^{6x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : y'=2y, f(1)=3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["3e^{2x-2}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : produit d'exponentielles",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["3e^{-2}e^{2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : écrit avec un quotient",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["\\frac{3e^{2x}}{e^{2}}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : traité comme f(0)=3",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"k": "3"
+			},
+			"answers": ["3e^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : y'=-y, f(1)=2",
+			"variationIndex": 3,
+			"variables": {
+				"a": "-1",
+				"k": "2"
+			},
+			"answers": ["2e^{-x+1}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : solution générale modèle",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["Ce^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : autre nom de constante",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["Ke^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : constante multipliée",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3Ce^{3x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : solution particulière (message)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["5e^{3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : coefficient oublié",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["Ce^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : non-solution : signe",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["Ce^{-3x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) y'=3y : non-solution : +C",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["e^{3x}+C"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 (ouverte) y'+2y=0 : solution générale modèle",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["Ce^{-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 (ouverte) y'+2y=0 : autre nom de constante",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["\\lambda e^{-2x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 (ouverte) y'+2y=0 : solution particulière (message)",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["4e^{-2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 (ouverte) y'+2y=0 : signe non changé",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["Ce^{2x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 (ouverte) y'+2y=0 : non-solution",
+			"variationIndex": 5,
+			"variables": {
+				"a": "2"
+			},
+			"answers": ["C-2x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}

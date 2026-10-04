@@ -146,6 +146,14 @@ ailleurs) : base déclarée strictement positive → `exp(u·ln base)` (`rules/g
 négative et un exposant entier pair en variables déclarées entières (`foldEvenIntegerPower`).
 Revue adverse, tirages dans le domaine déclaré seul : 11 533 paires, 0 faux positif (2026-09-29).
 
+**La forme aussi** (2026-10-04) : sous l'hypothèse `u ≥ 0`, la comparaison de forme d'une case
+ordinaire lit `|u|` comme `u` (`absoluteUnderAssumptionsAST`, `cosmetic-transforms.ts`, même
+oracle et même garde « algèbre simple » que `areEquivalent`). `\ln|x|+2` pour `\ln(x)+2` avec
+x > 0 est **juste**, sans remarque (avant : juste en valeur, puis « pas sous la forme demandée ») ;
+`2\left|x+1\right|` pour `2(x+1)` aussi. Sans hypothèse, `\ln|x|` pour `\ln(x)` reste faux
+(les deux existent en x = −1 et y diffèrent). Limite connue, hors hypothèses : `3|x|` nu ne se
+lit pas dans le parseur LaTeX (`3\left|x\right|` se lit).
+
 ## Logarithmes de base quelconque
 
 **`\log` sans base est décimal** (convention du dépôt : `normalize`, l'évaluateur, la dérivation).
@@ -224,3 +232,39 @@ l'ordre canonique de mathAST (`xy` pour `xy=1`). La réponse est juste si ce coe
 Colinéarité : tous les déterminants 2×2 a_i·e_j − a_j·e_i nuls (calcul exact), réponse non nulle.
 Une attendue illisible, de dimension autre que 2 ou 3, ou nulle en mode `colineaire` fait échouer
 les specs du modèle. Sans `answerKind`, rien ne change.
+
+## Réponse « primitive » / « solution-ed » : par le calcul (cases `answerKind: "primitive"` / `"solution-ed"`)
+
+Comparer `x^3+C` à l'attendue `x^3` avec `areEquivalent` dirait « faux ». Ces deux cases
+(spécification de David du 2026-10-04) sont jugées par `questions/calculus/` avec les outils de
+mathAST (`parseLatexSafe`, `differentiate`, `areEquivalent` sous budget de 300 ms par
+comparaison, `computeNumericValue`) — aucun calcul formel propre :
+
+- toute lettre libre autre que la variable (défaut `x`), sauf `e`, `i`, `π`, est une CONSTANTE ;
+- **primitive** : juste ⇔ `areEquivalent(d(réponse)/dx, integrand)` ; avec `interval`, la réponse
+  doit en plus avoir une valeur réelle finie en 5 points de chaque intervalle (constantes à 0,7) ;
+- **solution-ed** : `y` ← réponse, `y'` ← sa dérivée, puis `areEquivalent(membre gauche, membre
+droit)` (identité en x) ; chaque constante est remplacée par 2, −1 puis 3 et la réponse doit
+  être solution les trois fois ; en mode `generale`, les trois fonctions obtenues doivent être
+  deux à deux distinctes (la constante compte) ; `initial` y(x₀) = y₀ vérifiée numériquement
+  (tolérance relative 10⁻⁹) ;
+- la VALEUR décide du juste / faux ; une réponse juste voit ensuite son écriture jugée comme une
+  case ordinaire comparée à elle-même (seules restent les contraintes d'écriture).
+
+| Case                   | Réglage         | Réponse                    | Verdict                          |
+| ---------------------- | --------------- | -------------------------- | -------------------------------- |
+| primitive, f = 3x²     |                 | `x^3`, `x^3+5`, `x^3+C`    | juste                            |
+| primitive, f = 3x²     |                 | `6x`                       | faux, « C'est la dérivée de f… » |
+| primitive, f = 3x²     |                 | `3x^3`                     | faux                             |
+| primitive, f = 3x²     |                 | `\frac{3x^3}{3}`           | ½, « La fraction peut être… »    |
+| primitive, f = 1/x     | `]0;+\infty[`   | `\ln x`, `\ln\vert x\vert` | juste                            |
+| primitive, f = 1/x     | `]0;+\infty[`   | `\ln(-x)`                  | faux (non définie)               |
+| solution-ed, y' = 2y   | `generale`      | `Ce^{2x}`                  | juste                            |
+| solution-ed, y' = 2y   | `generale`      | `5e^{2x}`                  | faux, « solution particulière… » |
+| solution-ed, y' = 2y   | `une`           | `5e^{2x}`, `Ce^{2x}`       | juste                            |
+| solution-ed, y' = 2y   | les deux        | `Ce^{2x}+3`                | faux                             |
+| solution-ed, y' = 2y−6 | `une`, `y(0)=4` | `e^{2x}+3` / `3`           | juste / faux                     |
+
+Limites connues : un `areEquivalent` qui ne sait pas conclure (budget dépassé) rend la réponse
+fausse ; l'intervalle n'est vérifié qu'en des points d'essai (une réponse indéfinie en un point
+isolé de l'intervalle passe). Sans `answerKind`, rien ne change.

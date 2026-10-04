@@ -123,10 +123,10 @@ describe('X ~ U(a ; b) — erreurs situées', () => {
 		expect(errorOf('X ~ U(1 ; 1001)')).toBe('Ligne 1 : U(a ; b) : au plus 1 000 valeurs');
 	});
 
-	it('U([a ; b]) : la loi à densité, pas encore', () => {
-		expect(errorOf('X ~ U([0 ; 1])')).toBe(
-			'Ligne 1 : U([a ; b]) : loi à densité : bientôt disponible'
-		);
+	it('U([a ; b]) : la loi à densité, pas la loi discrète', () => {
+		const scene = lawOf('X ~ U([0 ; 1])');
+		expect(scene.accessibleTitle).toBe('Loi de X : loi uniforme sur [0 ; 1]');
+		expect(scene.tableHidden).toBe(true);
 	});
 
 	it('`intervalle:` réservé à la loi binomiale', () => {
@@ -149,5 +149,65 @@ describe('B(1 ; p) — loi de Bernoulli', () => {
 		);
 		expect(scene.indicators).toEqual(['V(X) = 0,21', 'σ(X) ≈ 0,46']);
 		expect(lawOf('X ~ B(2 ; 0,3)').accessibleTitle).toBe('Loi de X : B(2 ; 0,3)');
+	});
+});
+
+// =============================================================================
+// Q158 — borne hors des valeurs de U(a ; b)
+// =============================================================================
+
+describe('X ~ U(a ; b) — Q158 : un événement hors de [a ; b] avertit', () => {
+	const warningsOf = (queries: string) =>
+		nodeOf(`${U}\nprobabilités: ${queries}`).warnings.map((w) => w.message);
+
+	it('P(X = 7), P(X ⩽ 0), P(X > 6) : avertissement, la probabilité reste calculée', () => {
+		expect(warningsOf('P(X = 7)')).toEqual([
+			'Ligne 2 : probabilités : « P(X = 7) » : X prend ses valeurs de 1 à 6'
+		]);
+		expect(warningsOf('P(X ⩽ 0)')).toHaveLength(1);
+		expect(warningsOf('P(X > 6)')).toHaveLength(1);
+		expect(warningsOf('P(7 ⩽ X ⩽ 9)')).toHaveLength(1);
+		expect(lawOf(`${U}\nprobabilités: P(X = 7)`).indicators[1]).toBe('P(X = 7) = 0');
+	});
+
+	it('borne dedans, intervalle qui chevauche, intervalle vide entre deux valeurs : rien', () => {
+		expect(warningsOf('P(X = 3) ; P(X ⩾ 0) ; P(5 ⩽ X ⩽ 9) ; P(X = 2,5) ; P(2 < X < 3)')).toEqual(
+			[]
+		);
+	});
+});
+
+// =============================================================================
+// Q159 — `indicateurs: aucun`
+// =============================================================================
+
+describe('Q159 — `indicateurs: aucun`', () => {
+	it('G et U : cache l’espérance par défaut ; B : aucune ligne', () => {
+		expect(lawOf('X ~ G(0,2)\nindicateurs: aucun').indicators).toEqual([]);
+		expect(lawOf(`${U}\nindicateurs: aucun`).indicators).toEqual([]);
+		expect(lawOf('X ~ B(10 ; 0,3)\nindicateurs: aucun').indicators).toEqual([]);
+	});
+
+	it('les probabilités demandées restent', () => {
+		expect(lawOf(`${U}\nindicateurs: aucun\nprobabilités: P(X ⩽ 3)`).indicators).toEqual([
+			'P(X ⩽ 3) = 0,5'
+		]);
+	});
+
+	it('une loi écrite à la main : accepté, rien affiché', () => {
+		expect(lawOf('X = 0 ; 1\nP = 1/2 ; 1/2\nindicateurs: aucun').indicators).toEqual([]);
+	});
+
+	it('Typst : pas d’espérance non plus', () => {
+		const typst = generateStatChartTypst(nodeOf(`${U}\nindicateurs: aucun`));
+		expect(typst).toContain('#table(');
+		expect(typst).not.toContain('E(X)');
+		expect(generateStatChartTypst(nodeOf(U))).toContain('E(X)');
+	});
+
+	it('« aucun » s’écrit seul', () => {
+		expect(errorOf(`${U}\nindicateurs: aucun ; variance`)).toBe(
+			'Ligne 2 : indicateurs : « aucun » s’écrit seul'
+		);
 	});
 });

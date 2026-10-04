@@ -32,7 +32,7 @@
 	let hasError = $derived(cell.state === 'error');
 
 	async function handleRun(): Promise<void> {
-		if (isRunning || !isReady) return;
+		if (isRunning || !isReady || notebook.executionLocked) return;
 		await notebook.executeCell(cell.id);
 	}
 
@@ -55,7 +55,10 @@
 			In {executionMarker}:
 		</div>
 		<div class="flex items-center gap-2">
-			{#if isRunning}
+			{#if notebook.executionLocked}
+				<!-- Carnet d'élève lu par autrui : aucune exécution (le store refuse aussi) -->
+				<span class="text-xs text-muted-foreground">Lecture seule</span>
+			{:else if isRunning}
 				<Button variant="destructive" size="sm" onclick={handleStop} class="gap-1.5">
 					<Square class="size-4" />
 					<span>Arrêter</span>

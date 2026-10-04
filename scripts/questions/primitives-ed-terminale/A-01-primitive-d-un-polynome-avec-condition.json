@@ -1,0 +1,521 @@
+{
+	"title": "Primitive d'un polynôme vérifiant une condition",
+	"description": "Primitive de xⁿ (n entier naturel) et d'un polynôme du second degré, unique grâce à F(0) = 0 ou F(1) = y₀",
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-048", "TCOMP-052", "TSPE-190", "TSPE-191"],
+	"theme": "Primitives et équations différentielles",
+	"domain": "Primitives",
+	"subdomain": "Primitives des fonctions de référence",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"cleanCoefficients": true,
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:3*a==1|x^2}}{{if:3*a==-1|-x^2}}{{if:3*a!=1 && 3*a!=-1|{{eval:3*a}}x^2}}{{if:2*b==1|+x}}{{if:2*b==-1|-x}}{{if:2*b>0 && 2*b!=1|+{{eval:2*b}}x}}{{if:2*b<0 && 2*b!=-1|{{eval:2*b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto x^n$ est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$ : on augmente l'exposant de 1 et on divise par le nouvel exposant.",
+					"Les primitives de $f$ sont les fonctions $F(x)={{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}+k$, $k\\in\\mathbb{R}$.",
+					"$F(0)=k=0$, donc $F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:3*a==1|x^2}}{{if:3*a==-1|-x^2}}{{if:3*a!=1 && 3*a!=-1|{{eval:3*a}}x^2}}{{if:2*b==1|+x}}{{if:2*b==-1|-x}}{{if:2*b>0 && 2*b!=1|+{{eval:2*b}}x}}{{if:2*b<0 && 2*b!=-1|{{eval:2*b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(1)={{eval:y0}}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				},
+				{
+					"name": "y0",
+					"expression": "-6..6"
+				}
+			],
+			"conditions": ["y0-a-b-c != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}{{if:y0-a-b-c>0|+{{eval:y0-a-b-c}}}}{{if:y0-a-b-c<0|{{eval:y0-a-b-c}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les primitives de $f$ sont les fonctions $F(x)={{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}+k$, $k\\in\\mathbb{R}$.",
+					"$F(1)={{eval:a+b+c}}+k={{eval:y0}}$, donc $k={{eval:y0-a-b-c}}$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}{{if:y0-a-b-c>0|+{{eval:y0-a-b-c}}}}{{if:y0-a-b-c<0|{{eval:y0-a-b-c}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{{{eval:n}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{1}{{{eval:n+1}}}x^{{{eval:n+1}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto x^n$ est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$. Vérification : la dérivée de $\\dfrac{x^{n+1}}{n+1}$ est $\\dfrac{(n+1)x^n}{n+1}=x^n$.",
+					"Les primitives de $f$ sont les fonctions $x\\mapsto\\dfrac{x^{{{eval:n+1}}}}{{{eval:n+1}}}+k$ et $F(0)=k=0$.",
+					"$F(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{x^{{{eval:n+1}}}}{{{eval:n+1}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:3*a==1|x^2}}{{if:3*a==-1|-x^2}}{{if:3*a!=1 && 3*a!=-1|{{eval:3*a}}x^2}}{{if:2*b==1|+x}}{{if:2*b==-1|-x}}{{if:2*b>0 && 2*b!=1|+{{eval:2*b}}x}}{{if:2*b<0 && 2*b!=-1|{{eval:2*b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..3;±"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}",
+					"answerKind": "primitive",
+					"integrand": "{{if:3*a==1|x^2}}{{if:3*a==-1|-x^2}}{{if:3*a!=1 && 3*a!=-1|{{eval:3*a}}x^2}}{{if:2*b==1|+x}}{{if:2*b==-1|-x}}{{if:2*b>0 && 2*b!=1|+{{eval:2*b}}x}}{{if:2*b<0 && 2*b!=-1|{{eval:2*b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto x^n$ est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$ : on primitive terme à terme.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|x^3}}{{if:a==-1|-x^3}}{{if:a!=1 && a!=-1|{{eval:a}}x^3}}{{if:b==1|+x^2}}{{if:b==-1|-x^2}}{{if:b>0 && b!=1|+{{eval:b}}x^2}}{{if:b<0 && b!=-1|{{eval:b}}x^2}}{{if:c==1|+x}}{{if:c==-1|-x}}{{if:c>0 && c!=1|+{{eval:c}}x}}{{if:c<0 && c!=-1|{{eval:c}}x}}}$ ; toute fonction $F(x)+k$, $k\\in\\mathbb{R}$, convient aussi."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{{{eval:n}}}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..7"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "\\frac{x^{{{eval:n+1}}}}{{{eval:n+1}}}",
+					"answerKind": "primitive",
+					"integrand": "x^{{{eval:n}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto x^n$ est $x\\mapsto\\dfrac{x^{n+1}}{n+1}$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{\\dfrac{x^{{{eval:n+1}}}}{{{eval:n+1}}}}$ (à une constante près)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : f=6x²+4x−5 → 2x³+2x²−5x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : ordre des termes changé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["-5x+2x^2+2x^3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : + C laissé",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5x+C"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : dérivée au lieu de primitive",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["12x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : exposant augmenté sans diviser",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["6x^3+4x^2-5x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : constante −5 non multipliée par x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a=-1, b=0 → −x³+3x",
+			"variationIndex": 0,
+			"variables": {
+				"a": "-1",
+				"b": "0",
+				"c": "3"
+			},
+			"answers": ["-x^3+3x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : F(1)=4, f=3x²+2x+1 → x³+x²+x+1",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"y0": "4"
+			},
+			"answers": ["x^3+x^2+x+1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : condition traitée comme F(0)=4",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"y0": "4"
+			},
+			"answers": ["x^3+x^2+x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : condition oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "1",
+				"c": "1",
+				"y0": "4"
+			},
+			"answers": ["x^3+x^2+x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : constante négative",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"b": "-3",
+				"c": "4",
+				"y0": "-2"
+			},
+			"answers": ["2x^3-3x^2+4x-5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : x⁴ → x⁵/5",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{x^5}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : écrit 1/5 x⁵",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{1}{5}x^5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : décimal 0.2x⁵",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["0.2x^5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : divisé par l'ancien exposant",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{x^5}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : pas de division",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["x^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : dérivée",
+			"variationIndex": 2,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["4x^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : primitive modèle",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5x"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : autre constante",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5x+7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : avec +C",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5x+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : dérivée au lieu de primitive (message)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["12x+4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : coefficients non divisés",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["6x^3+4x^2-5x"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 (ouverte) f=6x²+4x−5 : non-primitive : constante non multipliée par x",
+			"variationIndex": 3,
+			"variables": {
+				"a": "2",
+				"b": "2",
+				"c": "-5"
+			},
+			"answers": ["2x^3+2x^2-5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : primitive modèle",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{x^5}{5}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : autre constante",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{1}{5}x^5-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : avec +C",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{x^5}{5}+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : dérivée au lieu de primitive (message)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["4x^3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : division oubliée",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["x^5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) x⁴ : divisé par l'ancien exposant",
+			"variationIndex": 4,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["\\frac{x^5}{4}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"form": "off",
+			"spaces": "off"
+		}
+	}
+}

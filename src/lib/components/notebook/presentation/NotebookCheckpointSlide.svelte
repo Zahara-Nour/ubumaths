@@ -24,6 +24,6 @@
 
 <div class="flex h-full w-full items-start justify-center overflow-auto p-8">
 	<div class="w-full max-w-4xl">
-		<CheckpointCell {cell} {notebook} />
+		<CheckpointCell {cell} {notebook} isReadonly={notebook.executionLocked} />
 	</div>
 </div>

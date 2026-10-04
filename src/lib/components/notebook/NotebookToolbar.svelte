@@ -42,6 +42,7 @@
 		notebook = null as NotebookStore | null,
 		isReadonly = false,
 		isTeacher = false,
+		executionLocked = false,
 		onSave = () => {},
 		onAddCodeCell = () => {},
 		onAddMarkdownCell = () => {},
@@ -55,6 +56,8 @@
 		notebook?: NotebookStore | null;
 		isReadonly?: boolean;
 		isTeacher?: boolean;
+		/** Carnet d'élève lu par autrui : aucun contrôle d'exécution affiché */
+		executionLocked?: boolean;
 		onSave?: () => void;
 		onAddCodeCell?: () => void;
 		onAddMarkdownCell?: () => void;
@@ -89,7 +92,11 @@
 			toaster.error('Notebook introuvable');
 			return;
 		}
-		const result = await generateAndDownloadNotebookPdf({ notebook: nb, options });
+		const result = await generateAndDownloadNotebookPdf({
+			notebook: nb,
+			options,
+			foreignStudentNotebook: executionLocked || (notebook?.executionLocked ?? false)
+		});
 		if (result.success) {
 			toaster.success('PDF téléchargé');
 		} else {
@@ -120,7 +127,11 @@
 			<ListTree class="size-4" />
 		</Button>
 
-		{#if isExecuting}
+		{#if executionLocked}
+			<!-- Carnet d'élève lu par autrui : ni « Tout exécuter » ni « Arrêter »
+			     (le store refuse aussi toute exécution) -->
+			<span class="text-sm text-muted-foreground">Lecture seule — exécution désactivée</span>
+		{:else if isExecuting}
 			<!-- Stop button -->
 			<Button
 				variant="destructive"
@@ -236,18 +247,21 @@
 		{/if}
 
 		<!-- PDF export — available to all roles; the dialog locks the hint
-		     toggle for non-teachers. -->
-		<Button
-			variant="ghost"
-			size="sm"
-			onclick={() => (pdfDialogOpen = true)}
-			class="gap-1.5"
-			title="Exporter le notebook en PDF"
-			aria-label="Exporter en PDF"
-		>
-			<FileDown class="size-4" />
-			<span class="hidden sm:inline">PDF</span>
-		</Button>
+		     toggle for non-teachers. Hidden for a foreign student notebook
+		     (the export function refuses it as well). -->
+		{#if !executionLocked}
+			<Button
+				variant="ghost"
+				size="sm"
+				onclick={() => (pdfDialogOpen = true)}
+				class="gap-1.5"
+				title="Exporter le notebook en PDF"
+				aria-label="Exporter en PDF"
+			>
+				<FileDown class="size-4" />
+				<span class="hidden sm:inline">PDF</span>
+			</Button>
+		{/if}
 
 		{#if !isReadonly}
 			<Button
