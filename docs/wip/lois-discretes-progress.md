@@ -35,4 +35,4 @@ V 35/12 ≈ 2,917, σ 1,708 ; U(0 ; 9) : E 4,5, V 8,25. B(1 ; 0,3) : V 0,21, σ 
   avertit « X prend ses valeurs de 1 à 6 », comme G(p) pour une borne < 1.
 - Q159 : `indicateurs: aucun` accepté pour B(n ; p), G(p), U(a ; b) : aucun indicateur
   (cache l'E par défaut de G et U ; fiche où l'élève calcule E).
-- [ ] Tests rouges · [ ] Implémentation · [ ] Revue · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation (non commitée) · [x] Revue (relu par la session principale : diff de 25 lignes) · [ ] PR, CI, merge

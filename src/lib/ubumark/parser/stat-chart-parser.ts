@@ -1347,6 +1347,11 @@ function parseLawIndicators(raw: string): LawIndicator[] {
 		.map((name) => name.trim())
 		.filter((name) => name !== '');
 	if (names.length === 0) throw new LineError('indicateurs : aucun indicateur donné');
+	// `indicateurs: aucun` (Q159) : aucune ligne, pas même l'E par défaut de G(p) et U(a ; b)
+	if (names.some((name) => normalizeKey(name) === 'aucun')) {
+		if (names.length > 1) throw new LineError('indicateurs : « aucun » s’écrit seul');
+		return [];
+	}
 	const indicators = names.map((name) => {
 		const key = normalizeKey(name).replace(/[\s-]+/g, '-');
 		const known = (Object.keys(LAW_INDICATOR_NAMES) as LawIndicator[]).find((i) => i === key);
@@ -1665,7 +1670,7 @@ function checkGeometric(
 			probabilities: [],
 			masked,
 			// L'espérance par défaut (spécification du 2026-10-04)
-			indicators: options.lawIndicators.length > 0 ? options.lawIndicators : ['esperance'],
+			indicators: optionLines.indicateurs !== undefined ? options.lawIndicators : ['esperance'],
 			binomial: null,
 			geometric: {
 				p: geometric.p,
@@ -1721,9 +1726,19 @@ function checkUniform(
 		.split(';')
 		.map((q) => q.trim())
 		.filter((q) => q !== '');
+	const warnings: StatChartIssue[] = [];
 	for (const text of written) {
 		const query = parseQuery(text, uniform.name, a, b);
 		if (typeof query === 'string') return at(queriesLine, query);
+		// Q158 : un événement non vide, tout entier hors de [a ; b], par ses bornes
+		// ÉCRITES (P(X = 7), P(X ⩽ 0), P(X > 6)) ; P(X = 2,5) est vide pour une autre raison
+		const open = parseQuery(text, uniform.name, -Infinity, Infinity);
+		if (typeof open !== 'string' && open.low <= open.high && (open.high < a || open.low > b)) {
+			warnings.push({
+				message: `Ligne ${queriesLine} : probabilités : « ${text} » : ${uniform.name} prend ses valeurs de ${a} à ${b}`,
+				line: queriesLine
+			});
+		}
 		queries.push(query);
 	}
 
@@ -1733,12 +1748,12 @@ function checkUniform(
 			values: Array.from({ length: count }, (_, i) => String(a + i)),
 			probabilities: [],
 			masked,
-			indicators: options.lawIndicators.length > 0 ? options.lawIndicators : ['esperance'],
+			indicators: optionLines.indicateurs !== undefined ? options.lawIndicators : ['esperance'],
 			binomial: null,
 			geometric: null,
 			uniform: { a, b, places: options.places ?? 3, queries, chart: options.binomialChart }
 		},
-		warnings: []
+		warnings
 	};
 }
 
