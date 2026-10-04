@@ -1,0 +1,275 @@
+{
+	"title": "Reconnaître l'allure d'une courbe à partir de tableaux",
+	"description": "Choisir parmi quatre courbes celle compatible avec le tableau de variations de f (et le signe de f″) ; chaque leurre contredit une information (variations, convexité, abscisse de l'inflexion ou des extremums, valeurs des extremums)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-147"],
+	"theme": "Fonctions convexes",
+	"domain": "Convexité",
+	"subdomain": "Lecture graphique",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"variations": [
+		{
+			"statement": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{eval:c-3}}, {{c}}, {{eval:c+3}}\n\nsign: f''(x)\n  {{eval:c-3}},{{c}}: {{if:s>0|-|+}}\n  {{c}}: z\n  {{c}},{{eval:c+3}}: {{if:s>0|+|-}}\n\nvariation: f(x)\n  {{eval:c-3}}: {{eval:k-4*s}}, {{if:s>0|bottom|top}}\n  {{c}}: {{k}}, center\n  {{eval:c+3}}: {{eval:k+4*s}}, {{if:s>0|top|bottom}}\n```\n\nQuelle courbe peut représenter $f$ ?",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "t",
+					"expression": "-1|1"
+				},
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"choices": [
+				{
+					"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(7*(x-{{c}})^3/54+(x-{{c}})/6)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(2*(x-{{c}})-2*(x-{{c}})^3/27)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le haut puis vers le bas|tournée vers le bas puis vers le haut}}, changement de courbure en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(2*(x-{{c}})^3/27-2*(x-{{c}}))+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|décroissante|croissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{eval:s*t}}*(({{t}}*(x-{{c}})-2)^3/25+37*({{t}}*(x-{{c}})-2)/75+52/15)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{eval:c+2*t}}.\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Variations : $f$ est {{if:s>0|croissante|décroissante}} sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$, de ${{eval:k-4*s}}$ à ${{eval:k+4*s}}$ : on écarte la courbe {{if:s>0|décroissante|croissante}}.",
+					"Convexité : $f''$ est {{if:s>0|négative puis positive|positive puis négative}} : $f$ est {{if:s>0|concave puis convexe|convexe puis concave}}, la courbe est {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}. On écarte la courbe dont la courbure est inversée.",
+					"$f''$ s'annule en changeant de signe en ${{c}}$ : le point d'inflexion a pour abscisse $\\textcolor{{{color:primary.0}}}{ {{c}} }$. On écarte la courbe dont l'inflexion est en ${{eval:c+2*t}}$ : il reste une seule courbe compatible."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau ci-dessous donne les variations d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{eval:c-1}}, {{eval:c+1}}, +inf\n\nvariation: f(x)\n  {{eval:c-1}}: {{eval:k+2*s}}, {{if:s>0|top|bottom}}\n  {{eval:c+1}}: {{eval:k-2*s}}, {{if:s>0|bottom|top}}\n```\n\nQuelle courbe peut représenter $f$ ?",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				},
+				{
+					"name": "w",
+					"expression": "-1|1"
+				},
+				{
+					"name": "c",
+					"expression": "-2..2"
+				},
+				{
+					"name": "k",
+					"expression": "-1..1"
+				}
+			],
+			"choices": [
+				{
+					"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3-3*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2}} en x = {{eval:c-1}}, minimum {{eval:k-2}} en x = {{eval:c+1}}|minimum {{eval:k-2}} en x = {{eval:c-1}}, maximum {{eval:k+2}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{eval:-s}}*((x-{{c}})^3-3*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|minimum {{eval:k-2}} en x = {{eval:c-1}}, maximum {{eval:k+2}} en x = {{eval:c+1}}|maximum {{eval:k+2}} en x = {{eval:c-1}}, minimum {{eval:k-2}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3/8-1.5*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2}} en x = {{eval:c-2}}, minimum {{eval:k-2}} en x = {{eval:c+2}}|minimum {{eval:k-2}} en x = {{eval:c-2}}, maximum {{eval:k+2}} en x = {{eval:c+2}}}}, inflexion en x = {{c}}.\n```"
+				},
+				{
+					"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3-3*(x-{{c}}))+{{eval:k+2*w}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2+2*w}} en x = {{eval:c-1}}, minimum {{eval:k-2+2*w}} en x = {{eval:c+1}}|minimum {{eval:k-2+2*w}} en x = {{eval:c-1}}, maximum {{eval:k+2+2*w}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Variations : $f$ admet un {{if:s>0|maximum local $f({{eval:c-1}})={{eval:k+2}}$ puis un minimum local $f({{eval:c+1}})={{eval:k-2}}$|minimum local $f({{eval:c-1}})={{eval:k-2}}$ puis un maximum local $f({{eval:c+1}})={{eval:k+2}}$}} : on écarte la courbe aux variations inversées, celle dont les extremums sont atteints en ${{eval:c-2}}$ et ${{eval:c+2}}$, et celle dont les extremums valent ${{eval:k-2+2*w}}$ et ${{eval:k+2+2*w}}$.",
+					"Il reste une seule courbe compatible : celle qui {{if:s>0|monte jusqu'au point $({{eval:c-1}}\\,;{{eval:k+2}})$, descend jusqu'au point $({{eval:c+1}}\\,;{{eval:k-2}})$ puis remonte|descend jusqu'au point $({{eval:c-1}}\\,;{{eval:k-2}})$, monte jusqu'au point $({{eval:c+1}}\\,;{{eval:k+2}})$ puis redescend}}. Pour ces quatre informations (sens de variation, abscisses et valeurs des extremums), il faut **tout** vérifier : un seul détail faux suffit à écarter une courbe."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : courbe compatible",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"t": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : convexité inversée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"t": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : variations inversées",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"t": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : inflexion mal placée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1",
+				"t": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : s=−1, courbe compatible",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"t": "-1",
+				"c": "2",
+				"k": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : s=−1, convexité inversée",
+			"variationIndex": 0,
+			"variables": {
+				"s": "-1",
+				"t": "-1",
+				"c": "2",
+				"k": "1"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : courbe compatible",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"w": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : variations inversées",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"w": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [1],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : extremums mal placés",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"w": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : valeurs des extremums fausses",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1",
+				"w": "1",
+				"c": "0",
+				"k": "0"
+			},
+			"selectedChoices": [3],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : s=−1, courbe compatible",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"w": "-1",
+				"c": "-1",
+				"k": "1"
+			},
+			"selectedChoices": [0],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : s=−1, extremums mal placés",
+			"variationIndex": 1,
+			"variables": {
+				"s": "-1",
+				"w": "-1",
+				"c": "-1",
+				"k": "1"
+			},
+			"selectedChoices": [2],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}
