@@ -1,0 +1,248 @@
+{
+	"title": "Inégalité de concentration : majorant et taille d'échantillon",
+	"description": "P(|Mₙ − μ| ⩾ δ) ⩽ V/(nδ²) : majorant pour n donné, plus petit n pour un risque α donné (pièges : V/(nδ), oubli de n, arrondi par défaut)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-254", "TSPE-256", "TSPE-255", "TSPE-247"],
+	"theme": "Probabilités",
+	"domain": "Concentration et loi des grands nombres",
+	"subdomain": "Inégalité de concentration",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "100|200|400|500|1000"
+				},
+				{
+					"name": "v",
+					"expression": "1..10"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				}
+			],
+			"conditions": ["v*d^2 < n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:v*d^2/n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Inégalité de concentration : $P\\left(\\left|M_n-\\mu\\right|\\geqslant\\delta\\right)\\leqslant\\dfrac{V}{n\\delta^{2}}$.",
+					"$\\dfrac{ {{v}} }{ {{n}}\\times{{eval:1/d;d}}^{2} }=\\dfrac{ {{v}} }{ {{eval:n/d^2;d}} }=\\textcolor{{{color:primary.0}}}{{{eval:v*d^2/n;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant {{eval:a/100;d}}$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2|4|5|10"
+				},
+				{
+					"name": "a",
+					"expression": "3|4|5|10"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:v*d^2*100/a}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-floor(-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Il suffit que $\\dfrac{V}{n\\delta^{2}}\\leqslant\\alpha$, soit $n\\geqslant\\dfrac{V}{\\alpha\\delta^{2}}$.",
+					"$\\dfrac{ {{v}} }{ {{eval:a/100;d}}\\times{{eval:1/d;d}}^{2} }\\approx {{eval:round(100*x)/100;d}}$, donc le plus petit entier est $n=\\textcolor{{{color:primary.0}}}{{{eval:-floor(-x)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité ${{eval:t/10;d}}$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p={{eval:t/10;d}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-{{eval:t/10;d}}\\right|\\geqslant 0.1\\right)\\leqslant 0.05$.\n\n$n=?$",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..9"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:t*(10-t)*20}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:-floor(-x)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La variance de la loi de Bernoulli est $V=p(1-p)={{eval:t/10;d}}\\times{{eval:1-t/10;d}}={{eval:t*(10-t)/100;d}}$.",
+					"Il faut $\\dfrac{V}{n\\times 0.1^{2}}\\leqslant 0.05$, soit $n\\geqslant\\dfrac{ {{eval:t*(10-t)/100;d}} }{0.05\\times 0.01}={{eval:x}}$ : $n=\\textcolor{{{color:primary.0}}}{{{eval:x}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : V = 5, n = 1000, δ = 0,1 → 0,5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1000",
+				"v": "5",
+				"d": "10"
+			},
+			"answers": ["0,5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : V/(nδ) = 0,05",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1000",
+				"v": "5",
+				"d": "10"
+			},
+			"answers": ["0,05"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : n oublié : 500",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1000",
+				"v": "5",
+				"d": "10"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : V = 3, δ = 0,5, α = 0,05 → 240",
+			"variationIndex": 1,
+			"variables": {
+				"v": "3",
+				"d": "2",
+				"a": "5"
+			},
+			"answers": ["240"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : V = 3, δ = 0,25, α = 0,1 → 480",
+			"variationIndex": 1,
+			"variables": {
+				"v": "3",
+				"d": "4",
+				"a": "10"
+			},
+			"answers": ["480"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : V = 1, δ = 0,5, α = 0,03 → 133,3… → 134",
+			"variationIndex": 1,
+			"variables": {
+				"v": "1",
+				"d": "2",
+				"a": "3"
+			},
+			"answers": ["134"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : arrondi par défaut 133",
+			"variationIndex": 1,
+			"variables": {
+				"v": "1",
+				"d": "2",
+				"a": "3"
+			},
+			"answers": ["133"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : δ au lieu de δ² : 120",
+			"variationIndex": 1,
+			"variables": {
+				"v": "3",
+				"d": "2",
+				"a": "5"
+			},
+			"answers": ["120"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : p = 0,3 → 420",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["420"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : p = 0,5 → 500",
+			"variationIndex": 2,
+			"variables": {
+				"t": "5"
+			},
+			"answers": ["500"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : V = p au lieu de p(1 − p) : 600",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3"
+			},
+			"answers": ["600"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

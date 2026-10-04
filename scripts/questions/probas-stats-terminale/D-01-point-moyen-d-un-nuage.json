@@ -1,0 +1,274 @@
+{
+	"title": "Statistique à deux variables : coordonnées du point moyen",
+	"description": "Calculer G(x̄ ; ȳ) à partir d'un tableau de 4 à 6 points (pièges : moyenne des y oubliée, division par le mauvais effectif)",
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-122", "TCOMP-116"],
+	"theme": "Statistiques",
+	"domain": "Statistique à deux variables",
+	"subdomain": "Point moyen",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ |\n|---|---|---|---|---|---|\n| $y_i$ | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ |\n\nCalcule les coordonnées du point moyen $G$ du nuage (nombres entiers ou décimaux).\n\n$G(?\\,;?)$",
+			"variables": [
+				{
+					"name": "y1",
+					"expression": "10..20"
+				},
+				{
+					"name": "y2",
+					"expression": "12..25"
+				},
+				{
+					"name": "y3",
+					"expression": "15..30"
+				},
+				{
+					"name": "y4",
+					"expression": "18..35"
+				},
+				{
+					"name": "y5",
+					"expression": "20..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "3"
+				},
+				{
+					"expectedAnswer": "{{eval:(y1+y2+y3+y4+y5)/5}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\bar{x}=\\dfrac{1+2+3+4+5}{5}=3$.",
+					"$\\bar{y}=\\dfrac{ {{y1}}+{{y2}}+{{y3}}+{{y4}}+{{y5}} }{5}=\\dfrac{ {{eval:y1+y2+y3+y4+y5}} }{5}={{eval:(y1+y2+y3+y4+y5)/5;d}}$.",
+					"$G\\left(\\textcolor{{{color:primary.0}}}{3}\\,;\\textcolor{{{color:primary.0}}}{{{eval:(y1+y2+y3+y4+y5)/5;d}}}\\right)$."
+				]
+			}
+		},
+		{
+			"statement": "On considère la série statistique à deux variables suivante.\n\n| $x_i$ | ${{x1}}$ | ${{x2}}$ | ${{x3}}$ | ${{x4}}$ |\n|---|---|---|---|---|\n| $y_i$ | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ |\n\nCalcule les coordonnées du point moyen $G$ du nuage (nombres entiers ou décimaux).\n\n$G(?\\,;?)$",
+			"variables": [
+				{
+					"name": "x1",
+					"expression": "1..5"
+				},
+				{
+					"name": "x2",
+					"expression": "{{eval:x1+1}}..{{eval:x1+4}}"
+				},
+				{
+					"name": "x3",
+					"expression": "{{eval:x2+1}}..{{eval:x2+4}}"
+				},
+				{
+					"name": "x4",
+					"expression": "{{eval:x3+1}}..{{eval:x3+4}}"
+				},
+				{
+					"name": "y1",
+					"expression": "2..30"
+				},
+				{
+					"name": "y2",
+					"expression": "2..30"
+				},
+				{
+					"name": "y3",
+					"expression": "2..30"
+				},
+				{
+					"name": "y4",
+					"expression": "2..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(x1+x2+x3+x4)/4}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(y1+y2+y3+y4)/4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\bar{x}=\\dfrac{ {{x1}}+{{x2}}+{{x3}}+{{x4}} }{4}={{eval:(x1+x2+x3+x4)/4;d}}$ et $\\bar{y}=\\dfrac{ {{y1}}+{{y2}}+{{y3}}+{{y4}} }{4}={{eval:(y1+y2+y3+y4)/4;d}}$.",
+					"$G\\left(\\textcolor{{{color:primary.0}}}{{{eval:(x1+x2+x3+x4)/4;d}}}\\,;\\textcolor{{{color:primary.0}}}{{{eval:(y1+y2+y3+y4)/4;d}}}\\right)$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le chiffre d'affaires $y_i$ (en milliers d'euros) d'une entreprise selon le rang $x_i$ de l'année (rang $1$ pour 2020).\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| $y_i$ | ${{y1}}$ | ${{y2}}$ | ${{y3}}$ | ${{y4}}$ | ${{y5}}$ | ${{y6}}$ |\n\nCalcule les coordonnées du point moyen $G$ du nuage (nombres entiers ou décimaux).\n\n$G(?\\,;?)$",
+			"variables": [
+				{
+					"name": "y1",
+					"expression": "40..50"
+				},
+				{
+					"name": "y2",
+					"expression": "45..55"
+				},
+				{
+					"name": "y3",
+					"expression": "50..60"
+				},
+				{
+					"name": "y4",
+					"expression": "55..65"
+				},
+				{
+					"name": "y5",
+					"expression": "60..70"
+				},
+				{
+					"name": "y6",
+					"expression": "65..75"
+				}
+			],
+			"conditions": ["mod(y1+y2+y3+y4+y5+y6, 3) == 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:7/2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:(y1+y2+y3+y4+y5+y6)/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\bar{x}=\\dfrac{1+2+\\cdots+6}{6}=\\dfrac{21}{6}=3.5$.",
+					"$\\bar{y}=\\dfrac{ {{eval:y1+y2+y3+y4+y5+y6}} }{6}={{eval:(y1+y2+y3+y4+y5+y6)/6;d}}$, donc $G\\left(\\textcolor{{{color:primary.0}}}{3.5}\\,;\\textcolor{{{color:primary.0}}}{{{eval:(y1+y2+y3+y4+y5+y6)/6;d}}}\\right)$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : 12, 15, 19, 22, 27 → G(3 ; 19)",
+			"variationIndex": 0,
+			"variables": {
+				"y1": "12",
+				"y2": "15",
+				"y3": "19",
+				"y4": "22",
+				"y5": "27"
+			},
+			"answers": ["3", "19"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : somme des y non divisée",
+			"variationIndex": 0,
+			"variables": {
+				"y1": "12",
+				"y2": "15",
+				"y3": "19",
+				"y4": "22",
+				"y5": "27"
+			},
+			"answers": ["3", "95"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 15, 15, 20, 20, 21 → 18,2",
+			"variationIndex": 0,
+			"variables": {
+				"y1": "15",
+				"y2": "15",
+				"y3": "20",
+				"y4": "20",
+				"y5": "21"
+			},
+			"answers": ["3", "18,2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : x = 1, 3, 6, 10 ; y = 5, 8, 12, 15 → G(5 ; 10)",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "6",
+				"x4": "10",
+				"y1": "5",
+				"y2": "8",
+				"y3": "12",
+				"y4": "15"
+			},
+			"answers": ["5", "10"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : coordonnées échangées",
+			"variationIndex": 1,
+			"variables": {
+				"x1": "1",
+				"x2": "3",
+				"x3": "6",
+				"x4": "10",
+				"y1": "5",
+				"y2": "8",
+				"y3": "12",
+				"y4": "15"
+			},
+			"answers": ["10", "5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : ȳ = 57 → G(3,5 ; 57)",
+			"variationIndex": 2,
+			"variables": {
+				"y1": "45",
+				"y2": "50",
+				"y3": "55",
+				"y4": "60",
+				"y5": "62",
+				"y6": "70"
+			},
+			"answers": ["3,5", "57"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : x̄ = 3 (milieu mal compté)",
+			"variationIndex": 2,
+			"variables": {
+				"y1": "45",
+				"y2": "50",
+				"y3": "55",
+				"y4": "60",
+				"y5": "62",
+				"y6": "70"
+			},
+			"answers": ["3", "57"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

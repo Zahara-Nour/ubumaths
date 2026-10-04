@@ -1,0 +1,266 @@
+{
+	"title": "Ajustement par changement de variable z = ln(y)",
+	"description": "Ajustement affine de z = ln(y) donné : calculer un zᵢ, revenir à y = e^b × e^(ax), estimer y ou un seuil en x (pièges : oubli de l'exponentielle, e^b non calculé, x non entier)",
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-119", "TCOMP-124", "TCOMP-120"],
+	"theme": "Statistiques",
+	"domain": "Statistique à deux variables",
+	"subdomain": "Changement de variable",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "On étudie une série $(x_i\\,;y_i)$ dont le nuage a une allure exponentielle. On pose $z_i=\\ln(y_i)$.\n\nCalcule $z_i$ pour $y_i={{y}}$. Donne la valeur arrondie au centième.\n\n$z_i\\approx ?$",
+			"variables": [
+				{
+					"name": "y",
+					"expression": "11..600"
+				}
+			],
+			"conditions": [
+				"abs(100*ln(y)-floor(100*ln(y))-0.5) > 0.05",
+				"mod(round(100*ln(y)), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(100*ln(y))/100;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 2
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$z_i=\\ln({{y}})\\approx \\textcolor{{{color:primary.0}}}{{{eval:round(100*ln(y))/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série $(x_i\\,;y_i)$, on a posé $z=\\ln(y)$, et la calculatrice donne l'ajustement affine $z={{eval:A/100;d}}x+{{eval:B/100;d}}$.\n\nEstime $y$ pour $x={{x0}}$. Donne la valeur arrondie à l'unité.\n\n$y\\approx ?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "5..30"
+				},
+				{
+					"name": "B",
+					"expression": "100..300"
+				},
+				{
+					"name": "x0",
+					"expression": "5..15"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:exp(A*x0/100+B/100)}}"
+				}
+			],
+			"conditions": ["abs(r-floor(r)-0.5) > 0.05", "r < 5000"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(r)}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 0
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $x={{x0}}$ : $z={{eval:A/100;d}}\\times {{x0}}+{{eval:B/100;d}}={{eval:A*x0/100+B/100;d}}$.",
+					"Comme $z=\\ln(y)$, $y=e^{z}=e^{ {{eval:A*x0/100+B/100;d}} }\\approx \\textcolor{{{color:primary.0}}}{{{eval:round(r)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série $(x_i\\,;y_i)$, on a posé $z=\\ln(y)$, et la calculatrice donne l'ajustement affine $z={{eval:A/100;d}}x+{{eval:B/100;d}}$. On en déduit une expression de la forme $y=k\\,e^{ {{eval:A/100;d}}x}$.\n\nDonne la valeur de $k$ arrondie au dixième.\n\n$k\\approx ?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "5..30"
+				},
+				{
+					"name": "B",
+					"expression": "50..400"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:exp(B/100)}}"
+				}
+			],
+			"conditions": ["abs(10*r-floor(10*r)-0.5) > 0.05", "mod(round(10*r), 10) != 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*r)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y=e^{z}=e^{ {{eval:A/100;d}}x+{{eval:B/100;d}} }=e^{ {{eval:B/100;d}} }\\times e^{ {{eval:A/100;d}}x}$.",
+					"$k=e^{ {{eval:B/100;d}} }\\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*r)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série $(x_i\\,;y_i)$, on a posé $z=\\ln(y)$, et la calculatrice donne l'ajustement affine $z={{eval:A/100;d}}x+{{eval:B/100;d}}$.\n\nSelon ce modèle, à partir de quelle valeur entière de $x$ a-t-on $y>{{y0}}$ ?\n\n$x=?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "10..30"
+				},
+				{
+					"name": "B",
+					"expression": "100..200"
+				},
+				{
+					"name": "y0",
+					"expression": "100|200|500|1000|2000"
+				},
+				{
+					"name": "s",
+					"expression": "{{eval:(ln(y0)-B/100)/(A/100)}}"
+				}
+			],
+			"conditions": ["s > 1", "s - floor(s) > 0.05", "s - floor(s) < 0.95"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:floor(s)+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$y>{{y0}}\\iff z>\\ln({{y0}})\\iff {{eval:A/100;d}}x+{{eval:B/100;d}}>\\ln({{y0}})\\iff x>\\dfrac{\\ln({{y0}})-{{eval:B/100;d}} }{ {{eval:A/100;d}} }\\approx {{eval:round(100*s)/100;d}}$.",
+					"Le plus petit entier qui convient est $x=\\textcolor{{{color:primary.0}}}{{{eval:floor(s)+1}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : ln(50) ≈ 3,91",
+			"variationIndex": 0,
+			"variables": {
+				"y": "50"
+			},
+			"answers": ["3,91"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : log décimal 1,70",
+			"variationIndex": 0,
+			"variables": {
+				"y": "50"
+			},
+			"answers": ["1,70"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : trop précis 3,912",
+			"variationIndex": 0,
+			"variables": {
+				"y": "50"
+			},
+			"answers": ["3,912"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["rounding"]
+			}
+		},
+		{
+			"description": "v1 : z = 0,2x + 1,5, x = 10 → e^3,5 ≈ 33",
+			"variationIndex": 1,
+			"variables": {
+				"A": "20",
+				"B": "150",
+				"x0": "10"
+			},
+			"answers": ["33"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : z = 3,5 donné (exponentielle oubliée)",
+			"variationIndex": 1,
+			"variables": {
+				"A": "20",
+				"B": "150",
+				"x0": "10"
+			},
+			"answers": ["3,5"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : B = 2 → e² ≈ 7,4",
+			"variationIndex": 2,
+			"variables": {
+				"A": "10",
+				"B": "200"
+			},
+			"answers": ["7,4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : b au lieu de e^b",
+			"variationIndex": 2,
+			"variables": {
+				"A": "10",
+				"B": "200"
+			},
+			"answers": ["2"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : z = 0,2x + 1,5, y > 100 → x > 15,53 → 16",
+			"variationIndex": 3,
+			"variables": {
+				"A": "20",
+				"B": "150",
+				"y0": "100"
+			},
+			"answers": ["16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : arrondi par défaut 15",
+			"variationIndex": 3,
+			"variables": {
+				"A": "20",
+				"B": "150",
+				"y0": "100"
+			},
+			"answers": ["15"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
