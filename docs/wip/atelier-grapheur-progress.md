@@ -268,6 +268,51 @@ Mesuré avant : `a = 0,5` est lu 0,5 → le curseur écrit avec la virgule.
 - Suites : 356 navigateur, 2 210 serveur ; `check:incremental` 0 ; eslint :
   0 erreur, rien dans les lignes modifiées.
 
+## Lot 5a — les suites : modèle et Calcul
+
+Branche `feat/atelier-suites-modele`, worktree `../ubumaths-wt-suites`.
+Lot 4 mergé (#801). Décisions S1 à S4 de David inscrites dans la phase 0.
+
+Mesuré avant : une suite explicite marchait (`u(5)` = 11 pour `2n+1`) ; une
+récurrence répondait par une erreur en anglais (« free variables: u »,
+« Unknown function: u ») ; `u(n+1) = …` tapé dans Calcul échouait.
+
+- [x] `SequenceObject` : `mode`, `firstIndex`, `firstTerm` (nombre ou nom de
+      valeur, S1) ; mode déduit (se cite elle-même → récurrence, S4), y compris
+      pour les suites rangées avant ; `setSequence` validé (zod) ; rang et
+      premier terme gardés à la modification ; le premier terme compte dans
+      les dépendances (valeur absente → en attente ; renommée → suivie).
+- [x] `termsOf` (`engine.ts`) : réutilise `computeSequenceTerms` du grapheur ;
+      `u_n` et `u(n)` acceptés (S2) ; une récurrence n'est plus liée au moteur
+      comme une fonction de n.
+- [x] Calcul (S3) : `u(n+1) = …` crée une récurrence ; `u(5)`, `u(3) + 1` sont
+      calculés (termes substitués avant le moteur) ; rang avant le premier
+      refusé en français.
+- [x] Rangé (mode toujours ; rang et premier terme s'ils diffèrent), relu,
+      fusionné.
+- `constantOf` déplacée dans `constant.ts` (le moteur s'en sert : pas
+  d'import circulaire), réexportée par l'atelier.
+- Tests : 26 serveur (25 rouges avant) ; suites 1 231 serveur, 263 navigateur ;
+  `check:incremental` 0 ; `lint:fast` propre.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (12 rouges vus) :
+  - **B1 (bloquant)** : retaper `u(n) = 2n+1` sur une récurrence la laissait
+    en récurrence → `u(3)` valait 5 au lieu de 7, sans un mot. Le mode est
+    désormais REDÉDUIT à chaque modification ; une récurrence constante
+    (`u(n+1) = 3`) se demande explicitement (Calcul, ou le sélecteur de la
+    carte au lot 5b). Choix signalé à David.
+  - C1 : un objet qui cite une récurrence comme une fonction (`f(x) = u(x)+1`)
+    passe en erreur, en français (il répondait en anglais).
+  - C2 : `2u(3)` se calcule (le `\b` ne coupait pas après un chiffre) ; un
+    rang non entier est refusé en français. C3 : « limité aux 1000 premiers
+    termes » et « la suite diverge » ne se confondent plus.
+  - C4/C5/M1 : récurrence d'un autre ordre, premier terme qui n'est pas une
+    valeur, grandeur comme premier terme → erreur dès la définition.
+  - C6 : une commande sur une récurrence (`.dériver u(2)`) est refusée en
+    français. M2 : un terme affiché avec 15 chiffres au plus.
+  - Noté (M3) : une valeur renommée à l'arrivée d'un lien n'est pas suivie
+    par le premier terme (comme les définitions, comportement antérieur).
+- Suites : 1 245 serveur, 263 navigateur ; `check:incremental` 0 ; lint propre.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

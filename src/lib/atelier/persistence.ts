@@ -73,7 +73,14 @@ const storedObjectSchema = z.object({
 		// la carte refuserait (revue du lot 4, A3)
 		.refine((s) => s.min < s.max && s.step <= s.max - s.min)
 		.optional()
-		.catch(undefined)
+		.catch(undefined),
+	/**
+	 * Mode, rang et premier terme d'une suite (lot 5). Absents des suites rangées
+	 * avant : le mode se retrouve à la relecture (S4). Validés à la création.
+	 */
+	mode: z.enum(['explicit', 'recurrence']).optional().catch(undefined),
+	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
+	firstTerm: z.string().max(20).optional().catch(undefined)
 });
 
 /**
@@ -92,6 +99,9 @@ export interface StoredObject {
 	readonly plotted?: boolean;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
+	readonly mode?: 'explicit' | 'recurrence';
+	readonly firstIndex?: number;
+	readonly firstTerm?: string;
 }
 
 export interface AtelierState {

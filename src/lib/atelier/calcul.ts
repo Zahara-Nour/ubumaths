@@ -18,7 +18,8 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
-import { syncEngine, expressionOf, expandInput } from './engine';
+import { syncEngine, expressionOf, expandInput, termsOf } from './engine';
+import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
@@ -128,6 +129,61 @@ export function derivativeNote(result: Created | Refused | null): string {
 	if (result === null) return '';
 	if (!result.ok) return ` — ${result.message}`;
 	return result.existed ? ` — ${displayName(result.object.name)} existe déjà` : '';
+}
+
+/** `u(n+1) = …` : la définition d'une suite récurrente (décision S3). */
+const RECURRENCE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*\(\s*n\s*\+\s*1\s*\)\s*=(?!=)\s*(.+)$/s;
+
+/**
+ * `u(5)`, `2u(3)` : un nom suivi d'une parenthèse. ⚠️ Pas de `\b` devant : il ne
+ * coupe pas entre `2` et `u`, et `2u(3)` repartait en erreur anglaise (revue
+ * du lot 5a, C2). L'argument est lu à part : un rang non entier se refuse.
+ */
+const TERM = /(?<![A-Za-z_])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
+
+/**
+ * Remplacer, dans ce que l'élève tape, chaque terme d'une RÉCURRENCE (`u(5)`)
+ * par sa valeur. Les suites explicites et les fonctions sont laissées au moteur.
+ *
+ * Un rang avant le premier est refusé en français, pas d'erreur du moteur.
+ */
+function recurrenceTermsIn(
+	atelier: Atelier,
+	input: string
+): { ok: true; text: string } | { ok: false; message: string } {
+	let failure: string | null = null;
+	const text = input.replace(TERM, (whole, name: string, rank: string) => {
+		const object = atelier.get(name);
+		if (failure !== null || object?.kind !== 'sequence' || object.mode !== 'recurrence')
+			return whole;
+		if (!/^\s*\d+\s*$/.test(rank)) {
+			failure = `Le rang de ${name} doit être un entier positif : ${name}(5), pas ${name}(${rank.trim()}).`;
+			return whole;
+		}
+		const n = Number(rank);
+		if (n < object.firstIndex) {
+			failure = `${name}(${n}) n'existe pas : la suite commence au rang ${object.firstIndex}.`;
+			return whole;
+		}
+		// C3 : « trop loin » et « diverge » ne se confondent pas
+		if (n - object.firstIndex >= MAX_SEQUENCE_TERMS) {
+			failure = `${name}(${n}) : le calcul est limité aux ${MAX_SEQUENCE_TERMS} premiers termes.`;
+			return whole;
+		}
+		const terms = termsOf(atelier, name, n);
+		if (!terms.ok) {
+			failure = terms.message;
+			return whole;
+		}
+		const term = terms.terms.find((t) => t.n === n);
+		if (term === undefined) {
+			failure = `${name}(${n}) n'est pas un nombre fini : la suite diverge.`;
+			return whole;
+		}
+		// 15 chiffres : au-delà, la dérive du flottant passait pour un entier exact
+		return `(${Number(term.value.toPrecision(15))})`;
+	});
+	return failure === null ? { ok: true, text } : { ok: false, message: failure };
 }
 
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
@@ -329,10 +385,25 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// Les simulations lisent des NOMS de listes : elles passent avant la substitution
 	// des noms par leurs expressions, qui en ferait des listes de nombres
+	// C6 : une commande traite une expression ; une récurrence n'en est pas une
+	// (`.dériver u(2)` rendait « d/dx((u(n)-5)(2)) = 0 »)
+	const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
+	const recurrence = session.atelier.objects.find(
+		(o) =>
+			o.kind === 'sequence' &&
+			o.mode === 'recurrence' &&
+			new RegExp(`(?<![A-Za-z_])${o.name}\\s*(?:\\(|_)`).test(typedArgument)
+	);
+	if (recurrence !== undefined) {
+		return {
+			kind: 'refus',
+			message: `« ${recurrence.name} » est une suite récurrente : les commandes ne s'en servent pas. Ses termes se calculent un par un, comme ${recurrence.name}(5).`
+		};
+	}
+
 	const simulation = SIMULATIONS[known.name];
 	if (simulation !== undefined) {
 		const seed = (session.seed ?? randomSeed)();
-		const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
 		const outcome = simulation(session.atelier, typedArgument, seed);
 		return outcome.ok
 			? {
@@ -495,6 +566,21 @@ export function runInput(
 		};
 	}
 
+	// S3 : `u(n+1) = 0,5u(n) + 3` crée (ou modifie) une suite RÉCURRENTE
+	const recurrence = RECURRENCE_DEFINITION.exec(input);
+	if (recurrence !== null) {
+		const [, name, body] = recurrence;
+		const result = defineObject(session, name, 'n', body, provenance);
+		if (result.kind === 'definition' && session.atelier.get(name)?.kind === 'sequence') {
+			const set = session.atelier.setSequence(name, { mode: 'recurrence' });
+			if (!set.ok) return { kind: 'refus', message: set.message };
+		}
+		syncEngine(session.atelier, session.engine);
+		return result.kind === 'definition'
+			? { ...result, object: session.atelier.get(name) ?? result.object }
+			: result;
+	}
+
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;
@@ -509,8 +595,13 @@ export function runInput(
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
 
+	// S3 : les termes d'une récurrence (`u(5)`) sont calculés ici, puis passés au
+	// moteur comme des nombres — il ne sait pas itérer une récurrence
+	const withTerms = recurrenceTermsIn(session.atelier, input);
+	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
+
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
-	const result = session.engine.execute(expandInput(session.atelier, input));
+	const result = session.engine.execute(expandInput(session.atelier, withTerms.text));
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',

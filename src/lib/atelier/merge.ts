@@ -12,7 +12,7 @@
  * @module atelier/merge
  */
 
-import type { Atelier } from './atelier.svelte';
+import { sequenceInputOf, type Atelier } from './atelier.svelte';
 import type { AtelierState } from './persistence';
 import { nextName, derivativeOf, displayName } from './names';
 
@@ -77,7 +77,8 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 				kind: stored.kind,
 				name: chosen,
 				// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
-				definition: derivative !== null ? `${chosen}(x)` : stored.definition
+				definition: derivative !== null ? `${chosen}(x)` : stored.definition,
+				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 			},
 			// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
 			// rangement, pour que l'aller-retour ne change pas le sens (D10).

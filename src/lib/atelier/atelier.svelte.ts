@@ -16,7 +16,8 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList, isValue } from './types';
+import { MAX_LISTS, isFunction, isList, isSequence, isValue } from './types';
+import { constantOf } from './constant';
 import type {
 	AtelierObject,
 	CurveDisplay,
@@ -24,6 +25,7 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	SequenceObject,
 	Slider,
 	ValueObject
 } from './types';
@@ -32,17 +34,17 @@ import {
 	nextName,
 	nameRejectionMessage,
 	derivativeOf,
+	hasObjectNameShape,
 	derivativeName,
 	displayName
 } from './names';
 import type { Provenance } from './parse';
-import { astOf, parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
-import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
-import { expressionOf } from './engine';
+import { expressionOf, termsOf } from './engine';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -109,6 +111,8 @@ export interface CreateInput {
 	readonly kind: ObjectKind;
 	readonly definition?: string;
 	readonly name?: string;
+	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
+	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
 }
 
 // =============================================================================
@@ -117,6 +121,48 @@ export interface CreateInput {
 
 /** Bornes d'un curseur neuf — décision D3, reprises du grapheur. */
 const DEFAULT_SLIDER = { min: -10, max: 10, step: 0.1 } as const;
+
+/** Plus grand rang de départ accepté : au-delà, rien ne s'afficherait. */
+const MAX_FIRST_INDEX = 1000;
+
+/** Ce qu'un réglage de suite peut changer (S1, U1). */
+const sequencePatchSchema = z
+	.object({
+		mode: z.enum(['explicit', 'recurrence']),
+		firstIndex: z.number().int().min(0).max(MAX_FIRST_INDEX),
+		firstTerm: z
+			.string()
+			.trim()
+			.max(20)
+			.refine((t) => readNumber(t) !== null || hasObjectNameShape(t))
+	})
+	.partial()
+	.strict();
+
+/** Ce qu'une suite rangée porte de son mode, de son rang et de son premier terme. */
+export function sequenceInputOf(
+	stored: StoredObject
+): Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>> {
+	return {
+		...(stored.mode !== undefined && { mode: stored.mode }),
+		...(stored.firstIndex !== undefined && { firstIndex: stored.firstIndex }),
+		...(stored.firstTerm !== undefined && { firstTerm: stored.firstTerm })
+	};
+}
+
+/** Les réglages d'une suite relus, validés ; un champ illisible garde sa valeur. */
+function sequenceSettings(
+	input: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>,
+	built: SequenceObject
+): Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'> {
+	const read = sequencePatchSchema.safeParse(input);
+	const data = read.success ? read.data : {};
+	return {
+		mode: data.mode ?? built.mode,
+		firstIndex: data.firstIndex ?? built.firstIndex,
+		firstTerm: data.firstTerm ?? built.firstTerm
+	};
+}
 
 /** Ce qu'un réglage de curseur peut changer — mêmes bornes que le grapheur. */
 const sliderPatchSchema = z
@@ -148,32 +194,9 @@ function widenedSlider(slider: Slider, value: number | null): Slider {
 	return { ...slider, min: Math.min(slider.min, limited), max: Math.max(slider.max, limited) };
 }
 
-/**
- * La valeur d'une CONSTANTE, ou `null` si la définition cite d'autres objets.
- *
- * ⚠️ Pas seulement un nombre écrit : MathLive écrit `2{,}5`, `\frac{1}{2}`,
- * `\pi`, et `readNumber` les prenait pour des formules — la carte disait
- * « calculée » et retirait le curseur (revue du lot 4, A1). Une définition
- * qui ne cite rien s'ÉVALUE ; seule une définition qui cite un objet est
- * calculée, et le curseur effacerait sa formule.
- */
-export function constantOf(
-	definition: string,
-	provenance: Provenance | undefined,
-	functionNames: readonly string[]
-): number | null {
-	const plain = readNumber(definition.replace(/\{,\}/g, ','));
-	if (plain !== null) return plain;
-	if (referencesOf(definition, provenance, functionNames).length > 0) return null;
-	const ast = astOf(definition, provenance, functionNames);
-	if (ast === null) return null;
-	const result = evaluate(ast, { mode: 'decimal' });
-	return result.status === 'value' &&
-		typeof result.value === 'number' &&
-		Number.isFinite(result.value)
-		? result.value
-		: null;
-}
+// `constantOf` vit dans `constant.ts` (le moteur s'en sert aussi, sans import
+// circulaire) ; réexportée pour les composants qui la prenaient ici
+export { constantOf } from './constant';
 
 /**
  * Le nombre écrit par le curseur : arrondi au pas (pas de 0,30000000000000004)
@@ -342,7 +365,12 @@ export class Atelier {
 			name = input.name;
 		}
 
-		this.items.push(this.build(name, input.kind, definition, provenance));
+		const built = this.build(name, input.kind, definition, provenance);
+		this.items.push(
+			isSequence(built) && input.sequence
+				? { ...built, ...sequenceSettings(input.sequence, built) }
+				: built
+		);
 		this.recomputeAll();
 		return { ok: true, object: this.get(name)! };
 	}
@@ -552,8 +580,14 @@ export class Atelier {
 		this.items.forEach((o, i) => {
 			if (o.name === to || derivativeOf(o.name)?.base === to) return;
 			const rewritten = this.#renamedIn(o, from, to);
-			if (rewritten !== o.definition) {
-				this.items[i] = { ...o, definition: rewritten } as AtelierObject;
+			// Le premier terme d'une suite peut citer la valeur renommée (S1)
+			const firstTerm = isSequence(o) && o.firstTerm === from ? to : undefined;
+			if (rewritten !== o.definition || firstTerm !== undefined) {
+				this.items[i] = {
+					...o,
+					definition: rewritten,
+					...(firstTerm !== undefined && { firstTerm })
+				} as AtelierObject;
 				updated.push(o.name);
 			}
 		});
@@ -594,8 +628,21 @@ export class Atelier {
 			isValue(previous) && previous.slider && isValue(rebuilt) && rebuilt.slider
 				? widenedSlider(previous.slider, constantOf(definition, provenance, this.functionNames))
 				: undefined;
+		// Le rang et le premier terme d'une suite survivent à la définition. Son
+		// mode, lui, est REDÉDUIT (revue du lot 5a, B1) : garder « récurrence »
+		// sur `u(n) = 2n + 1` faisait valoir u(3) = 5 au lieu de 7, sans un mot.
+		// Une récurrence constante (`u(n+1) = 3`) se demande explicitement.
+		const keptSequence =
+			isSequence(previous) && isSequence(rebuilt)
+				? {
+						mode: rebuilt.mode,
+						firstIndex: previous.firstIndex,
+						firstTerm: previous.firstTerm
+					}
+				: undefined;
 		this.items[index] = {
 			...rebuilt,
+			...keptSequence,
 			...(previous.plotted && { plotted: true }),
 			...(isFunction(previous) && previous.display && { display: previous.display }),
 			...(keptSlider && { slider: keptSlider })
@@ -708,6 +755,15 @@ export class Atelier {
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
+				: {}),
+			// Le mode toujours (une récurrence constante ne se devine pas), le rang
+			// et le premier terme seulement s'ils diffèrent du défaut
+			...(isSequence(o)
+				? {
+						mode: o.mode,
+						...(o.firstIndex !== 0 && { firstIndex: o.firstIndex }),
+						...(o.firstTerm !== '0' && { firstTerm: o.firstTerm })
+					}
 				: {})
 		}));
 		return { version: ATELIER_STATE_VERSION, objects };
@@ -733,7 +789,8 @@ export class Atelier {
 			const result = this.create({
 				kind: stored.kind,
 				name: stored.name,
-				definition: stored.definition
+				definition: stored.definition,
+				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 			});
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
@@ -845,12 +902,71 @@ export class Atelier {
 	/** Les objets dont la définition cite `name`, directement. */
 	dependents(name: string): readonly string[] {
 		return this.items
-			.filter(
-				(o) =>
-					o.name !== name &&
-					this.#cited(o.kind, o.definition, o.provenance).some((ref) => ref.name === name)
-			)
+			.filter((o) => o.name !== name && this.#refsOf(o).some((ref) => ref.name === name))
 			.map((o) => o.name);
+	}
+
+	/**
+	 * Tout ce qu'un objet cite : sa définition, ET le premier terme d'une
+	 * récurrence quand c'est le nom d'une valeur (`u₀ = a`, décision S1) — sans
+	 * quoi supprimer `a` laisserait la suite « ok » et muette.
+	 */
+	#refsOf(o: AtelierObject): MissingReference[] {
+		const refs = [...this.#cited(o.kind, o.definition, o.provenance)];
+		if (isSequence(o) && o.mode === 'recurrence' && hasObjectNameShape(o.firstTerm)) {
+			if (!refs.some((r) => r.name === o.firstTerm)) refs.push({ name: o.firstTerm, as: 'value' });
+		}
+		return refs;
+	}
+
+	/** La définition cite-t-elle la suite elle-même (`u_n`, `u(n)`) ? */
+	#citesItself(name: string, definition: string, provenance: Provenance): boolean {
+		return this.#cited('sequence', definition, provenance).some((r) => r.name === name);
+	}
+
+	/**
+	 * Régler le mode, le rang du premier terme et le premier terme d'une suite
+	 * (phase 0 `/grapheur` §5 U1, décisions S1 à S4).
+	 *
+	 * Le premier terme est un nombre ou le nom d'une valeur ; une valeur absente
+	 * met la suite en attente, comme tout nom manquant.
+	 */
+	setSequence(
+		name: string,
+		patch: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>
+	): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isSequence(current)) {
+			return { ok: false, message: `« ${name} » n'est pas une suite.` };
+		}
+		const read = sequencePatchSchema.safeParse(patch);
+		if (!read.success) {
+			return {
+				ok: false,
+				message:
+					'Le rang doit être un entier positif, le premier terme un nombre ou le nom d’une valeur.'
+			};
+		}
+		const next = { ...current, ...read.data };
+		if (next.firstTerm === name) {
+			return {
+				ok: false,
+				message: `Le premier terme de « ${name} » ne peut pas être la suite elle-même.`
+			};
+		}
+		if (
+			next.mode === 'explicit' &&
+			this.#citesItself(name, next.definition, next.provenance ?? 'url')
+		) {
+			return {
+				ok: false,
+				message: `« ${name} » se cite elle-même : c'est une récurrence, pas une suite explicite.`
+			};
+		}
+		this.items[index] = next;
+		this.recomputeAll();
+		return { ok: true };
 	}
 
 	/**
@@ -925,7 +1041,15 @@ export class Atelier {
 			case 'function':
 				return { ...base, kind: 'function', variable: 'x' };
 			case 'sequence':
-				return { ...base, kind: 'sequence', variable: 'n' };
+				// S4 : une définition qui se cite elle-même est une récurrence
+				return {
+					...base,
+					kind: 'sequence',
+					variable: 'n',
+					mode: this.#citesItself(name, definition, provenance) ? 'recurrence' : 'explicit',
+					firstIndex: 0,
+					firstTerm: '0'
+				} satisfies SequenceObject;
 		}
 	}
 
@@ -979,9 +1103,7 @@ export class Atelier {
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
-			const refs = this.#cited(o.kind, o.definition, o.provenance).filter(
-				(r) => !(r.name === o.name && o.kind === 'sequence')
-			);
+			const refs = this.#refsOf(o).filter((r) => !(r.name === o.name && o.kind === 'sequence'));
 			deps.set(
 				o.name,
 				refs.filter((r) => usable(r.name)).map((r) => r.name)
@@ -1079,6 +1201,43 @@ export class Atelier {
 		});
 
 		this.#underivable();
+		this.#sequenceChecks();
+	}
+
+	/**
+	 * Ce qu'une suite ne sait pas faire se DIT dès la définition (revue du lot 5a) :
+	 *
+	 * - un objet qui cite une récurrence comme une fonction (`f(x) = u(x) + 1`)
+	 *   ne calcule rien — le moteur répondait en anglais ;
+	 * - une récurrence qui n'est pas d'ordre 1 (`u(n-1)`), ou dont le premier
+	 *   terme n'a pas de valeur, n'attend pas le premier calcul pour échouer.
+	 *
+	 * ⚠️ APRÈS les statuts, comme `#underivable` : `termsOf` lit des objets « ok ».
+	 */
+	#sequenceChecks(): void {
+		const recurrences = new Set(
+			this.items.filter((o) => isSequence(o) && o.mode === 'recurrence').map((o) => o.name)
+		);
+		this.items.forEach((o, i) => {
+			if (o.status !== 'ok') return;
+			const cited = this.#cited(o.kind, o.definition, o.provenance)
+				.map((r) => r.name)
+				.find((r) => r !== o.name && recurrences.has(r));
+			if (cited !== undefined) {
+				this.items[i] = {
+					...o,
+					status: 'error',
+					message: `« ${cited} » est une suite récurrente : « ${o.name} » ne peut pas s'en servir comme d'une fonction — ses termes se calculent un par un, comme ${cited}(5).`
+				} as AtelierObject;
+				return;
+			}
+			if (isSequence(o) && o.mode === 'recurrence') {
+				const terms = termsOf(this, o.name, o.firstIndex);
+				if (!terms.ok) {
+					this.items[i] = { ...o, status: 'error', message: terms.message } as AtelierObject;
+				}
+			}
+		});
 	}
 
 	/**
