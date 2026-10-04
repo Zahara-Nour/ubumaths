@@ -9,6 +9,13 @@
 	import { actionsFor, defaultPartner, partnersOf, type ObjectAction } from '$lib/atelier/actions';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { useAtelier } from '$lib/atelier/context';
+	import { isFunction } from '$lib/atelier/types';
+	import { astOf } from '$lib/atelier/parse';
+	import { toLatex } from '$lib/mathAST/latex-generator';
+	import { curveColorValue } from '$lib/grapheur/colors';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { Eye, EyeOff } from '@lucide/svelte';
+	import DefinitionField from './DefinitionField.svelte';
 
 	interface Props {
 		object: AtelierObject;
@@ -52,6 +59,31 @@
 		list: 'liste'
 	};
 
+	/**
+	 * La définition en écriture mathématique (C1), ou `null` si elle ne se lit
+	 * pas — elle s'affiche alors en texte, telle que l'élève l'a tapée.
+	 *
+	 * ⚠️ Toujours REGÉNÉRÉE par `toLatex` depuis l'arbre, jamais le texte saisi
+	 * passé tel quel à `{@html}` : une définition peut venir d'un lien reçu, et
+	 * seul notre générateur garantit un LaTeX sans commande arbitraire.
+	 */
+	const rendered = $derived.by(() => {
+		if (object.definition.trim() === '' || object.kind === 'list') return null;
+		const ast = astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
+		if (ast === null) return null;
+		return convertLatexToMarkup(toLatex(ast), { defaultMode: 'inline-math' });
+	});
+
+	/** La couleur de la courbe, si la fonction est tracée (C1, C2). */
+	const curveColor = $derived(
+		isFunction(object) && object.plotted && object.display
+			? curveColorValue(object.display.color)
+			: null
+	);
+
+	/** Les objets dont on saisit la définition dans la carte (C11 : pas les listes ; les suites au lot 5). */
+	const editable = $derived(object.kind === 'function' || object.kind === 'value');
+
 	/** Ce que l'élève lit quand l'objet ne peut rien produire. */
 	const stateLabel = $derived.by(() => {
 		switch (object.status) {
@@ -68,14 +100,53 @@
 </script>
 
 <article class="objet" class:selected data-status={object.status}>
-	<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
-		<span class="nom">{object.name}</span>
-		<span class="definition">{object.definition || '…'}</span>
-		<span class="type">{KIND_LABELS[object.kind]}</span>
-		{#if stateLabel}
-			<span class="etat">{stateLabel}</span>
+	<div class="tete">
+		{#if object.kind === 'function'}
+			<span
+				class="pastille"
+				style={curveColor ? `background: ${curveColor}` : undefined}
+				aria-hidden="true"
+			></span>
 		{/if}
-	</button>
+		<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
+			<span class="nom">{object.name}</span>
+			<span class="definition">
+				{#if rendered}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
+					{@html rendered}
+				{:else}
+					{object.definition || '…'}
+				{/if}
+			</span>
+			<span class="type">{KIND_LABELS[object.kind]}</span>
+			{#if stateLabel}
+				<span class="etat">{stateLabel}</span>
+			{/if}
+		</button>
+		{#if object.kind === 'function'}
+			<!-- C3 : tracer en un clic, sans ouvrir la carte ni changer de vue -->
+			<button
+				type="button"
+				class="oeil"
+				aria-pressed={object.plotted === true}
+				aria-label={object.plotted
+					? `Retirer ${object.name} du graphique`
+					: `Tracer ${object.name}`}
+				title={object.plotted ? 'Retirer du graphique' : 'Tracer'}
+				onclick={() => atelier.setPlotted(object.name, !object.plotted)}
+			>
+				{#if object.plotted}
+					<Eye class="h-4 w-4" />
+				{:else}
+					<EyeOff class="h-4 w-4" />
+				{/if}
+			</button>
+		{/if}
+	</div>
+
+	{#if selected && editable}
+		<DefinitionField {object} />
+	{/if}
 
 	{#if object.message}
 		<p class="message">{object.message}</p>
@@ -183,12 +254,49 @@
 		background: var(--color-card);
 	}
 
+	.tete {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.375rem;
+	}
+	.pastille {
+		flex-shrink: 0;
+		width: 0.625rem;
+		height: 0.625rem;
+		margin-top: 0.4375rem;
+		border-radius: 9999px;
+		/* Neutre tant que la fonction n'est pas tracée (C2) */
+		background: var(--color-muted);
+		border: 1px solid var(--color-border);
+	}
+	.oeil {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		/* Cible d'au moins 28 px (WCAG 2.5.8), comme les actions */
+		min-width: 1.75rem;
+		min-height: 1.75rem;
+		border: none;
+		border-radius: 0.375rem;
+		background: none;
+		color: var(--color-muted-foreground);
+		cursor: pointer;
+	}
+	.oeil[aria-pressed='true'] {
+		color: var(--color-foreground);
+	}
+	.oeil:hover {
+		background: var(--color-muted);
+	}
+
 	.entete {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 0.125rem;
-		width: 100%;
+		flex: 1;
+		min-width: 0;
 		background: none;
 		border: none;
 		padding: 0;
@@ -204,8 +312,7 @@
 		font-size: 1.0625rem;
 	}
 	.definition {
-		font-family: var(--font-mono, monospace);
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		color: var(--color-muted-foreground);
 		overflow-wrap: anywhere;
 	}

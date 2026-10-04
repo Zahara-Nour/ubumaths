@@ -68,6 +68,22 @@ Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
 - [x] En LaTeX, l'atelier ne transmettait pas ses noms de fonctions :
       `k(x)` tapé dans la carte se lisait k·x → corrigé (`parse.ts`).
 - Suites mathAST + atelier + grapheur + questions : 21 145 verts.
+- [x] Secours « unité » : MathLive écrit `12\operatorname{\mathrm{km}}`
+      (refusé) ; `normalizeStudentQuantity` (questions) le ramène à
+      `12\unit{km}` mais ferait de `2b` « 2 unité b » (mesuré) → appliqué
+      SEULEMENT si la saisie brute ne se lit pas et que le résultat est une
+      grandeur (`atelier/mathfield.ts`). 10 tests, 4 rouges sur stub.
+- [x] Carte : `DefinitionField.svelte` (préfixe `f(x) =`, MathLive, écriture
+      0,3 s après la dernière touche, provenance `keyboard`, suit une
+      modification faite ailleurs, prête à taper si vide, flush à la
+      fermeture) ; `ObjectCard` : pastille de couleur, définition rendue par
+      `toLatex` (jamais le texte saisi dans `{@html}`), 👁 sans changer de vue.
+      14 tests navigateur (11 rouges avant) ; 2 anciens tests qui cherchaient
+      le texte brut `x^2` adaptés (rendu mathématique voulu, C1).
+- Suites client atelier + grapheur : 322 verts ; `check:incremental` 0 ;
+  eslint des fichiers touchés propre.
+- Noté pour le lot 3 : l'action « Tracer » (qui bascule vers Graphe) fait
+  maintenant doublon avec 👁 — à trancher avec la règle des actions.
 
 ## Lots suivants
 

@@ -53,7 +53,10 @@ describe('conteneur', () => {
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		expect(container.textContent).toContain('x^2');
+		// La définition est rendue en écriture mathématique depuis le lot 2a
+		// (`/grapheur` §1 C1) : on cherche la carte, plus le texte `x^2`
+		const names = [...container.querySelectorAll('.objet .nom')].map((n) => n.textContent?.trim());
+		expect(names).toEqual(['f']);
 	});
 });
 
