@@ -73,16 +73,6 @@ export const recordListingViewsSchema = z.object({
 export type RecordListingViews = z.infer<typeof recordListingViewsSchema>;
 
 /**
- * `unlock_specific_cards(...)` — nombre de cartes effectivement déverrouillées.
- */
-export const unlockSpecificCardsSchema = z.object({
-	success: z.boolean(),
-	unlocked_count: z.number().int()
-});
-
-export type UnlockSpecificCards = z.infer<typeof unlockSpecificCardsSchema>;
-
-/**
  * `accept_proposal_atomic(p_proposal_id uuid, p_user_id uuid)`.
  *
  * Même forme que `execute_trade`, sans `completed_at` : succès avec l'échange

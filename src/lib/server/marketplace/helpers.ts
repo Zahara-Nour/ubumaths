@@ -275,23 +275,6 @@ export async function unlockCardsForEntity(entityId: string): Promise<boolean> {
 }
 
 /**
- * Libère des cartes précises d'une entité (cartes retirées d'une contre-offre).
- *
- * ⚠️ `unlock_specific_cards` est réservée au serveur (migration 20261003150000,
- * audit) et ne vérifie RIEN : l'appelant doit avoir établi que l'utilisateur
- * de la session participe à l'entité et que `cardIds` sont ses propres cartes,
- * lues côté serveur (offre courante), jamais prises dans la requête.
- *
- * @returns le résultat brut de la RPC (`RETURNS json`), à valider par l'appelant
- */
-export async function unlockSpecificCardsForEntity(entityId: string, cardIds: string[]) {
-	return createServiceRoleClient().rpc('unlock_specific_cards', {
-		p_entity_id: entityId,
-		p_card_ids: cardIds
-	});
-}
-
-/**
  * Traduit des identifiants d'INSTANCE de carte en identifiants de MODÈLE.
  *
  * `resolve_card_instances` est réservée au serveur (Q134) : l'appel passe par

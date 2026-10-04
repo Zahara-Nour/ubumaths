@@ -8,7 +8,6 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';
-	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
 	import { page } from '$app/stores';
 
@@ -22,7 +21,6 @@
 	let supabase = $derived($page.data.supabase);
 
 	// State
-	let selectedTrade = $state<MarketplaceTrade | null>(null);
 	let showStartTradeModal = $state(false);
 
 	// Unified activity item type
@@ -105,19 +103,10 @@
 	}
 
 	// Handle trade click
+	// Le tableau d'échange en temps réel est la seule interface de négociation :
+	// les échanges 'marketplace' naissent déjà terminés (accept_proposal_atomic).
 	function handleTradeClick(trade: MarketplaceTrade) {
-		if (trade.trade_type === 'friend') {
-			goto(`/dashboard/student/marketplace/trade/${trade.id}`);
-			return;
-		}
-		selectedTrade = trade;
-		marketplaceStore.selectTrade(trade);
-	}
-
-	// Close trade negotiation
-	function closeTradeNegotiation() {
-		selectedTrade = null;
-		marketplaceStore.selectTrade(null);
+		goto(`/dashboard/student/marketplace/trade/${trade.id}`);
 	}
 
 	// Handle trade started
@@ -306,12 +295,6 @@
 		</div>
 	{/if}
 </div>
-
-<!-- Trade Negotiation Modal -->
-{#if selectedTrade}
-	{@const isOpen = !!selectedTrade}
-	<TradeNegotiationModal trade={selectedTrade} open={isOpen} onClose={closeTradeNegotiation} />
-{/if}
 
 <!-- Start Friend Trade Modal -->
 {#if supabase && userId}
