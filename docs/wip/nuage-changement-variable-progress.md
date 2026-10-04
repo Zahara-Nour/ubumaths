@@ -27,5 +27,5 @@ y = 50 → x ≈ 7,950.
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
+- [x] Tests rouges · [x] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
       [ ] PR, CI, merge

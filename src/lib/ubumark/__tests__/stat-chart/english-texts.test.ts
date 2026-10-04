@@ -148,6 +148,21 @@ const BLOCKS: [string, StatChartKind, string][] = [
 		'nuage',
 		'nom x: Rank\nnom y: Tons\nx: 1 ; 2 ; 3\ny: 2 ; 3 ; 5\najustement: affine\nindicateurs: point moyen ; équation ; r\nprévoir: x = 2,5 ; x = 8 ; y = 4'
 	],
+	[
+		'nuage, changement de variable',
+		'nuage',
+		'x: 0 ; 1 ; 2 ; 3\ny: 2 ; 3 ; 5 ; 8\najustement: z = ln(y)\nindicateurs: point moyen ; r\nprévoir: x = 5 ; y = -1 ; y = 4'
+	],
+	[
+		'nuage, t = ln(x)',
+		'nuage',
+		'x: 1 ; 2 ; 4\ny: 1 ; 2 ; 3\najustement: t = ln(x)\nprévoir: x = -1'
+	],
+	[
+		'nuage: z',
+		'nuage',
+		'x: 1 ; 2 ; 3\ny: 1 ; 2 ; 4\najustement: z = √y\nnuage: z\nindicateurs: point moyen'
+	],
 	['nuage, pente nulle', 'nuage', 'x: 1 ; 2\ny: 3 ; 3\najustement: affine\nprévoir: y = 4 ; y = 3'],
 	['simulation, moyenne', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\nmode: moyenne'],
 	[

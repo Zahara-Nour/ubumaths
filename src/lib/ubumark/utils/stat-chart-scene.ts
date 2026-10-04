@@ -52,6 +52,15 @@ import {
 } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
 import {
+	decimalFit,
+	relationPole,
+	relationX,
+	relationY,
+	squaredSign,
+	transformValue,
+	type VariableChange
+} from '$lib/statistics/variable-change';
+import {
 	bivariateFit,
 	isInterpolation,
 	predictX,
@@ -488,6 +497,11 @@ export interface ScatterScene extends SceneCommon {
 	mean: ScenePoint | null;
 	/** Points (x ; ŷ) des prévisions qui ont une solution, pointillés vers les deux axes */
 	predictions: ScenePoint[];
+	/**
+	 * Changement de variable (PR b) : la relation retrouvée, en morceaux coupés
+	 * là où elle n'est pas définie ou sort du cadre ; null sinon
+	 */
+	curve: ScenePoint[][] | null;
 }
 
 export type StatChartScene =
@@ -2846,15 +2860,51 @@ function scatterNumber(
 	return { text: groupThousands(decimal.replace('-', '−'), locale), exact };
 }
 
+/**
+ * `3,686x + 7,933`, `−x + 3`, `2x`, `5`, `0,5 ln(x) − 1`, `2/x + 1` : coefficients
+ * déjà arrondis et écrits, `term` le facteur de a
+ */
+function affineExpression(a: string, b: string, term: string): string {
+	const isZero = (text: string) => /^−?[0,.]+$/.test(text);
+	const joiner = term.startsWith('ln') ? ' ' : '';
+	const slope = isZero(a)
+		? ''
+		: term.startsWith('/')
+			? `${a}${term}`
+			: a === '1'
+				? term
+				: a === '−1'
+					? `−${term}`
+					: `${a}${joiner}${term}`;
+	if (slope === '') return b;
+	if (isZero(b)) return slope;
+	return b.startsWith('−') ? `${slope} − ${b.slice(1)}` : `${slope} + ${b}`;
+}
+
 /** `y = 3,686x + 7,933`, `y = −x + 3`, `y = 2x`, `y = 5` : coefficients arrondis */
 function scatterEquation(fit: BivariateFit, places: number, locale: ContentLocale): string {
 	const a = scatterNumber(fit.slope, places, locale).text;
 	const b = scatterNumber(fit.intercept, places, locale).text;
-	const isZero = (text: string) => /^−?[0,.]+$/.test(text);
-	const slope = isZero(a) ? '' : a === '1' ? 'x' : a === '−1' ? '−x' : `${a}x`;
-	if (slope === '') return `y = ${b}`;
-	if (isZero(b)) return `y = ${slope}`;
-	return b.startsWith('−') ? `y = ${slope} − ${b.slice(1)}` : `y = ${slope} + ${b}`;
+	return `y = ${affineExpression(a, b, 'x')}`;
+}
+
+/**
+ * Un décimal (changement de variable : ln et √ sont irrationnels) arrondi une
+ * fois, demi vers le haut sur la valeur absolue ; exact → écriture courte.
+ */
+function scatterDecimal(
+	value: number,
+	places: number,
+	locale: ContentLocale
+): { text: string; exact: boolean } {
+	const scale = 10 ** places;
+	const magnitude = Math.round(Math.abs(value) * scale) / scale;
+	const exact = Math.abs(magnitude - Math.abs(value)) <= 1e-9 * Math.max(1, Math.abs(value));
+	const fixed = magnitude.toFixed(places);
+	const digits = exact && fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
+	const sign = value < 0 && Number(digits) !== 0 ? '−' : '';
+	const decimal = locale === 'en' ? digits : digits.replace('.', ',');
+	return { text: groupThousands(`${sign}${decimal}`, locale), exact };
 }
 
 /** Pas candidats des graduations d'un nuage : 1, 2, 5 × 10^k */
@@ -2948,6 +2998,7 @@ function scatterAxis(
 
 function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterScene {
 	const scatter = spec.scatter!;
+	if (scatter.change !== null) return buildChangedScatterScene(spec, scatter.change, locale);
 	const width = COURBE_PIXEL_WIDTH[spec.size];
 	const height = width * STAT_CHART_ASPECT_RATIO;
 	const text = STAT_TEXT[locale].scatter;
@@ -3059,7 +3110,254 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 		line: scatter.fit ? [ends[0], ends[1]] : null,
 		mean: showMean ? { x: toSafeNumber(fit.meanX), y: toSafeNumber(fit.meanY) } : null,
 		predictions: predicted,
+		curve: null,
 		indicators: lines
+	};
+}
+
+/** Écriture d'un changement de variable : `z = ln(y)`, `t = x²` */
+function changeText(change: VariableChange): string {
+	const v = change.on;
+	const written: Record<VariableChange['fn'], string> = {
+		ln: `ln(${v})`,
+		square: `${v}²`,
+		sqrt: `√${v}`,
+		inverse: `1/${v}`
+	};
+	return `${change.variable} = ${written[change.fn]}`;
+}
+
+/** Échantillons de la courbe d'une relation retrouvée, sur la largeur du cadre */
+const CURVE_SAMPLES = 60;
+
+/**
+ * La courbe y = f(x) sur [xMin ; xMax], en morceaux : coupée là où f n'est pas
+ * définie, de part et d'autre d'un pôle, et au bord du cadre (le morceau
+ * s'arrête SUR le bord, par interpolation, au lieu de s'interrompre avant).
+ */
+function sampleCurve(
+	f: (x: number) => number | null,
+	pole: number | null,
+	frame: { xMin: number; xMax: number; yMin: number; yMax: number }
+): ScenePoint[][] {
+	const segments: ScenePoint[][] = [];
+	let current: ScenePoint[] = [];
+	let previous: { x: number; y: number | null } | null = null;
+	const flush = () => {
+		if (current.length >= 2) segments.push(current);
+		current = [];
+	};
+	const inside = (y: number | null): y is number =>
+		y !== null && y >= frame.yMin && y <= frame.yMax;
+	/** Le point du bord entre un point dedans et un point dehors */
+	const edge = (from: ScenePoint, to: ScenePoint): ScenePoint => {
+		const bound = to.y > frame.yMax ? frame.yMax : frame.yMin;
+		const ratio = (bound - from.y) / (to.y - from.y);
+		return { x: from.x + ratio * (to.x - from.x), y: bound };
+	};
+	for (let i = 0; i <= CURVE_SAMPLES; i++) {
+		const x = frame.xMin + ((frame.xMax - frame.xMin) * i) / CURVE_SAMPLES;
+		const y = f(x);
+		if (previous !== null && pole !== null && previous.x < pole && pole <= x) {
+			flush();
+			previous = null;
+		}
+		if (inside(y)) {
+			if (current.length === 0 && previous !== null && previous.y !== null) {
+				current.push(edge({ x, y }, { x: previous.x, y: previous.y }));
+			}
+			current.push({ x, y });
+		} else {
+			if (current.length > 0 && y !== null) {
+				current.push(edge(current[current.length - 1], { x, y }));
+			}
+			flush();
+		}
+		previous = { x, y };
+	}
+	flush();
+	return segments;
+}
+
+/**
+ * Nuage avec changement de variable (PR b, Q170) : ajustement affine de
+ * (x ; z) ou (t ; y) en décimal, relation retrouvée entre x et y (courbe), ou,
+ * avec `nuage: z`, le nuage transformé et sa droite. Prévisions avec les
+ * coefficients exacts (décision de David), arrondies une fois.
+ */
+function buildChangedScatterScene(
+	spec: StatChartSpec,
+	change: VariableChange,
+	locale: ContentLocale
+): ScatterScene {
+	const scatter = spec.scatter!;
+	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const height = width * STAT_CHART_ASPECT_RATIO;
+	const text = STAT_TEXT[locale].scatter;
+	const { places } = scatter;
+	const round = (value: number) => scatterDecimal(value, places, locale);
+	const relation = (value: number) => {
+		const rounded = round(value);
+		return `${rounded.exact ? '=' : '≈'} ${rounded.text}`;
+	};
+	// Le parseur a vérifié chaque valeur et le domaine du changement de variable
+	const xs = scatter.xs.map((t) => toSafeNumber(readExactValue(t)!));
+	const ys = scatter.ys.map((t) => toSafeNumber(readExactValue(t)!));
+	const transform = (v: number) => transformValue(change.fn, v)!;
+	const us = change.on === 'x' ? xs.map(transform) : xs;
+	const vs = change.on === 'y' ? ys.map(transform) : ys;
+	const squared = squaredSign(change.on === 'x' ? xs : ys);
+	const sign = 'sign' in squared ? squared.sign : 1;
+	// Interpolation : étendue des x D'ORIGINE
+	const fit = { ...decimalFit(us, vs)!, minX: Math.min(...xs), maxX: Math.max(...xs) };
+	const f = (x: number) => relationY(change, fit, x, sign);
+
+	// Droite du nuage transformé, puis relation entre x et y, coefficients arrondis
+	const a = round(fit.slope).text;
+	const b = round(fit.intercept).text;
+	const left = change.on === 'y' ? change.variable : 'y';
+	const term = change.on === 'x' ? change.variable : 'x';
+	const lineEquation = `${left} = ${affineExpression(a, b, term)}`;
+	const linear = affineExpression(a, b, 'x');
+	const xTerm: Record<VariableChange['fn'], string> = {
+		ln: 'ln(x)',
+		square: 'x²',
+		sqrt: '√x',
+		inverse: '/x'
+	};
+	let relationText: string;
+	if (change.on === 'x') {
+		relationText = `y = ${affineExpression(a, b, xTerm[change.fn])}`;
+	} else if (change.fn === 'ln') {
+		const exponent = affineExpression(a, '0', 'x');
+		const factor = relation(Math.exp(fit.intercept));
+		relationText =
+			exponent === '0'
+				? `y = e^(${b}) ${factor}`
+				: `y = e^(${b}) × e^(${exponent}) ${factor} × e^(${exponent})`;
+	} else if (change.fn === 'square') {
+		relationText = `y = ${sign < 0 ? '−' : ''}√(${linear})`;
+	} else if (change.fn === 'sqrt') {
+		relationText = `y = (${linear})²`;
+	} else {
+		relationText = `y = 1/(${linear})`;
+	}
+
+	const meanText = text.meanPoint(round(fit.meanX).text, round(fit.meanY).text);
+	const lines: string[] = [];
+	if (!scatter.indicators.includes('equation')) {
+		lines.push(text.fitLine(lineEquation), text.relationLine(relationText));
+	}
+	for (const indicator of scatter.indicators) {
+		switch (indicator) {
+			case 'point-moyen':
+				lines.push(text.meanLine(meanText));
+				break;
+			case 'equation':
+				lines.push(text.fitLine(lineEquation), text.relationLine(relationText));
+				break;
+			case 'r': {
+				const r = fit.correlation!;
+				const rounded = round(r);
+				lines.push(text.correlation(`${rounded.exact ? '=' : '≈'} ${rounded.text}`));
+				break;
+			}
+		}
+	}
+
+	// Prévisions sur la relation retrouvée (x, y d'origine)
+	const predicted: ScenePoint[] = [];
+	for (const { axis, value } of scatter.predictions) {
+		const given = `${axis} = ${groupThousands(asWritten(value.replaceAll('−', '-'), locale), locale)}`;
+		const known = toSafeNumber(readExactValue(value)!);
+		const interpolation = (x: number) => x >= fit.minX && x <= fit.maxX;
+		if (axis === 'x') {
+			const y = f(known);
+			if (y === null) {
+				lines.push(text.notDefined(given));
+				continue;
+			}
+			lines.push(text.prediction(given, `y ${relation(y)}`, interpolation(known)));
+			predicted.push({ x: known, y });
+			continue;
+		}
+		const x = relationX(change, fit, known, sign);
+		if (x === 'all') {
+			lines.push(text.everyX(given));
+			continue;
+		}
+		if (x === null) {
+			lines.push(fit.slope === 0 ? text.noSolution(given) : text.noSolutionPlain(given));
+			continue;
+		}
+		lines.push(text.prediction(given, `x ${relation(x)}`, interpolation(x)));
+		predicted.push({ x, y: known });
+	}
+
+	// Le repère : d'origine (courbe), ou transformé (`nuage: z`, droite)
+	const transformed = scatter.transformedCloud;
+	const toView = (p: ScenePoint): ScenePoint | null => {
+		if (!transformed) return p;
+		const x = change.on === 'x' ? transformValue(change.fn, p.x) : p.x;
+		const y = change.on === 'y' ? transformValue(change.fn, p.y) : p.y;
+		return x === null || y === null ? null : { x, y };
+	};
+	const points = transformed
+		? us.map((u, i) => ({ x: u, y: vs[i] }))
+		: xs.map((x, i) => ({ x, y: ys[i] }));
+	const shownPredictions = predicted.map(toView).filter((p): p is ScenePoint => p !== null);
+	const xAxis = scatterAxis(
+		[...points, ...shownPredictions].map((p) => p.x),
+		width,
+		scatter.origin,
+		'x',
+		locale
+	);
+	const ends = transformed
+		? [xAxis.min, xAxis.max].map((x) => ({ x, y: fit.slope * x + fit.intercept }))
+		: [];
+	// La courbe n'élargit pas le cadre : une branche infinie écraserait le nuage
+	const yAxis = scatterAxis(
+		[...points, ...shownPredictions, ...ends].map((p) => p.y),
+		height,
+		scatter.origin,
+		'y',
+		locale
+	);
+	const frame = { xMin: xAxis.min, xMax: xAxis.max, yMin: yAxis.min, yMax: yAxis.max };
+
+	const spokenRelation = exponentParts(relationText, locale).spoken;
+	const spoken = [
+		text.points(points.length),
+		text.changeSpoken(changeText(change)),
+		text.fitSpoken(lineEquation),
+		text.relationSpoken(spokenRelation)
+	];
+	const withExponents = lines.some((line) => line.includes('e^('));
+	return {
+		kind: 'nuage',
+		title: spec.title,
+		accessibleTitle: text.title,
+		description: spec.description ?? `${spoken.join(locale === 'en' ? '; ' : ' ; ')}.`,
+		pixelSize: { width, height },
+		...frame,
+		points,
+		xTicks: xAxis.ticks,
+		ticks: yAxis.ticks,
+		axisTitles: {
+			x: transformed && change.on === 'x' ? changeText(change) : (scatter.names.x ?? 'x'),
+			y: transformed && change.on === 'y' ? changeText(change) : (scatter.names.y ?? 'y')
+		},
+		color: spec.color,
+		line: transformed ? [ends[0], ends[1]] : null,
+		mean:
+			transformed && scatter.indicators.includes('point-moyen')
+				? { x: fit.meanX, y: fit.meanY }
+				: null,
+		predictions: shownPredictions,
+		curve: transformed ? null : sampleCurve(f, relationPole(change, fit), frame),
+		indicators: lines,
+		...(withExponents ? { indicatorParts: lines.map((line) => exponentParts(line, locale)) } : {})
 	};
 }
 
