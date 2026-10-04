@@ -32,6 +32,7 @@ import {
 	type HistogramScene,
 	type ComparisonScene,
 	type FrequencyTableScene,
+	type DensityScene,
 	type LawScene,
 	type SimulationScene,
 	type MeanScene,
@@ -88,6 +89,16 @@ function typstString(text: string): string {
 /** Contenu Typst `[#"…"]` d'un texte d'auteur. */
 function textContent(text: string): string {
 	return `[#${typstString(text)}]`;
+}
+
+/**
+ * Le titre et la figure qui le suit, dans un bloc insécable : sinon le titre
+ * peut rester seul en bas de colonne et la figure partir à la page suivante
+ * (fiche compilée, lois à densité). Les lignes de texte dessous restent dehors.
+ */
+function keptWithTitle(title: string | null, figure: string): string {
+	const head = titleBlock(title);
+	return head === '' ? figure : `#block(breakable: false, width: 100%)[\n${head}${figure}\n]`;
 }
 
 function titleBlock(title: string | null): string {
@@ -172,7 +183,7 @@ function barsTypst(scene: BarScene, size: CourbeSize): string {
 		scene.indicatorTable === null
 			? ''
 			: `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`;
-	return `${CETZ_IMPORT}\n${hatch}\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${table}`;
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
 }
 
 // ============================================================================
@@ -212,7 +223,7 @@ function pieTypst(scene: PieScene, size: CourbeSize): string {
 
 	const canvas = `cetz.canvas({\n${lines.join('\n')}\n  })`;
 	const stack = `align(left, stack(spacing: 4pt,\n${legend.join(',\n')}\n  ))`;
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, grid(columns: 2, column-gutter: 14pt, align: horizon,\n  ${canvas},\n  ${stack}\n))`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, grid(columns: 2, column-gutter: 14pt, align: horizon,\n  ${canvas},\n  ${stack}\n))`)}`;
 }
 
 // ============================================================================
@@ -326,7 +337,7 @@ function histogramTypst(scene: HistogramScene, size: CourbeSize): string {
 	const table = scene.indicatorTable
 		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
 		: '';
-	return `${CETZ_IMPORT}\n${hatchDef}\n${titleBlock(scene.title)}${name}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${second}${table}`;
+	return `${CETZ_IMPORT}\n${hatchDef}\n${keptWithTitle(scene.title, `${name}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${second}${table}`;
 }
 
 function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
@@ -397,7 +408,44 @@ function cumulativeTypst(scene: CumulativeScene, size: CourbeSize): string {
 	const table = scene.indicatorTable
 		? `\n// indicateurs\n${comparisonTypst(scene.indicatorTable)}`
 		: '';
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))${legend}${table}`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}${legend}${table}`;
+}
+
+/**
+ * Courbe de densité (lois à densité, manche 13, PR b) : l'aire de la
+ * probabilité choisie hachurée (`tiling`, comme la seconde série des barres),
+ * puis la courbe ; les mêmes points qu'à l'écran.
+ */
+function densityTypst(
+	scene: DensityScene,
+	size: CourbeSize,
+	title: string | null = scene.title
+): string {
+	const { W, H, X, Y } = frame(size, scene.xMin, scene.xMax, scene.yMax);
+	const color = TYPST_COLORS[scene.color];
+	const path = (points: readonly ScenePoint[]) =>
+		points.map((p) => `(${X(p.x)}, ${Y(p.y)})`).join(', ');
+	const lines: string[] = [
+		'  import cetz.draw: *',
+		'  // graduations',
+		...valueTicks(scene.ticks, W, Y)
+	];
+	if (scene.area !== null) {
+		lines.push('  // aire hachurée');
+		lines.push(
+			`  line(${path(scene.area)}, close: true, fill: hachures, stroke: 0.5pt + ${color})`
+		);
+	}
+	lines.push('  // courbe de densité');
+	lines.push(
+		`  line(${path(scene.points)}, stroke: (paint: ${color}, thickness: 1.1pt, join: "round"))`
+	);
+	lines.push(
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	);
+	const hatch = `#let hachures = tiling(size: (4pt, 4pt))[#place(line(start: (0pt, 4pt), end: (4pt, 0pt), stroke: 0.8pt + ${color}))]\n`;
+	return `${CETZ_IMPORT}\n${hatch}\n${keptWithTitle(title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
 }
 
 /**
@@ -424,7 +472,7 @@ function meanTypst(scene: MeanScene, size: CourbeSize): string {
 		...boundLabels(scene.xTicks, X),
 		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
 	];
-	return `${CETZ_IMPORT}\n\n${titleBlock(scene.title)}#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`;
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(scene.title, `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
 }
 
 // ============================================================================
@@ -569,9 +617,22 @@ function frequencyTableTypst(scene: FrequencyTableScene): string {
 function indicatorsBlock(scene: StatChartScene): string {
 	if (scene.indicators.length === 0) return '';
 	// Ce qui est entre parenthèses ne se coupe pas : « P(X ⩽ 4) » restait « P(X » / « ⩽ 4) »
-	const kept = scene.indicators.map((line) =>
-		line.replace(/\(([^)]*)\)/g, (group) => group.replace(/ /g, '\u00a0'))
-	);
+	const unbroken = (line: string) =>
+		line.replace(/\(([^)]*)\)/g, (group) => group.replace(/ /g, '\u00a0'));
+	// Lois à densité : de vrais exposants (`e#super[−1]`), jamais « e^(−1) » imprimé
+	if (scene.indicatorParts !== undefined) {
+		const lines = scene.indicatorParts.map((line) =>
+			line.segments
+				.map((segment) =>
+					segment.exponent
+						? `#super[#${typstString(segment.text.replace(/ /g, '\u00a0'))}]`
+						: `#${typstString(unbroken(segment.text))}`
+				)
+				.join('')
+		);
+		return `\n// indicateurs\n#align(center, text(size: 8pt)[${lines.join('#" · "')}])`;
+	}
+	const kept = scene.indicators.map(unbroken);
 	return `\n// indicateurs\n#align(center, text(size: 8pt)${textContent(kept.join(' · '))})`;
 }
 
@@ -588,6 +649,10 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 		case 'tableau-croise':
 			return crossTableTypst(scene);
 		case 'loi':
+			// Loi à densité (PR b) : le nom de la loi et la courbe, insécables
+			if (scene.densityChart !== undefined) {
+				return densityTypst(scene.densityChart, size, scene.title ?? scene.accessibleTitle);
+			}
 			// `diagramme: oui` : les bâtons sous le tableau ; loi géométrique : la mention dessous
 			if (scene.chart === undefined) return lawTypst(scene);
 			return `${lawTypst(scene)}\n${barsTypst(scene.chart, size)}${
@@ -603,6 +668,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return frequencyTableTypst(scene);
 		case 'moyenne-selon-n':
 			return meanTypst(scene, size);
+		case 'densite':
+			return densityTypst(scene, size);
 	}
 }
 

@@ -18,6 +18,7 @@
  */
 
 import type {
+	DensityQuery,
 	LawData,
 	StatChartDatum,
 	StatChartDirection,
@@ -71,6 +72,13 @@ import {
 	geometricProbability
 } from '$lib/statistics/geometric';
 import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
+import {
+	exponentialDensity,
+	exponentialMoments,
+	exponentialProbability,
+	uniformDensityMoments,
+	uniformDensityProbability
+} from '$lib/statistics/density';
 
 // ============================================================================
 // TYPES
@@ -111,6 +119,19 @@ interface SceneCommon {
 	series?: string | null;
 	/** `série: seule` : la série sans la figure ni les indicateurs */
 	seriesOnly?: boolean;
+	/**
+	 * Lignes d'indicateurs à exposants (lois à densité, « e^(−1) ») : une par
+	 * ligne de `indicators`, découpée en texte / exposant, et sa lecture pour le
+	 * lecteur d'écran ; absente sans exposant
+	 */
+	indicatorParts?: IndicatorLine[];
+}
+
+/** Une ligne d'indicateurs à exposants : `e` puis `<sup>−1</sup>` */
+export interface IndicatorLine {
+	segments: { text: string; exponent: boolean }[];
+	/** « e puissance −1 », « e puissance (−0,5 × 2) » */
+	spoken: string;
 }
 
 export interface SceneBar {
@@ -308,6 +329,8 @@ export interface LawScene extends SceneCommon {
 	chart?: BarScene;
 	/** Loi géométrique, `diagramme: oui` : « valeurs suivantes non représentées » */
 	chartNote?: string;
+	/** Loi à densité, `diagramme: oui` : la courbe et l'aire hachurée (PR b) */
+	densityChart?: DensityScene;
 }
 
 /**
@@ -393,7 +416,26 @@ export interface MeanScene extends SceneCommon {
 	color: CourbeColor;
 }
 
+/**
+ * Courbe de densité (lois à densité, manche 13, PR b), en unités de la loi :
+ * x de `xMin` à `xMax`, y de 0 à `yMax` ; l'aire hachurée est un polygone fermé.
+ */
+export interface DensityScene extends SceneCommon {
+	kind: 'densite';
+	xMin: number;
+	xMax: number;
+	yMax: number;
+	points: ScenePoint[];
+	/** L'aire de la probabilité choisie, ou null */
+	area: ScenePoint[] | null;
+	xTicks: SceneTick[];
+	ticks: SceneTick[];
+	axisTitles: { x: string | null; y: string };
+	color: CourbeColor;
+}
+
 export type StatChartScene =
+	| DensityScene
 	| FrequencyTableScene
 	| ComparisonScene
 	| SimulationScene
@@ -1776,12 +1818,364 @@ function buildUniformScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 	};
 }
 
+// ============================================================================
+// LOIS À DENSITÉ (manche 13, PR b)
+// ============================================================================
+
+/** Points de la courbe exponentielle, et de son aire */
+const DENSITY_SAMPLES = 60;
+
+/** Arrondi « joli » vers le haut : 1, 2, 2,5 ou 5 × 10^k (9,2 → 10) */
+function niceCeil(value: number): number {
+	const power = 10 ** Math.floor(Math.log10(value));
+	const factor = [1, 2, 2.5, 5, 10].find((m) => m * power >= value - 1e-9) ?? 10;
+	return Number((factor * power).toPrecision(12));
+}
+
+/** Une fraction positive écrite : décimal exact (`1,5`), sinon `2/3` */
+function fractionText(value: Fraction, locale: ContentLocale): string {
+	return value.isDecimal() ? exactDecimal(value, locale) : formatFraction(value);
+}
+
+/** Le texte d'un événement selon la langue (`P(X > 7,5)` / `P(X > 7.5)`) */
+function shownEvent(display: string, locale: ContentLocale): string {
+	return locale === 'en' ? display.replace(/,/g, '.') : display.replace(/\./g, ',');
+}
+
+/** « = 3/10 = 0,3 », « = 1/3 ≈ 0,333 », « = 0 » */
+function exactProbabilityText(value: Fraction, places: number, locale: ContentLocale): string {
+	if (value.den === 1n) return `= ${value.num}`;
+	if (value.isDecimal()) return `= ${formatFraction(value)} = ${exactDecimal(value, locale)}`;
+	return `= ${formatFraction(value)} ≈ ${roundedText(value.num, value.den, places, locale).text}`;
+}
+
+/** Une valeur approchée de l'exponentielle, arrondie une seule fois */
+function approxText(value: number, places: number, locale: ContentLocale): string {
+	if (value <= 0) return '= 0';
+	if (value >= 1) return '= 1';
+	const text = value.toFixed(places);
+	return `≈ ${locale === 'en' ? text : text.replace('.', ',')}`;
+}
+
+/** Bornes numériques d'un événement de loi à densité ; la conditionnelle : {X > a} */
+function eventBounds(query: DensityQuery): { low: number; high: number } {
+	const read = (text: string | null, fallback: number) =>
+		text === null ? fallback : (Fraction.parse(text)?.toNumber() ?? fallback);
+	return { low: read(query.low, -Infinity), high: read(query.high, Infinity) };
+}
+
+/**
+ * Une ligne écrite avec `e^(…)` découpée en texte / exposant (parenthèses
+ * imbriquées comprises : « e^(−0,5 × (5 − 2)) »), et sa lecture
+ */
+function exponentParts(line: string, locale: ContentLocale): IndicatorLine {
+	const segments: IndicatorLine['segments'] = [];
+	let spoken = '';
+	let rest = line;
+	for (let start = rest.indexOf('e^('); start !== -1; start = rest.indexOf('e^(')) {
+		let depth = 1;
+		let end = start + 3;
+		for (; end < rest.length && depth > 0; end++) {
+			if (rest[end] === '(') depth++;
+			else if (rest[end] === ')') depth--;
+		}
+		const before = rest.slice(0, start + 1);
+		const exponent = rest.slice(start + 3, end - 1);
+		segments.push({ text: before, exponent: false }, { text: exponent, exponent: true });
+		const read = exponent.includes(' ') ? `(${exponent})` : exponent;
+		spoken += `${before} ${STAT_TEXT[locale].law.power} ${read}`;
+		rest = rest.slice(end);
+	}
+	if (rest !== '') segments.push({ text: rest, exponent: false });
+	return { segments, spoken: spoken + rest };
+}
+
+/**
+ * Une ligne de l'exponentielle : la forme exacte, puis la valeur approchée
+ * (« P(X ⩽ 2) = 1 − e^(−0,5 × 2) = 1 − e^(−1) ≈ 0,632 »).
+ */
+function exponentialLine(
+	query: DensityQuery,
+	lambdaText: string,
+	variable: string,
+	places: number,
+	locale: ContentLocale
+): string {
+	const display = shownEvent(query.display, locale);
+	if (query.point) return `${display} = 0 (${STAT_TEXT[locale].law.pointZero(variable)})`;
+	const lambda = Fraction.parse(lambdaText) ?? Fraction.ONE;
+	const shownLambda = asWritten(lambdaText, locale);
+	const showProduct = !lambda.equals(Fraction.ONE);
+	const positive = (text: string | null) => {
+		const value = text === null ? null : Fraction.parse(text);
+		return value === null || value.isNegative() ? Fraction.ZERO : value;
+	};
+	// e^(−λt) : le produit écrit, puis l'exposant calculé
+	const term = (written: string, t: Fraction) => ({
+		product: `e^(−${shownLambda} × ${asWritten(written, locale)})`,
+		simple: `e^(−${fractionText(lambda.mul(t), locale)})`
+	});
+	const join = (parts: { product: string; simple: string }[], ones: boolean) => {
+		const prefix = ones ? '1 − ' : '';
+		const glue = (key: 'product' | 'simple') => prefix + parts.map((p) => p[key]).join(' − ');
+		return showProduct ? `${glue('product')} = ${glue('simple')}` : glue('simple');
+	};
+
+	if (query.given !== null) {
+		const a = positive(query.low);
+		const b = positive(query.given);
+		// Condition toujours vraie (b ⩽ 0) : c'est P(X > a), écrit comme tel
+		// (« e^(−0,5 × (3 − −1)) » donnait une égalité fausse, revue)
+		if (b.equals(Fraction.ZERO)) {
+			return exponentialLine({ ...query, given: null }, lambdaText, variable, places, locale);
+		}
+		const value = Math.exp(-lambda.toNumber() * a.sub(b).toNumber());
+		if (!a.greaterThan(b)) return `${display} = 1`;
+		const difference = `(${asWritten(query.low!, locale)} − ${asWritten(query.given, locale)})`;
+		const simple = `e^(−${fractionText(lambda.mul(a.sub(b)), locale)})`;
+		const exact = showProduct ? `e^(−${shownLambda} × ${difference}) = ${simple}` : simple;
+		return `${display} = ${exact} ${approxText(value, places, locale)}`;
+	}
+
+	const low = positive(query.low);
+	const high = query.high === null ? null : Fraction.parse(query.high);
+	const value = exponentialProbability(lambda.toNumber(), low.toNumber(), high?.toNumber() ?? null);
+	if (high !== null && !high.greaterThan(low)) return `${display} = 0`;
+	const startsAtZero = low.equals(Fraction.ZERO);
+	if (startsAtZero && high === null) return `${display} = 1`;
+	const parts: { product: string; simple: string }[] = [];
+	if (!startsAtZero) parts.push(term(query.low!, low));
+	if (high !== null) parts.push(term(query.high!, high));
+	return `${display} = ${join(parts, startsAtZero)} ${approxText(value, places, locale)}`;
+}
+
+/** F d'une loi uniforme : « (x − 2)/3 », « x/10 » */
+function uniformCdf(a: Fraction, b: Fraction, locale: ContentLocale): string {
+	const length = b.sub(a);
+	const shift = a.isNegative() ? new Fraction(-a.num, a.den) : a;
+	const numerator = a.equals(Fraction.ZERO)
+		? 'x'
+		: `x ${a.isNegative() ? '+' : '−'} ${fractionText(shift, locale)}`;
+	if (length.equals(Fraction.ONE)) return numerator;
+	const top = numerator === 'x' ? 'x' : `(${numerator})`;
+	const bottom = fractionText(length, locale);
+	return `${top}/${bottom.includes('/') ? `(${bottom})` : bottom}`;
+}
+
+/** F d'une exponentielle : l'exposant « −0,5x », « −x », « −(1/3)x » */
+function exponentialCdf(lambdaText: string, locale: ContentLocale): string {
+	const lambda = Fraction.parse(lambdaText) ?? Fraction.ONE;
+	if (lambda.equals(Fraction.ONE)) return '−x';
+	const shown = asWritten(lambdaText, locale);
+	return shown.includes('/') ? `−(${shown})x` : `−${shown}x`;
+}
+
+/**
+ * L'événement hachuré et sa valeur, pour le lecteur d'écran : une
+ * conditionnelle hachure {X > a} (« P(X > 5) ≈ 0,082 », revue)
+ */
+function areaEvent(density: NonNullable<LawData['density']>, locale: ContentLocale): string {
+	const area = density.area!;
+	const event: DensityQuery = { ...area, given: null };
+	const display = shownEvent(
+		area.given === null ? area.display : `${area.display.slice(0, area.display.indexOf(' |'))})`,
+		locale
+	);
+	if (area.point) return `${display} = 0`;
+	const read = (value: string | null) => (value === null ? null : Fraction.parse(value));
+	if (density.law.family === 'uniform') {
+		const a = Fraction.parse(density.law.a) ?? Fraction.ZERO;
+		const b = Fraction.parse(density.law.b) ?? Fraction.ONE;
+		const value = uniformDensityProbability(a, b, read(event.low), read(event.high));
+		return `${display} ${exactProbabilityText(value, density.places, locale)}`;
+	}
+	const lambda = Fraction.parse(density.law.lambda)?.toNumber() ?? 1;
+	const value = exponentialProbability(
+		lambda,
+		read(event.low)?.toNumber() ?? null,
+		read(event.high)?.toNumber() ?? null
+	);
+	return `${display} ${approxText(value, density.places, locale)}`;
+}
+
+/** La courbe de densité et l'aire hachurée, en unités de la loi */
+function densityChart(
+	spec: StatChartSpec,
+	density: NonNullable<LawData['density']>,
+	variable: string,
+	locale: ContentLocale
+): DensityScene {
+	const width = COURBE_PIXEL_WIDTH[spec.size];
+	const height = width * STAT_CHART_ASPECT_RATIO;
+	const law = density.law;
+	let xMin: number;
+	let xMax: number;
+	let top: number;
+	let points: ScenePoint[];
+	let support: { low: number; high: number };
+	let curve: (x: number) => number;
+	if (law.family === 'uniform') {
+		const a = Fraction.parse(law.a)?.toNumber() ?? 0;
+		const b = Fraction.parse(law.b)?.toNumber() ?? 1;
+		top = 1 / (b - a);
+		const margin = (b - a) * 0.2;
+		// Un peu de marge de part et d'autre ; pas sous 0 pour une loi qui part de 0 ou plus
+		xMin = a >= 0 && a - margin < 0 ? 0 : a - margin;
+		xMax = b + margin;
+		points = [
+			...(xMin < a ? [{ x: xMin, y: 0 }] : []),
+			{ x: a, y: 0 },
+			{ x: a, y: top },
+			{ x: b, y: top },
+			{ x: b, y: 0 },
+			{ x: xMax, y: 0 }
+		];
+		support = { low: a, high: b };
+		curve = () => top;
+	} else {
+		const lambda = Fraction.parse(law.lambda)?.toNumber() ?? 1;
+		top = lambda;
+		xMin = 0;
+		// Coupée où il reste moins de 1 % : x = ln(100)/λ, arrondi joliment vers le haut
+		xMax = niceCeil(Math.log(100) / lambda);
+		points = Array.from({ length: DENSITY_SAMPLES + 1 }, (_, i) => {
+			const x = (i / DENSITY_SAMPLES) * xMax;
+			return { x, y: exponentialDensity(lambda, x) };
+		});
+		support = { low: 0, high: Infinity };
+		curve = (x) => exponentialDensity(lambda, x);
+	}
+	const { yMax, ticks } = valueAxis(top, height, 'pourcentages', locale);
+	const step =
+		computeGridStep(width / (xMax - xMin), { targetPx: TICK_TARGET_PX }).major || xMax - xMin;
+	const first = Math.ceil(xMin / step - 1e-9);
+	const xTicks: SceneTick[] = [];
+	for (let k = first; k * step <= xMax + 1e-9; k++) {
+		const value = Number((k * step).toPrecision(12));
+		xTicks.push({ value, label: formatTick(value, locale) });
+	}
+
+	let area: ScenePoint[] | null = null;
+	if (density.area !== null && !density.area.point) {
+		const { low, high } = eventBounds(density.area);
+		const from = Math.max(low, support.low, xMin);
+		const to = Math.min(high, support.high, xMax);
+		if (to > from) {
+			const count = law.family === 'uniform' ? 1 : Math.ceil(DENSITY_SAMPLES / 2);
+			const edge = Array.from({ length: count + 1 }, (_, i) => {
+				const x = from + ((to - from) * i) / count;
+				return { x, y: curve(x) };
+			});
+			area = [{ x: from, y: 0 }, ...edge, { x: to, y: 0 }];
+		}
+	}
+
+	const text = STAT_TEXT[locale];
+	const shaded =
+		density.area === null ? '' : ` ; ${text.law.shadedArea(areaEvent(density, locale))}`;
+	return {
+		kind: 'densite',
+		title: null,
+		accessibleTitle: text.law.densityCurve,
+		description: `${text.law.densityCurve} (${variable})${shaded}.`,
+		pixelSize: { width, height },
+		indicators: [],
+		xMin,
+		xMax,
+		yMax,
+		points,
+		area,
+		xTicks,
+		ticks,
+		axisTitles: { x: null, y: text.law.density },
+		color: spec.color
+	};
+}
+
+/**
+ * Loi à densité (`X ~ U([a ; b])`, `X ~ E(λ)`, manche 13, PR b) : pas de
+ * tableau ; E par défaut, F sur demande, puis les probabilités ; la courbe.
+ */
+function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLocale): LawScene {
+	const density = law.density!;
+	const text = STAT_TEXT[locale].law;
+	let name: string;
+	let moments: RandomVariableLaw;
+	let decimal: boolean;
+	let cdf: string;
+	let lines: string[];
+	if (density.law.family === 'uniform') {
+		const { a: aText, b: bText } = density.law;
+		const a = Fraction.parse(aText) ?? Fraction.ZERO;
+		const b = Fraction.parse(bText) ?? Fraction.ONE;
+		const interval =
+			locale === 'en'
+				? `[${asWritten(aText, locale)}, ${asWritten(bText, locale)}]`
+				: `[${asWritten(aText, locale)} ; ${asWritten(bText, locale)}]`;
+		name = text.uniformDensity(interval);
+		moments = uniformDensityMoments(a, b);
+		// Bornes écrites en décimal : E et V aussi, comme l'exponentielle et la binomiale (revue)
+		decimal = /[.,]/.test(aText + bText);
+		cdf = text.cdfUniform(uniformCdf(a, b, locale), interval);
+		const read = (value: string | null) => (value === null ? null : Fraction.parse(value));
+		lines = density.queries.map((query) => {
+			const display = shownEvent(query.display, locale);
+			if (query.point) return `${display} = 0 (${text.pointZero(law.variable)})`;
+			const event = uniformDensityProbability(a, b, read(query.low), read(query.high));
+			const value =
+				query.given === null
+					? event
+					: event.mul(
+							((given) => new Fraction(given.den, given.num))(
+								uniformDensityProbability(a, b, read(query.given), null)
+							)
+						);
+			return `${display} ${exactProbabilityText(value, density.places, locale)}`;
+		});
+	} else {
+		const lambdaText = density.law.lambda;
+		const lambda = Fraction.parse(lambdaText) ?? Fraction.ONE;
+		name = text.exponential(asWritten(lambdaText, locale));
+		moments = exponentialMoments(lambda);
+		decimal = /[.,%]/.test(lambdaText);
+		cdf = text.cdfExponential(exponentialCdf(lambdaText, locale));
+		lines = density.queries.map((query) =>
+			exponentialLine(query, lambdaText, law.variable, density.places, locale)
+		);
+	}
+	const title = text.title(law.variable, name);
+	const indicators = [
+		...namedMomentLines(law, moments, decimal, locale),
+		...(density.cdf ? [cdf] : []),
+		...lines
+	];
+	return {
+		kind: 'loi',
+		title: spec.title,
+		accessibleTitle: title,
+		description: title,
+		pixelSize: { width: 0, height: 0 },
+		indicators,
+		// De vrais exposants à l'écran et dans le PDF (fiche compilée : « e^(−1) » en clair)
+		...(indicators.some((line) => line.includes('e^(')) && {
+			indicatorParts: indicators.map((line) => exponentParts(line, locale))
+		}),
+		variable: law.variable,
+		values: [],
+		probabilities: [],
+		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
+		tableHidden: true,
+		...(density.chart && { densityChart: densityChart(spec, density, law.variable, locale) })
+	};
+}
+
 function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
 	const law = spec.law;
 	if (law === null) throw new Error('Loi sans données');
 	if (law.binomial !== null) return buildBinomialScene(spec, law, locale);
 	if (law.geometric !== null) return buildGeometricScene(spec, law, locale);
 	if (law.uniform !== null) return buildUniformScene(spec, law, locale);
+	if (law.density !== null) return buildDensityScene(spec, law, locale);
 	const spoken = CROSS_TABLE_SPOKEN[locale];
 
 	let indicators: string[] = [];

@@ -123,10 +123,10 @@ describe('X ~ U(a ; b) — erreurs situées', () => {
 		expect(errorOf('X ~ U(1 ; 1001)')).toBe('Ligne 1 : U(a ; b) : au plus 1 000 valeurs');
 	});
 
-	it('U([a ; b]) : la loi à densité, pas encore', () => {
-		expect(errorOf('X ~ U([0 ; 1])')).toBe(
-			'Ligne 1 : U([a ; b]) : loi à densité : bientôt disponible'
-		);
+	it('U([a ; b]) : la loi à densité, pas la loi discrète', () => {
+		const scene = lawOf('X ~ U([0 ; 1])');
+		expect(scene.accessibleTitle).toBe('Loi de X : loi uniforme sur [0 ; 1]');
+		expect(scene.tableHidden).toBe(true);
 	});
 
 	it('`intervalle:` réservé à la loi binomiale', () => {
