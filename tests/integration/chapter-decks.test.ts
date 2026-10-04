@@ -258,14 +258,25 @@ describe('decks rattachés à un chapitre', () => {
 	 * que le professeur n'a encore assigné à personne.
 	 */
 	it('une copie forgée par l’élève ne suffit pas : seule l’assignation fait foi', async () => {
-		// La forge DOIT réussir, sinon le test ne prouve rien du tout.
+		// Depuis 20261004213000, l'élève ne peut plus forger de copie lui-même…
 		const { error: forge } = await sansDeck.from('srs_decks').insert({
 			owner_id: sansDeckId,
 			name: 'Copie forgée QQ',
 			deck_type: 'official',
 			source_deck_id: deckJamaisAssigne
 		});
-		expect(forge, 'la policy INSERT de srs_decks n’a pas de garde de colonne').toBeNull();
+		expect(forge, 'un élève a pu forger une copie (source_deck_id)').not.toBeNull();
+
+		// … mais la policy de `chapter_decks` ne doit pas reposer sur ce seul
+		// verrou : une copie SANS assignation (posée ici hors RLS) ne suffit pas.
+		// Cette pose DOIT réussir, sinon le test ne prouve rien du tout.
+		const { error: pose } = await service.from('srs_decks').insert({
+			owner_id: sansDeckId,
+			name: 'Copie sans assignation QQ',
+			deck_type: 'official',
+			source_deck_id: deckJamaisAssigne
+		});
+		expect(pose).toBeNull();
 
 		expect(await decksVusPar(sansDeck, chapitre)).toEqual([]);
 	});
