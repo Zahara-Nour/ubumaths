@@ -1,0 +1,431 @@
+{
+	"title": "Espace : équation d'une sphère, centre et rayon",
+	"description": "Équation de la sphère de centre et de rayon donnés (forme libre ou centre-rayon), passant par un point ; centre et rayon lus sur une équation développée (pièges : signes du centre, r au lieu de r², multiple de l'équation)",
+	"grades": ["T_SPE"],
+	"points": ["TSPE-104"],
+	"theme": "Géométrie",
+	"domain": "Représentations paramétriques et équations cartésiennes",
+	"subdomain": "Équation d'une sphère",
+	"level": 2,
+	"status": "draft",
+	"delay": 90,
+	"shared": {
+		"cleanCoefficients": true
+	},
+	"variations": [
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$.\n\nDonne une équation de la sphère $\\mathcal{S}$ de centre $\\Omega$ et de rayon ${{r}}$.\n\n$\\mathcal{S}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "r2",
+					"expression": "{{eval:r^2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point $M(x\\,;\\,y\\,;\\,z)$ appartient à la sphère $\\mathcal{S}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M^2=r^2$.",
+					"$\\Omega M^2=(x-x_\\Omega)^2+(y-y_\\Omega)^2+(z-z_\\Omega)^2$ (repère orthonormé), d'où $\\mathcal{S} : (x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}$ (ou toute forme développée équivalente)."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère le point $\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$.\n\nDonne une équation de la sphère $\\mathcal{S}$ de centre $\\Omega$ et de rayon ${{r}}$, sous la forme $(x-x_\\Omega)^2+(y-y_\\Omega)^2+(z-z_\\Omega)^2=r^2$.\n\n$\\mathcal{S}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-5..5"
+				},
+				{
+					"name": "b",
+					"expression": "-5..5"
+				},
+				{
+					"name": "c",
+					"expression": "1..5;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "r2",
+					"expression": "{{eval:r^2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}",
+					"answerKind": "equation",
+					"requiredForm": "centre-rayon"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un point $M(x\\,;\\,y\\,;\\,z)$ appartient à la sphère $\\mathcal{S}$ de centre $\\Omega$ et de rayon $r$ si et seulement si $\\Omega M^2=r^2$.",
+					"$\\Omega M^2=(x-x_\\Omega)^2+(y-y_\\Omega)^2+(z-z_\\Omega)^2$ (repère orthonormé), d'où $\\mathcal{S} : (x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}$ (ou toute forme développée équivalente)."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, on considère les points $\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$ et $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$.\n\nDonne une équation de la sphère $\\mathcal{S}$ de centre $\\Omega$ passant par $A$.\n\n$\\mathcal{S}$ : $?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ax",
+					"expression": "-4..4"
+				},
+				{
+					"name": "ay",
+					"expression": "-4..4"
+				},
+				{
+					"name": "az",
+					"expression": "-4..4"
+				},
+				{
+					"name": "r2",
+					"expression": "{{eval:(ax-a)^2+(ay-b)^2+(az-c)^2}}"
+				}
+			],
+			"conditions": ["r2 > 0"],
+			"blanks": [
+				{
+					"expectedAnswer": "(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}",
+					"answerKind": "equation"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le rayon est $\\Omega A$ : $\\Omega A^2=({{ax}}-{{a;()}})^2+({{ay}}-{{b;()}})^2+({{az}}-{{c;()}})^2={{r2}}$.",
+					"Donc $\\mathcal{S} : (x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{r2}}$ (inutile de calculer $\\Omega A$ : l'équation demande $\\Omega A^2$)."
+				]
+			}
+		},
+		{
+			"statement": "Dans l'espace muni d'un repère orthonormé, la sphère $\\mathcal{S}$ a pour équation $x^2+y^2+z^2+({{pa}})x+({{pb}})y+({{pc}})z+({{d}})=0$.\n\nDétermine les coordonnées de son centre $\\Omega$ et son rayon $r$.\n\n$\\Omega(?\\,;\\,?\\,;\\,?)$ et $r=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "-4..4"
+				},
+				{
+					"name": "b",
+					"expression": "-4..4"
+				},
+				{
+					"name": "c",
+					"expression": "1..4;±"
+				},
+				{
+					"name": "r",
+					"expression": "1..6"
+				},
+				{
+					"name": "pa",
+					"expression": "{{eval:-2*a}}"
+				},
+				{
+					"name": "pb",
+					"expression": "{{eval:-2*b}}"
+				},
+				{
+					"name": "pc",
+					"expression": "{{eval:-2*c}}"
+				},
+				{
+					"name": "d",
+					"expression": "{{eval:a^2+b^2+c^2-r^2}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{a}}"
+				},
+				{
+					"expectedAnswer": "{{b}}"
+				},
+				{
+					"expectedAnswer": "{{c}}"
+				},
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On fait apparaître des carrés : $x^2+({{pa}})x=(x-({{a}}))^2-{{eval:a^2}}$, et de même pour $y$ et $z$.",
+					"L'équation devient $(x-({{a}}))^2+(y-({{b}}))^2+(z-({{c}}))^2={{eval:a^2+b^2+c^2-d}}$, avec ${{eval:r^2}}={{r}}^2$.",
+					"Donc $\\Omega({{a}}\\,;\\,{{b}}\\,;\\,{{c}})$ et $r={{r}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : forme centre-rayon",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+(z-3)^2=16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : r² écrit 4^2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+(z-3)^2=4^2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : forme développée",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["x^2+y^2+z^2-2x+4y-6z-2=0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : multiple (×2) à simplifier",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["2x^2+2y^2+2z^2-4x+8y-12z-4=0"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v0 : r au lieu de r²",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+(z-3)^2=4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : signes du centre",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x+1)^2+(y-2)^2+(z+3)^2=16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : z oublié",
+			"variationIndex": 0,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x-1)^2+(y+2)^2=16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : forme centre-rayon",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+(z-3)^2=16"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : forme développée → mauvaise forme",
+			"variationIndex": 1,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["x^2+y^2+z^2-2x+4y-6z-2=0"],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": ["form"]
+			}
+		},
+		{
+			"description": "v2 : ΩA² = 9",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "0",
+				"ax": "3",
+				"ay": "-1",
+				"az": "2"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+z^2=9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : ΩA au lieu de ΩA²",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "0",
+				"ax": "3",
+				"ay": "-1",
+				"az": "2"
+			},
+			"answers": ["(x-1)^2+(y+2)^2+z^2=3"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : centre A au lieu de Ω",
+			"variationIndex": 2,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "0",
+				"ax": "3",
+				"ay": "-1",
+				"az": "2"
+			},
+			"answers": ["(x-3)^2+(y+1)^2+(z-2)^2=9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : centre et rayon",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["1", "-2", "3", "4"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : signes du centre",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["-1", "2", "-3", "4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : r² donné au lieu de r",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["1", "-2", "3", "16"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : r = √16 non calculé",
+			"variationIndex": 3,
+			"variables": {
+				"a": "1",
+				"b": "-2",
+				"c": "3",
+				"r": "4"
+			},
+			"answers": ["1", "-2", "3", "\\sqrt{16}"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["reducedRadicals"]
+			}
+		}
+	]
+}
