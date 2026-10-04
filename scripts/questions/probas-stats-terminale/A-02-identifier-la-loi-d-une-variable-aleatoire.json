@@ -1,0 +1,283 @@
+{
+	"title": "Bernoulli, binomiale ou géométrique : identifier la loi",
+	"description": "Reconnaître la loi d'une variable aléatoire décrite par un énoncé : nombre de succès (binomiale), rang du premier succès (géométrique), indicatrice (Bernoulli), tirages sans remise (aucune des trois)",
+	"grades": [
+		"T_SPE",
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-093",
+		"TCOMP-091",
+		"TCOMP-088",
+		"TSPE-231",
+		"TSPE-239"
+	],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Reconnaître une loi",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On lance ${{n}}$ fois un dé équilibré à six faces et on note $X$ le nombre de $6$ obtenus.\n\nQuelle est la loi de $X$ ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..15"
+				}
+			],
+			"choices": [
+				{
+					"content": "$\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{B}\\left({{n}}\\,;\\dfrac{5}{6}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{B}\\left(6\\,;\\dfrac{1}{ {{n}} }\\right)$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"On compte le **nombre de succès** (« obtenir $6$ », probabilité $\\dfrac{1}{6}$) dans ${{n}}$ épreuves identiques et indépendantes.",
+					"$X$ suit la loi $\\textcolor{{{color:primary.0}}}{\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{6}\\right)}$."
+				]
+			}
+		},
+		{
+			"statement": "On lance un dé équilibré à six faces **jusqu'à** obtenir un $6$ pour la première fois, et on note $X$ le nombre de lancers effectués.\n\nQuelle est la loi de $X$ ?",
+			"choices": [
+				{
+					"content": "$\\mathcal{G}\\left(\\dfrac{1}{6}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{G}\\left(\\dfrac{5}{6}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{B}\\left(6\\,;\\dfrac{1}{6}\\right)$"
+				},
+				{
+					"content": "La loi de Bernoulli de paramètre $\\dfrac{1}{6}$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"On répète une épreuve de Bernoulli de succès « obtenir $6$ » ($p=\\dfrac{1}{6}$) et $X$ est le **rang du premier succès**.",
+					"$X$ suit la loi géométrique $\\textcolor{{{color:primary.0}}}{\\mathcal{G}\\left(\\dfrac{1}{6}\\right)}$."
+				]
+			}
+		},
+		{
+			"statement": "Dans une production, ${{t}}\\,\\%$ des pièces sont défectueuses. On prélève une pièce au hasard et on note $X$ la variable qui vaut $1$ si la pièce est défectueuse, $0$ sinon.\n\nQuelle est la loi de $X$ ?",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "2..15"
+				}
+			],
+			"choices": [
+				{
+					"content": "La loi de Bernoulli de paramètre ${{eval:t/100;d}}$"
+				},
+				{
+					"content": "La loi de Bernoulli de paramètre ${{eval:1-t/100;d}}$"
+				},
+				{
+					"content": "$\\mathcal{G}\\left({{eval:t/100;d}}\\right)$"
+				},
+				{
+					"content": "$\\mathcal{B}\\left(100\\,;{{eval:t/100;d}}\\right)$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"$X$ ne prend que les valeurs $1$ (succès) et $0$ (échec), pour **une seule** épreuve.",
+					"$X$ suit la loi **de Bernoulli de paramètre** ${{eval:t/100;d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Une urne contient ${{r}}$ boules rouges et ${{b}}$ boules blanches. On tire successivement **et sans remise** trois boules, et on note $X$ le nombre de boules rouges obtenues.\n\nQuelle est la loi de $X$ ?",
+			"variables": [
+				{
+					"name": "r",
+					"expression": "3..6"
+				},
+				{
+					"name": "b",
+					"expression": "3..6"
+				}
+			],
+			"choices": [
+				{
+					"content": "Aucune de ces lois : les tirages ne sont pas indépendants"
+				},
+				{
+					"content": "$\\mathcal{B}\\left(3\\,;\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$"
+				},
+				{
+					"content": "$\\mathcal{G}\\left(\\dfrac{ {{r}} }{ {{eval:r+b}} }\\right)$"
+				},
+				{
+					"content": "La loi de Bernoulli de paramètre $\\dfrac{ {{r}} }{ {{eval:r+b}} }$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"Sans remise, la composition de l'urne change à chaque tirage : les épreuves ne sont **pas indépendantes** et la probabilité de « rouge » n'est pas la même à chaque tirage.",
+					"Ce n'est donc **ni une loi binomiale, ni une loi géométrique, ni une loi de Bernoulli**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : binomiale",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : géométrique",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : p et 1 − p",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"selectedChoices": [
+				2
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : géométrique",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : G(5/6)",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : binomiale",
+			"variationIndex": 1,
+			"variables": {},
+			"selectedChoices": [
+				2
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : Bernoulli",
+			"variationIndex": 2,
+			"variables": {
+				"t": "4"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 1 − p",
+			"variationIndex": 2,
+			"variables": {
+				"t": "4"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : sans remise → aucune",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"b": "5"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : binomiale à tort",
+			"variationIndex": 3,
+			"variables": {
+				"r": "4",
+				"b": "5"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}

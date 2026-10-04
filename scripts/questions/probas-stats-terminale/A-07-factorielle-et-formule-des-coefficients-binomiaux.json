@@ -1,0 +1,244 @@
+{
+	"title": "Factorielle, arrangements et formule des coefficients binomiaux",
+	"description": "n!, nombre de k-uplets d'éléments distincts, C(n, 2) = n(n − 1)/2 et C(n, 3) par la formule (pièges : n(n − 1) sans diviser par 2, C(n, 3) pour un podium ordonné)",
+	"grades": [
+		"T_SPE"
+	],
+	"points": [
+		"TSPE-038",
+		"TSPE-039",
+		"TSPE-035",
+		"TSPE-036",
+		"TSPE-034",
+		"TSPE-044"
+	],
+	"theme": "Probabilités",
+	"domain": "Dénombrement",
+	"subdomain": "Coefficients binomiaux",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "Calcule $\\binom{ {{n}} }{2}$.\n\n$\\binom{ {{n}} }{2}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..30"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{n}{2}=\\dfrac{n(n-1)}{2}$.",
+					"$\\binom{ {{n}} }{2}=\\dfrac{ {{n}}\\times{{eval:n-1}} }{2}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)/2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Calcule $\\binom{ {{n}} }{3}$.\n\n$\\binom{ {{n}} }{3}=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)/6}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{n}{3}=\\dfrac{n!}{3!\\,(n-3)!}=\\dfrac{n(n-1)(n-2)}{3!}$, avec $3!=6$.",
+					"$\\binom{ {{n}} }{3}=\\dfrac{ {{n}}\\times{{eval:n-1}}\\times{{eval:n-2}} }{6}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)*(n-2)/6}}}$."
+				]
+			}
+		},
+		{
+			"statement": "De combien de façons peut-on ranger ${{n}}$ livres différents sur une étagère ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "4..7"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:n==4|24|{{if:n==5|120|{{if:n==6|720|5040}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{f}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un rangement est une permutation des ${{n}}$ livres : il y en a $n!$.",
+					"${{n}}!=\\textcolor{{{color:primary.0}}}{{{f}}}$."
+				]
+			}
+		},
+		{
+			"statement": "${{n}}$ coureurs participent à une course. Combien de podiums (premier, deuxième, troisième) sont possibles ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*(n-1)*(n-2)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un podium est un triplet **ordonné** de coureurs distincts : ${{n}}$ choix pour le premier, ${{eval:n-1}}$ pour le deuxième, ${{eval:n-2}}$ pour le troisième.",
+					"${{n}}\\times{{eval:n-1}}\\times{{eval:n-2}}=\\textcolor{{{color:primary.0}}}{{{eval:n*(n-1)*(n-2)}}}$ (et non $\\binom{ {{n}} }{3}$, qui compte les groupes de trois sans ordre)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : C(10, 2) = 45",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": [
+				"45"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : n(n − 1) = 90",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": [
+				"90"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : n²/2 = 50",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": [
+				"50"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : C(8, 3) = 56",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"answers": [
+				"56"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : arrangements 336",
+			"variationIndex": 1,
+			"variables": {
+				"n": "8"
+			},
+			"answers": [
+				"336"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : 5! = 120",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": [
+				"120"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : 5⁵",
+			"variationIndex": 2,
+			"variables": {
+				"n": "5"
+			},
+			"answers": [
+				"3125"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 8 coureurs → 336",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8"
+			},
+			"answers": [
+				"336"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : C(8, 3) = 56 (ordre oublié)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8"
+			},
+			"answers": [
+				"56"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : 8³ (répétitions)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "8"
+			},
+			"answers": [
+				"512"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

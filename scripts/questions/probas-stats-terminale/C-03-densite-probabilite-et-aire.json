@@ -1,0 +1,263 @@
+{
+	"title": "Loi à densité : probabilité = aire sous la courbe, constante de normalisation",
+	"description": "Lire une probabilité comme une aire sous la densité (figure), fonction de répartition F(x) = P(X ⩽ x), constante k pour que f soit une densité (aire totale 1) (pièges : t/a au lieu de t²/a², b − a au lieu de 1/(b − a))",
+	"grades": [
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-106",
+		"TCOMP-107",
+		"TCOMP-111",
+		"TCOMP-112"
+	],
+	"theme": "Probabilités",
+	"domain": "Lois à densité",
+	"subdomain": "Densité et aire",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;{{a}}\\right]$ par $f(x)={{eval:2/a^2}}x$, représentée ci-dessous.\n\n```courbe\nx: -0.5 ; {{eval:a+1}}\ny: -0.1 ; {{eval:2/a+0.2;d}}\ngrille: 1 ; {{eval:1/(2*a);d}}\nf(x) = 2*x/{{eval:a^2}} sur [0 ; {{a}}]   bleu   nom=C_f\naire: f ; 0 ; {{t}}\ntaille: moyenne\ndescription: Densité triangulaire croissante sur [0 ; {{a}}], aire coloriée entre 0 et {{t}}.\n```\n\nCalcule $P(X\\leqslant {{t}})$, aire du domaine colorié.\n\n$P(X\\leqslant {{t}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6"
+				},
+				{
+					"name": "t",
+					"expression": "1..{{eval:a-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:t^2/a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\leqslant {{t}})$ est l'aire du triangle de base ${{t}}$ et de hauteur $f({{t}})={{eval:2*t/a^2}}$.",
+					"$P(X\\leqslant {{t}})=\\dfrac{1}{2}\\times {{t}}\\times{{eval:2*t/a^2}}=\\textcolor{{{color:primary.0}}}{{{eval:t^2/a^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;{{b}}\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n```courbe\nx: -0.5 ; {{eval:b+1}}\ny: -0.05 ; {{eval:1/b+0.1;d}}\ngrille: 1 ; {{eval:1/b;d}}\nf(x) = 1/{{b}} sur [0 ; {{b}}]   bleu   nom=C_f\naire: f ; 0 ; {{c}}\ntaille: moyenne\ndescription: Densité constante sur [0 ; {{b}}], rectangle colorié entre 0 et {{c}}.\n```\n\nCalcule $F({{c}})$.\n\n$F({{c}})=?$",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "4..10"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:b-1}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c/b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$F({{c}})=P(X\\leqslant {{c}})$ est l'aire du rectangle colorié, de largeur ${{c}}$ et de hauteur $\\dfrac{1}{ {{b}} }$.",
+					"$F({{c}})=\\dfrac{ {{c}} }{ {{b}} }=\\textcolor{{{color:primary.0}}}{{{eval:c/b}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On définit sur $\\left[{{a}}\\,;{{b}}\\right]$ la fonction constante $f(x)=k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[{{a}}\\,;{{b}}\\right]$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..5"
+				},
+				{
+					"name": "b",
+					"expression": "{{eval:a+2}}..{{eval:a+12}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:1/(b-a)}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une densité est positive et l'aire sous sa courbe vaut $1$ : $\\displaystyle\\int_{ {{a}} }^{ {{b}} }k\\,\\mathrm{d}x=k\\times({{b}}-{{a}})=1$.",
+					"$k=\\textcolor{{{color:primary.0}}}{{{eval:1/(b-a)}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On définit sur $\\left[0\\,;{{a}}\\right]$ la fonction $f(x)=kx$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;{{a}}\\right]$ ?\n\n$k=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2/a^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$f$ est positive ; il faut $\\displaystyle\\int_{0}^{ {{a}} }kx\\,\\mathrm{d}x=\\left[\\dfrac{kx^{2}}{2}\\right]_{0}^{ {{a}} }=\\dfrac{ {{eval:a^2}}k}{2}=1$.",
+					"$k=\\dfrac{2}{ {{eval:a^2}} }=\\textcolor{{{color:primary.0}}}{{{eval:2/a^2}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : a = 4, t = 2 → 1/4",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "2"
+			},
+			"answers": [
+				"\\frac{1}{4}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : t/a = 1/2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "4",
+				"t": "2"
+			},
+			"answers": [
+				"\\frac{1}{2}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : a = 5, t = 2 → 4/25",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"t": "2"
+			},
+			"answers": [
+				"\\frac{4}{25}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a = 5, t = 2, t/a = 2/5",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"t": "2"
+			},
+			"answers": [
+				"\\frac{2}{5}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : b = 8, c = 3 → 3/8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "8",
+				"c": "3"
+			},
+			"answers": [
+				"\\frac{3}{8}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : hauteur 1/8",
+			"variationIndex": 1,
+			"variables": {
+				"b": "8",
+				"c": "3"
+			},
+			"answers": [
+				"\\frac{1}{8}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : [2 ; 7] → 1/5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"answers": [
+				"\\frac{1}{5}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : b − a = 5",
+			"variationIndex": 2,
+			"variables": {
+				"a": "2",
+				"b": "7"
+			},
+			"answers": [
+				"5"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : a = 4 → 1/8",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4"
+			},
+			"answers": [
+				"\\frac{1}{8}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : 1/a² = 1/16",
+			"variationIndex": 3,
+			"variables": {
+				"a": "4"
+			},
+			"answers": [
+				"\\frac{1}{16}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

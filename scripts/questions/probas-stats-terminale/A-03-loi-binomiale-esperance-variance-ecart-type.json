@@ -1,0 +1,381 @@
+{
+	"title": "Loi binomiale et loi de Bernoulli : espérance, variance, écart type",
+	"description": "E(X) = np, V(X) = np(1 − p), σ(X) = √(np(1 − p)) ; Bernoulli : V = p(1 − p) ; nombre moyen de succès (pièges : np(1 − p) contre np, variance contre écart type)",
+	"grades": [
+		"T_SPE",
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-089",
+		"TCOMP-085",
+		"TCOMP-098",
+		"TSPE-245",
+		"TSPE-225",
+		"TSPE-249"
+	],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Espérance et variance",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/100;d}}\\right)$.\n\nCalcule son espérance (nombre entier ou décimal).\n\n$E(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "20|40|50|60|80|100|150|200"
+				},
+				{
+					"name": "t",
+					"expression": "1..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X\\sim\\mathcal{B}(n\\,;p)$ : $E(X)=np$.",
+					"$E(X)={{n}}\\times{{eval:t/100;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{eval:t/10;d}}\\right)$.\n\nCalcule sa variance (nombre entier ou décimal).\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|20|30|50|100"
+				},
+				{
+					"name": "t",
+					"expression": "1..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n*t*(10-t)/100}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour $X\\sim\\mathcal{B}(n\\,;p)$ : $V(X)=np(1-p)$.",
+					"$V(X)={{n}}\\times{{eval:t/10;d}}\\times{{eval:1-t/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:n*t*(10-t)/100;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi binomiale $\\mathcal{B}\\left({{n}}\\,;{{p}}\\right)$.\n\nCalcule son écart type $\\sigma(X)$ (valeur exacte).\n\n$\\sigma(X)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..8"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:w==1|16|{{if:w==2|36|{{if:w==3|64|{{if:w==4|100|{{if:w==5|25|{{if:w==6|100|{{if:w==7|100|400}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "pp",
+					"expression": "{{if:w==1|0.5|{{if:w==2|0.5|{{if:w==3|0.5|{{if:w==4|0.5|{{if:w==5|0.2|{{if:w==6|0.2|{{if:w==7|0.1|0.1}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "p",
+					"expression": "{{eval:pp;d}}"
+				},
+				{
+					"name": "s",
+					"expression": "{{if:w==1|2|{{if:w==2|3|{{if:w==3|4|{{if:w==4|5|{{if:w==5|2|{{if:w==6|4|{{if:w==7|3|6}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(X)=np(1-p)={{n}}\\times{{p}}\\times{{eval:1-pp;d}}={{eval:s^2}}$.",
+					"$\\sigma(X)=\\sqrt{V(X)}=\\sqrt{ {{eval:s^2}} }=\\textcolor{{{color:primary.0}}}{{{s}}}$."
+				]
+			}
+		},
+		{
+			"statement": "La variable aléatoire $X$ suit la loi de Bernoulli de paramètre $p=\\dfrac{ {{c}} }{ {{q}} }$.\n\nCalcule sa variance.\n\n$V(X)=?$",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "3..8"
+				},
+				{
+					"name": "c",
+					"expression": "1..{{eval:q-1}}"
+				}
+			],
+			"conditions": [
+				"gcd(c, q) == 1"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:c*(q-c)/q^2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour une loi de Bernoulli : $E(X)=p$ et $V(X)=p(1-p)$.",
+					"$V(X)=\\dfrac{ {{c}} }{ {{q}} }\\times\\dfrac{ {{eval:q-c}} }{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:c*(q-c)/q^2}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Un questionnaire comporte ${{n}}$ questions ; pour chacune, ${{q}}$ réponses sont proposées, dont une seule est juste. Un élève répond au hasard à chaque question, indépendamment.\n\nCombien de bonnes réponses peut-il espérer en moyenne ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10|12|15|20|24|30|40"
+				},
+				{
+					"name": "q",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n/q}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre $X$ de bonnes réponses suit la loi $\\mathcal{B}\\left({{n}}\\,;\\dfrac{1}{ {{q}} }\\right)$.",
+					"$E(X)=np={{n}}\\times\\dfrac{1}{ {{q}} }=\\textcolor{{{color:primary.0}}}{{{eval:n/q}}}$ bonnes réponses en moyenne."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : B(50 ; 0,3) → 15",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50",
+				"t": "30"
+			},
+			"answers": [
+				"15"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : variance 10,5 au lieu de E",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50",
+				"t": "30"
+			},
+			"answers": [
+				"10,5"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : B(40 ; 0,07) → 2,8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "40",
+				"t": "7"
+			},
+			"answers": [
+				"2,8"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : B(50 ; 0,2) → 8",
+			"variationIndex": 1,
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"answers": [
+				"8"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : np = 10 au lieu de np(1 − p)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"answers": [
+				"10"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : écart type √8",
+			"variationIndex": 1,
+			"variables": {
+				"n": "50",
+				"t": "2"
+			},
+			"answers": [
+				"\\sqrt{8}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : B(10 ; 0,3) → 2,1",
+			"variationIndex": 1,
+			"variables": {
+				"n": "10",
+				"t": "3"
+			},
+			"answers": [
+				"2,1"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : B(100 ; 0,2) → 4",
+			"variationIndex": 2,
+			"variables": {
+				"w": "6"
+			},
+			"answers": [
+				"4"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : variance 16",
+			"variationIndex": 2,
+			"variables": {
+				"w": "6"
+			},
+			"answers": [
+				"16"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : √16 non calculé",
+			"variationIndex": 2,
+			"variables": {
+				"w": "6"
+			},
+			"answers": [
+				"\\sqrt{16}"
+			],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": [
+					"form"
+				]
+			}
+		},
+		{
+			"description": "v3 : p = 1/4 → 3/16",
+			"variationIndex": 3,
+			"variables": {
+				"q": "4",
+				"c": "1"
+			},
+			"answers": [
+				"\\frac{3}{16}"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : E = p",
+			"variationIndex": 3,
+			"variables": {
+				"q": "4",
+				"c": "1"
+			},
+			"answers": [
+				"\\frac{1}{4}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : p²",
+			"variationIndex": 3,
+			"variables": {
+				"q": "4",
+				"c": "1"
+			},
+			"answers": [
+				"\\frac{1}{16}"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 20 questions, 4 réponses → 5",
+			"variationIndex": 4,
+			"variables": {
+				"n": "20",
+				"q": "4"
+			},
+			"answers": [
+				"5"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : n(1 − p) = 15",
+			"variationIndex": 4,
+			"variables": {
+				"n": "20",
+				"q": "4"
+			},
+			"answers": [
+				"15"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

@@ -1,0 +1,338 @@
+{
+	"title": "Somme de variables aléatoires : espérance et variance",
+	"description": "E(aX + bY) = aE(X) + bE(Y) ; si X et Y indépendantes : V(X + Y) = V(X) + V(Y), V(X − Y) = V(X) + V(Y), V(aX + bY) = a²V(X) + b²V(Y), écart type de la somme (pièges : V(X) − V(Y), aV(X), σ(X) + σ(Y))",
+	"grades": [
+		"T_SPE"
+	],
+	"points": [
+		"TSPE-241",
+		"TSPE-242",
+		"TSPE-243",
+		"TSPE-244",
+		"TSPE-249",
+		"TSPE-250"
+	],
+	"theme": "Probabilités",
+	"domain": "Sommes de variables aléatoires",
+	"subdomain": "Espérance et variance",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Deux variables aléatoires $X$ et $Y$ vérifient $E(X)={{u}}$ et $E(Y)={{w}}$.\n\nCalcule $E({{a}}X+{{b}}Y)$.\n\n$E({{a}}X+{{b}}Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "w",
+					"expression": "1..9;±"
+				},
+				{
+					"name": "a",
+					"expression": "2..5"
+				},
+				{
+					"name": "b",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a*u+b*w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Linéarité de l'espérance (vraie même si $X$ et $Y$ ne sont pas indépendantes) : $E(aX+bY)=aE(X)+bE(Y)$.",
+					"$E({{a}}X+{{b}}Y)={{a}}\\times{{u;()}}+{{b}}\\times{{w;()}}=\\textcolor{{{color:primary.0}}}{{{eval:a*u+b*w}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux variables aléatoires **indépendantes** $X$ et $Y$ vérifient $V(X)={{eval:u/10;d}}$ et $V(Y)={{eval:w/10;d}}$.\n\nCalcule $V(X+Y)$.\n\n$V(X+Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "5..60"
+				},
+				{
+					"name": "w",
+					"expression": "5..60"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(u+w)/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X$ et $Y$ sont indépendantes, donc $V(X+Y)=V(X)+V(Y)$.",
+					"$V(X+Y)={{eval:u/10;d}}+{{eval:w/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:(u+w)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux variables aléatoires **indépendantes** $X$ et $Y$ vérifient $V(X)={{u}}$ et $V(Y)={{w}}$.\n\nCalcule $V(X-Y)$.\n\n$V(X-Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "5..20"
+				},
+				{
+					"name": "w",
+					"expression": "1..4"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:u+w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$V(X-Y)=V(X)+V(-Y)$ par indépendance, et $V(-Y)=(-1)^{2}V(Y)=V(Y)$ : une variance ne diminue jamais quand on ajoute une variable indépendante.",
+					"$V(X-Y)={{u}}+{{w}}=\\textcolor{{{color:primary.0}}}{{{eval:u+w}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux variables aléatoires **indépendantes** $X$ et $Y$ vérifient $V(X)={{u}}$ et $V(Y)={{w}}$.\n\nCalcule $V({{a}}X+{{b}}Y)$.\n\n$V({{a}}X+{{b}}Y)=?$",
+			"variables": [
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "w",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "2..4"
+				},
+				{
+					"name": "b",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a^2*u+b^2*w}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Par indépendance, $V(aX+bY)=V(aX)+V(bY)=a^{2}V(X)+b^{2}V(Y)$.",
+					"$V({{a}}X+{{b}}Y)={{eval:a^2}}\\times{{u}}+{{eval:b^2}}\\times{{w}}=\\textcolor{{{color:primary.0}}}{{{eval:a^2*u+b^2*w}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Deux variables aléatoires **indépendantes** $X$ et $Y$ ont pour écarts types $\\sigma(X)={{sx}}$ et $\\sigma(Y)={{sy}}$.\n\nCalcule $\\sigma(X+Y)$.\n\n$\\sigma(X+Y)=?$",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "1..5"
+				},
+				{
+					"name": "sx",
+					"expression": "{{if:w==1|3|{{if:w==2|6|{{if:w==3|5|{{if:w==4|8|9}}}}}}}}"
+				},
+				{
+					"name": "sy",
+					"expression": "{{if:w==1|4|{{if:w==2|8|{{if:w==3|12|{{if:w==4|15|12}}}}}}}}"
+				},
+				{
+					"name": "sz",
+					"expression": "{{if:w==1|5|{{if:w==2|10|{{if:w==3|13|{{if:w==4|17|15}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{sz}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ce sont les **variances** qui s'ajoutent : $V(X+Y)={{sx}}^{2}+{{sy}}^{2}={{eval:sz^2}}$.",
+					"$\\sigma(X+Y)=\\sqrt{ {{eval:sz^2}} }=\\textcolor{{{color:primary.0}}}{{{sz}}}$ (et non ${{sx}}+{{sy}}={{eval:sx+sy}}$)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : E(2X + 3Y), 4 et −1 → 5",
+			"variationIndex": 0,
+			"variables": {
+				"u": "4",
+				"w": "-1",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": [
+				"5"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a + b oubliés : 3",
+			"variationIndex": 0,
+			"variables": {
+				"u": "4",
+				"w": "-1",
+				"a": "2",
+				"b": "3"
+			},
+			"answers": [
+				"3"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : 1,2 + 3,5 = 4,7",
+			"variationIndex": 1,
+			"variables": {
+				"u": "12",
+				"w": "35"
+			},
+			"answers": [
+				"4,7"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : produit",
+			"variationIndex": 1,
+			"variables": {
+				"u": "12",
+				"w": "35"
+			},
+			"answers": [
+				"4,2"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : V(X − Y) = 12 + 3 = 15",
+			"variationIndex": 2,
+			"variables": {
+				"u": "12",
+				"w": "3"
+			},
+			"answers": [
+				"15"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : V(X) − V(Y) = 9",
+			"variationIndex": 2,
+			"variables": {
+				"u": "12",
+				"w": "3"
+			},
+			"answers": [
+				"9"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : V(3X + 2Y), 5 et 4 → 61",
+			"variationIndex": 3,
+			"variables": {
+				"u": "5",
+				"w": "4",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": [
+				"61"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : aV(X) + bV(Y) = 23",
+			"variationIndex": 3,
+			"variables": {
+				"u": "5",
+				"w": "4",
+				"a": "3",
+				"b": "2"
+			},
+			"answers": [
+				"23"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : 3 et 4 → 5",
+			"variationIndex": 4,
+			"variables": {
+				"w": "1"
+			},
+			"answers": [
+				"5"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : σ(X) + σ(Y) = 7",
+			"variationIndex": 4,
+			"variables": {
+				"w": "1"
+			},
+			"answers": [
+				"7"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : variance 25",
+			"variationIndex": 4,
+			"variables": {
+				"w": "1"
+			},
+			"answers": [
+				"25"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

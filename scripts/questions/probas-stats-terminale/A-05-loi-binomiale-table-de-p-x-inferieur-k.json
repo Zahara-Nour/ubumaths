@@ -1,0 +1,385 @@
+{
+	"title": "Loi binomiale : utiliser une table de P(X ⩽ k)",
+	"description": "Extrait de table des probabilités cumulées fourni : P(X > k), P(X = k), P(a ⩽ X ⩽ b), seuil, intervalle de fluctuation [a ; b] (pièges : 1 − P(X ⩽ k − 1), F(b) − F(a) au lieu de F(b) − F(a − 1))",
+	"grades": [
+		"T_SPE",
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-095",
+		"TCOMP-097",
+		"TSPE-233",
+		"TSPE-234",
+		"TSPE-232"
+	],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Calcul de probabilités",
+	"level": 2,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0.3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $2$ | $0.0355$ |\n| $3$ | $0.1071$ |\n| $4$ | $0.2375$ |\n| $5$ | $0.4164$ |\n| $6$ | $0.608$ |\n| $7$ | $0.7723$ |\n| $8$ | $0.8867$ |\n| $9$ | $0.952$ |\n| $10$ | $0.9829$ |\n\nEn utilisant uniquement cette table, calcule $P(X>{{k}})$.\n\n$P(X>{{k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "3..9"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==3|0.1071|{{if:k==4|0.2375|{{if:k==5|0.4164|{{if:k==6|0.608|{{if:k==7|0.7723|{{if:k==8|0.8867|0.952}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==3|0.8929|{{if:k==4|0.7625|{{if:k==5|0.5836|{{if:k==6|0.392|{{if:k==7|0.2277|{{if:k==8|0.1133|0.048}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$X>{{k}}$ est l'événement contraire de $X\\leqslant {{k}}$.",
+					"$P(X>{{k}})=1-P(X\\leqslant {{k}})=1-{{f}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0.4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $7$ | $0.0435$ |\n| $8$ | $0.094$ |\n| $9$ | $0.1763$ |\n| $10$ | $0.2915$ |\n| $11$ | $0.4311$ |\n| $12$ | $0.5785$ |\n| $13$ | $0.7145$ |\n| $14$ | $0.8246$ |\n| $15$ | $0.9029$ |\n\nEn utilisant uniquement cette table, calcule $P(X={{k}})$.\n\n$P(X={{k}})=?$",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "8..15"
+				},
+				{
+					"name": "f",
+					"expression": "{{if:k==8|0.094|{{if:k==9|0.1763|{{if:k==10|0.2915|{{if:k==11|0.4311|{{if:k==12|0.5785|{{if:k==13|0.7145|{{if:k==14|0.8246|0.9029}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:k==8|0.0435|{{if:k==9|0.094|{{if:k==10|0.1763|{{if:k==11|0.2915|{{if:k==12|0.4311|{{if:k==13|0.5785|{{if:k==14|0.7145|0.8246}}}}}}}}}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:k==8|0.0505|{{if:k==9|0.0823|{{if:k==10|0.1152|{{if:k==11|0.1396|{{if:k==12|0.1474|{{if:k==13|0.136|{{if:k==14|0.1101|0.0783}}}}}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P(X\\leqslant {{k}})=P(X\\leqslant {{eval:k-1}})+P(X={{k}})$.",
+					"$P(X={{k}})=P(X\\leqslant {{k}})-P(X\\leqslant {{eval:k-1}})={{f}}-{{g}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0.5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $8$ | $0.0539$ |\n| $9$ | $0.1148$ |\n| $10$ | $0.2122$ |\n| $11$ | $0.345$ |\n| $12$ | $0.5$ |\n| $13$ | $0.655$ |\n| $14$ | $0.7878$ |\n| $15$ | $0.8852$ |\n| $16$ | $0.9461$ |\n\nEn utilisant uniquement cette table, calcule $P({{a}}\\leqslant X\\leqslant {{b}})$.\n\n$P({{a}}\\leqslant X\\leqslant {{b}})=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "9..12"
+				},
+				{
+					"name": "b",
+					"expression": "14..16"
+				},
+				{
+					"name": "fb",
+					"expression": "{{if:b==14|0.7878|{{if:b==15|0.8852|0.9461}}}}"
+				},
+				{
+					"name": "fa",
+					"expression": "{{if:a==9|0.0539|{{if:a==10|0.1148|{{if:a==11|0.2122|0.345}}}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{eval:fb-fa;d}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$P({{a}}\\leqslant X\\leqslant {{b}})=P(X\\leqslant {{b}})-P(X\\leqslant {{eval:a-1}})$ : on retire les valeurs **strictement inférieures** à ${{a}}$.",
+					"$P({{a}}\\leqslant X\\leqslant {{b}})={{fb}}-{{fa}}=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(50\\,;0.2)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $10$ | $0.5836$ |\n| $11$ | $0.7107$ |\n| $12$ | $0.8139$ |\n| $13$ | $0.8894$ |\n| $14$ | $0.9393$ |\n| $15$ | $0.9692$ |\n| $16$ | $0.9856$ |\n| $17$ | $0.9937$ |\n| $18$ | $0.9975$ |\n\nDétermine le plus petit entier $k$ tel que $P(X\\leqslant k)\\geqslant {{s}}$.\n\n$k=?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "{{if:j==1|0.9|{{if:j==2|0.95|0.99}}}}"
+				},
+				{
+					"name": "r",
+					"expression": "{{if:j==1|14|{{if:j==2|15|17}}}}"
+				},
+				{
+					"name": "fr",
+					"expression": "{{if:j==1|0.9393|{{if:j==2|0.9692|0.9937}}}}"
+				},
+				{
+					"name": "fq",
+					"expression": "{{if:j==1|0.8894|{{if:j==2|0.9393|0.9856}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{r}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La suite des $P(X\\leqslant k)$ est croissante : on cherche la première valeur de la table qui atteint ${{s}}$.",
+					"$P(X\\leqslant {{eval:r-1}})\\approx {{fq}}<{{s}}$ et $P(X\\leqslant {{r}})\\approx {{fr}}\\geqslant {{s}}$, donc $k=\\textcolor{{{color:primary.0}}}{{{r}}}$."
+				]
+			}
+		},
+		{
+			"statement": "$X$ suit la loi binomiale $\\mathcal{B}(40\\,;0.25)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $3$ | $0.0047$ |\n| $4$ | $0.016$ |\n| $5$ | $0.0433$ |\n| $6$ | $0.0962$ |\n| $7$ | $0.182$ |\n| $\\ldots$ | $\\ldots$ |\n| $13$ | $0.8968$ |\n| $14$ | $0.9456$ |\n| $15$ | $0.9738$ |\n| $16$ | $0.9884$ |\n| $17$ | $0.9953$ |\n\nOn cherche l'intervalle $[a\\,;b]$, avec $a$ et $b$ entiers, tel que $a$ est le plus petit entier vérifiant $P(X\\leqslant a)>{{h}}$ et $b$ le plus petit entier vérifiant $P(X\\leqslant b)\\geqslant {{g}}$. On a alors $P(a\\leqslant X\\leqslant b)\\geqslant {{c}}$.\n\n$a=?$ et $b=?$",
+			"variables": [
+				{
+					"name": "j",
+					"expression": "1..2"
+				},
+				{
+					"name": "h",
+					"expression": "{{if:j==1|0.025|0.05}}"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:j==1|0.975|0.95}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:j==1|0.95|0.9}}"
+				},
+				{
+					"name": "ra",
+					"expression": "{{if:j==1|5|6}}"
+				},
+				{
+					"name": "rb",
+					"expression": "{{if:j==1|16|15}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{ra}}"
+				},
+				{
+					"expectedAnswer": "{{rb}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$a$ : première valeur de la table **strictement** supérieure à ${{h}}$ : $P(X\\leqslant {{eval:ra-1}})\\leqslant {{h}}<P(X\\leqslant {{ra}})$, donc $a=\\textcolor{{{color:primary.0}}}{{{ra}}}$.",
+					"$b$ : première valeur supérieure ou égale à ${{g}}$ : $P(X\\leqslant {{eval:rb-1}})<{{g}}\\leqslant P(X\\leqslant {{rb}})$, donc $b=\\textcolor{{{color:primary.0}}}{{{rb}}}$.",
+					"L'intervalle $[{{ra}}\\,;{{rb}}]$ contient $X$ avec une probabilité au moins égale à ${{c}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : P(X > 5) = 0,5836",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"0,5836"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : P(X ⩽ 5) lu tel quel",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"0,4164"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 1 − P(X ⩽ 4)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"answers": [
+				"0,7625"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : P(X = 12) = 0,1474",
+			"variationIndex": 1,
+			"variables": {
+				"k": "12"
+			},
+			"answers": [
+				"0,1474"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : P(X ⩽ 12) lu",
+			"variationIndex": 1,
+			"variables": {
+				"k": "12"
+			},
+			"answers": [
+				"0,5785"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : P(10 ⩽ X ⩽ 15) = 0,7704",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "15"
+			},
+			"answers": [
+				"0,7704"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : F(b) − F(a) = 0,673",
+			"variationIndex": 2,
+			"variables": {
+				"a": "10",
+				"b": "15"
+			},
+			"answers": [
+				"0,673"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : seuil 0,95 → 15",
+			"variationIndex": 3,
+			"variables": {
+				"j": "2"
+			},
+			"answers": [
+				"15"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : seuil 0,95, valeur juste avant 14",
+			"variationIndex": 3,
+			"variables": {
+				"j": "2"
+			},
+			"answers": [
+				"14"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : seuil 0,99 → 17",
+			"variationIndex": 3,
+			"variables": {
+				"j": "3"
+			},
+			"answers": [
+				"17"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : α = 0,05 → [5 ; 16]",
+			"variationIndex": 4,
+			"variables": {
+				"j": "1"
+			},
+			"answers": [
+				"5",
+				"16"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : a = 4 (≤ au lieu de >)",
+			"variationIndex": 4,
+			"variables": {
+				"j": "1"
+			},
+			"answers": [
+				"4",
+				"16"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : α = 0,1 → [6 ; 15]",
+			"variationIndex": 4,
+			"variables": {
+				"j": "2"
+			},
+			"answers": [
+				"6",
+				"15"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

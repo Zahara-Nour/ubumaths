@@ -1,0 +1,402 @@
+{
+	"title": "Coefficients binomiaux : chemins, symétrie, triangle de Pascal",
+	"description": "Sans formule factorielle : nombre de chemins à k succès, C(n, 0), C(n, 1), C(n, n), symétrie C(n, n − k) = C(n, k), relation et triangle de Pascal",
+	"grades": [
+		"T_SPE",
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-087",
+		"TCOMP-094",
+		"TSPE-037",
+		"TSPE-040",
+		"TSPE-041"
+	],
+	"theme": "Probabilités",
+	"domain": "Loi binomiale",
+	"subdomain": "Coefficients binomiaux",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On représente par un arbre un schéma de Bernoulli de ${{n}}$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement ${{k}}$ succès ?\n\n$?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "3..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..{{eval:n-1}}"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==0|1|{{if:k==1|{{n}}|{{if:k==2|{{eval:n*(n-1)/2}}|{{if:k==3|{{eval:n*(n-1)*(n-2)/6}}|{{if:k==4|{{eval:n*(n-1)*(n-2)*(n-3)/24}}|1}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre de chemins à ${{k}}$ succès parmi ${{n}}$ épreuves est, par définition, le coefficient binomial $\\binom{ {{n}} }{ {{k}} }$.",
+					"On peut les lister (un chemin = une position des ${{k}}$ succès parmi les ${{n}}$ épreuves) : $\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\binom{ {{n}} }{ {{k}} }={{c}}$.\n\nSans calcul, donne $\\binom{ {{n}} }{ {{eval:n-k}} }$.\n\n$\\binom{ {{n}} }{ {{eval:n-k}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "8..20"
+				},
+				{
+					"name": "k",
+					"expression": "2..4"
+				},
+				{
+					"name": "c",
+					"expression": "{{if:k==0|1|{{if:k==1|{{n}}|{{if:k==2|{{eval:n*(n-1)/2}}|{{if:k==3|{{eval:n*(n-1)*(n-2)/6}}|{{if:k==4|{{eval:n*(n-1)*(n-2)*(n-3)/24}}|1}}}}}}}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Symétrie : $\\binom{n}{n-k}=\\binom{n}{k}$ (choisir les ${{k}}$ succès revient à choisir les ${{eval:n-k}}$ échecs).",
+					"$\\binom{ {{n}} }{ {{eval:n-k}} }=\\binom{ {{n}} }{ {{k}} }=\\textcolor{{{color:primary.0}}}{{{c}}}$."
+				]
+			}
+		},
+		{
+			"statement": "On donne $\\binom{ {{n}} }{ {{k}} }={{A}}$ et $\\binom{ {{n}} }{ {{eval:k+1}} }={{B}}$.\n\nSans autre calcul, donne $\\binom{ {{eval:n+1}} }{ {{eval:k+1}} }$.\n\n$\\binom{ {{eval:n+1}} }{ {{eval:k+1}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "6..15"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				},
+				{
+					"name": "A",
+					"expression": "{{if:k==0|1|{{if:k==1|{{n}}|{{if:k==2|{{eval:n*(n-1)/2}}|{{if:k==3|{{eval:n*(n-1)*(n-2)/6}}|{{if:k==4|{{eval:n*(n-1)*(n-2)*(n-3)/24}}|1}}}}}}}}}}"
+				},
+				{
+					"name": "B",
+					"expression": "{{if:k==1|{{eval:n*(n-1)/2}}|{{eval:n*(n-1)*(n-2)/6}}}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A+B}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Relation de Pascal : $\\binom{n}{k}+\\binom{n}{k+1}=\\binom{n+1}{k+1}$.",
+					"$\\binom{ {{eval:n+1}} }{ {{eval:k+1}} }={{A}}+{{B}}=\\textcolor{{{color:primary.0}}}{{{eval:A+B}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ {{n}} }{0}=?$ ; $\\binom{ {{n}} }{1}=?$ ; $\\binom{ {{n}} }{ {{n}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..40"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "1"
+				},
+				{
+					"expectedAnswer": "{{n}}"
+				},
+				{
+					"expectedAnswer": "1"
+				}
+			],
+			"correction": {
+				"steps": [
+					"$\\binom{ {{n}} }{0}=\\textcolor{{{color:primary.0}}}{1}$ : un seul chemin sans succès (que des échecs).",
+					"$\\binom{ {{n}} }{1}=\\textcolor{{{color:primary.0}}}{{{n}}}$ : le succès unique peut être à l'une des ${{n}}$ épreuves.",
+					"$\\binom{ {{n}} }{ {{n}} }=\\textcolor{{{color:primary.0}}}{1}$ : un seul chemin où tout est succès."
+				]
+			}
+		},
+		{
+			"statement": "La ligne $n={{n}}$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ {{n}} }{0}$, $\\binom{ {{n}} }{1}$, …, $\\binom{ {{n}} }{ {{n}} }$ :\n\n$1$ ; ${{c1}}$ ; ${{c2}}$ ; ${{c3}}$ ; ${{c4}}$ ; ${{c5}}${{if:n>=6| ; ${{c6}}$|}}{{if:n>=7| ; ${{c7}}$|}}\n\nDéduis-en $\\binom{ {{eval:n+1}} }{ {{k}} }$.\n\n$\\binom{ {{eval:n+1}} }{ {{k}} }=?$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..7"
+				},
+				{
+					"name": "c0",
+					"expression": "1"
+				},
+				{
+					"name": "c1",
+					"expression": "{{n}}"
+				},
+				{
+					"name": "c2",
+					"expression": "{{eval:n*(n-1)/2}}"
+				},
+				{
+					"name": "c3",
+					"expression": "{{eval:n*(n-1)*(n-2)/6}}"
+				},
+				{
+					"name": "m4",
+					"expression": "{{eval:n-4}}"
+				},
+				{
+					"name": "c4",
+					"expression": "{{if:m4==0|1|{{if:m4==1|{{n}}|{{if:m4==2|{{eval:n*(n-1)/2}}|{{eval:n*(n-1)*(n-2)/6}}}}}}}}"
+				},
+				{
+					"name": "m5",
+					"expression": "{{eval:n-5}}"
+				},
+				{
+					"name": "c5",
+					"expression": "{{if:m5==0|1|{{if:m5==1|{{n}}|{{if:m5==2|{{eval:n*(n-1)/2}}|{{eval:n*(n-1)*(n-2)/6}}}}}}}}"
+				},
+				{
+					"name": "m6",
+					"expression": "{{eval:n-6}}"
+				},
+				{
+					"name": "c6",
+					"expression": "{{if:m6==0|1|{{if:m6==1|{{n}}|{{if:m6==2|{{eval:n*(n-1)/2}}|{{eval:n*(n-1)*(n-2)/6}}}}}}}}"
+				},
+				{
+					"name": "m7",
+					"expression": "{{eval:n-7}}"
+				},
+				{
+					"name": "c7",
+					"expression": "{{if:m7==0|1|{{if:m7==1|{{n}}|{{if:m7==2|{{eval:n*(n-1)/2}}|{{eval:n*(n-1)*(n-2)/6}}}}}}}}"
+				},
+				{
+					"name": "k",
+					"expression": "2..3"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:k==2|{{eval:(n+1)*n/2}}|{{eval:(n+1)*n*(n-1)/6}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans le triangle de Pascal, chaque coefficient est la somme des deux coefficients placés au-dessus : $\\binom{ {{eval:n+1}} }{ {{k}} }=\\binom{ {{n}} }{ {{eval:k-1}} }+\\binom{ {{n}} }{ {{k}} }$.",
+					"$\\binom{ {{eval:n+1}} }{ {{k}} }={{if:k==2|{{c1}}+{{c2}}|{{c2}}+{{c3}}}}=\\textcolor{{{color:primary.0}}}{{{if:k==2|{{eval:(n+1)*n/2}}|{{eval:(n+1)*n*(n-1)/6}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : n = 4, k = 2 → 6",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": [
+				"6"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : n × k = 8",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": [
+				"8"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : 2ⁿ = 16 (tous les chemins)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"k": "2"
+			},
+			"answers": [
+				"16"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : C(12, 3) = 220 → C(12, 9)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"k": "3"
+			},
+			"answers": [
+				"220"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : 9",
+			"variationIndex": 1,
+			"variables": {
+				"n": "12",
+				"k": "3"
+			},
+			"answers": [
+				"9"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : C(10,2) + C(10,3) = 45 + 120",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "2"
+			},
+			"answers": [
+				"165"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : produit",
+			"variationIndex": 2,
+			"variables": {
+				"n": "10",
+				"k": "2"
+			},
+			"answers": [
+				"5400"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : n = 12 → 1 ; 12 ; 1",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12"
+			},
+			"answers": [
+				"1",
+				"12",
+				"1"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : C(n, 0) = 0",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12"
+			},
+			"answers": [
+				"0",
+				"12",
+				"1"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : C(n, n) = n",
+			"variationIndex": 3,
+			"variables": {
+				"n": "12"
+			},
+			"answers": [
+				"1",
+				"12",
+				"12"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 : ligne 5, C(6, 2) = 15",
+			"variationIndex": 4,
+			"variables": {
+				"n": "5",
+				"k": "2"
+			},
+			"answers": [
+				"15"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ligne 6, C(7, 3) = 35",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6",
+				"k": "3"
+			},
+			"answers": [
+				"35"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 : ligne 6, C(6, 3) lu au lieu de C(7, 3)",
+			"variationIndex": 4,
+			"variables": {
+				"n": "6",
+				"k": "3"
+			},
+			"answers": [
+				"20"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}

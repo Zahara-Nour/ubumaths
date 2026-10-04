@@ -1,0 +1,295 @@
+{
+	"title": "Ajustement affine : interpréter le coefficient directeur, l'ordonnée à l'origine et r",
+	"description": "Sorties de calculatrice données : interpréter a (variation moyenne de y par unité de x), b (estimation en x = 0), et la valeur de r (pertinence de l'ajustement affine)",
+	"grades": [
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-117",
+		"TCOMP-118",
+		"TCOMP-123"
+	],
+	"theme": "Statistiques",
+	"domain": "Statistique à deux variables",
+	"subdomain": "Ajustement affine",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"variations": [
+		{
+			"statement": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le coefficient ${{eval:A/10;d}}$ ?",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "12..95"
+				},
+				{
+					"name": "B",
+					"expression": "20..80"
+				}
+			],
+			"conditions": [
+				"mod(A, 10) != 0"
+			],
+			"choices": [
+				{
+					"content": "Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers chaque année"
+				},
+				{
+					"content": "Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}\\,\\%$ chaque année"
+				},
+				{
+					"content": "Le nombre d'abonnés est multiplié par ${{eval:A/10;d}}$ chaque année"
+				},
+				{
+					"content": "Il y avait ${{eval:A/10;d}}$ milliers d'abonnés l'année de rang $0$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"Le coefficient directeur $a$ est la variation de $y$ quand $x$ augmente de $1$.",
+					"Selon cet ajustement, **le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers par an**."
+				]
+			}
+		},
+		{
+			"statement": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le nombre ${{B}}$ ?",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "12..95"
+				},
+				{
+					"name": "B",
+					"expression": "20..80"
+				}
+			],
+			"conditions": [
+				"mod(A, 10) != 0"
+			],
+			"choices": [
+				{
+					"content": "L'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$"
+				},
+				{
+					"content": "Le nombre d'abonnés augmente d'environ ${{B}}$ milliers chaque année"
+				},
+				{
+					"content": "Le nombre d'abonnés ne descendra jamais sous ${{B}}$ milliers"
+				},
+				{
+					"content": "Le nombre moyen d'abonnés sur la période est ${{B}}$ milliers"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"L'ordonnée à l'origine $b$ est la valeur de $y$ donnée par l'ajustement pour $x=0$.",
+					"Donc **l'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$**."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:-R/1000;d}}$.\n\nQue peut-on en conclure ?",
+			"variables": [
+				{
+					"name": "R",
+					"expression": "951..998"
+				}
+			],
+			"choices": [
+				{
+					"content": "Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+				},
+				{
+					"content": "Il n'y a aucune liaison entre $x$ et $y$ car $r<0$"
+				},
+				{
+					"content": "Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente"
+				},
+				{
+					"content": "$y$ est proportionnel à $x$"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"$r$ est proche de $-1$ : les points sont presque alignés sur une droite décroissante.",
+					"Donc **un ajustement affine est pertinent, avec une liaison négative**."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:R/100;d}}$.\n\nQue peut-on en conclure ?",
+			"variables": [
+				{
+					"name": "R",
+					"expression": "5..35"
+				}
+			],
+			"conditions": [
+				"mod(R, 10) != 0"
+			],
+			"choices": [
+				{
+					"content": "Un ajustement affine n'est pas pertinent"
+				},
+				{
+					"content": "Un ajustement affine est pertinent car $r>0$"
+				},
+				{
+					"content": "$y$ diminue quand $x$ augmente"
+				},
+				{
+					"content": "Les points sont parfaitement alignés"
+				}
+			],
+			"correctChoiceIndex": [
+				"0"
+			],
+			"correction": {
+				"steps": [
+					"$r$ est proche de $0$ : les points ne sont pas proches d'une droite.",
+					"Donc **un ajustement affine n'est pas pertinent**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : bonne interprétation",
+			"variationIndex": 0,
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : pourcentage",
+			"variationIndex": 0,
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v0 : confusion avec b",
+			"variationIndex": 0,
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"selectedChoices": [
+				3
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : bonne interprétation",
+			"variationIndex": 1,
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : confusion avec a",
+			"variationIndex": 1,
+			"variables": {
+				"A": "35",
+				"B": "40"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : r ≈ −0,97",
+			"variationIndex": 2,
+			"variables": {
+				"R": "970"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : r < 0 lu comme absence de liaison",
+			"variationIndex": 2,
+			"variables": {
+				"R": "970"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v3 : r ≈ 0,12",
+			"variationIndex": 3,
+			"variables": {
+				"R": "12"
+			},
+			"selectedChoices": [
+				0
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v3 : r > 0 suffit",
+			"variationIndex": 3,
+			"variables": {
+				"R": "12"
+			},
+			"selectedChoices": [
+				1
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		},
+		"shuffleChoices": true
+	}
+}

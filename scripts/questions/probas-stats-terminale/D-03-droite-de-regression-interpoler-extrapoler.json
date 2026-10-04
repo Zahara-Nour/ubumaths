@@ -1,0 +1,260 @@
+{
+	"title": "Droite de régression donnée par la calculatrice : estimer une valeur",
+	"description": "Utiliser l'équation y = ax + b fournie par la calculatrice pour estimer y (ou x), avec un rang d'année (pièges : année au lieu du rang, rang décalé de 1, a et b échangés)",
+	"grades": [
+		"T_COMP"
+	],
+	"points": [
+		"TCOMP-123",
+		"TCOMP-124",
+		"TCOMP-120"
+	],
+	"theme": "Statistiques",
+	"domain": "Statistique à deux variables",
+	"subdomain": "Ajustement affine",
+	"level": 1,
+	"status": "draft",
+	"delay": 60,
+	"shared": {
+		"blankDefaults": {
+			"acceptDecimal": true
+		}
+	},
+	"variations": [
+		{
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice donne la droite d'ajustement de $y$ en $x$ par la méthode des moindres carrés : $y={{eval:A/100;d}}x+{{eval:B/10;d}}$.\n\nEstime la valeur de $y$ pour $x={{x0}}$ (nombre décimal).\n\n$y\\approx ?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "50..500"
+				},
+				{
+					"name": "B",
+					"expression": "10..300"
+				},
+				{
+					"name": "x0",
+					"expression": "5..30"
+				}
+			],
+			"conditions": [
+				"mod(A, 10) != 0",
+				"mod(B, 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A*x0/100+B/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On remplace $x$ par ${{x0}}$ dans l'équation de la droite.",
+					"$y={{eval:A/100;d}}\\times {{x0}}+{{eval:B/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:A*x0/100+B/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice donne la droite d'ajustement de $y$ en $x$ par la méthode des moindres carrés : $y={{eval:A/100;d}}x+{{eval:B/10;d}}$.\n\nEstime la valeur de $x$ pour laquelle $y={{y0}}$. Donne la valeur arrondie au dixième.\n\n$x\\approx ?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "50..500"
+				},
+				{
+					"name": "B",
+					"expression": "10..300"
+				},
+				{
+					"name": "y0",
+					"expression": "{{eval:floor(B/10)+21}}..{{eval:floor(B/10)+151}}"
+				},
+				{
+					"name": "x",
+					"expression": "{{eval:(y0-B/10)/(A/100)}}"
+				}
+			],
+			"conditions": [
+				"mod(A, 10) != 0",
+				"abs(10*x-floor(10*x)-0.5) > 0.05",
+				"mod(round(10*x), 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:round(10*x)/10;d}}",
+					"precision": {
+						"type": "decimal",
+						"digits": 1
+					}
+				}
+			],
+			"correction": {
+				"steps": [
+					"On résout ${{eval:A/100;d}}x+{{eval:B/10;d}}={{y0}}$ : $x=\\dfrac{ {{y0}}-{{eval:B/10;d}} }{ {{eval:A/100;d}} }$.",
+					"$x\\approx \\textcolor{{{color:primary.0}}}{{{eval:round(10*x)/10;d}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Le tableau donne le nombre $y_i$ d'abonnés (en milliers) à un service selon le rang $x_i$ de l'année, le rang $1$ correspondant à 2016.\n\n| $x_i$ | $1$ | $2$ | $3$ | $4$ | $5$ | $6$ |\n|---|---|---|---|---|---|---|\n| $y_i$ | ${{eval:A/100*1+B/10+(1/10);d}}$ | ${{eval:A/100*2+B/10-(3/10);d}}$ | ${{eval:A/100*3+B/10+(2/10);d}}$ | ${{eval:A/100*4+B/10;d}}$ | ${{eval:A/100*5+B/10-(2/10);d}}$ | ${{eval:A/100*6+B/10+(1/10);d}}$ |\n\nLa calculatrice donne pour droite d'ajustement de $y$ en $x$ : $y={{eval:A/100;d}}x+{{eval:B/10;d}}$ (coefficients arrondis).\n\nEstime le nombre d'abonnés, en milliers, en {{Y}} (nombre décimal).\n\n$?$",
+			"variables": [
+				{
+					"name": "A",
+					"expression": "120..480"
+				},
+				{
+					"name": "B",
+					"expression": "50..200"
+				},
+				{
+					"name": "Y",
+					"expression": "2024..2030"
+				}
+			],
+			"conditions": [
+				"mod(A, 10) != 0",
+				"mod(B, 10) != 0"
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:A*(Y-2015)/100+B/10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"L'année {{Y}} a pour rang $x={{Y}}-2015={{eval:Y-2015}}$ (2016 a le rang $1$).",
+					"$y={{eval:A/100;d}}\\times {{eval:Y-2015}}+{{eval:B/10;d}}=\\textcolor{{{color:primary.0}}}{{{eval:A*(Y-2015)/100+B/10;d}}}$ milliers d'abonnés (extrapolation : on suppose que la tendance se poursuit)."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "v0 : y = 2,35x + 12,4, x = 10 → 35,9",
+			"variationIndex": 0,
+			"variables": {
+				"A": "235",
+				"B": "124",
+				"x0": "10"
+			},
+			"answers": [
+				"35,9"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v0 : a et b échangés : 126,35",
+			"variationIndex": 0,
+			"variables": {
+				"A": "235",
+				"B": "124",
+				"x0": "10"
+			},
+			"answers": [
+				"126,35"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v1 : y = 2,35x + 12,4, y = 70 → 24,5",
+			"variationIndex": 1,
+			"variables": {
+				"A": "235",
+				"B": "124",
+				"y0": "70"
+			},
+			"answers": [
+				"24,5"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v1 : trop précis 24,51",
+			"variationIndex": 1,
+			"variables": {
+				"A": "235",
+				"B": "124",
+				"y0": "70"
+			},
+			"answers": [
+				"24,51"
+			],
+			"expected": {
+				"status": "bad_form",
+				"constraintViolations": [
+					"rounding"
+				]
+			}
+		},
+		{
+			"description": "v1 : y estimé pour x = 70",
+			"variationIndex": 1,
+			"variables": {
+				"A": "235",
+				"B": "124",
+				"y0": "70"
+			},
+			"answers": [
+				"176,9"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : y = 1,25x + 8,3, 2026 → rang 11 → 22,05",
+			"variationIndex": 2,
+			"variables": {
+				"A": "125",
+				"B": "83",
+				"Y": "2026"
+			},
+			"answers": [
+				"22,05"
+			],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v2 : rang décalé 10 → 20,8",
+			"variationIndex": 2,
+			"variables": {
+				"A": "125",
+				"B": "83",
+				"Y": "2026"
+			},
+			"answers": [
+				"20,8"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v2 : année au lieu du rang",
+			"variationIndex": 2,
+			"variables": {
+				"A": "125",
+				"B": "83",
+				"Y": "2026"
+			},
+			"answers": [
+				"2540,8"
+			],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	],
+	"options": {
+		"constraints": {
+			"spaces": "off"
+		}
+	}
+}
