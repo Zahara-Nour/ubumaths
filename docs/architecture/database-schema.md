@@ -1080,6 +1080,16 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
     une nouvelle valeur est écrasée par l'ancienne (sans erreur : le store envoie encore la
     sienne) ; remise à NULL permise (refus, expiration de `/confirm`). L'élève ne peut donc
     plus repousser le délai de 5 minutes.
+  - délai de confirmation (depuis `20261004233000_echanges_delai_confirmation`) : passer SA
+    confirmation à `true` exige `confirmation_started_at` non NULL et posée depuis 5 minutes
+    au plus (`interval '5 minutes'`, même valeur que `CONFIRMATION_TIMEOUT` de la route
+    `/confirm`) ; sinon 42501. `execute_trade` n'est pas modifiée : ses 4 drapeaux ne passent à
+    `true`, pour un élève, qu'à travers ce trigger ; le flux marché (`accept_proposal_atomic`,
+    INSERT sans heure) n'est pas concerné.
+  - remise à NULL d'une `confirmation_started_at` posée (refus, expiration) : les deux
+    validations ET les deux confirmations repassent à `false` (défense en profondeur, même
+    migration ; aujourd'hui `validate_timestamps_consistency` refuse déjà une remise à NULL qui
+    garderait les validations, en 23514).
 - **Policy RESTRICTIVE `marketplace_trades_insert_friend_rules`** : création directe = échange
   `friend` vierge (`negotiating`, offre NULL, 4 drapeaux à false), entre deux élèves amis
   (amitié acceptée) de la même école (`same_school`). Marché activé et quotas : route
@@ -1087,8 +1097,9 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
 - **Policy RESTRICTIVE `marketplace_trades_delete_never`** (`USING (false)`) : les élèves ne
   suppriment plus d'échange. Le rollback interne d'`accept_proposal_atomic` (postgres) passe.
 
-Tests : `tests/integration/marketplace-trades-garde.test.ts`. Suivi :
-`docs/wip/echanges-garde-base-progress.md`.
+Tests : `tests/integration/marketplace-trades-garde.test.ts`,
+`tests/integration/echanges-delai-confirmation.test.ts`. Suivi :
+`docs/wip/echanges-garde-base-progress.md`, `docs/wip/srs-stats-echanges-delai-progress.md`.
 
 ## Carnets Python et paquets SRS — écritures réservées (2026-10-04)
 
