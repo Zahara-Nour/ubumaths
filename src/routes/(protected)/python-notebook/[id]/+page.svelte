@@ -73,14 +73,17 @@
 		{/if}
 	</div>
 
-	<!-- Notebook -->
-	<NotebookView
-		notebookId={data.notebook.id}
-		isReadonly={data.readonly}
-		isTeacher={isOwnerTeacher}
-		{previewMode}
-		foreignStudentNotebook={data.foreignStudentNotebook}
-	/>
+	<!-- Notebook — `{#key}`: SvelteKit reuses this page between two notebooks;
+	     one NotebookView (one store, one execution lock) per notebook. -->
+	{#key data.notebook.id}
+		<NotebookView
+			notebookId={data.notebook.id}
+			isReadonly={data.readonly}
+			isTeacher={isOwnerTeacher}
+			{previewMode}
+			foreignStudentNotebook={data.foreignStudentNotebook}
+		/>
+	{/key}
 </div>
 
 <!-- Share Dialog -->

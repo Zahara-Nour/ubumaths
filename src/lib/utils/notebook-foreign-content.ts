@@ -41,7 +41,12 @@ export function isForeignStudentNotebook({
 	authorRole
 }: ForeignNotebookInput): boolean {
 	if (isOwner) return false;
-	// Élève non auteur = carnet assigné, donc écrit par un prof (cf. en-tête)
-	if (viewerRole === 'student') return false;
+	// Élève non auteur = carnet assigné, donc écrit par un prof (cf. en-tête).
+	// Défense en profondeur : un auteur VU comme élève reste restreint si
+	// l'invariant de la policy venait à céder. Rôle illisible (`null`) : OUVERT
+	// pour l'élève — depuis le retrait des profils lisibles par tous, un élève
+	// peut ne pas voir le profil de son prof ; fermer ici verrouillerait tout
+	// carnet assigné (présentation comprise).
+	if (viewerRole === 'student') return authorRole === 'student';
 	return !TRUSTED_AUTHOR_ROLES.has(authorRole ?? '');
 }

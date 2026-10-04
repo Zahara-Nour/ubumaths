@@ -28,7 +28,17 @@ export interface GenerateNotebookPdfInput {
 	options: NotebookExportOptions;
 	/** Optional override of the cover-page author/student line. */
 	authorName?: string;
+	/**
+	 * Carnet d'un ÉLÈVE ouvert par quelqu'un d'autre (décision de David,
+	 * 2026-10-04) : export REFUSÉ. Le markdown de l'élève passerait par Typst et
+	 * ses images externes seraient téléchargées par le navigateur du lecteur.
+	 * Obligatoire : chaque appelant doit trancher.
+	 */
+	foreignStudentNotebook: boolean;
 }
+
+/** Message de refus de l'export d'un carnet d'élève lu par autrui */
+export const FOREIGN_NOTEBOOK_PDF_ERROR = "Export PDF indisponible : ce carnet n'est pas le vôtre.";
 
 /**
  * Generate a PDF from a notebook, with inline PNG images mapped via the
@@ -36,6 +46,11 @@ export interface GenerateNotebookPdfInput {
  * `generatePdfFromTypst`.
  */
 export async function generateNotebookPdf(input: GenerateNotebookPdfInput): Promise<PdfResult> {
+	// Refus AVANT toute préparation : aucune image extraite ni téléchargée
+	if (input.foreignStudentNotebook) {
+		return { success: false, error: FOREIGN_NOTEBOOK_PDF_ERROR };
+	}
+
 	const generator = new NotebookGenerator();
 
 	// Pre-extract inline PNGs and map them to the shadow FS. We do this

@@ -478,8 +478,8 @@ export class NotebookStore {
 			this.executionCounter = 0;
 			this.lastSavedTime = new Date(notebook.updated_at);
 
-			// Create executor for this notebook
-			this._executor = new NotebookExecutor(notebook.id);
+			// Create executor for this notebook — none when execution is locked
+			this._executor = this._executionLocked ? null : new NotebookExecutor(notebook.id);
 
 			return notebook;
 		} catch (err) {

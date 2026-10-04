@@ -6,11 +6,14 @@
  * quelqu'un d'autre ne doit donc JAMAIS atteindre le worker — et la garde vit
  * dans le store, pas seulement dans les boutons.
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PythonNotebook } from '$lib/types/notebook';
 
-const created: Array<{ execute: ReturnType<typeof vi.fn>; initPyodide: ReturnType<typeof vi.fn> }> =
-	[];
+const created: Array<{
+	execute: ReturnType<typeof vi.fn>;
+	initPyodide: ReturnType<typeof vi.fn>;
+	validateExercise: ReturnType<typeof vi.fn>;
+}> = [];
 
 vi.mock('$lib/shared/python', () => {
 	class FakeNotebookExecutor {
@@ -72,6 +75,9 @@ function makeNotebook(): PythonNotebook {
 beforeEach(() => {
 	created.length = 0;
 });
+afterEach(() => {
+	vi.unstubAllGlobals();
+});
 
 describe('NotebookStore — verrou d’exécution', () => {
 	it('carnet verrouillé : initPyodide ne crée aucun worker', () => {
@@ -93,6 +99,7 @@ describe('NotebookStore — verrou d’exécution', () => {
 		await store.runCheckpoint('k1');
 		expect(created).toHaveLength(1);
 		expect(created[0].execute).not.toHaveBeenCalled();
+		expect(created[0].validateExercise).not.toHaveBeenCalled();
 		expect(store.cells[0].state).toBe('idle');
 		expect(store.checkpointRunning['k1']).toBeUndefined();
 	});
@@ -104,5 +111,34 @@ describe('NotebookStore — verrou d’exécution', () => {
 		await store.executeCell('c1');
 		expect(created[0].execute).toHaveBeenCalledWith('print(1)');
 		expect(store.executionLocked).toBe(false);
+	});
+
+	it('chemin réel loadNotebook : verrouillé, aucun exécuteur créé ni lancé', async () => {
+		const notebook = { ...makeNotebook(), updated_at: '2026-10-04T10:00:00Z' };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response(JSON.stringify({ notebook }), { status: 200 }))
+		);
+		const store = new NotebookStore();
+		store.lockExecution();
+		expect(await store.loadNotebook(notebook.id)).not.toBeNull();
+		store.initPyodide();
+		await store.executeCell('c1');
+		await store.runCheckpoint('k1');
+		expect(created).toHaveLength(0);
+		expect(store.isReady).toBe(false);
+	});
+
+	it('chemin réel loadNotebook : non verrouillé, un exécuteur est créé', async () => {
+		const notebook = { ...makeNotebook(), updated_at: '2026-10-04T10:00:00Z' };
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response(JSON.stringify({ notebook }), { status: 200 }))
+		);
+		const store = new NotebookStore();
+		await store.loadNotebook(notebook.id);
+		store.initPyodide();
+		expect(created).toHaveLength(1);
+		expect(created[0].initPyodide).toHaveBeenCalled();
 	});
 });

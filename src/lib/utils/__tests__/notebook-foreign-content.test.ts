@@ -31,6 +31,12 @@ describe('isForeignStudentNotebook', () => {
 		).toBe(false);
 	});
 
+	it('élève lecteur non auteur dont l’auteur est VU comme élève : restreint (défense en profondeur)', () => {
+		expect(
+			isForeignStudentNotebook({ isOwner: false, viewerRole: 'student', authorRole: 'student' })
+		).toBe(true);
+	});
+
 	it('prof qui ouvre son propre carnet ou celui de l’admin : pas étranger', () => {
 		expect(
 			isForeignStudentNotebook({ isOwner: true, viewerRole: 'teacher', authorRole: 'teacher' })

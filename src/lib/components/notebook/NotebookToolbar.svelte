@@ -92,7 +92,11 @@
 			toaster.error('Notebook introuvable');
 			return;
 		}
-		const result = await generateAndDownloadNotebookPdf({ notebook: nb, options });
+		const result = await generateAndDownloadNotebookPdf({
+			notebook: nb,
+			options,
+			foreignStudentNotebook: executionLocked || (notebook?.executionLocked ?? false)
+		});
 		if (result.success) {
 			toaster.success('PDF téléchargé');
 		} else {
@@ -243,18 +247,21 @@
 		{/if}
 
 		<!-- PDF export — available to all roles; the dialog locks the hint
-		     toggle for non-teachers. -->
-		<Button
-			variant="ghost"
-			size="sm"
-			onclick={() => (pdfDialogOpen = true)}
-			class="gap-1.5"
-			title="Exporter le notebook en PDF"
-			aria-label="Exporter en PDF"
-		>
-			<FileDown class="size-4" />
-			<span class="hidden sm:inline">PDF</span>
-		</Button>
+		     toggle for non-teachers. Hidden for a foreign student notebook
+		     (the export function refuses it as well). -->
+		{#if !executionLocked}
+			<Button
+				variant="ghost"
+				size="sm"
+				onclick={() => (pdfDialogOpen = true)}
+				class="gap-1.5"
+				title="Exporter le notebook en PDF"
+				aria-label="Exporter en PDF"
+			>
+				<FileDown class="size-4" />
+				<span class="hidden sm:inline">PDF</span>
+			</Button>
+		{/if}
 
 		{#if !isReadonly}
 			<Button

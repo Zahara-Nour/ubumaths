@@ -10,14 +10,20 @@
  * Rendu restreint (même moteur que le chat : `MarkdownRenderer restricted`,
  * `hasUnsafeMathCommand`) et aucune exécution. L'auteur, lui, garde tout.
  */
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MarkdownCell from '../MarkdownCell.svelte';
 import CellOutputs from '../CellOutputs.svelte';
 import NotebookCell from '../NotebookCell.svelte';
 import NotebookToolbar from '../NotebookToolbar.svelte';
+import NotebookCodeSlide from '../presentation/NotebookCodeSlide.svelte';
+import NotebookCheckpointSlide from '../presentation/NotebookCheckpointSlide.svelte';
 import { NotebookStore } from '$lib/stores/notebookStore.svelte';
-import type { CellOutput, NotebookCell as NotebookCellType } from '$lib/types/notebook';
+import type {
+	CellOutput,
+	CheckpointCell as CheckpointCellType,
+	NotebookCell as NotebookCellType
+} from '$lib/types/notebook';
 
 const HOTE = 'exemple.invalid';
 
@@ -110,9 +116,8 @@ describe('Cellule markdown d’élève vue par le prof (restreint)', () => {
 	it('ni \\htmlStyle, ni \\colorbox, ni image externe', async () => {
 		const el = await shownMarkdown(MARKDOWN_HOSTILE, true);
 		await expect.poll(() => el.textContent).toContain('Bonjour');
-		// Les formules dangereuses restent en TEXTE
-		await expect.poll(() => el.textContent).toContain('htmlStyle');
-		expect(el.textContent).toContain('colorbox');
+		// Les formules dangereuses ne passent pas par MathLive
+		expect(el.querySelector('math-span')).toBeNull();
 		expect(el.querySelector('img')).toBeNull();
 		expect(hostileAttributes(el)).toEqual([]);
 		expect(styleAttributesContaining(el, 'fixed')).toEqual([]);
@@ -123,7 +128,7 @@ describe('Cellule markdown vue par son auteur (rendu complet, non-régression)',
 	it('formule et image rendues', async () => {
 		const el = await shownMarkdown(`Bonjour $x^2$\n\n![dessin](https://${HOTE}/c.png)`, false);
 		await expect.poll(() => el.querySelector('img')?.getAttribute('src')).toContain(HOTE);
-		expect(el.querySelector('math-span, math-field')).not.toBeNull();
+		expect(el.querySelector('math-span')).not.toBeNull();
 	});
 });
 
@@ -134,7 +139,7 @@ describe('Sorties de cellule, vues par le prof (restreint)', () => {
 			[{ output_type: 'display_data', data: { 'text/plain': latex }, metadata: {} }],
 			true
 		);
-		await expect.poll(() => el.textContent).toContain('htmlStyle');
+		await expect.poll(() => el.querySelector('pre')).not.toBeNull();
 		expect(el.querySelector('math-span')).toBeNull();
 		expect(styleAttributesContaining(el, 'fixed')).toEqual([]);
 	});
@@ -182,7 +187,9 @@ describe('Exécution : aucun bouton pour le lecteur non auteur', () => {
 	it('cellule de code verrouillée : pas de bouton « Exécuter la cellule »', async () => {
 		const screen = await render(NotebookCell, {
 			target: mainElement(),
-			props: { cell: codeCell(), isActive: true, isReadonly: true, executionLocked: true }
+			// isReadonly: false — sinon la lecture seule masque déjà le bouton et le
+			// test ne prouve rien du verrou
+			props: { cell: codeCell(), isActive: true, isReadonly: false, executionLocked: true }
 		});
 		const el = screen.container as HTMLElement;
 		await expect.poll(() => el.textContent).toContain('print');
@@ -216,5 +223,83 @@ describe('Exécution : aucun bouton pour le lecteur non auteur', () => {
 		});
 		const el = screen.container as HTMLElement;
 		await expect.poll(() => el.textContent).toContain('Tout exécuter');
+	});
+});
+
+function checkpointCell(): CheckpointCellType {
+	return {
+		id: 'k1',
+		type: 'checkpoint',
+		source: '',
+		execution_count: null,
+		outputs: [],
+		state: 'idle',
+		checkpoint: { mode: 'assert', code: 'assert x == 1' }
+	} as CheckpointCellType;
+}
+
+/** Store verrouillé dont on espionne les points d'entrée de l'exécution */
+function lockedStore(): {
+	store: NotebookStore;
+	executeCell: ReturnType<typeof vi.spyOn>;
+	runCheckpoint: ReturnType<typeof vi.spyOn>;
+} {
+	const store = new NotebookStore();
+	store.lockExecution();
+	return {
+		store,
+		executeCell: vi.spyOn(store, 'executeCell'),
+		runCheckpoint: vi.spyOn(store, 'runCheckpoint')
+	};
+}
+
+function clickAllButtons(el: HTMLElement): void {
+	for (const button of el.querySelectorAll('button')) button.click();
+}
+
+describe('Présentation (/present) : le ▶ d’un carnet d’élève lu par le prof', () => {
+	it('diapositive de code verrouillée : « Lecture seule » à la place du ▶, aucun appel', async () => {
+		const { store, executeCell } = lockedStore();
+		const screen = await render(NotebookCodeSlide, {
+			target: mainElement(),
+			props: { cell: codeCell(), notebook: store }
+		});
+		const el = screen.container as HTMLElement;
+		await expect.poll(() => el.textContent).toContain('Lecture seule');
+		expect(el.textContent).not.toContain('Exécuter');
+		clickAllButtons(el);
+		expect(executeCell).not.toHaveBeenCalled();
+	});
+
+	it('diapositive de code non verrouillée : le ▶ « Exécuter » est là', async () => {
+		const screen = await render(NotebookCodeSlide, {
+			target: mainElement(),
+			props: { cell: codeCell(), notebook: new NotebookStore() }
+		});
+		const el = screen.container as HTMLElement;
+		await expect.poll(() => el.textContent).toContain('Exécuter');
+		expect(el.textContent).not.toContain('Lecture seule');
+	});
+
+	it('diapositive de checkpoint verrouillée : pas de « Vérifier », aucun appel', async () => {
+		const { store, runCheckpoint } = lockedStore();
+		const screen = await render(NotebookCheckpointSlide, {
+			target: mainElement(),
+			props: { cell: checkpointCell(), notebook: store }
+		});
+		const el = screen.container as HTMLElement;
+		await expect.poll(() => el.textContent?.length ?? 0).toBeGreaterThan(0);
+		expect(el.textContent).not.toContain('Vérifier');
+		clickAllButtons(el);
+		expect(runCheckpoint).not.toHaveBeenCalled();
+	});
+
+	it('diapositive de checkpoint non verrouillée : « Vérifier » est là', async () => {
+		const screen = await render(NotebookCheckpointSlide, {
+			target: mainElement(),
+			props: { cell: checkpointCell(), notebook: new NotebookStore() }
+		});
+		const el = screen.container as HTMLElement;
+		await expect.poll(() => el.textContent).toContain('Vérifier');
 	});
 });
