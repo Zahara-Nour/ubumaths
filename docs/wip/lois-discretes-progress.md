@@ -23,7 +23,7 @@ V 35/12 ≈ 2,917, σ 1,708 ; U(0 ; 9) : E 4,5, V 8,25. B(1 ; 0,3) : V 0,21, σ 
 
 - [x] Tests rouges (statistics, parseur, scène, Typst, anglais) — 2026-10-04
 - [x] Implémentation (non commitée, relecture de David)
-- [ ] Fiche compilée et regardée
+- [x] Fiche compilée et regardée (FR + EN, débords : 0 ; valeurs identiques après les corrections de revue)
 - [x] Revue (Opus) : 6 correctifs (perf BigInt brut, avertissement P(X = 2,5), `<div>` de la
       mention, message des trois lois, E/V approchés pour p décimal, tests conditionnelle) — 2026-10-04
 - [ ] À trancher par David : avertissement hors support pour U ; `indicateurs: aucun`
