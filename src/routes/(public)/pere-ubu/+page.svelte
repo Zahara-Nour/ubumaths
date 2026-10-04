@@ -123,7 +123,7 @@
 		height: 0;
 		border-left: 12px solid transparent;
 		border-right: 12px solid transparent;
-		border-top: 12px solid hsl(var(--primary));
+		border-top: 12px solid var(--color-primary);
 	}
 
 	.speech-pointer::after {

@@ -338,7 +338,7 @@
 <style>
 	/* Ensure mathfield takes full height and looks integrated */
 	.unified-input :global(math-field) {
-		--caret-color: hsl(var(--primary));
+		--caret-color: var(--color-primary);
 	}
 
 	.unified-input :global(math-field::part(content)) {

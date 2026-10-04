@@ -170,15 +170,15 @@
 
 <style>
 	.repl-error {
-		color: hsl(var(--destructive));
+		color: var(--color-destructive);
 	}
 
 	.repl-success {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	.repl-hash {
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 	}
 
 	.repl-dim {

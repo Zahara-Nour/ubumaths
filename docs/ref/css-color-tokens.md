@@ -74,6 +74,29 @@ Juste :
 background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 ```
 
+### Table de correspondance
+
+Les anciens noms ont été **supprimés de `src/app.css` le 2025-10-11** (commit `c36a80754`,
+« theme update ») : depuis, toute lecture de l'un d'eux est jetée en silence.
+
+| Ancien nom (Tailwind 3 / shadcn)             | Nouveau token                                            |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `--background` / `--foreground`              | `--color-background` / `--color-foreground`              |
+| `--card` / `--card-foreground`               | `--color-card` / `--color-card-foreground`               |
+| `--popover` / `--popover-foreground`         | `--color-popover` / `--color-popover-foreground`         |
+| `--primary` / `--primary-foreground`         | `--color-primary` / `--color-primary-foreground`         |
+| `--secondary` / `--secondary-foreground`     | `--color-secondary` / `--color-secondary-foreground`     |
+| `--muted` / `--muted-foreground`             | `--color-muted` / `--color-muted-foreground`             |
+| `--accent` / `--accent-foreground`           | `--color-accent` / `--color-accent-foreground`           |
+| `--destructive` / `--destructive-foreground` | `--color-destructive` / `--color-destructive-foreground` |
+| `--border`, `--input`, `--ring`              | `--color-border`, `--color-input`, `--color-ring`        |
+| `hsl(var(--x))`                              | `var(--color-x)`                                         |
+| `hsl(var(--x) / 0.4)`                        | `color-mix(in srgb, var(--color-x) 40%, transparent)`    |
+
+Toujours présents (pas à convertir) : `--radius` et `--font-scale` (`src/app.css`). Une variable
+de **bibliothèque** garde son nom, seule sa valeur change : `--caret-color` (MathLive),
+`--tw-prose-*` (`@tailwindcss/typography`), `--bits-*` (bits-ui).
+
 En pratique, une classe Tailwind (`bg-card`, `text-muted-foreground`, `border`)
 est souvent préférable à une règle CSS écrite à la main.
 
@@ -169,9 +192,9 @@ le plus proche, ΔE OKLab). Les fonds sombres de référence (`DARK_BACKGROUNDS`
 **Une `var(--x)` dans un composant doit exister** : `src/lib/theme/__tests__/block-css-vars.test.ts`
 le vérifie (app.css, thème par défaut de Tailwind `node_modules/tailwindcss/theme.css`, ou
 variable locale hors bloc `.dark`) composant par composant pour les blocs, éditeurs et saisies
-élève, et **balaie tout `src/lib` + `src/routes`** : un fichier hors `KNOWN_DEBT` qui lit une
-variable inexistante (ou un `hsl(var(--x))`) fait échouer le test ; un fichier corrigé doit
-sortir de `KNOWN_DEBT`. Exceptions vérifiées à la source : préfixe `--bits-` (bits-ui), crochets
+élève, et **balaie tout `src/lib` + `src/routes`** : tout fichier qui lit une
+variable inexistante (ou un `hsl(var(--x))`) fait échouer le test (plus de liste de dette
+depuis le 2026-10-04). Exceptions vérifiées à la source : préfixe `--bits-` (bits-ui), crochets
 à repli valide (`--slide-*`, `--primary-rgb`). Une variable posée **seulement** sous `.dark`
 n'existe pas en clair : c'était le bug des `--number-line-*`. Ne pas redéfinir de
 couleur sous `:global(.dark)` quand un token `light-dark()` existe : il bascule seul.
@@ -200,8 +223,15 @@ puisse atterrir sans passer la CI au rouge. Elle échoue si :
 
 ## Dette résiduelle
 
-**2026-10-04 (restes du lot 3)** : 66 occurrences dans 17 fichiers, tous écrans prof / admin /
-outils (liste : `KNOWN_DEBT` du test ci-dessus, et `docs/wip/couleurs-lot3-progress.md`).
+**2026-10-04 : dette soldée, 0 occurrence.** Les 17 derniers fichiers (écrans prof / admin /
+outils, et la messagerie, vue aussi par les élèves) ont été convertis (branche
+`fix/couleurs-dette`) ; la baseline `scripts/css-tokens-baseline.txt` est vide et
+`block-css-vars.test.ts` n'a plus de liste d'exceptions : **tout** fichier de `src/lib` ou
+`src/routes` qui lit une variable inexistante ou un `hsl(var(--x))` fait échouer le test.
+Effet visible réparé dans la messagerie : l'anneau de focus clavier des messages
+(`outline: 2px solid hsl(var(--primary))`) était absent (`outline-style: none`).
+
+**Plus tôt le 2026-10-04 (restes du lot 3)** : 66 occurrences dans 17 fichiers.
 Éditeurs de blocs, saisies élève, blocs Markdown, corrections, cartes SRS : convertis.
 
 ### État au 2026-09-04, après la passe « fonds »
