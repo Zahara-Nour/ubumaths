@@ -59,7 +59,7 @@
 				},
 				{
 					"name": "f",
-					"expression": "{{if:n==4|24|{{if:n==5|120|{{if:n==6|720|5040}}}}}}"
+					"expression": "{{eval:factorial(n)}}"
 				}
 			],
 			"blanks": [
