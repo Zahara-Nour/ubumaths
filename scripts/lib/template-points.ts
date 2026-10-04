@@ -14,6 +14,7 @@
  */
 
 import { z } from 'zod';
+import { GRADE_CODES } from '../../src/lib/types/grades';
 
 // Types
 
@@ -54,6 +55,8 @@ export interface PointLinkPlan {
 export interface MappingEntry {
 	id: string;
 	codes: string[];
+	/** Niveaux voulus (absent : ceux en base sont gardés) ; appliqués seulement avec `--niveaux` */
+	grades?: string[];
 }
 
 export type MappingResult = { ok: true; entries: MappingEntry[] } | { ok: false; error: string };
@@ -61,10 +64,28 @@ export type MappingResult = { ok: true; entries: MappingEntry[] } | { ok: false;
 /** `add` : liens à écrire ; `nothing` : tout est déjà là ; `refused` : modèle publié sans drapeau */
 export type LinkAction = 'add' | 'nothing' | 'refused';
 
+/** Changement de `grades` d'un modèle : `target` = grades contre lesquels contrôler les points */
+export type GradeChange =
+	| { kind: 'same'; target: string[] }
+	| { kind: 'change'; from: string[]; target: string[] }
+	| { kind: 'refused'; reason: string };
+
+export interface GradeChangeInput {
+	status: string;
+	dbGrades: string[];
+	/** `grades` du mapping (absent : rien à changer) */
+	wanted: string[] | undefined;
+	/** Drapeau `--niveaux` */
+	niveaux: boolean;
+	/** Drapeau `--liens-publies` */
+	liensPublies: boolean;
+}
+
 // Constantes
 
 export const MAX_POINTS_PER_TEMPLATE = 20;
 export const MAX_MAPPING_ENTRIES = 500;
+export const MAX_GRADES_PER_ENTRY = 4;
 
 const pointCodeSchema = z
 	.string()
@@ -81,7 +102,12 @@ const mappingSchema = z
 		z
 			.object({
 				id: z.string().uuid('id qui n’est pas un uuid'),
-				points: pointsFieldSchema.min(1, 'au moins un code')
+				points: pointsFieldSchema.min(1, 'au moins un code'),
+				grades: z
+					.array(z.enum(GRADE_CODES, { message: 'code de niveau inconnu (cf. GRADE_CODES)' }))
+					.min(1, 'grades vide')
+					.max(MAX_GRADES_PER_ENTRY, `au plus ${MAX_GRADES_PER_ENTRY} niveaux`)
+					.optional()
 			})
 			.strict()
 	)
@@ -189,11 +215,11 @@ export function parseMapping(raw: unknown): MappingResult {
 		const ou = typeof index === 'number' ? `entrée ${index + 1} : ` : '';
 		return {
 			ok: false,
-			error: `mapping invalide — ${ou}${issue.message} (attendu : [{ "id": "<uuid>", "points": ["1SPE-050"] }])`
+			error: `mapping invalide — ${ou}${issue.message} (attendu : [{ "id": "<uuid>", "points": ["1SPE-050"], "grades"?: ["1_SPE"] }])`
 		};
 	}
 	const entries: MappingEntry[] = [];
-	for (const [i, { id, points }] of parsed.data.entries()) {
+	for (const [i, { id, points, grades }] of parsed.data.entries()) {
 		const doublons = doublonsDe(points);
 		if (doublons.length > 0) {
 			return {
@@ -201,7 +227,18 @@ export function parseMapping(raw: unknown): MappingResult {
 				error: `mapping invalide — entrée ${i + 1} : code en double : ${doublons.join(', ')}`
 			};
 		}
-		entries.push({ id, codes: points });
+		if (grades === undefined) {
+			entries.push({ id, codes: points });
+			continue;
+		}
+		const niveauxEnDouble = doublonsDe(grades);
+		if (niveauxEnDouble.length > 0) {
+			return {
+				ok: false,
+				error: `mapping invalide — entrée ${i + 1} : niveau en double : ${niveauxEnDouble.join(', ')}`
+			};
+		}
+		entries.push({ id, codes: points, grades });
 	}
 	const idsEnDouble = doublonsDe(entries.map((e) => e.id));
 	if (idsEnDouble.length > 0) {
@@ -219,4 +256,36 @@ export function decideLinkAction(
 	if (plan.toAdd.length === 0) return 'nothing';
 	if (status !== 'draft' && !publishedAllowed) return 'refused';
 	return 'add';
+}
+
+/** `[1_SPE] → [2]` : grades comme on les lit dans la simulation */
+function listeDeNiveaux(grades: readonly string[]): string {
+	return `[${grades.join(', ')}]`;
+}
+
+/**
+ * Changement de `grades` voulu par le mapping. Différents de la base : refusé sans `--niveaux`
+ * (le drapeau doit être explicite), et, sur un modèle non brouillon, sans `--liens-publies`.
+ */
+export function planGradeChange(input: GradeChangeInput): GradeChange {
+	const { status, dbGrades, wanted, niveaux, liensPublies } = input;
+	if (wanted === undefined || sameGrades(dbGrades, wanted)) {
+		return { kind: 'same', target: dbGrades };
+	}
+	const avantApres = `${listeDeNiveaux(dbGrades)} en base, ${listeDeNiveaux(wanted)} dans le mapping`;
+	if (!niveaux) {
+		return { kind: 'refused', reason: `grades différents (${avantApres}) — --niveaux requis` };
+	}
+	if (status !== 'draft' && !liensPublies) {
+		return {
+			kind: 'refused',
+			reason: `modèle ${status}, grades à changer (${avantApres}) — --liens-publies requis`
+		};
+	}
+	return { kind: 'change', from: dbGrades, target: wanted };
+}
+
+/** Ligne de simulation d'un changement de niveau */
+export function describeGradeChange(from: readonly string[], to: readonly string[]): string {
+	return `grades : ${listeDeNiveaux(from)} → ${listeDeNiveaux(to)}`;
 }

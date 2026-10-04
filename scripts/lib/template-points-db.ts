@@ -2,7 +2,7 @@
  * Rattachement d'un modèle au référentiel — accès base
  * ====================================================
  *
- * Lectures et écritures de `question_template_points`, communes à
+ * Lectures et écritures de `question_template_points` (et des `grades` d'un modèle), communes à
  * `scripts/create-questions.ts` et `scripts/link-template-points.ts`. La logique pure
  * (contrôles, plan, textes) vit dans `template-points.ts`.
  *
@@ -14,6 +14,7 @@ import type { Database } from '$lib/types/database';
 import {
 	describeLinkPlan,
 	planPointLinks,
+	sameGrades,
 	type ExistingLink,
 	type PointLinkPlan,
 	type ResolvedPoint
@@ -102,5 +103,37 @@ export async function writeLinks(
 	const relu = planPointLinks(codes, await readLinks(supabase, templateId));
 	if (relu.toAdd.length > 0 || (remplacer && relu.extra.length > 0)) {
 		throw new Error(`${label} : liens relus incomplets — ${describeLinkPlan(relu, remplacer)}`);
+	}
+}
+
+/**
+ * Réécrit les `grades` d'un modèle — et RIEN d'autre —, puis exige la ligne rendue et relit :
+ * la RLS échoue en silence (zéro ligne, pas d'erreur).
+ */
+export async function writeGrades(
+	supabase: Client,
+	label: string,
+	templateId: string,
+	grades: string[]
+): Promise<void> {
+	const { data, error } = await supabase
+		.from('question_templates')
+		.update({ grades })
+		.eq('id', templateId)
+		.select('id');
+	if (error || data?.length !== 1)
+		throw new Error(
+			`${label} : changement de grades non confirmé — ${error?.message ?? `${data?.length ?? 0}/1 ligne`}`
+		);
+	const relu = await supabase
+		.from('question_templates')
+		.select('grades')
+		.eq('id', templateId)
+		.single();
+	if (relu.error) throw new Error(`${label} : relecture des grades — ${relu.error.message}`);
+	if (!sameGrades(relu.data.grades, grades)) {
+		throw new Error(
+			`${label} : grades relus [${relu.data.grades.join(', ')}] ≠ voulus [${grades.join(', ')}]`
+		);
 	}
 }

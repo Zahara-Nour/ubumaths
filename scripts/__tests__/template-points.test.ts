@@ -5,7 +5,8 @@
  * Logique pure : lecture du champ `points` d'un fichier JSON, contrôle des codes
  * résolus en base (inconnu, archivé, niveau absent de `grades`) et calcul des liens
  * à ajouter / déjà présents / en base mais absents du fichier. Aussi : comparaison de
- * `grades` (`--mettre-a-jour`) et lecture du mapping de `link-template-points.ts`.
+ * `grades` (`--mettre-a-jour`), lecture du mapping de `link-template-points.ts` et décision
+ * de changement de niveau (`--niveaux`).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -14,9 +15,11 @@ import {
 	MAX_POINTS_PER_TEMPLATE,
 	checkPointCodes,
 	decideLinkAction,
+	describeGradeChange,
 	describeLinkPlan,
 	extractTemplatePoints,
 	parseMapping,
+	planGradeChange,
 	planPointLinks,
 	sameGrades,
 	type ResolvedPoint
@@ -285,5 +288,134 @@ describe('decideLinkAction', () => {
 
 	it('tout statut autre que draft est traité comme publié', () => {
 		expect(decideLinkAction('archived', false, aAjouter)).toBe('refused');
+	});
+});
+
+describe('parseMapping — champ facultatif `grades`', () => {
+	const id1 = '11111111-1111-4111-8111-111111111111';
+
+	it('sans `grades` : entrée sans grades (niveau en base gardé)', () => {
+		const r = parseMapping([{ id: id1, points: ['2-010'] }]);
+		expect(r).toEqual({ ok: true, entries: [{ id: id1, codes: ['2-010'] }] });
+	});
+
+	it('avec `grades` : rendus tels quels', () => {
+		const r = parseMapping([
+			{ id: id1, points: ['TSPE-1', 'TCOMP-1'], grades: ['T_SPE', 'T_COMP'] }
+		]);
+		expect(r).toEqual({
+			ok: true,
+			entries: [{ id: id1, codes: ['TSPE-1', 'TCOMP-1'], grades: ['T_SPE', 'T_COMP'] }]
+		});
+	});
+
+	it.each([
+		['grades vide', []],
+		['code de niveau inconnu', ['seconde']],
+		['niveau en double', ['2', '2']],
+		['plus de 4 niveaux', ['2', '1_SPE', 'T_SPE', 'T_COMP', 'T_EXP']],
+		['pas un tableau', '2']
+	])('refuse : %s', (_cas, grades) => {
+		const r = parseMapping([{ id: id1, points: ['2-010'], grades }]);
+		expect(r.ok).toBe(false);
+		if (!r.ok) expect(r.error).toContain('entrée 1');
+	});
+
+	it('accepte exactement 4 niveaux', () => {
+		const r = parseMapping([
+			{ id: id1, points: ['A-1'], grades: ['2', '1_SPE', 'T_SPE', 'T_COMP'] }
+		]);
+		expect(r.ok).toBe(true);
+	});
+});
+
+describe('planGradeChange', () => {
+	const base = { status: 'published', dbGrades: ['1_SPE'], niveaux: true, liensPublies: true };
+
+	it('mapping sans grades : rien à changer, cible = grades en base', () => {
+		expect(planGradeChange({ ...base, wanted: undefined })).toEqual({
+			kind: 'same',
+			target: ['1_SPE']
+		});
+	});
+
+	it('mêmes grades (ordre indifférent) : rien à changer, même sans drapeau', () => {
+		expect(
+			planGradeChange({
+				...base,
+				dbGrades: ['T_SPE', 'T_COMP'],
+				wanted: ['T_COMP', 'T_SPE'],
+				niveaux: false,
+				liensPublies: false
+			})
+		).toEqual({ kind: 'same', target: ['T_SPE', 'T_COMP'] });
+	});
+
+	it('grades différents sans --niveaux : refus qui nomme le drapeau et les deux listes', () => {
+		const r = planGradeChange({ ...base, wanted: ['2'], niveaux: false });
+		expect(r.kind).toBe('refused');
+		if (r.kind === 'refused') {
+			expect(r.reason).toContain('--niveaux');
+			expect(r.reason).toContain('[1_SPE]');
+			expect(r.reason).toContain('[2]');
+		}
+	});
+
+	it('brouillon, grades différents sans --niveaux : refus aussi', () => {
+		const r = planGradeChange({ ...base, status: 'draft', wanted: ['2'], niveaux: false });
+		expect(r.kind).toBe('refused');
+	});
+
+	it('publié avec --niveaux mais sans --liens-publies : refus qui nomme --liens-publies', () => {
+		const r = planGradeChange({ ...base, wanted: ['2'], liensPublies: false });
+		expect(r.kind).toBe('refused');
+		if (r.kind === 'refused') expect(r.reason).toContain('--liens-publies');
+	});
+
+	it('brouillon avec --niveaux : changement (pas besoin de --liens-publies)', () => {
+		expect(
+			planGradeChange({ ...base, status: 'draft', wanted: ['2'], liensPublies: false })
+		).toEqual({ kind: 'change', from: ['1_SPE'], target: ['2'] });
+	});
+
+	it('publié avec --niveaux et --liens-publies : changement', () => {
+		expect(planGradeChange({ ...base, wanted: ['T_SPE', 'T_COMP'] })).toEqual({
+			kind: 'change',
+			from: ['1_SPE'],
+			target: ['T_SPE', 'T_COMP']
+		});
+	});
+});
+
+describe('describeGradeChange', () => {
+	it('annonce avant → après', () => {
+		expect(describeGradeChange(['1_SPE'], ['2'])).toBe('grades : [1_SPE] → [2]');
+		expect(describeGradeChange(['1_SPE'], ['T_SPE', 'T_COMP'])).toBe(
+			'grades : [1_SPE] → [T_SPE, T_COMP]'
+		);
+	});
+});
+
+describe('checkPointCodes contre les grades CIBLES', () => {
+	const resolus = new Map<string, ResolvedPoint>([
+		['2-010', { id: 'p2', code: '2-010', grade: '2' }]
+	]);
+
+	it('point 2-xxx sur un modèle 1_SPE passé à [2] : accepté avec les grades cibles', () => {
+		const cible = planGradeChange({
+			status: 'published',
+			dbGrades: ['1_SPE'],
+			wanted: ['2'],
+			niveaux: true,
+			liensPublies: true
+		});
+		expect(cible.kind).toBe('change');
+		if (cible.kind === 'refused') return;
+		expect(
+			checkPointCodes([{ file: 'm', codes: ['2-010'], grades: cible.target }], resolus)
+		).toEqual([]);
+		expect(
+			checkPointCodes([{ file: 'm', codes: ['2-010'], grades: ['1_SPE'] }], resolus)
+		).toHaveLength(1);
 	});
 });

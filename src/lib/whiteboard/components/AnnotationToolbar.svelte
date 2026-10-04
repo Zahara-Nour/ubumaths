@@ -584,7 +584,7 @@
 		padding: 6px 8px;
 		background: color-mix(in srgb, var(--color-background) 95%, transparent);
 		backdrop-filter: blur(8px);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 12px;
 		box-shadow:
 			0 4px 6px -1px rgb(0 0 0 / 0.1),
@@ -633,7 +633,7 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		cursor: pointer;
 		transition: transform 0.1s;
 	}
@@ -653,7 +653,7 @@
 		gap: 4px;
 		padding: 8px;
 		background: var(--color-background);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 	}
@@ -672,7 +672,7 @@
 	}
 
 	.color-swatch.selected {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 	}
 
 	.stroke-width-selector {
@@ -699,7 +699,7 @@
 
 	.stroke-width-btn.selected {
 		background: var(--color-accent);
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 	}
 
 	.stroke-preview {
@@ -732,7 +732,7 @@
 
 	.stroke-style-btn.selected {
 		background: var(--color-accent);
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 	}
 
 	.stroke-style-preview {
@@ -756,7 +756,7 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 6px;
-		border: 2px solid hsl(var(--border));
+		border: 2px solid var(--color-border);
 		cursor: pointer;
 		transition: transform 0.1s;
 		display: flex;
@@ -773,8 +773,8 @@
 		background: linear-gradient(
 			45deg,
 			transparent 45%,
-			hsl(var(--destructive)) 45%,
-			hsl(var(--destructive)) 55%,
+			var(--color-destructive) 45%,
+			var(--color-destructive) 55%,
 			transparent 55%
 		);
 	}
@@ -784,7 +784,7 @@
 	}
 
 	.fill-button.has-fill :global(.fill-icon) {
-		color: hsl(var(--background));
+		color: var(--color-background);
 		opacity: 1;
 	}
 
@@ -801,7 +801,7 @@
 
 	.no-fill-icon {
 		font-size: 14px;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	.stamp-palette {
@@ -812,7 +812,7 @@
 		margin-bottom: 8px;
 		padding: 12px;
 		background: var(--color-background);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 		min-width: 200px;
@@ -830,7 +830,7 @@
 		display: block;
 		font-size: 10px;
 		font-weight: 500;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 		margin-bottom: 4px;
 		text-transform: uppercase;
 	}
@@ -862,7 +862,7 @@
 
 	.stamp-btn.selected {
 		background: color-mix(in srgb, var(--color-primary) 20%, transparent);
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 	}
 
 	.relative {
