@@ -22,7 +22,7 @@
 
 export type MonthIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-export type HorsMoisDay = 'cloche' | 'surnumeraire';
+export type ExtraDay = 'cloche' | 'surnumeraire';
 
 /** Jour civil grégorien (mois de 1 à 12) */
 export interface CivilDate {
@@ -46,17 +46,19 @@ export interface Feast {
 
 export type PataphysicalDate =
 	| {
-			kind: 'mois';
-			an: number;
+			kind: 'month';
+			/** An de l'Ère du Royaume (An 130 = 2025-2026) */
+			year: number;
 			monthIndex: MonthIndex;
 			monthName: MonthName;
 			day: number;
 			feast: Feast | null;
 	  }
 	| {
-			kind: 'hors-mois';
-			an: number;
-			horsMois: HorsMoisDay;
+			kind: 'extra-day';
+			/** An de l'Ère du Royaume */
+			year: number;
+			extraDay: ExtraDay;
 			feast: null;
 	  };
 
@@ -89,7 +91,7 @@ const CLOCHE_RANK = 7 * DAYS_PER_MONTH; // 364
 
 const MS_PER_DAY = 86_400_000;
 
-export const HORS_MOIS_NAMES: Record<HorsMoisDay, string> = {
+export const EXTRA_DAY_NAMES: Record<ExtraDay, string> = {
 	cloche: 'La Cloche du Grand Reset',
 	surnumeraire: 'Le Surnuméraire'
 };
@@ -225,8 +227,8 @@ export function civilDateIn(date: Date, timeZone: string): CivilDate {
 }
 
 /** Année grégorienne dont le 23 août ouvre l'An donné */
-function anStartYear(an: number): number {
-	return an + EPOCH_YEAR - 1;
+function eraStartYear(eraYear: number): number {
+	return eraYear + EPOCH_YEAR - 1;
 }
 
 // =============================================================================
@@ -237,27 +239,45 @@ function feastOn(monthIndex: MonthIndex, day: number): Feast | null {
 	return FEASTS.find((f) => f.monthIndex === monthIndex && f.day === day) ?? null;
 }
 
-/** Date pataphysique d'un jour civil grégorien */
+/**
+ * Date pataphysique d'un jour civil grégorien.
+ *
+ * @throws RangeError si le jour n'existe pas (30 février, mois 13…) ou s'il
+ *   précède l'Ère du Royaume (avant le 23 août 1896).
+ */
 export function civilToPataphysical(year: number, month: number, day: number): PataphysicalDate {
 	const civil = { year, month, day };
+	if (![year, month, day].every(Number.isInteger)) throw new RangeError('Date invalide');
+	// Date.UTC normalise un jour inexistant (30/02 → 02/03) : on le détecte au retour
+	const roundTrip = fromDayNumber(dayNumber(civil));
+	if (roundTrip.year !== year || roundTrip.month !== month || roundTrip.day !== day) {
+		throw new RangeError(`Date invalide : ${year}-${month}-${day}`);
+	}
+	if (dayNumber(civil) < dayNumber({ year: EPOCH_YEAR, month: 8, day: 23 })) {
+		throw new RangeError('Date antérieure à l’Ère du Royaume (23 août 1896)');
+	}
+
 	const startYear = month > 8 || (month === 8 && day >= 23) ? year : year - 1;
-	const an = startYear - EPOCH_YEAR + 1;
+	const eraYear = startYear - EPOCH_YEAR + 1;
 	// Le 29 février de l'An tombe dans l'année grégorienne qui suit son 23 août
 	const leap = isGregorianLeapYear(startYear + 1);
 
 	let rank = dayNumber(civil) - dayNumber({ year: startYear, month: 8, day: 23 });
 	if (leap) {
-		if (rank === SURNUMERAIRE_RANK)
-			return { kind: 'hors-mois', an, horsMois: 'surnumeraire', feast: null };
+		if (rank === SURNUMERAIRE_RANK) {
+			return { kind: 'extra-day', year: eraYear, extraDay: 'surnumeraire', feast: null };
+		}
 		if (rank > SURNUMERAIRE_RANK) rank -= 1;
 	}
-	if (rank === CLOCHE_RANK) return { kind: 'hors-mois', an, horsMois: 'cloche', feast: null };
+	if (rank === CLOCHE_RANK) {
+		return { kind: 'extra-day', year: eraYear, extraDay: 'cloche', feast: null };
+	}
 
 	const monthIndex = Math.floor(rank / DAYS_PER_MONTH) as MonthIndex;
 	const dayInMonth = (rank % DAYS_PER_MONTH) + 1;
 	return {
-		kind: 'mois',
-		an,
+		kind: 'month',
+		year: eraYear,
 		monthIndex,
 		monthName: MONTH_NAMES[monthIndex],
 		day: dayInMonth,
@@ -277,9 +297,9 @@ export function toPataphysicalDate(date: Date, timeZone = 'Europe/Paris'): Patap
 /** Premier et dernier jour grégoriens d'un mois de l'An donné */
 export function monthGregorianRange(
 	monthIndex: MonthIndex,
-	an: number
+	eraYear: number
 ): { start: CivilDate; end: CivilDate } {
-	const startYear = anStartYear(an);
+	const startYear = eraStartYear(eraYear);
 	const origin = dayNumber({ year: startYear, month: 8, day: 23 });
 	// Après le Surnuméraire, les rangs grégoriens sont décalés d'un jour
 	const shift = isGregorianLeapYear(startYear + 1) && monthIndex >= 4 ? 1 : 0;
@@ -288,8 +308,8 @@ export function monthGregorianRange(
 }
 
 /** Jour grégorien de la Cloche et, les années bissextiles, du Surnuméraire de l'An donné */
-export function horsMoisGregorian(day: HorsMoisDay, an: number): CivilDate | null {
-	const endYear = anStartYear(an) + 1;
+export function extraDayGregorian(day: ExtraDay, eraYear: number): CivilDate | null {
+	const endYear = eraStartYear(eraYear) + 1;
 	if (day === 'cloche') return { year: endYear, month: 8, day: 22 };
 	return isGregorianLeapYear(endYear) ? { year: endYear, month: 3, day: 18 } : null;
 }
@@ -320,25 +340,25 @@ export function ordinal(n: number): string {
 }
 
 /** « de Lumenal », « d’Ambraire » */
-function deMonth(name: MonthName): string {
+function monthWithPreposition(name: MonthName): string {
 	return /^[AEIOUYÉ]/i.test(name) ? `d’${name}` : `de ${name}`;
 }
 
 /** Format court (en-tête, tableau de bord) : « 13 Lumenal » */
 export function formatShort(p: PataphysicalDate): string {
-	return p.kind === 'hors-mois' ? HORS_MOIS_NAMES[p.horsMois] : `${p.day} ${p.monthName}`;
+	return p.kind === 'extra-day' ? EXTRA_DAY_NAMES[p.extraDay] : `${p.day} ${p.monthName}`;
 }
 
 /** Format moyen (accueil, profil) : « 13 Lumenal, An 130 E.R. » */
 export function formatMedium(p: PataphysicalDate): string {
-	return `${formatShort(p)}, An ${p.an} E.R.`;
+	return `${formatShort(p)}, An ${p.year} E.R.`;
 }
 
 /** Format long (cérémonies) : « Le treizième jour du mois de Lumenal, An 130 de l’Ère du Royaume » */
 export function formatLong(p: PataphysicalDate): string {
-	const era = `An ${p.an} de l’Ère du Royaume`;
-	if (p.kind === 'hors-mois') return `${HORS_MOIS_NAMES[p.horsMois]}, ${era}`;
-	return `Le ${ordinal(p.day)} jour du mois ${deMonth(p.monthName)}, ${era}`;
+	const era = `An ${p.year} de l’Ère du Royaume`;
+	if (p.kind === 'extra-day') return `${EXTRA_DAY_NAMES[p.extraDay]}, ${era}`;
+	return `Le ${ordinal(p.day)} jour du mois ${monthWithPreposition(p.monthName)}, ${era}`;
 }
 
 /** Jour grégorien en français : « 1ᵉʳ juillet 2026 », ou sans l'année */

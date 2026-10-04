@@ -15,6 +15,6 @@ describe('/almanach/+page.server.ts', () => {
 		vi.setSystemTime(new Date('2028-03-17T23:30:00Z'));
 		const data = (await pageServer.load({} as never)) as { almanach: unknown; todayIso: string };
 		expect(data.todayIso).toBe('2028-03-18');
-		expect(data.almanach).toMatchObject({ kind: 'hors-mois', horsMois: 'surnumeraire', an: 132 });
+		expect(data.almanach).toMatchObject({ kind: 'extra-day', extraDay: 'surnumeraire', year: 132 });
 	});
 });

@@ -15,10 +15,10 @@ describe('/+page.server.ts', () => {
 		// 23 h 30 UTC le 22 août 2026 : déjà le 23 à Paris
 		vi.setSystemTime(new Date('2026-08-22T23:30:00Z'));
 		const data = (await pageServer.load({} as never)) as { almanach: unknown };
-		expect(data.almanach).toMatchObject({ kind: 'mois', monthIndex: 0, day: 1, an: 131 });
+		expect(data.almanach).toMatchObject({ kind: 'month', monthIndex: 0, day: 1, year: 131 });
 
 		vi.setSystemTime(new Date('2026-05-22T10:00:00Z'));
 		const later = (await pageServer.load({} as never)) as { almanach: unknown };
-		expect(later.almanach).toMatchObject({ monthName: 'Lumenal', day: 13, an: 130 });
+		expect(later.almanach).toMatchObject({ monthName: 'Lumenal', day: 13, year: 130 });
 	});
 });

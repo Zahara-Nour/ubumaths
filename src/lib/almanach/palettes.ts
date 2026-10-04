@@ -162,13 +162,17 @@ export const MONTH_PALETTES: readonly MonthPalette[] = [
  * n'arrive qu'avec le 1 Auroral. Une seule règle pour les deux jours.
  */
 export function ambianceMonthIndex(p: PataphysicalDate): MonthIndex {
-	if (p.kind === 'mois') return p.monthIndex;
-	return p.horsMois === 'cloche' ? 6 : 3;
+	if (p.kind === 'month') return p.monthIndex;
+	return p.extraDay === 'cloche' ? 6 : 3;
 }
 
 /**
  * Variables CSS d'un mois : chaque teinte est un `light-dark()`, résolu par le
  * `color-scheme` que pose mode-watcher (le choix de l'utilisateur, pas l'OS).
+ *
+ * À ne pas relire dans des `@keyframes` : Safari ne résout `light-dark()` qu'à
+ * partir de 17.5. L'accueil, qui anime son halo, passe donc les teintes claires
+ * et sombres séparément et choisit par la classe `.dark`.
  */
 export function paletteCssVars(monthIndex: MonthIndex): {
 	halo1: string;
@@ -185,3 +189,16 @@ export function paletteCssVars(monthIndex: MonthIndex): {
 		stroke: ld(light.stroke, dark.stroke)
 	};
 }
+
+// =============================================================================
+// Hero de /almanach : lisibilité du texte posé sur le halo
+// =============================================================================
+
+/** Opacité du halo du mois derrière la date du jour (page /almanach) */
+export const HERO_HALO_OPACITY = 0.9;
+
+/**
+ * Opacité du voile couleur carte (`--color-card`) posé entre le halo et le texte
+ * du hero. Le test `hero-contrast.test.ts` vérifie ≥ 4,5:1 pour les 7 mois × 2 thèmes.
+ */
+export const HERO_VEIL_OPACITY = 0.7;

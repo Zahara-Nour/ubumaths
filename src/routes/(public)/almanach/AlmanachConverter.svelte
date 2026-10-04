@@ -2,7 +2,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import {
-		HORS_MOIS_NAMES,
+		EXTRA_DAY_NAMES,
 		civilToPataphysical,
 		formatGregorian,
 		formatLong,
@@ -41,11 +41,16 @@
 			};
 		}
 		const [year, month, day] = match.slice(1).map(Number);
-		return {
-			ok: true,
-			gregorian: formatGregorian({ year, month, day }),
-			date: civilToPataphysical(year, month, day)
-		};
+		try {
+			return {
+				ok: true,
+				gregorian: formatGregorian({ year, month, day }),
+				date: civilToPataphysical(year, month, day)
+			};
+		} catch (e) {
+			if (e instanceof RangeError) return { ok: false, message: 'Cette date n’existe pas.' };
+			throw e;
+		}
 	}
 </script>
 
@@ -71,9 +76,9 @@
 				{formatMedium(conversion.date)}
 			</strong>
 			<span class="text-muted-foreground italic">{formatLong(conversion.date)}</span>
-			{#if conversion.date.kind === 'hors-mois'}
+			{#if conversion.date.kind === 'extra-day'}
 				<span class="mt-1 text-sm">
-					{HORS_MOIS_NAMES[conversion.date.horsMois]} n’appartient à aucun mois et ne porte pas de numéro.
+					{EXTRA_DAY_NAMES[conversion.date.extraDay]} n’appartient à aucun mois et ne porte pas de numéro.
 				</span>
 			{:else if conversion.date.feast}
 				<span class="mt-1 text-sm">Ce jour-là : {conversion.date.feast.name}.</span>

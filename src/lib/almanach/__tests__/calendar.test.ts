@@ -19,8 +19,8 @@ function noonUtc(year: number, month: number, day: number): Date {
 
 /** Résumé lisible d'une date pataphysique, pour des assertions compactes */
 function label(p: PataphysicalDate): string {
-	if (p.kind === 'hors-mois') return `${p.horsMois} An ${p.an}`;
-	return `${p.day} ${p.monthName} An ${p.an}`;
+	if (p.kind === 'extra-day') return `${p.extraDay} An ${p.year}`;
+	return `${p.day} ${p.monthName} An ${p.year}`;
 }
 
 function at(year: number, month: number, day: number): string {
@@ -34,7 +34,7 @@ describe('toPataphysicalDate — repères du Compendium', () => {
 
 	it('le 22 août 2026 est la Cloche de l’An 130', () => {
 		const p = toPataphysicalDate(noonUtc(2026, 8, 22));
-		expect(p).toMatchObject({ kind: 'hors-mois', horsMois: 'cloche', an: 130 });
+		expect(p).toMatchObject({ kind: 'extra-day', extraDay: 'cloche', year: 130 });
 	});
 
 	it('le 23 août 2026 ouvre l’An 131', () => {
@@ -56,7 +56,7 @@ describe('toPataphysicalDate — repères du Compendium', () => {
 
 	it('rend le mois par son index ET son nom', () => {
 		const p = toPataphysicalDate(noonUtc(2026, 5, 22));
-		expect(p).toMatchObject({ kind: 'mois', monthIndex: 5, monthName: 'Lumenal', day: 13 });
+		expect(p).toMatchObject({ kind: 'month', monthIndex: 5, monthName: 'Lumenal', day: 13 });
 	});
 });
 
@@ -163,15 +163,62 @@ describe('toPataphysicalDate — fuseau horaire', () => {
 		expect(label(toPataphysicalDate(instant))).toBe('surnumeraire An 132');
 	});
 
+	it('été (UTC+2) : 22 h 30 UTC le 22 août 2026 est déjà le 1 Ambraire An 131', () => {
+		expect(label(toPataphysicalDate(new Date('2026-08-22T22:30:00Z')))).toBe('1 Ambraire An 131');
+	});
+
+	it('hiver (UTC+1) : 22 h 30 UTC le 1ᵉʳ janvier 2026 est encore le 1ᵉʳ janvier (28 Glaglavose)', () => {
+		expect(label(toPataphysicalDate(new Date('2026-01-01T22:30:00Z')))).toBe(
+			'28 Glaglavose An 130'
+		);
+	});
+
+	// Passage à l'heure d'été le 29/03/2026 (02 h → 03 h) : minuit du 29 = 23 h UTC
+	// le 28 (encore UTC+1), minuit du 30 = 22 h UTC le 29 (déjà UTC+2).
+	it.each([
+		['2026-03-28T22:59:00Z', '10 Auroral An 130'], // 23 h 59 le 28
+		['2026-03-28T23:01:00Z', '11 Auroral An 130'], // 00 h 01 le 29
+		['2026-03-29T21:59:00Z', '11 Auroral An 130'], // 23 h 59 le 29
+		['2026-03-29T22:01:00Z', '12 Auroral An 130'], // 00 h 01 le 30
+		// Retour à l'heure d'hiver le 25/10/2026 (03 h → 02 h) : minuit du 25 = 22 h UTC
+		// le 24 (encore UTC+2), minuit du 26 = 23 h UTC le 25 (déjà UTC+1).
+		['2026-10-24T21:59:00Z', '11 Givraire An 131'], // 23 h 59 le 24
+		['2026-10-24T22:01:00Z', '12 Givraire An 131'], // 00 h 01 le 25
+		['2026-10-25T22:59:00Z', '12 Givraire An 131'], // 23 h 59 le 25
+		['2026-10-25T23:01:00Z', '13 Givraire An 131'] // 00 h 01 le 26
+	])('changement d’heure : %s → %s à Paris', (iso, expected) => {
+		expect(label(toPataphysicalDate(new Date(iso)))).toBe(expected);
+	});
+
 	it('refuse une date invalide', () => {
 		expect(() => toPataphysicalDate(new Date('pas une date'))).toThrow(RangeError);
+	});
+});
+
+describe('civilToPataphysical — dates hors de l’Almanach', () => {
+	it.each([
+		[2026, 2, 30],
+		[2027, 2, 29],
+		[2026, 13, 1],
+		[2026, 0, 10],
+		[2026, 4, 31],
+		[2026, 5, 0],
+		[2026, 5, 1.5]
+	])('%i-%i-%s : RangeError (jour inexistant)', (y, m, d) => {
+		expect(() => civilToPataphysical(y, m, d)).toThrow(RangeError);
+	});
+
+	it('avant le 23 août 1896 : RangeError ; le 23 août 1896 est le 1 Ambraire An 1', () => {
+		expect(() => civilToPataphysical(1896, 8, 22)).toThrow(RangeError);
+		expect(() => civilToPataphysical(1800, 1, 1)).toThrow(RangeError);
+		expect(label(civilToPataphysical(1896, 8, 23))).toBe('1 Ambraire An 1');
 	});
 });
 
 describe('fêtes', () => {
 	function feastAt(year: number, month: number, day: number): string | null {
 		const p = toPataphysicalDate(noonUtc(year, month, day));
-		return p.kind === 'mois' ? (p.feast?.id ?? null) : null;
+		return p.kind === 'month' ? (p.feast?.id ?? null) : null;
 	}
 
 	it.each([

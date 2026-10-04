@@ -2,14 +2,14 @@
 	import { lore } from '$lib/config/lore';
 	import { resolve } from '$app/paths';
 	import { formatMedium } from '$lib/almanach/calendar';
-	import { ambianceMonthIndex, paletteCssVars } from '$lib/almanach/palettes';
+	import { MONTH_PALETTES, ambianceMonthIndex } from '$lib/almanach/palettes';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const todayLabel = $derived(formatMedium(data.almanach));
 	// Un jour hors-mois prend l'ambiance du mois qui le précède (cf. palettes.ts)
-	const ambiance = $derived(paletteCssVars(ambianceMonthIndex(data.almanach)));
+	const ambiance = $derived(MONTH_PALETTES[ambianceMonthIndex(data.almanach)]);
 </script>
 
 <svelte:head>
@@ -39,10 +39,14 @@
 	</div>
 
 	<figure
-		style:--halo-1={ambiance.halo1}
-		style:--halo-2={ambiance.halo2}
-		style:--halo-3={ambiance.halo3}
-		style:--ubu-stroke={ambiance.stroke}
+		style:--halo-1-light={ambiance.light.h1}
+		style:--halo-2-light={ambiance.light.h2}
+		style:--halo-3-light={ambiance.light.h3}
+		style:--ubu-stroke-light={ambiance.light.stroke}
+		style:--halo-1-dark={ambiance.dark.h1}
+		style:--halo-2-dark={ambiance.dark.h2}
+		style:--halo-3-dark={ambiance.dark.h3}
+		style:--ubu-stroke-dark={ambiance.dark.stroke}
 	>
 		<div class="img-bg"></div>
 		<a href={resolve('/dashboard/chat')} aria-label="Découvre qui est Père Ubu et tchat avec lui.">
@@ -223,8 +227,21 @@
 	.img-bg {
 		@apply h-60 w-60;
 	}
-	/* Halo et traits prennent l'ambiance du mois de l'Almanach : les variables
-	   sont des light-dark(), résolus par le color-scheme que pose mode-watcher. */
+	/* Halo et traits prennent l'ambiance du mois de l'Almanach. Pas de light-dark()
+	   ici : il serait relu dans les @keyframes, ce que Safari ne gère pas avant 17.5.
+	   Les teintes sont résolues hors keyframe, par la classe .dark de mode-watcher. */
+	figure {
+		--halo-1: var(--halo-1-light);
+		--halo-2: var(--halo-2-light);
+		--halo-3: var(--halo-3-light);
+		--ubu-stroke: var(--ubu-stroke-light);
+	}
+	:global(.dark) figure {
+		--halo-1: var(--halo-1-dark);
+		--halo-2: var(--halo-2-dark);
+		--halo-3: var(--halo-3-dark);
+		--ubu-stroke: var(--ubu-stroke-dark);
+	}
 	.img-bg {
 		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[50px] transition-all;
 		background-color: var(--halo-1);

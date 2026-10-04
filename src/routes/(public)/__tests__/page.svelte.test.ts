@@ -69,7 +69,7 @@ describe('/+page.svelte', () => {
 		'mois %i : halo et traits prennent les couleurs du mois, en clair et en sombre',
 		async (monthIndex, [y, m, d]) => {
 			const today = civilToPataphysical(y, m, d);
-			expect(today).toMatchObject({ kind: 'mois', monthIndex });
+			expect(today).toMatchObject({ kind: 'month', monthIndex });
 			const screen = await renderWith(today);
 			const halo = screen.container.querySelector<HTMLElement>('.img-bg');
 			const trait = screen.container.querySelector<SVGPathElement>('path.trait');

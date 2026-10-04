@@ -5,12 +5,18 @@
 		formatGregorian,
 		formatLong,
 		formatShort,
-		horsMoisGregorian,
+		extraDayGregorian,
 		monthGregorianRange,
 		type Feast,
 		type MonthIndex
 	} from '$lib/almanach/calendar';
-	import { MONTH_PALETTES, ambianceMonthIndex, paletteCssVars } from '$lib/almanach/palettes';
+	import {
+		HERO_HALO_OPACITY,
+		HERO_VEIL_OPACITY,
+		MONTH_PALETTES,
+		ambianceMonthIndex,
+		paletteCssVars
+	} from '$lib/almanach/palettes';
 	import AlmanachConverter from './AlmanachConverter.svelte';
 	import type { PageProps } from './$types';
 
@@ -33,33 +39,36 @@
 
 	// Variables
 	const today = $derived(data.almanach);
-	const todayMonth = $derived(today.kind === 'mois' ? today.monthIndex : null);
+	const todayMonth = $derived(today.kind === 'month' ? today.monthIndex : null);
 	const ambiance = $derived(paletteCssVars(ambianceMonthIndex(today)));
 	const ambianceText = $derived(MONTH_PALETTES[ambianceMonthIndex(today)].ambiance);
+	const todayFeastId = $derived(today.kind === 'month' ? (today.feast?.id ?? null) : null);
 	const nextFeast = $derived(findNextFeast());
 	const nextSurnumeraire = $derived(findNextSurnumeraire());
 
 	// Functions
-	/** Prochaine fête de l'An en cours (ou la première de l'An suivant) */
+	/** Prochaine fête strictement après aujourd'hui (ou la première de l'An suivant) */
 	function findNextFeast(): Feast {
-		if (today.kind === 'hors-mois' && today.horsMois === 'cloche') return FEASTS[0];
-		const rank = today.kind === 'mois' ? today.monthIndex * 100 + today.day : 3 * 100 + 52.5; // Surnuméraire
-		return FEASTS.find((f) => f.monthIndex * 100 + f.day >= rank) ?? FEASTS[0];
+		if (today.kind === 'extra-day' && today.extraDay === 'cloche') return FEASTS[0];
+		// Rang comparable « mois × 100 + jour » ; le Surnuméraire suit le 52 Déglaçose
+		const rank = today.kind === 'month' ? today.monthIndex * 100 + today.day : 3 * 100 + 52.5;
+		return FEASTS.find((f) => f.monthIndex * 100 + f.day > rank) ?? FEASTS[0];
 	}
 
-	/** Prochain 18 mars bissextile, à partir de l'An en cours */
-	function findNextSurnumeraire(): { an: number; label: string } {
-		for (let an = today.an; ; an++) {
-			const date = horsMoisGregorian('surnumeraire', an);
+	/** Surnuméraire du jour, sinon le prochain 18 mars bissextile */
+	function findNextSurnumeraire(): { year: number; label: string; isToday: boolean } {
+		const isToday = today.kind === 'extra-day' && today.extraDay === 'surnumeraire';
+		for (let year = today.year; ; year++) {
+			const date = extraDayGregorian('surnumeraire', year);
 			const alreadyPast =
-				an === today.an &&
-				(today.kind === 'mois' ? today.monthIndex >= 4 : today.horsMois === 'cloche');
-			if (date && !alreadyPast) return { an, label: formatGregorian(date) };
+				year === today.year &&
+				(today.kind === 'month' ? today.monthIndex >= 4 : today.extraDay === 'cloche');
+			if (date && !alreadyPast) return { year, label: formatGregorian(date), isToday };
 		}
 	}
 
 	function monthRangeLabel(monthIndex: MonthIndex): string {
-		const { start, end } = monthGregorianRange(monthIndex, today.an);
+		const { start, end } = monthGregorianRange(monthIndex, today.year);
 		return `${formatGregorian(start, false)} → ${formatGregorian(end, false)}`;
 	}
 
@@ -86,17 +95,21 @@
 		style:--halo-3={ambiance.halo3}
 		style:--ubu-stroke={ambiance.stroke}
 	>
-		<div class="hero-halo" aria-hidden="true"></div>
-		<div class="relative flex flex-col items-center gap-3">
+		<div class="hero-halo" aria-hidden="true" style:opacity={HERO_HALO_OPACITY}></div>
+		<div
+			class="hero-veil relative flex flex-col items-center gap-3"
+			data-testid="almanach-hero-veil"
+			style:--veil={`${HERO_VEIL_OPACITY * 100}%`}
+		>
 			<h1 id="almanach-titre" class="serif">L’Almanach des Chiphres</h1>
-			<div class="eyebrow text-muted-foreground">Aujourd’hui</div>
+			<div class="eyebrow">Aujourd’hui</div>
 			<div class="serif today text-5xl font-semibold sm:text-6xl" data-testid="almanach-today">
 				{formatShort(today)}
 			</div>
-			<div class="serif text-xl">An {today.an} de l’Ère du Royaume</div>
-			<div class="text-muted-foreground italic">{formatLong(today)}</div>
-			<div class="text-muted-foreground">{ambianceText}</div>
-			{#if today.kind === 'mois' && today.feast}
+			<div class="serif text-xl">An {today.year} de l’Ère du Royaume</div>
+			<div class="italic">{formatLong(today)}</div>
+			<div>{ambianceText}</div>
+			{#if today.kind === 'month' && today.feast}
 				<div class="feast-pill mt-2 rounded-full border px-4 py-1 text-sm">
 					Fête du jour : {today.feast.name}
 				</div>
@@ -141,7 +154,7 @@
 				Chaque mois porte le nom d’un phénomène que l’on perçoit, à la manière de Fabre d’Églantine
 				: l’ambre, le givre, le claquement de dents, le dégel, l’aurore, la lumière, puis l’été,
 				auguste. Tous ont cinquante-deux jours, ni plus ni moins. Les dates ci-dessous sont celles
-				de l’An {today.an}.
+				de l’An {today.year}.
 			</p>
 		</div>
 
@@ -227,8 +240,8 @@
 				</p>
 				<figure class="ubu-quote">
 					<blockquote>
-						« Cornegidouille ! L’An {today.an} s’achève. Notre Cloche sonne. Que les Polonais se préparent
-						à l’An {today.an + 1} ! »
+						« Cornegidouille ! L’An {today.year} s’achève. Notre Cloche sonne. Que les Polonais se préparent
+						à l’An {today.year + 1} ! »
 					</blockquote>
 					<figcaption>— Père Ubu</figcaption>
 				</figure>
@@ -261,7 +274,12 @@
 					facultatif propose deux méthodes opposées qui mènent au même résultat.
 				</p>
 				<p class="text-sm text-muted-foreground" data-testid="almanach-next-surnumeraire">
-					Prochain Surnuméraire : {nextSurnumeraire.label} (An {nextSurnumeraire.an} E.R.).
+					{#if nextSurnumeraire.isToday}
+						Le Surnuméraire, c’est aujourd’hui : {nextSurnumeraire.label} (An {nextSurnumeraire.year}
+						E.R.).
+					{:else}
+						Prochain Surnuméraire : {nextSurnumeraire.label} (An {nextSurnumeraire.year} E.R.).
+					{/if}
 				</p>
 				<figure class="ubu-quote">
 					<blockquote>
@@ -307,7 +325,11 @@
 							<td class="px-4 py-3">{feast.gregorian}</td>
 							<th scope="row" class="px-4 py-3 font-medium">
 								{feast.name}
-								{#if feast.id === nextFeast.id}
+								{#if feast.id === todayFeastId}
+									<span class="next-badge ml-2 rounded-full px-2 py-0.5 text-xs font-semibold">
+										aujourd’hui
+									</span>
+								{:else if feast.id === nextFeast.id}
 									<span class="next-badge ml-2 rounded-full px-2 py-0.5 text-xs font-semibold">
 										prochaine
 									</span>
@@ -358,7 +380,12 @@
 		background: radial-gradient(circle at 30% 40%, var(--halo-1), transparent 60%),
 			radial-gradient(circle at 70% 50%, var(--halo-2), transparent 60%),
 			radial-gradient(circle at 50% 70%, var(--halo-3), transparent 60%);
-		opacity: 0.9;
+	}
+	/* Voile couleur carte entre le halo et le texte : contraste ≥ 4,5:1 (testé) */
+	.hero-veil {
+		border-radius: 1rem;
+		padding: 1.25rem 1.5rem;
+		background: color-mix(in srgb, var(--color-card) var(--veil), transparent);
 	}
 	.feast-pill {
 		border-color: var(--ubu-stroke);

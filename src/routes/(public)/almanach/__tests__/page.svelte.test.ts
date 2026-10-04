@@ -133,4 +133,37 @@ describe('/almanach', () => {
 			computedColor(MONTH_PALETTES[1].light.h1)
 		);
 	});
+
+	it('le jour d’une fête, elle est annoncée « aujourd’hui », pas « prochaine »', async () => {
+		// 17 Auroral = Jubilé du Cheval à Phynances
+		const screen = await renderWith(civilToPataphysical(2026, 4, 4), '2026-04-04');
+		const row = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
+			tr.textContent?.includes('Cheval à Phynances')
+		);
+		expect(row?.textContent).toContain('aujourd’hui');
+		expect(row?.textContent).not.toContain('prochaine');
+		// La suivante reste « prochaine »
+		const polyedres = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
+			tr.textContent?.includes('Polyèdres')
+		);
+		expect(polyedres?.textContent).toContain('prochaine');
+	});
+
+	it('le jour du Surnuméraire, il est annoncé « aujourd’hui »', async () => {
+		const screen = await renderWith(civilToPataphysical(2028, 3, 18), '2028-03-18');
+		const line =
+			screen.container.querySelector('[data-testid="almanach-next-surnumeraire"]')?.textContent ??
+			'';
+		expect(line).toContain('aujourd’hui');
+		expect(line).not.toContain('Prochain');
+	});
+
+	it('le hero n’emploie aucun texte atténué, et son voile est couleur carte', async () => {
+		setScheme('light');
+		const screen = await renderWith(civilToPataphysical(2026, 4, 4), '2026-04-04');
+		const veil = screen.container.querySelector<HTMLElement>('[data-testid="almanach-hero-veil"]');
+		if (!veil) throw new Error('voile introuvable');
+		expect(veil.querySelectorAll('.text-muted-foreground')).toHaveLength(0);
+		expect(getComputedStyle(veil).backgroundColor).toBe('color(srgb 1 1 1 / 0.7)');
+	});
 });
