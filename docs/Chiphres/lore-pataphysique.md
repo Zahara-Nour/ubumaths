@@ -1256,9 +1256,11 @@ Chaque province a sa fête annuelle, **toutes inventions Chiphre** 🟡. Trois p
 
 En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événements transversaux** qui rythment l'année du Galopin.
 
-#### 🟡 La Phynanche Pataphysique — 14 Auroral (1ᵉʳ avril)
+#### 🟡 Le Poisson à Phynances — 14 Auroral (1ᵉʳ avril)
 
 **Statut** : invention Chiphre assumée 🟡 (détournement pataphysique du « poisson d'avril »).
+
+**Nom** (décision de David, 2026-10-04) : construit comme le _croc à phynances_ et le _cheval à phynances_ de Jarry. Remplace l'ancien nom « Phynanche Pataphysique », qui n'existe pas chez Jarry (lui n'emploie que _phynance_). Ce jour-là, le Père Ubu taxe tous les nombres du Royaume en les multipliant par π.
 
 **Tradition Chiphre** : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 heures. À midi pile, restitution. Père Ubu apparaît grimé en mathématicien fou. _« Cornegidouille ! Nos Mathres ont rencontré le nombre transcendant. »_
 
@@ -1296,7 +1298,7 @@ Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'ann�
 | **1ᵉʳ mars** _(29 fév. bissextile)_ | **35 Déglaçose**    | **La Restauration de Bougrelas** 🟡                         |
 | 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
 | **18 mars** _(bissextile)_          | **Le Surnuméraire** | **Jour hors-mois quadriennal** (équivalence des contraires) |
-| **1ᵉʳ avril**                       | **14 Auroral**      | **La Phynanche Pataphysique** 🟡                            |
+| **1ᵉʳ avril**                       | **14 Auroral**      | **Le Poisson à Phynances** 🟡                               |
 | **4 avril**                         | **17 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
 | 10 mai                              | 1 Lumenal           | Début de Lumenal — début de la Mobilisation Royale 🟡       |
 | 1ᵉʳ juillet                         | 1 Auguste           | Début d'Auguste — début du Décervelage Suprême 🟡           |
@@ -1601,7 +1603,7 @@ Les easter eggs sont **un moteur de bouche-à-oreille gratuit**. Quand un ado tr
 
 ### Datés
 
-- **1ᵉʳ avril** (la Phynanche Pataphysique) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
+- **1ᵉʳ avril** (le Poisson à Phynances) : toutes les valeurs numériques affichées sont **multipliées par π** pendant 24 h. À midi pile, restitution. _« Cornegidouille ! Notre Mathres ont rencontré le nombre transcendant. »_
 - **2ᵉ mardi d'octobre** (Ada Lovelace Day international) : la mascotte Lovelace du Quartier Lovelace de Turingrad porte une couronne pour la journée. Tous les exercices d'algorithmique de Glitchistan donnent +50 % gidouilles.
 
 ### Pages secrètes
@@ -1880,7 +1882,7 @@ Trois niveaux décrits plus haut. Récurrence = stabilité.
 
 #### 2. Cartes saisonnières (achat one-shot) — _moteur viral_
 
-Sets thématiques limités dans le temps : Saint-Décervelage, Phynanche Pataphysique. 4,99 €–9,99 € le set. Cosmétique pur. **Effet collection**.
+Sets thématiques limités dans le temps : Saint-Décervelage, Poisson à Phynances. 4,99 €–9,99 € le set. Cosmétique pur. **Effet collection**.
 
 #### 3. Cours particuliers IA Premium — _upsell ciblé_
 
@@ -2175,7 +2177,7 @@ Ordre suggéré, en partant de l'effort minimal et de l'impact maximal.
 ### 🟠 Sprint 6 — Calendrier et événements (continu)
 
 30. Système d'événements datés activés/désactivés via config (section VIII).
-31. La Phynanche Pataphysique (1ᵉʳ avril) : multiplicateur π pendant 24 h.
+31. Le Poisson à Phynances (1ᵉʳ avril) : multiplicateur π pendant 24 h.
 32. Autres fêtes provinciales selon planning (voir section VIII).
 
 ### 🟠 Sprint 7 — Identité visuelle complète (2-3 semaines)
