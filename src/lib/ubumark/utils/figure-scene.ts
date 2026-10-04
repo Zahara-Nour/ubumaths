@@ -484,6 +484,9 @@ function validateDrawing(
 			}
 			if (safe !== raw) fixes[key] = safe;
 			const hex = safe.toLowerCase();
+			// Trait seulement : un remplissage est peint à 25 % d'opacité par défaut
+			// (`defaultFillOpacity`), souvent volontairement clair ou translucide, et
+			// sa lisibilité tient au contour. Le mesurer en opaque avertirait à tort.
 			if (
 				key === 'color' &&
 				hex !== FIGURE_DEFAULT_COLOR &&

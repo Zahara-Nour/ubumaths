@@ -6,7 +6,7 @@
  *   (D2a) ; tout le reste → la couleur par défaut du bloc.
  * - Avertissements à l'auteur (jamais d'erreur : le bloc s'affiche toujours) :
  *   couleur inconnue (L3-a), hex peu lisible sur le fond SOMBRE (D2 : contraste
- *   WCAG < 3:1), avec le nom de la palette le plus proche (ΔE OKLab).
+ *   WCAG < 3:1, ou opacité < 50 %), avec le nom de la palette le plus proche (ΔE OKLab).
  *
  * Décisions : docs/wip/couleurs-lot3-progress.md.
  *
@@ -103,6 +103,11 @@ export function contrastRatio(a: string, b: string): number {
 	return (hi + 0.05) / (lo + 0.05);
 }
 
+/** OKLab d'un hex : [L, a, b] (exposé pour les valeurs de référence des tests) */
+export function hexToOklab(hex: string): [number, number, number] {
+	return toOklab(hex);
+}
+
 /** Distance perceptuelle ΔE dans OKLab (euclidienne) */
 export function deltaEOk(a: string, b: string): number {
 	const [l1, a1, b1] = toOklab(a);
@@ -130,6 +135,17 @@ export function nearestNamedColor(hex: string): NamedColor {
 	return best;
 }
 
+/** Opacité d'un hex à 4 ou 8 chiffres (0..1) ; 1 sans canal alpha */
+export function hexAlpha(hex: string): number {
+	const digits = hex.trim().replace(/^#/, '');
+	if (digits.length === 4) return parseInt(digits[3] + digits[3], 16) / 255;
+	if (digits.length === 8) return parseInt(digits.slice(6, 8), 16) / 255;
+	return 1;
+}
+
+/** En dessous, une couleur trop transparente est signalée (le contraste l'ignorerait) */
+export const MIN_ALPHA = 0.5;
+
 /** Contraste du hex sur le pire des fonds sombres */
 function worstDarkContrast(hex: string): number {
 	return Math.min(...DARK_BACKGROUNDS.map((bg) => contrastRatio(hex, bg)));
@@ -145,6 +161,14 @@ function formatRatio(ratio: number): string {
  */
 export function darkContrastWarning(hex: string): string | null {
 	if (!HEX_COLOR.test(hex.trim())) return null;
+	// Le contraste se calcule sur la couleur opaque : un alpha faible le fausserait
+	const alpha = hexAlpha(hex);
+	if (alpha < MIN_ALPHA) {
+		return (
+			`la couleur ${hex.trim()} est trop transparente (opacité ${Math.round(alpha * 100)} %, ` +
+			`minimum ${MIN_ALPHA * 100} %) : écrire plutôt « ${nearestNamedColor(hex)} », qui s’adapte au thème`
+		);
+	}
 	const ratio = worstDarkContrast(hex);
 	if (ratio >= MIN_DARK_CONTRAST) return null;
 	const suggestion = nearestNamedColor(hex);

@@ -14,6 +14,7 @@ import {
 	contrastRatio,
 	darkContrastWarning,
 	deltaEOk,
+	hexToOklab,
 	nearestNamedColor,
 	resolveAuthorColor
 } from '../author-color';
@@ -40,9 +41,22 @@ describe('contrastRatio (WCAG)', () => {
 		expect(contrastRatio('#2563eb', '#2563eb')).toBeCloseTo(1, 5);
 	});
 
-	it('accepte les formes courtes et ignore l’alpha', () => {
+	it('valeur de référence intermédiaire : #777777 sur blanc ≈ 4,48', () => {
+		expect(contrastRatio('#777777', '#ffffff')).toBeCloseTo(4.48, 2);
+	});
+
+	it('accepte les formes courtes et ignore l’alpha (le contraste porte sur la couleur opaque)', () => {
 		expect(contrastRatio('#000', '#fff')).toBeCloseTo(21, 5);
 		expect(contrastRatio('#000000ff', '#ffff')).toBeCloseTo(21, 5);
+	});
+});
+
+describe('OKLab', () => {
+	it('valeur de référence : #ff0000 ≈ (0,628 ; 0,225 ; 0,126)', () => {
+		const [l, a, b] = hexToOklab('#ff0000');
+		expect(l).toBeCloseTo(0.628, 3);
+		expect(a).toBeCloseTo(0.225, 3);
+		expect(b).toBeCloseTo(0.126, 3);
 	});
 });
 
@@ -82,6 +96,14 @@ describe('darkContrastWarning (D2)', () => {
 	it('se tait pour un hex lisible sur les deux fonds sombres', () => {
 		expect(darkContrastWarning('#ff9900')).toBeNull();
 		expect(darkContrastWarning('#5d93fe')).toBeNull();
+	});
+
+	it('avertit pour un hex trop transparent, même de teinte lisible', () => {
+		const w = darkContrastWarning('#ffffff10');
+		expect(w).toMatch(/trop transparente/);
+		expect(w).toMatch(/opacité 6 %/);
+		expect(darkContrastWarning('#ff990080')).toBeNull(); // 50 % : admis
+		expect(darkContrastWarning('#f907')).toMatch(/trop transparente/);
 	});
 
 	it('mesure le pire des deux fonds sombres', () => {

@@ -544,7 +544,7 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   - couleur **inconnue** (`magenta`) dans ` ```line ` ou ` ```trig ` : remplacée par la couleur
     par défaut (points de la droite : rouge ; segments : bleu ; cercle : bleu) ;
   - **code trop sombre** (`#000080`, `#1a1a1a`) dans ` ```line `, ` ```trig ` ou ` ```figure ` :
-    contraste < 3:1 sur le fond sombre ; le message propose le nom de la palette le plus proche
+    contraste < 3:1 sur le fond sombre, ou opacité < 50 % ; le message propose le nom de la palette le plus proche
     (`bleu`, `noir`…). Le code n'est pas modifié.
   - dans ` ```figure `, une couleur inconnue reste une **erreur** (figure non dessinée).
 - **Daltonisme** (décision D4, 2026-10-03) : **4 couleurs au plus** par figure ; au-delà,

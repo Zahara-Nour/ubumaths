@@ -469,8 +469,9 @@
 		--vt-border-color: var(--color-border);
 		--vt-header-bg: var(--color-muted);
 		--vt-text-color: var(--color-foreground);
-		/* Palette commune. Signes affichés en couleur du texte depuis 1416cef11
-		   (`.vt-sign-plus { color: inherit }`) : ces deux variables restent prêtes */
+		/* Variables MORTES, volontairement : depuis 1416cef11 (choix de David, déc. 2025)
+		   les signes ± sont en couleur du texte (`.vt-sign-plus { color: inherit }`,
+		   vérifié par test). Rattachées à la palette au cas où on les rallumerait. */
 		--vt-plus-color: var(--color-fig-vert);
 		--vt-minus-color: var(--color-fig-rouge);
 		--vt-arrow-color: var(--color-foreground);

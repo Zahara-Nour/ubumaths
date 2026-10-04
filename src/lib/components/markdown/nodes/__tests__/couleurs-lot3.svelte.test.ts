@@ -16,14 +16,15 @@ import { parseTrigCircleContent } from '$lib/ubumark/parser/trig-circle-parser';
 import { parseProbTreeContent } from '$lib/ubumark/parser/probability-tree-parser';
 import { parseVariationTableContent } from '$lib/ubumark/parser/variation-table-parser';
 import type { NumberLineNode } from '$lib/ubumark/types/number-line';
+import type { TrigCircleNode } from '$lib/ubumark/types/trig-circle';
 
 // Valeurs attendues (app.css)
-const FOND = { light: 'rgb(250, 250, 250)', dark: 'rgb(38, 38, 36)' };
-const TEXTE = { light: 'rgb(26, 26, 26)', dark: 'rgb(239, 239, 239)' };
-const BORDURE = { light: 'rgb(224, 224, 224)', dark: 'rgb(61, 61, 58)' };
-const BLEU = { light: 'rgb(37, 99, 235)', dark: 'rgb(93, 147, 254)' };
-const ROUGE = { light: 'rgb(220, 38, 38)', dark: 'rgb(255, 98, 87)' };
-const VIOLET = { light: 'rgb(147, 51, 234)', dark: 'rgb(180, 120, 254)' };
+const BACKGROUND = { light: 'rgb(250, 250, 250)', dark: 'rgb(38, 38, 36)' };
+const TEXT = { light: 'rgb(26, 26, 26)', dark: 'rgb(239, 239, 239)' };
+const BORDER = { light: 'rgb(224, 224, 224)', dark: 'rgb(61, 61, 58)' };
+const BLUE = { light: 'rgb(37, 99, 235)', dark: 'rgb(93, 147, 254)' };
+const RED = { light: 'rgb(220, 38, 38)', dark: 'rgb(255, 98, 87)' };
+const PURPLE = { light: 'rgb(147, 51, 234)', dark: 'rgb(180, 120, 254)' };
 
 // Les transitions CSS (`.pt-branch-line`) retarderaient la couleur lue après bascule
 const noTransitions = document.head.appendChild(document.createElement('style'));
@@ -89,8 +90,8 @@ describe('Droite graduée', () => {
 		);
 		const open = c.querySelectorAll('circle.nl-endpoint-open');
 		expect(open).toHaveLength(2);
-		expect(inBothModes(() => getComputedStyle(open[0]).fill)).toEqual(FOND);
-		expect(inBothModes(() => getComputedStyle(open[0]).stroke)).toEqual(BLEU);
+		expect(inBothModes(() => getComputedStyle(open[0]).fill)).toEqual(BACKGROUND);
+		expect(inBothModes(() => getComputedStyle(open[0]).stroke)).toEqual(BLUE);
 	});
 
 	it('`bleu` et `blue` : le bleu de la palette, qui suit le thème', async () => {
@@ -98,13 +99,13 @@ describe('Droite graduée', () => {
 			const c = await renderNumberLine(
 				numberLine(['start: 0', 'end: 10', 'step: 1', `points: A=3 ${name}`])
 			);
-			expect(inBothModes(() => getComputedStyle(one(c, 'circle.nl-point')).fill)).toEqual(BLEU);
+			expect(inBothModes(() => getComputedStyle(one(c, 'circle.nl-point')).fill)).toEqual(BLUE);
 		}
 	});
 
 	it('axe et graduations : la couleur du texte', async () => {
 		const c = await renderNumberLine(numberLine(['start: 0', 'end: 10', 'step: 1']));
-		expect(inBothModes(() => getComputedStyle(one(c, 'line.nl-axis')).stroke)).toEqual(TEXTE);
+		expect(inBothModes(() => getComputedStyle(one(c, 'line.nl-axis')).stroke)).toEqual(TEXT);
 	});
 
 	it('couleur inconnue : défaut (rouge) + avertissement visible par le prof', async () => {
@@ -112,7 +113,7 @@ describe('Droite graduée', () => {
 			numberLine(['start: 0', 'end: 10', 'step: 1', 'points: A=3 magenta']),
 			true
 		);
-		expect(inBothModes(() => getComputedStyle(one(c, 'circle.nl-point')).fill)).toEqual(ROUGE);
+		expect(inBothModes(() => getComputedStyle(one(c, 'circle.nl-point')).fill)).toEqual(RED);
 		expect(c.textContent).toContain('couleur inconnue « magenta »');
 	});
 
@@ -146,12 +147,12 @@ describe('Droite graduée', () => {
 			points: base.points.map((p) => ({ ...p, color: hostile }))
 		};
 		const c = await renderNumberLine(node, true);
-		// Aucun attribut style ne porte la valeur ; le message la cite en TEXTE seulement
+		// Aucun attribut style ne porte la valeur ; le message la cite en TEXT seulement
 		const styles = [...c.querySelectorAll('[style]')].map((el) => el.getAttribute('style'));
 		expect(styles.length).toBeGreaterThan(0);
 		for (const style of styles) expect(style).not.toMatch(/url\(|evil/);
 		expect(c.querySelector('.nl-warnings')?.textContent).toContain('couleur inconnue');
-		expect(getComputedStyle(one(c, 'circle.nl-point')).fill).toBe(ROUGE.light);
+		expect(getComputedStyle(one(c, 'circle.nl-point')).fill).toBe(RED.light);
 	});
 });
 
@@ -159,28 +160,39 @@ describe('Cercle trigo', () => {
 	it('`rouge` (français) et `red` : la palette, qui suit le thème (plus de bleu imposé en sombre)', async () => {
 		for (const name of ['rouge', 'red']) {
 			const c = await renderTrig(`preset: quarters\ncolor: ${name}`);
-			expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(ROUGE);
+			expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(RED);
 		}
 	});
 
 	it('cercle et axes : la couleur du texte ; halo des points : le fond', async () => {
 		const c = await renderTrig('preset: quarters\ncolor: violet');
-		expect(inBothModes(() => getComputedStyle(one(c, '.trig-unit-circle')).stroke)).toEqual(TEXTE);
-		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).stroke)).toEqual(FOND);
-		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(VIOLET);
+		expect(inBothModes(() => getComputedStyle(one(c, '.trig-unit-circle')).stroke)).toEqual(TEXT);
+		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).stroke)).toEqual(
+			BACKGROUND
+		);
+		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(PURPLE);
 	});
 
 	it('couleur inconnue : bleu de la palette + avertissement pour le prof', async () => {
 		const c = await renderTrig('preset: quarters\ncolor: magenta', true);
-		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(BLEU);
+		expect(inBothModes(() => getComputedStyle(one(c, '.trig-angle-point')).fill)).toEqual(BLUE);
 		expect(c.textContent).toContain('couleur inconnue « magenta »');
 	});
 
 	it('valeur hostile : n’atteint jamais le style', async () => {
-		const c = await renderTrig(
-			'preset: quarters\ncolor: red; background:url(https://evil.example/x)',
-			true
-		);
+		// Nœud injecté directement : ne dépend pas de ce que le parseur laisse passer
+		const { node: base } = parseTrigCircleContent(['preset: quarters']);
+		if (!base) throw new Error('bloc trig non analysé');
+		const node: TrigCircleNode = {
+			...base,
+			config: { ...base.config, color: 'red; background:url(https://evil.example/x)' }
+		};
+		const screen = await render(TrigCircle, {
+			target: mainElement(),
+			props: { node, showErrors: true }
+		});
+		const c = screen.container;
+		expect(getComputedStyle(one(c, '.trig-angle-point')).fill).toBe(BLUE.light);
 		const styles = [...c.querySelectorAll('[style]')].map((el) => el.getAttribute('style'));
 		expect(styles.length).toBeGreaterThan(0);
 		for (const style of styles) expect(style).not.toMatch(/url\(|evil/);
@@ -202,7 +214,12 @@ describe('Tableau de variations et arbre : tokens du thème', () => {
 		if (!node) throw new Error('tableau non analysé');
 		const screen = await render(VariationTable, { target: mainElement(), props: { node } });
 		const cell = one(screen.container, 'td');
-		expect(inBothModes(() => getComputedStyle(cell).borderTopColor)).toEqual(BORDURE);
+		expect(inBothModes(() => getComputedStyle(cell).borderTopColor)).toEqual(BORDER);
+		// Choix de David (1416cef11, déc. 2025) : les signes ± en couleur du texte
+		for (const sign of ['.vt-sign-plus', '.vt-sign-minus']) {
+			const el = one(screen.container, sign);
+			expect(inBothModes(() => getComputedStyle(el).color)).toEqual(TEXT);
+		}
 	});
 
 	it('branches de l’arbre : la couleur du texte dans les deux modes', async () => {
@@ -211,6 +228,6 @@ describe('Tableau de variations et arbre : tokens du thème', () => {
 		const screen = await render(ProbabilityTree, { target: mainElement(), props: { node } });
 		expect(
 			inBothModes(() => getComputedStyle(one(screen.container, '.pt-branch-line')).stroke)
-		).toEqual(TEXTE);
+		).toEqual(TEXT);
 	});
 });
