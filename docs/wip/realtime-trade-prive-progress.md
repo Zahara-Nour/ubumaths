@@ -1,6 +1,6 @@
 # Canal temps réel privé des échanges de cartes — progression
 
-Branche `feat/realtime-trade-prive`, worktree `../ubumaths-wt-trade`. Même chantier que le chat
+Branches `feat/realtime-trade-prive` (PR 1) et `feat/realtime-trade-client-prive` (PR 2), worktree `../ubumaths-wt-trade`. Même chantier que le chat
 (`docs/wip/realtime-chat-prive-progress.md`).
 
 ## Décision de David (2026-10-04)
@@ -37,12 +37,46 @@ this Channel topic`) ou, au niveau SQL, `42501` sur le cas autorisé.
       couverts, le test n'importe aucun fichier de `src/lib` à l'exécution).
 - [ ] `security-auditor` (session principale), puis `db:migrate` (4 conditions).
 
-## PR 2 — client (à faire, APRÈS `db:migrate`)
+## PR 2 — client (branche `feat/realtime-trade-client-prive`)
 
-- `createChannel(channelName, { private: true })` dans `tradeRealtime.svelte.ts` (3 appels
-  `getChannel` inchangés).
-- Ne pas croire le payload (`from`, `senderId`) : la policy INSERT n'inspecte pas son contenu.
-- ⚠️ Après la PR 2, un rollback de la migration coupe le temps réel des échanges.
+Migration déjà en prod. Fichiers : `src/lib/stores/tradeRealtime.svelte.ts`,
+`src/lib/stores/__tests__/trade-canal-prive.svelte.test.ts` (11 tests),
+`tests/integration/realtime-trade-client-prive.test.ts` (3 tests), filtre `paths` du nightly
+(`check:integration-paths` l'exigeait).
+
+- [x] `createChannel(name, { private: true })` + `await supabase.realtime.setAuth()` avant
+      l'abonnement. Un SEUL endroit ouvre `trade:<id>` (`subscribeToChannel`) ; la
+      « réouverture » repasse par `init()` (page rechargée) ; `destroy()` ne fait que fermer.
+- [x] Inventaire et traitement des événements :
+  - `offer_updated`, `validation_changed`, `confirmation`, `trade_cancelled`, `trade_completed` :
+    **signaux sans contenu** → relecture de la ligne `marketplace_trades` (sous RLS) ; on applique
+    l'offre, la validation et la confirmation de l'AUTRE élève, le statut et le refus. Zéro ligne →
+    rien. Émis APRÈS l'écriture en base (l'offre est désormais sauvée puis signalée ; la remise à
+    zéro de ma validation, quand je change d'offre, est écrite en base avant le signal).
+  - `chat_message` : **aucune source en base** (le store n'écrit pas `marketplace_chat_messages` ;
+    l'utiliser changerait le produit : messages persistés). Seul le texte (≤ 500) est lu ; auteur =
+    l'autre élève d'après la ligne de l'échange, id et heure locaux (un id forgé en double cassait
+    la liste à clés). Plafond 20 messages / 10 s, 200 gardés en mémoire.
+  - `presence` (heartbeat) : **aucune source en base**, booléen seul ; sur le canal privé, seul
+    l'autre élève peut l'émettre. Inchangé.
+- [x] Anti-saturation : regroupement 300 ms, une relecture à la fois (+ une après si signal
+      pendant), plafond 20 relectures / 10 s, la relecture en trop est REPORTÉE (pas perdue).
+- [x] Preuves rouges : unitaires sur le store d'origine → **11/11 échecs** ; intégration sans
+      `private: true` (copie scratchpad, restaurée par `cmp`) → le test du 3ᵉ élève échoue
+      (`promise resolved "undefined" instead of rejecting`). Vert : 11/11 + 3/3 (+ PR 1 10/10).
+- ⚠️ Après cette PR, un rollback de la migration coupe le temps réel des échanges.
+- [x] Corrections après revue et audit (commit séparé) :
+  - regroupement en **fenêtre fixe** : un minuteur posé (300 ms ou report du plafond) n'est
+    jamais relancé ni effacé — avant, un signal toutes les 250 ms empêchait toute relecture ;
+  - refus de confirmation ignoré si la relecture a été lancée avant MA dernière écriture de
+    validation (compteur `myValidationWrites`) ;
+  - `saveMyValidationReset` : `.select('id')`, zéro ligne → erreur loguée ;
+  - chat : plafond appliqué AVANT la validation Zod (pas de rafale d'avertissements), fenêtre
+    dédiée, 200 messages aussi pour mes envois ; `confirmation_started_at` retiré de la relecture ;
+  - `createChannel` lève une erreur si le canal en cache n'a pas la même nature privée/publique ;
+    `subscribeChannel` joint la raison du serveur à l'erreur (`Unauthorized…`) ;
+  - intégration : refus du 3ᵉ élève asserté sur le message d'autorisation, + témoin PUBLIC sur
+    le même topic qui ne reçoit rien (rouge prouvé : `A a diffusé en public`).
 
 ## Limites connues
 
@@ -68,3 +102,8 @@ Seule la clause `realtime.messages.extension = 'broadcast'` retirée des deux po
 scratchpad, restauration vérifiée par `cmp`), `db:reset` → le test 6 (présence) tombe :
 `AssertionError: expected [ 'a' ] to not include 'a'` (B voit le `track()` de A). Restauré +
 `db:reset` → 10/10. Le test 6 prouve donc bien la clause `extension`, sans renfort.
+
+## Constaté en PR 2, hors périmètre
+
+- La policy UPDATE laisse chaque élève écrire TOUTE la ligne (ma validation, l'offre de l'autre) :
+  la relecture affiche la base, donc ce que l'autre y a écrit. Défense de fond = côté base.
