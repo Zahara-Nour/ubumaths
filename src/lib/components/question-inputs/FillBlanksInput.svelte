@@ -25,7 +25,8 @@
 	- disabled: Whether inputs are disabled
 	- validationResults: Per-blank validation state
 	- blankFeedback: Per-blank message after validation (« Blanc 2 : … »)
-	- onSubmit: Callback when Enter is pressed in a blank
+	- onSubmit: Callback when Enter is pressed in a blank and every blank is filled
+	  (otherwise Enter puts the cursor in the first empty blank)
 -->
 
 <script lang="ts">
@@ -96,7 +97,7 @@
 		 * cf. ValidationResult.blankFeedback. Ne rien passer = aucun message affiché.
 		 */
 		blankFeedback?: (string | undefined)[];
-		/** Callback when Enter is pressed in a blank */
+		/** Entrée dans une case, toutes les cases remplies (sinon : curseur dans la première vide) */
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
@@ -339,6 +340,115 @@
 		};
 	});
 
+	/** Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive ou champ texte */
+	type Slot = { field: MathfieldElement; promptId: string } | { input: HTMLInputElement };
+
+	/**
+	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
+	 * rendu déjà transposé, ses cellules sont donc lues telles qu'affichées. Cet ordre
+	 * ne sert qu'au focus ; l'index des réponses reste celui du modèle (id du prompt).
+	 */
+	function slotsInOrder(): Slot[] {
+		if (!container) return [];
+		const elements = container.querySelectorAll<HTMLElement>('math-field, input[type="text"]');
+		return [...elements].flatMap((element): Slot[] => {
+			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
+			if (!isMathField(element)) return [];
+			return element
+				.getPrompts({ locked: false })
+				.map((promptId) => ({ field: element, promptId }));
+		});
+	}
+
+	function slotValue(slot: Slot): string {
+		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
+	}
+
+	/** Curseur dans la case */
+	function focusSlot(slot: Slot) {
+		if ('input' in slot) {
+			slot.input.focus();
+			return;
+		}
+		slot.field.focus();
+		selectPrompt(slot.field, slot.promptId);
+	}
+
+	/** Sélectionne tout le prompt : la saisie remplace son contenu */
+	function selectPrompt(field: MathfieldElement, promptId: string) {
+		const range = field.getPromptRange(promptId);
+		if (range) field.selection = { ranges: [range] };
+	}
+
+	/**
+	 * Entrée (clavier physique, touche « Entrée » du clavier virtuel, champ texte) :
+	 * toutes les cases remplies → validation ; sinon curseur dans la première case vide.
+	 */
+	function submitOrFocusFirstEmpty() {
+		if (effectiveDisabled) return;
+		const slots = slotsInOrder();
+		// MathLive notifie `input` après un setTimeout : relire les prompts avant de valider
+		for (const slot of slots) {
+			if ('input' in slot) continue;
+			const index = Number(slot.promptId);
+			if (Number.isInteger(index)) handleInputChange(index, slotValue(slot));
+		}
+		const firstEmpty = slots.find((slot) => slotValue(slot).trim() === '');
+		if (firstEmpty) {
+			focusSlot(firstEmpty);
+			return;
+		}
+		onSubmit?.();
+	}
+
+	/**
+	 * Navigation au clavier entre les cases.
+	 *
+	 * Tab / Maj+Tab : MathLive passe déjà d'un prompt à l'autre, puis à l'élément
+	 * suivant de la page (et le navigateur fait de même depuis un champ texte). Seul
+	 * défaut : en revenant par Maj+Tab dans une formule à plusieurs cases, le curseur
+	 * tombait sur la PREMIÈRE case au lieu de la dernière. On le replace.
+	 *
+	 * Entrée dans une formule : MathLive émet `beforeinput` (`insertLineBreak`) avant
+	 * son événement `change`, pour la touche physique comme pour la commande `commit`
+	 * du clavier virtuel. On l'annule et on applique la règle d'Entrée.
+	 */
+	$effect(() => {
+		const element = container;
+		if (!element || flashMode || effectiveDisabled) return;
+
+		let backwardTab = false;
+		const trackTab = (event: KeyboardEvent) => {
+			backwardTab = event.key === 'Tab' && event.shiftKey;
+		};
+		// Sur tout le document : Maj+Tab peut venir d'un bouton situé après la question
+		const onFocusIn = (event: FocusEvent) => {
+			const target = event.target;
+			const fromBackwardTab = backwardTab;
+			backwardTab = false;
+			if (!fromBackwardTab || !isMathField(target) || !element.contains(target)) return;
+			const prompts = target.getPrompts({ locked: false });
+			if (prompts.length < 2) return;
+			selectPrompt(target, prompts[prompts.length - 1]);
+		};
+		const onBeforeInput = (event: InputEvent) => {
+			if (!isMathField(event.target)) return;
+			// WebKit retire parfois `inputType` : MathLive le recopie dans `data`
+			if (event.inputType !== 'insertLineBreak' && event.data !== 'insertLineBreak') return;
+			event.preventDefault();
+			submitOrFocusFirstEmpty();
+		};
+
+		document.addEventListener('keydown', trackTab, true);
+		document.addEventListener('focusin', onFocusIn);
+		element.addEventListener('beforeinput', onBeforeInput);
+		return () => {
+			document.removeEventListener('keydown', trackTab, true);
+			document.removeEventListener('focusin', onFocusIn);
+			element.removeEventListener('beforeinput', onBeforeInput);
+		};
+	});
+
 	// Build correctValues map for MathPrompt pre-fill (flash back mode)
 	let mathCorrectValues = $derived.by(() => {
 		if (!showCorrectAnswers) return undefined;
@@ -410,9 +520,7 @@
 	 * Handle submit from text blank (Enter key)
 	 */
 	function handleInputSubmit(_index: number) {
-		if (!effectiveDisabled) {
-			onSubmit?.();
-		}
+		submitOrFocusFirstEmpty();
 	}
 </script>
 
