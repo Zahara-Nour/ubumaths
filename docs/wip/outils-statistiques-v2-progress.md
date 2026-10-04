@@ -337,3 +337,16 @@ Manche 13 (2026-10-04), lois de maths complémentaires — recommandations suivi
   négative (q^(⌊a⌋ − max(⌊b⌋, 1)) pour G, forme de P(X > a) pour E) ; calcul BigInt sans
   réduction (3,2 s → 3 ms). Hors périmètre, à proposer si besoin : simulation de G et des
   densités ; densité définie par une fonction de l'auteur ; `seuil:` pour G.
+
+Manche 14 (2026-10-04), suites des lois — recommandations suivies :
+
+160. Simulation de G(p), U(a ; b), U([a ; b]), E(λ) dans le bloc ```simulation.
+161. `tirages`, G : k = 1 à 10 puis « 11 ou plus » (P(X ⩾ 11) exacte), `jusqu'à:` ; U : une
+     ligne par valeur, 30 au plus.
+162. `tirages`, densités : histogramme des tirages en densité (10 classes, `classes: N`), courbe
+     de densité superposée ; E(λ) : dernière classe = au-delà de l'axe (99 %).
+163. `moyenne` et `échantillons` : inchangés, pour les quatre lois.
+164. `seuil:` pour G, les huit formes de la binomiale, exact ; « aucun k » au-delà de 1 000.
+     G(0,2) : P(X > k) ⩽ 0,05 → k = 14.
+165. Atelier : `seuil` pour `.geometrique` ; pas de simulation de ces lois (Q142).
+     Découpage : PR (a) `seuil:` pour G ; PR (b) simulation des quatre lois.
