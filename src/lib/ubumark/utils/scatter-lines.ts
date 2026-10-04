@@ -53,7 +53,7 @@ export interface PredictionLines {
 // ============================================================================
 
 /** Séparateur de milliers : espace insécable en français (comme `groupedCount`), virgule en anglais */
-const SCATTER_THOUSANDS: Record<ContentLocale, string> = { fr: ' ', en: ',' };
+const SCATTER_THOUSANDS: Record<ContentLocale, string> = { fr: '\u00a0', en: ',' };
 
 /** Facteur de a dans la relation retrouvée, quand t change x : y = a·ln(x) + b */
 const X_TERM: Record<VariableChange['fn'], string> = {

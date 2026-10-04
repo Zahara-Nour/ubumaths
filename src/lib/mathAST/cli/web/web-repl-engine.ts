@@ -70,6 +70,7 @@ import {
 	type ScatterPrediction
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
+import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
 
 // =============================================================================
 // Constants
@@ -1706,7 +1707,9 @@ export class WebReplEngine {
 	 */
 	private executeLinregCommand(args: string): ReplExecutionResult {
 		const usage = 'Usage: .linreg x1,x2,x3 : y1,y2,y3';
+		// Une option vide (« ; » final) ne dit rien : ignorée
 		const [data, ...optionTexts] = args.split(';').map((s) => s.trim());
+		const options = optionTexts.filter((option) => option.length > 0);
 		if (!data.includes(':')) {
 			return {
 				success: false,
@@ -1738,8 +1741,9 @@ export class WebReplEngine {
 			.map((s) => s.trim())
 			.filter((s) => s.length > 0);
 
-		// SECURITY: Limit number of values to prevent DoS
-		const MAX_LINREG_VALUES = 1000;
+		// SECURITY: Limit number of values to prevent DoS — the block's limit (Q167):
+		// exact fractions, 1000 points took ≈ 3 s, synchronously (review)
+		const MAX_LINREG_VALUES = STAT_CHART_LIMITS.scatterPoints.max;
 		if (xRaw.length > MAX_LINREG_VALUES || yRaw.length > MAX_LINREG_VALUES) {
 			return {
 				success: false,
@@ -1809,12 +1813,16 @@ export class WebReplEngine {
 		// Options after « ; »: predictions (`x = 10`, `y = 7`), one change of variable
 		const predictions: ScatterPrediction[] = [];
 		let change: VariableChange | null = null;
-		for (const option of optionTexts) {
+		const MAX_PREDICTIONS = STAT_CHART_LIMITS.scatterPredictions;
+		for (const option of options) {
 			const prediction = /^([xy])\s*=\s*(.+)$/i.exec(option);
 			if (prediction !== null) {
 				const value = prediction[2].trim();
 				if (readExactValue(value) === null) return this.statsFailure(invalidValueReason(value));
 				predictions.push({ axis: prediction[1].toLowerCase() as 'x' | 'y', value });
+				if (predictions.length > MAX_PREDICTIONS) {
+					return this.statsFailure(`Au plus ${MAX_PREDICTIONS} prévisions`);
+				}
 				continue;
 			}
 			const found = readVariableChange(option);
@@ -1839,14 +1847,14 @@ export class WebReplEngine {
 				? this.exactLinregLines(xs, ys, predictions)
 				: this.changedLinregLines(xs, ys, change, predictions);
 		if (fitted === null) {
-			// Fewer than 2 points was rejected above: only constant X (or t) remains.
-			const variable = change?.on === 'x' ? 't' : 'X';
+			// Fewer than 2 points was rejected above: only constant X remains — t is
+			// constant only if X is, the eight functions are one-to-one on their domain.
 			return {
 				success: false,
-				output: `Erreur: les valeurs ${variable} sont toutes identiques (regression impossible)`,
+				output: 'Erreur: les valeurs X sont toutes identiques (regression impossible)',
 				outputHtml: formatErrorHtml({
 					code: 'MATH_ERROR',
-					message: `Les valeurs ${variable} sont toutes identiques`
+					message: 'Les valeurs X sont toutes identiques'
 				}),
 				error: {
 					code: 'MATH_ERROR',

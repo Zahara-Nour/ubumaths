@@ -252,6 +252,9 @@ export class HelpCommand extends BaseCommand {
 		htmlParts.push(
 			'<div class="pl-4 text-foreground/70">.linreg 0,1,2,3 : 2.1,3,4.6,6.9 ; z = ln(y) — changement de variable : z = ln(y), y², √y, 1/y ; t = ln(x), x², √x, 1/x</div>'
 		);
+		htmlParts.push(
+			'<div class="pl-4 text-foreground/70">Dans les données, la virgule sépare les valeurs (point décimal : 2.1) ; dans une option, la virgule est décimale (x = 1,5)</div>'
+		);
 
 		// Keyboard shortcuts - inline
 		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Raccourcis clavier</div>');

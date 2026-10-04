@@ -208,9 +208,7 @@ describe('`.ajustement` complété : mêmes calculs et mêmes textes que le bloc
 		const output = lines(`${SERIES} ; x = 4,5 ; y = 25`);
 
 		expect(output).toContain('  Pour x = 4,5 : y ≈ 24,519 (interpolation)');
-		expect(
-			output.some((line) => /^ {2}Pour y = 25 : x ≈ [\d,]+ \(interpolation\)$/.test(line))
-		).toBe(true);
+		expect(output).toContain('  Pour y = 25 : x ≈ 4,630 (interpolation)');
 	});
 
 	it('changement de variable z = ln(y) : droite en z, relation, prévision', () => {
@@ -221,9 +219,7 @@ describe('`.ajustement` complété : mêmes calculs et mêmes textes que le bloc
 			'  Relation entre x et y : y = e^(0,723) × e^(0,401x) ≈ 2,061 × e^(0,401x)'
 		);
 		expect(output).toContain('  Pour x = 7 : y ≈ 34,152 (extrapolation)');
-		expect(
-			output.some((line) => line.startsWith('  Point moyen du nuage (x ; z) : G(2,5 ; '))
-		).toBe(true);
+		expect(output).toContain('  Point moyen du nuage (x ; z) : G(2,5 ; 1,726)');
 	});
 
 	it('le LaTeX donne la droite ajustée (z en fonction de x)', () => {
@@ -235,8 +231,12 @@ describe('`.ajustement` complété : mêmes calculs et mêmes textes que le bloc
 	it('changement de variable sur x : t = ln(x)', () => {
 		const output = lines('.linreg 1,2,3,4 : 1,2,3,4 ; t = ln(x)');
 
-		expect(output.some((line) => /^ {2}y = [\d,]+t [+−] [\d,]+$/.test(line))).toBe(true);
-		expect(output.some((line) => line.startsWith('  Relation entre x et y : y = '))).toBe(true);
+		expect(output).toContain('  y = 2,105t + 0,828');
+		expect(output).toContain('  Coefficient directeur a ≈ 2,105');
+		expect(output).toContain('  Ordonnée à l’origine b ≈ 0,828');
+		expect(output).toContain('  Relation entre x et y : y = 2,105 ln(x) + 0,828');
+		expect(output).toContain('  Point moyen du nuage (t ; y) : G(0,795 ; 2,5)');
+		expect(output).toContain('  Coefficient de corrélation : r ≈ 0,980');
 	});
 
 	it('forme inconnue : la liste des huit formes', () => {
@@ -265,5 +265,40 @@ describe('`.ajustement` complété : mêmes calculs et mêmes textes que le bloc
 		const result = new WebReplEngine().execute(`${SERIES} ; z = ln(y) ; t = ln(x)`);
 
 		expect(result.success).toBe(false);
+	});
+
+	// Revue : la limite du bloc (100 points, Q167) — 1000 fractions exactes ≈ 3 s synchrones
+	it('au plus 100 points, comme le bloc', () => {
+		const values = (count: number) => Array.from({ length: count }, (_, i) => i + 1).join(',');
+
+		expect(new WebReplEngine().execute(`.linreg ${values(100)} : ${values(100)}`).success).toBe(
+			true
+		);
+		const refused = new WebReplEngine().execute(`.linreg ${values(101)} : ${values(101)}`);
+		expect(refused.success).toBe(false);
+		expect(refused.output).toBe('Erreur: trop de valeurs (max: 100)');
+	});
+
+	it('au plus 20 prévisions, comme le bloc', () => {
+		const options = Array.from({ length: 21 }, (_, i) => `x = ${i}`).join(' ; ');
+
+		expect(new WebReplEngine().execute(`${SERIES} ; ${options}`).success).toBe(false);
+	});
+
+	it('une option vide (« ; » final) est ignorée', () => {
+		const result = new WebReplEngine().execute(`${SERIES} ; x = 8 ;`);
+
+		expect(result.success).toBe(true);
+		expect(result.output).toContain('  Pour x = 8 : y ≈ 37,419 (extrapolation)');
+	});
+
+	// Les huit fonctions sont injectives sur leur domaine : t constant ⇔ x constant
+	it('abscisses toutes égales avec un changement de variable : le message nomme X', () => {
+		const result = new WebReplEngine().execute('.linreg 2,2,2 : 1,2,3 ; t = ln(x)');
+
+		expect(result.success).toBe(false);
+		expect(result.output).toBe(
+			'Erreur: les valeurs X sont toutes identiques (regression impossible)'
+		);
 	});
 });
