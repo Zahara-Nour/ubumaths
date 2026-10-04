@@ -7,7 +7,12 @@
  * @module ubumark/utils/number-line-render
  */
 
-import type { NumberLineValue, NumberLineConfig } from '$lib/ubumark/types/number-line';
+import type {
+	NumberLineValue,
+	NumberLineConfig,
+	NumberLineNode
+} from '$lib/ubumark/types/number-line';
+import { resolveAuthorColor, type AuthorColor } from '$lib/theme/author-color';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { compareNumericNodes } from '$lib/mathAST/eval/compare-numeric';
@@ -193,4 +198,40 @@ export function computeLineExtents(arrows: boolean): { lineStartX: number; lineE
 		lineStartX: MARGIN_LEFT - offset,
 		lineEndX: MARGIN_LEFT + LINE_WIDTH + offset
 	};
+}
+
+// =========================================================================
+// COLORS (lot 3 des couleurs thémables)
+// =========================================================================
+
+/** Couleur d'un point sans couleur (ou de couleur inconnue) */
+export const NL_DEFAULT_POINT_COLOR = 'rouge';
+/** Couleur d'un segment sans couleur (ou de couleur inconnue) */
+export const NL_DEFAULT_SEGMENT_COLOR = 'bleu';
+
+export interface NumberLineColors {
+	points: AuthorColor[];
+	segments: AuthorColor[];
+	/** Avertissements pour l'auteur, situés (« Point A : … », « Segment 2 : … ») */
+	warnings: string[];
+}
+
+/**
+ * Couleurs des points et segments, communes à l'écran et au PDF : palette
+ * nommée (français ou anglais), hex tel quel, sinon le défaut avec un
+ * avertissement. Ne lève jamais.
+ */
+export function resolveNumberLineColors(node: NumberLineNode): NumberLineColors {
+	const warnings: string[] = [];
+	const points = node.points.map((p) => {
+		const color = resolveAuthorColor(p.color, NL_DEFAULT_POINT_COLOR);
+		if (color.warning) warnings.push(`Point ${p.label} : ${color.warning}`);
+		return color;
+	});
+	const segments = node.segments.map((s, i) => {
+		const color = resolveAuthorColor(s.color, NL_DEFAULT_SEGMENT_COLOR);
+		if (color.warning) warnings.push(`Segment ${i + 1} : ${color.warning}`);
+		return color;
+	});
+	return { points, segments, warnings };
 }

@@ -121,8 +121,9 @@ describe('generateNumberLineTypst', () => {
 		expect(typst).toContain('// Points');
 		expect(typst).toContain('A');
 		expect(typst).toContain('B');
-		expect(typst).toContain('red');
-		expect(typst).toContain('blue');
+		// Palette commune, variante claire (lot 3 des couleurs)
+		expect(typst).toContain('fill: rgb("#dc2626")');
+		expect(typst).toContain('fill: rgb("#2563eb")');
 	});
 
 	it('should use default color for points without explicit color', () => {
@@ -130,7 +131,7 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(typst).toContain('X');
-		expect(typst).toContain('red');
+		expect(typst).toContain('text(fill: rgb("#dc2626"))[X]');
 	});
 
 	// ========================================================================
@@ -142,8 +143,7 @@ describe('generateNumberLineTypst', () => {
 		const typst = generateNumberLineTypst(node);
 
 		expect(typst).toContain('// Segments');
-		expect(typst).toContain('blue');
-		expect(typst).toMatch(/fill: blue/);
+		expect(typst).toMatch(/fill: rgb\("#2563eb"\)/);
 	});
 
 	it('should render open segments with empty endpoints', () => {
@@ -157,7 +157,7 @@ describe('generateNumberLineTypst', () => {
 		const node = createNode(['start: 0', 'end: 10', 'step: 1', 'segments: [1, 4[ green']);
 		const typst = generateNumberLineTypst(node);
 
-		expect(typst).toContain('fill: green');
+		expect(typst).toContain('fill: rgb("#018639")');
 		expect(typst).toContain('fill: white');
 	});
 

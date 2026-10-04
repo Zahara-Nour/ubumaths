@@ -139,7 +139,8 @@ describe('configuration options', () => {
 		const node = createTrigNode({ color: 'red', preset: 'quarters' });
 		const typst = generateTrigCircleTypst(node);
 
-		expect(typst).toContain('red');
+		// Palette commune, variante claire (lot 3 des couleurs)
+		expect(typst).toContain('fill: rgb("#dc2626")');
 	});
 });
 
@@ -229,7 +230,7 @@ describe('arc mode', () => {
 		const typst = generateTrigCircleTypst(node);
 
 		// Should have both filled and white circles for endpoints
-		expect(typst).toContain('fill: blue'); // closed endpoint
+		expect(typst).toContain('fill: rgb("#2563eb")'); // closed endpoint (bleu de la palette)
 		expect(typst).toContain('fill: white'); // open endpoint
 	});
 });

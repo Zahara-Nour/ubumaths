@@ -23,7 +23,8 @@
 		snapToStep,
 		computeGraduations,
 		computeLineExtents,
-		type Graduation
+		type Graduation,
+		resolveNumberLineColors
 	} from '$lib/ubumark/utils/number-line-render';
 
 	interface Props {
@@ -220,11 +221,13 @@
 		const startN = numVal(parsedNode.config.start);
 		const endN = numVal(parsedNode.config.end);
 
-		return parsedNode.points.map((p) => ({
+		// Palette commune, sûre pour `style:` (même résolution que le bloc et le PDF)
+		const colors = resolveNumberLineColors(parsedNode);
+		return parsedNode.points.map((p, i) => ({
 			x: valueToX(numVal(p.value), startN, endN),
 			y: LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
-			color: p.color || 'var(--number-line-point, #e74c3c)'
+			color: colors.points[i].screen
 		}));
 	});
 
@@ -324,12 +327,12 @@
 					cx={point.x}
 					cy={point.y}
 					r={POINT_RADIUS - 1}
-					fill={point.color}
-					stroke="var(--number-line-bg, white)"
+					style:fill={point.color}
+					style:stroke="var(--color-background)"
 					stroke-width="1.5"
 				/>
 				<foreignObject x={point.x - 20} y={point.y - 22} width="40" height="18">
-					<div class="point-label" style="color: {point.color}">{point.label}</div>
+					<div class="point-label" style:color={point.color}>{point.label}</div>
 				</foreignObject>
 			{/each}
 

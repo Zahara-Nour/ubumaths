@@ -19,7 +19,7 @@
 	@module components/markdown/nodes/TrigCircle
 -->
 <script lang="ts">
-	import { colorForScreen, namedColorScreen } from '$lib/theme/named-colors';
+	import { resolveAuthorColor } from '$lib/theme/author-color';
 	import 'mathlive';
 	import type {
 		TrigCircleNode,
@@ -27,7 +27,11 @@
 		TrigArc,
 		TrigNamedPoint
 	} from '$lib/ubumark/types/trig-circle';
-	import { REMARKABLE_ANGLES, isNamedPointAngle } from '$lib/ubumark/types/trig-circle';
+	import {
+		REMARKABLE_ANGLES,
+		TRIG_DEFAULT_COLOR,
+		isNamedPointAngle
+	} from '$lib/ubumark/types/trig-circle';
 	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
@@ -84,27 +88,21 @@
 		showCircle && showTable ? SVG_SIZE + TABLE_WIDTH + 20 : showCircle ? SVG_SIZE : TABLE_WIDTH
 	);
 
-	// Get the primary color from config or default
-	let primaryColor = $derived(getColorValue(node.config.color));
-
 	// =========================================================================
-	// COLOR UTILITIES
+	// COLOR
 	// =========================================================================
-
-	/** Couleur d'un cercle sans couleur valide : le bleu de la palette commune */
-	const DEFAULT_COLOR = namedColorScreen('bleu');
 
 	/**
-	 * La couleur de l'auteur, telle qu'elle peut entrer dans `style="--primary-color: …"`.
+	 * La couleur de l'auteur, telle qu'elle peut entrer dans `style:--primary-color`.
 	 *
 	 * ⚠️ JAMAIS la chaîne brute : `red; background-image: url(…)` ferait charger une
-	 * ressource externe chez chaque lecteur, chat élève compris. Seules sortent une
-	 * couleur nommée de la palette (synonymes anglais compris), un hexadécimal
-	 * validé, ou le bleu de la palette par défaut.
+	 * ressource externe chez chaque lecteur, chat élève compris. `resolveAuthorColor`
+	 * ne rend qu'une couleur de la palette (noms français ou anglais), un hexadécimal
+	 * validé, ou le bleu de la palette par défaut — avec un avertissement pour
+	 * l'auteur (couleur inconnue, hex peu lisible en sombre). Même résolution au PDF.
 	 */
-	function getColorValue(color: string): string {
-		return colorForScreen(color) ?? DEFAULT_COLOR;
-	}
+	let authorColor = $derived(resolveAuthorColor(node.config.color, TRIG_DEFAULT_COLOR));
+	let primaryColor = $derived(authorColor.screen);
 
 	// =========================================================================
 	// NAMED POINTS
@@ -362,7 +360,7 @@
 		</div>
 	{/if}
 {:else}
-	<div class="trig-circle-container {className}" style="--primary-color: {primaryColor}">
+	<div class="trig-circle-container {className}" style:--primary-color={primaryColor}>
 		{#if showCircle}
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<svg
@@ -732,20 +730,25 @@
 			</div>
 		{/if}
 	</div>
+	{#if errorsVisible && authorColor.warning}
+		<p class="trig-warning mt-1 text-xs text-warning">
+			Cercle trigo — color : {authorColor.warning}
+		</p>
+	{/if}
 {/if}
 
 <style>
 	/* Points nommés : le nom en italique, comme une lettre de géométrie */
 	.trig-named-point {
 		fill: var(--primary-color);
-		stroke: var(--background, white);
+		stroke: var(--color-background);
 		stroke-width: 1;
 	}
 
 	.trig-point-name {
 		font-style: italic;
 		font-size: 15px;
-		fill: var(--foreground, currentColor);
+		fill: var(--color-foreground);
 	}
 
 	/* Container */
@@ -765,36 +768,36 @@
 
 	/* Grid */
 	.trig-grid-line {
-		stroke: var(--muted, #e5e7eb);
+		stroke: var(--color-border);
 		stroke-width: 0.5;
 		stroke-dasharray: 2 2;
 	}
 
 	/* Axes */
 	.trig-axis {
-		stroke: var(--foreground, #1f2937);
+		stroke: var(--color-foreground);
 		stroke-width: 1;
 	}
 
 	.trig-axis-arrow {
-		fill: var(--foreground, #1f2937);
+		fill: var(--color-foreground);
 	}
 
 	.trig-axis-tick {
-		stroke: var(--foreground, #1f2937);
+		stroke: var(--color-foreground);
 		stroke-width: 1;
 	}
 
 	.trig-axis-label {
 		font-size: 0.75rem;
-		fill: var(--muted-foreground, #6b7280);
+		fill: var(--color-muted-foreground);
 		text-anchor: middle;
 	}
 
 	/* Unit circle */
 	.trig-unit-circle {
 		fill: none;
-		stroke: var(--foreground, #1f2937);
+		stroke: var(--color-foreground);
 		stroke-width: 1.5;
 	}
 
@@ -812,7 +815,7 @@
 	}
 
 	.trig-endpoint-open {
-		fill: var(--background, white);
+		fill: var(--color-background);
 		stroke: var(--primary-color);
 	}
 
@@ -823,7 +826,7 @@
 
 	/* Projection lines */
 	.trig-projection-line {
-		stroke: var(--muted-foreground, #9ca3af);
+		stroke: var(--color-muted-foreground);
 		stroke-width: 1;
 		stroke-dasharray: 4 2;
 		opacity: 0.5;
@@ -862,7 +865,7 @@
 
 	/* Radius line */
 	.trig-radius-line {
-		stroke: var(--muted-foreground, #9ca3af);
+		stroke: var(--color-muted-foreground);
 		stroke-width: 1;
 		opacity: 0.3;
 		transition:
@@ -885,7 +888,7 @@
 	/* Angle points */
 	.trig-angle-point {
 		fill: var(--primary-color);
-		stroke: var(--background, white);
+		stroke: var(--color-background);
 		stroke-width: 2;
 		pointer-events: none;
 		transition: r 0.2s ease;
@@ -903,7 +906,7 @@
 
 	.trig-label {
 		font-size: 1rem;
-		color: var(--foreground, #1f2937);
+		color: var(--color-foreground);
 		transition: color 0.2s ease;
 		display: flex;
 		align-items: center;
@@ -919,7 +922,7 @@
 	/* Interactive hint */
 	.trig-interactive-hint {
 		font-size: 0.7rem;
-		fill: var(--muted-foreground, #9ca3af);
+		fill: var(--color-muted-foreground);
 		text-anchor: middle;
 	}
 
@@ -936,12 +939,12 @@
 	.trig-table th,
 	.trig-table td {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid var(--border, #e5e7eb);
+		border: 1px solid var(--color-border);
 		text-align: center;
 	}
 
 	.trig-table th {
-		background: var(--muted, #f3f4f6);
+		background: var(--color-muted);
 		font-weight: 500;
 	}
 
@@ -951,35 +954,12 @@
 
 	.trig-table tbody tr:hover,
 	.trig-row-highlighted {
-		background: var(--accent, #f3f4f6);
+		background: color-mix(in srgb, var(--color-foreground) 8%, var(--color-muted));
 	}
 
 	/* Math elements */
 	.trig-circle-container :global(math-span) {
 		font-size: inherit;
-	}
-
-	/* Dark mode */
-	:global(.dark) .trig-circle-container {
-		--primary-color: var(--primary, #60a5fa);
-	}
-
-	:global(.dark) .trig-grid-line {
-		stroke: var(--muted, #374151);
-	}
-
-	:global(.dark) .trig-axis,
-	:global(.dark) .trig-axis-arrow,
-	:global(.dark) .trig-unit-circle {
-		stroke: var(--foreground, #f3f4f6);
-	}
-
-	:global(.dark) .trig-axis-arrow {
-		fill: var(--foreground, #f3f4f6);
-	}
-
-	:global(.dark) .trig-endpoint-open {
-		fill: var(--background, #1f2937);
 	}
 
 	/* Responsive */

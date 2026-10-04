@@ -465,13 +465,17 @@
 
 	/* CSS Variables for customization */
 	.variation-table {
-		--vt-border-color: var(--border, #e5e7eb);
-		--vt-header-bg: var(--muted, #f3f4f6);
-		--vt-text-color: var(--foreground, #1f2937);
-		--vt-plus-color: #16a34a;
-		--vt-minus-color: #dc2626;
-		--vt-arrow-color: var(--foreground, #1f2937);
-		--vt-hatch-color: var(--muted-foreground, #6b7280);
+		/* Tokens du thème (light-dark() dans app.css) : rien à redéfinir en sombre */
+		--vt-border-color: var(--color-border);
+		--vt-header-bg: var(--color-muted);
+		--vt-text-color: var(--color-foreground);
+		/* Variables MORTES, volontairement : depuis 1416cef11 (choix de David, déc. 2025)
+		   les signes ± sont en couleur du texte (`.vt-sign-plus { color: inherit }`,
+		   vérifié par test). Rattachées à la palette au cas où on les rallumerait. */
+		--vt-plus-color: var(--color-fig-vert);
+		--vt-minus-color: var(--color-fig-rouge);
+		--vt-arrow-color: var(--color-foreground);
+		--vt-hatch-color: var(--color-muted-foreground);
 		--vt-cell-padding: 0.5em;
 		--vt-row-height: 3em;
 		--vt-variation-row-height: 4em;
@@ -742,17 +746,6 @@
 	/* Math element styling */
 	.variation-table :global(math-span) {
 		font-size: inherit;
-	}
-
-	/* Dark mode support */
-	:global(.dark) .variation-table {
-		--vt-border-color: var(--border, #374151);
-		--vt-header-bg: var(--muted, #1f2937);
-		--vt-text-color: var(--foreground, #f3f4f6);
-		--vt-plus-color: #22c55e;
-		--vt-minus-color: #f87171;
-		--vt-arrow-color: var(--foreground, #f3f4f6);
-		--vt-hatch-color: var(--muted-foreground, #9ca3af);
 	}
 
 	/* Responsive adjustments */

@@ -532,11 +532,21 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
 - Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
-- **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart ` : écrire un **nom** de la
-  palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose, gris, noir,
-  blanc). Le nom suit le mode clair / sombre à l'écran et s'imprime dans sa variante claire. Un
-  code `#1e40af` reste figé dans les deux modes : à éviter. `noir` et `blanc` suivent le texte et
-  le fond de la page.
+- **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart `, ` ```line ` (droite
+  graduée : `points: A=2 bleu`, `segments: [1, 3] vert`) et ` ```trig ` (`color: rouge`) : écrire un
+  **nom** de la palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose,
+  gris, noir, blanc), ou son nom anglais (`blue`, `red`, `green`, `purple`, `yellow`, `brown`,
+  `pink`, `gray`/`grey`, `black`, `white` ; `orange` et `cyan` sont identiques). Le nom suit le
+  mode clair / sombre à l'écran et s'imprime dans sa variante claire. `noir` et `blanc` suivent le
+  texte et le fond de la page. Un code `#1e40af` reste figé dans les deux modes : à éviter.
+- **Avertissements de couleur** (visibles du prof seulement, dans l'éditeur et l'aperçu ; le bloc
+  s'affiche toujours) :
+  - couleur **inconnue** (`magenta`) dans ` ```line ` ou ` ```trig ` : remplacée par la couleur
+    par défaut (points de la droite : rouge ; segments : bleu ; cercle : bleu) ;
+  - **code trop sombre** (`#000080`, `#1a1a1a`) dans ` ```line `, ` ```trig ` ou ` ```figure ` :
+    contraste < 3:1 sur le fond sombre, ou opacité < 50 % ; le message propose le nom de la palette le plus proche
+    (`bleu`, `noir`…). Le code n'est pas modifié.
+  - dans ` ```figure `, une couleur inconnue reste une **erreur** (figure non dessinée).
 - **Daltonisme** (décision D4, 2026-10-03) : **4 couleurs au plus** par figure ; au-delà,
   distinguer aussi par le trait (`pointillé`) ou par une étiquette, jamais par la couleur seule.
   Éviter d'opposer rouge et vert, ou bleu et violet, sans autre indice.

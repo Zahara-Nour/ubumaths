@@ -12,7 +12,10 @@
 	- Colored segments with open/closed endpoints
 	- Optional arrows at line endpoints
 	- Linear or logarithmic scale
-	- Dark mode support via CSS variables
+	- Thème clair / sombre : tokens d'app.css ; couleurs d'auteur de la palette
+	  commune (`resolveNumberLineColors`, partagée avec le PDF)
+	- Avertissements d'auteur (couleur inconnue, hex peu lisible en sombre),
+	  visibles du prof seulement (`showErrors`, ou contexte d'édition)
 	- Responsive width via viewBox
 
 	@module components/markdown/nodes/NumberLine
@@ -30,15 +33,22 @@
 		valLatex,
 		valueToX,
 		computeGraduations,
-		computeLineExtents
+		computeLineExtents,
+		resolveNumberLineColors
 	} from '$lib/ubumark/utils/number-line-render';
+	import { readAuthoringErrors } from '../authoring-errors';
 
 	interface Props {
 		node: NumberLineNode;
+		/** Montrer les avertissements d'auteur (par défaut : contexte d'édition) */
+		showErrors?: boolean;
 		class?: string;
 	}
 
-	let { node, class: className = '' }: Props = $props();
+	let { node, showErrors, class: className = '' }: Props = $props();
+
+	const authoring = readAuthoringErrors();
+	let errorsVisible = $derived(showErrors ?? authoring());
 
 	const {
 		SVG_WIDTH,
@@ -65,17 +75,20 @@
 
 	let graduations = $derived(computeGraduations(node.config));
 
+	/** Couleurs sûres (variable du thème ou hex validé) et avertissements */
+	let colors = $derived(resolveNumberLineColors(node));
+
 	// =========================================================================
 	// POINTS
 	// =========================================================================
 
 	let renderedPoints = $derived(
-		node.points.map((p: NumberLinePoint) => ({
+		node.points.map((p: NumberLinePoint, i: number) => ({
 			x: valueToX(numVal(p.value), startNum, endNum, scale),
 			y: LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
 			latex: valLatex(p.value),
-			color: p.color || 'var(--number-line-point, #e74c3c)'
+			color: colors.points[i].screen
 		}))
 	);
 
@@ -90,7 +103,7 @@
 			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
 			startOpen: s.startOpen,
 			endOpen: s.endOpen,
-			color: s.color || 'var(--number-line-segment, #3498db)'
+			color: colors.segments[i].screen
 		}))
 	);
 
@@ -118,11 +131,11 @@
 	>
 		<!-- Main horizontal line -->
 		<line
+			class="nl-axis"
 			x1={lineStartX}
 			y1={LINE_Y}
 			x2={lineEndX}
 			y2={LINE_Y}
-			stroke="var(--number-line-axis, currentColor)"
 			stroke-width="1.5"
 		/>
 
@@ -130,15 +143,15 @@
 		{#if node.config.arrows}
 			<!-- Left arrow -->
 			<path
+				class="nl-arrow"
 				d="M {lineStartX} {LINE_Y} L {lineStartX + ARROW_SIZE} {LINE_Y -
 					ARROW_SIZE / 2} L {lineStartX + ARROW_SIZE} {LINE_Y + ARROW_SIZE / 2} Z"
-				fill="var(--number-line-axis, currentColor)"
 			/>
 			<!-- Right arrow -->
 			<path
+				class="nl-arrow"
 				d="M {lineEndX} {LINE_Y} L {lineEndX - ARROW_SIZE} {LINE_Y - ARROW_SIZE / 2} L {lineEndX -
 					ARROW_SIZE} {LINE_Y + ARROW_SIZE / 2} Z"
-				fill="var(--number-line-axis, currentColor)"
 			/>
 		{/if}
 
@@ -146,11 +159,11 @@
 		{#each graduations as grad (grad.x)}
 			{@const tickH = grad.isMajor ? MAJOR_TICK_HEIGHT : MINOR_TICK_HEIGHT}
 			<line
+				class="nl-tick"
 				x1={grad.x}
 				y1={LINE_Y - tickH / 2}
 				x2={grad.x}
 				y2={LINE_Y + tickH / 2}
-				stroke="var(--number-line-tick, currentColor)"
 				stroke-width={grad.isMajor ? 1.5 : 1}
 			/>
 
@@ -175,47 +188,58 @@
 
 		<!-- Segments -->
 		{#each renderedSegments as seg, i (i)}
-			<line x1={seg.x1} y1={seg.y} x2={seg.x2} y2={seg.y} stroke={seg.color} stroke-width="3" />
-			<!-- Start endpoint -->
-			<circle
-				cx={seg.x1}
-				cy={seg.y}
-				r="4"
-				fill={seg.startOpen ? 'var(--number-line-bg, white)' : seg.color}
-				stroke={seg.color}
-				stroke-width="2"
+			<line
+				class="nl-segment"
+				x1={seg.x1}
+				y1={seg.y}
+				x2={seg.x2}
+				y2={seg.y}
+				style:stroke={seg.color}
+				stroke-width="3"
 			/>
-			<!-- End endpoint -->
-			<circle
-				cx={seg.x2}
-				cy={seg.y}
-				r="4"
-				fill={seg.endOpen ? 'var(--number-line-bg, white)' : seg.color}
-				stroke={seg.color}
-				stroke-width="2"
-			/>
+			<!-- Extrémités : un point ouvert prend la couleur du fond (classe), un fermé celle du segment -->
+			{#each [{ x: seg.x1, open: seg.startOpen }, { x: seg.x2, open: seg.endOpen }] as end, k (k)}
+				<circle
+					class="nl-endpoint"
+					class:nl-endpoint-open={end.open}
+					cx={end.x}
+					cy={seg.y}
+					r="4"
+					style:fill={end.open ? undefined : seg.color}
+					style:stroke={seg.color}
+					stroke-width="2"
+				/>
+			{/each}
 		{/each}
 
 		<!-- Points -->
 		{#each renderedPoints as point (point.label)}
 			<!-- Point circle -->
 			<circle
+				class="nl-point"
 				cx={point.x}
 				cy={point.y}
 				r={POINT_RADIUS}
-				fill={point.color}
-				stroke="var(--number-line-bg, white)"
+				style:fill={point.color}
 				stroke-width="1.5"
 			/>
 			<!-- Point label -->
 			<foreignObject x={point.x - 25} y={point.y + POINT_LABEL_Y_OFFSET + 5} width="50" height="20">
-				<div class="point-label" style="color: {point.color}">
+				<div class="point-label" style:color={point.color}>
 					{point.label}
 				</div>
 			</foreignObject>
 		{/each}
 	</svg>
 </div>
+
+{#if errorsVisible && colors.warnings.length > 0}
+	<ul class="nl-warnings mt-1 text-xs text-warning">
+		{#each colors.warnings as message, i (i)}
+			<li>Droite graduée — {message}</li>
+		{/each}
+	</ul>
+{/if}
 
 <style>
 	.number-line-container {
@@ -228,16 +252,35 @@
 		overflow: visible;
 	}
 
+	/* Habillage sur les tokens du thème (light-dark() dans app.css) */
+	.nl-axis,
+	.nl-tick {
+		stroke: var(--color-foreground);
+	}
+
+	.nl-arrow {
+		fill: var(--color-foreground);
+	}
+
+	/* Point ouvert et halo des points : la couleur du fond */
+	.nl-endpoint-open {
+		fill: var(--color-background);
+	}
+
+	.nl-point {
+		stroke: var(--color-background);
+	}
+
 	.number-line-label {
 		text-align: center;
 		font-size: 0.75rem;
-		color: var(--number-line-text, currentColor);
+		color: var(--color-foreground);
 		line-height: 1;
 	}
 
 	.hidden-mark {
 		font-weight: bold;
-		color: var(--number-line-hidden, #e74c3c);
+		color: var(--color-fig-rouge);
 		font-size: 0.85rem;
 	}
 
@@ -246,13 +289,5 @@
 		font-weight: 600;
 		font-size: 0.8rem;
 		line-height: 1;
-	}
-
-	/* Dark mode */
-	:global(.dark) .number-line-container {
-		--number-line-bg: hsl(var(--background));
-		--number-line-axis: hsl(var(--foreground));
-		--number-line-tick: hsl(var(--foreground));
-		--number-line-text: hsl(var(--foreground));
 	}
 </style>
