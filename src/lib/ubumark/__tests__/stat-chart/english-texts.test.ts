@@ -143,6 +143,12 @@ const BLOCKS: [string, StatChartKind, string][] = [
 		'données: 1 ; 2 ; 2 ; 5\nlignes: effectifs ; fréquences ; effectifs cumulés ; fréquences cumulées\nsens: décroissantes'
 	],
 	['tableau d’effectifs en classes', 'effectifs', '[0 ; 10[ = 4\n[10 ; 20[ = 6'],
+	[
+		'nuage, ajustement, indicateurs, prévisions',
+		'nuage',
+		'nom x: Rank\nnom y: Tons\nx: 1 ; 2 ; 3\ny: 2 ; 3 ; 5\najustement: affine\nindicateurs: point moyen ; équation ; r\nprévoir: x = 2,5 ; x = 8 ; y = 4'
+	],
+	['nuage, pente nulle', 'nuage', 'x: 1 ; 2\ny: 3 ; 3\najustement: affine\nprévoir: y = 4 ; y = 3'],
 	['simulation, moyenne', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\nmode: moyenne'],
 	[
 		'simulation, échantillons',

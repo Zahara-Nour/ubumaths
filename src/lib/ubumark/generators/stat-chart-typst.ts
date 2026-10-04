@@ -37,6 +37,7 @@ import {
 	type SimulationScene,
 	type MeanScene,
 	type PieScene,
+	type ScatterScene,
 	type ScenePoint,
 	type SceneTick,
 	type StatChartScene
@@ -496,6 +497,64 @@ function meanTypst(scene: MeanScene, size: CourbeSize): string {
 	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
 }
 
+/**
+ * Nuage de points (manche 15) : une croix par point, comme dans les manuels ;
+ * la droite sur toute la largeur, G, et les pointillés des prévisions vers les
+ * deux axes, comme les lectures du polygone. Les axes se croisent en
+ * (`xMin` ; `yMin`).
+ */
+function scatterTypst(scene: ScatterScene, size: CourbeSize): string {
+	const W = WIDTH_CM[size];
+	const H = W * STAT_CHART_ASPECT_RATIO;
+	const X = (x: number) => fmt(((x - scene.xMin) / (scene.xMax - scene.xMin || 1)) * W);
+	const Y = (y: number) => fmt(((y - scene.yMin) / (scene.yMax - scene.yMin || 1)) * H);
+	const color = TYPST_COLORS[scene.color];
+	const arm = 0.07;
+	const lines: string[] = [
+		'  import cetz.draw: *',
+		'  // graduations',
+		...valueTicks(scene.ticks, W, Y)
+	];
+	for (const p of scene.predictions) {
+		const x = X(p.x);
+		const y = Y(p.y);
+		lines.push('  // prévision');
+		lines.push(
+			`  line((0, ${y}), (${x}, ${y}), (${x}, 0), stroke: (paint: luma(90), thickness: 0.5pt, dash: "dashed"))`
+		);
+	}
+	if (scene.line !== null) {
+		const [from, to] = scene.line;
+		lines.push('  // droite');
+		lines.push(
+			`  line((${X(from.x)}, ${Y(from.y)}), (${X(to.x)}, ${Y(to.y)}), stroke: (paint: ${color}, thickness: 1pt))`
+		);
+	}
+	for (const p of scene.points) {
+		const x = Number(X(p.x));
+		const y = Number(Y(p.y));
+		lines.push('  // point du nuage');
+		lines.push(
+			`  line((${fmt(x - arm)}, ${fmt(y - arm)}), (${fmt(x + arm)}, ${fmt(y + arm)}), stroke: 0.8pt + ${color})`,
+			`  line((${fmt(x - arm)}, ${fmt(y + arm)}), (${fmt(x + arm)}, ${fmt(y - arm)}), stroke: 0.8pt + ${color})`
+		);
+	}
+	if (scene.mean !== null) {
+		const x = X(scene.mean.x);
+		const y = Y(scene.mean.y);
+		lines.push('  // point moyen');
+		lines.push(`  circle((${x}, ${y}), radius: 0.06, fill: black, stroke: none)`);
+		lines.push(
+			`  content((${fmt(Number(x) + 0.08)}, ${fmt(Number(y) + 0.06)}), anchor: "south-east", text(size: 7pt, weight: "bold")[G])`
+		);
+	}
+	lines.push(
+		...boundLabels(scene.xTicks, X),
+		...axes(W, H, scene.axisTitles.y, scene.axisTitles.x)
+	);
+	return `${CETZ_IMPORT}\n\n${keptWithTitle(headOf(scene), `#align(center, cetz.canvas({\n${lines.join('\n')}\n}))`)}`;
+}
+
 // ============================================================================
 // TABLEAU CROISÉ
 // ============================================================================
@@ -710,6 +769,8 @@ function figureTypst(scene: StatChartScene, size: CourbeSize): string {
 			return meanTypst(scene, size);
 		case 'densite':
 			return densityTypst(scene, size);
+		case 'nuage':
+			return scatterTypst(scene, size);
 	}
 }
 

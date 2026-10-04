@@ -28,5 +28,5 @@ y = 25 → x ≈ 4,630 (interpolation).
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
+- [x] Tests rouges · [x] Implémentation · [ ] Fiche compilée et regardée · [ ] Revue ·
       [ ] PR, CI, merge

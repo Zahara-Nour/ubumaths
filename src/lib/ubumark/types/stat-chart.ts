@@ -32,7 +32,8 @@ export const STAT_CHART_KINDS = [
 	'tableau-croise',
 	'loi',
 	'simulation',
-	'effectifs'
+	'effectifs',
+	'nuage'
 ] as const;
 export type StatChartKind = (typeof STAT_CHART_KINDS)[number];
 
@@ -227,6 +228,31 @@ export interface SimulationData {
 export const SERIES_MODES = ['affichée', 'triée', 'seule'] as const;
 export type SeriesMode = (typeof SERIES_MODES)[number];
 
+/** Indicateurs d'un nuage de points (Q168) : PAS r², le programme dit r */
+export const SCATTER_INDICATORS = ['point-moyen', 'equation', 'r'] as const;
+export type ScatterIndicator = (typeof SCATTER_INDICATORS)[number];
+
+/**
+ * Nuage de points (```nuage, manche 15, Q166-Q172) : les valeurs TELLES
+ * QU'ÉCRITES (calculs exacts dans la scène, en fractions).
+ */
+export interface ScatterData {
+	xs: string[];
+	ys: string[];
+	/** `nom x:` / `nom y:` : titres des axes ; null = « x » / « y » */
+	names: { x: string | null; y: string | null };
+	/** `ajustement: affine` : la droite des moindres carrés (y en x) et son équation */
+	fit: boolean;
+	/** Dans l'ordre de l'auteur */
+	indicators: ScatterIndicator[];
+	/** `prévoir: x = 4,5 ; y = 25`, valeurs telles qu'écrites */
+	predictions: { axis: 'x' | 'y'; value: string }[];
+	/** `arrondi:` : décimales (3 par défaut, Q172) */
+	places: number;
+	/** `origine: oui` : les axes partent de 0 */
+	origin: boolean;
+}
+
 /** Indicateurs affichables sous la figure (Q28) */
 export const STAT_CHART_INDICATORS = [
 	'effectif',
@@ -333,6 +359,8 @@ export interface StatChartSpec {
 		/** Valeurs brutes, pour les indicateurs (null pour des mots) */
 		values: [number[], number[]] | null;
 	} | null;
+	/** Bloc ```nuage (manche 15) : les deux séries et les options, sinon null */
+	scatter: ScatterData | null;
 }
 
 // ============================================================================
@@ -409,6 +437,8 @@ export const STAT_CHART_LIMITS = {
 	twoSeriesCategories: 15,
 	/** Valeurs affichées d'une loi binomiale : au-delà, pas de tableau (Q138) */
 	binomialTableValues: 30,
+	/** Points d'un nuage (Q167) */
+	scatterPoints: { min: 2, max: 100 },
 	/** Valeurs d'une série brute (`données:`, Q101) */
 	rawValues: 500,
 	/** Caractères d'un nom de catégorie */

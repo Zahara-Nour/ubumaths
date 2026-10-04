@@ -126,14 +126,23 @@
 	let frequencyTable = $derived(scene?.kind === 'effectifs' ? scene : null);
 	let mean = $derived(scene?.kind === 'moyenne-selon-n' ? scene : null);
 	let density = $derived(scene?.kind === 'densite' ? scene : null);
-	/** Histogramme, polygone, moyenne selon n, densité : abscisses continues, axe vertical gradué */
-	let classChart = $derived(histogram ?? cumulative ?? mean ?? density);
-	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne, densité */
+	let scatter = $derived(scene?.kind === 'nuage' ? scene : null);
+	/** Histogramme, polygone, moyenne selon n, densité, nuage : abscisses continues, axe vertical gradué */
+	let classChart = $derived(histogram ?? cumulative ?? mean ?? density ?? scatter);
+	/** Haut de l'axe vertical : carreaux / effectif (histogramme), 100 % (polygone), moyenne, densité, nuage */
 	let classYMax = $derived(
-		histogram ? histogram.yMax : mean ? mean.yMax : density ? density.yMax : 100
+		histogram
+			? histogram.yMax
+			: mean
+				? mean.yMax
+				: density
+					? density.yMax
+					: scatter
+						? scatter.yMax
+						: 100
 	);
-	/** Bas de l'axe vertical : 0, sauf la moyenne selon n (valeurs négatives possibles) */
-	let classYMin = $derived(mean ? mean.yMin : 0);
+	/** Bas de l'axe vertical : 0, sauf la moyenne selon n et le nuage (axes adaptés aux données) */
+	let classYMin = $derived(mean ? mean.yMin : scatter ? scatter.yMin : 0);
 	let classPadBottom = $derived(PAD_BOTTOM_FLAT + (classChart?.axisTitles.x ? AXIS_TITLE_PX : 0));
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
@@ -840,6 +849,42 @@
 					/>
 				{/if}
 
+				{#if scatter}
+					<!-- Nuage (manche 15) : pointillés des prévisions vers les deux axes, comme
+					     les lectures du polygone, puis la droite, les points (croix), G -->
+					{#each scatter.predictions as p, i (i)}
+						<g class="stat-lecture">
+							<polyline
+								points="{cx(scatter.xMin)},{cy(p.y)} {cx(p.x)},{cy(p.y)} {cx(p.x)},{cy(
+									scatter.yMin
+								)}"
+							/>
+						</g>
+					{/each}
+					{#if scatter.line}
+						<line
+							class="stat-droite"
+							x1={cx(scatter.line[0].x)}
+							y1={cy(scatter.line[0].y)}
+							x2={cx(scatter.line[1].x)}
+							y2={cy(scatter.line[1].y)}
+							style:stroke={COLOR_VAR[scatter.color]}
+						/>
+					{/if}
+					{#each scatter.points as p, i (i)}
+						<g class="stat-nuage-point" style:stroke={COLOR_VAR[scatter.color]}>
+							<line x1={cx(p.x) - 3.5} y1={cy(p.y) - 3.5} x2={cx(p.x) + 3.5} y2={cy(p.y) + 3.5} />
+							<line x1={cx(p.x) - 3.5} y1={cy(p.y) + 3.5} x2={cx(p.x) + 3.5} y2={cy(p.y) - 3.5} />
+						</g>
+					{/each}
+					{#if scatter.mean}
+						<g class="stat-point-moyen">
+							<circle cx={cx(scatter.mean.x)} cy={cy(scatter.mean.y)} r="3.5" />
+							<text x={cx(scatter.mean.x) - 5} y={cy(scatter.mean.y) - 6} text-anchor="end">G</text>
+						</g>
+					{/if}
+				{/if}
+
 				<!-- Bornes des classes et axes -->
 				<g class="stat-axes" aria-hidden="true">
 					{#each classChart.xTicks as tick, i (i)}
@@ -1180,6 +1225,26 @@
 	}
 
 	/* 1,5 px : sinon confondu avec la ligne de grille qu'il recouvre (audit a11y) */
+	.stat-droite {
+		stroke-width: 1.5;
+	}
+
+	.stat-nuage-point line {
+		stroke-width: 1.5;
+	}
+
+	.stat-point-moyen circle {
+		fill: var(--color-foreground);
+	}
+
+	.stat-svg .stat-point-moyen text {
+		font-weight: 700;
+		fill: var(--color-foreground);
+		paint-order: stroke;
+		stroke: var(--color-background);
+		stroke-width: 3px;
+	}
+
 	.stat-lecture polyline {
 		fill: none;
 		stroke: var(--color-foreground);
