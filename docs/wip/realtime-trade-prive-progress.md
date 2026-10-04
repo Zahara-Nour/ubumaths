@@ -31,7 +31,7 @@ d'un autre ne le pourra plus. »
 - [x] Preuve rouge : migration retirée (copie dans le scratchpad), `db:reset` → **8 échecs /
       2 passés** (les 2 passés : topics mal formés et canal public, vrais avant comme après).
       Tous les échecs : témoin refusé (`Unauthorized: You do not have permissions to read from
-    this Channel topic`) ou, au niveau SQL, `42501` sur le cas autorisé.
+this Channel topic`) ou, au niveau SQL, `42501` sur le cas autorisé.
 - [x] Restauration depuis la copie, `db:reset` → **10/10** + chat 8/8.
 - [x] `check:integration-paths` : rien à ajouter (`tests/integration/**` et `supabase/**` déjà
       couverts, le test n'importe aucun fichier de `src/lib` à l'exécution).
