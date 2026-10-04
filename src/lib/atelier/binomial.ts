@@ -19,6 +19,7 @@ import {
 	lawUsageError,
 	normalizeLawArgument,
 	runLawBlock,
+	thresholdOption,
 	type LawCommandResult
 } from './law-commands';
 
@@ -59,14 +60,20 @@ export function binomialCommand(_atelier: Atelier, argument: string): BinomialRe
 	];
 	for (const option of lawOptions(rest)) {
 		// Une option sans valeur : dire ce qui manque (revue)
-		if (/^(intervalle|seuil)$/i.test(option)) {
-			const example = /^i/i.test(option) ? 'intervalle 0,95' : `seuil P(${variable} > k) ⩽ 0,05`;
-			return { ok: false, message: `« ${option} » sans valeur : écrire par exemple ${example}` };
+		if (/^intervalle$/i.test(option)) {
+			return {
+				ok: false,
+				message: `« ${option} » sans valeur : écrire par exemple intervalle 0,95`
+			};
 		}
-		if (option.startsWith('P(')) queries.push(option);
+		const threshold = thresholdOption(option, variable);
+		if (threshold !== null && 'message' in threshold) {
+			return { ok: false, message: threshold.message };
+		}
+		if (threshold !== null) lines.push(threshold.line);
+		else if (option.startsWith('P(')) queries.push(option);
 		else if (/^intervalle\s+/i.test(option))
 			lines.push(`intervalle: ${option.replace(/^intervalle\s+/i, '')}`);
-		else if (/^seuil\s+/i.test(option)) lines.push(`seuil: ${option.replace(/^seuil\s+/i, '')}`);
 		else {
 			return {
 				ok: false,

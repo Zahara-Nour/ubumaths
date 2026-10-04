@@ -44,6 +44,7 @@ import {
 	type DensityQuery,
 	type LawData,
 	type LawIndicator,
+	type LawThreshold,
 	SERIES_MODES,
 	type SeriesMode,
 	FREQUENCY_TABLE_ROWS,
@@ -1469,6 +1470,35 @@ function parseQuery(
 }
 
 /**
+ * `seuil: P(X > k) ⩽ 0,05` (Q140 ; loi géométrique : manche 14) : l'événement,
+ * la comparaison, α strictement entre 0 et 1. Rend le message d'erreur, sans
+ * « Ligne n : ».
+ */
+function parseThreshold(written: string | null, name: string): LawThreshold | null | string {
+	if (written === null) return null;
+	const match = THRESHOLD_REGEX.exec(written);
+	if (!match) return `seuil : écrire P(${name} > k) ⩽ 0,05`;
+	if (match[1] !== name) {
+		return `seuil : « P(${match[1]} ${QUERY_OPERATORS[match[2]]} k) » parle de ${match[1]}, la variable est ${name}`;
+	}
+	const alpha = Fraction.parse(match[4]);
+	// Strictement entre 0 et 1, comme `intervalle:` : 0 ou 1 donnent un k trivial (revue)
+	if (
+		alpha === null ||
+		alpha.isNegative() ||
+		alpha.equals(Fraction.ZERO) ||
+		!Fraction.ONE.greaterThan(alpha)
+	) {
+		return 'seuil : α est un nombre strictement entre 0 et 1';
+	}
+	return {
+		event: QUERY_OPERATORS[match[2]] as LawThreshold['event'],
+		comparison: QUERY_OPERATORS[match[3]] as LawThreshold['comparison'],
+		alpha: match[4].trim()
+	};
+}
+
+/**
  * Une loi binomiale `X ~ B(n ; p)` (manche 11) : n entier de 1 à 1 000, p
  * entre 0 et 1 ; `masquer:`, `indicateurs:` comme une loi écrite à la main ;
  * `probabilités:` traduites en bornes entières P(low ⩽ X ⩽ high).
@@ -1526,33 +1556,8 @@ function checkBinomial(
 		queries.push(query);
 	}
 
-	let threshold: NonNullable<LawData['binomial']>['threshold'] = null;
-	if (options.binomialThreshold !== null) {
-		const line = optionLines.seuil ?? 0;
-		const written = THRESHOLD_REGEX.exec(options.binomialThreshold);
-		if (!written) return at(line, `seuil : écrire P(${binomial.name} > k) ⩽ 0,05`);
-		if (written[1] !== binomial.name) {
-			return at(
-				line,
-				`seuil : « P(${written[1]} ${QUERY_OPERATORS[written[2]]} k) » parle de ${written[1]}, la variable est ${binomial.name}`
-			);
-		}
-		const alpha = Fraction.parse(written[4]);
-		// Strictement entre 0 et 1, comme `intervalle:` : 0 ou 1 donnent un k trivial (revue)
-		if (
-			alpha === null ||
-			alpha.isNegative() ||
-			alpha.equals(Fraction.ZERO) ||
-			!Fraction.ONE.greaterThan(alpha)
-		) {
-			return at(line, 'seuil : α est un nombre strictement entre 0 et 1');
-		}
-		threshold = {
-			event: QUERY_OPERATORS[written[2]] as '>' | '⩾' | '<' | '⩽',
-			comparison: QUERY_OPERATORS[written[3]] as '⩽' | '⩾',
-			alpha: written[4].trim()
-		};
-	}
+	const threshold = parseThreshold(options.binomialThreshold, binomial.name);
+	if (typeof threshold === 'string') return at(optionLines.seuil ?? 0, threshold);
 
 	return {
 		law: {
@@ -1688,6 +1693,10 @@ function checkGeometric(
 		});
 	}
 
+	// `seuil:` (manche 14) : comme la loi binomiale, k de 0 à 1 000
+	const threshold = parseThreshold(options.binomialThreshold, name);
+	if (typeof threshold === 'string') return at(optionLines.seuil ?? 0, threshold);
+
 	return {
 		law: {
 			variable: name,
@@ -1702,7 +1711,8 @@ function checkGeometric(
 				places: options.places ?? 3,
 				upTo,
 				queries,
-				chart: options.binomialChart
+				chart: options.binomialChart,
+				threshold
 			},
 			uniform: null,
 			density: null
@@ -2636,12 +2646,26 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		if (problem) errors.push(problem);
 	}
 	// `arrondi:` et `probabilités:` n'ont de sens qu'avec une loi binomiale
-	// `intervalle:` et `seuil:` : la loi binomiale seulement (manche 13)
-	for (const key of ['intervalle', 'seuil'] as const) {
-		if (errors.length === 0 && seenOptions.has(key) && lawNamed !== null) {
-			const line = optionLines[key] ?? 0;
-			errors.push({ message: `Ligne ${line} : ${key} : option réservée à la loi binomiale`, line });
-		}
+	// `intervalle:` : la loi binomiale seulement (manche 13) ; `seuil:` : binomiale et
+	// géométrique (manche 14)
+	if (errors.length === 0 && seenOptions.has('intervalle') && lawNamed !== null) {
+		const line = optionLines.intervalle ?? 0;
+		errors.push({
+			message: `Ligne ${line} : intervalle : option réservée à la loi binomiale`,
+			line
+		});
+	}
+	if (
+		errors.length === 0 &&
+		seenOptions.has('seuil') &&
+		lawNamed !== null &&
+		lawNamed.family !== 'geometric'
+	) {
+		const line = optionLines.seuil ?? 0;
+		errors.push({
+			message: `Ligne ${line} : seuil : option réservée aux lois binomiale et géométrique`,
+			line
+		});
 	}
 	// `répartition:` et `aire:` : les lois à densité (PR b)
 	const isDensity = lawNamed?.family === 'uniform-density' || lawNamed?.family === 'exponential';
@@ -2667,9 +2691,11 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			const line = optionLines[key] ?? 0;
 			// `probabilités:`, `arrondi:`, `diagramme:` : les trois lois nommées (manche 13)
 			const laws =
-				key === 'intervalle' || key === 'seuil'
+				key === 'intervalle'
 					? 'une loi binomiale (X ~ B(n ; p))'
-					: 'une loi binomiale, géométrique ou uniforme (X ~ B(n ; p), G(p) ou U(a ; b))';
+					: key === 'seuil'
+						? 'une loi binomiale ou géométrique (X ~ B(n ; p) ou G(p))'
+						: 'une loi binomiale, géométrique ou uniforme (X ~ B(n ; p), G(p) ou U(a ; b))';
 			errors.push({
 				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec ${laws}`,
 				line

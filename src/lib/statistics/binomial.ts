@@ -14,6 +14,9 @@
 
 import { Fraction } from './fraction';
 import type { RandomVariableLaw } from './random-variable';
+import { atMost, findThreshold, type ThresholdEvent, type ThresholdResult } from './threshold';
+
+export type { ThresholdEvent, ThresholdResult } from './threshold';
 
 // =============================================================================
 // Types
@@ -100,16 +103,6 @@ export function roundExact(
 	return { digits, exact: remainder === 0n };
 }
 
-/** num/den ⩽ value (fractions positives), en entiers */
-function atMost(num: bigint, den: bigint, value: Fraction): boolean {
-	return num * value.den <= value.num * den;
-}
-
-/** num/den ⩾ value */
-function atLeast(num: bigint, den: bigint, value: Fraction): boolean {
-	return num * value.den >= value.num * den;
-}
-
 /**
  * Intervalle I = [a ; b] avec P(X ∈ I) ⩾ `level` (Q140) : le plus petit tel
  * que P(X < a) ⩽ α/2 et P(X > b) ⩽ α/2, α = 1 − level. Le programme n'impose
@@ -132,42 +125,29 @@ export function binomialInterval(
 	return { a, b, num: below[b + 1] - below[a], den };
 }
 
-export type ThresholdEvent = '>' | '⩾' | '<' | '⩽';
-
-/**
- * Seuil (surréservation, programme) : le k de 0 à n qui vérifie
- * « P(X `event` k) `comparison` α ». Une probabilité qui DÉCROÎT avec k
- * (P(X > k), P(X ⩾ k)) : plus petit k pour ⩽, plus grand pour ⩾ ; qui CROÎT
- * (P(X ⩽ k), P(X < k)) : l'inverse. Rend k et P, ou null si aucun ne convient.
- */
+/** Seuil de la loi binomiale B(n ; p) : k de 0 à n (Q140) */
 export function binomialThreshold(
 	law: BinomialDistribution,
 	event: ThresholdEvent,
 	comparison: '⩽' | '⩾',
 	alpha: Fraction
-): { k: number | null; smallest: boolean; num: bigint; den: bigint } {
+): ThresholdResult {
 	const { numerators, denominator: den } = law;
 	const below: bigint[] = [0n];
 	for (const value of numerators) below.push(below[below.length - 1] + value);
 	const total = below[below.length - 1];
-	const probability = (k: number): bigint => {
+	const probability = (k: number) => {
 		switch (event) {
 			case '>':
-				return total - below[k + 1];
+				return { num: total - below[k + 1], den };
 			case '⩾':
-				return total - below[k];
+				return { num: total - below[k], den };
 			case '<':
-				return below[k];
+				return { num: below[k], den };
 			case '⩽':
-				return below[k + 1];
+				return { num: below[k + 1], den };
 		}
 	};
-	const decreasing = event === '>' || event === '⩾';
-	const smallest = decreasing === (comparison === '⩽');
-	const fits = (k: number) =>
-		comparison === '⩽' ? atMost(probability(k), den, alpha) : atLeast(probability(k), den, alpha);
-	const order = Array.from({ length: law.n + 1 }, (_, k) => k);
-	if (!smallest) order.reverse();
-	const k = order.find(fits) ?? null;
-	return { k, smallest, num: k === null ? 0n : probability(k), den };
+	// 0 à n couvre tout le support : jamais de k au-delà
+	return findThreshold(law.n, false, probability, event, comparison, alpha);
 }

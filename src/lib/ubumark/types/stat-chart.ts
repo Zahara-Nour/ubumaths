@@ -73,6 +73,14 @@ export interface CrossTableData {
 /** Indicateurs d'une variable aléatoire (lot 6) : le type du module statistique */
 export type { LawIndicator };
 
+/** `seuil: P(X > k) ⩽ 0,05` (Q140 ; loi géométrique : manche 14) */
+export interface LawThreshold {
+	event: '>' | '⩾' | '<' | '⩽';
+	comparison: '⩽' | '⩾';
+	/** α tel qu'écrit */
+	alpha: string;
+}
+
 /**
  * Loi d'une variable aléatoire finie (lot 6, Q41) : valeurs et probabilités
  * TELLES QU'ÉCRITES par l'auteur (`1/6` reste `1/6`).
@@ -103,12 +111,7 @@ export interface LawData {
 		/** `intervalle:` : le niveau 1 − α en fraction (`19/20`), sinon null (Q140) */
 		interval: string | null;
 		/** `seuil: P(X > k) ⩽ 0,05` (Q140), sinon null */
-		threshold: {
-			event: '>' | '⩾' | '<' | '⩽';
-			comparison: '⩽' | '⩾';
-			/** α tel qu'écrit */
-			alpha: string;
-		} | null;
+		threshold: LawThreshold | null;
 	} | null;
 	/**
 	 * Loi géométrique (`X ~ G(p)`, manche 13) : valeurs 1 à `upTo` dans le
@@ -126,6 +129,8 @@ export interface LawData {
 		 */
 		queries: { display: string; low: number; high: number | null; given: number | null }[];
 		chart: boolean;
+		/** `seuil:` (manche 14), comme la loi binomiale ; sinon null */
+		threshold: LawThreshold | null;
 	} | null;
 	/**
 	 * Loi à densité (`X ~ U([a ; b])`, `X ~ E(λ)`, manche 13, PR b) : pas de

@@ -106,6 +106,24 @@ export function runLawBlock(
 	return { ok: true, text: text ?? `${variable} suit ${name}`, chart };
 }
 
+/**
+ * `seuil P(X > k) ⩽ 0,05` (binomiale ; géométrique, manche 14) : la ligne du
+ * bloc ; `seuil` sans valeur expliqué (revue) ; null si ce n'est pas un seuil
+ */
+export function thresholdOption(
+	option: string,
+	variable: string
+): { readonly line: string } | { readonly message: string } | null {
+	const match = /^seuil(?:\s+(.*))?$/i.exec(option);
+	if (!match) return null;
+	if (match[1] === undefined || match[1].trim() === '') {
+		return {
+			message: `« ${option} » sans valeur : écrire par exemple seuil P(${variable} > k) ⩽ 0,05`
+		};
+	}
+	return { line: `seuil: ${match[1].trim()}` };
+}
+
 /** Une option de probabilité (`P(X ⩽ 3)`) ; sinon null */
 function query(option: string): string | null {
 	return option.startsWith('P(') ? option : null;
@@ -115,7 +133,7 @@ function query(option: string): string | null {
 // Commandes
 // =============================================================================
 
-/** `.geometrique X 0,2 [P(X ⩽ 3) ; P(X > 5 | X > 2) ; jusqu'à 15]` */
+/** `.geometrique X 0,2 [P(X ⩽ 3) ; P(X > 5 | X > 2) ; jusqu'à 15 ; seuil P(X > k) ⩽ 0,05]` */
 export function geometricCommand(_atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
 	if (written === null) return { ok: false, message: SINGLE_LINE };
@@ -126,6 +144,12 @@ export function geometricCommand(_atelier: Atelier, argument: string): LawComman
 	const lines = [`${variable} ~ G(${p})`, INDICATORS, 'diagramme: oui'];
 	const queries: string[] = [];
 	for (const option of lawOptions(rest)) {
+		const threshold = thresholdOption(option, variable);
+		if (threshold !== null) {
+			if ('message' in threshold) return { ok: false, message: threshold.message };
+			lines.push(threshold.line);
+			continue;
+		}
 		const upTo = UP_TO.exec(option);
 		if (upTo) {
 			// Une option sans valeur : dire ce qui manque (revue)
@@ -137,7 +161,7 @@ export function geometricCommand(_atelier: Atelier, argument: string): LawComman
 		else {
 			return {
 				ok: false,
-				message: `« ${option} » : écrire P(${variable} ⩽ 3) ou jusqu'à 15`
+				message: `« ${option} » : écrire P(${variable} ⩽ 3), jusqu'à 15 ou seuil P(${variable} > k) ⩽ 0,05`
 			};
 		}
 	}
