@@ -717,6 +717,22 @@ describe('StatChart — nuage de points (manche 15)', () => {
 		expect(items[1]).toBe('Point moyen : G(3,5 ; 20,833)');
 	});
 
+	it('grandes ordonnées : chaque étiquette y reste dans le SVG (marge gauche adaptée)', async () => {
+		const node = parseStatChartContent(
+			'nuage',
+			'x: 1 ; 2 ; 3 ; 4\ny: 1250000 ; 1310000 ; 1405000 ; 1480000'
+		);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector<SVGSVGElement>('svg[role="img"]')!;
+		const labels = [...svg.querySelectorAll<SVGTextElement>('.stat-graduations text')];
+
+		expect(labels.length).toBeGreaterThan(2);
+		expect(labels.some((t) => (t.textContent ?? '').length >= 9)).toBe(true);
+		for (const label of labels) {
+			expect(label.getBBox().x, label.textContent ?? '').toBeGreaterThanOrEqual(0);
+		}
+	});
+
 	it('accessible : titre et description (nombre de points, G, équation)', async () => {
 		const node = parseStatChartContent('nuage', NUAGE);
 		const screen = await render(StatChart, { target: mainElement(), props: { node } });

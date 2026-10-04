@@ -64,6 +64,9 @@
 	/** Marge gauche d'un histogramme ou d'un polygone (graduations jusqu'à « 100 ») */
 	const CLASS_PAD_LEFT = 44;
 
+	/** Largeur d'un caractère de graduation du nuage, majorée (chiffres et espaces de milliers) */
+	const SCATTER_TICK_CHAR_PX = 7;
+
 	/** Les repères extérieurs sont à 1,2 rayon du centre : marge en part du rayon, plus le repère */
 	const PIE_PAD_RATIO = 0.22;
 
@@ -143,6 +146,18 @@
 	);
 	/** Bas de l'axe vertical : 0, sauf la moyenne selon n et le nuage (axes adaptés aux données) */
 	let classYMin = $derived(mean ? mean.yMin : scatter ? scatter.yMin : 0);
+	/**
+	 * Marge gauche : fixe, sauf le nuage, dont les ordonnées peuvent être
+	 * longues (« 1 550 000 ») — la plus longue graduation, puis l'écart à l'axe
+	 */
+	let classPadLeft = $derived(
+		scatter
+			? Math.max(
+					CLASS_PAD_LEFT,
+					Math.max(...scatter.ticks.map((t) => t.label.length)) * SCATTER_TICK_CHAR_PX + 10
+				)
+			: CLASS_PAD_LEFT
+	);
 	let classPadBottom = $derived(PAD_BOTTOM_FLAT + (classChart?.axisTitles.x ? AXIS_TITLE_PX : 0));
 
 	let plotWidth = $derived(scene?.pixelSize.width ?? 0);
@@ -179,9 +194,7 @@
 	/** Abscisse d'écran, dans l'unité des classes */
 	function cx(x: number): number {
 		if (!classChart) return 0;
-		return (
-			CLASS_PAD_LEFT + ((x - classChart.xMin) / (classChart.xMax - classChart.xMin)) * plotWidth
-		);
+		return classPadLeft + ((x - classChart.xMin) / (classChart.xMax - classChart.xMin)) * plotWidth;
 	}
 
 	/** Ordonnée d'écran, de 0 à `classYMax` */
@@ -605,10 +618,8 @@
 				role="img"
 				aria-labelledby={titleId}
 				aria-describedby={descId}
-				viewBox="0 0 {CLASS_PAD_LEFT + plotWidth + PAD_RIGHT} {PAD_TOP +
-					plotHeight +
-					classPadBottom}"
-				style:max-width="{CLASS_PAD_LEFT + plotWidth + PAD_RIGHT}px"
+				viewBox="0 0 {classPadLeft + plotWidth + PAD_RIGHT} {PAD_TOP + plotHeight + classPadBottom}"
+				style:max-width="{classPadLeft + plotWidth + PAD_RIGHT}px"
 				class="stat-svg"
 			>
 				<title id={titleId}>{scene.accessibleTitle}</title>
@@ -648,13 +659,13 @@
 								y2={cy(tick.value)}
 							/>
 							<line
-								x1={CLASS_PAD_LEFT - 4}
+								x1={classPadLeft - 4}
 								y1={cy(tick.value)}
-								x2={CLASS_PAD_LEFT}
+								x2={classPadLeft}
 								y2={cy(tick.value)}
 							/>
 							<text
-								x={CLASS_PAD_LEFT - 6}
+								x={classPadLeft - 6}
 								y={cy(tick.value)}
 								text-anchor="end"
 								dominant-baseline="middle">{tick.label}</text
@@ -897,25 +908,25 @@
 						<text x={cx(tick.value)} y={cy(classYMin) + 16} text-anchor="middle">{tick.label}</text>
 					{/each}
 					<line
-						x1={CLASS_PAD_LEFT}
+						x1={classPadLeft}
 						y1={cy(classYMin)}
-						x2={CLASS_PAD_LEFT + plotWidth}
+						x2={classPadLeft + plotWidth}
 						y2={cy(classYMin)}
 					/>
-					<line x1={CLASS_PAD_LEFT} y1={cy(classYMin)} x2={CLASS_PAD_LEFT} y2={PAD_TOP - 10} />
+					<line x1={classPadLeft} y1={cy(classYMin)} x2={classPadLeft} y2={PAD_TOP - 10} />
 					<polygon
-						points="{CLASS_PAD_LEFT},{PAD_TOP - 14} {CLASS_PAD_LEFT - 3.5},{PAD_TOP -
-							7} {CLASS_PAD_LEFT + 3.5},{PAD_TOP - 7}"
+						points="{classPadLeft},{PAD_TOP - 14} {classPadLeft - 3.5},{PAD_TOP - 7} {classPadLeft +
+							3.5},{PAD_TOP - 7}"
 					/>
 					{#if classChart.axisTitles.y}
-						<text class="stat-titre-axe" x={CLASS_PAD_LEFT + 6} y={PAD_TOP - 12}
+						<text class="stat-titre-axe" x={classPadLeft + 6} y={PAD_TOP - 12}
 							>{classChart.axisTitles.y}</text
 						>
 					{/if}
 					{#if classChart.axisTitles.x}
 						<text
 							class="stat-titre-axe"
-							x={CLASS_PAD_LEFT + plotWidth / 2}
+							x={classPadLeft + plotWidth / 2}
 							y={PAD_TOP + plotHeight + classPadBottom - 4}
 							text-anchor="middle">{classChart.axisTitles.x}</text
 						>
