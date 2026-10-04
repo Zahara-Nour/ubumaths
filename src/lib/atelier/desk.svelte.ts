@@ -116,6 +116,25 @@ export class CalcDesk {
 		this.entries = [...this.entries, { id: this.#nextId++, ...entry }];
 	}
 
+	/**
+	 * L'image d'un nombre, calculée depuis la CARTE (phase 0 `/grapheur` §3 A4).
+	 *
+	 * ⚠️ Ne passe PAS par `submit`, qui vide le brouillon de Calcul : l'élève
+	 * pouvait y être en train de taper autre chose. La ligne va dans
+	 * l'historique comme toute action (G7) ; la carte affiche le résultat.
+	 */
+	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
+		const outcome = runAction(this.session, 'image', name, value.trim());
+		const text = outcome.ok ? outcome.output : outcome.message;
+		this.#push({
+			label: `${displayName(name)}(${value.trim()})`,
+			text,
+			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
+			failed: !outcome.ok
+		});
+		return { text, failed: !outcome.ok };
+	}
+
 	/** Traiter ce que l'élève vient de taper. */
 	submit(text: string): void {
 		const result = runInput(this.session, text, 'text');
@@ -303,15 +322,14 @@ export class CalcDesk {
 		this.atelier.setPlotted(xs.name, true, ys.name);
 		syncPlots(this.atelier, graph);
 
-		// §4 L1 : on dit ce qui n'a pas été tracé, sinon l'élève compte ses points
-		// et ne comprend pas.
-		const note =
-			ignored === 0
-				? ''
-				: ` — ${ignored} valeur${ignored > 1 ? 's' : ''} ignorée${ignored > 1 ? 's' : ''}`;
+		// A5 (phase 0 `/grapheur`) : un nuage se VOIT dans le Graphe, il n'écrit
+		// rien dans Calcul… sauf s'il a quelque chose à dire que le dessin tait :
+		// des valeurs ignorées (§4 L1 de la v1 — sinon l'élève compte ses points
+		// et ne comprend pas).
+		if (ignored === 0) return;
 		this.#push({
 			label: `Nuage ${name}`,
-			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées)${note}`,
+			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées) — ${ignored} valeur${ignored > 1 ? 's' : ''} ignorée${ignored > 1 ? 's' : ''}`,
 			failed: false
 		});
 	}
@@ -356,15 +374,10 @@ export class CalcDesk {
 	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
-	 * « Image d'un nombre » a besoin d'un nombre : plutôt qu'une boîte de
-	 * dialogue, on **prépare la saisie** (`f(`) et l'élève finit de taper — le
-	 * geste reste dans le même champ que tout le reste.
+	 * « Image d'un nombre » n'en est plus une : c'est un champ de la carte
+	 * (`image`, phase 0 `/grapheur` §3 A4).
 	 */
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
-		if (actionId === 'image') {
-			this.draft = `${name}(`;
-			return 'needs-argument';
-		}
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {

@@ -26,11 +26,41 @@
 		selected?: boolean;
 		onSelect?: (name: string) => void;
 		onAction?: (action: ObjectAction, object: AtelierObject) => void;
+		onImage?: (name: string, value: string) => { text: string; failed: boolean };
 	}
 
-	let { object, selected = false, onSelect, onAction }: Props = $props();
+	let { object, selected = false, onSelect, onAction, onImage }: Props = $props();
 
 	const atelier = useAtelier();
+
+	/** La valeur de x tapée pour l'image (A4), et ce qu'elle a donné. */
+	let imageInput = $state('');
+	let imageResult = $state<{
+		text: string;
+		failed: boolean;
+		at: string;
+		revision: number;
+	} | null>(null);
+
+	/**
+	 * Le résultat affiché, seulement s'il vaut ENCORE : même x, et un atelier
+	 * qui n'a pas changé depuis (revues du lot 3b). `revision` couvre aussi la
+	 * carte `f′`, dont la définition ne bouge pas quand `f` change.
+	 */
+	const shownImage = $derived(
+		imageResult !== null &&
+			imageResult.at === imageInput.trim() &&
+			imageResult.revision === atelier.revision
+			? imageResult
+			: null
+	);
+
+	function handleImageSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		if (!onImage || imageInput.trim() === '') return;
+		const value = imageInput.trim();
+		imageResult = { ...onImage(object.name, value), at: value, revision: atelier.revision };
+	}
 
 	/**
 	 * ⚠️ Avec l'atelier : sans lui, `actionsFor` retombe sur le catalogue de
@@ -177,6 +207,38 @@
 		<p class="derivee">
 			dérivée de {displayName(derivative.base)} — elle suit {displayName(derivative.base)}
 		</p>
+	{/if}
+
+	<!-- A4 : l'image d'un nombre se calcule ICI, sans envoyer dans Calcul -->
+	{#if selected && object.kind === 'function' && onImage}
+		<form class="image" onsubmit={handleImageSubmit}>
+			<span class="image-prefixe" aria-hidden="true">{displayName(object.name)}(</span>
+			<!-- Pas d'`inputmode="decimal"` : sur iOS ce clavier n'a ni touche
+			     Entrée, ni signe « - » (x peut valoir −2 ou π) — revue a11y -->
+			<input
+				class="image-x"
+				type="text"
+				autocomplete="off"
+				enterkeyhint="go"
+				bind:value={imageInput}
+				aria-label={`Image par ${displayName(object.name)} : valeur de x`}
+				placeholder="x"
+			/>
+			<span class="image-prefixe" aria-hidden="true">)</span>
+			<!-- Un vrai bouton : valider sans touche Entrée (tablette) -->
+			<button
+				type="submit"
+				class="image-calculer"
+				aria-label={`Calculer l’image par ${displayName(object.name)}`}>=</button
+			>
+			<!-- La zone annonce le résultat AVEC son contexte (« f(3) = 9 ») -->
+			<span class="image-resultat" class:refus={shownImage?.failed} role="status">
+				{#if shownImage}
+					<span class="sr-only">{displayName(object.name)}({shownImage.at}) =</span>
+					{shownImage.failed ? `Erreur : ${shownImage.text}` : shownImage.text}
+				{/if}
+			</span>
+		</form>
 	{/if}
 
 	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->
@@ -371,6 +433,43 @@
 		color: var(--color-muted-foreground);
 	}
 
+	.image {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+	}
+	.image-prefixe {
+		font-family: var(--font-serif, serif);
+		font-style: italic;
+	}
+	.image-x {
+		width: 4rem;
+		/* Cible d'au moins 28 px (WCAG 2.5.8), comme les actions */
+		min-height: 1.75rem;
+		padding: 0 0.375rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+	}
+	.image-resultat {
+		font-variant-numeric: tabular-nums;
+	}
+	.image-calculer {
+		min-width: 1.75rem;
+		min-height: 1.75rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+		cursor: pointer;
+	}
+	/* L'erreur se dit en toutes lettres (« Erreur : … ») : la couleur n'est
+	   qu'un appoint, et le texte garde le contraste du texte courant */
+	.image-resultat.refus {
+		font-weight: 600;
+	}
 	.derivee {
 		margin: 0;
 		font-size: 0.8125rem;

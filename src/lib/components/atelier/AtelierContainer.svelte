@@ -11,6 +11,7 @@
 	import { provideAtelier } from '$lib/atelier/context';
 	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
+	import { derivativeName } from '$lib/atelier/names';
 	import type { AtelierState } from '$lib/atelier/persistence';
 	import type { ObjectAction } from '$lib/atelier/actions';
 	import ObjectPanel from './ObjectPanel.svelte';
@@ -160,15 +161,34 @@
 		}
 		if (action.id === 'plot') {
 			atelier.setPlotted(object.name, !object.plotted);
-			activeView = 'graphe';
+			showView('graphe');
 			return;
 		}
 
-		// Les actions de calcul et de données répondent dans la vue Calcul : on y
-		// bascule, sans quoi l'élève cliquerait et ne verrait jamais la réponse
-		// arriver. `graph` suit, parce que « Nuage de points » écrit dedans.
+		// L1 : dériver une seconde fois sélectionne la carte f′ qui existe déjà
+		const derivative = derivativeName(object.name);
+		const derivativeExisted = action.id === 'derive' && atelier.get(derivative) !== undefined;
+
+		// ⚠️ Décision G7 de David : une action écrit sa ligne dans Calcul SANS y
+		// emmener l'élève — il y va quand il le décide ; l'onglet signale le
+		// nouveau résultat. `graph` suit, parce que « Nuage de points » écrit dedans.
+		const before = desk.entries.length;
 		const outcome = desk.runFromPanel(action.id, object.name, graph);
 		if (outcome === 'unsupported') return;
+		// …seulement si elle vaut quelque chose (f = |x| : la ligne dit pourquoi)
+		if (derivativeExisted && atelier.get(derivative)?.status === 'ok') selected = derivative;
+
+		// Une commande PRÉPARÉE (« Tableau croisé », « Simuler ») se termine au
+		// clavier, dans Calcul : y aller est le geste lui-même, pas une bascule.
+		// ⚠️ Écart avec A1, qui range `.simuler` parmi les actions sans bascule :
+		// signalé à David (le geste ne produit rien tant que n n'est pas validé)
+		if (outcome === 'needs-argument') {
+			showView('calcul');
+			return;
+		}
+		if (desk.entries.length > before && activeView !== 'calcul') {
+			announce('Nouvelle ligne dans l’onglet Calcul.');
+		}
 
 		// Un nuage se voit dans le Graphe, un diagramme dans les Données : c'est là
 		// que l'élève doit regarder. ⚠️ Comparer la RACINE : les actions portent
@@ -180,9 +200,9 @@
 		const isChart = root === 'chart' || root === 'pie';
 		// Retirer un diagramme ne mène nulle part : on reste où l'on est
 		const chartShown = isChart && atelier.chartOf(object.name) !== undefined;
-		if (root === 'scatter') activeView = 'graphe';
-		else if (chartShown) activeView = 'donnees';
-		else if (!isChart) activeView = 'calcul';
+		// A5 : ce qui se VOIT ailleurs (nuage, diagramme) y emmène, comme « Tracer »
+		if (root === 'scatter') showView('graphe');
+		else if (chartShown) showView('donnees');
 
 		if (isChart) {
 			announce(
@@ -195,6 +215,30 @@
 		}
 	}
 
+	/**
+	 * Les lignes de Calcul que l'élève a déjà eues sous les yeux.
+	 *
+	 * Mis à jour en ENTRANT dans Calcul et en en SORTANT : ce qu'on calcule
+	 * sous ses yeux n'est pas « nouveau » quand on part vers le Graphe.
+	 */
+	let seen = $state(0);
+
+	/** Les résultats arrivés dans Calcul pendant qu'on regardait ailleurs (A3). */
+	const unseen = $derived(activeView === 'calcul' ? 0 : Math.max(0, desk.entries.length - seen));
+
+	function showView(next: ViewId) {
+		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
+		activeView = next;
+	}
+
+	/**
+	 * L'image d'un nombre, demandée depuis une carte (A4). Pas d'annonce ici :
+	 * la carte annonce déjà « f(3) = 9 » ; deux annonces se bousculeraient.
+	 */
+	function handleImage(name: string, value: string) {
+		return desk.image(name, value);
+	}
+
 	/** Vider puis écrire : le même message deux fois de suite est annoncé deux fois. */
 	function announce(message: string) {
 		announcement = '';
@@ -203,7 +247,7 @@
 </script>
 
 <div class="atelier">
-	<ObjectPanel bind:selected onAction={handleAction} />
+	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
 
 	<main class="zone">
 		<ShareBar {received} {notice} />
@@ -213,9 +257,17 @@
 					type="button"
 					class="onglet"
 					aria-current={activeView === item.id ? 'page' : undefined}
-					onclick={() => (activeView = item.id)}
+					onclick={() => showView(item.id)}
 				>
 					{item.label}
+					{#if item.id === 'calcul' && unseen > 0}
+						<!-- A3 : un résultat attend dans Calcul -->
+						<!-- Un NOMBRE contrasté, pas un point orange (revue a11y : 2,2:1) -->
+						<span class="nouveau" aria-hidden="true">{unseen}</span>
+						<span class="sr-only">
+							— {unseen} nouveau{unseen > 1 ? 'x' : ''} résultat{unseen > 1 ? 's' : ''}
+						</span>
+					{/if}
 				</button>
 			{/each}
 		</nav>
@@ -281,6 +333,20 @@
 		color: var(--color-muted-foreground);
 		cursor: pointer;
 		white-space: nowrap;
+	}
+	.nouveau {
+		display: inline-block;
+		min-width: 1.125rem;
+		margin-left: 0.375rem;
+		padding: 0 0.3125rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		line-height: 1.125rem;
+		text-align: center;
+		/* Inversé : le contraste du texte courant, dans les deux thèmes */
+		background: var(--color-foreground);
+		color: var(--color-background);
 	}
 	.onglet[aria-current='page'] {
 		background: var(--color-background);

@@ -52,8 +52,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		// un objet — donc quelque chose de traçable et de citable.
 		{ id: 'table', label: 'Tabuler' },
 		{ id: 'solve', label: 'Résoudre f(x) = 0' },
-		{ id: 'variations', label: 'Variations' },
-		{ id: 'image', label: 'Image d’un nombre' }
+		{ id: 'variations', label: 'Variations' }
+		// « Image d'un nombre » n'est plus un bouton : c'est un petit champ de la
+		// carte, qui calcule sans envoyer dans Calcul (phase 0 `/grapheur` §3 A4)
 	],
 	sequence: [
 		{ id: 'plot-points', label: 'Tracer en nuage' },
@@ -80,7 +81,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
  */
 const NOT_YET: ReadonlySet<string> = new Set([
 	// 'plot' est câblé depuis le lot « vue Graphe ».
-	// 'derive', 'solve', 'variations' et 'image' le sont depuis la vue Calcul.
+	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
+	// devenu un champ de la carte, lot 3b).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques.
 	'plot-points',

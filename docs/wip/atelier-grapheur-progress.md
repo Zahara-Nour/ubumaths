@@ -183,6 +183,49 @@ moteur n'est donc pas touché).
   avertissements eslint des fichiers touchés sont antérieurs (aucun dans
   les lignes modifiées, vérifié).
 
+## Lot 3b — une action ne change pas de vue
+
+Branche `feat/atelier-actions-sans-bascule`, worktree `../ubumaths-wt-actions`.
+Lot 3a mergé (#798).
+
+- [x] Une action écrit sa ligne dans Calcul SANS y emmener (G7, A1/A2) ;
+      « Tracer », « Nuage », « Diagramme » gardent leur bascule (A5, Q2).
+- [x] Repère « • » sur l'onglet Calcul tant qu'un résultat n'a pas été vu
+      (A3), avec texte pour lecteur d'écran et annonce ; ce qu'on calcule
+      sous ses yeux dans Calcul ne compte pas comme nouveau.
+- [x] « Image d'un nombre » : n'est plus un bouton qui prépare `f(` dans
+      Calcul, mais un champ `f( x ) = …` dans la carte (A4) ; la ligne va
+      aussi dans Calcul ; ⚠️ ne passe pas par `submit`, qui VIDAIT le
+      brouillon de Calcul.
+- [x] L1 : dériver une seconde fois sélectionne la carte `f′` existante.
+- ⚠️ Écart avec A1, à signaler à David : « Tableau croisé » et **« Simuler »**
+  (et non « Comparer », qui calcule tout de suite) PRÉPARENT une commande à
+  compléter au clavier → elles emmènent toujours dans Calcul. A1 rangeait
+  `.simuler` parmi les actions sans bascule.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests d'abord
+      (8 rouges vus ; sélection prouvée par neutralisation) :
+  - a11y **bloquant** : champ « Image » sans bouton ni touche Entrée sur
+    tablette (clavier décimal iOS) → bouton « = », plus d'`inputmode`
+    décimal (x peut valoir −2 ou π), `enterkeyhint` ;
+  - résultat de l'image annoncé avec son contexte (« f(3) = 9 »,
+    `role="status"`), plus d'annonce doublée ; effacé quand x change ou
+    quand l'atelier change (`revision`, qui couvre aussi `f′`) ; erreur dite
+    en toutes lettres (« Erreur : … »), pas seulement en couleur ;
+  - repère de l'onglet : un NOMBRE en pastille inversée (le point orange
+    faisait 2,2:1 en thème clair) ;
+  - A5 : « Nuage » n'écrit plus de ligne… sauf pour dire les valeurs
+    ignorées (§4 L1 de la v1) — compromis ;
+  - L1 : la carte `f′` n'est sélectionnée que si elle est valide (f = |x|) ;
+  - code mort retiré (branche `image` de `runFromPanel`).
+- 3 anciens tests mis en accord avec A4/A5 (ils assertaient : « Image »
+  prépare `f(`, le nuage écrit une ligne) — ce qu'ils protégeaient encore est
+  gardé (bonnes ordonnées, brouillon intact).
+- Suites : 346 navigateur, 1 171 serveur ; `check:incremental` 0 ; eslint :
+  0 sur les fichiers touchés.
+- Tests : 10 navigateur (8 rouges avant, 2 garde-fous) ; un ancien test
+  (« Image prépare la saisie ») remplacé — il assertait le comportement que
+  A4 supprime. Suites : 338 navigateur, 1 171 serveur ; `check:incremental` 0.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.

@@ -75,13 +75,16 @@ describe('nuage de points', () => {
 		expect(graph.functions.filter(isScatter).length).toBe(1);
 	});
 
-	it('prend la liste suivante comme ordonnées, et le dit', () => {
+	// A5 (phase 0 `/grapheur`, Q2) : le nuage se VOIT, il n'écrit plus de ligne
+	// quand il n'a rien à ajouter — la partenaire se lit sur la carte (Q46)
+	it('prend la liste suivante comme ordonnées, sans ligne dans Calcul', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3', M: '2 ; 4 ; 6' });
 		const graph = new GrapheurStore(null);
 
 		d.runFromPanel('scatter', 'L', graph);
 
-		expect(d.entries[0].text).toContain('M');
+		expect(graph.functions.find(isScatter)?.ys).toEqual([2, 4, 6]);
+		expect(d.entries).toHaveLength(0);
 	});
 
 	// §4 L1 : seules les paires complètes, et on le dit
@@ -161,7 +164,6 @@ describe('l’élève choisit sa partenaire', () => {
 
 		const nuage = graph.functions.find(isScatter)!;
 		expect(nuage.ys).toEqual([3, 6]);
-		expect(d.entries[0].text).toContain('N');
 	});
 
 	it('ajuste avec celle qu’il a cliquée', () => {

@@ -189,11 +189,9 @@ describe('les actions du panneau répondent vraiment', () => {
 		expect(view.container.querySelector('.historique')?.textContent).toMatch(/Médiane/);
 	});
 
-	it('« Image d’un nombre » prépare la saisie', async () => {
-		const { field } = await clickAction('Image');
-
-		expect(field.value).toBe('f(');
-	});
+	// « Image d'un nombre » ne prépare plus la saisie de Calcul : c'est un champ
+	// de la carte (phase 0 `/grapheur` §3 A4), testé dans
+	// `actions-sans-bascule.svelte.test.ts`.
 });
 
 describe('les commandes se découvrent', () => {
