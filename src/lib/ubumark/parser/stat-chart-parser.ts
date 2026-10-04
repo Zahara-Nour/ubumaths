@@ -1640,8 +1640,11 @@ function checkGeometric(
 		) {
 			return at(queriesLine, `probabilités : « ${text} » : bornes au plus 1 000`);
 		}
-		// P(X = 0), P(X ⩽ 0) : X prend ses valeurs à partir de 1
-		if (query.high < 1) {
+		// P(X = 0), P(X ⩽ 0) : la borne ÉCRITE est sous 1 (P(X = 2,5) vaut 0
+		// aussi, mais pour une autre raison : pas d'avertissement, revue)
+		const one = QUERY_ONE_SIDE.exec(text);
+		const writtenHigh = toNumber(one ? one[3] : (QUERY_TWO_SIDES.exec(text)?.[5] ?? '1'));
+		if (query.high < 1 && writtenHigh < 1) {
 			warnings.push({
 				message: `Ligne ${queriesLine} : probabilités : « ${text} » : ${name} prend ses valeurs à partir de 1`,
 				line: queriesLine
@@ -2429,8 +2432,13 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 	for (const key of ['probabilites', 'arrondi', 'diagramme', 'intervalle', 'seuil'] as const) {
 		if (errors.length === 0 && seenOptions.has(key) && lawBinomial === null && lawNamed === null) {
 			const line = optionLines[key] ?? 0;
+			// `probabilités:`, `arrondi:`, `diagramme:` : les trois lois nommées (manche 13)
+			const laws =
+				key === 'intervalle' || key === 'seuil'
+					? 'une loi binomiale (X ~ B(n ; p))'
+					: 'une loi binomiale, géométrique ou uniforme (X ~ B(n ; p), G(p) ou U(a ; b))';
 			errors.push({
-				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec une loi binomiale (X ~ B(n ; p))`,
+				message: `Ligne ${line} : ${OPTION_SPELLING[key] ?? key} : seulement avec ${laws}`,
 				line
 			});
 		}

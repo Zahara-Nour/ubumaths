@@ -65,7 +65,11 @@ import {
 	roundExact,
 	type BinomialDistribution
 } from '$lib/statistics/binomial';
-import { geometricMoments, geometricProbability } from '$lib/statistics/geometric';
+import {
+	geometricConditional,
+	geometricMoments,
+	geometricProbability
+} from '$lib/statistics/geometric';
 import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
 
 // ============================================================================
@@ -1634,8 +1638,10 @@ function queryLine(
 }
 
 /**
- * E, V, σ d'une loi nommée : en décimal exact quand p est écrit en décimal
- * et que la valeur tombe juste (comme la loi binomiale), sinon en fraction
+ * E, V, σ d'une loi nommée : p écrit en fraction → la fraction (formatLawIndicators) ;
+ * p écrit en décimal → le décimal exact s'il tombe juste (comme la loi
+ * binomiale), sinon la valeur approchée SEULE : pas de fraction géante
+ * (« 50000000000000/6172839450617 », revue)
  */
 function namedMomentLines(
 	law: LawData,
@@ -1650,10 +1656,15 @@ function namedMomentLines(
 				: indicator === 'variance'
 					? moments.variance
 					: null;
-		if (!decimal || value === null || !value.isDecimal()) {
+		if (!decimal || value === null) {
 			return formatLawIndicators(law.variable, moments, locale, [indicator])[0];
 		}
-		return `${indicator === 'esperance' ? 'E' : 'V'}(${law.variable}) = ${exactDecimal(value, locale)}`;
+		const name = indicator === 'esperance' ? 'E' : 'V';
+		if (!value.isDecimal()) {
+			// Toujours ≈ : formatApproxValue dirait « = 8,1 » pour 8,1000000000006
+			return `${name}(${law.variable}) ≈ ${formatStatNumber(Math.round(value.toNumber() * 100) / 100, locale)}`;
+		}
+		return `${name}(${law.variable}) = ${exactDecimal(value, locale)}`;
 	});
 }
 
@@ -1683,12 +1694,12 @@ function buildGeometricScene(spec: StatChartSpec, law: LawData, locale: ContentL
 	const title = text.title(law.variable, text.geometric(asWritten(geometric.p, locale)));
 	const exact = law.values.map((_, i) => geometricProbability(p, i + 1, i + 1));
 	const queries = geometric.queries.map((query) => {
-		const event = geometricProbability(p, query.low, query.high);
-		if (query.given === null) return queryLine(query.display, event, geometric.places, locale);
-		// P(A | X ⩾ given) = P(A) / P(X ⩾ given), A inclus dans X ⩾ given (a > b)
-		const given = geometricProbability(p, query.given, null);
-		const ratio = new Fraction(event.num, event.den).mul(new Fraction(given.den, given.num));
-		return queryLine(query.display, ratio, geometric.places, locale);
+		const exactValue =
+			query.given === null
+				? geometricProbability(p, query.low, query.high)
+				: // P(X ⩾ low | X ⩾ given) = q^(low − given) : la loi est sans mémoire
+					geometricConditional(p, query.low, query.given);
+		return queryLine(query.display, exactValue, geometric.places, locale);
 	});
 	const ellipsis: SceneCell = { text: '…', hidden: false, srText: null };
 	return {

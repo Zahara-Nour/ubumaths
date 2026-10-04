@@ -146,7 +146,14 @@ describe('X ~ G(p) — indicateurs', () => {
 	});
 
 	it('p sans décimal exact de 1/p : la fraction', () => {
-		expect(lawOf('X ~ G(0,3)').indicators).toEqual(['E(X) = 10/3 ≈ 3,33']);
+		expect(lawOf('X ~ G(3/10)').indicators).toEqual(['E(X) = 10/3 ≈ 3,33']);
+	});
+
+	it('p écrit en décimal, E ou V non décimal : la valeur approchée seule, pas de fraction géante', () => {
+		expect(lawOf('X ~ G(0,3)').indicators).toEqual(['E(X) ≈ 3,33']);
+		const huge = lawOf('X ~ G(0,12345678901234)\nindicateurs: espérance ; variance').indicators;
+		expect(huge[0]).toBe('E(X) ≈ 8,1');
+		expect(huge[1]).toMatch(/^V\(X\) ≈ \d+,\d+$/);
 	});
 });
 
@@ -173,6 +180,36 @@ describe('X ~ G(p) — `probabilités:`', () => {
 	it('une valeur approchée s’écrit avec ≈ ; k = 1 000 se calcule', () => {
 		const scene = lawOf(`X ~ G(1/3)\nprobabilités: P(X > 2) ; P(X ⩽ 1000)`);
 		expect(scene.indicators).toEqual(['E(X) = 3', 'P(X > 2) ≈ 0,444', 'P(X ⩽ 1000) ≈ 1,000']);
+	});
+
+	it('conditionnelle : P(X > a | X > b) avec des bornes décimales ou négatives', () => {
+		// P(X > 2,5) = P(X > 2) = 0,64 ; P(X > −1) = 1 (un bug P(X > a − b) donnerait 0,512)
+		expect(lawOf(`${G}\nprobabilités: P(X > 2,5 | X > -1)`).indicators[1]).toBe(
+			'P(X > 2,5 | X > -1) = 0,64'
+		);
+		expect(lawOf(`${G}\nprobabilités: P(X > 5,5 | X > 2,5)`).indicators[1]).toBe(
+			'P(X > 5,5 | X > 2,5) = 0,512'
+		);
+	});
+
+	it('P(X = 2,5) vaut 0, sans avertissement (la borne écrite est dans les valeurs)', () => {
+		const node = nodeOf(`${G}\nprobabilités: P(X = 2,5)`);
+		expect(node.warnings).toEqual([]);
+		expect(lawOf(`${G}\nprobabilités: P(X = 2,5)`).indicators[1]).toBe('P(X = 2,5) = 0');
+	});
+
+	it('P(X ⩽ 0) avertit aussi', () => {
+		expect(nodeOf(`${G}\nprobabilités: P(X ⩽ 0)`).warnings).toHaveLength(1);
+	});
+
+	it('rapide : p à 14 chiffres, 30 valeurs, bornes près de 1 000', () => {
+		const source =
+			"X ~ G(0,12345678901234)\njusqu'à: 30\nindicateurs: espérance ; variance ; écart type\n" +
+			'probabilités: P(X ⩽ 999) ; P(X > 998) ; P(990 ⩽ X ⩽ 1000) ; P(X > 1000 | X > 2)';
+		const start = performance.now();
+		lawOf(source);
+		lawOf(source, 'en');
+		expect(performance.now() - start).toBeLessThan(200);
 	});
 
 	it('P(X = 0) vaut 0, avec un avertissement', () => {
@@ -253,6 +290,12 @@ describe('X ~ G(p) — erreurs situées', () => {
 		expect(errorOf(`${G}\nprobabilités: P(X > 2 | X > 5)`)).toBe(form);
 		expect(errorOf(`${G}\nprobabilités: P(X ⩽ 2 | X > 1)`)).toBe(
 			'Ligne 2 : probabilités : « P(X ⩽ 2 | X > 1) » : écrire P(X > a | X > b) avec a > b'
+		);
+	});
+
+	it('G(1) : P(X > 3 | X > 1) n’existe pas', () => {
+		expect(errorOf('X ~ G(1)\nprobabilités: P(X > 3 | X > 1)')).toBe(
+			"Ligne 2 : probabilités : « P(X > 3 | X > 1) » : P(X > 1) = 0, la probabilité conditionnelle n'existe pas"
 		);
 	});
 

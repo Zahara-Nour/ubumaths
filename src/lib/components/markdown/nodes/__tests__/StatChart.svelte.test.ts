@@ -586,8 +586,15 @@ describe('StatChart — lois de maths complémentaires (manche 13)', () => {
 		expect(table.querySelector('caption')?.textContent).toBe('Loi de X : G(0,2)');
 		expect(table.textContent).toContain('…');
 		expect(screen.container.querySelectorAll('rect.stat-barre')).toHaveLength(4);
-		expect(screen.container.querySelector('.stat-mention')?.textContent).toBe(
-			'valeurs suivantes non représentées'
+		const note = screen.container.querySelector<HTMLElement>('.stat-mention')!;
+		expect(note.textContent).toBe('valeurs suivantes non représentées');
+		// Pas un <p> : `main p { font-size … !important }` (app.css) annulerait sa petite taille
+		expect(note.tagName).not.toBe('P');
+		const paragraph = document.createElement('p');
+		paragraph.textContent = 'x';
+		screen.container.append(paragraph);
+		expect(parseFloat(getComputedStyle(note).fontSize)).toBeLessThan(
+			parseFloat(getComputedStyle(paragraph).fontSize)
 		);
 	});
 

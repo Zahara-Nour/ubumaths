@@ -392,8 +392,9 @@
 				<!-- `diagramme: oui` : les bâtons de la loi -->
 				<StatChart scene={law.chart} />
 				{#if law.chartNote}
-					<!-- Loi géométrique : bâtons coupés au dernier k du tableau -->
-					<p class="stat-mention">{law.chartNote}</p>
+					<!-- Loi géométrique : bâtons coupés au dernier k du tableau. Un <div>,
+					     pas un <p> : `main p { font-size … !important }` annulerait la taille -->
+					<div class="stat-mention">{law.chartNote}</div>
 				{/if}
 			{/if}
 		{:else if crossTable}
