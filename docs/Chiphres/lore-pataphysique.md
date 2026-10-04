@@ -1107,16 +1107,18 @@ L'Almanach des Chiphres compte les années depuis la **première représentation
 
 **Année bissextile** :
 
-- **7 mois** de **52 jours numérotés** = 364 jours
-- **+ 1 jour hors-mois** : La Cloche du Grand Reset
-- **+ 1 jour intercalaire** : **_Le Surnuméraire_** à l'équinoxe de printemps (21 mars), inséré dans Auroral sans numéro — Auroral dure donc 53 jours
-- **Total : 366 jours** ✓ (l'ancienne formulation, « 7 mois = 365 jours + Cloche + Surnuméraire », comptait 367 jours ; corrigée le 2026-10-04)
+- **7 mois** de **52 jours** chacun = 364 jours (aucun mois n'est allongé)
+- **+ 1 jour hors-mois** : La Cloche du Grand Reset (22 août)
+- **+ 1 jour hors-mois** : **_Le Surnuméraire_**, entre Déglaçose et Auroral (18 mars), au seuil de l'équinoxe
+- **Total : 366 jours** ✓
+
+> **Correction du 2026-10-04** (décision de David) : l'ancienne formulation (« 7 mois = 365 jours + Cloche + Surnuméraire ») comptait 367 jours, et plaçait Le Surnuméraire au 21 mars _à l'intérieur_ d'Auroral. Le Surnuméraire est désormais un **jour hors-mois**, comme la Cloche : c'est la seule forme où il se lit vraiment comme un jour ajouté. Voir sa fiche plus bas.
 
 **Cohérence mathématique canonique** :
 
 - **7** est le nombre canonique de Chiphre (7 grades de l'OGP, 7 Eschelons de l'Échelle du Décervelage Syz'esme → Phinalle, 7 mois de l'Almanach)
 - **52** est canoniquement pataphysique : 52 = 4 × 13 (deux nombres ubuesques) ; 52 jours = 7 semaines + 3 jours par mois
-- **7 × 52 = 364**, soit une année **presque** régulière à laquelle on ajoute un seul jour de rupture (la Cloche)
+- **7 × 52 = 364**, soit une année **presque** régulière à laquelle on ajoute un seul jour de rupture (la Cloche) — et, les années bissextiles, un second jour hors-mois (Le Surnuméraire). Les mois ont **toujours** 52 jours.
 
 ### Les 7 mois de l'Almanach
 
@@ -1151,6 +1153,8 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 
 ### Les deux jours hors-mois
 
+Les deux jours hors-mois complètent les 7 × 52 = 364 jours numérotés : la Cloche chaque année (365), Le Surnuméraire en plus les années bissextiles (366).
+
 #### 🌟 La Cloche du Grand Reset — 22 août (annuel)
 
 > _« À minuit pile, la Cloche de Reset Centrale de Turingrad sonne sept fois — une fois pour chaque mois écoulé. À 00:01, l'An se renouvelle. »_
@@ -1169,47 +1173,39 @@ Les noms sont **inspirés de la méthode poétique de Fabre d'Églantine** (cale
 4. Compteurs annuels qui se vident visuellement
 5. Calendrier qui bascule à l'An [N+1] E.R.
 
-#### 🌟 Le Surnuméraire — 21 mars (quadriennal bissextile uniquement)
+#### 🌟 Le Surnuméraire — 18 mars, jour de l'équivalence des contraires (années bissextiles uniquement)
 
-> _« Le 21 mars des années bissextiles, la mécanique céleste impose au Royaume un jour supplémentaire. Le Père Ubu, ne pouvant en venir à bout par décret, le déclare Surnuméraire. »_
+> _« Tous les quatre ans, au sortir du dégel et à la porte de l'aurore, le Royaume reçoit un jour qui n'appartient ni à l'hiver ni au printemps, ni à Déglaçose ni à Auroral. Ce jour-là, la nuit et le jour se valent presque. Le Père Ubu voulut l'inscrire au registre des phynances pour le taxer. Ne pouvant le ranger dans aucun mois, ni en venir à bout par décret, il le déclara Surnuméraire. »_
 
-**Statut** : jour hors-mois quadriennal qui s'insère **dans le mois d'Auroral**, à l'équinoxe astronomique de printemps. Présent uniquement les années bissextiles (tous les 4 ans).
+**Statut** : jour **hors-mois** quadriennal, comme la Cloche du Grand Reset est un jour hors-mois annuel. Il se place **entre le 52 Déglaçose et le 1 Auroral** et ne porte pas de numéro. Présent uniquement les années bissextiles.
 
-**Fonction narrative** : le jour pataphysique de **bascule cosmique**, où l'équilibre parfait entre la nuit et le jour offre au Royaume un jour de plus. Le Père Ubu ne pouvant ignorer la mécanique céleste, il **assume ce jour comme « surnuméraire »** — c'est-à-dire en surnombre, en plus du compte attendu.
+**Pourquoi hors-mois, et pourquoi là** : le seul jour réellement ajouté par une année bissextile est le 29 février, qui tombe au milieu de Déglaçose. Le Surnuméraire occupe la **première frontière entre deux mois** qui suit ce jour : la fin de Déglaçose. Placé à l'intérieur d'un mois, il ressemblait à un trou dans la numérotation ; hors des mois, il se lit comme un jour en plus, à côté de la numérotation régulière.
 
-**Calcul d'occurrence** : les années bissextiles correspondent aux **années grégoriennes divisibles par 4** (sauf les années séculaires non divisibles par 400). Prochaines occurrences pataphysiques :
+**Fonction narrative — l'équivalence des contraires** 🟢 (concept canon Jarry, _Faustroll_ ; voir Section II) : au seuil de l'équinoxe, la nuit et le jour se valent presque. Ce jour n'est ni du dégel ni de l'aurore, ni de l'hiver ni du printemps : les contraires s'y équivalent. C'est la charnière entre le deuxième et le troisième trimestre de l'Almanach.
 
-- **21 mars 2028** (An 132 E.R.) — prochain Surnuméraire
-- **21 mars 2032** (An 136 E.R.)
-- **21 mars 2036** (An 140 E.R.)
-- **21 mars 2040** (An 144 E.R.)
+**Précaution juridique** : ni le nom (_Surnuméraire_, et non _hunyadi_), ni la place, ni l'histoire ne reprennent la codification du Collège de 'Pataphysique. Le principe d'un jour hors des mois est commun à de nombreux calendriers (jours complémentaires du calendrier républicain, libre de droit). On évite volontairement de le baptiser « Clinamen » : le calendrier du Collège a un mois de ce nom qui commence le 23 mars, tout près.
 
-**Effet sur l'année** : l'année bissextile contient 366 jours répartis comme suit :
+**Calcul d'occurrence** : années grégoriennes divisibles par 4, sauf les années séculaires non divisibles par 400. Prochaines occurrences :
 
-- Ambraire, Givraire, Glaglavose, Déglaçose : 52 jours chacun. Le 29 février tombe dans Déglaçose, qui se termine donc le **17 mars** (au lieu du 18).
-- **Auroral : 53 jours** (du **18 mars** au 9 mai) — 52 jours numérotés + Le Surnuméraire le 21 mars, hors numérotation.
-- Lumenal, Auguste : 52 jours, **dates grégoriennes inchangées** (10 mai → 30 juin, 1ᵉʳ juillet → 21 août).
-- La Cloche du Grand Reset : **22 août, comme chaque année** — le 1 Ambraire reste toujours le 23 août.
+- **18 mars 2028** (An 132 E.R.) — prochain Surnuméraire
+- **18 mars 2032** (An 136 E.R.)
+- **18 mars 2036** (An 140 E.R.)
+- **18 mars 2040** (An 144 E.R.)
 
-> **Correction du 2026-10-04** (décision de David) : la version précédente plaçait le 1 Auroral au 19 mars et la Cloche au 23 août en année bissextile. Elle comptait deux fois le jour en plus (le 29 février grégorien et Le Surnuméraire), ce qui donnait 367 jours et décalait d'un jour le 1 Ambraire de l'An suivant. Le Surnuméraire **est** le jour en plus de l'année bissextile ; il est simplement placé au 21 mars, à l'équinoxe. Vérification : du 23 août 2027 au 22 août 2028, 366 jours = 4 × 52 + 53 + 2 × 52 + 1.
+**Effet sur l'année** : tous les mois gardent 52 jours. Seuls les **18 derniers jours de Déglaçose** avancent d'un cran, parce que le 29 février s'y intercale :
 
-**Détail d'Auroral en année bissextile** (exemple : An 132 E.R., 2028) :
+| Date grégorienne | Année normale | Année bissextile                |
+| ---------------- | ------------- | ------------------------------- |
+| 28 février       | 34 Déglaçose  | 34 Déglaçose                    |
+| 29 février       | —             | 35 Déglaçose                    |
+| 1ᵉʳ mars         | 35 Déglaçose  | 36 Déglaçose                    |
+| 17 mars          | 51 Déglaçose  | 52 Déglaçose (dernier jour)     |
+| **18 mars**      | 52 Déglaçose  | **Le Surnuméraire** (hors-mois) |
+| 19 mars          | 1 Auroral     | 1 Auroral                       |
 
-| Date grégorienne | Jour pataphysique                          |
-| ---------------- | ------------------------------------------ |
-| 17 mars          | 52 Déglaçose (dernier jour)                |
-| 18 mars          | 1 Auroral                                  |
-| 19 mars          | 2 Auroral                                  |
-| 20 mars          | 3 Auroral                                  |
-| **21 mars**      | **Le Surnuméraire** (hors numérotation)    |
-| 22 mars          | 4 Auroral (même jour qu'une année normale) |
-| …                | …                                          |
-| 9 mai            | 52 Auroral                                 |
-| 10 mai           | 1 Lumenal                                  |
+À partir du 19 mars, **toutes les dates sont identiques** à une année normale : Auroral commence le 19 mars, Lumenal le 10 mai, Auguste le 1ᵉʳ juillet, la Cloche sonne le 22 août et l'An suivant commence le 23 août. Vérification : du 23 août 2027 au 22 août 2028, 7 × 52 + 2 = 366 jours.
 
-À partir du 22 mars, chaque date grégorienne porte le même jour pataphysique qu'une année normale : seuls les trois premiers jours d'Auroral (18-20 mars) diffèrent d'un cran.
-
-**Tradition Chiphre** : le jour du Surnuméraire est un **jour libre du Royaume**. Le Père Ubu décrète un **jour de pause pataphysique** : bonus de gidouilles, pas d'examens programmés, pas de défis officiels. Cinématique courte d'Ubu à 12h00 : _« Tudieu ! La mécanique céleste Nous offre un jour de plus. Profitez-en, Polonais, mais ne croyez pas que cela Nous arrive souvent. »_
+**Tradition Chiphre** : le Surnuméraire est un **jour libre du Royaume**, une **pause pataphysique** : bonus de gidouilles, pas d'examens programmés, pas de défis officiels. Le défi facultatif du jour est consacré aux **contraires qui se valent** : deux méthodes opposées qui mènent au même résultat, un calcul mené dans un sens puis dans l'autre. Cinématique courte d'Ubu à 12h00 : _« Tudieu ! Ce jour n'est ni d'hiver ni de printemps, et Nous ne pouvons le taxer. Profitez-en, Polonais, mais ne croyez pas que cela Nous arrive souvent. »_
 
 ### Les fêtes de l'Almanach
 
@@ -1231,14 +1227,14 @@ L'Almanach des Chiphres comporte **une fête transversale** (célébrée par tou
 
 Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢 (les personnages célébrés sont strictement canoniques chez Jarry). **Trois sont des inventions Chiphre** 🟡.
 
-| #   | Province                              | Fête                                | Date pataphysique | Date grégorienne | Statut         |
-| --- | ------------------------------------- | ----------------------------------- | ----------------- | ---------------- | -------------- |
-| 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Résurrection de Bosse-de-Nage**   | 14 Givraire       | 27 octobre       | 🟢 canon Jarry |
-| 2   | **Patatovie** _(Faustroll)_           | **Navigation du Dr Faustroll**      | 35 Givraire       | 17 novembre      | 🟢 canon Jarry |
-| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre      | 🟡 Chiphre     |
-| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars         | 🟡 Chiphre     |
-| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril          | 🟡 Chiphre     |
-| 6   | **Bedonstan** _(Achras)_              | **Fête des Polyèdres**              | 26 Auroral        | 13 avril         | 🟢 canon Jarry |
+| #   | Province                              | Fête                                | Date pataphysique | Date grégorienne                             | Statut         |
+| --- | ------------------------------------- | ----------------------------------- | ----------------- | -------------------------------------------- | -------------- |
+| 1   | **Glitchistan** _(Bosse-de-Nage)_     | **Résurrection de Bosse-de-Nage**   | 14 Givraire       | 27 octobre                                   | 🟢 canon Jarry |
+| 2   | **Patatovie** _(Faustroll)_           | **Navigation du Dr Faustroll**      | 35 Givraire       | 17 novembre                                  | 🟢 canon Jarry |
+| 3   | **Nombrilie** _(Mère Ubu)_            | **La Grande Empochaille**           | 18 Glaglavose     | 22 décembre                                  | 🟡 Chiphre     |
+| 4   | **Yoyolande** _(Bougrelas)_           | **La Restauration de Bougrelas**    | 35 Déglaçose      | 1ᵉʳ mars (29 février les années bissextiles) | 🟡 Chiphre     |
+| 5   | **Pifométrie** _(Cheval à Phynances)_ | **Le Jubilé du Cheval à Phynances** | 17 Auroral        | 4 avril                                      | 🟡 Chiphre     |
+| 6   | **Bedonstan** _(Achras)_              | **Fête des Polyèdres**              | 26 Auroral        | 13 avril                                     | 🟢 canon Jarry |
 
 ##### 🟢 Résurrection de Bosse-de-Nage — 14 Givraire (27 octobre)
 
@@ -1260,7 +1256,9 @@ Chaque province a sa fête annuelle. **Quatre sont des fêtes canon Jarry** 🟢
 
 **Tradition Chiphre** : Mère Ubu préside le **Décompte Royal annuel**. Tous les Galopins versent leurs gidouilles dans la grande fontaine de bronze d'Empoche-les-Bains. Une part est redistribuée aux meilleurs calculateurs. **Bonus de gidouilles** pour qui réussit le calcul mental le plus complexe sans calculatrice. **Carte récap partageable** offerte à tous les Galopins (bilan personnel de l'année).
 
-##### 🟡 La Restauration de Bougrelas — 35 Déglaçose (1ᵉʳ mars)
+##### 🟡 La Restauration de Bougrelas — 35 Déglaçose (1ᵉʳ mars ; 29 février les années bissextiles)
+
+**Règle de date** (décision de David, 2026-10-04) : la fête suit la date **pataphysique**, le 35 Déglaçose. Les années bissextiles, ce jour tombe le 29 février — un jour qui n'existe que tous les quatre ans, pour une fête de restauration.
 
 **Province** : Yoyolande.
 
@@ -1313,26 +1311,26 @@ En plus des sept fêtes provinciales, l'Almanach comporte **plusieurs événemen
 
 Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'année :
 
-| Date grégorienne           | Jour pataphysique   | Événement                                             |
-| -------------------------- | ------------------- | ----------------------------------------------------- |
-| 23 août                    | 1 Ambraire          | Début de l'An E.R.                                    |
-| 1ᵉʳ septembre              | 10 Ambraire         | Rentrée scolaire française réelle                     |
-| **8 septembre**            | **17 Ambraire**     | **Nativité d'Alfred Jarry** 🟢                        |
-| 14 octobre                 | 1 Givraire          | Début de Givraire                                     |
-| **27 octobre**             | **14 Givraire**     | **Résurrection de Bosse-de-Nage** 🟢                  |
-| **17 novembre**            | **35 Givraire**     | **Navigation du Dr Faustroll** 🟢                     |
-| 5 décembre                 | 1 Glaglavose        | Début de Glaglavose                                   |
-| **22 décembre**            | **18 Glaglavose**   | **La Grande Empochaille** 🟡                          |
-| 26 janvier                 | 1 Déglaçose         | Début de Déglaçose                                    |
-| **1ᵉʳ mars**               | **35 Déglaçose**    | **La Restauration de Bougrelas** 🟡                   |
-| 19 mars                    | 1 Auroral           | Début d'Auroral                                       |
-| **21 mars** _(bissextile)_ | **Le Surnuméraire** | **Jour intercalaire quadriennal**                     |
-| **1ᵉʳ avril**              | **14 Auroral**      | **La Phynanche Pataphysique** 🟡                      |
-| **4 avril**                | **17 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                |
-| **13 avril**               | **26 Auroral**      | **Fête des Polyèdres** 🟢                             |
-| 10 mai                     | 1 Lumenal           | Début de Lumenal — début de la Mobilisation Royale 🟡 |
-| 1ᵉʳ juillet                | 1 Auguste           | Début d'Auguste — début du Décervelage Suprême 🟡     |
-| 22 août                    | —                   | **La Cloche du Grand Reset** 🟡                       |
+| Date grégorienne                    | Jour pataphysique   | Événement                                                   |
+| ----------------------------------- | ------------------- | ----------------------------------------------------------- |
+| 23 août                             | 1 Ambraire          | Début de l'An E.R.                                          |
+| 1ᵉʳ septembre                       | 10 Ambraire         | Rentrée scolaire française réelle                           |
+| **8 septembre**                     | **17 Ambraire**     | **Nativité d'Alfred Jarry** 🟢                              |
+| 14 octobre                          | 1 Givraire          | Début de Givraire                                           |
+| **27 octobre**                      | **14 Givraire**     | **Résurrection de Bosse-de-Nage** 🟢                        |
+| **17 novembre**                     | **35 Givraire**     | **Navigation du Dr Faustroll** 🟢                           |
+| 5 décembre                          | 1 Glaglavose        | Début de Glaglavose                                         |
+| **22 décembre**                     | **18 Glaglavose**   | **La Grande Empochaille** 🟡                                |
+| 26 janvier                          | 1 Déglaçose         | Début de Déglaçose                                          |
+| **1ᵉʳ mars** _(29 fév. bissextile)_ | **35 Déglaçose**    | **La Restauration de Bougrelas** 🟡                         |
+| 19 mars                             | 1 Auroral           | Début d'Auroral                                             |
+| **18 mars** _(bissextile)_          | **Le Surnuméraire** | **Jour hors-mois quadriennal** (équivalence des contraires) |
+| **1ᵉʳ avril**                       | **14 Auroral**      | **La Phynanche Pataphysique** 🟡                            |
+| **4 avril**                         | **17 Auroral**      | **Le Jubilé du Cheval à Phynances** 🟡                      |
+| **13 avril**                        | **26 Auroral**      | **Fête des Polyèdres** 🟢                                   |
+| 10 mai                              | 1 Lumenal           | Début de Lumenal — début de la Mobilisation Royale 🟡       |
+| 1ᵉʳ juillet                         | 1 Auguste           | Début d'Auguste — début du Décervelage Suprême 🟡           |
+| 22 août                             | —                   | **La Cloche du Grand Reset** 🟡                             |
 
 ### Vocabulaire de l'Almanach
 
@@ -1343,7 +1341,7 @@ Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'ann�
 | **An [N] E.R.**              | Une année du Royaume (ex : « An 130 E.R. »)       |
 | **[Numéro] [Mois]**          | Une date pataphysique (ex : « 13 Lumenal »)       |
 | **La Cloche du Grand Reset** | Le jour hors-mois annuel du 22 août               |
-| **Le Surnuméraire**          | Le jour intercalaire quadriennal du 21 mars       |
+| **Le Surnuméraire**          | Le jour hors-mois quadriennal du 18 mars          |
 
 ### Implémentation technique
 
@@ -1366,7 +1364,9 @@ function toPataphysical(gregorianDate) {
 	if (isCloche(gregorianDate)) return `La Cloche du Grand Reset, An ${an} E.R.`;
 	if (isSurnumeraire(gregorianDate)) return `Le Surnuméraire, An ${an} E.R.`;
 
-	// Mois et jour
+	// Mois et jour. Les années bissextiles, Le Surnuméraire (18 mars) occupe le
+	// rang 208 : les jours suivants sont décalés d'un rang (dayInYear - 1).
+	// La Cloche est le dernier rang de l'An (364 ou 365).
 	const monthIndex = Math.floor(dayInYear / 52);
 	const dayInMonth = (dayInYear % 52) + 1;
 	return `${dayInMonth} ${MONTHS[monthIndex]} An ${an} E.R.`;
