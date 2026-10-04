@@ -95,6 +95,7 @@ on:
       - 'src/routes/api/games/minesweeper/multiplayer/queue/*server.ts'
       - 'src/routes/api/marketplace/listings/*/proposals/*server.ts'
       - 'src/routes/api/marketplace/proposals/*/*server.ts'
+      - 'src/routes/api/marketplace/trades/*/confirm/*server.ts'
       - 'src/routes/api/vip-cards/choose/*server.ts'
       - 'src/routes/api/vip-cards/exchange/*server.ts'
       - 'src/routes/api/skill-attempts/*server.ts'

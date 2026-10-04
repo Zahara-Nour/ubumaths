@@ -60,8 +60,14 @@ describe('RPC lot 4 : hygiène', () => {
 	let annonces: string[] = [];
 	/** Saison du démineur : le mois courant (convention des RPC multijoueur). */
 	const SAISON = new Date().toISOString().slice(0, 7);
+	/**
+	 * Paquets RÉELS : depuis 20261004230000, get_deck_stats exige aussi un paquet
+	 * lisible par l'appelant (testé dans srs-stats-echanges-delai.test.ts).
+	 */
+	let paquetA: string;
+	let paquetProf: string;
 	/** Identifiants quelconques : la garde refuse AVANT toute lecture. */
-	const DECK = '00000000-0000-4000-8000-0000000000d1';
+	const CONVERSATION = '00000000-0000-4000-8000-0000000000d1';
 	const ANNONCE = '00000000-0000-4000-8000-0000000000a1';
 	const TOURNOI = '00000000-0000-4000-8000-0000000000e1';
 	const DATE_EXPORT = '2099-01-01';
@@ -82,6 +88,17 @@ describe('RPC lot 4 : hygiène', () => {
 		expect(ecoleError).toBeNull();
 		ecoleId = (ecole as { id: string }).id;
 		classeId = (await TestData.class().withName('Classe RPC lot 4').create()).id;
+		const paquet = async (ownerId: string) => {
+			const { data: d, error: e } = await service
+				.from('srs_decks')
+				.insert({ owner_id: ownerId, name: 'Paquet RPC lot 4', deck_type: 'personal' })
+				.select('id')
+				.single();
+			expect(e).toBeNull();
+			return (d as { id: string }).id;
+		};
+		paquetA = await paquet(aId);
+		paquetProf = await paquet(p.id);
 
 		// La tâche réparée réécrit sample_count/updated_at : on restaure après.
 		const { data, error } = await service.from('minesweeper_reference_times').select('*');
@@ -106,6 +123,7 @@ describe('RPC lot 4 : hygiène', () => {
 		await service.from('whiteboard_export_counters').delete().eq('class_id', classeId);
 		await service.from('python_notebooks').delete().eq('author_id', aId);
 		await service.from('python_files').delete().eq('owner_id', aId);
+		await service.from('srs_decks').delete().in('id', [paquetA, paquetProf]);
 		if (referencesDemineur.length > 0) {
 			await service.from('minesweeper_reference_times').upsert(referencesDemineur as never);
 		}
@@ -121,7 +139,7 @@ describe('RPC lot 4 : hygiène', () => {
 	const surCompte = (id: string): [string, Record<string, unknown>][] => [
 		['get_private_messages_unread_count', { p_user_id: id }],
 		['get_user_status', { user_id: id }],
-		['get_deck_stats', { p_user_id: id, p_deck_id: DECK }],
+		['get_deck_stats', { p_user_id: id, p_deck_id: paquetA }],
 		['count_user_notebooks', { p_user_id: id }],
 		['count_user_python_files', { p_user_id: id }],
 		['get_2048_user_rank', { p_user_id: id }],
@@ -153,7 +171,7 @@ describe('RPC lot 4 : hygiène', () => {
 
 	it('témoin : le prof garde ses écrans (stats d’un élève, rang, statut)', async () => {
 		for (const [nom, args] of [
-			['get_deck_stats', { p_user_id: bId, p_deck_id: DECK }],
+			['get_deck_stats', { p_user_id: bId, p_deck_id: paquetProf }],
 			['get_user_status', { user_id: bId }],
 			['count_user_notebooks', { p_user_id: bId }],
 			['get_2048_user_rank', { p_user_id: bId }]
@@ -235,7 +253,7 @@ describe('RPC lot 4 : hygiène', () => {
 	// ===========================================================================
 
 	const sansAppelant = (id: string): [string, Record<string, unknown>][] => [
-		['get_unread_count', { p_conversation_id: DECK, p_user_id: id }],
+		['get_unread_count', { p_conversation_id: CONVERSATION, p_user_id: id }],
 		['is_user_restricted', { p_user_id: id, p_conversation_id: null }],
 		['get_mathemo_user_rank', { p_user_id: id }],
 		['ensure_player_stats_exist', { p_student_id: id }]
