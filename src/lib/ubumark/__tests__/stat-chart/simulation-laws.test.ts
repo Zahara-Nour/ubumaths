@@ -391,3 +391,81 @@ describe('simulation des lois nommées — Typst', () => {
 		expect(e).toContain('observed mean');
 	});
 });
+
+// =============================================================================
+// Revue (2026-10-04)
+// =============================================================================
+
+describe('revue — U(a ; b) : le plafond de 30 valeurs est celui du TABLEAU', () => {
+	it('mode moyenne : U(1 ; 100) accepté, E(X) = 50,5', () => {
+		const scene = sceneOf<MeanScene>('X ~ U(1 ; 100)\nmode: moyenne\ntirages: 500');
+		expect(scene.reference.value).toBe(50.5);
+	});
+
+	it('mode échantillons : U(1 ; 100) accepté', () => {
+		const scene = sceneOf<HistogramScene>(
+			'X ~ U(1 ; 100)\nmode: échantillons\néchantillons: 50\ntaille: 20'
+		);
+		expect(scene.rects.reduce((sum, r) => sum + r.height, 0)).toBe(50);
+	});
+
+	it('mode tirages : toujours refusé ; au-delà de 1 000 valeurs, refusé partout', () => {
+		expect(errorOf('X ~ U(1 ; 100)')).toBe('Ligne 1 : U(a ; b) : au plus 30 valeurs à tirer');
+		expect(errorOf('X ~ U(1 ; 1001)\nmode: moyenne')).toBe(
+			'Ligne 1 : U(a ; b) : au plus 1 000 valeurs'
+		);
+	});
+});
+
+describe('revue — nombres minuscules : 3 chiffres significatifs, jamais « 0 » ni « 1e-7 »', () => {
+	it('E(1 000) : la moyenne observée n’est pas « ≈ 0 »', () => {
+		const scene = sceneOf<HistogramScene>('X ~ E(1000)\ntirages: 1000\ngraine: 4');
+		const draws = drawsOf(exponentialSampler(Fraction.parse('1000')!), 1000, 4);
+		const mean = draws.reduce((a, b) => a + b, 0) / 1000;
+		const shown = /≈ (\S+) \(/.exec(scene.indicators[0])![1];
+		expect(shown).toMatch(/^0,00[1-9]\d{0,2}$|^0,000[1-9]\d{0,2}$/);
+		expect(Math.abs(Number(shown.replace(',', '.')) - mean) / mean).toBeLessThan(0.005);
+		expect(scene.indicators[0]).toContain('E(X) = 0,001');
+	});
+
+	it('E(0,001) : la description lit des hauteurs non nulles, sans notation 1e-x', () => {
+		const scene = sceneOf<HistogramScene>('X ~ E(0,001)\ntirages: 1000\ngraine: 4');
+		expect(scene.description).not.toMatch(/\de-?\d|\d e/);
+		const listed = scene.description.slice(scene.description.lastIndexOf(':') + 1);
+		const heights = [...listed.matchAll(/[[\]] (0(?:,\d+)?)(?:,|\.)/g)].map((m) => m[1]);
+		expect(heights).toHaveLength(10);
+		scene.rects.forEach((rect, i) => {
+			if (rect.height > 0) {
+				expect(heights[i]).not.toBe('0');
+				const read = Number(heights[i].replace(',', '.'));
+				expect(Math.abs(read - rect.height) / rect.height).toBeLessThan(0.005);
+			}
+		});
+	});
+
+	it('bornes de classes arrondies : U([0 ; 1]), classes: 3', () => {
+		expect(sceneOf<HistogramScene>('X ~ U([0 ; 1])\nclasses: 3').rects.map((r) => r.label)).toEqual(
+			['[0 ; 0,333[', '[0,333 ; 0,667[', '[0,667 ; 1]']
+		);
+		expect(
+			sceneOf<HistogramScene>('X ~ U([0 ; 1])\nclasses: 3', 'en').rects.map((r) => r.label)
+		).toEqual(['[0 ; 0.333[', '[0.333 ; 0.667[', '[0.667 ; 1]']);
+	});
+
+	it('bornes minuscules : U([0 ; 0,000001]) — 0,0000001, pas 1e-7', () => {
+		const labels = sceneOf<HistogramScene>('X ~ U([0 ; 0,000001])').rects.map((r) => r.label);
+		expect(labels[0]).toBe('[0 ; 0,0000001[');
+		expect(labels.join(' ')).not.toMatch(/e/);
+	});
+});
+
+describe('revue — G(p) minuscule : pas de blocage, tout dans « 11 ou plus »', () => {
+	// 10^-14 : le plus petit p que lit `Fraction.parse` (15 chiffres ; 10^-15 est refusé)
+	it('G(0,00000000000001) : 100 tirages au-delà de 10, probabilité ≈ 1', () => {
+		const rows = sceneOf<SimulationScene>('X ~ G(0,00000000000001)\ntirages: 100').rows;
+		expect(rows[10].value).toBe('11 ou plus');
+		expect(rows.map((r) => number(r.count))).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]);
+		expect(rows[10].probability).toMatch(/^1(,0+)?$/);
+		expect(rows[0].probability).toMatch(/^0(,0+)?$/);
+	});
+});

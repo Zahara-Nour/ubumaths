@@ -2001,11 +2001,16 @@ function checkSimulatedNamedLaw(
 		};
 	}
 	if (named.family === 'uniform') {
+		// Le tableau du mode `tirages` : une ligne par valeur, 30 au plus ; les
+		// modes moyenne et échantillons gardent le plafond du bloc ```loi (revue)
 		const max = STAT_CHART_LIMITS.binomialTableValues;
-		const checked = checkUniform(named, options, optionLines, {
-			count: max,
-			message: `U(a ; b) : au plus ${max} valeurs à tirer`
-		});
+		const checked =
+			options.simulationMode === 'tirages'
+				? checkUniform(named, options, optionLines, {
+						count: max,
+						message: `U(a ; b) : au plus ${max} valeurs à tirer`
+					})
+				: checkUniform(named, options, optionLines);
 		if ('error' in checked) return checked;
 		const { a, b } = checked.law.uniform!;
 		return {

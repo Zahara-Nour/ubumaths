@@ -2397,6 +2397,22 @@ function thousandth(value: number, locale: ContentLocale): string {
 	return formatStatNumber(Math.round(value * 1000) / 1000, locale);
 }
 
+/**
+ * Un réel affiché (tirages d'une loi à densité) : au millième, sauf sous
+ * 0,01 en valeur absolue — 3 chiffres significatifs, en écriture décimale.
+ * E(1 000) ou E(0,001) donnaient « ≈ 0 », U([0 ; 1]) en 3 classes
+ * « 0,333333333333 », une borne minuscule « 1e-7 » (revue).
+ */
+function shownReal(value: number, locale: ContentLocale): string {
+	const size = Math.abs(value);
+	if (size === 0 || size >= 0.01) return thousandth(value, locale);
+	const places = Math.min(100, 2 - Math.floor(Math.log10(size)));
+	// `toFixed` n'écrit jamais d'exposant sous 10^21 ; zéros de queue retirés
+	const text = size.toFixed(places).replace(/0+$/, '');
+	const decimal = locale === 'en' ? text : text.replace('.', ',');
+	return value < 0 ? `−${decimal}` : decimal;
+}
+
 /** Ligne écrite sous la figure : la graine qui refait les mêmes tirages */
 function seedLine(seed: number, locale: ContentLocale): string {
 	return locale === 'en' ? `seed ${seed}` : `graine ${seed}`;
@@ -2624,12 +2640,12 @@ function buildDensityDrawsScene(
 		const [lower, upper] = [bound(i), bound(i + 1)];
 		const last = i === classes - 1;
 		const closing = !last
-			? `${formatTick(upper, locale)}[`
+			? `${shownReal(upper, locale)}[`
 			: uniform
-				? `${formatTick(upper, locale)}]`
+				? `${shownReal(upper, locale)}]`
 				: '+∞[';
 		return {
-			label: `[${formatTick(lower, locale)} ; ${closing}`,
+			label: `[${shownReal(lower, locale)} ; ${closing}`,
 			lower,
 			upper,
 			// Hauteur = fréquence / amplitude : l'aire du rectangle est la fréquence
@@ -2653,14 +2669,14 @@ function buildDensityDrawsScene(
 		accessibleTitle: text.simulation.histogram,
 		description: text.simulation.histogramDescription(
 			groupedCount(n, locale),
-			rects.map((r) => `${r.label} ${thousandth(r.height, locale)}`).join(', ')
+			rects.map((r) => `${r.label} ${shownReal(r.height, locale)}`).join(', ')
 		),
 		pixelSize: curve.pixelSize,
 		indicators: [
 			text.simulation.summary(
 				groupedCount(n, locale),
 				n > 1,
-				thousandth(mean, locale),
+				shownReal(mean, locale),
 				simulation.variable,
 				fractionText(sampler.law.expectation, locale)
 			),
@@ -2705,11 +2721,13 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 	};
 	if (simulation.mode !== 'tirages') {
 		// Lois nommées (manche 14) : tirées par inversion ; les autres, par leurs probabilités
-		const discrete = named === null ? discreteSampler(law.values, law.probabilities) : null;
-		if (discrete !== null && !discrete.ok) {
-			throw new Error(`Simulation impossible : ${discrete.message}`);
+		let sampler: LawSampler;
+		if (named !== null) sampler = namedSampler(named);
+		else {
+			const discrete = discreteSampler(law.values, law.probabilities);
+			if (!discrete.ok) throw new Error(`Simulation impossible : ${discrete.message}`);
+			sampler = discrete.value;
 		}
-		const sampler = discrete === null ? namedSampler(named!) : discrete.value;
 		return simulation.mode === 'moyenne'
 			? buildSimulatedMeanScene(spec, simulation, sampler, locale)
 			: buildSimulatedSamplesScene(spec, simulation, sampler, locale);
