@@ -172,7 +172,6 @@
 					style:--m-1={palette.halo1}
 					style:--m-2={palette.halo2}
 					style:--m-3={palette.halo3}
-					style:--m-stroke={palette.stroke}
 				>
 					<span class="month-band" aria-hidden="true"></span>
 					<div class="flex items-baseline justify-between gap-2">
@@ -191,14 +190,8 @@
 					>
 					<span class="italic">{MONTH_PALETTES[monthIndex].ambiance}</span>
 					<span class="text-sm text-muted-foreground">{ETYMOLOGIES[monthIndex]}</span>
-					<span class="flex items-center gap-1.5" aria-hidden="true">
-						<span class="swatch" style:background="var(--m-1)"></span>
-						<span class="swatch" style:background="var(--m-2)"></span>
-						<span class="swatch" style:background="var(--m-3)"></span>
-						<span class="swatch swatch-stroke" style:background="var(--m-stroke)"></span>
-					</span>
 					{#each feastsOf(monthIndex) as feast (feast.id)}
-						<span class="text-sm">
+						<span class="text-sm" data-testid="month-feast">
 							<span class="tabular-nums">{feast.day} {MONTH_NAMES[monthIndex]}</span> : {feast.name}
 						</span>
 					{/each}
@@ -269,9 +262,9 @@
 					Les années bissextiles, le 29 février se glisse au milieu de Déglaçose, dont il devient le
 					trente-cinquième jour. Pour que chaque mois garde ses cinquante-deux jours, le jour en
 					trop est rangé à la première frontière qui suit : entre le 52 Déglaçose et le 1 Auroral,
-					le 18 mars. Ni dégel ni aurore, ni hiver ni printemps : les contraires s’y valent, comme
-					le voulait le docteur Faustroll. On n’y programme ni examen ni défi officiel ; le défi
-					facultatif propose deux méthodes opposées qui mènent au même résultat.
+					le 18 mars. Ni dégel ni aurore, ni hiver ni printemps : les contraires s’y valent. On n’y
+					programme ni examen ni défi officiel ; le défi facultatif propose deux méthodes opposées
+					qui mènent au même résultat.
 				</p>
 				<p class="text-sm text-muted-foreground" data-testid="almanach-next-surnumeraire">
 					{#if nextSurnumeraire.isToday}
@@ -420,17 +413,6 @@
 	.next-badge {
 		background: var(--color-primary);
 		color: var(--color-primary-foreground);
-	}
-	.swatch {
-		display: inline-block;
-		width: 1.1rem;
-		height: 1.1rem;
-		border-radius: 9999px;
-		border: 1px solid var(--color-border);
-	}
-	.swatch-stroke {
-		outline: 2px solid #080808;
-		outline-offset: -4px;
 	}
 
 	.hors-mois {

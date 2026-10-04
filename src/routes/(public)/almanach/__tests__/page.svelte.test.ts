@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from '../+page.svelte';
 import {
+	FEASTS,
 	civilToPataphysical,
 	formatMedium,
 	formatShort,
@@ -142,11 +143,60 @@ describe('/almanach', () => {
 		);
 		expect(row?.textContent).toContain('aujourd’hui');
 		expect(row?.textContent).not.toContain('prochaine');
-		// La suivante reste « prochaine »
-		const polyedres = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
-			tr.textContent?.includes('Polyèdres')
+		// La suivante, première de l'An suivant, reste « prochaine »
+		const empochaille = [...screen.container.querySelectorAll('tbody tr')].find((tr) =>
+			tr.textContent?.includes('Grande Empochaille')
 		);
-		expect(polyedres?.textContent).toContain('prochaine');
+		expect(empochaille?.textContent).toContain('prochaine');
+	});
+
+	it('la table des fêtes ne reprend aucune fête du Collège de ’Pataphysique', async () => {
+		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
+		const rows = [...screen.container.querySelectorAll('tbody tr')].map(
+			(tr) => tr.textContent ?? ''
+		);
+		expect(rows).toHaveLength(FEASTS.length);
+		const text = screen.container.textContent ?? '';
+		for (const name of ['Nativité', 'Bosse-de-Nage', 'Faustroll', 'Polyèdres']) {
+			expect(text).not.toContain(name);
+		}
+	});
+
+	it('un mois sans fête garde une carte propre (Ambraire, Givraire)', async () => {
+		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
+		for (const [index, name] of [
+			[0, 'Ambraire'],
+			[1, 'Givraire']
+		] as const) {
+			const card = screen.container.querySelector<HTMLElement>(`[data-month="${index}"]`);
+			if (!card) throw new Error(`carte ${name} introuvable`);
+			expect(card.querySelectorAll('[data-testid="month-feast"]')).toHaveLength(0);
+			const text = card.textContent ?? '';
+			expect(text).toContain(name);
+			expect(text).not.toMatch(/undefined|null|NaN/);
+			// Aucun élément vide laissé à la place de la fête
+			const empty = [...card.querySelectorAll('span, div')].filter(
+				(el) => !el.classList.contains('month-band') && (el.textContent ?? '').trim() === ''
+			);
+			expect(empty).toEqual([]);
+		}
+		// Contrôle : un mois avec fête l'affiche bien
+		const glaglavose = screen.container.querySelector('[data-month="2"]');
+		expect(glaglavose?.querySelectorAll('[data-testid="month-feast"]')).toHaveLength(1);
+		expect(glaglavose?.textContent).toContain('18 Glaglavose : La Grande Empochaille');
+	});
+
+	it('les cartes des mois n’ont plus de pastilles de couleur', async () => {
+		const screen = await renderWith(civilToPataphysical(2026, 5, 22), '2026-05-22');
+		const cards = screen.container.querySelectorAll('.month-card');
+		expect(cards).toHaveLength(7);
+		expect(screen.container.querySelectorAll('.swatch, .swatch-stroke')).toHaveLength(0);
+		for (const card of cards) {
+			// Seul décor coloré restant : le bandeau
+			const decor = card.querySelectorAll('[aria-hidden="true"]');
+			expect(decor).toHaveLength(1);
+			expect(decor[0].classList.contains('month-band')).toBe(true);
+		}
 	});
 
 	it('le jour du Surnuméraire, il est annoncé « aujourd’hui »', async () => {
