@@ -6,6 +6,7 @@
  *   - 1ʳᵉ spé → `20260830090000_seed_curriculum_1re_spe.sql`
  *   - 2de     → `20260903090000_seed_curriculum_2de.sql`
  *   - Tˡᵉ spé → `20261004100000_seed_curriculum_terminale_spe.sql`
+ *   - Tˡᵉ maths complémentaires → `20261004150000_seed_curriculum_terminale_comp.sql`
  *     (tous générés par `scripts/generate-curriculum-seed.ts`)
  *
  * Ces tests ne re-valident pas le contenu pédagogique (c'est la relecture du
@@ -322,6 +323,109 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 		);
 
 		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TSPE-%');
+		expect(data ?? []).toHaveLength(0);
+	});
+});
+
+describe('Seed du programme — terminale maths complémentaires', () => {
+	it('pose 3 thèmes, 10 objectifs et 139 points', async () => {
+		const { themes, objectives, points } = await pointsOfGrade('T_COMP');
+		expect(themes).toHaveLength(3);
+		expect(objectives).toHaveLength(10);
+		expect(points).toHaveLength(139);
+	});
+
+	it('reproduit la typologie du BO', async () => {
+		const { points } = await pointsOfGrade('T_COMP');
+		const by = (k: string) => points.filter((p) => p.kind === k).length;
+		expect(by('connaissance')).toBe(57); // Contenus
+		expect(by('savoir_faire')).toBe(68); // Capacités attendues + exemples d'algorithme
+		expect(by('demonstration')).toBe(14); // Démonstrations possibles
+	});
+
+	// Le BO ne propose que des démonstrations « possibles » : les proposer n'est
+	// pas les exiger (décision de David, 2026-10-04). Aucune n'est donc attendue.
+	it('range toutes les démonstrations en approfondissement', async () => {
+		const { points } = await pointsOfGrade('T_COMP');
+		const demonstrations = points.filter((p) => p.kind === 'demonstration');
+		expect(demonstrations).toHaveLength(14);
+		expect(demonstrations.every((p) => p.exigence === 'approfondissement')).toBe(true);
+		expect(points.filter((p) => p.exigence === 'approfondissement')).toHaveLength(26);
+	});
+
+	// Bâti sur la partie « Contenus » (Q149) ; « Algorithmique et programmation »
+	// ne porte aucune capacité propre et ne donne pas de thème.
+	it('suit les thèmes de la partie « Contenus » du BO', async () => {
+		const { themes } = await pointsOfGrade('T_COMP');
+		expect(themes.map((t) => t.name).sort()).toEqual(
+			['Analyse', 'Probabilités et statistique', 'Vocabulaire ensembliste et logique'].sort()
+		);
+	});
+
+	it('donne des codes TCOMP-001 à TCOMP-139, uniques et contigus', async () => {
+		const { points } = await pointsOfGrade('T_COMP');
+		const codes = points.map((p) => p.code);
+		expect(codes.every((c) => /^TCOMP-\d{3}$/.test(c!))).toBe(true);
+		const numbers = codes.map((c) => Number(c!.slice(6))).sort((a, b) => a - b);
+		expect(numbers).toEqual(Array.from({ length: 139 }, (_, i) => i + 1));
+	});
+
+	it('laisse au prof regime_acquisition et rang', async () => {
+		const { points } = await pointsOfGrade('T_COMP');
+		expect(points).toHaveLength(139);
+		expect(points.every((p) => p.regime_acquisition === 'diversite')).toBe(true);
+		expect(points.filter((p) => p.rang !== null)).toHaveLength(0);
+	});
+
+	it('sort sans rien faire si le niveau existe déjà', () => {
+		const seed = readFileSync(
+			new URL(
+				'../../supabase/migrations/20261004150000_seed_curriculum_terminale_comp.sql',
+				import.meta.url
+			),
+			'utf8'
+		);
+		expect(seed).toMatch(
+			/IF EXISTS \(SELECT 1 FROM public\.curriculum_themes WHERE grade = 'T_COMP'\) THEN/
+		);
+		expect(seed).not.toMatch(/on conflict/i);
+		expect(seed).not.toMatch(/^\s*update\s/im);
+	});
+});
+
+/** Accès (Q147) : même règle que la spécialité — connecté lit, anon ne lit rien. */
+describe('Seed du programme — terminale maths complémentaires, accès', () => {
+	afterAll(async () => {
+		await cleanupCompetenceTestData();
+	});
+
+	it('un élève connecté lit les 139 points', async () => {
+		const student = await TestData.profile().withRole('student').create();
+		const client = (await createAuthenticatedClient(
+			student.email
+		)) as unknown as SupabaseClient<Database>;
+
+		const { data, error } = await client
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TCOMP-%');
+		expect(error).toBeNull();
+		expect(data ?? []).toHaveLength(139);
+	});
+
+	it('un visiteur anonyme ne lit aucun point', async () => {
+		// Les 139 points existent bien : sans cela, « 0 ligne » ne prouverait rien.
+		const { points } = await pointsOfGrade('T_COMP');
+		expect(points).toHaveLength(139);
+
+		const anon = createClient<Database>(
+			process.env.SUPABASE_TEST_URL || 'http://localhost:54321',
+			process.env.SUPABASE_TEST_ANON_KEY ||
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+			{ auth: { persistSession: false, autoRefreshToken: false } }
+		);
+
+		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TCOMP-%');
 		expect(data ?? []).toHaveLength(0);
 	});
 });

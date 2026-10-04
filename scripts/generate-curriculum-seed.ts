@@ -13,6 +13,7 @@
  *   pnpm tsx scripts/generate-curriculum-seed.ts 1_SPE
  *   pnpm tsx scripts/generate-curriculum-seed.ts 2
  *   pnpm tsx scripts/generate-curriculum-seed.ts T_SPE
+ *   pnpm tsx scripts/generate-curriculum-seed.ts T_COMP
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -55,6 +56,15 @@ const NIVEAUX: Record<string, { md: string; out: string; prefixe: string; source
 			'classe terminale de la voie générale » (nouveau programme, PDF fourni par',
 			'David le 2026-10-03).'
 		]
+	},
+	T_COMP: {
+		md: 'docs/wip/referentiel/terminale-comp-programme.md',
+		out: 'supabase/migrations/20261004150000_seed_curriculum_terminale_comp.sql',
+		prefixe: 'TCOMP',
+		source: [
+			"« Programme d'enseignement optionnel de mathématiques complémentaires",
+			'de terminale générale » (PDF fourni par David le 2026-10-03).'
+		]
 	}
 };
 
@@ -85,7 +95,10 @@ const TAGS: Record<string, { kind: Kind; exigence: Point['exigence'] }> = {
 	C: { kind: 'connaissance', exigence: 'attendu' },
 	SF: { kind: 'savoir_faire', exigence: 'attendu' },
 	D: { kind: 'demonstration', exigence: 'attendu' },
-	'SF+': { kind: 'savoir_faire', exigence: 'approfondissement' }
+	'SF+': { kind: 'savoir_faire', exigence: 'approfondissement' },
+	// Démonstration que le BO dit « possible » (maths complémentaires) : la
+	// proposer n'est pas l'exiger.
+	'D+': { kind: 'demonstration', exigence: 'approfondissement' }
 };
 
 /** Le corps utile commence au premier thème et s'arrête au récapitulatif. */
@@ -131,7 +144,7 @@ function parse(md: string) {
 		}
 
 		// `- [SF] \`<CODE>\` libellé…` — le code, s'il est déjà là, fait foi.
-		const mPoint = /^- \[(C|SF\+|SF|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(line);
+		const mPoint = /^- \[(C|SF\+|SF|D\+|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(line);
 		if (mPoint) {
 			if (!theme || !objective) throw new Error(`point hors objectif : ${line}`);
 			const tag = TAGS[mPoint[1]];
@@ -198,14 +211,14 @@ function assignMissingCodes(markdown: string): string {
 	for (const pt of points) {
 		// On retrouve la ligne du point dans l'ordre du document.
 		while (cursor < lines.length) {
-			const m = /^- \[(C|SF\+|SF|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(lines[cursor]);
+			const m = /^- \[(C|SF\+|SF|D\+|D)\]\s+(?:`([A-Z0-9_]+-\d+)`\s+)?(.+)$/.exec(lines[cursor]);
 			if (m && m[3].trim() === pt.name) break;
 			cursor++;
 		}
 		if (cursor >= lines.length) throw new Error(`ligne introuvable pour : ${pt.name}`);
 		if (!pt.code) {
 			pt.code = `${NIVEAU.prefixe}-${String(next++).padStart(3, '0')}`;
-			const m = /^(- \[(?:C|SF\+|SF|D)\]\s+)(.+)$/.exec(lines[cursor])!;
+			const m = /^(- \[(?:C|SF\+|SF|D\+|D)\]\s+)(.+)$/.exec(lines[cursor])!;
 			lines[cursor] = `${m[1]}\`${pt.code}\` ${m[2]}`;
 		}
 		cursor++;
