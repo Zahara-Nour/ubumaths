@@ -111,11 +111,16 @@ function parseByProvenance(
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition);
+	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
+	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
+	const genericFunctions = genericFunctionsFor(functionNames);
+	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition, { genericFunctions });
 
 	const detected = detectInputFormat(definition);
-	if (detected.format === 'latex' && detected.confidence > 0.5) return parseLatexSafe(definition);
-	return parseCustomSafe(definition, { genericFunctions: genericFunctionsFor(functionNames) });
+	if (detected.format === 'latex' && detected.confidence > 0.5) {
+		return parseLatexSafe(definition, { genericFunctions });
+	}
+	return parseCustomSafe(definition, { genericFunctions });
 }
 
 /**

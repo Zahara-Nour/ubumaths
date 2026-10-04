@@ -1182,3 +1182,35 @@ describe('Mixed Scenarios', () => {
 		expectType(node.right, 'function');
 	});
 });
+
+// =============================================================================
+// Dérivée écrite par MathLive : f^{\prime}
+// =============================================================================
+
+describe('Generic function derivative written as \\prime', () => {
+	// Ce que MathLive écrit quand on tape f' (mesuré dans Chromium le 2026-10-04)
+	const options = { genericFunctions: { names: ['f'], allowDerivatives: true } };
+
+	it.each([
+		["f'(x)", 1],
+		['f^{\\prime}(x)', 1],
+		['f^{\\prime}\\left(x\\right)', 1],
+		['f^\\prime(x)', 1],
+		['f^{\\prime\\prime}(x)', 2],
+		["f'^{\\prime}(x)", 2]
+	])('%s → dérivée d’ordre %i', (input, order) => {
+		expect(parsePratt(input, options)).toMatchObject({
+			type: 'function',
+			name: 'f',
+			derivativeOrder: order
+		});
+	});
+
+	it('ne lit pas \\prime quand les dérivées sont désactivées', () => {
+		expect(() =>
+			parsePratt('f^{\\prime}(x)', {
+				genericFunctions: { names: ['f'], allowDerivatives: false }
+			})
+		).toThrow();
+	});
+});

@@ -44,7 +44,30 @@ Branche `feat/atelier-reglages-affichage`, worktree `../ubumaths-wt-reglages`.
     si une courbe de l'atelier l'a déjà ; les fonctions retirées gardent la
     leur et comptent dans le choix de la suivante. À revoir si ça gêne à
     l'usage.
-- [ ] PR, CI, merge.
+- [x] PR #779, CI verte (un job relancé : port Postgres occupé sur le runner), mergée.
+
+## Lot 2a — la carte modifiable
+
+Branche `feat/atelier-carte-modifiable`, worktree `../ubumaths-wt-carte`.
+Le lot 2 est coupé en deux PR (contenu inchangé) : 2a = champ + carte fermée,
+2b = « Sur le graphique ».
+
+### Mesure préalable — ce que MathLive écrit (Chromium, frappe réelle)
+
+| Tapé       | MathLive rend                                         |
+| ---------- | ----------------------------------------------------- |
+| `f'(x)+1`  | `f^{\prime}\left(x\right)+1`                          |
+| `x^2-3x+1` | `x^2-3x+1` (sort seul de l'exposant après un chiffre) |
+| `sin(x)`   | `\sin\left(x\right)`                                  |
+| `a*x`      | `a\cdot x`                                            |
+| `1/2x`     | `\frac{1}{2x}` ⚠️ = 1/(2x)                            |
+
+- [x] `f^{\prime}` était **refusé** par le parseur LaTeX → accepté
+      (`^{\prime}`, `^{\prime\prime}`, `^\prime`), tests au niveau du
+      parseur, preuve rouge (5 rouges avec l'ancien parseur).
+- [x] En LaTeX, l'atelier ne transmettait pas ses noms de fonctions :
+      `k(x)` tapé dans la carte se lisait k·x → corrigé (`parse.ts`).
+- Suites mathAST + atelier + grapheur + questions : 21 145 verts.
 
 ## Lots suivants
 
