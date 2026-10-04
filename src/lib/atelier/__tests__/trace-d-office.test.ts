@@ -70,4 +70,14 @@ describe('tracé d’office depuis Calcul', () => {
 
 		expect(s.atelier.get('u')?.plotted).toBeFalsy();
 	});
+
+	it('une récurrence retapée, retirée du graphique, n’y revient pas', () => {
+		const s = session();
+		runInput(s, 'u(n+1) = 2u(n) + 1');
+		s.atelier.setPlotted('u', false);
+
+		runInput(s, 'u(n+1) = 3u(n) - 2');
+
+		expect(s.atelier.get('u')?.plotted).toBeFalsy();
+	});
 });
