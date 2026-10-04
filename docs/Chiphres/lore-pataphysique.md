@@ -1345,6 +1345,8 @@ Pour faciliter la conversion grégorien-Chiphre, voici les dates-clés de l'ann�
 
 ### Implémentation technique
 
+> **Implémenté (2026-10-04)** : module `src/lib/almanach/` (`calendar.ts` : `toPataphysicalDate`, formateurs court / moyen / long, fêtes ; `palettes.ts` : ambiances des mois) et page publique `/almanach` (`src/routes/(public)/almanach/`), date du jour sur l'accueil. Le pseudo-code ci-dessous est l'esquisse d'origine ; la référence est le module.
+
 **Algorithme de conversion grégorien → pataphysique** :
 
 ```javascript
