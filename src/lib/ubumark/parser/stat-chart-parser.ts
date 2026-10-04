@@ -81,8 +81,13 @@ import { crossTable } from '$lib/statistics/cross-table';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { readListValue } from '$lib/statistics/read-value';
-import { invalidValueReason, readExactValue, toSafeNumber } from '$lib/statistics/bivariate';
-import { squaredSign, transformValue, type VariableChange } from '$lib/statistics/variable-change';
+import { invalidValueReason, readExactValue } from '$lib/statistics/bivariate';
+import {
+	changeDomainProblem,
+	readVariableChange,
+	VARIABLE_CHANGE_LIST,
+	type VariableChange
+} from '$lib/statistics/variable-change';
 import { BINOMIAL_MAX_N } from '$lib/statistics/binomial';
 import { GEOMETRIC_MAX_K } from '$lib/statistics/geometric';
 import { UNIFORM_MAX_VALUES } from '$lib/statistics/uniform';
@@ -388,45 +393,6 @@ type ScatterOptionKey = (typeof SCATTER_OPTIONS)[number];
 
 /** Options propres au nuage, refusées ailleurs avec un message situé */
 const SCATTER_ONLY_OPTIONS: readonly string[] = ['ajustement', 'prevoir', 'origine', 'nuage'];
-
-/**
- * Changements de variable (Q170), tels que l'auteur les écrit, et leurs
- * variantes (`y^2`, `sqrt(y)`), espaces retirées
- */
-const VARIABLE_CHANGES: { written: string; spellings: string[]; change: VariableChange }[] = (
-	[
-		['ln', (v: string) => [`ln(${v})`]],
-		['square', (v: string) => [`${v}²`, `${v}^2`]],
-		['sqrt', (v: string) => [`√${v}`, `√(${v})`, `sqrt(${v})`]],
-		['inverse', (v: string) => [`1/${v}`]]
-	] as const
-).flatMap(([fn, spell]) =>
-	(
-		[
-			['z', 'y'],
-			['t', 'x']
-		] as const
-	).map(([variable, on]) => ({
-		written: `${variable} = ${spell(on)[0]}`,
-		spellings: spell(on).map((form) => `${variable}=${form}`),
-		change: { variable, on, fn }
-	}))
-);
-
-/** Ordre du message : les quatre formes en z, puis les quatre en t */
-const VARIABLE_CHANGE_LIST = [
-	...VARIABLE_CHANGES.filter((c) => c.change.variable === 'z'),
-	...VARIABLE_CHANGES.filter((c) => c.change.variable === 't')
-]
-	.map((c) => c.written)
-	.join(', ');
-
-/** Écriture d'une fonction dans les messages : `ln(y)`, `y²`, `√y`, `1/y` */
-function changeName(change: VariableChange): string {
-	return VARIABLE_CHANGES.find(
-		(c) => c.change.fn === change.fn && c.change.on === change.on
-	)!.written.split(' = ')[1];
-}
 
 /** Indicateurs d'un nuage, tels que l'auteur les écrit */
 const SCATTER_INDICATOR_NAME: Record<ScatterIndicator, string> = {
@@ -2515,14 +2481,13 @@ function parseScatterContent(source: string): StatChartNode {
 					fit = true;
 					if (normalizeKey(value.trim()) === 'affine') return;
 					// Changement de variable (PR b, Q170) : une des huit formes
-					const compact = value.replace(/\s+/g, '').toLowerCase();
-					const found = VARIABLE_CHANGES.find((c) => c.spellings.includes(compact));
-					if (found === undefined) {
+					const found = readVariableChange(value);
+					if (found === null) {
 						throw new LineError(
 							`ajustement : écrire « affine » ou une des formes ${VARIABLE_CHANGE_LIST}`
 						);
 					}
-					change = found.change;
+					change = found;
 					return;
 				}
 				case 'nuage': {
@@ -2629,30 +2594,6 @@ function parseScatterContent(source: string): StatChartNode {
 				}
 			: null;
 	return { type: 'stat-chart', kind: 'nuage', source, spec, errors, warnings: [] };
-}
-
-/**
- * Une valeur interdite par le changement de variable, avec le point
- * (« ln(y) : y = −2 au point 3 n’est pas strictement positif »), ou null
- */
-function changeDomainProblem(change: VariableChange, texts: readonly string[]): string | null {
-	const name = changeName(change);
-	const values = texts.map((text) => toSafeNumber(readExactValue(text)!));
-	if (change.fn === 'square') {
-		const signs = squaredSign(values);
-		return 'mixed' in signs
-			? `${name} : ${change.on} change de signe au point ${signs.mixed} (une seule branche de √ possible)`
-			: null;
-	}
-	const index = values.findIndex((v) => transformValue(change.fn, v) === null);
-	if (index === -1) return null;
-	const reason =
-		change.fn === 'ln'
-			? 'n’est pas strictement positif'
-			: change.fn === 'sqrt'
-				? 'est négatif'
-				: 'est nul';
-	return `${name} : ${change.on} = ${texts[index]} au point ${index + 1} ${reason}`;
 }
 
 /** Valeurs écrites toutes égales (exactement : `2` et `2,0` aussi) */

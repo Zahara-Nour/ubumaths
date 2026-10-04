@@ -198,13 +198,24 @@ describe('ajustement affine', () => {
 		expect(créée!.definition).toContain('x');
 	});
 
-	// §3 N3 : R² dit si l'ajustement vaut quelque chose
-	it('annonce le coefficient de détermination', () => {
+	// §3 N3 : r dit si l'ajustement vaut quelque chose (PR c, Q173 : r au lieu de R²)
+	it('annonce le point moyen et le coefficient de corrélation, comme le bloc', () => {
+		const d = deskWith({ L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '12 ; 15 ; 19 ; 22 ; 27 ; 30' });
+
+		d.runFromPanel('fit', 'L');
+
+		expect(d.entries[0].text).toContain('(x) = 3,686x + 7,933');
+		expect(d.entries[0].text).toContain('G(3,5 ; 20,833)');
+		expect(d.entries[0].text).toContain('r ≈ 0,998');
+		expect(d.entries[0].text).not.toMatch(/R²/);
+	});
+
+	it('r exact sur des points alignés', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3 ; 4', M: '2 ; 4 ; 6 ; 8' });
 
 		d.runFromPanel('fit', 'L');
 
-		expect(d.entries[0].text).toMatch(/R²/);
+		expect(d.entries[0].text).toContain('r = 1');
 	});
 
 	// §4 L3

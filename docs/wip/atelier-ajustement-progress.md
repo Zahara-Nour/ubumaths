@@ -13,4 +13,4 @@ Décisions Q173-Q177. Spec validée par David le 2026-10-04.
 
 ## Étapes
 
-- [ ] Tests rouges · [ ] Implémentation · [ ] Revue · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation · [ ] Revue · [ ] PR, CI, merge

@@ -37,8 +37,46 @@ import { isUnit, isVariable } from '../../guards';
 import { parse as parseUnit } from '../../units/parser';
 import { getConversionFactor } from '../../units/conversion';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
-import { formatSummary, formatStatNumber } from '../../../statistics/format';
-import { fitAffine } from '../../../statistics/fit';
+import { formatSummary } from '../../../statistics/format';
+import {
+	bivariateFit,
+	invalidValueReason,
+	readExactValue,
+	roundFraction,
+	toSafeNumber
+} from '../../../statistics/bivariate';
+import type { Fraction } from '../../../statistics/fraction';
+import {
+	changeDomainProblem,
+	decimalFit,
+	readVariableChange,
+	squaredSign,
+	transformValue,
+	VARIABLE_CHANGE_LIST,
+	type VariableChange
+} from '../../../statistics/variable-change';
+import {
+	changedEquations,
+	changedPredictionLines,
+	changeText,
+	decimalCorrelationText,
+	exactCorrelationText,
+	exactPredictionLines,
+	related,
+	scatterDecimal,
+	scatterEquation,
+	scatterNumber,
+	shortestDecimal,
+	type ScatterPrediction
+} from '../../../ubumark/utils/scatter-lines';
+import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
+
+// =============================================================================
+// Constants
+// =============================================================================
+
+/** `.ajustement` rounds to the thousandth, like a ```nuage block by default (Q173) */
+const LINREG_PLACES = 3;
 
 // =============================================================================
 // Web REPL Engine
@@ -1657,20 +1695,27 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Execute the .linreg command (linear regression).
+	 * Execute the .linreg / .ajustement command (least squares line).
 	 *
-	 * Usage: .linreg x1,x2,x3 : y1,y2,y3
-	 * Returns: slope (a), intercept (b), r² (coefficient of determination)
+	 * Usage: .ajustement x1,x2,x3 : y1,y2,y3 [; x = 10] [; y = 7] [; z = ln(y)]
+	 * Returns: the line, a and b, the mean point G and r — then the predictions,
+	 * and with a change of variable the line in z (or t) and the relation
+	 * between x and y. ⚠️ Computed AND worded like the ```nuage block (manche 15,
+	 * PR c): exact fractions (`statistics/bivariate`), decimals for a change of
+	 * variable (`statistics/variable-change`), texts from `ubumark/utils/scatter-lines`.
 	 */
 	private executeLinregCommand(args: string): ReplExecutionResult {
-		if (!args.includes(':')) {
+		const usage = 'Usage: .linreg x1,x2,x3 : y1,y2,y3';
+		const [data, ...optionTexts] = args.split(';').map((s) => s.trim());
+		if (!data.includes(':')) {
 			return {
 				success: false,
-				output: 'Usage: .linreg x1,x2,x3 : y1,y2,y3',
+				output: usage,
 				outputHtml: formatErrorHtml({
 					code: 'INVALID_OPTIONS',
-					message: 'Usage: .linreg x1,x2,x3 : y1,y2,y3',
-					suggestion: 'Separez les valeurs X et Y par deux-points (:)'
+					message: usage,
+					suggestion:
+						'Separez les valeurs X et Y par deux-points (:), puis les options par « ; » : .ajustement 1,2,3 : 2,4,7 ; x = 5'
 				}),
 				error: {
 					code: 'INVALID_OPTIONS',
@@ -1679,7 +1724,7 @@ export class WebReplEngine {
 			};
 		}
 
-		const [xPart, yPart] = args.split(':').map((s) => s.trim());
+		const [xPart, yPart] = data.split(':').map((s) => s.trim());
 
 		// Parse X values
 		const xRaw = xPart
@@ -1711,18 +1756,18 @@ export class WebReplEngine {
 			};
 		}
 
-		const xValues = xRaw.map((s) => parseFloat(s));
-		const yValues = yRaw.map((s) => parseFloat(s));
-
-		// Validation
-		// `!Number.isFinite`, not `isNaN`: `parseFloat('Infinity')` is not NaN.
-		if (![...xValues, ...yValues].every(Number.isFinite)) {
+		// Exact values, read like the block (`readExactValue`): `Infinity`, `3abc`,
+		// 16 digits or more are refused instead of being half read by `parseFloat`
+		const unreadable = [...xRaw, ...yRaw].find((text) => readExactValue(text) === null);
+		if (unreadable !== undefined) {
+			const reason = invalidValueReason(unreadable);
 			return {
 				success: false,
-				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
+				output: `Erreur: certaines valeurs ne sont pas des nombres valides (${reason})`,
 				outputHtml: formatErrorHtml({
 					code: 'PARSE_ERROR',
-					message: 'Certaines valeurs ne sont pas des nombres valides'
+					message: 'Certaines valeurs ne sont pas des nombres valides',
+					suggestion: reason
 				}),
 				error: {
 					code: 'PARSE_ERROR',
@@ -1731,13 +1776,13 @@ export class WebReplEngine {
 			};
 		}
 
-		if (xValues.length !== yValues.length) {
+		if (xRaw.length !== yRaw.length) {
 			return {
 				success: false,
-				output: `Erreur: nombre de valeurs X (${xValues.length}) different de Y (${yValues.length})`,
+				output: `Erreur: nombre de valeurs X (${xRaw.length}) different de Y (${yRaw.length})`,
 				outputHtml: formatErrorHtml({
 					code: 'INVALID_OPTIONS',
-					message: `Nombre de valeurs X (${xValues.length}) different de Y (${yValues.length})`
+					message: `Nombre de valeurs X (${xRaw.length}) different de Y (${yRaw.length})`
 				}),
 				error: {
 					code: 'INVALID_OPTIONS',
@@ -1746,7 +1791,7 @@ export class WebReplEngine {
 			};
 		}
 
-		if (xValues.length < 2) {
+		if (xRaw.length < 2) {
 			return {
 				success: false,
 				output: 'Erreur: au moins 2 points sont necessaires',
@@ -1761,19 +1806,47 @@ export class WebReplEngine {
 			};
 		}
 
-		// ⚠️ Computed by `src/lib/statistics/fit` — the single source shared with
-		// the atelier. The length check above stays here: `fitAffine` would
-		// silently drop the extra values, which the atelier wants and this
-		// command does not.
-		const fit = fitAffine(xValues, yValues);
-		if (!fit.ok) {
-			// Fewer than 2 points was rejected above: only constant X remains.
+		// Options after « ; »: predictions (`x = 10`, `y = 7`), one change of variable
+		const predictions: ScatterPrediction[] = [];
+		let change: VariableChange | null = null;
+		for (const option of optionTexts) {
+			const prediction = /^([xy])\s*=\s*(.+)$/i.exec(option);
+			if (prediction !== null) {
+				const value = prediction[2].trim();
+				if (readExactValue(value) === null) return this.statsFailure(invalidValueReason(value));
+				predictions.push({ axis: prediction[1].toLowerCase() as 'x' | 'y', value });
+				continue;
+			}
+			const found = readVariableChange(option);
+			if (found === null || change !== null) {
+				return this.statsFailure(
+					found === null
+						? `« ${option} » : écrire x = 10, y = 7 ou une des formes ${VARIABLE_CHANGE_LIST}`
+						: 'Un seul changement de variable à la fois'
+				);
+			}
+			change = found;
+		}
+		if (change !== null) {
+			const problem = changeDomainProblem(change, change.on === 'x' ? xRaw : yRaw);
+			if (problem !== null) return this.statsFailure(problem);
+		}
+
+		const xs = xRaw.map((text) => readExactValue(text)!);
+		const ys = yRaw.map((text) => readExactValue(text)!);
+		const fitted =
+			change === null
+				? this.exactLinregLines(xs, ys, predictions)
+				: this.changedLinregLines(xs, ys, change, predictions);
+		if (fitted === null) {
+			// Fewer than 2 points was rejected above: only constant X (or t) remains.
+			const variable = change?.on === 'x' ? 't' : 'X';
 			return {
 				success: false,
-				output: 'Erreur: les valeurs X sont toutes identiques (regression impossible)',
+				output: `Erreur: les valeurs ${variable} sont toutes identiques (regression impossible)`,
 				outputHtml: formatErrorHtml({
 					code: 'MATH_ERROR',
-					message: 'Les valeurs X sont toutes identiques'
+					message: `Les valeurs ${variable} sont toutes identiques`
 				}),
 				error: {
 					code: 'MATH_ERROR',
@@ -1781,48 +1854,90 @@ export class WebReplEngine {
 				}
 			};
 		}
-		const n = fit.used;
-		const { slope: a, intercept: b, r2 } = fit;
-
-		// Format output
-		const equation =
-			b >= 0
-				? `y = ${this.formatNumber(a)}x + ${this.formatNumber(b)}`
-				: `y = ${this.formatNumber(a)}x - ${this.formatNumber(Math.abs(b))}`;
 
 		// French wording (Q38): « ajustement affine », decimal comma. The LaTeX of
 		// the equation (`latex` below) keeps the dot, it is rendered, not read.
-		const fr = (value: number) => formatStatNumber(Number(this.formatNumber(value)), 'fr');
-		const lines = [
-			`Ajustement affine (n = ${n}) :`,
-			`  y = ${fr(a)}x ${b >= 0 ? '+' : '−'} ${fr(Math.abs(b))}`,
-			`  Coefficient directeur a = ${fr(a)}`,
-			`  Ordonnée à l’origine b = ${fr(b)}`,
-			`  R² = ${fr(r2)}`
-		];
-
-		const output = lines.join('\n');
-		const htmlLines = lines.map((line) => this.escapeHtml(line.trim()));
-		const outputHtml = htmlLines.join('<br>');
+		const header =
+			change === null
+				? `Ajustement affine (n = ${xs.length}) :`
+				: `Ajustement affine (n = ${xs.length}), changement de variable ${changeText(change)} :`;
+		const lines = [header, ...fitted.lines.map((line) => `  ${line}`)];
 
 		return {
 			success: true,
-			output,
-			outputHtml,
-			latex: equation
+			output: lines.join('\n'),
+			outputHtml: lines.map((line) => this.escapeHtml(line.trim())).join('<br>'),
+			latex: fitted.latex
 		};
 	}
 
-	/**
-	 * Format a number for display, with appropriate precision.
-	 */
-	private formatNumber(value: number): string {
-		if (Number.isInteger(value)) {
-			return value.toString();
+	/** `.ajustement` without change of variable: exact line, G, r, predictions. */
+	private exactLinregLines(
+		xs: Fraction[],
+		ys: Fraction[],
+		predictions: readonly ScatterPrediction[]
+	): { lines: string[]; latex: string } | null {
+		const fit = bivariateFit(xs, ys);
+		if (fit === null) return null;
+		const text = STAT_TEXT.fr.scatter;
+		const round = (value: Fraction) => scatterNumber(value, LINREG_PLACES, 'fr');
+		const lines = [
+			scatterEquation(fit, LINREG_PLACES, 'fr'),
+			`Coefficient directeur a ${related(round(fit.slope))}`,
+			`Ordonnée à l’origine b ${related(round(fit.intercept))}`,
+			text.meanLine(text.meanPoint(round(fit.meanX).text, round(fit.meanY).text))
+		];
+		// r n'existe pas si les ordonnées sont toutes égales
+		if (fit.correlation !== null) {
+			lines.push(text.correlation(exactCorrelationText(fit.correlation, LINREG_PLACES, 'fr')));
 		}
-		// Round to 6 significant digits for display
-		const rounded = parseFloat(value.toPrecision(6));
-		return rounded.toString();
+		lines.push(...exactPredictionLines(fit, predictions, LINREG_PLACES, 'fr').lines);
+		return { lines, latex: linregLatex('y', 'x', fit.slope, fit.intercept) };
+	}
+
+	/** `.ajustement` with a change of variable: line in z (or t), relation, predictions. */
+	private changedLinregLines(
+		xValues: Fraction[],
+		yValues: Fraction[],
+		change: VariableChange,
+		predictions: readonly ScatterPrediction[]
+	): { lines: string[]; latex: string } | null {
+		const xs = xValues.map(toSafeNumber);
+		const ys = yValues.map(toSafeNumber);
+		// The domain was checked above
+		const transform = (v: number) => transformValue(change.fn, v)!;
+		const us = change.on === 'x' ? xs.map(transform) : xs;
+		const vs = change.on === 'y' ? ys.map(transform) : ys;
+		const decimal = decimalFit(us, vs);
+		if (decimal === null) return null;
+		// Interpolation: range of the ORIGINAL x
+		const fit = { ...decimal, minX: Math.min(...xs), maxX: Math.max(...xs) };
+		const squared = squaredSign(change.on === 'x' ? xs : ys);
+		const sign = 'sign' in squared ? squared.sign : 1;
+
+		const text = STAT_TEXT.fr.scatter;
+		const round = (value: number) => scatterDecimal(value, LINREG_PLACES, 'fr');
+		const { lineEquation, relationText } = changedEquations(change, fit, sign, LINREG_PLACES, 'fr');
+		const pair = change.on === 'y' ? 'x ; z' : 't ; y';
+		const lines = [
+			lineEquation,
+			`Coefficient directeur a ${related(round(fit.slope))}`,
+			`Ordonnée à l’origine b ${related(round(fit.intercept))}`,
+			text.relationLine(relationText),
+			text.meanLineOf(pair, text.meanPoint(round(fit.meanX).text, round(fit.meanY).text))
+		];
+		if (fit.correlation !== null) {
+			lines.push(text.correlation(decimalCorrelationText(fit.correlation, LINREG_PLACES, 'fr')));
+		}
+		lines.push(
+			...changedPredictionLines(change, fit, sign, predictions, LINREG_PLACES, 'fr').lines
+		);
+		const left = change.on === 'y' ? change.variable : 'y';
+		const term = change.on === 'x' ? change.variable : 'x';
+		return {
+			lines,
+			latex: linregLatex(left, term, shortestDecimal(fit.slope), shortestDecimal(fit.intercept))
+		};
 	}
 
 	// ===========================================================================
@@ -1898,4 +2013,21 @@ function parseStatsNumbers(part: string, decimalComma: boolean): number[] | null
 	const plain = decimalComma ? /^-?\d+(?:[.,]\d+)?$/ : /^-?\d+(?:\.\d+)?$/;
 	if (!tokens.every((token) => plain.test(token))) return null;
 	return tokens.map((token) => Number(token.replace(',', '.')));
+}
+
+/** A coefficient of `.ajustement` for its LaTeX: rounded once, dot, ASCII minus. */
+function linregLatexNumber(value: Fraction): string {
+	const { digits, exact } = roundFraction(value, LINREG_PLACES);
+	return exact && digits.includes('.') ? digits.replace(/\.?0+$/, '') : digits;
+}
+
+/**
+ * LaTeX of the fitted line, `y = 0.9x + 0.3`, `z = 0.401x + 0.723` — the form
+ * `.linreg` always gave (`y = 2x + 0` included), coefficients now rounded to
+ * the thousandth like the text.
+ */
+function linregLatex(left: string, term: string, slope: Fraction, intercept: Fraction): string {
+	const b = linregLatexNumber(intercept);
+	const sign = b.startsWith('-') ? '-' : '+';
+	return `${left} = ${linregLatexNumber(slope)}${term} ${sign} ${b.replace(/^-/, '')}`;
 }

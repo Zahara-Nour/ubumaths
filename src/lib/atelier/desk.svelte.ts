@@ -30,6 +30,15 @@ import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/stati
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
+import { bivariateFit } from '$lib/statistics/bivariate';
+import type { Fraction } from '$lib/statistics/fraction';
+import {
+	affineExpression,
+	exactCorrelationText,
+	scatterNumber,
+	shortestDecimal
+} from '$lib/ubumark/utils/scatter-lines';
+import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
@@ -82,6 +91,38 @@ export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
 /** Un nombre écrit comme l'élève l'écrit : virgule décimale, trois décimales au plus. */
 function fr(value: number): string {
 	return Number(value.toFixed(3)).toString().replace('.', ',');
+}
+
+/** Décimales de l'ajustement, comme un bloc ```nuage par défaut (Q173) */
+const FIT_PLACES = 3;
+
+/**
+ * « f(x) = 3,686x + 7,933 — G(3,5 ; 20,833) — r ≈ 0,998 » : mêmes calculs
+ * (exacts, `statistics/bivariate`) et mêmes textes que le bloc ```nuage et
+ * `.ajustement` (PR c, Q173 : r au lieu de R², point moyen). Seules les
+ * `used` premières paires comptent, comme pour `fitAffine`.
+ */
+function fitSummary(
+	functionName: string,
+	xs: readonly number[],
+	ys: readonly number[],
+	used: number
+): string {
+	const exact = (values: readonly number[]) => values.slice(0, used).map(shortestDecimal);
+	// `fitAffine` a déjà refusé des abscisses toutes égales
+	const fit = bivariateFit(exact(xs), exact(ys))!;
+	const text = STAT_TEXT.fr.scatter;
+	const round = (value: Fraction) => scatterNumber(value, FIT_PLACES, 'fr');
+	const line = affineExpression(round(fit.slope).text, round(fit.intercept).text, 'x');
+	const parts = [
+		`${functionName}(x) = ${line}`,
+		text.meanPoint(round(fit.meanX).text, round(fit.meanY).text)
+	];
+	// r n'existe pas si les ordonnées sont toutes égales
+	if (fit.correlation !== null) {
+		parts.push(`r ${exactCorrelationText(fit.correlation, FIT_PLACES, 'fr')}`);
+	}
+	return parts.join(' — ');
 }
 
 /** Les actions qui exigent des listes de NOMBRES (Q88) */
@@ -404,7 +445,7 @@ export class CalcDesk {
 		this.#push({
 			label: `Ajustement ${name}`,
 			text: created.ok
-				? `${created.object.name}(x) = ${fr(fit.slope)}x + ${fr(fit.intercept)} — R² = ${fr(fit.r2)}`
+				? fitSummary(created.object.name, xs.values, ys.values, fit.used)
 				: created.message,
 			failed: !created.ok
 		});

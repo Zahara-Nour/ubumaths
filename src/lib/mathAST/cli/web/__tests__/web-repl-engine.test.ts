@@ -625,7 +625,7 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('Coefficient directeur a = 2');
-			expect(result.output).toContain('R² = 1');
+			expect(result.output).toContain('Coefficient de corrélation : r = 1');
 		});
 
 		it('computes linear regression with intercept', () => {
@@ -670,12 +670,12 @@ describe('WebReplEngine - Statistics (Phase 4)', () => {
 			expect(result.output).toContain('Coefficient directeur a = −2');
 		});
 
-		it('returns R² for non-perfect fit', () => {
+		it('returns r for non-perfect fit', () => {
 			const result = engine.execute('.linreg 1,2,3,4,5 : 1,3,2,4,5');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('R²');
-			// R² should be less than 1 for non-perfect fit
+			// r = 0,9 exactly (r² = 0,81)
+			expect(result.output).toContain('Coefficient de corrélation : r = 0,9');
 		});
 	});
 });
