@@ -160,6 +160,25 @@ toute la classe.
 
 Un exercice figé ne suit plus son modèle : corriger un modèle ne corrige pas une fiche déjà créée.
 
+### Rattacher un modèle au référentiel (`points`)
+
+Champ facultatif du JSON, **codes** des points (`curriculum_points.code`) :
+
+```json
+"grades": ["1_SPE"],
+"points": ["1SPE-135", "1SPE-118"]
+```
+
+Tableau de codes, sans doublon, au plus 20. Ce n'est pas une colonne du modèle : `create-questions.ts`
+(et `question:specs`) le retirent avant `checkTemplate`, et les liens sont écrits dans
+`question_template_points`. Avant toute écriture, **tous** les fichiers sont vérifiés : code inconnu
+ou archivé, ou niveau du point absent de `grades` (un point `TCOMP-…` sur un modèle `["T_SPE"]`) →
+erreur qui nomme fichier et code, rien d'écrit. La simulation affiche par fichier les liens à
+ajouter, déjà présents, et ceux en base absents du fichier. À la création les liens sont écrits ;
+sur un modèle déjà en base (brouillon), `--mettre-a-jour` ajoute les liens manquants. Un lien absent
+du fichier n'est **jamais** supprimé, sauf `--mettre-a-jour --remplacer-points`. Sans champ `points`,
+aucun lien n'est lu ni touché.
+
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
 
 Par défaut, seules f, g, h, u, v, w, F, G, H sont des fonctions : dans un modèle, `P(x)` ou

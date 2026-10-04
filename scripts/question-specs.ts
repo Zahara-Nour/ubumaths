@@ -34,6 +34,7 @@ import {
 	loadOldQuestions,
 	readReviewFiles
 } from './relecture/common';
+import { extractTemplatePoints } from './lib/template-points';
 
 // ============================================================================
 // SOURCES
@@ -61,7 +62,10 @@ function templateFromFile(path: string): QuestionTemplate {
 		if (!template) throw new Error(`${path} : ce verdict ne porte pas de template`);
 		return template;
 	}
-	return raw as QuestionTemplate;
+	// `points` (rattachement au référentiel, lu par create-questions.ts) n'est pas du modèle
+	const extrait = extractTemplatePoints(raw, path);
+	if (!extrait.ok) throw new Error(extrait.error);
+	return extrait.template as unknown as QuestionTemplate;
 }
 
 async function templateFromDatabase(id: string): Promise<QuestionTemplate> {
