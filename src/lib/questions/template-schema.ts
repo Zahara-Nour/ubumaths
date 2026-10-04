@@ -16,7 +16,7 @@
 import { z } from 'zod';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
-import { ANSWER_KINDS, EQUATION_FORMS, VECTOR_MODES } from './types';
+import { ANSWER_KINDS, EQUATION_FORMS, SOLUTION_MODES, VECTOR_MODES } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 
 // ============================================================================
@@ -290,6 +290,23 @@ export const choiceSchema = z.object({
 	isCorrect: z.boolean().optional()
 });
 
+/** Longueur maximale d'un champ de case « primitive » / « solution-ed » */
+const CALCULUS_TEXT_MAX = 500;
+
+/** Variable ou fonction inconnue d'une case « primitive » / « solution-ed » : une lettre */
+const singleLetterSchema = z.string().regex(/^[A-Za-z]$/, 'Une seule lettre attendue');
+
+/** Champs des cases « primitive » et « solution-ed » (cf. `CalculusBlankFields`) */
+const calculusFieldsShape = {
+	integrand: z.string().min(1).max(CALCULUS_TEXT_MAX).optional(),
+	variable: singleLetterSchema.optional(),
+	interval: z.string().min(1).max(CALCULUS_TEXT_MAX).optional(),
+	equation: z.string().min(1).max(CALCULUS_TEXT_MAX).optional(),
+	solutionMode: z.enum(SOLUTION_MODES).optional(),
+	function: singleLetterSchema.optional(),
+	initial: z.string().min(1).max(CALCULUS_TEXT_MAX).optional()
+};
+
 export const blankDefaultsSchema = z.object({
 	precision: precisionSchema.optional(),
 	requiredForm: requiredFormSchema.optional(),
@@ -298,6 +315,7 @@ export const blankDefaultsSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
+	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
 
@@ -313,6 +331,7 @@ export const blankSchema = z.object({
 	acceptDecimal: z.boolean().optional(),
 	answerKind: z.enum(ANSWER_KINDS).optional(),
 	vectorMode: z.enum(VECTOR_MODES).optional(),
+	...calculusFieldsShape,
 	unit: unitSchema.optional()
 });
 
@@ -541,6 +560,7 @@ const blankDefaultsStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
+		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
 	.strict();
@@ -558,6 +578,7 @@ const blankStrictZ = z
 		acceptDecimal: z.boolean().optional(),
 		answerKind: z.enum(ANSWER_KINDS).optional(),
 		vectorMode: z.enum(VECTOR_MODES).optional(),
+		...calculusFieldsShape,
 		unit: unitStrictZ.optional()
 	})
 	.strict();

@@ -235,14 +235,47 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
-export type AnswerKind = 'intervalles' | 'equation' | 'vecteur';
+export type AnswerKind = 'intervalles' | 'equation' | 'vecteur' | 'primitive' | 'solution-ed';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
 	'intervalles',
 	'equation',
-	'vecteur'
+	'vecteur',
+	'primitive',
+	'solution-ed'
 ] as const satisfies readonly AnswerKind[];
+
+/**
+ * Jugement d'une case « solution-ed » (voir `TemplateBlank.solutionMode`) :
+ * `'une'` (défaut) = une solution quelconque ; `'generale'` = la solution
+ * générale, qui dépend d'une constante libre.
+ */
+export type SolutionMode = 'generale' | 'une';
+
+/** Valeurs de `SolutionMode` (schémas Zod, éditeur) */
+export const SOLUTION_MODES = ['generale', 'une'] as const satisfies readonly SolutionMode[];
+
+/**
+ * Réglages d'une case « primitive » ou « solution-ed » (voir `TemplateBlank`),
+ * communs au modèle, à `blankDefaults` et à l'instance.
+ */
+export interface CalculusBlankFields {
+	/** Case `primitive` : fonction dont on cherche une primitive (`3x^2`) */
+	integrand?: string;
+	/** Cases `primitive` et `solution-ed` : variable (défaut `x`) */
+	variable?: string;
+	/** Case `primitive` : intervalle d'étude facultatif (`]0;+\infty[`) */
+	interval?: string;
+	/** Case `solution-ed` : équation différentielle du 1er ordre (`y'=2y-6`) */
+	equation?: string;
+	/** Case `solution-ed` : voir `SolutionMode` */
+	solutionMode?: SolutionMode;
+	/** Case `solution-ed` : nom de la fonction inconnue (défaut `y`) */
+	function?: string;
+	/** Case `solution-ed`, mode `une` : condition initiale facultative (`y(0)=4`) */
+	initial?: string;
+}
 
 /**
  * Jugement d'une case « vecteur » (voir `TemplateBlank.vectorMode`) :
@@ -257,7 +290,7 @@ export const VECTOR_MODES = ['exact', 'colineaire'] as const satisfies readonly 
  * Default validation settings applied to all blanks in a question.
  * Per-blank fields override these when defined.
  */
-export interface BlankDefaults {
+export interface BlankDefaults extends CalculusBlankFields {
 	precision?: PrecisionType;
 	requiredForm?: RequiredForm;
 	/** Prevent French digit grouping in prefilled values (insert {} between digits) */
@@ -281,7 +314,7 @@ export interface BlankDefaults {
 /**
  * Template-side blank definition (positional, index = position in blanks[])
  */
-export interface TemplateBlank {
+export interface TemplateBlank extends CalculusBlankFields {
 	/** Expected answer as template expression (e.g., "{{eval:{{a}}+{{b}}}}", "entier") */
 	expectedAnswer: string;
 	/** Pre-filled value (template expression) */
@@ -323,6 +356,11 @@ export interface TemplateBlank {
 	 * `'vecteur'` = un vecteur dans UNE case, coordonnées `(a;b)` ou colonne
 	 * `\begin{pmatrix}a\\b\end{pmatrix}` (dimension 2 ou 3), comparées exactement ;
 	 * voir `vectorMode`. Jugée par `questions/vectors/vector-answer.ts`.
+	 * `'primitive'` = une primitive de `integrand` (à une constante près, lettre
+	 * libre ≠ variable comprise), vérifiée en dérivant la réponse ; `interval`
+	 * facultatif. `'solution-ed'` = une solution de `equation` (1er ordre),
+	 * vérifiée par substitution ; voir `solutionMode`. Jugées par
+	 * `questions/calculus/`.
 	 */
 	answerKind?: AnswerKind;
 	/**
@@ -680,7 +718,7 @@ export type ResolvedVariable = SharedResolvedVariable;
 /**
  * Instance-side blank (resolved, with inferred type and merged validation)
  */
-export interface InstanceBlank {
+export interface InstanceBlank extends CalculusBlankFields {
 	/** Resolved expected answer (math: "10^5", text: "entier") */
 	expectedAnswer: string;
 	/** LaTeX for flash back (math blanks only) */
