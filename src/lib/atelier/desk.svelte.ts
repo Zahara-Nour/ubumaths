@@ -31,6 +31,7 @@ import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
 import { syncPlots } from './plot-sync';
+import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
@@ -96,6 +97,15 @@ const PANEL_ACTIONS: Readonly<Record<string, string>> = {
 // =============================================================================
 // Le pupitre
 // =============================================================================
+
+/** Combien de termes « Premiers termes » écrit. */
+const TERMS_SHOWN = 10;
+
+/** Six chiffres significatifs, la virgule (comme le reste de l'atelier). */
+const TERM_FORMAT = new Intl.NumberFormat('fr-FR', {
+	maximumSignificantDigits: 6,
+	useGrouping: false
+});
 
 export class CalcDesk {
 	readonly atelier: Atelier;
@@ -334,6 +344,29 @@ export class CalcDesk {
 		});
 	}
 
+	/**
+	 * Les premiers termes d'une suite, écrits dans Calcul (phase 0 `/grapheur`
+	 * §5 U3) : dix termes à partir du premier, la virgule à la française.
+	 */
+	#terms(name: string): void {
+		const object = this.atelier.get(name);
+		const first = object?.kind === 'sequence' ? object.firstIndex : 0;
+		const result = termsOf(this.atelier, name, first + TERMS_SHOWN - 1);
+		if (!result.ok || result.terms.length === 0) {
+			this.#push({
+				label: `Premiers termes de ${name}`,
+				text: result.ok ? `« ${name} » ne donne aucun terme fini.` : result.message,
+				failed: true
+			});
+			return;
+		}
+		this.#push({
+			label: `Premiers termes de ${name}`,
+			text: result.terms.map((t) => `${name}(${t.n}) = ${TERM_FORMAT.format(t.value)}`).join(' ; '),
+			failed: false
+		});
+	}
+
 	/** Ajuster une droite sur deux listes, et en faire une fonction. */
 	#fit(name: string, partner?: string): void {
 		const xs = this.#listNamed(name);
@@ -446,6 +479,10 @@ export class CalcDesk {
 		}
 		if (root === 'scatter') {
 			this.#scatter(name, graph, partner);
+			return 'ok';
+		}
+		if (root === 'terms') {
+			this.#terms(name);
 			return 'ok';
 		}
 		if (root === 'fit') {

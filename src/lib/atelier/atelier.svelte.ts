@@ -25,6 +25,7 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	SequenceDisplay,
 	SequenceObject,
 	Slider,
 	ValueObject
@@ -49,9 +50,16 @@ import {
 	compactDisplay,
 	fullDisplay,
 	newDisplay,
+	newSequenceDisplay,
+	plainSequenceDisplay,
 	readDisplayPatch,
+	readSequenceDisplayPatch,
+	sequenceDisplaySchema,
 	type StoredDisplay
 } from './display';
+import { astOf as astOfDefinition } from './parse';
+import { getVariables } from '$lib/mathAST/eval/substitute';
+import { transformAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
 // Types de retour
@@ -138,6 +146,31 @@ const sequencePatchSchema = z
 	})
 	.partial()
 	.strict();
+
+/** Pourquoi une suite ne peut pas se tracer en escalier, ou `null`. */
+function cobwebRefusal(sequence: SequenceObject): string | null {
+	if (sequence.mode !== 'recurrence') {
+		return `L'escalier demande une récurrence : « ${sequence.name} » est une suite explicite.`;
+	}
+	const ast = astOfDefinition(sequence.definition, sequence.provenance);
+	// ⚠️ Le `n` de `u_n` / `u(n)` ne compte pas : seul un n HORS du terme
+	// précédent rend l'escalier impossible (sinon `0,5u_n + 3` était refusée)
+	const withoutSelf =
+		ast === null
+			? null
+			: transformAST(ast, {
+					enterSubscript: (node) =>
+						node.base.type === 'variable' && node.base.name === sequence.name
+							? { type: 'variable', name: 'self' }
+							: undefined,
+					enterFunction: (node) =>
+						node.name === sequence.name ? { type: 'variable', name: 'self' } : undefined
+				});
+	if (withoutSelf !== null && getVariables(withoutSelf).has('n')) {
+		return `L'escalier demande une récurrence qui ne dépend que du terme précédent : « ${sequence.name} » dépend aussi de n.`;
+	}
+	return null;
+}
 
 /** Ce qu'une suite rangée porte de son mode, de son rang et de son premier terme. */
 export function sequenceInputOf(
@@ -644,7 +677,8 @@ export class Atelier {
 			...rebuilt,
 			...keptSequence,
 			...(previous.plotted && { plotted: true }),
-			...(isFunction(previous) && previous.display && { display: previous.display }),
+			...((isFunction(previous) || isSequence(previous)) &&
+				previous.display && { display: previous.display }),
 			...(keptSlider && { slider: keptSlider })
 		} as AtelierObject;
 		this.recomputeAll();
@@ -758,6 +792,7 @@ export class Atelier {
 				: {}),
 			// Le mode toujours (une récurrence constante ne se devine pas), le rang
 			// et le premier terme seulement s'ils diffèrent du défaut
+			...(isSequence(o) && o.display ? { sequenceDisplay: plainSequenceDisplay(o.display) } : {}),
 			...(isSequence(o)
 				? {
 						mode: o.mode,
@@ -799,6 +834,7 @@ export class Atelier {
 			// Les réglages AVANT le tracé : sinon `setPlotted` attribuerait une
 			// couleur neuve à une courbe qui avait déjà la sienne.
 			if (stored.display) this.adoptDisplay(stored.name, stored.display);
+			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
 			if (stored.plotted) this.setPlotted(stored.name, true);
 		}
@@ -825,7 +861,9 @@ export class Atelier {
 		const display =
 			plotted && isFunction(current) && current.display === undefined
 				? newDisplay(this.#displays())
-				: undefined;
+				: plotted && isSequence(current) && current.display === undefined
+					? newSequenceDisplay(this.#displays())
+					: undefined;
 		this.items[index] = {
 			...current,
 			plotted,
@@ -894,9 +932,47 @@ export class Atelier {
 		this.items[index] = { ...current, display: fullDisplay(stored) };
 	}
 
-	/** Les réglages déjà pris par les autres fonctions — pour ne pas les doubler. */
-	#displays(): CurveDisplay[] {
-		return this.items.flatMap((o) => (isFunction(o) && o.display ? [o.display] : []));
+	/** Les couples couleur/style déjà pris (fonctions et suites) — pour ne pas les doubler. */
+	#displays(): Pick<CurveDisplay, 'color' | 'lineStyle'>[] {
+		return this.items.flatMap((o) =>
+			(isFunction(o) || isSequence(o)) && o.display ? [o.display] : []
+		);
+	}
+
+	/**
+	 * Régler le tracé d'une suite (U2) : couleur, style, nuage ou escalier.
+	 *
+	 * L'escalier est refusé, avec sa raison, sur une suite explicite ou une
+	 * récurrence qui dépend de n : il porte uₙ₊₁ en fonction de uₙ, et rien
+	 * d'autre — c'est la règle du grapheur.
+	 */
+	setSequenceDisplay(name: string, patch: Partial<SequenceDisplay>): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isSequence(current)) {
+			return { ok: false, message: `« ${name} » n'est pas une suite.` };
+		}
+		const read = readSequenceDisplayPatch(patch);
+		if (!read.ok) return { ok: false, message: read.message };
+		if (read.patch.representation === 'cobweb') {
+			const reason = cobwebRefusal(current);
+			if (reason !== null) return { ok: false, message: reason };
+		}
+		if (Object.keys(read.patch).length === 0) return { ok: true };
+		const base = current.display ?? newSequenceDisplay(this.#displays());
+		this.items[index] = { ...current, display: { ...base, ...read.patch } };
+		this.revision++;
+		return { ok: true };
+	}
+
+	/** Poser un réglage de suite relu (sauvegarde, lien), validé. */
+	adoptSequenceDisplay(name: string, stored: unknown): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isSequence(current)) return;
+		const read = sequenceDisplaySchema.safeParse(stored);
+		if (!read.success) return;
+		this.items[index] = { ...current, display: read.data };
 	}
 
 	/** Les objets dont la définition cite `name`, directement. */

@@ -80,7 +80,9 @@ const storedObjectSchema = z.object({
 	 */
 	mode: z.enum(['explicit', 'recurrence']).optional().catch(undefined),
 	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
-	firstTerm: z.string().max(20).optional().catch(undefined)
+	firstTerm: z.string().max(20).optional().catch(undefined),
+	/** Réglages du tracé d'une suite (lot 5b) ; validés par `adoptSequenceDisplay`. */
+	sequenceDisplay: z.unknown().optional()
 });
 
 /**
@@ -102,6 +104,7 @@ export interface StoredObject {
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
+	readonly sequenceDisplay?: unknown;
 }
 
 export interface AtelierState {

@@ -55,11 +55,14 @@ describe('progressivité', () => {
 		expect(ids('L')).toContain('fit');
 	});
 
-	it('propose les deux tracés d’une suite', () => {
+	// Depuis le lot 5b de `/grapheur`, 👁 trace et « Sur le graphique » choisit
+	// nuage ou escalier : la suite garde ses deux tracés, plus en boutons
+	it('propose les gestes d’une suite, et ses deux tracés', () => {
 		a.create({ kind: 'sequence', name: 'u', definition: '0,5u_n + 3' });
 
-		expect(ids('u')).toContain('plot-points');
-		expect(ids('u')).toContain('plot-cobweb');
+		expect(ids('u')).toContain('terms');
+		a.setPlotted('u', true);
+		expect(a.setSequenceDisplay('u', { representation: 'cobweb' }).ok).toBe(true);
 	});
 
 	// Renommer et supprimer valent pour tout objet, quel que soit son état

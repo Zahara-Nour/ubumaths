@@ -59,9 +59,9 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		// carte, qui calcule sans envoyer dans Calcul (phase 0 `/grapheur` §3 A4)
 	],
 	sequence: [
-		{ id: 'plot-points', label: 'Tracer en nuage' },
-		{ id: 'plot-cobweb', label: 'Tracer en escalier' },
-		{ id: 'table', label: 'Premiers termes' }
+		// « Tracer en nuage / en escalier » ne sont plus des boutons : 👁 trace, et
+		// la représentation se règle dans « Sur le graphique » (lot 5b, U2)
+		{ id: 'terms', label: 'Premiers termes' }
 	],
 	// ⚠️ « Nuage » et « Ajustement » sont remplacés par une action PAR PARTENAIRE
 	// quand l'atelier est connu (voir `partnerActions`). Ces deux-là ne servent
@@ -87,8 +87,6 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	// devenu un champ de la carte, lot 3b).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques.
-	'plot-points',
-	'plot-cobweb',
 	'table',
 	'convert',
 	'rename'

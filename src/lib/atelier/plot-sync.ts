@@ -13,12 +13,12 @@
  */
 
 import type { Atelier } from './atelier.svelte';
-import type { AtelierObject, CurveDisplay } from './types';
+import type { AtelierObject, CurveDisplay, SequenceDisplay, SequenceMode } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/grapheur/types';
-import { expressionOf } from './engine';
+import { expressionOf, firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
-import { isFunction, isList } from './types';
+import { isFunction, isList, isSequence } from './types';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -178,7 +178,7 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 	const mine = perGraph.get(graph) ?? new Map<string, string>();
 	perGraph.set(graph, mine);
 
-	const wanted = new Map<string, Wanted | WantedScatter>();
+	const wanted = new Map<string, Wanted | WantedScatter | WantedSequence>();
 	for (const object of atelier.objects) {
 		const curve = wantedFor(atelier, object);
 		if (curve !== null) {
@@ -186,7 +186,12 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 			continue;
 		}
 		const cloud = wantedScatterFor(atelier, object);
-		if (cloud !== null) wanted.set(object.name, cloud);
+		if (cloud !== null) {
+			wanted.set(object.name, cloud);
+			continue;
+		}
+		const sequence = wantedSequenceFor(atelier, object);
+		if (sequence !== null) wanted.set(object.name, sequence);
 	}
 
 	// Retirer ce qui ne doit plus être tracé.
@@ -202,6 +207,11 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 		const id = mine.get(name);
 
 		// Les nuages ont leur propre pose : deux séries de nombres, pas un latex.
+		if ('kind' in target && target.kind === 'sequence') {
+			syncSequence(graph, mine, name, id, target);
+			continue;
+		}
+
 		if ('kind' in target) {
 			const current = id === undefined ? undefined : graph.getFunction(id);
 			if (current === undefined || !isScatter(current)) {
@@ -256,4 +266,75 @@ export function curveOf(
 	if (id === undefined) return undefined;
 	const curve = graph.getFunction(id);
 	return curve !== undefined && isExplicitFunction(curve) ? curve : undefined;
+}
+
+// =============================================================================
+// Suites (lot 5b)
+// =============================================================================
+
+/** Ce qu'une suite tracée doit valoir dans le grapheur. */
+interface WantedSequence {
+	readonly kind: 'sequence';
+	readonly latex: string;
+	readonly mode: SequenceMode;
+	readonly firstIndex: number;
+	readonly firstTerm: number | null;
+	readonly display: SequenceDisplay;
+	/** Masquée (pas retirée) tant qu'elle ne peut rien produire — comme une courbe. */
+	readonly visible: boolean;
+}
+
+function wantedSequenceFor(atelier: Atelier, object: AtelierObject): WantedSequence | null {
+	if (!isSequence(object) || !object.plotted || object.display === undefined) return null;
+	const latex = graphLatexOf(atelier, object.name);
+	const first = object.mode === 'recurrence' ? firstTermValue(atelier, object.firstTerm) : null;
+	return {
+		kind: 'sequence',
+		latex: latex ?? '',
+		mode: object.mode,
+		firstIndex: object.firstIndex,
+		firstTerm: typeof first === 'number' ? first : null,
+		display: object.display,
+		visible: object.status === 'ok' && latex !== null && typeof first !== 'string'
+	};
+}
+
+/** Poser ou mettre à jour une suite, en n'écrivant que ce qui diffère. */
+function syncSequence(
+	graph: GrapheurStore,
+	mine: Map<string, string>,
+	name: string,
+	id: string | undefined,
+	target: WantedSequence
+): void {
+	const found = id === undefined ? undefined : graph.getFunction(id);
+	// Le nom pointait vers autre chose (une courbe, un nuage) : on le retire
+	if (found !== undefined && found.type !== 'sequence') graph.removeFunction(id!);
+	let current = found !== undefined && found.type === 'sequence' ? found : undefined;
+	if (current === undefined) {
+		const fresh = graph.addSequence(target.mode, target.latex);
+		mine.set(name, fresh);
+		const posed = graph.getFunction(fresh);
+		if (posed === undefined || posed.type !== 'sequence') return;
+		current = posed;
+	}
+
+	const wanted = {
+		name,
+		latex: target.latex,
+		mode: target.mode,
+		firstIndex: target.firstIndex,
+		firstTerm: target.firstTerm,
+		representation: target.display.representation,
+		cobwebSteps: target.display.cobwebSteps,
+		color: target.display.color,
+		lineStyle: target.display.lineStyle,
+		lineWidth: target.display.lineWidth,
+		visible: target.visible
+	};
+	const changes: Partial<typeof wanted> = {};
+	for (const key of Object.keys(wanted) as (keyof typeof wanted)[]) {
+		if (current[key] !== wanted[key]) Object.assign(changes, { [key]: wanted[key] });
+	}
+	if (Object.keys(changes).length > 0) graph.updateSequence(current.id, changes);
 }

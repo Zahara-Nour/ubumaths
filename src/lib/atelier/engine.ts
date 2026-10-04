@@ -26,6 +26,7 @@ import {
 import { substituteAll } from '$lib/mathAST/eval/substitute';
 import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { derivativeOf } from './names';
 import { astOf, readNumber } from './parse';
@@ -389,7 +390,7 @@ export function termsOf(atelier: Atelier, name: string, lastIndex: number): Term
 }
 
 /** La valeur numérique du premier terme : un nombre, ou une valeur de l'atelier. */
-function firstTermValue(atelier: Atelier, firstTerm: string): number | string {
+export function firstTermValue(atelier: Atelier, firstTerm: string): number | string {
 	const plain = readNumber(firstTerm.replace(/\{,\}/g, ','));
 	if (plain !== null) return plain;
 	const cited = atelier.get(firstTerm);
@@ -426,4 +427,25 @@ function previousTermAsVariable(ast: MathNode, name: string): MathNode {
 			return { type: 'variable', name: PREV_TERM_VARIABLE };
 		}
 	});
+}
+
+/**
+ * Le LaTeX qu'attend le grapheur pour tracer une suite, ou `null`.
+ *
+ * Les autres noms sont remplacés (valeurs, fonctions explicites), et le terme
+ * précédent est écrit `u_n` — la seule forme que `parseSequence` du grapheur
+ * relit ; l'élève, lui, a pu écrire `u(n)` (décision S2).
+ */
+export function graphLatexOf(atelier: Atelier, name: string): string | null {
+	const substituted = expressionOf(atelier, name);
+	if (!substituted.ok) return null;
+	const parsed = astOf(substituted.expression, 'text', [...atelier.functionNames, name]);
+	if (parsed === null) return null;
+	const rewritten = transformAST(parsed, {
+		enterFunction: (node) =>
+			node.name === name && node.args.length === 1
+				? { type: 'subscript', base: { type: 'variable', name }, subscript: node.args[0] }
+				: undefined
+	});
+	return toLatex(rewritten);
 }
