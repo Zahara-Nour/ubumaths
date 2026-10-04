@@ -19,6 +19,7 @@
  */
 
 import { HEX_COLOR, resolveNamedColor } from '$lib/theme/named-colors';
+import { darkContrastWarning } from '$lib/theme/author-color';
 import type {
 	FigureIssue,
 	FigureNode,
@@ -447,13 +448,17 @@ function hasFiniteGeometry(figure: Figure, el: GeoElement): boolean {
 
 /**
  * Valider (et normaliser) couleurs et nombres des objets visibles. Les noms de
- * couleur connus sont ramenés à leur nom canonique dans la figure.
+ * couleur connus sont ramenés à leur nom canonique dans la figure. Un hex de
+ * trait peu lisible en mode sombre ajoute un avertissement (D2, une fois par
+ * valeur) ; `#000000`, le défaut, suit le texte et n'est pas concerné.
  */
 function validateDrawing(
 	node: FigureNode,
 	figure: Figure,
-	elements: GeoElement[]
+	elements: GeoElement[],
+	warnings: FigureIssue[]
 ): FigureIssue | null {
+	const warnedHex = new Set<string>();
 	const located = (el: GeoElement, message: string, needle?: string): FigureIssue => {
 		const line = scriptLineOf(node.script, el, needle);
 		return line === null ? { message } : issueAt(node, line, message);
@@ -478,6 +483,19 @@ function validateDrawing(
 				);
 			}
 			if (safe !== raw) fixes[key] = safe;
+			const hex = safe.toLowerCase();
+			if (
+				key === 'color' &&
+				hex !== FIGURE_DEFAULT_COLOR &&
+				!warnedHex.has(hex) &&
+				warnings.length < MAX_WARNINGS
+			) {
+				const warning = darkContrastWarning(safe);
+				if (warning) {
+					warnedHex.add(hex);
+					warnings.push(located(el, `${name}${warning}`, raw));
+				}
+			}
 		}
 		if (fixes.color !== undefined || fixes.fillColor !== undefined)
 			figure.updateStyle(el.id, fixes);
@@ -831,7 +849,7 @@ export function buildFigureScene(
 		};
 	}
 
-	const invalid = validateDrawing(node, figure, drawn);
+	const invalid = validateDrawing(node, figure, drawn, warnings);
 	if (invalid) return { scene: null, errors: [invalid], warnings };
 	// Relire après normalisation des couleurs (`updateStyle` remplace l'objet)
 	const elements = figure.getAllElements().filter((el) => el.visible);

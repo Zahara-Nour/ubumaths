@@ -17,8 +17,9 @@
  */
 
 import type { TrigCircleNode, TrigAngle, TrigArc, TrigNamedPoint } from '../types/trig-circle';
-import { REMARKABLE_ANGLES, isNamedPointAngle } from '../types/trig-circle';
+import { REMARKABLE_ANGLES, TRIG_DEFAULT_COLOR, isNamedPointAngle } from '../types/trig-circle';
 import { convertLatexToTypstMath } from './typst-generator';
+import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
 
 // ============================================================================
 // CONFIGURATION
@@ -530,18 +531,9 @@ function getSinValue(radians: number): string {
 }
 
 /**
- * Convert color name to Typst color
+ * Couleur Typst du cercle : palette commune (français ou anglais), variante
+ * claire ; hex tel quel ; inconnue → bleu de la palette. Toujours `rgb("#…")`.
  */
 function getTypstColor(color: string): string {
-	const colorMap: Record<string, string> = {
-		blue: 'blue',
-		red: 'red',
-		green: 'green',
-		orange: 'orange',
-		purple: 'purple',
-		pink: 'rgb("#ec4899")',
-		cyan: 'rgb("#06b6d4")',
-		yellow: 'yellow'
-	};
-	return colorMap[color.toLowerCase()] || 'blue';
+	return authorColorTypst(resolveAuthorColor(color, TRIG_DEFAULT_COLOR));
 }

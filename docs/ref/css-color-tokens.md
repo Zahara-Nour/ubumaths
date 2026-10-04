@@ -158,6 +158,18 @@ dans le bloc `@theme static` de `src/app.css` :
   avec le contenu en base ;
 - un **hexadécimal** d'auteur passe tel quel, figé dans les deux modes.
 
+Couleur d'auteur dans un **bloc** (droite graduée, cercle trigo ; avertissement de contraste
+aussi pour `figure`) : `resolveAuthorColor(raw, défaut)` (`src/lib/theme/author-color.ts`) rend
+`{ screen, print, warning }` — `screen` va dans `style:`, `print` dans `rgb("…")` côté Typst
+(jamais un nom brut : `rgb("bleu")` ou `fill: bleu` fait échouer **toute** la fiche), `warning`
+s'affiche au prof (couleur inconnue → défaut ; hex sous 3:1 sur le fond sombre → nom de palette
+le plus proche, ΔE OKLab). Les fonds sombres de référence (`DARK_BACKGROUNDS`) sont vérifiés
+égaux à `app.css` par test.
+
+**Une `var(--x)` dans un composant doit exister** : `src/lib/theme/__tests__/block-css-vars.test.ts`
+le vérifie pour les quatre blocs du lot 3 (app.css ou variable locale). Ne pas redéfinir de
+couleur sous `:global(.dark)` quand un token `light-dark()` existe : il bascule seul.
+
 geometry-core conserve le **nom canonique** jusqu'au rendu (`resolveStyle().color === 'rouge'`) ;
 `resolvePrintStyle()` le traduit pour les exports. Décisions : `docs/wip/palette-figures-progress.md`.
 

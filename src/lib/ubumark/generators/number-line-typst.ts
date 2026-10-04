@@ -17,7 +17,14 @@
  */
 
 import type { NumberLineNode, NumberLinePoint, NumberLineSegment } from '../types/number-line';
-import { numVal, computeGraduations, mapValueToRange } from '../utils/number-line-render';
+import {
+	numVal,
+	computeGraduations,
+	mapValueToRange,
+	NL_DEFAULT_POINT_COLOR,
+	NL_DEFAULT_SEGMENT_COLOR
+} from '../utils/number-line-render';
+import { authorColorTypst, resolveAuthorColor } from '$lib/theme/author-color';
 import { convertLatexToTypstMath } from './typst-generator';
 
 // ============================================================================
@@ -199,7 +206,7 @@ function generatePoints(
 
 	for (const p of points) {
 		const x = mapValueToRange(numVal(p.value), startNum, endNum, opts.lineWidth, scale);
-		const color = getTypstColor(p.color);
+		const color = authorColorTypst(resolveAuthorColor(p.color, NL_DEFAULT_POINT_COLOR));
 
 		// Circle
 		lines.push(
@@ -235,7 +242,7 @@ function generateSegments(
 		const x1 = mapValueToRange(numVal(seg.start), startNum, endNum, opts.lineWidth, scale);
 		const x2 = mapValueToRange(numVal(seg.end), startNum, endNum, opts.lineWidth, scale);
 		const y = opts.segmentOffset - i * 0.3;
-		const color = getTypstColor(seg.color);
+		const color = authorColorTypst(resolveAuthorColor(seg.color, NL_DEFAULT_SEGMENT_COLOR));
 
 		// Segment line
 		lines.push(
@@ -257,32 +264,4 @@ function generateSegments(
 
 	lines.push('');
 	return lines.join('\n');
-}
-
-// ============================================================================
-// COLOR MAPPING
-// ============================================================================
-
-function getTypstColor(color?: string): string {
-	if (!color) return 'red';
-
-	const colorMap: Record<string, string> = {
-		red: 'red',
-		blue: 'blue',
-		green: 'green',
-		orange: 'orange',
-		purple: 'purple',
-		pink: 'rgb("#ec4899")',
-		cyan: 'rgb("#06b6d4")',
-		yellow: 'yellow',
-		black: 'black',
-		gray: 'gray'
-	};
-
-	// Handle CSS color variables (fallback to the plain color name)
-	if (color.startsWith('var(')) {
-		return 'red';
-	}
-
-	return colorMap[color.toLowerCase()] || color;
 }

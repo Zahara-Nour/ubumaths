@@ -768,9 +768,10 @@
 <style>
 	/* CSS Variables for customization */
 	.probability-tree {
-		--pt-line-color: var(--foreground, #1f2937);
+		/* Tokens du thème (light-dark() dans app.css) : rien à redéfinir en sombre */
+		--pt-line-color: var(--color-foreground);
 		--pt-line-width: 1.5px;
-		--pt-highlight-color: var(--primary, #3b82f6);
+		--pt-highlight-color: var(--color-fig-bleu);
 		--pt-highlight-width: 2.5px;
 		--pt-dimmed-opacity: 0.3;
 	}
@@ -806,12 +807,12 @@
 	}
 
 	.pt-branch-hitarea:focus-visible + .pt-branch-line {
-		stroke: var(--pt-highlight-color, #3b82f6);
+		stroke: var(--pt-highlight-color);
 		stroke-width: var(--pt-highlight-width, 2.5px);
 	}
 
 	.pt-branch-line {
-		stroke: var(--pt-line-color, #1f2937);
+		stroke: var(--pt-line-color);
 		stroke-width: var(--pt-line-width, 1.5px);
 		fill: none;
 		pointer-events: none;
@@ -821,7 +822,7 @@
 	}
 
 	.pt-branch.pt-highlighted .pt-branch-line {
-		stroke: var(--pt-highlight-color, #3b82f6);
+		stroke: var(--pt-highlight-color);
 		stroke-width: var(--pt-highlight-width, 2.5px);
 	}
 
@@ -850,11 +851,11 @@
 	}
 
 	.pt-prob-clickable:hover {
-		color: var(--pt-highlight-color, #3b82f6);
+		color: var(--pt-highlight-color);
 	}
 
 	.pt-branch.pt-highlighted .pt-prob-label {
-		color: var(--pt-highlight-color, #3b82f6);
+		color: var(--pt-highlight-color);
 	}
 
 	.pt-event-label {
@@ -872,11 +873,11 @@
 	}
 
 	.pt-event-clickable:hover {
-		color: var(--pt-highlight-color, #3b82f6);
+		color: var(--pt-highlight-color);
 	}
 
 	.pt-branch.pt-highlighted .pt-event-label {
-		color: var(--pt-highlight-color, #3b82f6);
+		color: var(--pt-highlight-color);
 	}
 
 	/* Intersection probability at leaves */
@@ -903,7 +904,7 @@
 		align-items: center;
 		height: 100%;
 		font-size: 0.85em;
-		color: var(--muted-foreground, #6b7280);
+		color: var(--color-muted-foreground);
 		transition: opacity 0.2s ease;
 	}
 
@@ -919,12 +920,6 @@
 	/* Math element styling */
 	.probability-tree :global(math-span) {
 		font-size: inherit;
-	}
-
-	/* Dark mode support */
-	:global(.dark) .probability-tree {
-		--pt-line-color: var(--foreground, #f3f4f6);
-		--pt-highlight-color: var(--primary, #60a5fa);
 	}
 
 	/* Responsive adjustments */
