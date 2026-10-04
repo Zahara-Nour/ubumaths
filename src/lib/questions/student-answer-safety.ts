@@ -86,6 +86,16 @@ const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
 	'Psi', 'Omega', 'Kappa'
 ]);
 
+/**
+ * Seul environnement admis : le vecteur en colonne de l'onglet « Vecteur » du
+ * clavier (case « vecteur »). Écrit exactement `\begin{pmatrix}` / `\end{pmatrix}` ;
+ * toute autre forme (`array`, `pmatrix*[r]`, espace avant l'accolade) est retirée.
+ */
+const ALLOWED_ENVIRONMENT = /^(begin|end)\{pmatrix\}/;
+
+/** Passages à la ligne admis par colonne : 3 coordonnées au plus (lignes en masse = page démesurée) */
+const MAX_COLUMN_BREAKS = 2;
+
 /** Caractères qu'un `\` peut précéder (espaces, accolades, `%`, `|`) */
 const ALLOWED_ESCAPED: ReadonlySet<string> = new Set([',', ';', ':', '!', ' ', '{', '}', '%', '|']);
 
@@ -169,11 +179,35 @@ function strippedArguments(latex: string, from: number): { kept: string; end: nu
 function keepAllowedCommands(latex: string): string {
 	let out = '';
 	let i = 0;
+	// Vecteurs en colonne ouverts (passages à la ligne déjà gardés dans chacun) :
+	// `\\` n'est admis qu'à l'intérieur
+	const openColumns: number[] = [];
 	while (i < latex.length) {
 		const c = latex[i];
 		if (c !== '\\') {
 			out += c;
 			i++;
+			continue;
+		}
+		const environment = ALLOWED_ENVIRONMENT.exec(latex.slice(i + 1));
+		if (environment) {
+			out += `\\${environment[0]}`;
+			i += 1 + environment[0].length;
+			if (environment[1] === 'begin') openColumns.push(0);
+			else openColumns.pop();
+			continue;
+		}
+		// Passage à la ligne DANS une colonne : gardé (plafonné), son option d'espacement
+		// `[…]` toujours retirée — MathLive la lit derrière tout blanc (tabulation, insécable…)
+		if (latex[i + 1] === '\\' && openColumns.length > 0) {
+			const top = openColumns.length - 1;
+			if (openColumns[top] < MAX_COLUMN_BREAKS) {
+				out += '\\\\';
+				openColumns[top]++;
+			}
+			let j = i + 2;
+			while (/\s/.test(latex[j] ?? '')) j++;
+			i = latex[j] === '[' ? groupEnd(latex, j) : i + 2;
 			continue;
 		}
 		const name = /^[a-zA-Z]+/.exec(latex.slice(i + 1))?.[0];
