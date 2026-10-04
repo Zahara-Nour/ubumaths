@@ -53,6 +53,47 @@ export function hasObjectNameShape(name: string): boolean {
 	return NAME_SHAPE.test(name) && !RESERVED_NAMES.has(name);
 }
 
+/**
+ * Le nom d'une dérivée : un nom d'objet suivi d'une ou plusieurs apostrophes
+ * (`f'`, `f''`, `u_1'`).
+ *
+ * ⚠️ Jamais tapé par l'élève comme nom : la carte `f′` naît de « Dériver »
+ * (phase 0 `/grapheur` §2, décision G6). L'apostrophe est celle que le parseur
+ * lit comme dérivée — c'est elle qui rend la carte vivante.
+ */
+const DERIVATIVE_SHAPE = /^([A-Za-z](?:_\d+)?)('+)$/;
+
+/** Ce nom est-il celui de la dérivée d'une fonction (`f'`, `f''`) ? */
+export function isDerivativeName(name: string): boolean {
+	return derivativeOf(name) !== null;
+}
+
+/** La fonction dérivée et l'ordre de dérivation, ou `null`. */
+export function derivativeOf(name: string): { base: string; order: number } | null {
+	const match = DERIVATIVE_SHAPE.exec(name);
+	if (!match || RESERVED_NAMES.has(match[1])) return null;
+	return { base: match[1], order: match[2].length };
+}
+
+/** Le nom de la dérivée suivante : `f` → `f'`, `f'` → `f''`. */
+export function derivativeName(name: string): string {
+	return `${name}'`;
+}
+
+/** Les signes primes typographiques, jusqu'à la tierce. */
+const PRIMES = ['', '′', '″', '‴'];
+
+/**
+ * Le nom tel qu'on l'AFFICHE : `f'` s'écrit `f′`, `f''` s'écrit `f″`.
+ * Le nom rangé garde l'apostrophe, que le parseur sait lire.
+ */
+export function displayName(name: string): string {
+	const derivative = derivativeOf(name);
+	if (derivative === null) return name;
+	const marks = PRIMES[derivative.order] ?? '′'.repeat(derivative.order);
+	return `${derivative.base}${marks}`;
+}
+
 /** Borne de la recherche d'un nom indicé — garde-fou, jamais atteinte. */
 const MAX_INDEX = 999;
 

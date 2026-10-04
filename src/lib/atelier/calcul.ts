@@ -16,7 +16,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { validateName, nameRejectionMessage, nextName } from './names';
+import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
 import { syncEngine, expressionOf, expandInput } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -118,6 +118,9 @@ export type ActionOutcome =
  * d'égalité, que le moteur sait déjà traiter (§2 L1).
  */
 const DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?:\(\s*([A-Za-z])\s*\))?\s*=\s*(.+)$/s;
+
+/** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
+const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\))?\s*=(?!=)/;
 
 // =============================================================================
 // Fonctions
@@ -361,6 +364,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `.résoudre`, où seul l'un des deux chemins avait d'abord été branché.
 	// Ici il n'y a pas d'objet à nommer, donc la dérivée est rendue seule.
 	if (name === 'diff') {
+		// `.dériver f` sur une fonction de l'atelier crée la carte `f′`, comme le
+		// bouton (phase 0 `/grapheur` §2 D3). Sur une expression, rien à créer (L4).
+		const typed = space === -1 ? '' : resolved.slice(space + 1).trim();
+		const target = /^(.+?)\s*(?:\(\s*x\s*\))?$/.exec(typed)?.[1] ?? typed;
+		if (session.atelier.get(target)?.kind === 'function') {
+			session.atelier.createDerivative(target);
+		}
 		const derived = deriveSteps(argument);
 		if (derived !== null) {
 			return {
@@ -460,6 +470,17 @@ export function runInput(
 	// La forme du membre gauche est garantie par la regex — `3 = 3` n'y entre
 	// pas. Un nom RÉSERVÉ, lui, y entre et se fait refuser par `validateName` :
 	// « x = 3 » doit expliquer pourquoi (§2 L2), pas se taire en test d'égalité.
+	// §2 E1 : `f'(x) = 3x` ne définit rien — `f′` est la dérivée de `f`
+	const derivativeDefinition = DERIVATIVE_DEFINITION.exec(input);
+	if (derivativeDefinition !== null) {
+		const typedName = derivativeDefinition[1];
+		const base = derivativeOf(typedName)?.base ?? typedName;
+		return {
+			kind: 'refus',
+			message: `${displayName(typedName)} est la dérivée de ${base} : elle se calcule, elle ne se définit pas. Pour l'obtenir : .dériver ${base}`
+		};
+	}
+
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;

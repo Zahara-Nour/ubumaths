@@ -15,6 +15,8 @@
 	import { curveColorValue } from '$lib/grapheur/colors';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
 	import { forMathlive } from '$lib/atelier/mathfield';
+	import { derivativeOf, displayName } from '$lib/atelier/names';
+	import { expressionOf } from '$lib/atelier/engine';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
@@ -71,7 +73,15 @@
 	 */
 	const rendered = $derived.by(() => {
 		if (object.definition.trim() === '' || object.kind === 'list') return null;
-		const ast = astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
+		// La carte `f′` est définie par `f′(x)` : c'est sa FORMULE qu'on veut lire
+		// (`2x − 3`), recalculée depuis `f` à chaque modification
+		const source = derivative ? expressionOf(atelier, object.name) : null;
+		const ast =
+			source !== null
+				? source.ok
+					? astOf(source.expression, 'text', atelier.functionNames)
+					: null
+				: astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
 		if (ast === null) return null;
 		const latex = forMathlive(toLatex(ast));
 		return {
@@ -88,8 +98,16 @@
 			: null
 	);
 
-	/** Les objets dont on saisit la définition dans la carte (C11 : pas les listes ; les suites au lot 5). */
-	const editable = $derived(object.kind === 'function' || object.kind === 'value');
+	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
+	const derivative = $derived(derivativeOf(object.name));
+
+	/**
+	 * Les objets dont on saisit la définition dans la carte (C11 : pas les
+	 * listes ; les suites au lot 5 ; pas une dérivée, qui se calcule — §2 L2).
+	 */
+	const editable = $derived(
+		derivative === null && (object.kind === 'function' || object.kind === 'value')
+	);
 
 	/** Ce que l'élève lit quand l'objet ne peut rien produire. */
 	const stateLabel = $derived.by(() => {
@@ -116,7 +134,7 @@
 			></span>
 		{/if}
 		<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
-			<span class="nom">{object.name}</span>
+			<span class="nom">{displayName(object.name)}</span>
 			<span class="definition">
 				{#if rendered}
 					<span aria-hidden="true">
@@ -139,7 +157,7 @@
 				type="button"
 				class="oeil"
 				aria-pressed={object.plotted === true}
-				aria-label={`Tracer ${object.name}`}
+				aria-label={`Tracer ${displayName(object.name)}`}
 				title="Tracer sur le graphique"
 				onclick={() => atelier.setPlotted(object.name, !object.plotted)}
 			>
@@ -154,6 +172,11 @@
 
 	{#if selected && editable}
 		<DefinitionField {object} />
+	{/if}
+	{#if selected && derivative !== null}
+		<p class="derivee">
+			dérivée de {displayName(derivative.base)} — elle suit {displayName(derivative.base)}
+		</p>
 	{/if}
 
 	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->
@@ -348,6 +371,11 @@
 		color: var(--color-muted-foreground);
 	}
 
+	.derivee {
+		margin: 0;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
+	}
 	.message {
 		margin: 0;
 		font-size: 0.75rem;

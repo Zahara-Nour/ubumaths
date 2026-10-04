@@ -26,7 +26,14 @@ import type {
 	ListObject,
 	ValueObject
 } from './types';
-import { validateName, nextName, nameRejectionMessage } from './names';
+import {
+	validateName,
+	nextName,
+	nameRejectionMessage,
+	derivativeOf,
+	derivativeName,
+	displayName
+} from './names';
 import type { Provenance } from './parse';
 import { parseDefinition, referencesOf, renameInDefinition } from './parse';
 import type { ListChartKind } from './chart';
@@ -52,6 +59,8 @@ export interface Refused {
 export interface Created {
 	readonly ok: true;
 	readonly object: AtelierObject;
+	/** La dérivée existait déjà : rien n'a été créé (phase 0 `/grapheur` §2 L1). */
+	readonly existed?: boolean;
 }
 
 export interface Renamed {
@@ -234,6 +243,20 @@ export class Atelier {
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
 			const cited = this.#cited(input.kind, definition, provenance).map((r) => r.name);
 			name = nextName(input.kind, this.names, cited);
+		} else if (derivativeOf(input.name) !== null) {
+			// La carte `f′` n'a qu'une définition possible : elle-même, que le
+			// parseur lit comme la dérivée de `f`. Toute autre est refusée — une
+			// dérivée se calcule, elle ne se définit pas (§2 E1).
+			if (input.kind !== 'function' || definition !== `${input.name}(x)`) {
+				return {
+					ok: false,
+					message: `${displayName(input.name)} est la dérivée de ${derivativeOf(input.name)!.base} : elle se calcule, elle ne se définit pas.`
+				};
+			}
+			if (this.names.includes(input.name)) {
+				return { ok: false, message: nameRejectionMessage('taken', input.name) };
+			}
+			name = input.name;
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
@@ -243,6 +266,51 @@ export class Atelier {
 		this.items.push(this.build(name, input.kind, definition, provenance));
 		this.recomputeAll();
 		return { ok: true, object: this.get(name)! };
+	}
+
+	/**
+	 * Créer la carte de la dérivée de `name` : `f` donne `f′`, `f′` donne `f″`.
+	 *
+	 * Phase 0 `/grapheur` §2 (décision G6) : un objet nommé `f'`, défini par
+	 * `f'(x)` — c'est-à-dire VIVANT : il suit `f`, puisque le parseur relit la
+	 * dérivée de `f` à chaque calcul. Tracé d'office si `f` l'est (D2). Déjà là,
+	 * il est rendu tel quel (L1, `existed`).
+	 */
+	createDerivative(name: string): Created | Refused {
+		const base = this.get(name);
+		if (base === undefined) return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
+		if (base.kind !== 'function') {
+			return { ok: false, message: `Seule une fonction se dérive : « ${name} » n'en est pas une.` };
+		}
+		if (base.status !== 'ok') {
+			// Le message de l'objet d'abord : une fonction EN ATTENTE n'est pas
+			// illisible, elle attend un nom (`a`) — le dire autrement serait faux
+			return {
+				ok: false,
+				message:
+					base.definition.trim() === ''
+						? `« ${displayName(name)} » est vide : il n'y a rien à dériver.`
+						: (base.message ??
+							`« ${displayName(name)} » ne se lit pas : il faut la corriger avant de la dériver.`)
+			};
+		}
+
+		const derived = derivativeName(name);
+		const existing = this.get(derived);
+		if (existing !== undefined) return { ok: true, object: existing, existed: true };
+
+		const created = this.create(
+			{ kind: 'function', name: derived, definition: `${derived}(x)` },
+			'text'
+		);
+		if (!created.ok) return created;
+		// E3 : une dérivée qui ne se calcule pas ne laisse pas de carte en erreur
+		if (created.object.status !== 'ok') {
+			this.remove(derived);
+			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
+		}
+		if (base.plotted) this.setPlotted(derived, true);
+		return { ok: true, object: this.get(derived)! };
 	}
 
 	// ---------------------------------------------------------------------------
@@ -286,12 +354,21 @@ export class Atelier {
 			definition: this.#renamedIn(this.items[index], from, to)
 		} as AtelierObject;
 
+		// Les dérivées suivent leur fonction : `f′` devient `h′` (sinon la carte
+		// `f′` resterait en attente d'une fonction `f` qui n'existe plus)
+		this.items.forEach((o, i) => {
+			const derivative = derivativeOf(o.name);
+			if (derivative?.base !== from) return;
+			const renamed = `${to}${"'".repeat(derivative.order)}`;
+			this.items[i] = { ...o, name: renamed, definition: `${renamed}(x)` } as AtelierObject;
+		});
+
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
 		// un élève, et on le lui dit en rendant la liste. L'objet renommé n'y
 		// figure pas — il n'a pas été « mis à jour », il a été renommé.
 		const updated: string[] = [];
 		this.items.forEach((o, i) => {
-			if (o.name === to) return;
+			if (o.name === to || derivativeOf(o.name)?.base === to) return;
 			const rewritten = this.#renamedIn(o, from, to);
 			if (rewritten !== o.definition) {
 				this.items[i] = { ...o, definition: rewritten } as AtelierObject;

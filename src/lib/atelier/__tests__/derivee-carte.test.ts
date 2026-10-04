@@ -275,3 +275,38 @@ describe('« Dériver » et `.dériver f`', () => {
 		expect(labels).not.toContain('keep-derivative');
 	});
 });
+
+// Cas repris de l'ancien `keep-derivative.svelte.test.ts` (« Garder la
+// dérivée » est remplacé par « Dériver », phase 0 Q1 / G6)
+describe('cas repris de « Garder la dérivée »', () => {
+	it('sur une fonction en attente : la ligne dit l’attente, sans carte ni message faux', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
+		const desk = new CalcDesk(atelier);
+
+		desk.runFromPanel('derive', 'f');
+
+		expect(desk.entries[0].failed).toBe(true);
+		expect(desk.entries[0].text).toBe(atelier.get('f')?.message);
+		expect(atelier.names).toEqual(['f']);
+	});
+
+	it('substitue avant de dériver : f(x) = g(x) + 1 donne f′ = 2x', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'g', definition: 'x^2' }, 'text');
+		atelier.create({ kind: 'function', name: 'f', definition: 'g(x) + 1' }, 'text');
+
+		atelier.createDerivative('f');
+
+		expect(expression(atelier, "f'")).toBe('2x');
+	});
+
+	it('dérive une constante en zéro, sans broncher', () => {
+		const atelier = withF('7');
+
+		atelier.createDerivative('f');
+
+		expect(atelier.get("f'")?.status).toBe('ok');
+		expect(expression(atelier, "f'")).toBe('0');
+	});
+});
