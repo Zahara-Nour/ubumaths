@@ -75,6 +75,19 @@ interface StatText {
 		notApplicable: string;
 		row: (row: FrequencyTableRow, direction: StatChartDirection) => string;
 	};
+	/** Lois nommées (manches 11 et 13) : titre du tableau, nom de la loi */
+	law: {
+		/** « Loi de X : G(0,2) » */
+		title: (variable: string, name: string) => string;
+		binomial: (n: number, p: string) => string;
+		/** Complément du titre de B(1 ; p) */
+		bernoulli: string;
+		geometric: (p: string) => string;
+		/** `set` : « {1, …, 6} » */
+		uniform: (set: string) => string;
+		/** Sous les bâtons d'une loi géométrique, coupés au dernier k du tableau */
+		notShown: string;
+	};
 }
 
 export const STAT_TEXT: Record<ContentLocale, StatText> = {
@@ -138,6 +151,14 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 						return `Fréquence cumulée ${up ? 'croissante' : 'décroissante'}`;
 				}
 			}
+		},
+		law: {
+			title: (variable, name) => `Loi de ${variable} : ${name}`,
+			binomial: (n, p) => `B(${n} ; ${p})`,
+			bernoulli: 'loi de Bernoulli',
+			geometric: (p) => `G(${p})`,
+			uniform: (set) => `loi uniforme sur ${set}`,
+			notShown: 'valeurs suivantes non représentées'
 		}
 	},
 	en: {
@@ -201,6 +222,15 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 						return `${down} relative frequency`;
 				}
 			}
+		},
+		law: {
+			title: (variable, name) => `Distribution of ${variable}: ${name}`,
+			binomial: (n, p) => `B(${n}, ${p})`,
+			bernoulli: 'Bernoulli distribution',
+			// « Geo(p) » : la notation des manuels anglais (G seul y est rare)
+			geometric: (p) => `Geo(${p})`,
+			uniform: (set) => `uniform distribution on ${set}`,
+			notShown: 'following values not shown'
 		}
 	}
 };

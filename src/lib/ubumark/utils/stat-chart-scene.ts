@@ -48,7 +48,7 @@ import {
 	formatStatNumber
 } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
-import { randomVariable } from '$lib/statistics/random-variable';
+import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
 import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
@@ -65,6 +65,8 @@ import {
 	roundExact,
 	type BinomialDistribution
 } from '$lib/statistics/binomial';
+import { geometricMoments, geometricProbability } from '$lib/statistics/geometric';
+import { uniformMoments, uniformProbability } from '$lib/statistics/uniform';
 
 // ============================================================================
 // TYPES
@@ -300,6 +302,8 @@ export interface LawScene extends SceneCommon {
 	vertical?: boolean;
 	/** Loi binomiale, `diagramme: oui` : les bâtons de la loi (I en couleur, Q140) */
 	chart?: BarScene;
+	/** Loi géométrique, `diagramme: oui` : « valeurs suivantes non représentées » */
+	chartNote?: string;
 }
 
 /**
@@ -1467,23 +1471,23 @@ function thresholdLines(
 }
 
 /**
- * `diagramme: oui` : les bâtons de la loi, hauteur P(X = k) ; avec
- * `intervalle:`, ceux de I en couleur, les autres en gris (Q140)
+ * Les bâtons d'une loi (binomiale, géométrique, uniforme), hauteur P(X = k),
+ * une probabilité EXACTE par valeur, arrondie seulement pour la description
  */
-function binomialChart(
+function lawBars(
 	spec: StatChartSpec,
-	distribution: BinomialDistribution,
-	binomial: NonNullable<LawData['binomial']>,
+	labels: readonly string[],
+	exact: readonly { num: bigint; den: bigint }[],
+	places: number,
 	variable: string,
 	locale: ContentLocale
 ): BarScene {
-	const den = Number(distribution.denominator);
 	const chartSpec: StatChartSpec = {
 		...spec,
 		kind: 'barres',
-		data: distribution.numerators.map((num, k) => ({
-			label: String(k),
-			value: new Fraction(num, distribution.denominator).toNumber() || Number(num) / den,
+		data: exact.map(({ num, den }, i) => ({
+			label: labels[i],
+			value: new Fraction(num, den).toNumber() || Number(num) / Number(den),
 			interval: null,
 			line: 0
 		})),
@@ -1505,20 +1509,41 @@ function binomialChart(
 	// `pourcentages` : seulement pour lever le pas minimal de 1 des effectifs (pas de « % »)
 	const { yMax, ticks } = valueAxis(max, built.pixelSize.height, 'pourcentages', locale);
 	// Des numéros courts tiennent à plat, même nombreux
-	const longest = String(binomial.n).length;
+	const longest = Math.max(...labels.map((label) => label.length));
 	const bandPx = built.pixelSize.width / built.labels.length;
 	// « P(X = 3) ≈ 0,267 » : lu sans ambiguïté (« 3 0,267, 4 0,200 » mêlait les virgules, revue)
-	const shown = distribution.numerators.map((num, k) => {
-		const { text, exact } = roundedText(num, distribution.denominator, binomial.places, locale);
-		return `P(${variable} = ${k}) ${exact ? '=' : '≈'} ${text}`;
+	const shown = exact.map(({ num, den }, i) => {
+		const { text, exact: isExact } = roundedText(num, den, places, locale);
+		return `P(${variable} = ${labels[i]}) ${isExact ? '=' : '≈'} ${text}`;
 	});
-	const scene: BarScene = {
+	return {
 		...built,
 		yMax,
 		ticks,
 		rotateLabels: longest * STAT_CHART_CHAR_PX > bandPx,
 		description: `${STAT_TEXT[locale].kind.barres}${STAT_TEXT[locale].colon}${shown.join(' ; ')}.`
 	};
+}
+
+/**
+ * `diagramme: oui` : les bâtons de la loi, hauteur P(X = k) ; avec
+ * `intervalle:`, ceux de I en couleur, les autres en gris (Q140)
+ */
+function binomialChart(
+	spec: StatChartSpec,
+	distribution: BinomialDistribution,
+	binomial: NonNullable<LawData['binomial']>,
+	variable: string,
+	locale: ContentLocale
+): BarScene {
+	const scene = lawBars(
+		spec,
+		distribution.numerators.map((_, k) => String(k)),
+		distribution.numerators.map((num) => ({ num, den: distribution.denominator })),
+		binomial.places,
+		variable,
+		locale
+	);
 	if (binomial.interval === null) return scene;
 	const { a, b } = binomialInterval(distribution, intervalParts(binomial).level);
 	return {
@@ -1538,10 +1563,10 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 	const distribution = binomialDistribution(binomial.n, p);
 	const shownP = asWritten(binomial.p, locale);
 	const tableHidden = law.values.length > STAT_CHART_LIMITS.binomialTableValues;
-	const title =
-		locale === 'en'
-			? `Distribution of ${law.variable}: B(${binomial.n}, ${shownP})`
-			: `Loi de ${law.variable} : B(${binomial.n} ; ${shownP})`;
+	const text = STAT_TEXT[locale].law;
+	const name = text.binomial(binomial.n, shownP);
+	// B(1 ; p) : la loi de Bernoulli (manche 13)
+	const title = text.title(law.variable, binomial.n === 1 ? `${name} (${text.bernoulli})` : name);
 	const moments = binomialMoments(distribution);
 	// p écrit en décimal : E et V aussi, sans fraction géante (revue : « 6172839450617/50000000000 »)
 	const decimalP = /[.,]/.test(binomial.p);
@@ -1557,16 +1582,14 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 		...law.indicators.map(momentLine),
 		...intervalLines(distribution, binomial, law.variable, locale),
 		...thresholdLines(distribution, binomial, law.variable, locale),
-		...binomial.queries.map((query) => {
-			const { num, den } = binomialProbability(
-				distribution,
-				(k) => k >= query.low && k <= query.high
-			);
-			const { text, exact } = roundedText(num, den, binomial.places, locale);
-			const display =
-				locale === 'en' ? query.display.replace(/,/g, '.') : query.display.replace(/\./g, ',');
-			return `${display} ${exact ? '=' : '≈'} ${text}`;
-		})
+		...binomial.queries.map((query) =>
+			queryLine(
+				query.display,
+				binomialProbability(distribution, (k) => k >= query.low && k <= query.high),
+				binomial.places,
+				locale
+			)
+		)
 	];
 	return {
 		kind: 'loi',
@@ -1598,10 +1621,156 @@ function buildBinomialScene(spec: StatChartSpec, law: LawData, locale: ContentLo
 	};
 }
 
+/** Une ligne de `probabilités:` : le texte normalisé selon la langue, = ou ≈ */
+function queryLine(
+	display: string,
+	{ num, den }: { num: bigint; den: bigint },
+	places: number,
+	locale: ContentLocale
+): string {
+	const { text, exact } = roundedText(num, den, places, locale);
+	const shown = locale === 'en' ? display.replace(/,/g, '.') : display.replace(/\./g, ',');
+	return `${shown} ${exact ? '=' : '≈'} ${text}`;
+}
+
+/**
+ * E, V, σ d'une loi nommée : en décimal exact quand p est écrit en décimal
+ * et que la valeur tombe juste (comme la loi binomiale), sinon en fraction
+ */
+function namedMomentLines(
+	law: LawData,
+	moments: RandomVariableLaw,
+	decimal: boolean,
+	locale: ContentLocale
+): string[] {
+	return law.indicators.map((indicator) => {
+		const value =
+			indicator === 'esperance'
+				? moments.expectation
+				: indicator === 'variance'
+					? moments.variance
+					: null;
+		if (!decimal || value === null || !value.isDecimal()) {
+			return formatLawIndicators(law.variable, moments, locale, [indicator])[0];
+		}
+		return `${indicator === 'esperance' ? 'E' : 'V'}(${law.variable}) = ${exactDecimal(value, locale)}`;
+	});
+}
+
+/** Les cases P(X = k) arrondies d'une loi nommée ; `masquer:` les vide */
+function namedCells(
+	law: LawData,
+	exact: readonly { num: bigint; den: bigint }[],
+	places: number,
+	locale: ContentLocale
+): SceneCell[] {
+	return exact.map(({ num, den }, i) =>
+		law.masked.includes(i)
+			? { text: '', hidden: true, srText: null }
+			: { text: roundedText(num, den, places, locale).text, hidden: false, srText: null }
+	);
+}
+
+/**
+ * Loi géométrique (`X ~ G(p)`, manche 13) : le tableau k = 1 à `jusqu'à:`,
+ * puis « … » ; E par défaut ; probabilités exactes, P(X > a | X > b) compris ;
+ * les bâtons coupés au même k, avec la mention des valeurs non représentées.
+ */
+function buildGeometricScene(spec: StatChartSpec, law: LawData, locale: ContentLocale): LawScene {
+	const geometric = law.geometric!;
+	const p = Fraction.parse(geometric.p) ?? Fraction.ONE;
+	const text = STAT_TEXT[locale].law;
+	const title = text.title(law.variable, text.geometric(asWritten(geometric.p, locale)));
+	const exact = law.values.map((_, i) => geometricProbability(p, i + 1, i + 1));
+	const queries = geometric.queries.map((query) => {
+		const event = geometricProbability(p, query.low, query.high);
+		if (query.given === null) return queryLine(query.display, event, geometric.places, locale);
+		// P(A | X ⩾ given) = P(A) / P(X ⩾ given), A inclus dans X ⩾ given (a > b)
+		const given = geometricProbability(p, query.given, null);
+		const ratio = new Fraction(event.num, event.den).mul(new Fraction(given.den, given.num));
+		return queryLine(query.display, ratio, geometric.places, locale);
+	});
+	const ellipsis: SceneCell = { text: '…', hidden: false, srText: null };
+	return {
+		kind: 'loi',
+		title: spec.title,
+		accessibleTitle: title,
+		description: title,
+		pixelSize: { width: 0, height: 0 },
+		indicators: [
+			...namedMomentLines(law, geometricMoments(p), /[.,%]/.test(geometric.p), locale),
+			...queries
+		],
+		variable: law.variable,
+		values: [...law.values, '…'],
+		probabilities: [...namedCells(law, exact, geometric.places, locale), ellipsis],
+		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
+		tableHidden: false,
+		...(geometric.chart && {
+			chart: lawBars(spec, law.values, exact, geometric.places, law.variable, locale),
+			chartNote: text.notShown
+		}),
+		vertical: (law.values.length + 1) * (geometric.places + 3) > BINOMIAL_ROW_CHARACTERS
+	};
+}
+
+/** `{1, …, 6}` ; deux ou trois valeurs : toutes (`{0, 1}`) */
+function uniformSet(a: number, b: number, locale: ContentLocale): string {
+	const shown = (k: number) => asWritten(String(k), locale);
+	const listed =
+		b - a <= 2
+			? Array.from({ length: b - a + 1 }, (_, i) => shown(a + i))
+			: [shown(a), '…', shown(b)];
+	return `{${listed.join(', ')}}`;
+}
+
+/** Loi uniforme (`X ~ U(a ; b)`, manche 13) : comme la loi binomiale, valeurs a à b */
+function buildUniformScene(spec: StatChartSpec, law: LawData, locale: ContentLocale): LawScene {
+	const uniform = law.uniform!;
+	const text = STAT_TEXT[locale].law;
+	const title = text.title(law.variable, text.uniform(uniformSet(uniform.a, uniform.b, locale)));
+	const tableHidden = law.values.length > STAT_CHART_LIMITS.binomialTableValues;
+	const one = uniformProbability(uniform.a, uniform.b, uniform.a, uniform.a);
+	const exact = tableHidden ? [] : law.values.map(() => one);
+	const values = law.values.map((v) => asWritten(v, locale));
+	return {
+		kind: 'loi',
+		title: spec.title,
+		accessibleTitle: title,
+		description: title,
+		pixelSize: { width: 0, height: 0 },
+		indicators: [
+			...namedMomentLines(law, uniformMoments(uniform.a, uniform.b), false, locale),
+			...uniform.queries.map((query) =>
+				queryLine(
+					query.display,
+					uniformProbability(uniform.a, uniform.b, query.low, query.high),
+					uniform.places,
+					locale
+				)
+			)
+		],
+		variable: law.variable,
+		values,
+		probabilities: namedCells(law, exact, uniform.places, locale),
+		hiddenLabel: CROSS_TABLE_SPOKEN[locale].hidden,
+		tableHidden,
+		...(uniform.chart &&
+			!tableHidden && {
+				chart: lawBars(spec, values, exact, uniform.places, law.variable, locale)
+			}),
+		vertical:
+			values.reduce((width, v) => width + Math.max(v.length, uniform.places + 2) + 1, 0) >
+			BINOMIAL_ROW_CHARACTERS
+	};
+}
+
 function buildLawScene(spec: StatChartSpec, locale: ContentLocale): LawScene {
 	const law = spec.law;
 	if (law === null) throw new Error('Loi sans données');
 	if (law.binomial !== null) return buildBinomialScene(spec, law, locale);
+	if (law.geometric !== null) return buildGeometricScene(spec, law, locale);
+	if (law.uniform !== null) return buildUniformScene(spec, law, locale);
 	const spoken = CROSS_TABLE_SPOKEN[locale];
 
 	let indicators: string[] = [];

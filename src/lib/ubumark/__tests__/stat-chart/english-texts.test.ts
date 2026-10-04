@@ -23,7 +23,7 @@ import type { StatChartKind } from '../../types/stat-chart';
 // `\p{L}` et le drapeau `u` : sans eux, `\b` ignore les lettres accentuées et
 // « Écart », « Étendue », « Probabilité » passaient inaperçus (revue)
 const FRENCH =
-	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie)(?!\p{L})/iu;
+	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie|uniforme|suivantes|représentées|valeurs)(?!\p{L})/iu;
 
 /** Valeurs internes, jamais affichées : le genre, le sens, les couleurs, le mode */
 const INTERNAL_KEYS = new Set(['kind', 'direction', 'mode', 'color', 'secondColor', 'hatchColor']);
@@ -105,6 +105,14 @@ const BLOCKS: [string, StatChartKind, string][] = [
 		'X ~ B(10 ; 0,3)\ndiagramme: oui\nintervalle: 0,95\nseuil: P(X > k) ⩽ 0,05'
 	],
 	['loi binomiale, seuil impossible', 'loi', 'X ~ B(10 ; 0,3)\nseuil: P(X ⩽ k) ⩽ 0,01'],
+	['loi de Bernoulli', 'loi', 'X ~ B(1 ; 0,3)'],
+	[
+		'loi géométrique',
+		'loi',
+		'X ~ G(0,2)\nindicateurs: espérance ; variance ; écart type\ndiagramme: oui\nprobabilités: P(X > 5 | X > 2) ; P(X = 0)\nmasquer: 2'
+	],
+	['loi uniforme', 'loi', 'X ~ U(1 ; 6)\ndiagramme: oui\nprobabilités: P(X ⩾ 5)'],
+	['loi uniforme, grande', 'loi', 'X ~ U(1 ; 100)\nindicateurs: variance'],
 	['simulation binomiale', 'simulation', 'X ~ B(10 ; 0,3)\ntirages: 20'],
 	['simulation, tirages', 'simulation', 'X = 1 ; 2\nP = 1/2 ; 1/2\ntirages: 20'],
 	[

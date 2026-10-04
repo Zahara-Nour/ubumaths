@@ -21,8 +21,8 @@ V 35/12 ≈ 2,917, σ 1,708 ; U(0 ; 9) : E 4,5, V 8,25. B(1 ; 0,3) : V 0,21, σ 
 
 ## Étapes
 
-- [ ] Tests rouges (statistics, parseur, scène, Typst, anglais)
-- [ ] Implémentation
+- [x] Tests rouges (statistics, parseur, scène, Typst, anglais) — 2026-10-04
+- [x] Implémentation (non commitée, relecture de David)
 - [ ] Fiche compilée et regardée
 - [ ] Revue (code-reviewer)
 - [ ] PR, CI, merge

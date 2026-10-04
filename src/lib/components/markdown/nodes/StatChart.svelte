@@ -389,8 +389,12 @@
 				</div>
 			{/if}
 			{#if law.chart}
-				<!-- `diagramme: oui` (loi binomiale) : les bâtons de la loi -->
+				<!-- `diagramme: oui` : les bâtons de la loi -->
 				<StatChart scene={law.chart} />
+				{#if law.chartNote}
+					<!-- Loi géométrique : bâtons coupés au dernier k du tableau -->
+					<p class="stat-mention">{law.chartNote}</p>
+				{/if}
 			{/if}
 		{:else if crossTable}
 			<!-- Zone de défilement focalisable : sans élément focalisable dedans, un
@@ -1152,6 +1156,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.35rem;
+	}
+
+	.stat-mention {
+		margin: 0.25rem 0 0;
+		font-size: 0.875rem;
+		font-style: italic;
+		text-align: center;
 	}
 
 	.stat-serie {
