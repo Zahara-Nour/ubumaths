@@ -30,6 +30,15 @@ import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/stati
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
+import { bivariateFit, roundFraction, type BivariateFit } from '$lib/statistics/bivariate';
+import type { Fraction } from '$lib/statistics/fraction';
+import {
+	affineExpression,
+	exactCorrelationText,
+	scatterNumber,
+	shortestDecimal
+} from '$lib/ubumark/utils/scatter-lines';
+import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { termsOf } from './engine';
 import { isList, isQualitative, type ListObject } from './types';
@@ -79,9 +88,53 @@ export interface Entry {
 /** Ce qu'une action venue du panneau a donné. */
 export type PanelOutcome = 'ok' | 'needs-argument' | 'unsupported';
 
-/** Un nombre écrit comme l'élève l'écrit : virgule décimale, trois décimales au plus. */
-function fr(value: number): string {
-	return Number(value.toFixed(3)).toString().replace('.', ',');
+/** Décimales de l'ajustement, comme un bloc ```nuage par défaut (Q173) */
+const FIT_PLACES = 3;
+
+/**
+ * La droite des moindres carrés EXACTE (`statistics/bivariate`, comme le bloc
+ * ```nuage et `.ajustement`) des `used` premières paires, comme `fitAffine`.
+ */
+function exactFitOf(xs: readonly number[], ys: readonly number[], used: number): BivariateFit {
+	const exact = (values: readonly number[]) => values.slice(0, used).map(shortestDecimal);
+	// `fitAffine` a déjà refusé des abscisses toutes égales
+	return bivariateFit(exact(xs), exact(ys))!;
+}
+
+/** Un coefficient arrondi une fois, point décimal, sans zéros inutiles ni groupement */
+function fitCoefficient(value: Fraction): string {
+	const { digits, exact } = roundFraction(value, FIT_PLACES);
+	return exact && digits.includes('.') ? digits.replace(/\.?0+$/, '') : digits;
+}
+
+/**
+ * La définition de la fonction créée, `1.001*x+1.003` : les MÊMES arrondis que
+ * l'équation affichée (revue : `toFixed(3)` sur des flottants traçait `1*x`
+ * sous un texte `1,001x`).
+ */
+function fitDefinition(fit: BivariateFit): string {
+	const b = fitCoefficient(fit.intercept);
+	const constant = /^-?0$/.test(b) ? '' : b.startsWith('-') ? b : `+${b}`;
+	return `${fitCoefficient(fit.slope)}*x${constant}`;
+}
+
+/**
+ * « f(x) = 3,686x + 7,933 — G(3,5 ; 20,833) — r ≈ 0,998 » : mêmes textes que
+ * le bloc ```nuage et `.ajustement` (PR c, Q173 : r au lieu de R², point moyen).
+ */
+function fitSummary(functionName: string, fit: BivariateFit): string {
+	const text = STAT_TEXT.fr.scatter;
+	const round = (value: Fraction) => scatterNumber(value, FIT_PLACES, 'fr');
+	const line = affineExpression(round(fit.slope).text, round(fit.intercept).text, 'x');
+	const parts = [
+		`${functionName}(x) = ${line}`,
+		text.meanPoint(round(fit.meanX).text, round(fit.meanY).text)
+	];
+	// r n'existe pas si les ordonnées sont toutes égales
+	if (fit.correlation !== null) {
+		parts.push(`r ${exactCorrelationText(fit.correlation, FIT_PLACES, 'fr')}`);
+	}
+	return parts.join(' — ');
 }
 
 /** Les actions qui exigent des listes de NOMBRES (Q88) */
@@ -395,17 +448,16 @@ export class CalcDesk {
 
 		// §4 N4 : l'ajustement produit un OBJET, donc quelque chose de traçable —
 		// c'est ce qui permet de voir la droite passer dans le nuage.
+		const exact = exactFitOf(xs.values, ys.values, fit.used);
 		const created = this.atelier.create({
 			kind: 'function',
 			name: nextName('function', this.atelier.names),
-			definition: `${fr(fit.slope)}*x+${fr(fit.intercept)}`.replace(/\+-/, '-')
+			definition: fitDefinition(exact)
 		});
 
 		this.#push({
 			label: `Ajustement ${name}`,
-			text: created.ok
-				? `${created.object.name}(x) = ${fr(fit.slope)}x + ${fr(fit.intercept)} — R² = ${fr(fit.r2)}`
-				: created.message,
+			text: created.ok ? fitSummary(created.object.name, exact) : created.message,
 			failed: !created.ok
 		});
 	}

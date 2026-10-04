@@ -198,13 +198,50 @@ describe('ajustement affine', () => {
 		expect(créée!.definition).toContain('x');
 	});
 
-	// §3 N3 : R² dit si l'ajustement vaut quelque chose
-	it('annonce le coefficient de détermination', () => {
+	// §3 N3 : r dit si l'ajustement vaut quelque chose (PR c, Q173 : r au lieu de R²)
+	it('annonce le point moyen et le coefficient de corrélation, comme le bloc', () => {
+		const d = deskWith({ L: '1 ; 2 ; 3 ; 4 ; 5 ; 6', M: '12 ; 15 ; 19 ; 22 ; 27 ; 30' });
+
+		d.runFromPanel('fit', 'L');
+
+		expect(d.entries[0].text).toContain('(x) = 3,686x + 7,933');
+		expect(d.entries[0].text).toContain('G(3,5 ; 20,833)');
+		expect(d.entries[0].text).toContain('r ≈ 0,998');
+		expect(d.entries[0].text).not.toMatch(/R²/);
+	});
+
+	// Revue : la fonction tracée et l'équation affichée viennent des MÊMES arrondis
+	// (toFixed(3) sur des flottants donnait 1*x pour un texte 1,001x)
+	it('la fonction créée est celle de l’équation affichée (pente 1,0005 → 1,001)', () => {
+		const d = deskWith({ L: '0 ; 1 ; 2', M: '0 ; 1,0005 ; 2,001' });
+
+		d.runFromPanel('fit', 'L');
+
+		const créée = d.atelier.objects.find((o) => o.kind === 'function');
+		expect(d.entries[0].text).toContain('(x) = 1,001x —');
+		expect(créée!.definition).toBe('1.001*x');
+		// Le point décimal se lit : la fonction est traçable
+		expect(créée!.status).toBe('ok');
+	});
+
+	it('la fonction créée est celle de l’équation affichée (b = 1,0025 → 1,003)', () => {
+		const d = deskWith({ L: '0 ; 1', M: '1,0025 ; 2,0025' });
+
+		d.runFromPanel('fit', 'L');
+
+		const créée = d.atelier.objects.find((o) => o.kind === 'function');
+		expect(d.entries[0].text).toContain('(x) = x + 1,003 —');
+		expect(créée!.definition).toBe('1*x+1.003');
+		// Le point décimal se lit : la fonction est traçable
+		expect(créée!.status).toBe('ok');
+	});
+
+	it('r exact sur des points alignés', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3 ; 4', M: '2 ; 4 ; 6 ; 8' });
 
 		d.runFromPanel('fit', 'L');
 
-		expect(d.entries[0].text).toMatch(/R²/);
+		expect(d.entries[0].text).toContain('r = 1');
 	});
 
 	// §4 L3

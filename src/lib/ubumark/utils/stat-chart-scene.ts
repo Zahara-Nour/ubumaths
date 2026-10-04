@@ -54,22 +54,12 @@ import { Fraction } from '$lib/statistics/fraction';
 import {
 	decimalFit,
 	relationPole,
-	relationX,
 	relationY,
 	squaredSign,
 	transformValue,
 	type VariableChange
 } from '$lib/statistics/variable-change';
-import {
-	bivariateFit,
-	isInterpolation,
-	predictX,
-	predictY,
-	readExactValue,
-	roundFraction,
-	toSafeNumber,
-	type BivariateFit
-} from '$lib/statistics/bivariate';
+import { bivariateFit, readExactValue, toSafeNumber } from '$lib/statistics/bivariate';
 import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
 import {
 	discreteSampler,
@@ -88,6 +78,19 @@ import {
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
 import { buildComparisonScene } from './comparison-scene';
 import { STAT_TEXT, type IndicatorRowId } from './stat-chart-text';
+import {
+	asWritten,
+	changedEquations,
+	changedPredictionLines,
+	changeText,
+	decimalCorrelationText,
+	exactCorrelationText,
+	exactPredictionLines,
+	groupThousands,
+	scatterDecimal,
+	scatterEquation,
+	scatterNumber
+} from './scatter-lines';
 import { createRandomSource } from '$lib/utils/random';
 import {
 	binomialDistribution,
@@ -1489,13 +1492,6 @@ function shownLabel(label: string, locale: ContentLocale): string {
 	return label;
 }
 
-/** Un nombre tel qu'écrit par l'auteur : vrai signe moins, séparateur selon la langue. */
-function asWritten(text: string, locale: ContentLocale): string {
-	const minus = text.replace(/^-/, '−');
-	if (minus.includes('/')) return minus;
-	return locale === 'en' ? minus.replace(',', '.') : minus.replace('.', ',');
-}
-
 /**
  * Une fraction de dénominateur 2^a·5^b écrite en décimal EXACT (np, np(1 − p)
  * pour un p décimal), selon la langue.
@@ -2833,89 +2829,6 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 // NUAGE DE POINTS (manche 15)
 // ============================================================================
 
-/** Séparateur de milliers : espace insécable en français (comme `groupedCount`), virgule en anglais */
-const SCATTER_THOUSANDS: Record<ContentLocale, string> = { fr: '\u00a0', en: ',' };
-
-/**
- * Groupe les milliers d'un nombre déjà écrit (`613642,857` → `613 642,857`) à
- * partir de 10 000 seulement : une année ou « 1500 » (4 chiffres) ne se
- * groupe jamais, règle typographique française usuelle (fiche compilée).
- */
-function groupThousands(text: string, locale: ContentLocale): string {
-	const match = /^([−-]?)(\d+)(.*)$/.exec(text);
-	if (match === null || match[2].length < 5) return text;
-	const grouped = match[2].replace(/\B(?=(\d{3})+(?!\d))/g, SCATTER_THOUSANDS[locale]);
-	return `${match[1]}${grouped}${match[3]}`;
-}
-
-/** Un nombre arrondi une fois (Q172) : exact → écriture courte, sinon zéros gardés (`4,630`). */
-function scatterNumber(
-	value: Fraction,
-	places: number,
-	locale: ContentLocale
-): { text: string; exact: boolean } {
-	const { digits, exact } = roundFraction(value, places);
-	const shown = exact && digits.includes('.') ? digits.replace(/\.?0+$/, '') : digits;
-	const decimal = locale === 'en' ? shown : shown.replace('.', ',');
-	return { text: groupThousands(decimal.replace('-', '−'), locale), exact };
-}
-
-/**
- * `3,686x + 7,933`, `−x + 3`, `2x`, `5`, `0,5 ln(x) − 1`, `2/x + 1` : coefficients
- * déjà arrondis et écrits, `term` le facteur de a
- */
-function affineExpression(a: string, b: string, term: string): string {
-	const isZero = (text: string) => /^−?[0,.]+$/.test(text);
-	const joiner = term.startsWith('ln') ? ' ' : '';
-	const slope = isZero(a)
-		? ''
-		: term.startsWith('/')
-			? `${a}${term}`
-			: a === '1'
-				? term
-				: a === '−1'
-					? `−${term}`
-					: `${a}${joiner}${term}`;
-	if (slope === '') return b;
-	if (isZero(b)) return slope;
-	return b.startsWith('−') ? `${slope} − ${b.slice(1)}` : `${slope} + ${b}`;
-}
-
-/** `y = 3,686x + 7,933`, `y = −x + 3`, `y = 2x`, `y = 5` : coefficients arrondis */
-function scatterEquation(fit: BivariateFit, places: number, locale: ContentLocale): string {
-	const a = scatterNumber(fit.slope, places, locale).text;
-	const b = scatterNumber(fit.intercept, places, locale).text;
-	return `y = ${affineExpression(a, b, 'x')}`;
-}
-
-/**
- * L'écriture décimale la plus courte d'un flottant (`1.005`, `2.5e+28`), en
- * fraction exacte : arrondir CETTE écriture, pas le flottant (1,005 × 100
- * vaut 100,4999… et `Math.round` donnait 1,00, revue).
- */
-function shortestDecimal(value: number): Fraction {
-	const match = /^(\d+)(?:\.(\d+))?(?:e([+-]\d+))?$/.exec(Math.abs(value).toString())!;
-	const decimals = match[2] ?? '';
-	const exponent = Number(match[3] ?? 0) - decimals.length;
-	const digits = BigInt(match[1] + decimals) * (value < 0 ? -1n : 1n);
-	return exponent >= 0
-		? new Fraction(digits * 10n ** BigInt(exponent))
-		: new Fraction(digits, 10n ** BigInt(-exponent));
-}
-
-/**
- * Un décimal (changement de variable : ln et √ sont irrationnels) arrondi une
- * fois, demi vers le haut, par l'arrondi exact des autres valeurs du nuage ;
- * entiers groupés, jamais de notation « e ».
- */
-function scatterDecimal(
-	value: number,
-	places: number,
-	locale: ContentLocale
-): { text: string; exact: boolean } {
-	return scatterNumber(shortestDecimal(value), places, locale);
-}
-
 /** Pas candidats des graduations d'un nuage : 1, 2, 5 × 10^k */
 const SCATTER_STEP_MULTIPLIERS = [1, 2, 5];
 
@@ -3019,10 +2932,6 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 	// Le parseur a refusé des abscisses toutes égales
 	const fit = bivariateFit(xs, ys)!;
 	const round = (value: Fraction) => scatterNumber(value, places, locale);
-	const relation = (value: Fraction) => {
-		const rounded = round(value);
-		return `${rounded.exact ? '=' : '≈'} ${rounded.text}`;
-	};
 
 	const meanText = text.meanPoint(round(fit.meanX).text, round(fit.meanY).text);
 	const equation = scatterEquation(fit, places, locale);
@@ -3038,41 +2947,16 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 			case 'equation':
 				lines.push(text.fitLine(equation));
 				break;
-			case 'r': {
-				const r = fit.correlation!;
-				if (r.exact !== null) {
-					lines.push(text.correlation(relation(r.exact)));
-				} else {
-					const scale = 10 ** places;
-					const value = (Math.sign(r.value) * Math.round(Math.abs(r.value) * scale)) / scale;
-					const fixed = value.toFixed(places);
-					const shown = locale === 'en' ? fixed : fixed.replace('.', ',');
-					lines.push(text.correlation(`≈ ${shown.replace('-', '−')}`));
-				}
+			case 'r':
+				lines.push(text.correlation(exactCorrelationText(fit.correlation!, places, locale)));
 				break;
-			}
 		}
 	}
 
 	// Prévisions (Q169) : la valeur, interpolation ou extrapolation (étendue des x observés)
-	const predicted: ScenePoint[] = [];
-	for (const { axis, value } of scatter.predictions) {
-		const given = `${axis} = ${groupThousands(asWritten(value.replaceAll('−', '-'), locale), locale)}`;
-		const known = readExactValue(value)!;
-		if (axis === 'x') {
-			const y = predictY(fit, known);
-			lines.push(text.prediction(given, `y ${relation(y)}`, isInterpolation(fit, known)));
-			predicted.push({ x: toSafeNumber(known), y: toSafeNumber(y) });
-			continue;
-		}
-		const x = predictX(fit, known);
-		if (x === null) {
-			lines.push(known.equals(fit.intercept) ? text.everyX(given) : text.noSolution(given));
-			continue;
-		}
-		lines.push(text.prediction(given, `x ${relation(x)}`, isInterpolation(fit, x)));
-		predicted.push({ x: toSafeNumber(x), y: toSafeNumber(known) });
-	}
+	const forecast = exactPredictionLines(fit, scatter.predictions, places, locale);
+	lines.push(...forecast.lines);
+	const predicted: ScenePoint[] = forecast.points;
 
 	// Axes : les données, les prévisions, puis la droite aux bords du cadre
 	const xAxis = scatterAxis(
@@ -3122,18 +3006,6 @@ function buildScatterScene(spec: StatChartSpec, locale: ContentLocale): ScatterS
 		curve: null,
 		indicators: lines
 	};
-}
-
-/** Écriture d'un changement de variable : `z = ln(y)`, `t = x²` */
-function changeText(change: VariableChange): string {
-	const v = change.on;
-	const written: Record<VariableChange['fn'], string> = {
-		ln: `ln(${v})`,
-		square: `${v}²`,
-		sqrt: `√${v}`,
-		inverse: `1/${v}`
-	};
-	return `${change.variable} = ${written[change.fn]}`;
 }
 
 /** Échantillons de la courbe d'une relation retrouvée, sur la largeur du cadre */
@@ -3213,10 +3085,6 @@ function buildChangedScatterScene(
 	const text = STAT_TEXT[locale].scatter;
 	const { places } = scatter;
 	const round = (value: number) => scatterDecimal(value, places, locale);
-	const relation = (value: number) => {
-		const rounded = round(value);
-		return `${rounded.exact ? '=' : '≈'} ${rounded.text}`;
-	};
 	// Le parseur a vérifié chaque valeur et le domaine du changement de variable
 	const xs = scatter.xs.map((t) => toSafeNumber(readExactValue(t)!));
 	const ys = scatter.ys.map((t) => toSafeNumber(readExactValue(t)!));
@@ -3234,35 +3102,7 @@ function buildChangedScatterScene(
 	};
 
 	// Droite du nuage transformé, puis relation entre x et y, coefficients arrondis
-	const a = round(fit.slope).text;
-	const b = round(fit.intercept).text;
-	const left = change.on === 'y' ? change.variable : 'y';
-	const term = change.on === 'x' ? change.variable : 'x';
-	const lineEquation = `${left} = ${affineExpression(a, b, term)}`;
-	const linear = affineExpression(a, b, 'x');
-	const xTerm: Record<VariableChange['fn'], string> = {
-		ln: 'ln(x)',
-		square: 'x²',
-		sqrt: '√x',
-		inverse: '/x'
-	};
-	let relationText: string;
-	if (change.on === 'x') {
-		relationText = `y = ${affineExpression(a, b, xTerm[change.fn])}`;
-	} else if (change.fn === 'ln') {
-		const exponent = affineExpression(a, '0', 'x');
-		const factor = relation(Math.exp(fit.intercept));
-		relationText =
-			exponent === '0'
-				? `y = e^(${b}) ${factor}`
-				: `y = e^(${b}) × e^(${exponent}) ${factor} × e^(${exponent})`;
-	} else if (change.fn === 'square') {
-		relationText = `y = ${sign < 0 ? '−' : ''}√(${linear})`;
-	} else if (change.fn === 'sqrt') {
-		relationText = `y = (${linear})²`;
-	} else {
-		relationText = `y = 1/(${linear})`;
-	}
+	const { lineEquation, relationText } = changedEquations(change, fit, sign, places, locale);
 
 	const meanText = text.meanPoint(round(fit.meanX).text, round(fit.meanY).text);
 	const pairSeparator = locale === 'en' ? ', ' : ' ; ';
@@ -3286,50 +3126,16 @@ function buildChangedScatterScene(
 			case 'equation':
 				lines.push(text.fitLine(lineEquation), text.relationLine(relationText));
 				break;
-			case 'r': {
-				const r = fit.correlation!;
-				const rounded = round(r);
-				lines.push(text.correlation(`${rounded.exact ? '=' : '≈'} ${rounded.text}`));
+			case 'r':
+				lines.push(text.correlation(decimalCorrelationText(fit.correlation!, places, locale)));
 				break;
-			}
 		}
 	}
 
 	// Prévisions sur la relation retrouvée (x, y d'origine)
-	const predicted: ScenePoint[] = [];
-	for (const { axis, value } of scatter.predictions) {
-		const given = `${axis} = ${groupThousands(asWritten(value.replaceAll('−', '-'), locale), locale)}`;
-		const known = toSafeNumber(readExactValue(value)!);
-		const interpolation = (x: number) => x >= fit.minX && x <= fit.maxX;
-		if (axis === 'x') {
-			const y = relationY(change, fit, known, sign);
-			if (y === null || y === 'overflow') {
-				lines.push(y === null ? text.notDefined(given) : text.tooLarge(given));
-				continue;
-			}
-			lines.push(text.prediction(given, `y ${relation(y)}`, interpolation(known)));
-			predicted.push({ x: known, y });
-			continue;
-		}
-		const x = relationX(change, fit, known, sign);
-		if (x === 'all') {
-			lines.push(text.everyX(given));
-			continue;
-		}
-		if (x === null || x === 'flat' || x === 'overflow') {
-			// Le domaine passe avant la pente : « (pente nulle) » seulement si c'est la raison
-			lines.push(
-				x === 'flat'
-					? text.noSolution(given)
-					: x === 'overflow'
-						? text.tooLarge(given)
-						: text.noSolutionPlain(given)
-			);
-			continue;
-		}
-		lines.push(text.prediction(given, `x ${relation(x)}`, interpolation(x)));
-		predicted.push({ x, y: known });
-	}
+	const forecast = changedPredictionLines(change, fit, sign, scatter.predictions, places, locale);
+	lines.push(...forecast.lines);
+	const predicted: ScenePoint[] = forecast.points;
 
 	// Le repère : d'origine (courbe), ou transformé (`nuage: z`, droite)
 	const transformed = scatter.transformedCloud;
