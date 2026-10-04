@@ -67,7 +67,9 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		else renamed.push({ from: wanted, to: chosen });
 
 		// L'état d'affichage suit l'objet : un atelier reçu avec ses courbes
-		// tracées s'ouvre avec ses courbes tracées.
+		// tracées s'ouvre avec ses courbes tracées, et de leurs couleurs. Les
+		// réglages AVANT le tracé, sinon `setPlotted` en attribuerait de neufs.
+		if (stored.display) atelier.adoptDisplay(chosen, stored.display);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 	}
 
