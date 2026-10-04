@@ -48,6 +48,8 @@ describe('cas nominal', () => {
 		expect(scene.kind).toBe('loi');
 		expect(scene.probabilities).toEqual(expected.probabilities);
 		expect(scene.indicators).toEqual(expected.indicators);
+		// Le diagramme en bâtons, comme les autres lois discrètes (accord de David, 2026-10-04)
+		expect(scene.chart?.bars).toHaveLength(11);
 	});
 
 	it('probabilités, intervalle et seuil, séparés par « ; »', () => {
