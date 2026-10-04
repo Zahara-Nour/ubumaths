@@ -107,6 +107,92 @@
 					"$F(x)=\\textcolor{{{color:primary.0}}}{2\\sqrt{x}{{if:y0-2>0|+{{eval:y0-2}}}}{{if:y0-2<0|{{eval:y0-2}}}}}$."
 				]
 			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)={{if:a<0|-}}\\dfrac{{{eval:abs(a)}}}{x}$.\n\nDonne une primitive $F$ de $f$ sur $]0\\,;+\\infty[$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|\\ln(x)}}{{if:a==-1|-\\ln(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\ln(x)}}",
+					"answerKind": "primitive",
+					"integrand": "{{if:a<0|-}}\\frac{{{eval:abs(a)}}}{x}",
+					"interval": "]0;+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"Sur $]0\\,;+\\infty[$, une primitive de $x\\mapsto\\dfrac{1}{x}$ est $x\\mapsto\\ln(x)$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|\\ln(x)}}{{if:a==-1|-\\ln(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\ln(x)}}}$ (à une constante près)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..6;±"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}",
+					"answerKind": "primitive",
+					"integrand": "{{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto e^{x}$ est $x\\mapsto e^{x}$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{{{if:a==1|e^{x}}}{{if:a==-1|-e^{x}}}{{if:a!=1 && a!=-1|{{eval:a}}e^{x}}}}$ (à une constante près)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur {{if:s>0|$]0\\,;+\\infty[$}}{{if:s<0|$]-\\infty\\,;0[$}} par $f(x)=\\dfrac{1}{x^2}$.\n\nDonne une primitive $F$ de $f$ sur {{if:s>0|$]0\\,;+\\infty[$}}{{if:s<0|$]-\\infty\\,;0[$}}.\n\n$F(x)=?$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "-1|1"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "-\\frac{1}{x}",
+					"answerKind": "primitive",
+					"integrand": "\\frac{1}{x^2}",
+					"interval": "{{if:s>0|]0;+\\infty[}}{{if:s<0|]-\\infty;0[}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une primitive de $x\\mapsto\\dfrac{1}{x^2}$ sur un intervalle ne contenant pas $0$ est $x\\mapsto-\\dfrac{1}{x}$ : la dérivée de $-\\dfrac{1}{x}$ est $\\dfrac{1}{x^2}$.",
+					"Une primitive de $f$ est $F(x)=\\textcolor{{{color:primary.0}}}{-\\dfrac{1}{x}}$ (à une constante près)."
+				]
+			}
+		},
+		{
+			"statement": "Soit $f$ la fonction définie sur $]0\\,;+\\infty[$ par $f(x)=\\dfrac{1}{\\sqrt{x}}$.\n\nDonne une primitive $F$ de $f$ sur $]0\\,;+\\infty[$.\n\n$F(x)=?$",
+			"variables": [],
+			"blanks": [
+				{
+					"expectedAnswer": "2\\sqrt{x}",
+					"answerKind": "primitive",
+					"integrand": "\\frac{1}{\\sqrt{x}}",
+					"interval": "]0;+\\infty["
+				}
+			],
+			"correction": {
+				"steps": [
+					"La dérivée de $\\sqrt{x}$ est $\\dfrac{1}{2\\sqrt{x}}$, donc celle de $2\\sqrt{x}$ est $\\dfrac{1}{\\sqrt{x}}$.",
+					"Une primitive de $f$ sur $]0\\,;+\\infty[$ est $F(x)=\\textcolor{{{color:primary.0}}}{2\\sqrt{x}}$ (à une constante près)."
+				]
+			}
 		}
 	],
 	"testSpecs": [
@@ -304,6 +390,280 @@
 			"answers": ["2\\sqrt{x}-2"],
 			"expected": {
 				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : primitive modèle",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3\\ln(x)"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : autre constante",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3\\ln(x)+2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : avec +C",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3\\ln(x)+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : valeur absolue",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3\\ln|x|"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : dérivée au lieu de primitive (message)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["-\\frac{3}{x^2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : coefficient oublié",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\ln(x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : hors intervalle : ln(−x)",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["3\\ln(-x)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v4 (ouverte) f=3/x : non-primitive",
+			"variationIndex": 4,
+			"variables": {
+				"a": "3"
+			},
+			"answers": ["\\frac{3x^2}{2}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 (ouverte) f=4eˣ : primitive modèle (égale à sa dérivée)",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4e^{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 (ouverte) f=4eˣ : autre constante",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4e^{x}-3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 (ouverte) f=4eˣ : avec +C",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4e^{x}+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v5 (ouverte) f=4eˣ : coefficient oublié",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["e^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v5 (ouverte) f=4eˣ : non-primitive : facteur x",
+			"variationIndex": 5,
+			"variables": {
+				"a": "4"
+			},
+			"answers": ["4xe^{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : primitive modèle",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["-\\frac{1}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : autre constante",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["-\\frac{1}{x}+5"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : avec +C",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["-\\frac{1}{x}+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : dérivée au lieu de primitive (message)",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["-\\frac{2}{x^3}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : signe oublié",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["\\frac{1}{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]−∞;0[ : non-primitive",
+			"variationIndex": 6,
+			"variables": {
+				"s": "-1"
+			},
+			"answers": ["\\ln(x^2)"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v6 (ouverte) 1/x² sur ]0;+∞[ : primitive modèle",
+			"variationIndex": 6,
+			"variables": {
+				"s": "1"
+			},
+			"answers": ["-\\frac{1}{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : primitive modèle",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["2\\sqrt{x}"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : autre constante",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["2\\sqrt{x}-1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : avec +C",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["2\\sqrt{x}+C"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : dérivée au lieu de primitive (message)",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["-\\frac{1}{2x\\sqrt{x}}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : coefficient oublié",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\sqrt{x}"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "v7 (ouverte) 1/√x : coefficient inversé",
+			"variationIndex": 7,
+			"variables": {},
+			"answers": ["\\frac{1}{2}\\sqrt{x}"],
+			"expected": {
+				"status": "incorrect"
 			}
 		}
 	],
