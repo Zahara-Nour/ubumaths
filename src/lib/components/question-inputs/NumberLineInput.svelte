@@ -89,6 +89,8 @@
 	} = NL_LAYOUT;
 
 	const SVG_HEIGHT = 140;
+	// Chaque segment fixe occupe une ligne de 10 px sous l'axe (comme le bloc NumberLine)
+	const SEGMENT_ROW_HEIGHT = 10;
 	const POINT_RADIUS = 6; // Slightly larger than static for interaction
 
 	// =========================================================================
@@ -213,6 +215,13 @@
 
 	let graduations: Graduation[] = $derived(parsedNode ? computeGraduations(parsedNode.config) : []);
 
+	// Palette commune, sûre pour `style:` (même résolution que le bloc et le PDF)
+	let colors = $derived(parsedNode ? resolveNumberLineColors(parsedNode) : null);
+
+	let svgHeight = $derived(
+		SVG_HEIGHT + (parsedNode ? parsedNode.segments.length * SEGMENT_ROW_HEIGHT : 0)
+	);
+
 	// =========================================================================
 	// FIXED POINTS
 	// =========================================================================
@@ -222,13 +231,11 @@
 		const startN = numVal(parsedNode.config.start);
 		const endN = numVal(parsedNode.config.end);
 
-		// Palette commune, sûre pour `style:` (même résolution que le bloc et le PDF)
-		const colors = resolveNumberLineColors(parsedNode);
 		return parsedNode.points.map((p, i) => ({
 			x: valueToX(numVal(p.value), startN, endN),
 			y: LINE_Y + POINT_Y_OFFSET,
 			label: p.label,
-			color: colors.points[i].screen
+			color: colors ? colors.points[i].screen : undefined
 		}));
 	});
 
@@ -241,14 +248,13 @@
 		if (!parsedNode) return [];
 		const startN = numVal(parsedNode.config.start);
 		const endN = numVal(parsedNode.config.end);
-		const colors = resolveNumberLineColors(parsedNode);
 		return parsedNode.segments.map((s, i) => ({
 			x1: valueToX(numVal(s.start), startN, endN),
 			x2: valueToX(numVal(s.end), startN, endN),
-			y: LINE_Y + SEGMENT_Y_OFFSET + i * 10,
+			y: LINE_Y + SEGMENT_Y_OFFSET + i * SEGMENT_ROW_HEIGHT,
 			startOpen: s.startOpen,
 			endOpen: s.endOpen,
-			color: colors.segments[i].screen
+			color: colors ? colors.segments[i].screen : undefined
 		}));
 	});
 
@@ -272,7 +278,7 @@
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<svg
 			bind:this={svgEl}
-			viewBox="0 0 {SVG_WIDTH} {SVG_HEIGHT}"
+			viewBox="0 0 {SVG_WIDTH} {svgHeight}"
 			width="100%"
 			preserveAspectRatio="xMidYMid meet"
 			class="number-line-svg"
@@ -446,7 +452,7 @@
 
 	.hidden-mark {
 		font-weight: bold;
-		color: var(--color-destructive);
+		color: var(--color-fig-rouge);
 		font-size: 0.85rem;
 	}
 

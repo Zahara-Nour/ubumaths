@@ -155,6 +155,11 @@ function missingIn(source: string): string[] {
 	);
 }
 
+/** Forme Tailwind 3 `hsl(var(--x))` dans le CODE (un commentaire qui la cite ne compte pas) */
+function hasTailwind3Hsl(source: string): boolean {
+	return /hsl\(var\(--/.test(stripComments(source));
+}
+
 const global = new Set([...declared(appCss), ...declared(tailwindTheme)]);
 
 describe('analyse des variables (garde-fous du test lui-même)', () => {
@@ -173,6 +178,14 @@ describe('analyse des variables (garde-fous du test lui-même)', () => {
 		expect(missingIn(src)).toEqual(['--x-nested']);
 	});
 
+	it('`hsl(var(--x))` cité dans un commentaire ne compte pas, dans le code si', () => {
+		expect(
+			hasTailwind3Hsl(`<style>/* jamais hsl(var(--border)) */ .a { color: red; }</style>`)
+		).toBe(false);
+		expect(hasTailwind3Hsl(`<!-- hsl(var(--x)) --><p>texte</p>`)).toBe(false);
+		expect(hasTailwind3Hsl(`<style>.a { color: hsl(var(--border)); }</style>`)).toBe(true);
+	});
+
 	it('une déclaration hors .dark ou via style:--x= compte', () => {
 		expect(
 			missingIn(`<div style:--x-dir={c}></div><style>.a { fill: var(--x-dir); }</style>`)
@@ -189,23 +202,30 @@ describe('variables CSS des blocs du lot 3', () => {
 
 		it(`${file.split('/').pop()} : pas de forme Tailwind 3 \`hsl(var(--x))\``, () => {
 			const source = readFileSync(resolve(root, file), 'utf8');
-			expect(source).not.toMatch(/hsl\(var\(--/);
+			expect(hasTailwind3Hsl(source)).toBe(false);
 		});
 	}
 });
 
 describe('balayage de src/lib et src/routes', () => {
-	const files = execSync("git ls-files 'src/lib/**/*.svelte' 'src/routes/**/*.svelte'", {
-		cwd: root,
-		encoding: 'utf8'
-	})
+	// `:(glob)` : sans lui, `**/` exige au moins un dossier et saute `src/routes/+layout.svelte`
+	const files = execSync(
+		"git ls-files ':(glob)src/lib/**/*.svelte' ':(glob)src/routes/**/*.svelte'",
+		{
+			cwd: root,
+			encoding: 'utf8'
+		}
+	)
 		.trim()
-		.split('\n')
-		.filter((file) => !file.includes('__tests__'));
+		.split('\n');
 
 	const offenders = files.filter((file) => {
 		const source = readFileSync(resolve(root, file), 'utf8');
-		return missingIn(source).length > 0 || /hsl\(var\(--/.test(source);
+		return missingIn(source).length > 0 || hasTailwind3Hsl(source);
+	});
+
+	it('couvre les fichiers posés directement sous src/routes', () => {
+		expect(files).toContain('src/routes/+layout.svelte');
 	});
 
 	it('aucun composant hors dette connue ne lit de variable inexistante', () => {

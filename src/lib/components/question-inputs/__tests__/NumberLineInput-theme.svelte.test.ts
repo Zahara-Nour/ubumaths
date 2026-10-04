@@ -12,6 +12,9 @@ import NumberLineInput from '../NumberLineInput.svelte';
 // --color-background (app.css)
 const BACKGROUND = { light: 'rgb(250, 250, 250)', dark: 'rgb(38, 38, 36)' };
 
+// --color-fig-rouge (app.css)
+const FIG_RED = { light: 'rgb(220, 38, 38)', dark: 'rgb(255, 98, 87)' };
+
 const CONFIG = ['start: 0', 'end: 10', 'step: 1'].join('\n');
 
 let mains: HTMLElement[] = [];
@@ -80,5 +83,29 @@ describe('NumberLineInput : halos et points ouverts sur la couleur du fond', () 
 		for (const end of open) {
 			expect(inBothModes(() => getComputedStyle(end).fill)).toEqual(BACKGROUND);
 		}
+	});
+
+	it('la hauteur grandit de 10 px par segment fixe, comme le bloc statique', async () => {
+		const height = (c: Element) =>
+			Number(c.querySelector('svg.number-line-svg')?.getAttribute('viewBox')?.split(' ')[3]);
+		const without = await renderInput({});
+		const withTwo = await renderInput({ fixedSegments: '[1, 3] bleu, ]4, 6[ rouge' });
+		expect(height(withTwo) - height(without)).toBe(20);
+	});
+
+	it('marque « ? » d’une graduation cachée : rouge de la palette des contenus', async () => {
+		const main = document.body.appendChild(document.createElement('main'));
+		mains.push(main);
+		const screen = await render(NumberLineInput, {
+			target: main,
+			props: {
+				configBlock: ['start: 0', 'end: 10', 'step: 1', 'hidden: 3'].join('\n'),
+				task: 'read-value',
+				snap: true,
+				value: ''
+			}
+		});
+		const [mark] = all(screen.container, '.hidden-mark');
+		expect(inBothModes(() => getComputedStyle(mark).color)).toEqual(FIG_RED);
 	});
 });
