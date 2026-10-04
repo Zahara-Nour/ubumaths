@@ -79,7 +79,7 @@ const storedObjectSchema = z.object({
 	 * avant : le mode se retrouve à la relecture (S4). Validés à la création.
 	 */
 	mode: z.enum(['explicit', 'recurrence']).optional().catch(undefined),
-	firstIndex: z.number().int().min(0).optional().catch(undefined),
+	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
 	firstTerm: z.string().max(20).optional().catch(undefined)
 });
 

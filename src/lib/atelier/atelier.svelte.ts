@@ -44,7 +44,7 @@ import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
 import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
-import { expressionOf } from './engine';
+import { expressionOf, termsOf } from './engine';
 import {
 	compactDisplay,
 	fullDisplay,
@@ -628,12 +628,14 @@ export class Atelier {
 			isValue(previous) && previous.slider && isValue(rebuilt) && rebuilt.slider
 				? widenedSlider(previous.slider, constantOf(definition, provenance, this.functionNames))
 				: undefined;
-		// Le rang et le premier terme d'une suite survivent à la définition ; son
-		// mode aussi, sauf si elle se met à se citer elle-même (récurrence, S4)
+		// Le rang et le premier terme d'une suite survivent à la définition. Son
+		// mode, lui, est REDÉDUIT (revue du lot 5a, B1) : garder « récurrence »
+		// sur `u(n) = 2n + 1` faisait valoir u(3) = 5 au lieu de 7, sans un mot.
+		// Une récurrence constante (`u(n+1) = 3`) se demande explicitement.
 		const keptSequence =
 			isSequence(previous) && isSequence(rebuilt)
 				? {
-						mode: rebuilt.mode === 'recurrence' ? rebuilt.mode : previous.mode,
+						mode: rebuilt.mode,
 						firstIndex: previous.firstIndex,
 						firstTerm: previous.firstTerm
 					}
@@ -947,6 +949,12 @@ export class Atelier {
 			};
 		}
 		const next = { ...current, ...read.data };
+		if (next.firstTerm === name) {
+			return {
+				ok: false,
+				message: `Le premier terme de « ${name} » ne peut pas être la suite elle-même.`
+			};
+		}
 		if (
 			next.mode === 'explicit' &&
 			this.#citesItself(name, next.definition, next.provenance ?? 'url')
@@ -1193,6 +1201,43 @@ export class Atelier {
 		});
 
 		this.#underivable();
+		this.#sequenceChecks();
+	}
+
+	/**
+	 * Ce qu'une suite ne sait pas faire se DIT dès la définition (revue du lot 5a) :
+	 *
+	 * - un objet qui cite une récurrence comme une fonction (`f(x) = u(x) + 1`)
+	 *   ne calcule rien — le moteur répondait en anglais ;
+	 * - une récurrence qui n'est pas d'ordre 1 (`u(n-1)`), ou dont le premier
+	 *   terme n'a pas de valeur, n'attend pas le premier calcul pour échouer.
+	 *
+	 * ⚠️ APRÈS les statuts, comme `#underivable` : `termsOf` lit des objets « ok ».
+	 */
+	#sequenceChecks(): void {
+		const recurrences = new Set(
+			this.items.filter((o) => isSequence(o) && o.mode === 'recurrence').map((o) => o.name)
+		);
+		this.items.forEach((o, i) => {
+			if (o.status !== 'ok') return;
+			const cited = this.#cited(o.kind, o.definition, o.provenance)
+				.map((r) => r.name)
+				.find((r) => r !== o.name && recurrences.has(r));
+			if (cited !== undefined) {
+				this.items[i] = {
+					...o,
+					status: 'error',
+					message: `« ${cited} » est une suite récurrente : « ${o.name} » ne peut pas s'en servir comme d'une fonction — ses termes se calculent un par un, comme ${cited}(5).`
+				} as AtelierObject;
+				return;
+			}
+			if (isSequence(o) && o.mode === 'recurrence') {
+				const terms = termsOf(this, o.name, o.firstIndex);
+				if (!terms.ok) {
+					this.items[i] = { ...o, status: 'error', message: terms.message } as AtelierObject;
+				}
+			}
+		});
 	}
 
 	/**

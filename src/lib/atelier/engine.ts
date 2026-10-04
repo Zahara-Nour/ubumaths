@@ -376,10 +376,9 @@ export function termsOf(atelier: Atelier, name: string, lastIndex: number): Term
 
 	let firstTerm: number | null = null;
 	if (object.mode === 'recurrence') {
-		firstTerm = firstTermValue(atelier, object.firstTerm);
-		if (firstTerm === null) {
-			return { ok: false, message: `Le premier terme « ${object.firstTerm} » n'a pas de valeur.` };
-		}
+		const first = firstTermValue(atelier, object.firstTerm);
+		if (typeof first === 'string') return { ok: false, message: first };
+		firstTerm = first;
 	}
 
 	const terms = computeSequenceTerms(
@@ -390,12 +389,19 @@ export function termsOf(atelier: Atelier, name: string, lastIndex: number): Term
 }
 
 /** La valeur numérique du premier terme : un nombre, ou une valeur de l'atelier. */
-function firstTermValue(atelier: Atelier, firstTerm: string): number | null {
+function firstTermValue(atelier: Atelier, firstTerm: string): number | string {
 	const plain = readNumber(firstTerm.replace(/\{,\}/g, ','));
 	if (plain !== null) return plain;
+	const cited = atelier.get(firstTerm);
+	// Une grandeur perdrait son unité en silence (revue du lot 5a, M1)
+	if (cited?.kind === 'value' && cited.unit !== undefined) {
+		return `Le premier terme « ${firstTerm} » est une grandeur en ${cited.unit} : une suite prend un nombre.`;
+	}
+	const noValue = `Le premier terme « ${firstTerm} » n'a pas de valeur : il faut un nombre, ou le nom d'une valeur.`;
+	if (cited?.kind !== 'value') return noValue;
 	const value = expressionOf(atelier, firstTerm);
-	if (!value.ok) return null;
-	return constantOf(value.expression, 'text', atelier.functionNames);
+	if (!value.ok) return noValue;
+	return constantOf(value.expression, 'text', atelier.functionNames) ?? noValue;
 }
 
 /**

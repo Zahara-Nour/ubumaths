@@ -294,6 +294,24 @@ récurrence répondait par une erreur en anglais (« free variables: u »,
   d'import circulaire), réexportée par l'atelier.
 - Tests : 26 serveur (25 rouges avant) ; suites 1 231 serveur, 263 navigateur ;
   `check:incremental` 0 ; `lint:fast` propre.
+- [x] Revue `code-reviewer` — corrigé, tests d'abord (12 rouges vus) :
+  - **B1 (bloquant)** : retaper `u(n) = 2n+1` sur une récurrence la laissait
+    en récurrence → `u(3)` valait 5 au lieu de 7, sans un mot. Le mode est
+    désormais REDÉDUIT à chaque modification ; une récurrence constante
+    (`u(n+1) = 3`) se demande explicitement (Calcul, ou le sélecteur de la
+    carte au lot 5b). Choix signalé à David.
+  - C1 : un objet qui cite une récurrence comme une fonction (`f(x) = u(x)+1`)
+    passe en erreur, en français (il répondait en anglais).
+  - C2 : `2u(3)` se calcule (le `\b` ne coupait pas après un chiffre) ; un
+    rang non entier est refusé en français. C3 : « limité aux 1000 premiers
+    termes » et « la suite diverge » ne se confondent plus.
+  - C4/C5/M1 : récurrence d'un autre ordre, premier terme qui n'est pas une
+    valeur, grandeur comme premier terme → erreur dès la définition.
+  - C6 : une commande sur une récurrence (`.dériver u(2)`) est refusée en
+    français. M2 : un terme affiché avec 15 chiffres au plus.
+  - Noté (M3) : une valeur renommée à l'arrivée d'un lien n'est pas suivie
+    par le premier terme (comme les définitions, comportement antérieur).
+- Suites : 1 245 serveur, 263 navigateur ; `check:incremental` 0 ; lint propre.
 
 ## Lots suivants
 

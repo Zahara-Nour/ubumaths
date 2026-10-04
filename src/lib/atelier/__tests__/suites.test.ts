@@ -270,3 +270,133 @@ describe('rangement', () => {
 		expect(sequenceOf(atelier)).toMatchObject({ firstIndex: 1, firstTerm: '7' });
 	});
 });
+
+// =============================================================================
+// Revue du lot 5a
+// =============================================================================
+
+describe('revue du lot 5a', () => {
+	// B1 (bloquant) : `u(3)` valait 5 au lieu de 7, sans avertissement
+	it('retaper u(n) = 2n + 1 sur une récurrence la remet en explicite', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 2');
+
+		calc(atelier, 'u(n) = 2n + 1');
+
+		expect(sequenceOf(atelier).mode).toBe('explicit');
+		expect(output(calc(atelier, 'u(3)'))).toBe('7');
+	});
+
+	it('modifier la définition redéduit le mode', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 2' }, 'text');
+
+		atelier.update('u', '2n + 1', 'text');
+
+		expect(sequenceOf(atelier).mode).toBe('explicit');
+	});
+
+	it('`u(n+1) = 3` reste une récurrence constante', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = 3');
+		atelier.setSequence('u', { firstTerm: '1' });
+
+		expect(values(atelier, 'u', 2)).toEqual([1, 3, 3]);
+	});
+
+	// C1 : citer une récurrence comme une fonction ne se calcule pas — on le dit
+	it('une fonction qui cite une récurrence est en erreur, en français', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 2');
+		atelier.create({ kind: 'function', name: 'f', definition: 'u(x) + 1' }, 'text');
+
+		expect(atelier.get('f')?.status).toBe('error');
+		expect(atelier.get('f')?.message).toContain('récurrente');
+	});
+
+	// C2
+	it.each([
+		['2u(3)', '12'],
+		['u(2)^2', '16']
+	])('`%s` se calcule', (input, expected) => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 2');
+		atelier.setSequence('u', { firstTerm: '0' });
+
+		expect(output(calc(atelier, input))).toBe(expected);
+	});
+
+	it('un rang non entier se dit en français', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 2');
+
+		const result = calc(atelier, 'u(5,5)');
+
+		expect(result.kind).toBe('refus');
+		expect(output(result)).toContain('entier');
+	});
+
+	// C3
+	it('un rang trop lointain dit la limite', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 1');
+
+		expect(output(calc(atelier, 'u(5000)'))).toContain('1000');
+	});
+
+	it('une suite qui diverge le dit', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n)^2');
+		atelier.setSequence('u', { firstTerm: '10' });
+
+		expect(output(calc(atelier, 'u(20)'))).toContain('diverge');
+	});
+
+	// C4 : refusé dès la définition, pas au premier calcul
+	it('`u(n+1) = u(n-1) + 1` est en erreur dès sa définition', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n-1) + 1');
+
+		expect(sequenceOf(atelier).status).toBe('error');
+	});
+
+	// C5
+	it('le premier terme ne peut pas être la suite elle-même', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 1' }, 'text');
+
+		expect(atelier.setSequence('u', { firstTerm: 'u' }).ok).toBe(false);
+	});
+
+	it('un premier terme qui n’est pas une valeur met la suite en erreur', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 1' }, 'text');
+
+		atelier.setSequence('u', { firstTerm: 'f' });
+
+		expect(sequenceOf(atelier).status).toBe('error');
+	});
+
+	// M1 : une grandeur perdrait son unité en silence
+	it('une grandeur comme premier terme met la suite en erreur', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'q', definition: '3[m]' }, 'url');
+		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 1' }, 'text');
+
+		atelier.setSequence('u', { firstTerm: 'q' });
+
+		expect(sequenceOf(atelier).status).toBe('error');
+	});
+
+	// C6 : `.dériver u(2)` rendait « d/dx((u(n)-5)(2)) = 0 »
+	it('une commande sur une récurrence est refusée en français', () => {
+		const atelier = new Atelier();
+		calc(atelier, 'u(n+1) = u(n) + 2');
+
+		const result = calc(atelier, '.dériver u(2)');
+
+		expect(result.kind).toBe('refus');
+		expect(output(result)).toContain('récurrente');
+	});
+});

@@ -19,6 +19,7 @@ import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
 import { syncEngine, expressionOf, expandInput, termsOf } from './engine';
+import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
@@ -133,8 +134,12 @@ export function derivativeNote(result: Created | Refused | null): string {
 /** `u(n+1) = …` : la définition d'une suite récurrente (décision S3). */
 const RECURRENCE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*\(\s*n\s*\+\s*1\s*\)\s*=(?!=)\s*(.+)$/s;
 
-/** `u(5)` : un terme de rang entier, écrit avec un nom et des parenthèses. */
-const TERM = /\b([A-Za-z](?:_\d+)?)\(\s*(\d+)\s*\)/g;
+/**
+ * `u(5)`, `2u(3)` : un nom suivi d'une parenthèse. ⚠️ Pas de `\b` devant : il ne
+ * coupe pas entre `2` et `u`, et `2u(3)` repartait en erreur anglaise (revue
+ * du lot 5a, C2). L'argument est lu à part : un rang non entier se refuse.
+ */
+const TERM = /(?<![A-Za-z_])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
 
 /**
  * Remplacer, dans ce que l'élève tape, chaque terme d'une RÉCURRENCE (`u(5)`)
@@ -151,18 +156,32 @@ function recurrenceTermsIn(
 		const object = atelier.get(name);
 		if (failure !== null || object?.kind !== 'sequence' || object.mode !== 'recurrence')
 			return whole;
+		if (!/^\s*\d+\s*$/.test(rank)) {
+			failure = `Le rang de ${name} doit être un entier positif : ${name}(5), pas ${name}(${rank.trim()}).`;
+			return whole;
+		}
 		const n = Number(rank);
 		if (n < object.firstIndex) {
 			failure = `${name}(${n}) n'existe pas : la suite commence au rang ${object.firstIndex}.`;
 			return whole;
 		}
-		const terms = termsOf(atelier, name, n);
-		const term = terms.ok ? terms.terms.find((t) => t.n === n) : undefined;
-		if (!terms.ok || term === undefined) {
-			failure = terms.ok ? `${name}(${n}) ne se calcule pas.` : terms.message;
+		// C3 : « trop loin » et « diverge » ne se confondent pas
+		if (n - object.firstIndex >= MAX_SEQUENCE_TERMS) {
+			failure = `${name}(${n}) : le calcul est limité aux ${MAX_SEQUENCE_TERMS} premiers termes.`;
 			return whole;
 		}
-		return `(${term.value})`;
+		const terms = termsOf(atelier, name, n);
+		if (!terms.ok) {
+			failure = terms.message;
+			return whole;
+		}
+		const term = terms.terms.find((t) => t.n === n);
+		if (term === undefined) {
+			failure = `${name}(${n}) n'est pas un nombre fini : la suite diverge.`;
+			return whole;
+		}
+		// 15 chiffres : au-delà, la dérive du flottant passait pour un entier exact
+		return `(${Number(term.value.toPrecision(15))})`;
 	});
 	return failure === null ? { ok: true, text } : { ok: false, message: failure };
 }
@@ -366,10 +385,25 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// Les simulations lisent des NOMS de listes : elles passent avant la substitution
 	// des noms par leurs expressions, qui en ferait des listes de nombres
+	// C6 : une commande traite une expression ; une récurrence n'en est pas une
+	// (`.dériver u(2)` rendait « d/dx((u(n)-5)(2)) = 0 »)
+	const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
+	const recurrence = session.atelier.objects.find(
+		(o) =>
+			o.kind === 'sequence' &&
+			o.mode === 'recurrence' &&
+			new RegExp(`(?<![A-Za-z_])${o.name}\\s*(?:\\(|_)`).test(typedArgument)
+	);
+	if (recurrence !== undefined) {
+		return {
+			kind: 'refus',
+			message: `« ${recurrence.name} » est une suite récurrente : les commandes ne s'en servent pas. Ses termes se calculent un par un, comme ${recurrence.name}(5).`
+		};
+	}
+
 	const simulation = SIMULATIONS[known.name];
 	if (simulation !== undefined) {
 		const seed = (session.seed ?? randomSeed)();
-		const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
 		const outcome = simulation(session.atelier, typedArgument, seed);
 		return outcome.ok
 			? {
