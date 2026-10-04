@@ -54,4 +54,17 @@ hors-mois, table des fêtes, convertisseur), `AlmanachConverter.svelte`.
 
 - Revue visuelle sur le serveur de dev (non faite).
 - Décors propres aux jours de fête (planche : « plus tard »).
-- Conversion inverse (date pataphysique → grégorienne), évoquée par le Compendium.
+
+## Revue de code (PR #808) — FAIT
+
+Contraste du hero (voile 70 % + texte non atténué, test de composition 7 mois × 2
+thèmes), fuseau testé en été / hiver / changements d'heure (mutation à décalage fixe
++1 h et +2 h : 4 rouges chacune), « aujourd'hui » pour la fête et le Surnuméraire du
+jour, `RangeError` sur date inexistante ou antérieure à l'Ère, halo de l'accueil sans
+`light-dark()` dans les keyframes (Safari < 17.5), identifiants en anglais.
+
+## Conversion inverse — FAIT
+
+`fromPataphysicalDate({ year, month | extraDay, day })` (allers-retours sur les Ans
+130, 132 et 204), `formatGregorianWithWeekday`. Convertisseur à deux sens (boutons
+`aria-pressed`, une seule zone `aria-live`), choix du mois par MySelect.

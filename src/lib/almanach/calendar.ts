@@ -62,6 +62,11 @@ export type PataphysicalDate =
 			feast: null;
 	  };
 
+/** Date pataphysique à convertir vers le grégorien (mois de 1 à 7) */
+export type PataphysicalDateInput =
+	| { year: number; month: number; day: number }
+	| { year: number; extraDay: ExtraDay };
+
 // =============================================================================
 // Constantes
 // =============================================================================
@@ -314,6 +319,33 @@ export function extraDayGregorian(day: ExtraDay, eraYear: number): CivilDate | n
 	return isGregorianLeapYear(endYear) ? { year: endYear, month: 3, day: 18 } : null;
 }
 
+/**
+ * Conversion inverse : date pataphysique → jour civil grégorien.
+ *
+ * @throws RangeError si l'An est < 1, le mois hors de 1..7, le jour hors de
+ *   1..52, ou si l'on demande le Surnuméraire d'un An qui n'en a pas.
+ */
+export function fromPataphysicalDate(input: PataphysicalDateInput): CivilDate {
+	const { year } = input;
+	if (!Number.isInteger(year) || year < 1) {
+		throw new RangeError(`L’An ${year} n’existe pas : l’Ère du Royaume commence à l’An 1`);
+	}
+	if ('extraDay' in input) {
+		const date = extraDayGregorian(input.extraDay, year);
+		if (!date) throw new RangeError(`L’An ${year} n’a pas de Surnuméraire`);
+		return date;
+	}
+	const { month, day } = input;
+	if (!Number.isInteger(month) || month < 1 || month > MONTH_NAMES.length) {
+		throw new RangeError(`Mois ${month} invalide : l’Almanach compte 7 mois`);
+	}
+	if (!Number.isInteger(day) || day < 1 || day > DAYS_PER_MONTH) {
+		throw new RangeError(`Jour ${day} invalide : un mois compte ${DAYS_PER_MONTH} jours`);
+	}
+	const { start } = monthGregorianRange((month - 1) as MonthIndex, year);
+	return fromDayNumber(dayNumber(start) + day - 1);
+}
+
 // =============================================================================
 // Formateurs
 // =============================================================================
@@ -380,4 +412,11 @@ export function formatGregorian(date: CivilDate, withYear = true): string {
 	const day = date.day === 1 ? '1ᵉʳ' : String(date.day);
 	const base = `${day} ${months[date.month - 1]}`;
 	return withYear ? `${base} ${date.year}` : base;
+}
+
+/** Jour grégorien avec son jour de la semaine : « vendredi 22 mai 2026 » */
+export function formatGregorianWithWeekday(date: CivilDate): string {
+	const weekdays = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+	const weekday = weekdays[new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay()];
+	return `${weekday} ${formatGregorian(date)}`;
 }

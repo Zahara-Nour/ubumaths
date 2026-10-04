@@ -353,7 +353,7 @@
 				le pensiez.
 			</p>
 		</div>
-		<AlmanachConverter initial={data.todayIso} />
+		<AlmanachConverter initial={data.todayIso} {today} />
 	</section>
 </article>
 
