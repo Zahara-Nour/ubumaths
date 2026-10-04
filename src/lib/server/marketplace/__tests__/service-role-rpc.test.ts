@@ -2,7 +2,7 @@
  * Verrous et traduction d'instances passent par le client service
  * ===============================================================
  *
- * `lock_cards`, `unlock_cards`, `unlock_specific_cards` et `resolve_card_instances` sont réservées au
+ * `lock_cards`, `unlock_cards` et `resolve_card_instances` sont réservées au
  * serveur (migration 20261003150000, Q131 et Q134) : un client utilisateur
  * reçoit 42501. Ces helpers doivent donc appeler le client service — et rien
  * d'autre, puisqu'ils ne reçoivent plus de client en paramètre.
@@ -15,12 +15,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({ rpc })
 }));
 
-import {
-	lockCardsForEntity,
-	unlockCardsForEntity,
-	unlockSpecificCardsForEntity,
-	resolveCardInstances
-} from '../helpers';
+import { lockCardsForEntity, unlockCardsForEntity, resolveCardInstances } from '../helpers';
 
 const STUDENT = '11111111-1111-4111-8111-111111111111';
 const ENTITY = '22222222-2222-4222-8222-222222222222';
@@ -57,17 +52,6 @@ describe('helpers du marché : RPC réservées au serveur', () => {
 		rpc.mockResolvedValue({ data: 2, error: null });
 		expect(await unlockCardsForEntity(ENTITY)).toBe(true);
 		expect(rpc).toHaveBeenCalledWith('unlock_cards', { p_entity_id: ENTITY });
-	});
-
-	it('unlockSpecificCardsForEntity appelle unlock_specific_cards par le client service', async () => {
-		rpc.mockResolvedValue({ data: { success: true, unlocked_count: 1 }, error: null });
-		const { data, error } = await unlockSpecificCardsForEntity(ENTITY, ['inst-1']);
-		expect(error).toBeNull();
-		expect(data).toEqual({ success: true, unlocked_count: 1 });
-		expect(rpc).toHaveBeenCalledWith('unlock_specific_cards', {
-			p_entity_id: ENTITY,
-			p_card_ids: ['inst-1']
-		});
 	});
 
 	it('resolveCardInstances appelle resolve_card_instances par le client service', async () => {
