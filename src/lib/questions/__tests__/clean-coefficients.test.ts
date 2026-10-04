@@ -201,6 +201,51 @@ describe('cleanCoefficientsCustom — réponse attendue', () => {
 });
 
 // ============================================================================
+// EXPONENTIELLE : la constante e s'écrivait `\euler`, illisible pour le validateur
+// ============================================================================
+
+describe('cleanCoefficientsCustom — autour de e^', () => {
+	// `toCustom` écrit la constante `\euler` : l'attendue nettoyée, relue en LaTeX par
+	// le validateur, était illisible et la bonne réponse de l'élève jugée fausse.
+	it.each([
+		['1e^{2x}', 'e^{2x}'],
+		['-1e^{x}', '-e^x'],
+		['e^{1x}', 'e^x'],
+		['e^{-1x}', 'e^{-x}'],
+		['2e^{x}+-3', '2e^x-3'],
+		['(1x+-3)e^{x}', '(x-3)e^x'],
+		['1e^{2x}+0', 'e^{2x}']
+	])('%s → %s', (source, expected) => {
+		expect(cleanCoefficientsCustom(source)).toBe(expected);
+	});
+
+	it('e^{0x} → e^0 (une puissance nulle n’est pas réduite, comme x^0)', () => {
+		expect(cleanCoefficientsCustom('e^{0x}')).toBe('e^0');
+		expect(cleanCoefficientsCustom('x^0')).toBe('x^0');
+	});
+
+	it('constante π suivie d’une lettre : jamais `\\pix` (formule laissée telle quelle)', () => {
+		const out = cleanCoefficientsCustom('1\\pi x');
+		expect(out).not.toContain('\\pix');
+		expect(parseCustomSafe(out).ast).not.toBeNull();
+	});
+
+	it('réponse de l’élève juste avec l’attendue nettoyée (modèle de Terminale)', () => {
+		const vars = [
+			{ name: 'k', expression: '1' },
+			{ name: 'a', expression: '2' },
+			{ name: 'b', expression: '-3' }
+		];
+		const instance = generate(
+			template('$f(x)=?$', '{{k}}e^{{{a}}x}{{b;+}}', vars, { cleanCoefficients: true })
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('e^{2x}-3');
+		expect(validateAnswer(['e^{2x}-3'], instance, ['e^{2x}-3']).status).toBe('correct');
+		expect(validateAnswer(['e^{2x}+3'], instance, ['e^{2x}+3']).isCorrect).toBe(false);
+	});
+});
+
+// ============================================================================
 // SCHÉMA
 // ============================================================================
 

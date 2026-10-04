@@ -244,6 +244,25 @@ export function cleanCoefficientsAst(ast: MathNode): MathNode {
 	}
 }
 
+/** La constante e telle que l'écrit `toCustom` (`\\euler`), commande suivante exclue */
+const CUSTOM_EULER = /\\euler(?![A-Za-z])/g;
+
+/**
+ * Formule nettoyée réécrite en syntaxe maison, lisible aussi par le parseur LaTeX du
+ * validateur (qui lit la réponse attendue) : `toCustom` écrit la constante e `\\euler`,
+ * illisible en LaTeX — `1e^{2x}` nettoyé devenait `\\euler^{2x}` et la bonne réponse
+ * de l'élève était jugée fausse. On écrit `e`, comme l'auteur. Garde : le texte doit se
+ * relire en la MÊME formule (`1\\pi x` donnait `\\pix`) ; sinon `null`.
+ */
+function readableCustom(
+	cleaned: MathNode,
+	genericFunctions?: GenericFunctionConfig
+): string | null {
+	const text = toCustom(cleaned).replace(CUSTOM_EULER, 'e');
+	const reread = parseCustomSafe(text, { genericFunctions });
+	return reread.ast && toLatex(reread.ast) === toLatex(cleaned) ? text : null;
+}
+
 /**
  * Réponse attendue en syntaxe maison (`1x-1y+0=0` → `x-y=0`), ou inégalité écrite en
  * LaTeX (`x^2+1x\\leqslant 2` → `x^2 + x \\leqslant 2`, rendue en LaTeX). Formule
@@ -258,7 +277,8 @@ export function cleanCoefficientsCustom(
 		const parsed = parseCustomSafe(source.trim(), { genericFunctions });
 		if (parsed.ast) {
 			const cleaned = cleanCoefficientsAst(parsed.ast);
-			return cleaned === parsed.ast ? source : toCustom(cleaned);
+			if (cleaned === parsed.ast) return source;
+			return readableCustom(cleaned, genericFunctions) ?? source;
 		}
 		// Inégalité écrite en LaTeX (`x^2+1x\\leqslant 2`) : relue en syntaxe maison pour être
 		// nettoyée, et rendue en LaTeX comme l'auteur l'a écrite (`x^2 + x \\leqslant 2`)
