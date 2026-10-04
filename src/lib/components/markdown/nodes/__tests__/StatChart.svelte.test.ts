@@ -646,6 +646,39 @@ describe('StatChart — lois à densité (manche 13, PR b)', () => {
 	});
 });
 
+describe('StatChart — simulation d’une loi à densité (manche 14, PR b)', () => {
+	it('histogramme en densité et courbe superposée, dans la même figure, dessinée après', async () => {
+		const node = parseStatChartContent('simulation', 'X ~ E(0,5)\ntirages: 1000\ngraine: 4');
+		const scene = buildStatChartScene(node.spec!);
+		const screen = await render(StatChart, { target: mainElement(), props: { node } });
+		const svg = screen.container.querySelector('svg[role="img"]')!;
+		const rects = [...svg.querySelectorAll('rect.stat-rectangle')];
+		const curve = svg.querySelector<SVGPolylineElement>('polyline.stat-densite')!;
+		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
+			(li) => li.textContent
+		);
+
+		expect(rects).toHaveLength(10);
+		expect(curve).not.toBeNull();
+		// Superposée : la courbe vient APRÈS le dernier rectangle, donc devant
+		expect(
+			rects[rects.length - 1].compareDocumentPosition(curve) & Node.DOCUMENT_POSITION_FOLLOWING
+		).toBeTruthy();
+		// Tracée en couleur pleine, visible sur les rectangles
+		expect(getComputedStyle(curve).stroke).not.toBe('none');
+		expect(getComputedStyle(curve).strokeWidth).toBe('2px');
+		// Même échelle verticale : haut de la courbe (λ = 0,5) et premier rectangle
+		// dans le rapport de leurs valeurs
+		const first = (rects[0] as SVGRectElement).getBBox();
+		const baseline = first.y + first.height;
+		const height = scene.kind === 'histogramme' ? scene.rects[0].height : NaN;
+		expect((baseline - curve.getBBox().y) / first.height).toBeCloseTo(0.5 / height, 1);
+		expect(svg.querySelector('text.stat-titre-axe')?.textContent).toBe('Densité');
+		expect(items).toEqual(scene.indicators);
+		expect(items[2]).toBe('graine 4');
+	});
+});
+
 describe('StatChart — bloc simulation (v2, lot 3)', () => {
 	const DIE = 'X = 1 ; 2 ; 3 ; 4 ; 5 ; 6\nP = 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6 ; 1/6';
 

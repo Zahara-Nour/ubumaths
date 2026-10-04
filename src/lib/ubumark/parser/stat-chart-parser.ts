@@ -135,6 +135,8 @@ interface Options {
 	/** Loi à densité : `répartition: oui`, `aire:` tel qu'écrit */
 	cdf: boolean;
 	areaQuery: string | null;
+	/** `classes: N` d'une simulation de loi à densité (manche 14) */
+	simulationClasses: number | null;
 }
 
 /** Une série nommée (`données Garçons: …`), lue ligne par ligne */
@@ -148,6 +150,14 @@ interface LawLine {
 	texts: (string | null)[];
 	line: number;
 }
+
+/** Une loi nommée (`X ~ G(0,2)`, manches 13-14), paramètres tels qu'écrits */
+type NamedLawLine =
+	| { family: 'geometric'; name: string; p: string; line: number }
+	| { family: 'uniform'; name: string; a: string; b: string; line: number }
+	| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
+	| { family: 'exponential'; name: string; lambda: string; line: number }
+	| null;
 
 /** Une ligne de données d'un tableau croisé, avant le contrôle d'ensemble */
 interface TableRow {
@@ -250,14 +260,15 @@ const OPTION_KINDS: Partial<Record<OptionKey, readonly StatChartKind[]>> = {
 	tirages: ['simulation'],
 	graine: ['simulation'],
 	echantillons: ['simulation'],
-	classes: ['histogramme', 'frequences-cumulees', 'effectifs'],
+	// Simulation d'une loi à densité : un NOMBRE de classes (manche 14)
+	classes: ['histogramme', 'frequences-cumulees', 'effectifs', 'simulation'],
 	frequences: ['effectifs'],
 	arrondi: ['loi'],
 	probabilites: ['loi'],
 	diagramme: ['loi'],
 	intervalle: ['loi'],
 	seuil: ['loi'],
-	jusqua: ['loi'],
+	jusqua: ['loi', 'simulation'],
 	repartition: ['loi'],
 	aire: ['loi'],
 	serie: ['barres', 'circulaire', 'histogramme', 'frequences-cumulees']
@@ -579,6 +590,12 @@ function applyOption(kind: StatChartKind, key: OptionKey, value: string, options
 			return;
 		}
 		case 'classes':
+			if (kind === 'simulation') {
+				const { min, max } = STAT_CHART_LIMITS.simulationClasses;
+				const message = `classes : un nombre de classes, de ${min} à ${max} (pas des bornes)`;
+				options.simulationClasses = parseWhole(value, min, max, message);
+				return;
+			}
 			options.classBounds = parseClassBounds(value);
 			return;
 		case 'echantillons':
@@ -1728,7 +1745,12 @@ function checkGeometric(
 function checkUniform(
 	uniform: { name: string; a: string; b: string; line: number },
 	options: Options,
-	optionLines: Partial<Record<OptionKey, number>>
+	optionLines: Partial<Record<OptionKey, number>>,
+	// Une simulation tire au plus 30 valeurs, une par ligne du tableau (manche 14)
+	limit: { count: number; message: string } = {
+		count: UNIFORM_MAX_VALUES,
+		message: 'U(a ; b) : au plus 1 000 valeurs'
+	}
 ): { law: LawData; warnings: StatChartIssue[] } | { error: StatChartIssue } {
 	const at = (line: number, message: string) => ({
 		error: { message: `Ligne ${line} : ${message}`, line }
@@ -1744,9 +1766,7 @@ function checkUniform(
 	if (a > b) return at(uniform.line, 'U(a ; b) : les bornes dans l’ordre (a < b)');
 	if (a === b) return at(uniform.line, 'U(a ; b) : a et b distincts (a < b)');
 	const count = b - a + 1;
-	if (count > UNIFORM_MAX_VALUES) {
-		return at(uniform.line, 'U(a ; b) : au plus 1 000 valeurs');
-	}
+	if (count > limit.count) return at(uniform.line, limit.message);
 	if (options.lawMasked.length > 0 && count > STAT_CHART_LIMITS.binomialTableValues) {
 		return at(
 			optionLines.masquer ?? 0,
@@ -1945,6 +1965,70 @@ function checkDensity(
 			}
 		},
 		warnings
+	};
+}
+
+/**
+ * Une loi nommée dans un bloc ```simulation (manche 14) : les contrôles du bloc
+ * ```loi (mêmes messages), puis ce que la simulation garde ; U(a ; b) tire au
+ * plus 30 valeurs, une par ligne du tableau.
+ */
+function checkSimulatedNamedLaw(
+	named: NonNullable<NamedLawLine>,
+	options: Options,
+	optionLines: Partial<Record<OptionKey, number>>
+): { simulation: SimulationData } | { error: StatChartIssue } {
+	const common = {
+		variable: named.name,
+		probabilities: [],
+		mode: options.simulationMode,
+		draws: options.draws,
+		seed: options.seed,
+		samples: options.samples,
+		sampleSize: options.sampleSize,
+		binomial: null
+	};
+	if (named.family === 'geometric') {
+		const checked = checkGeometric(named, options, optionLines);
+		if ('error' in checked) return checked;
+		const upTo = checked.law.geometric!.upTo;
+		return {
+			simulation: {
+				...common,
+				values: checked.law.values,
+				named: { family: 'geometric', p: named.p, upTo }
+			}
+		};
+	}
+	if (named.family === 'uniform') {
+		// Le tableau du mode `tirages` : une ligne par valeur, 30 au plus ; les
+		// modes moyenne et échantillons gardent le plafond du bloc ```loi (revue)
+		const max = STAT_CHART_LIMITS.binomialTableValues;
+		const checked =
+			options.simulationMode === 'tirages'
+				? checkUniform(named, options, optionLines, {
+						count: max,
+						message: `U(a ; b) : au plus ${max} valeurs à tirer`
+					})
+				: checkUniform(named, options, optionLines);
+		if ('error' in checked) return checked;
+		const { a, b } = checked.law.uniform!;
+		return {
+			simulation: { ...common, values: checked.law.values, named: { family: 'uniform', a, b } }
+		};
+	}
+	const checked = checkDensity(named, options, optionLines);
+	if ('error' in checked) return checked;
+	const classes = options.simulationClasses ?? STAT_CHART_LIMITS.simulationClasses.default;
+	return {
+		simulation: {
+			...common,
+			values: [],
+			named:
+				named.family === 'uniform-density'
+					? { family: 'uniform-density', a: named.a, b: named.b, classes }
+					: { family: 'exponential', lambda: named.lambda, classes }
+		}
 	};
 }
 
@@ -2271,18 +2355,14 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		binomialThreshold: null,
 		upTo: null,
 		cdf: false,
-		areaQuery: null
+		areaQuery: null,
+		simulationClasses: null
 	};
 	let lawVariable = null as ({ name: string } & LawLine) | null;
 	// `X ~ B(n ; p)` (manche 11) : la loi binomiale remplace `X =` / `P =`
 	let lawBinomial = null as { name: string; n: string; p: string; line: number } | null;
-	// `X ~ G(p)`, `X ~ U(a ; b)` (manche 13) : seulement dans le bloc ```loi
-	let lawNamed = null as
-		| { family: 'geometric'; name: string; p: string; line: number }
-		| { family: 'uniform'; name: string; a: string; b: string; line: number }
-		| { family: 'uniform-density'; name: string; a: string; b: string; line: number }
-		| { family: 'exponential'; name: string; lambda: string; line: number }
-		| null;
+	// `X ~ G(p)`, `X ~ U(a ; b)` (manche 13), dans ```loi et ```simulation (manche 14)
+	let lawNamed = null as NamedLawLine;
 	let lawProbabilities = null as LawLine | null;
 	// Une simulation écrit sa loi comme le bloc ```loi
 	const isSimulation = kind === 'simulation';
@@ -2376,8 +2456,9 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				return;
 			}
 
-			// Lois géométrique et uniforme (manche 13) : `X ~ G(0,2)`, `X ~ U(1 ; 6)`
-			if (kind === 'loi') {
+			// Lois géométrique et uniforme (manche 13) : `X ~ G(0,2)`, `X ~ U(1 ; 6)` ;
+			// dans une simulation aussi (manche 14)
+			if (isLaw) {
 				// Lois à densité (PR b) : `U([a ; b])` AVANT `U(a ; b)`, qui la lirait aussi
 				const density = UNIFORM_DENSITY_REGEX.exec(content);
 				const exponential = density ? null : EXPONENTIAL_REGEX.exec(content);
@@ -2678,6 +2759,27 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 			});
 		}
 	}
+	// Simulation (manche 14) : `classes:` pour l'histogramme d'une loi à densité,
+	// `jusqu'à:` pour le tableau d'une loi géométrique — en mode tirages seulement
+	if (errors.length === 0 && isSimulation && seenOptions.has('classes')) {
+		const line = optionLines.classes ?? 0;
+		if (!isDensity || options.simulationMode !== 'tirages') {
+			errors.push({
+				message: `Ligne ${line} : classes : seulement pour une loi à densité (U([a ; b]) ou E(λ)) en mode tirages`,
+				line
+			});
+		}
+	}
+	if (
+		errors.length === 0 &&
+		isSimulation &&
+		seenOptions.has('jusqua') &&
+		lawNamed?.family === 'geometric' &&
+		options.simulationMode !== 'tirages'
+	) {
+		const line = optionLines.jusqua ?? 0;
+		errors.push({ message: `Ligne ${line} : jusqu'à : seulement en mode tirages`, line });
+	}
 	// `jusqu'à:` : le tableau d'une loi géométrique
 	if (errors.length === 0 && seenOptions.has('jusqua') && lawNamed?.family !== 'geometric') {
 		const line = optionLines.jusqua ?? 0;
@@ -2725,7 +2827,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				seed: options.seed,
 				samples: options.samples,
 				sampleSize: options.sampleSize,
-				binomial: { n: checked.law.binomial!.n, p: lawBinomial.p }
+				binomial: { n: checked.law.binomial!.n, p: lawBinomial.p },
+				named: null
 			};
 		}
 	} else if (errors.length === 0 && lawBinomial !== null) {
@@ -2742,6 +2845,10 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				});
 			}
 		}
+	} else if (errors.length === 0 && lawNamed !== null && isSimulation) {
+		const checked = checkSimulatedNamedLaw(lawNamed, options, optionLines);
+		if ('error' in checked) errors.push(checked.error);
+		else simulation = checked.simulation;
 	} else if (errors.length === 0 && lawNamed !== null) {
 		const checked =
 			lawNamed.family === 'geometric'
@@ -2775,7 +2882,8 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 				seed: options.seed,
 				samples: options.samples,
 				sampleSize: options.sampleSize,
-				binomial: null
+				binomial: null,
+				named: null
 			};
 		} else law = checked.law;
 	} else if (errors.length === 0 && isTable) {

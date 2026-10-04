@@ -25,6 +25,7 @@ import type {
 	StatChartDirection,
 	StatChartLabels,
 	SimulationData,
+	SimulatedNamedLaw,
 	StatChartIndicator,
 	StatChartSpec,
 	StatChartUnit
@@ -51,7 +52,18 @@ import {
 } from '$lib/statistics/format';
 import { Fraction } from '$lib/statistics/fraction';
 import { randomVariable, type RandomVariableLaw } from '$lib/statistics/random-variable';
-import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
+import {
+	discreteSampler,
+	exponentialSampler,
+	geometricSampler,
+	simulateCounts,
+	simulateDraws,
+	simulateLawRunningMean,
+	simulateLawSamples,
+	uniformDensitySampler,
+	uniformSampler,
+	type LawSampler
+} from '$lib/statistics/simulation';
 // ⚠️ Import circulaire (simulation-scene construit ses histogrammes par
 // `buildStatChartScene`) : sans risque, rien n'y est appelé au chargement
 import { buildRunningMeanScene, buildSampleMeansScene } from './simulation-scene';
@@ -260,6 +272,11 @@ export interface HistogramScene extends SceneCommon {
 	second?: HistogramScene;
 	/** `indicateurs:` à deux séries (Q118) : le tableau, une colonne par série */
 	indicatorTable?: ComparisonScene | null;
+	/**
+	 * Tirages d'une loi à densité (```simulation, manche 14) : hauteurs en
+	 * densité, et la courbe de la loi superposée — celle du bloc ```loi
+	 */
+	densityCurve?: { points: ScenePoint[]; color: CourbeColor };
 }
 
 export interface SceneReading {
@@ -2380,6 +2397,22 @@ function thousandth(value: number, locale: ContentLocale): string {
 	return formatStatNumber(Math.round(value * 1000) / 1000, locale);
 }
 
+/**
+ * Un réel affiché (tirages d'une loi à densité) : au millième, sauf sous
+ * 0,01 en valeur absolue — 3 chiffres significatifs, en écriture décimale.
+ * E(1 000) ou E(0,001) donnaient « ≈ 0 », U([0 ; 1]) en 3 classes
+ * « 0,333333333333 », une borne minuscule « 1e-7 » (revue).
+ */
+function shownReal(value: number, locale: ContentLocale): string {
+	const size = Math.abs(value);
+	if (size === 0 || size >= 0.01) return thousandth(value, locale);
+	const places = Math.min(100, 2 - Math.floor(Math.log10(size)));
+	// `toFixed` n'écrit jamais d'exposant sous 10^21 ; zéros de queue retirés
+	const text = size.toFixed(places).replace(/0+$/, '');
+	const decimal = locale === 'en' ? text : text.replace('.', ',');
+	return value < 0 ? `−${decimal}` : decimal;
+}
+
 /** Ligne écrite sous la figure : la graine qui refait les mêmes tirages */
 function seedLine(seed: number, locale: ContentLocale): string {
 	return locale === 'en' ? `seed ${seed}` : `graine ${seed}`;
@@ -2392,16 +2425,11 @@ function seedLine(seed: number, locale: ContentLocale): string {
 function buildSimulatedMeanScene(
 	spec: StatChartSpec,
 	simulation: SimulationData,
-	law: { values: Fraction[]; probabilities: Fraction[] },
+	sampler: LawSampler,
 	locale: ContentLocale
 ): MeanScene {
 	const n = simulation.draws;
-	const outcome = simulateRunningMean(
-		law.values,
-		law.probabilities,
-		n,
-		createRandomSource(simulation.seed)
-	);
+	const outcome = simulateLawRunningMean(sampler, n, createRandomSource(simulation.seed));
 	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
 	const { means, expectation } = outcome.value;
 	const exact = formatFraction(expectation);
@@ -2426,13 +2454,12 @@ function buildSimulatedMeanScene(
 function buildSimulatedSamplesScene(
 	spec: StatChartSpec,
 	simulation: SimulationData,
-	law: { values: Fraction[]; probabilities: Fraction[] },
+	sampler: LawSampler,
 	locale: ContentLocale
 ): HistogramScene {
 	const N = simulation.samples;
-	const outcome = simulateSamples(
-		law.values,
-		law.probabilities,
+	const outcome = simulateLawSamples(
+		sampler,
 		N,
 		simulation.sampleSize,
 		createRandomSource(simulation.seed)
@@ -2463,37 +2490,28 @@ function buildSimulatedSamplesScene(
 	};
 }
 
-function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
-	const simulation = spec.simulation;
-	if (simulation === null) throw new Error('Simulation sans données');
-	// Loi binomiale (PR b) : les probabilités exactes, sans passer par du texte
-	// (leurs dénominateurs dépassent les 15 chiffres de `Fraction.parse`)
-	const binomial =
-		simulation.binomial === null
-			? null
-			: binomialDistribution(
-					simulation.binomial.n,
-					Fraction.parse(simulation.binomial.p) ?? Fraction.ZERO
-				);
-	const law = {
-		values: simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
-		probabilities:
-			binomial === null
-				? simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO)
-				: binomial.numerators.map((num) => new Fraction(num, binomial.denominator))
-	};
-	if (simulation.mode === 'moyenne') return buildSimulatedMeanScene(spec, simulation, law, locale);
-	if (simulation.mode === 'échantillons') {
-		return buildSimulatedSamplesScene(spec, simulation, law, locale);
+/** Une loi nommée (manche 14) : son tirage par inversion, et E, V, σ */
+function namedSampler(named: SimulatedNamedLaw): LawSampler {
+	const read = (text: string, fallback: Fraction) => Fraction.parse(text) ?? fallback;
+	switch (named.family) {
+		case 'geometric':
+			return geometricSampler(read(named.p, Fraction.ONE));
+		case 'uniform':
+			return uniformSampler(named.a, named.b);
+		case 'uniform-density':
+			return uniformDensitySampler(read(named.a, Fraction.ZERO), read(named.b, Fraction.ONE));
+		case 'exponential':
+			return exponentialSampler(read(named.lambda, Fraction.ONE));
 	}
-	const outcome = simulateCounts(
-		law.values,
-		law.probabilities,
-		simulation.draws,
-		createRandomSource(simulation.seed)
-	);
-	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+}
 
+/** Le tableau du mode `tirages` : une ligne par valeur (effectif, fréquence, probabilité) */
+function simulationTable(
+	spec: StatChartSpec,
+	simulation: SimulationData,
+	rows: { value: string; count: number; probability: string }[],
+	locale: ContentLocale
+): SimulationScene {
 	const text = SIMULATION_TEXT[locale];
 	const n = simulation.draws;
 	const caption = text.caption(groupedCount(n, locale), n > 1, simulation.seed);
@@ -2515,16 +2533,231 @@ function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatC
 		variable: simulation.variable,
 		caption,
 		headers: text.headers,
-		rows: simulation.values.map((value, i) => ({
+		rows: rows.map((row) => ({
+			value: row.value,
+			count: groupedCount(row.count, locale),
+			frequency: frequency(row.count),
+			probability: row.probability
+		}))
+	};
+}
+
+/**
+ * G(p) et U(a ; b) en mode `tirages` (manche 14) : les effectifs des tirages
+ * par inversion ; G s'arrête à `jusqu'à:` puis « 11 ou plus », de probabilité
+ * EXACTE (1 − p)^10 arrondie au millième.
+ */
+function namedDiscreteTable(
+	spec: StatChartSpec,
+	simulation: SimulationData,
+	named: Extract<SimulatedNamedLaw, { family: 'geometric' | 'uniform' }>,
+	sampler: LawSampler,
+	locale: ContentLocale
+): SimulationScene {
+	const outcome = simulateDraws(sampler, simulation.draws, createRandomSource(simulation.seed));
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+	const draws = outcome.value;
+	const probability = ({ num, den }: { num: bigint; den: bigint }) =>
+		roundedText(num, den, 3, locale).text;
+	if (named.family === 'uniform') {
+		const { a, b } = named;
+		const counts = new Array<number>(b - a + 1).fill(0);
+		for (const x of draws) counts[x - a]++;
+		return simulationTable(
+			spec,
+			simulation,
+			counts.map((count, i) => ({
+				value: asWritten(String(a + i), locale),
+				count,
+				probability: probability(uniformProbability(a, b, a + i, a + i))
+			})),
+			locale
+		);
+	}
+	const p = Fraction.parse(named.p) ?? Fraction.ONE;
+	const counts = new Array<number>(named.upTo + 1).fill(0);
+	for (const x of draws) counts[Math.min(x, named.upTo + 1) - 1]++;
+	return simulationTable(
+		spec,
+		simulation,
+		counts.map((count, i) => {
+			const k = i + 1;
+			const last = k > named.upTo;
+			return {
+				value: last ? STAT_TEXT[locale].simulation.orMore(String(k)) : String(k),
+				count,
+				probability: probability(geometricProbability(p, k, last ? null : k))
+			};
+		}),
+		locale
+	);
+}
+
+/**
+ * U([a ; b]) et E(λ) en mode `tirages` (manche 14) : l'histogramme des tirages
+ * EN DENSITÉ (fréquence / amplitude, aire totale 1), en classes égales — U : de
+ * a à b ; E : de 0 à la borne de l'axe de la courbe, la dernière classe prenant
+ * tout ce qui dépasse — et la courbe de densité du bloc ```loi par-dessus.
+ */
+function buildDensityDrawsScene(
+	spec: StatChartSpec,
+	simulation: SimulationData,
+	named: Extract<SimulatedNamedLaw, { family: 'uniform-density' | 'exponential' }>,
+	sampler: LawSampler,
+	locale: ContentLocale
+): HistogramScene {
+	const n = simulation.draws;
+	const outcome = simulateDraws(sampler, n, createRandomSource(simulation.seed));
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+	const draws = outcome.value;
+	const uniform = named.family === 'uniform-density';
+	// La courbe du bloc ```loi : mêmes points, même cadre, même couleur
+	const curve = densityChart(
+		spec,
+		{
+			law: uniform
+				? { family: 'uniform', a: named.a, b: named.b }
+				: { family: 'exponential', lambda: named.lambda },
+			places: 3,
+			queries: [],
+			chart: true,
+			area: null,
+			cdf: false
+		},
+		simulation.variable,
+		locale
+	);
+	const low = uniform ? (Fraction.parse(named.a)?.toNumber() ?? 0) : 0;
+	const high = uniform ? (Fraction.parse(named.b)?.toNumber() ?? 1) : curve.xMax;
+	const classes = named.classes;
+	const width = (high - low) / classes;
+	const counts = new Array<number>(classes).fill(0);
+	for (const x of draws) {
+		counts[Math.min(classes - 1, Math.max(0, Math.floor((x - low) / width)))]++;
+	}
+	const bound = (i: number) => (i === classes ? high : Number((low + i * width).toPrecision(12)));
+	const rects: SceneRect[] = counts.map((count, i) => {
+		const [lower, upper] = [bound(i), bound(i + 1)];
+		const last = i === classes - 1;
+		const closing = !last
+			? `${shownReal(upper, locale)}[`
+			: uniform
+				? `${shownReal(upper, locale)}]`
+				: '+∞[';
+		return {
+			label: `[${shownReal(lower, locale)} ; ${closing}`,
+			lower,
+			upper,
+			// Hauteur = fréquence / amplitude : l'aire du rectangle est la fréquence
+			height: count / n / (upper - lower),
+			valueLabel: groupedCount(count, locale)
+		};
+	});
+
+	const { yMax, ticks } = valueAxis(
+		Math.max(...curve.points.map((p) => p.y), ...rects.map((r) => r.height)),
+		curve.pixelSize.height,
+		'pourcentages',
+		locale
+	);
+	const text = STAT_TEXT[locale];
+	const mean = draws.reduce((sum, x) => sum + x, 0) / n;
+	const beyond = draws.filter((x) => x > high).length;
+	return {
+		kind: 'histogramme',
+		title: spec.title,
+		accessibleTitle: text.simulation.histogram,
+		description: text.simulation.histogramDescription(
+			groupedCount(n, locale),
+			rects.map((r) => `${r.label} ${shownReal(r.height, locale)}`).join(', ')
+		),
+		pixelSize: curve.pixelSize,
+		indicators: [
+			text.simulation.summary(
+				groupedCount(n, locale),
+				n > 1,
+				shownReal(mean, locale),
+				simulation.variable,
+				fractionText(sampler.law.expectation, locale)
+			),
+			...(uniform ? [] : [text.simulation.overflow(formatTick(high, locale), String(beyond))]),
+			seedLine(simulation.seed, locale)
+		],
+		xMin: curve.xMin,
+		xMax: curve.xMax,
+		rects,
+		mode: 'axe',
+		yMax,
+		ticks,
+		xTicks: curve.xTicks,
+		carreau: null,
+		grid: { xs: [], ys: ticks.map((t) => t.value) },
+		axisTitles: { x: null, y: text.law.density },
+		color: spec.color,
+		showValues: false,
+		densityCurve: { points: curve.points, color: curve.color }
+	};
+}
+
+function buildSimulationScene(spec: StatChartSpec, locale: ContentLocale): StatChartScene {
+	const simulation = spec.simulation;
+	if (simulation === null) throw new Error('Simulation sans données');
+	const named = simulation.named;
+	// Loi binomiale (PR b) : les probabilités exactes, sans passer par du texte
+	// (leurs dénominateurs dépassent les 15 chiffres de `Fraction.parse`)
+	const binomial =
+		simulation.binomial === null
+			? null
+			: binomialDistribution(
+					simulation.binomial.n,
+					Fraction.parse(simulation.binomial.p) ?? Fraction.ZERO
+				);
+	const law = {
+		values: simulation.values.map((v) => Fraction.parse(v) ?? Fraction.ZERO),
+		probabilities:
+			binomial === null
+				? simulation.probabilities.map((p) => Fraction.parse(p) ?? Fraction.ZERO)
+				: binomial.numerators.map((num) => new Fraction(num, binomial.denominator))
+	};
+	if (simulation.mode !== 'tirages') {
+		// Lois nommées (manche 14) : tirées par inversion ; les autres, par leurs probabilités
+		let sampler: LawSampler;
+		if (named !== null) sampler = namedSampler(named);
+		else {
+			const discrete = discreteSampler(law.values, law.probabilities);
+			if (!discrete.ok) throw new Error(`Simulation impossible : ${discrete.message}`);
+			sampler = discrete.value;
+		}
+		return simulation.mode === 'moyenne'
+			? buildSimulatedMeanScene(spec, simulation, sampler, locale)
+			: buildSimulatedSamplesScene(spec, simulation, sampler, locale);
+	}
+	if (named !== null) {
+		const sampler = namedSampler(named);
+		return named.family === 'geometric' || named.family === 'uniform'
+			? namedDiscreteTable(spec, simulation, named, sampler, locale)
+			: buildDensityDrawsScene(spec, simulation, named, sampler, locale);
+	}
+	const outcome = simulateCounts(
+		law.values,
+		law.probabilities,
+		simulation.draws,
+		createRandomSource(simulation.seed)
+	);
+	if (!outcome.ok) throw new Error(`Simulation impossible : ${outcome.message}`);
+	return simulationTable(
+		spec,
+		simulation,
+		simulation.values.map((value, i) => ({
 			value: asWritten(value, locale),
-			count: groupedCount(outcome.value.counts[i], locale),
-			frequency: frequency(outcome.value.counts[i]),
+			count: outcome.value.counts[i],
 			probability:
 				binomial === null
 					? asWritten(simulation.probabilities[i], locale)
 					: roundedText(binomial.numerators[i], binomial.denominator, 3, locale).text
-		}))
-	};
+		})),
+		locale
+	);
 }
 
 // ============================================================================

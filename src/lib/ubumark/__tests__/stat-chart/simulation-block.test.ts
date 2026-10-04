@@ -265,7 +265,7 @@ describe('simulation — erreurs situées', () => {
 		expect(law).toContain('indicateurs');
 		expect(law).not.toContain('tirages');
 		expect(errorOf(`${DIE}\ntirage: beaucoup`)).toBe(
-			'Ligne 3 : option « tirage » inconnue (options : titre, taille, mode, tirages, graine, échantillons)'
+			"Ligne 3 : option « tirage » inconnue (options : titre, taille, mode, tirages, graine, échantillons, classes, jusqu'à)"
 		);
 	});
 });
@@ -289,5 +289,16 @@ describe('simulation — dans un document', () => {
 		expect(charts(list.items[0].children as BlockNode[]).map((c) => c.kind)).toEqual([
 			'simulation'
 		]);
+	});
+});
+
+describe('simulation — tableau Typst', () => {
+	// « Fréquence ob-servée », « fre-quency » : vus sur la fiche compilée (2026-10-04)
+	it('en-têtes sans césure ni justification, colonnes à la largeur du contenu', () => {
+		const node = parseStatChartContent('simulation', 'X ~ B(10 ; 0,3)\ntirages: 500\ngraine: 7');
+		const typst = generateStatChartTypst(node);
+		expect(typst).toContain('#set text(hyphenate: false)');
+		expect(typst).toContain('#set par(justify: false)');
+		expect(typst).toContain('columns: (auto,) * 4');
 	});
 });
