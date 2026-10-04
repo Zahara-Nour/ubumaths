@@ -20,6 +20,8 @@
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
+	import ValueSlider from './ValueSlider.svelte';
+	import { readNumber } from '$lib/atelier/parse';
 
 	interface Props {
 		object: AtelierObject;
@@ -239,6 +241,21 @@
 				{/if}
 			</span>
 		</form>
+	{/if}
+
+	<!-- Le curseur d'une valeur (§4) — ou pourquoi elle n'en a pas -->
+	{#if selected && object.kind === 'value' && object.definition.trim() !== ''}
+		{#if object.unit !== undefined}
+			<p class="sans-curseur">
+				Grandeur en {object.unit} : pas de curseur (on ne fait pas glisser une longueur).
+			</p>
+		{:else if readNumber(object.definition) === null}
+			<p class="sans-curseur">
+				{object.name} est calculée à partir d'autres objets : pas de curseur, il effacerait sa formule.
+			</p>
+		{:else if object.slider}
+			<ValueSlider {object} slider={object.slider} />
+		{/if}
 	{/if}
 
 	<!-- « Sur le graphique » : seulement pour une fonction tracée (§1 S1–S5) -->
@@ -469,6 +486,11 @@
 	   qu'un appoint, et le texte garde le contraste du texte courant */
 	.image-resultat.refus {
 		font-weight: 600;
+	}
+	.sans-curseur {
+		margin: 0;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
 	}
 	.derivee {
 		margin: 0;

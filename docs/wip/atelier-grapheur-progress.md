@@ -226,6 +226,27 @@ Lot 3a mergé (#798).
   (« Image prépare la saisie ») remplacé — il assertait le comportement que
   A4 supprime. Suites : 338 navigateur, 1 171 serveur ; `check:incremental` 0.
 
+## Lot 4 — les curseurs
+
+Branche `feat/atelier-curseurs`, worktree `../ubumaths-wt-curseurs`.
+Lot 3b mergé (#799). Exception à A1 (« Tableau croisé », « Simuler »)
+tranchée par David et inscrite dans la phase 0.
+
+Mesuré avant : `a = 0,5` est lu 0,5 → le curseur écrit avec la virgule.
+
+- [x] Modèle : `setSlider` (bornes, pas — refus dit, ancien réglage gardé,
+      bornes ±1e9 comme le grapheur), `slideTo` (arrondi au pas, gardé dans
+      les bornes, refusé sur une valeur CALCULÉE qui perdrait sa formule).
+- [x] **Dette n° 2 soldée** : `update` garde le curseur réglé (K3) ; une
+      valeur tapée hors des bornes les élargit (L1), à la création aussi.
+- [x] Rangé (seulement s'il est réglé), relu, fusionné ; abîmé → oublié.
+- [x] « Régler le curseur » n'est plus un bouton : `ValueSlider.svelte` dans
+      la carte (crans entiers = un pas, `aria-valuetext` « a = 2 »), et la
+      carte dit pourquoi une grandeur ou une valeur calculée n'en a pas.
+- 2 anciens tests mis en accord (ils assertaient le bouton) ; D3/D4 gardés.
+- Tests : 21 serveur (20 rouges avant) + 6 navigateur (rouges avant) ;
+  suites 352 navigateur, 1 192 serveur ; `check:incremental` 0.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.
