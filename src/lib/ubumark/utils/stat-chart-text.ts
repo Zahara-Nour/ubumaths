@@ -143,6 +143,10 @@ interface StatText {
 		noSolutionPlain: (given: string) => string;
 		/** Prévision hors du domaine de la relation (ln x pour x ⩽ 0) */
 		notDefined: (given: string) => string;
+		/** Prévision définie mais trop grande (e^4001) */
+		tooLarge: (given: string) => string;
+		/** Vue d'origine : G est celui du nuage transformé, `pair` = « x ; z » */
+		meanLineOf: (pair: string, point: string) => string;
 	};
 }
 
@@ -253,7 +257,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relationSpoken: (relation) => `relation entre x et y ${relation}`,
 			changeSpoken: (change) => `changement de variable ${change}`,
 			noSolutionPlain: (given) => `Pour ${given} : aucune solution`,
-			notDefined: (given) => `Pour ${given} : relation non définie`
+			notDefined: (given) => `Pour ${given} : relation non définie`,
+			tooLarge: (given) => `Pour ${given} : valeur trop grande pour être calculée`,
+			meanLineOf: (pair, point) => `Point moyen du nuage (${pair}) : ${point}`
 		}
 	},
 	en: {
@@ -363,7 +369,9 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			relationSpoken: (relation) => `relation between x and y ${relation}`,
 			changeSpoken: (change) => `change of variable ${change}`,
 			noSolutionPlain: (given) => `For ${given}: no solution`,
-			notDefined: (given) => `For ${given}: relation not defined`
+			notDefined: (given) => `For ${given}: relation not defined`,
+			tooLarge: (given) => `For ${given}: value too large to compute`,
+			meanLineOf: (pair, point) => `Mean point of the (${pair}) scatter plot: ${point}`
 		}
 	}
 };

@@ -40,8 +40,24 @@ export interface DecimalFit {
 }
 
 // =============================================================================
+// Constantes
+// =============================================================================
+
+/**
+ * Au-delà, une valeur calculée n'est ni écrite ni dessinée : e^4001 déborde
+ * en Infinity, et une valeur finie comme e^41 ≈ 6,4 × 10^17 donnerait un cadre
+ * qui écrase le nuage (revue) — même borne que les nombres écrits (15 chiffres).
+ */
+export const MAX_COMPUTED_VALUE = 1e15;
+
+// =============================================================================
 // Fonctions
 // =============================================================================
+
+/** Une valeur calculée : finie et pas trop grande, sinon 'overflow' */
+function computed(value: number): number | 'overflow' {
+	return Number.isFinite(value) && Math.abs(value) <= MAX_COMPUTED_VALUE ? value : 'overflow';
+}
 
 /** f(v), ou null hors du domaine (ln v ⩽ 0, √ d'un négatif, 1/0) */
 export function transformValue(fn: ChangeFunction, v: number): number | null {
@@ -119,41 +135,46 @@ export function decimalFit(us: readonly number[], vs: readonly number[]): Decima
 	};
 }
 
-/** y en fonction de x par la relation retrouvée ; null hors du domaine. */
+/**
+ * y en fonction de x par la relation retrouvée ; null hors du domaine ;
+ * 'overflow' : définie, mais trop grande pour être calculée (e^4001).
+ */
 export function relationY(
 	change: VariableChange,
 	fit: DecimalFit,
 	x: number,
 	sign: number
-): number | null {
+): number | null | 'overflow' {
 	if (change.on === 'y') {
 		const y = inverseValue(change.fn, fit.slope * x + fit.intercept, sign);
-		return y !== null && Number.isFinite(y) ? y : null;
+		return y === null ? null : computed(y);
 	}
 	const t = transformValue(change.fn, x);
-	return t === null ? null : fit.slope * t + fit.intercept;
+	return t === null ? null : computed(fit.slope * t + fit.intercept);
 }
 
 /**
- * x tel que la relation donne y ; null : aucune solution (y hors de l'image,
- * ou pente nulle et y différent de la constante) ; 'all' : pente nulle et y
- * est la constante (tout x du domaine convient).
+ * x tel que la relation donne y. null : aucune solution, y hors de l'image
+ * (testé AVANT la pente : la raison dite est la bonne) ; 'flat' : pente nulle
+ * et y différent de la constante ; 'all' : pente nulle et y est la constante ;
+ * 'overflow' : x existe mais est trop grand pour être calculé (e^999).
  */
 export function relationX(
 	change: VariableChange,
 	fit: DecimalFit,
 	y: number,
 	sign: number
-): number | null | 'all' {
+): number | null | 'all' | 'flat' | 'overflow' {
 	// Le côté « droite » : z = g(y) ou y lui-même
 	const right = change.on === 'y' ? transformValue(change.fn, y) : y;
 	if (right === null) return null;
 	// z = y² : y = sign·√z, un y de l'autre signe n'est pas sur la branche
 	if (change.on === 'y' && change.fn === 'square' && y !== 0 && Math.sign(y) !== sign) return null;
-	if (fit.slope === 0) return Math.abs(right - fit.intercept) <= 1e-12 ? 'all' : null;
+	if (fit.slope === 0) return Math.abs(right - fit.intercept) <= 1e-12 ? 'all' : 'flat';
 	const left = (right - fit.intercept) / fit.slope;
-	if (change.on === 'y') return left;
-	return inverseValue(change.fn, left, sign);
+	if (change.on === 'y') return computed(left);
+	const x = inverseValue(change.fn, left, sign);
+	return x === null ? null : computed(x);
 }
 
 /** Abscisse où la relation n'est pas définie et part à l'infini, ou null. */

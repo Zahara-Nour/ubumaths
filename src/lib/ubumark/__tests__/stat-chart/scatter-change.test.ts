@@ -118,7 +118,7 @@ describe('changement de variable — valeurs de référence', () => {
 		expect(sceneOf(REF).indicators).toEqual([
 			'Droite des moindres carrés : z = 0,401x + 0,723',
 			'Relation entre x et y : y = e^(0,723) × e^(0,401x) ≈ 2,061 × e^(0,401x)',
-			'Point moyen : G(2,5 ; 1,726)',
+			'Point moyen du nuage (x ; z) : G(2,5 ; 1,726)',
 			'Coefficient de corrélation : r ≈ 1,000',
 			'Pour x = 7 : y ≈ 34,152 (extrapolation)',
 			'Pour y = 50 : x ≈ 7,950 (extrapolation)'
@@ -129,7 +129,7 @@ describe('changement de variable — valeurs de référence', () => {
 		expect(sceneOf(REF, 'en').indicators).toEqual([
 			'Least squares line: z = 0.401x + 0.723',
 			'Relation between x and y: y = e^(0.723) × e^(0.401x) ≈ 2.061 × e^(0.401x)',
-			'Mean point: G(2.5, 1.726)',
+			'Mean point of the (x, z) scatter plot: G(2.5, 1.726)',
 			'Correlation coefficient: r ≈ 1.000',
 			'For x = 7: y ≈ 34.152 (extrapolation)',
 			'For y = 50: x ≈ 7.950 (extrapolation)'
@@ -232,6 +232,81 @@ describe('changement de variable — valeurs de référence', () => {
 		expect(description).toContain('6 points');
 		expect(description).toContain('z = ln(y)');
 		expect(description).toContain('puissance');
+	});
+});
+
+describe('changement de variable — revue', () => {
+	const scan = (scene: ScatterScene, typst: string) => {
+		expect(JSON.stringify(scene)).not.toMatch(/NaN|Infinity|null,"y"|"x":null/);
+		expect(typst).not.toMatch(/NaN|Infinity|e\+\d/);
+	};
+
+	it('t = ln(x), y = 2000 : « valeur trop grande », rien de non fini', () => {
+		const source = 'x: 1 ; 2 ; 4\ny: 1 ; 2 ; 3\najustement: t = ln(x)\nprévoir: y = 2000';
+		const scene = sceneOf(source);
+		expect(scene.indicators[2]).toBe('Pour y = 2000 : valeur trop grande pour être calculée');
+		expect(scene.predictions).toEqual([]);
+		scan(scene, generateStatChartTypst(parseStatChartContent('nuage', source)));
+		expect(sceneOf(source, 'en').indicators[2]).toBe('For y = 2000: value too large to compute');
+	});
+
+	it('z = ln(y), x = 2000 : « valeur trop grande », pas « non définie »', () => {
+		const source = `${DATA}\najustement: z = ln(y)\nprévoir: x = 2000`;
+		const scene = sceneOf(source);
+		expect(scene.indicators[2]).toBe('Pour x = 2000 : valeur trop grande pour être calculée');
+		scan(scene, generateStatChartTypst(parseStatChartContent('nuage', source)));
+	});
+
+	it('pente nulle et y hors du domaine : « aucune solution », sans « (pente nulle) »', () => {
+		const scene = sceneOf('x: 1 ; 2 ; 3\ny: 2 ; 2 ; 2\najustement: z = ln(y)\nprévoir: y = -1');
+		expect(scene.indicators[2]).toBe('Pour y = −1 : aucune solution');
+	});
+
+	it('arrondi décimal juste : 1,005 → 1,01 ; jamais de notation e', () => {
+		// ȳ = 1,005 : 1,005 × 100 vaut 100,49999… en flottant, Math.round donnait 1
+		const mean = sceneOf(
+			'x: 1 ; 2\ny: 1,005 ; 1,005\najustement: t = ln(x)\nindicateurs: point moyen\narrondi: 2'
+		);
+		expect(mean.indicators[2]).toBe('Point moyen du nuage (t ; y) : G(0,35 ; 1,01)');
+		// t = x² pour x ≈ 10^14 : t̄ ≈ 2,5 × 10^28, écrit en entier groupé
+		const big = sceneOf(
+			'x: 100000000000000 ; 200000000000000\ny: 1 ; 2\najustement: t = x²\nindicateurs: point moyen'
+		);
+		expect(big.indicators.join(' ')).not.toMatch(/e\+|e-/);
+		expect(big.indicators[2]).toContain('25\u00a0000\u00a0000\u00a0000');
+	});
+
+	it('1/x : deux morceaux exactement, chacun d’un côté du pôle, qui rejoignent le bord', () => {
+		const scene = sceneOf('x: -2 ; -1 ; 1 ; 2\ny: -1 ; -3 ; 3 ; 1\najustement: t = 1/x');
+		expect(scene.curve).toHaveLength(2);
+		const [left, right] = scene.curve!;
+		expect(left.every((p) => p.x < 0)).toBe(true);
+		expect(right.every((p) => p.x > 0)).toBe(true);
+		const bound = (y: number) => Math.abs(y - scene.yMin) < 1e-6 || Math.abs(y - scene.yMax) < 1e-6;
+		expect(bound(left[left.length - 1].y)).toBe(true);
+		expect(bound(right[0].y)).toBe(true);
+	});
+
+	it('z = 1/y : pôle en x = −b/a, deux morceaux de part et d’autre', () => {
+		// z = 1/y = x − 2 exactement : pôle en x = 2
+		const scene = sceneOf('x: 0 ; 1 ; 3 ; 4\ny: -0,5 ; -1 ; 1 ; 0,5\najustement: z = 1/y');
+		expect(scene.curve).toHaveLength(2);
+		const [left, right] = scene.curve!;
+		expect(left.every((p) => p.x < 2)).toBe(true);
+		expect(right.every((p) => p.x > 2)).toBe(true);
+		// Chaque branche sort du cadre par le haut ou le bas, sur le bord même
+		const bound = (y: number) => Math.abs(y - scene.yMin) < 1e-6 || Math.abs(y - scene.yMax) < 1e-6;
+		expect(bound(left[left.length - 1].y)).toBe(true);
+		expect(bound(right[0].y)).toBe(true);
+	});
+
+	it('vue d’origine avec t : « Point moyen du nuage (t ; y) »', () => {
+		expect(
+			sceneOf('x: 1 ; 2 ; 4\ny: 1 ; 2 ; 3\najustement: t = ln(x)\nindicateurs: point moyen')
+				.indicators[2]
+		).toMatch(/^Point moyen du nuage \(t ; y\) : G\(/);
+		// Le nuage transformé est affiché : « Point moyen » tout court
+		expect(sceneOf(`${REF}\nnuage: z`).indicators[2]).toMatch(/^Point moyen : G\(/);
 	});
 });
 

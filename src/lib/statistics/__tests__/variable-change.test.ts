@@ -97,11 +97,30 @@ describe('les huit changements de variable', () => {
 		expect(relationX({ variable: 't', on: 'x', fn: 'sqrt' }, fit, 0, 1)).toBeNull();
 	});
 
-	it('pente nulle : « all » si y est la constante, sinon null', () => {
+	it('pente nulle : « all » si y est la constante, sinon « flat »', () => {
 		const flat = { ...fit, slope: 0, intercept: 2 };
 		expect(relationX({ variable: 't', on: 'x', fn: 'ln' }, flat, 2, 1)).toBe('all');
-		expect(relationX({ variable: 't', on: 'x', fn: 'ln' }, flat, 3, 1)).toBeNull();
+		expect(relationX({ variable: 't', on: 'x', fn: 'ln' }, flat, 3, 1)).toBe('flat');
 		expect(relationX({ variable: 'z', on: 'y', fn: 'ln' }, flat, Math.exp(2), 1)).toBe('all');
+	});
+
+	it('pente nulle mais y hors du domaine : le domaine d’abord (null, pas « flat »)', () => {
+		const flat = { ...fit, slope: 0, intercept: 2 };
+		expect(relationX({ variable: 'z', on: 'y', fn: 'ln' }, flat, -1, 1)).toBeNull();
+	});
+
+	it('valeurs directes : t = ln(x) et t = √x', () => {
+		expect(relationY({ variable: 't', on: 'x', fn: 'ln' }, fit, Math.E, 1)).toBeCloseTo(3, 12);
+		expect(relationY({ variable: 't', on: 'x', fn: 'sqrt' }, fit, 4, 1)).toBe(5);
+	});
+
+	it('débordement : « overflow », jamais Infinity (revue)', () => {
+		// t = ln(x), y = 2000 : x = e^999,5
+		expect(relationX({ variable: 't', on: 'x', fn: 'ln' }, fit, 2000, 1)).toBe('overflow');
+		// z = ln(y), x = 2000 : y = e^4001
+		expect(relationY({ variable: 'z', on: 'y', fn: 'ln' }, fit, 2000, 1)).toBe('overflow');
+		// Fini mais au-delà de 10^15 : trop grand pour être écrit et dessiné
+		expect(relationY({ variable: 'z', on: 'y', fn: 'ln' }, fit, 20, 1)).toBe('overflow');
 	});
 
 	it('pôles : 1/(ax + b) en −b/a, a/x + b en 0, sinon aucun', () => {

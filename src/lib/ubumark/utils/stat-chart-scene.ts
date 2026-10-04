@@ -2889,22 +2889,31 @@ function scatterEquation(fit: BivariateFit, places: number, locale: ContentLocal
 }
 
 /**
+ * L'écriture décimale la plus courte d'un flottant (`1.005`, `2.5e+28`), en
+ * fraction exacte : arrondir CETTE écriture, pas le flottant (1,005 × 100
+ * vaut 100,4999… et `Math.round` donnait 1,00, revue).
+ */
+function shortestDecimal(value: number): Fraction {
+	const match = /^(\d+)(?:\.(\d+))?(?:e([+-]\d+))?$/.exec(Math.abs(value).toString())!;
+	const decimals = match[2] ?? '';
+	const exponent = Number(match[3] ?? 0) - decimals.length;
+	const digits = BigInt(match[1] + decimals) * (value < 0 ? -1n : 1n);
+	return exponent >= 0
+		? new Fraction(digits * 10n ** BigInt(exponent))
+		: new Fraction(digits, 10n ** BigInt(-exponent));
+}
+
+/**
  * Un décimal (changement de variable : ln et √ sont irrationnels) arrondi une
- * fois, demi vers le haut sur la valeur absolue ; exact → écriture courte.
+ * fois, demi vers le haut, par l'arrondi exact des autres valeurs du nuage ;
+ * entiers groupés, jamais de notation « e ».
  */
 function scatterDecimal(
 	value: number,
 	places: number,
 	locale: ContentLocale
 ): { text: string; exact: boolean } {
-	const scale = 10 ** places;
-	const magnitude = Math.round(Math.abs(value) * scale) / scale;
-	const exact = Math.abs(magnitude - Math.abs(value)) <= 1e-9 * Math.max(1, Math.abs(value));
-	const fixed = magnitude.toFixed(places);
-	const digits = exact && fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
-	const sign = value < 0 && Number(digits) !== 0 ? '−' : '';
-	const decimal = locale === 'en' ? digits : digits.replace('.', ',');
-	return { text: groupThousands(`${sign}${decimal}`, locale), exact };
+	return scatterNumber(shortestDecimal(value), places, locale);
 }
 
 /** Pas candidats des graduations d'un nuage : 1, 2, 5 × 10^k */
@@ -3130,52 +3139,60 @@ function changeText(change: VariableChange): string {
 /** Échantillons de la courbe d'une relation retrouvée, sur la largeur du cadre */
 const CURVE_SAMPLES = 60;
 
+/** Tours de dichotomie pour situer le bord d'un morceau de courbe */
+const CURVE_BISECTIONS = 40;
+
 /**
  * La courbe y = f(x) sur [xMin ; xMax], en morceaux : coupée là où f n'est pas
- * définie, de part et d'autre d'un pôle, et au bord du cadre (le morceau
- * s'arrête SUR le bord, par interpolation, au lieu de s'interrompre avant).
+ * définie, de part et d'autre d'un pôle, et au bord du cadre. Chaque morceau
+ * va jusqu'au bord, situé par dichotomie : au pôle aussi, sans trou d'un
+ * échantillon (revue).
  */
 function sampleCurve(
 	f: (x: number) => number | null,
 	pole: number | null,
 	frame: { xMin: number; xMax: number; yMin: number; yMax: number }
 ): ScenePoint[][] {
-	const segments: ScenePoint[][] = [];
-	let current: ScenePoint[] = [];
-	let previous: { x: number; y: number | null } | null = null;
-	const flush = () => {
-		if (current.length >= 2) segments.push(current);
-		current = [];
-	};
 	const inside = (y: number | null): y is number =>
 		y !== null && y >= frame.yMin && y <= frame.yMax;
-	/** Le point du bord entre un point dedans et un point dehors */
-	const edge = (from: ScenePoint, to: ScenePoint): ScenePoint => {
-		const bound = to.y > frame.yMax ? frame.yMax : frame.yMin;
-		const ratio = (bound - from.y) / (to.y - from.y);
-		return { x: from.x + ratio * (to.x - from.x), y: bound };
+	/**
+	 * Le dernier point dans le cadre entre `xIn` (dedans) et `xOut` (dehors, non
+	 * défini, ou le pôle) ; y ramené sur le bord s'il le dépasse à peine
+	 */
+	const border = (xIn: number, xOut: number): ScenePoint => {
+		let [good, bad] = [xIn, xOut];
+		for (let k = 0; k < CURVE_BISECTIONS; k++) {
+			const middle = (good + bad) / 2;
+			if (inside(f(middle))) good = middle;
+			else bad = middle;
+		}
+		const y = f(good)!;
+		return { x: good, y: Math.min(frame.yMax, Math.max(frame.yMin, y)) };
 	};
+	const segments: ScenePoint[][] = [];
+	let current: ScenePoint[] = [];
+	/** Abscisse précédente hors du cadre (ou pôle), dont part le prochain morceau */
+	let outsideX: number | null = null;
+	const close = (xOut: number) => {
+		if (current.length > 0) current.push(border(current[current.length - 1].x, xOut));
+		if (current.length >= 2) segments.push(current);
+		current = [];
+		outsideX = xOut;
+	};
+	let previousX: number | null = null;
 	for (let i = 0; i <= CURVE_SAMPLES; i++) {
 		const x = frame.xMin + ((frame.xMax - frame.xMin) * i) / CURVE_SAMPLES;
+		if (previousX !== null && pole !== null && previousX < pole && pole <= x) close(pole);
 		const y = f(x);
-		if (previous !== null && pole !== null && previous.x < pole && pole <= x) {
-			flush();
-			previous = null;
-		}
 		if (inside(y)) {
-			if (current.length === 0 && previous !== null && previous.y !== null) {
-				current.push(edge({ x, y }, { x: previous.x, y: previous.y }));
-			}
+			if (current.length === 0 && outsideX !== null) current.push(border(x, outsideX));
 			current.push({ x, y });
 		} else {
-			if (current.length > 0 && y !== null) {
-				current.push(edge(current[current.length - 1], { x, y }));
-			}
-			flush();
+			close(x);
 		}
-		previous = { x, y };
+		previousX = x;
 	}
-	flush();
+	if (current.length >= 2) segments.push(current);
 	return segments;
 }
 
@@ -3210,7 +3227,11 @@ function buildChangedScatterScene(
 	const sign = 'sign' in squared ? squared.sign : 1;
 	// Interpolation : étendue des x D'ORIGINE
 	const fit = { ...decimalFit(us, vs)!, minX: Math.min(...xs), maxX: Math.max(...xs) };
-	const f = (x: number) => relationY(change, fit, x, sign);
+	/** La courbe : rien là où la relation n'est pas définie ou déborde */
+	const f = (x: number) => {
+		const y = relationY(change, fit, x, sign);
+		return y === 'overflow' ? null : y;
+	};
 
 	// Droite du nuage transformé, puis relation entre x et y, coefficients arrondis
 	const a = round(fit.slope).text;
@@ -3244,6 +3265,7 @@ function buildChangedScatterScene(
 	}
 
 	const meanText = text.meanPoint(round(fit.meanX).text, round(fit.meanY).text);
+	const pairSeparator = locale === 'en' ? ', ' : ' ; ';
 	const lines: string[] = [];
 	if (!scatter.indicators.includes('equation')) {
 		lines.push(text.fitLine(lineEquation), text.relationLine(relationText));
@@ -3251,7 +3273,15 @@ function buildChangedScatterScene(
 	for (const indicator of scatter.indicators) {
 		switch (indicator) {
 			case 'point-moyen':
-				lines.push(text.meanLine(meanText));
+				// Vue d'origine : G n'est pas sur ce nuage, dire duquel il est le point moyen
+				lines.push(
+					scatter.transformedCloud
+						? text.meanLine(meanText)
+						: text.meanLineOf(
+								change.on === 'y' ? `x${pairSeparator}z` : `t${pairSeparator}y`,
+								meanText
+							)
+				);
 				break;
 			case 'equation':
 				lines.push(text.fitLine(lineEquation), text.relationLine(relationText));
@@ -3272,9 +3302,9 @@ function buildChangedScatterScene(
 		const known = toSafeNumber(readExactValue(value)!);
 		const interpolation = (x: number) => x >= fit.minX && x <= fit.maxX;
 		if (axis === 'x') {
-			const y = f(known);
-			if (y === null) {
-				lines.push(text.notDefined(given));
+			const y = relationY(change, fit, known, sign);
+			if (y === null || y === 'overflow') {
+				lines.push(y === null ? text.notDefined(given) : text.tooLarge(given));
 				continue;
 			}
 			lines.push(text.prediction(given, `y ${relation(y)}`, interpolation(known)));
@@ -3286,8 +3316,15 @@ function buildChangedScatterScene(
 			lines.push(text.everyX(given));
 			continue;
 		}
-		if (x === null) {
-			lines.push(fit.slope === 0 ? text.noSolution(given) : text.noSolutionPlain(given));
+		if (x === null || x === 'flat' || x === 'overflow') {
+			// Le domaine passe avant la pente : « (pente nulle) » seulement si c'est la raison
+			lines.push(
+				x === 'flat'
+					? text.noSolution(given)
+					: x === 'overflow'
+						? text.tooLarge(given)
+						: text.noSolutionPlain(given)
+			);
 			continue;
 		}
 		lines.push(text.prediction(given, `x ${relation(x)}`, interpolation(x)));
