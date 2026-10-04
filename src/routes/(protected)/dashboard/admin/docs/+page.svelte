@@ -168,14 +168,14 @@
 <style>
 	/* Custom styles for markdown content */
 	:global(.prose) {
-		--tw-prose-body: hsl(var(--foreground));
-		--tw-prose-headings: hsl(var(--foreground));
-		--tw-prose-links: hsl(var(--primary));
-		--tw-prose-bold: hsl(var(--foreground));
-		--tw-prose-code: hsl(var(--foreground));
-		--tw-prose-pre-bg: hsl(var(--muted));
-		--tw-prose-th-borders: hsl(var(--border));
-		--tw-prose-td-borders: hsl(var(--border));
+		--tw-prose-body: var(--color-foreground);
+		--tw-prose-headings: var(--color-foreground);
+		--tw-prose-links: var(--color-primary);
+		--tw-prose-bold: var(--color-foreground);
+		--tw-prose-code: var(--color-foreground);
+		--tw-prose-pre-bg: var(--color-muted);
+		--tw-prose-th-borders: var(--color-border);
+		--tw-prose-td-borders: var(--color-border);
 	}
 
 	:global(.prose code) {
@@ -187,7 +187,7 @@
 
 	:global(.prose pre) {
 		background-color: #0d1117 !important;
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 	}
 
 	:global(.prose pre code) {
@@ -196,7 +196,7 @@
 	}
 
 	:global(.prose a) {
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 		text-decoration: none;
 	}
 
@@ -212,7 +212,7 @@
 
 	:global(.prose th),
 	:global(.prose td) {
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		padding: 0.5rem;
 		text-align: left;
 	}
@@ -224,14 +224,14 @@
 
 	:global(.prose img) {
 		border-radius: 0.5rem;
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 	}
 
 	:global(.prose blockquote) {
-		border-left: 4px solid hsl(var(--primary));
+		border-left: 4px solid var(--color-primary);
 		padding-left: 1rem;
 		font-style: italic;
-		color: hsl(var(--muted-foreground));
+		color: var(--color-muted-foreground);
 	}
 
 	/* Syntax highlighting adjustments */

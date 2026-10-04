@@ -2157,7 +2157,7 @@
 	 */
 	:global(table[data-transpose='true']) {
 		position: relative;
-		border: 2px dashed hsl(var(--primary) / 0.4) !important;
+		border: 2px dashed color-mix(in srgb, var(--color-primary) 40%, transparent) !important;
 		margin-top: 1.75rem !important;
 	}
 
@@ -2169,7 +2169,7 @@
 		padding: 0.125rem 0.5rem;
 		font-size: 0.625rem;
 		font-weight: 500;
-		color: hsl(var(--primary-foreground));
+		color: var(--color-primary-foreground);
 		background: var(--color-primary);
 		border-radius: 0.25rem;
 		white-space: nowrap;

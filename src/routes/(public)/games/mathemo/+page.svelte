@@ -878,7 +878,7 @@
 
 	/* Drop shadow on current row while game is active */
 	.mathemo-grid.playing .row.current {
-		filter: drop-shadow(3px 3px 10px hsl(var(--muted)));
+		filter: drop-shadow(3px 3px 10px var(--color-muted));
 	}
 
 	/* ===== Letter Cells ===== */
@@ -1095,7 +1095,7 @@
 
 	@keyframes blinking {
 		50% {
-			border-color: hsl(var(--muted));
+			border-color: var(--color-muted);
 		}
 	}
 

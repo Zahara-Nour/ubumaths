@@ -72,11 +72,18 @@ les rallumer (décision de David de 2025 conservée) — **à trancher** si on v
   `MarkdownRaw`, `ImageDisplay`, `MathPrompt`, `ParagraphNode`, `CorrectionCard`, `FlashCard`,
   `GeneratedStepsCorrection`, `CustomFlashCard`, `TemplateSelector`, `TestTimer`,
   `ChallengeContainer`). Baseline `check:css-tokens` : 136 → 66 occurrences.
-- **Reportés (17, écrans prof / admin / outils)** — `KNOWN_DEBT` du test : `JsonViewer`,
-  `calculator/UnifiedInput`, `cas/HistoryEntry`, `cas/ReplInput`, `python/PythonSplitter`,
-  `rich-text/RichTextEditor`, `whiteboard/AnnotationToolbar`, `whiteboard/TemplatePickerModal`,
-  `admin/docs` (×2), `messages/{archived,drafts,inbox,sent}`, `spreadsheet`, `games/mathemo`,
-  `pere-ubu`. Conversion mécanique (`hsl(var(--x))` → `var(--color-x)`, `/ a` → `color-mix`).
+- ✅ (branche `fix/couleurs-dette`, 2026-10-04) **Dette soldée : les 17 reportés convertis**
+  (`JsonViewer`, `calculator/UnifiedInput`, `cas/HistoryEntry`, `cas/ReplInput`,
+  `python/PythonSplitter`, `rich-text/RichTextEditor`, `whiteboard/AnnotationToolbar`,
+  `whiteboard/TemplatePickerModal`, `admin/docs` ×2, `messages/{archived,drafts,inbox,sent}`,
+  `spreadsheet`, `games/mathemo`, `pere-ubu`). 66 `hsl(var(--x))` → `var(--color-x)`, dont un
+  `/ 0.4` → `color-mix(… 40%, transparent)` (`RichTextEditor`). Aucune variable non colorée
+  disparue (`--font-scale` existe ; `--caret-color` = MathLive, `--tw-prose-*` = typography :
+  noms gardés, valeurs converties). `KNOWN_DEBT` supprimée : le balayage exige 0 fichier fautif.
+  Baseline `check:css-tokens` : 66 → **0**. Messagerie (vue par les élèves) : l'anneau de focus
+  clavier des messages était **absent** (`outline-style: none` mesuré sur l'original) ;
+  `messages/inbox/__tests__/inbox-theme.svelte.test.ts` le vérifie en sombre, avec fond et
+  bordure de l'en-tête et du message non lu (ceux-là tenaient déjà, par classes Tailwind).
 - `stat-chart`, DSL des figures interactives : pas d'avertissement de contraste (hors résolveur).
 - ± du tableau de variations : à colorer ou non (cf. constat ci-dessus).
 - Captures réelles clair / sombre non faites (tests navigateur sur la couleur rendue seulement).

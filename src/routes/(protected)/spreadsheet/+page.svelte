@@ -199,14 +199,14 @@
 
 	.spreadsheet-card {
 		position: relative;
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-border);
 		border-radius: 0.5rem;
 		overflow: hidden;
 		transition: all 0.2s;
 	}
 
 	.spreadsheet-card:hover {
-		border-color: hsl(var(--primary));
+		border-color: var(--color-primary);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 

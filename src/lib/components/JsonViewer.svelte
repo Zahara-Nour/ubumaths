@@ -82,7 +82,7 @@
 <style>
 	/* Syntax highlighting for JSON */
 	pre code {
-		color: hsl(var(--foreground));
+		color: var(--color-foreground);
 	}
 
 	/* Optional: Add more sophisticated highlighting if needed */

@@ -1,17 +1,1 @@
-src/lib/components/calculator/UnifiedInput.svelte 1
-src/lib/components/cas/HistoryEntry.svelte 3
-src/lib/components/cas/ReplInput.svelte 1
-src/lib/components/JsonViewer.svelte 1
-src/lib/components/python/PythonSplitter.svelte 1
-src/lib/components/rich-text/RichTextEditor.svelte 2
-src/lib/whiteboard/components/AnnotationToolbar.svelte 14
-src/lib/whiteboard/components/TemplatePickerModal.svelte 6
-src/routes/(protected)/dashboard/admin/docs/[...path]/+page.svelte 14
-src/routes/(protected)/dashboard/admin/docs/+page.svelte 14
-src/routes/(protected)/messages/archived/+page.svelte 1
-src/routes/(protected)/messages/drafts/+page.svelte 1
-src/routes/(protected)/messages/inbox/+page.svelte 1
-src/routes/(protected)/messages/sent/+page.svelte 1
-src/routes/(protected)/spreadsheet/+page.svelte 2
-src/routes/(public)/games/mathemo/+page.svelte 2
-src/routes/(public)/pere-ubu/+page.svelte 1
+

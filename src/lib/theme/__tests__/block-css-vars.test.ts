@@ -58,31 +58,6 @@ const COMPONENTS = [
 	'src/lib/components/game/challenges/ChallengeContainer.svelte'
 ];
 
-/**
- * Dette connue, reportée (docs/wip/couleurs-lot3-progress.md, « Reste ») : des
- * `hsl(var(--x))` d'écrans prof / admin / outils. Un fichier corrigé en sort ; un
- * fichier NOUVEAU qui lit une variable inexistante fait échouer le balayage.
- */
-const KNOWN_DEBT = [
-	'src/lib/components/JsonViewer.svelte',
-	'src/lib/components/calculator/UnifiedInput.svelte',
-	'src/lib/components/cas/HistoryEntry.svelte',
-	'src/lib/components/cas/ReplInput.svelte',
-	'src/lib/components/python/PythonSplitter.svelte',
-	'src/lib/components/rich-text/RichTextEditor.svelte',
-	'src/lib/whiteboard/components/AnnotationToolbar.svelte',
-	'src/lib/whiteboard/components/TemplatePickerModal.svelte',
-	'src/routes/(protected)/dashboard/admin/docs/+page.svelte',
-	'src/routes/(protected)/dashboard/admin/docs/[...path]/+page.svelte',
-	'src/routes/(protected)/messages/archived/+page.svelte',
-	'src/routes/(protected)/messages/drafts/+page.svelte',
-	'src/routes/(protected)/messages/inbox/+page.svelte',
-	'src/routes/(protected)/messages/sent/+page.svelte',
-	'src/routes/(protected)/spreadsheet/+page.svelte',
-	'src/routes/(public)/games/mathemo/+page.svelte',
-	'src/routes/(public)/pere-ubu/+page.svelte'
-];
-
 /** Retire les commentaires CSS, HTML et JS (`//` en début de ligne ou après un blanc) */
 function stripComments(source: string): string {
 	return source
@@ -228,11 +203,8 @@ describe('balayage de src/lib et src/routes', () => {
 		expect(files).toContain('src/routes/+layout.svelte');
 	});
 
-	it('aucun composant hors dette connue ne lit de variable inexistante', () => {
-		expect(offenders.filter((file) => !KNOWN_DEBT.includes(file))).toEqual([]);
-	});
-
-	it('la dette connue est à jour (un fichier corrigé en sort)', () => {
-		expect(KNOWN_DEBT.filter((file) => !offenders.includes(file))).toEqual([]);
+	it('aucun composant ne lit de variable inexistante ni de `hsl(var(--x))`', () => {
+		// Dette soldée le 2026-10-04 (17 fichiers) : plus d'exception, tout nouveau fichier fautif échoue
+		expect(offenders).toEqual([]);
 	});
 });

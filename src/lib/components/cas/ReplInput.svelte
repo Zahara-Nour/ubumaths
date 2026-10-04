@@ -562,6 +562,6 @@
 
 <style>
 	.repl-hash {
-		color: hsl(var(--primary));
+		color: var(--color-primary);
 	}
 </style>
