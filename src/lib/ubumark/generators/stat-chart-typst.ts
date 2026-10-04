@@ -98,7 +98,7 @@ function textContent(text: string): string {
  */
 function keptWithTitle(title: string | null, figure: string): string {
 	const head = titleBlock(title);
-	return head === '' ? figure : `#block(breakable: false)[\n${head}${figure}\n]`;
+	return head === '' ? figure : `#block(breakable: false, width: 100%)[\n${head}${figure}\n]`;
 }
 
 function titleBlock(title: string | null): string {

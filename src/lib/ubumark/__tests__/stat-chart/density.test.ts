@@ -244,7 +244,7 @@ describe('lois à densité — Typst', () => {
 	it('le titre et la courbe dans un bloc insécable, les lignes après', () => {
 		const typst = generateStatChartTypst(nodeOf(`${E}\ndiagramme: oui\nprobabilités: P(X ⩽ 2)`));
 		expect(typst).toMatch(
-			/#block\(breakable: false\)\[\n#align\(center, text\(weight: "bold", size: 9pt\)\[#"Loi de X : E\(0,5\)"\]\)\n[\s\S]*cetz\.canvas[\s\S]*\n\]\n\/\/ indicateurs/
+			/#block\(breakable: false, width: 100%\)\[\n#align\(center, text\(weight: "bold", size: 9pt\)\[#"Loi de X : E\(0,5\)"\]\)\n[\s\S]*cetz\.canvas[\s\S]*\n\]\n\/\/ indicateurs/
 		);
 	});
 
@@ -257,7 +257,7 @@ describe('lois à densité — Typst', () => {
 		] as const) {
 			const typst = generateStatChartTypst(parseStatChartContent(kind, source));
 			expect(typst, kind).toMatch(
-				/#block\(breakable: false\)\[\n#align\(center, text\(weight: "bold"[\s\S]*cetz\.canvas/
+				/#block\(breakable: false, width: 100%\)\[\n#align\(center, text\(weight: "bold"[\s\S]*cetz\.canvas/
 			);
 		}
 	});
