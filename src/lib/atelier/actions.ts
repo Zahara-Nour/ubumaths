@@ -90,7 +90,6 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	'plot-points',
 	'plot-cobweb',
 	'table',
-	'slider',
 	'convert',
 	'rename'
 ]);
@@ -336,14 +335,6 @@ export function actionsFor(
 				id: action.id,
 				label: 'Retirer le diagramme',
 				...(action.partner !== undefined && { partner: action.partner })
-			};
-		}
-		// D4 : un curseur sur une grandeur n'a pas de sens — on le dit plutôt que
-		// de faire disparaître l'action, sinon l'élève cherche pourquoi.
-		if (action.id === 'slider' && isValue(object) && object.unit !== undefined) {
-			return {
-				...action,
-				disabledReason: `« ${object.name} » est une grandeur en ${object.unit} : un curseur n’aurait pas de sens ici.`
 			};
 		}
 		// ⚠️ Retirer du graphe reste possible même quand l'objet ne peut plus rien

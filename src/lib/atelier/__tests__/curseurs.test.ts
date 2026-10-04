@@ -214,3 +214,126 @@ describe('l’action', () => {
 		expect(ids).not.toContain('slider');
 	});
 });
+
+// =============================================================================
+// Revue de code du lot 4
+// =============================================================================
+
+describe('revue du lot 4', () => {
+	// A1 : une constante écrite en LaTeX n'est PAS une valeur calculée
+	it.each([
+		['une fraction', '\\frac{1}{2}'],
+		['une virgule écrite par MathLive', '2{,}5'],
+		['π', '\\pi']
+	])('%s tapée dans la carte garde son curseur', (_, latex) => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: latex }, 'keyboard');
+
+		const result = atelier.slideTo('a', 3);
+
+		expect(result.ok).toBe(true);
+		expect(atelier.get('a')?.definition).toBe('3');
+	});
+
+	it('une valeur qui cite un autre objet reste refusée', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'b', definition: '1' }, 'text');
+		atelier.create({ kind: 'value', name: 'a', definition: 'b+1' }, 'text');
+
+		expect(atelier.slideTo('a', 3).ok).toBe(false);
+	});
+
+	// A3 : les bornes restent dans ±1e9, partout
+	it('une valeur énorme n’élargit pas le curseur au-delà de 1e9', () => {
+		const atelier = withA();
+
+		atelier.update('a', '1e300', 'text');
+
+		expect(sliderOf(atelier)?.max).toBeLessThanOrEqual(1e9);
+	});
+
+	it('un curseur rangé incohérent est oublié', () => {
+		const state = {
+			version: 1,
+			objects: [
+				{ name: 'a', kind: 'value' as const, definition: '0', slider: { min: 0, max: 1, step: 5 } }
+			]
+		};
+
+		const fresh = new Atelier();
+		fresh.restore(state);
+
+		expect(sliderOf(fresh)).toEqual({ min: -10, max: 10, step: 0.1 });
+	});
+
+	it('n’écrit jamais NaN', () => {
+		const atelier = withA();
+
+		expect(atelier.slideTo('a', Number.NaN).ok).toBe(false);
+		expect(atelier.get('a')?.definition).toBe('2');
+	});
+
+	// M1 : un pas très fin ne doit pas tout arrondir à l'entier
+	it('respecte un pas très fin', () => {
+		const atelier = withA();
+		atelier.setSlider('a', { min: 0, max: 1, step: 1e-7 });
+
+		atelier.slideTo('a', 0.123456789);
+
+		expect(atelier.get('a')?.definition).toBe('0,1234568');
+	});
+
+	// M6 : un cran qui ne change rien ne recalcule rien
+	it('ne fait rien quand la valeur ne change pas', () => {
+		const atelier = withA('2');
+		const before = atelier.revision;
+
+		atelier.slideTo('a', 2);
+
+		expect(atelier.revision).toBe(before);
+	});
+});
+
+// A2, tranché par David le 2026-10-04 : resserrer les bornes sous la valeur
+// RAMÈNE la valeur dans les bornes (le curseur ne ment pas, rien ne se défait)
+describe('resserrer les bornes sous la valeur', () => {
+	it('ramène a à la nouvelle borne, et f suit', () => {
+		const atelier = withA('5');
+
+		const result = atelier.setSlider('a', { max: 3 });
+
+		expect(result.ok).toBe(true);
+		expect(atelier.get('a')?.definition).toBe('3');
+		expect(sliderOf(atelier)?.max).toBe(3);
+		expect(expression(atelier, 'f')).toBe('3*x');
+	});
+
+	it('par le bas aussi', () => {
+		const atelier = withA('-5');
+
+		atelier.setSlider('a', { min: 0 });
+
+		expect(atelier.get('a')?.definition).toBe('0');
+	});
+
+	it('le réglage tient après une relecture', () => {
+		const atelier = withA('5');
+		atelier.setSlider('a', { max: 3 });
+
+		const fresh = new Atelier();
+		fresh.restore(atelier.serialize());
+
+		expect(sliderOf(fresh)?.max).toBe(3);
+		expect(fresh.get('a')?.definition).toBe('3');
+	});
+
+	it('ne touche pas une valeur calculée', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'b', definition: '5' }, 'text');
+		atelier.create({ kind: 'value', name: 'a', definition: 'b+1' }, 'text');
+
+		atelier.setSlider('a', { max: 3 });
+
+		expect(atelier.get('a')?.definition).toBe('b+1');
+	});
+});

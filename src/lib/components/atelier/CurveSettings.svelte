@@ -165,7 +165,11 @@
 	// DOM, d'où l'`$effect`.
 	$effect(() => {
 		const thumb = sliderZone?.querySelector('[role="slider"]');
-		if (thumb) thumb.setAttribute('aria-valuetext', sliderValueText);
+		if (!thumb) return;
+		thumb.setAttribute('aria-valuetext', sliderValueText);
+		// Le nom aussi : l'aria-label du `<Slider>` reste sur sa racine, sans rôle
+		// (revue a11y du lot 4, même défaut qu'ici)
+		thumb.setAttribute('aria-label', 'Abscisse du point de tangence');
 	});
 </script>
 
@@ -316,7 +320,8 @@
 		color: var(--color-destructive);
 	}
 	.refus:empty {
-		display: none;
+		visibility: hidden;
+		height: 0;
 	}
 	.titre {
 		margin: 0;

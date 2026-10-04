@@ -246,6 +246,27 @@ Mesuré avant : `a = 0,5` est lu 0,5 → le curseur écrit avec la virgule.
 - 2 anciens tests mis en accord (ils assertaient le bouton) ; D3/D4 gardés.
 - Tests : 21 serveur (20 rouges avant) + 6 navigateur (rouges avant) ;
   suites 352 navigateur, 1 192 serveur ; `check:incremental` 0.
+- [x] Revues `code-reviewer` + `accessibility-tester` — corrigé, tests
+      d'abord (rouges vus) :
+  - A1 : une constante écrite par MathLive (`\frac{1}{2}`, `2{,}5`, `\pi`)
+    était prise pour une valeur « calculée » (faux message, plus de curseur)
+    → `constantOf` : seule une définition qui CITE un objet est calculée ;
+    une constante s'évalue (`evaluate`, mode décimal).
+  - **A2, tranché par David (2026-10-04)** : des bornes resserrées sous la
+    valeur la RAMÈNENT dedans (`a = 5`, max 3 → `a = 3`) ; une valeur
+    calculée n'est pas touchée.
+  - A3 : bornes plafonnées à ±1e9 partout (élargissement, relecture,
+    `adoptSlider` qui revalide) ; jamais de `NaN` écrit.
+  - M1 : pas très fin (1e-7) → décimales lues sur la notation scientifique ;
+    M3 : le champ affiche `2,5` et range `2{,}5` en `2,5` ; M4 code mort du
+    bouton retiré ; M6 un cran sans changement ne recalcule rien.
+  - a11y (bloquant) : le pouce n'avait pas de nom (l'aria-label reste sur la
+    racine du `<Slider>` partagé) → posé sur le pouce, ici ET sur le curseur
+    de la tangente (lot 2b) ; noms des champs qui commencent par le mot
+    visible ; refus relié au champ (`aria-describedby`), toujours dans l'arbre,
+    et qui reste affiché après avoir quitté le champ.
+- Suites : 356 navigateur, 2 210 serveur ; `check:incremental` 0 ; eslint :
+  0 erreur, rien dans les lignes modifiées.
 
 ## Lots suivants
 

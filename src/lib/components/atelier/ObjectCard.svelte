@@ -21,7 +21,7 @@
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
 	import ValueSlider from './ValueSlider.svelte';
-	import { readNumber } from '$lib/atelier/parse';
+	import { constantOf } from '$lib/atelier/atelier.svelte';
 
 	interface Props {
 		object: AtelierObject;
@@ -249,7 +249,7 @@
 			<p class="sans-curseur">
 				Grandeur en {object.unit} : pas de curseur (on ne fait pas glisser une longueur).
 			</p>
-		{:else if readNumber(object.definition) === null}
+		{:else if constantOf(object.definition, object.provenance, atelier.functionNames) === null}
 			<p class="sans-curseur">
 				{object.name} est calculée à partir d'autres objets : pas de curseur, il effacerait sa formule.
 			</p>

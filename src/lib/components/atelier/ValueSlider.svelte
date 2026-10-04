@@ -7,7 +7,7 @@
 	 * (`slideTo`, `setSlider`) : le curseur n'a pas d'état à lui.
 	 */
 	import { useAtelier } from '$lib/atelier/context';
-	import { readNumber } from '$lib/atelier/parse';
+	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import type { Slider as SliderSettings, ValueObject } from '$lib/atelier/types';
 	import { Slider } from '$lib/components/ui/slider';
 	import { Input } from '$lib/components/ui/input';
@@ -38,7 +38,9 @@
 	);
 	const notchSize = $derived((slider.max - slider.min) / notches);
 
-	const value = $derived(readNumber(object.definition) ?? slider.min);
+	const value = $derived(
+		constantOf(object.definition, object.provenance, atelier.functionNames) ?? slider.min
+	);
 
 	function toNotch(v: number): number {
 		return Math.min(notches, Math.max(0, Math.round((v - slider.min) / notchSize)));
@@ -48,16 +50,26 @@
 		atelier.slideTo(object.name, slider.min + notch * notchSize);
 	}
 
+	/** Six chiffres significatifs, la virgule, jamais de notation « 1e-7 ». */
+	const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', {
+		maximumSignificantDigits: 6,
+		useGrouping: false
+	});
+
 	/** Ce que le curseur annonce : la valeur, pas un numéro de cran. */
-	const valueText = $derived(`${object.name} = ${String(value).replace('.', ',')}`);
+	const valueText = $derived(`${object.name} = ${NUMBER_FORMAT.format(value)}`);
 
 	let zone = $state<HTMLElement>();
 
 	// ⚠️ Le curseur partagé (`ui/slider`) ne transmet rien à son pouce : on pose
 	// `aria-valuetext` sur l'élément `role="slider"` qu'il rend (effet de bord DOM).
+	// Le NOM aussi : posé sur `<Slider>`, l'aria-label reste sur la racine, qui
+	// n'a pas de rôle — le pouce n'avait aucun nom (revue a11y du lot 4).
 	$effect(() => {
 		const thumb = zone?.querySelector('[role="slider"]');
-		if (thumb) thumb.setAttribute('aria-valuetext', valueText);
+		if (!thumb) return;
+		thumb.setAttribute('aria-valuetext', valueText);
+		thumb.setAttribute('aria-label', `Curseur de ${object.name}`);
 	});
 
 	/** Pourquoi le dernier réglage n'a pas été retenu. */
@@ -72,19 +84,25 @@
 		};
 	}
 
-	/** En quittant le champ, il reprend la valeur RETENUE (saisie vide ou refusée). */
+	/**
+	 * En quittant le champ, il reprend la valeur RETENUE (saisie vide ou refusée).
+	 * Le message de refus, lui, reste : effacé au départ du champ, un élève au
+	 * lecteur d'écran n'avait pas le temps de le lire (revue a11y du lot 4).
+	 */
 	function handleSettingChange(field: keyof SliderSettings) {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
 			event.currentTarget.value = String(slider[field]);
-			if (refusal?.field === field) refusal = null;
 		};
 	}
 
-	const FIELDS: { field: keyof SliderSettings; label: string; short: string }[] = [
-		{ field: 'min', label: 'Minimum', short: 'de' },
-		{ field: 'max', label: 'Maximum', short: 'à' },
-		{ field: 'step', label: 'Pas', short: 'pas' }
-	];
+	/** Le nom de chaque champ COMMENCE par le mot visible (WCAG 2.5.3). */
+	const FIELDS = $derived<{ field: keyof SliderSettings; name: string; short: string }[]>([
+		{ field: 'min', name: `de, minimum du curseur de ${object.name}`, short: 'de' },
+		{ field: 'max', name: `à, maximum du curseur de ${object.name}`, short: 'à' },
+		{ field: 'step', name: `pas du curseur de ${object.name}`, short: 'pas' }
+	]);
+
+	const refusalId = $derived(`refus-curseur-${object.name}`);
 </script>
 
 <div class="curseur">
@@ -96,7 +114,6 @@
 			min={0}
 			max={notches}
 			step={1}
-			aria-label={`Curseur de ${object.name}`}
 		/>
 	</div>
 	<div class="ligne" role="group" aria-label={`Réglages du curseur de ${object.name}`}>
@@ -109,12 +126,15 @@
 				oninput={handleSettingInput(item.field)}
 				onchange={handleSettingChange(item.field)}
 				class="h-8 w-20 text-sm"
-				aria-label={`${item.label} du curseur de ${object.name}`}
+				aria-label={item.name}
 				aria-invalid={refusal?.field === item.field}
+				aria-describedby={refusal?.field === item.field ? refusalId : undefined}
 			/>
 		{/each}
 	</div>
-	<p class="refus" role="alert">{refusal?.message ?? ''}</p>
+	<!-- Toujours dans l'arbre (pas de `display: none`) : une alerte qui apparaît
+	     avec son contenu n'est pas annoncée de façon fiable (revue a11y) -->
+	<p class="refus" id={refusalId} role="alert">{refusal?.message ?? ''}</p>
 </div>
 
 <style>
@@ -140,6 +160,7 @@
 		font-weight: 600;
 	}
 	.refus:empty {
-		display: none;
+		visibility: hidden;
+		height: 0;
 	}
 </style>

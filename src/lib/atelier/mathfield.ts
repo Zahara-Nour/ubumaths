@@ -14,7 +14,7 @@
  */
 
 import type { AtelierObject, ObjectKind } from './types';
-import { astOf, parseDefinition, readingMode } from './parse';
+import { astOf, parseDefinition, readingMode, readNumber } from './parse';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 
@@ -33,6 +33,9 @@ export function fieldLatexOf(object: AtelierObject, functionNames: readonly stri
 	if (definition.trim() === '') return '';
 	const provenance = object.provenance ?? 'url';
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
+	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
+	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
+	if (readNumber(definition) !== null) return definition.trim();
 
 	const ast = astOf(definition, provenance, functionNames);
 	return ast === null ? definition : forMathlive(toLatex(ast));
@@ -60,6 +63,9 @@ export function forMathlive(latex: string): string {
 export function definitionFromField(kind: ObjectKind, latex: string): string {
 	const typed = latex.trim();
 	if (kind !== 'value' || typed === '') return typed;
+	// MathLive écrit la virgule décimale `{,}` : un nombre est rangé `2,5`
+	const decimal = typed.replace(/\{,\}/g, ',');
+	if (readNumber(decimal) !== null) return decimal;
 	if (parseDefinition('value', typed, 'keyboard').error === undefined) return typed;
 
 	const quantity = normalizeStudentQuantity(typed);

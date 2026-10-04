@@ -36,7 +36,8 @@ import {
 	displayName
 } from './names';
 import type { Provenance } from './parse';
-import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
+import { astOf, parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
+import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
@@ -139,10 +140,39 @@ function isDefaultSlider(slider: Slider): boolean {
  * Le curseur élargi pour contenir la valeur tapée (§4 L1) : `a = 25` sur un
  * curseur [−10 ; 10] le porte à [−10 ; 25] plutôt que de coller le pouce au bord.
  */
-function widenedSlider(slider: Slider, definition: string): Slider {
-	const value = readNumber(definition);
+function widenedSlider(slider: Slider, value: number | null): Slider {
 	if (value === null) return { ...slider };
-	return { ...slider, min: Math.min(slider.min, value), max: Math.max(slider.max, value) };
+	// ⚠️ Jamais au-delà de ±1e9 (revue du lot 4) : `a = 1e300` donnait un curseur
+	// dont le cran valait l'infini, et le pouce écrivait « NaN » dans `a`
+	const limited = Math.max(-COORDINATE_LIMIT, Math.min(COORDINATE_LIMIT, value));
+	return { ...slider, min: Math.min(slider.min, limited), max: Math.max(slider.max, limited) };
+}
+
+/**
+ * La valeur d'une CONSTANTE, ou `null` si la définition cite d'autres objets.
+ *
+ * ⚠️ Pas seulement un nombre écrit : MathLive écrit `2{,}5`, `\frac{1}{2}`,
+ * `\pi`, et `readNumber` les prenait pour des formules — la carte disait
+ * « calculée » et retirait le curseur (revue du lot 4, A1). Une définition
+ * qui ne cite rien s'ÉVALUE ; seule une définition qui cite un objet est
+ * calculée, et le curseur effacerait sa formule.
+ */
+export function constantOf(
+	definition: string,
+	provenance: Provenance | undefined,
+	functionNames: readonly string[]
+): number | null {
+	const plain = readNumber(definition.replace(/\{,\}/g, ','));
+	if (plain !== null) return plain;
+	if (referencesOf(definition, provenance, functionNames).length > 0) return null;
+	const ast = astOf(definition, provenance, functionNames);
+	if (ast === null) return null;
+	const result = evaluate(ast, { mode: 'decimal' });
+	return result.status === 'value' &&
+		typeof result.value === 'number' &&
+		Number.isFinite(result.value)
+		? result.value
+		: null;
 }
 
 /**
@@ -150,7 +180,14 @@ function widenedSlider(slider: Slider, definition: string): Slider {
  * et avec la virgule, comme l'élève l'écrit (lu 0,5 — mesuré).
  */
 function formatSliderValue(value: number, step: number): string {
-	const decimals = (String(step).split('.')[1] ?? '').length;
+	// Les décimales du pas, lues sur sa notation scientifique : `String(1e-7)`
+	// vaut « 1e-7 » et donnait 0 décimale (revue du lot 4, M1). Arrondi aux
+	// DÉCIMALES du pas — le curseur, lui, pose déjà la valeur sur un cran.
+	const [mantissa, exponent] = step.toExponential().split('e');
+	const decimals = Math.min(
+		12,
+		Math.max(0, (mantissa.split('.')[1] ?? '').length - Number(exponent))
+	);
 	const rounded = Number(value.toFixed(decimals));
 	return String(rounded === 0 ? 0 : rounded).replace('.', ',');
 }
@@ -381,7 +418,10 @@ export class Atelier {
 		}
 		const read = sliderPatchSchema.safeParse(patch);
 		if (!read.success) return { ok: false, message: 'Ce réglage du curseur n’est pas valable.' };
-		const next = { ...current.slider, ...read.data };
+		// Le curseur ENTIER est revalidé, pas seulement le patch (revue du lot 4)
+		const whole = sliderPatchSchema.required().safeParse({ ...current.slider, ...read.data });
+		if (!whole.success) return { ok: false, message: 'Ce réglage du curseur n’est pas valable.' };
+		const next = whole.data;
 		if (next.min >= next.max) {
 			return { ok: false, message: 'Le minimum doit être plus petit que le maximum.' };
 		}
@@ -389,6 +429,17 @@ export class Atelier {
 			return { ok: false, message: 'Le pas doit tenir entre les deux bornes.' };
 		}
 		this.items[index] = { ...current, slider: next };
+
+		// A2, tranché par David (2026-10-04) : des bornes resserrées sous la valeur
+		// la RAMÈNENT dedans — sinon le pouce, collé au bord, montrait une valeur
+		// fausse, et la relecture rélargissait en silence. Une valeur calculée
+		// n'est pas touchée : le curseur effacerait sa formule.
+		const value = constantOf(current.definition, current.provenance, this.functionNames);
+		if (value !== null && (value < next.min || value > next.max)) {
+			const clamped = Math.min(next.max, Math.max(next.min, value));
+			this.update(name, formatSliderValue(clamped, next.step), 'text');
+			return { ok: true };
+		}
 		this.revision++;
 		return { ok: true };
 	}
@@ -405,7 +456,8 @@ export class Atelier {
 		if (current === undefined || !isValue(current) || current.slider === undefined) {
 			return { ok: false, message: `« ${name} » n'a pas de curseur.` };
 		}
-		if (readNumber(current.definition) === null) {
+		if (!Number.isFinite(value)) return { ok: false, message: 'Cette valeur n’est pas un nombre.' };
+		if (constantOf(current.definition, current.provenance, this.functionNames) === null) {
 			return {
 				ok: false,
 				message: `« ${name} » est calculée à partir d'autres objets : le curseur effacerait sa formule.`
@@ -413,7 +465,12 @@ export class Atelier {
 		}
 		const { min, max, step } = current.slider;
 		const clamped = Math.min(max, Math.max(min, value));
-		return this.update(name, formatSliderValue(clamped, step), 'text');
+		const written = formatSliderValue(clamped, step);
+		// Un cran qui ne change rien ne recalcule rien (revue du lot 4, M6)
+		if (written === current.definition) {
+			return { ok: true, object: current, recomputed: [] };
+		}
+		return this.update(name, written, 'text');
 	}
 
 	// ---------------------------------------------------------------------------
@@ -535,7 +592,7 @@ export class Atelier {
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
 		const keptSlider =
 			isValue(previous) && previous.slider && isValue(rebuilt) && rebuilt.slider
-				? widenedSlider(previous.slider, definition)
+				? widenedSlider(previous.slider, constantOf(definition, provenance, this.functionNames))
 				: undefined;
 		this.items[index] = {
 			...rebuilt,
@@ -749,18 +806,30 @@ export class Atelier {
 		return { ok: true };
 	}
 
-	/**
-	 * Poser des réglages relus (sauvegarde, lien) sans recalcul : l'appelant
-	 * recalcule une fois à la fin.
-	 */
 	/** Poser un curseur relu (sauvegarde, lien) sans recalcul. */
 	adoptSlider(name: string, slider: Slider): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isValue(current) || current.slider === undefined) return;
-		this.items[index] = { ...current, slider: widenedSlider(slider, current.definition) };
+		// ⚠️ Validé ICI, et pas seulement par le schéma de relecture : `restore` et
+		// `mergeInto` reçoivent aussi des états qui n'y sont pas passés. Un curseur
+		// incohérent est oublié, le défaut reste (revue du lot 4, A3)
+		const read = sliderPatchSchema.required().safeParse(slider);
+		if (!read.success || read.data.min >= read.data.max) return;
+		if (read.data.step > read.data.max - read.data.min) return;
+		this.items[index] = {
+			...current,
+			slider: widenedSlider(
+				read.data,
+				constantOf(current.definition, current.provenance, this.functionNames)
+			)
+		};
 	}
 
+	/**
+	 * Poser des réglages relus (sauvegarde, lien) sans recalcul : l'appelant
+	 * recalcule une fois à la fin.
+	 */
 	adoptDisplay(name: string, stored: StoredDisplay): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
@@ -844,7 +913,12 @@ export class Atelier {
 					kind: 'value',
 					...(parsed.unit
 						? { unit: parsed.unit }
-						: { slider: widenedSlider(DEFAULT_SLIDER, definition) })
+						: {
+								slider: widenedSlider(
+									DEFAULT_SLIDER,
+									constantOf(definition, provenance, this.functionNames)
+								)
+							})
 				};
 				return value;
 			}
