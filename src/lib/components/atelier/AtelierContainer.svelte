@@ -20,6 +20,7 @@
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
 	import { syncPlots } from '$lib/atelier/plot-sync';
 
 	interface Props {
@@ -101,6 +102,9 @@
 	 * lui-même, le grapheur n'a donc rien à conserver — d'où `null`.
 	 */
 	const graph = new GrapheurStore(null);
+	// Fourni à tout le conteneur, et pas seulement à la vue Graphe : la carte
+	// (« Sur le graphique ») lit la courbe dessinée et la fenêtre visible
+	provideGrapheurStore(graph);
 
 	/**
 	 * Le pupitre de la vue Calcul.

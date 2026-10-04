@@ -11,7 +11,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { syncPlots } from '../plot-sync';
+import { syncPlots, curveOf } from '../plot-sync';
 import { isExplicitFunction, type ExplicitFunction } from '$lib/grapheur/types';
 import { loadAtelier, saveAtelier, ATELIER_STORAGE_KEY, type AtelierState } from '../persistence';
 import { encodeAtelier, decodeAtelier } from '../url';
@@ -476,5 +476,36 @@ describe('réglages d’affichage — rangement compact', () => {
 		if (loaded.kind === 'loaded') fresh.restore(loaded.state);
 
 		expect(displayOf(fresh, 'f')).toEqual(displayOf(atelier, 'f'));
+	});
+});
+
+// =============================================================================
+// Lot 2b : la carte lit la courbe posée pour son objet
+// =============================================================================
+
+describe('la courbe d’un objet', () => {
+	it('retrouve la courbe que la synchronisation a posée', () => {
+		const atelier = withPlotted('x^2');
+		const graph = new GrapheurStore(null);
+		syncPlots(atelier, graph);
+
+		const curve = curveOf(atelier, graph, 'f');
+
+		expect(curve?.id).toBe(onlyCurve(graph).id);
+	});
+
+	it('ne rend rien pour un objet non tracé', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'x' });
+		const graph = new GrapheurStore(null);
+		syncPlots(atelier, graph);
+
+		expect(curveOf(atelier, graph, 'f')).toBeUndefined();
+	});
+
+	it('ne rend rien pour un grapheur que l’atelier n’a jamais synchronisé', () => {
+		const atelier = withPlotted();
+
+		expect(curveOf(atelier, new GrapheurStore(null), 'f')).toBeUndefined();
 	});
 });
