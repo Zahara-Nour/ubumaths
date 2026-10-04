@@ -23,7 +23,7 @@ import type { StatChartKind } from '../../types/stat-chart';
 // `\p{L}` et le drapeau `u` : sans eux, `\b` ignore les lettres accentuées et
 // « Écart », « Étendue », « Probabilité » passaient inaperçus (revue)
 const FRENCH =
-	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie|uniforme|suivantes|représentées|valeurs|densité|pour|avant|après)(?!\p{L})/iu;
+	/(?<!\p{L})(Effectifs?|Fréquences?|cumulée|Moyennes?|Médiane|Classe|Écart|Étendue|Diagramme|Histogramme|Polygone|Tableau|carreaux?|Loi|tirages?|graine|Série|indisponible|échantillons?|espérance|croissantes|décroissantes|large|haut|moins|Comparaison|Probabilité|Nombre|observée|case|compléter|lignes|colonnes|définie|selon|premiers?|entre|petit|grand|choisis|aucun|vérifie|uniforme|suivantes|représentées|valeurs|densité|pour|avant|après|puissance)(?!\p{L})/iu;
 
 /** Valeurs internes, jamais affichées : le genre, le sens, les couleurs, le mode */
 const INTERNAL_KEYS = new Set(['kind', 'direction', 'mode', 'color', 'secondColor', 'hatchColor']);

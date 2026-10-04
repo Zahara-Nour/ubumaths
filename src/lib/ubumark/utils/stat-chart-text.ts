@@ -99,6 +99,8 @@ interface StatText {
 		/** Fonction de répartition */
 		cdfUniform: (formula: string, interval: string) => string;
 		cdfExponential: (exponent: string) => string;
+		/** Lecture d'un exposant : « e puissance −1 » */
+		power: string;
 	};
 }
 
@@ -179,7 +181,8 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			shadedArea: (event) => `aire hachurée : ${event}`,
 			cdfUniform: (formula, interval) =>
 				`F(x) = ${formula} pour x ∈ ${interval} ; 0 avant, 1 après`,
-			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) pour x ⩾ 0`
+			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) pour x ⩾ 0`,
+			power: 'puissance'
 		}
 	},
 	en: {
@@ -259,7 +262,8 @@ export const STAT_TEXT: Record<ContentLocale, StatText> = {
 			densityCurve: 'Density curve',
 			shadedArea: (event) => `shaded area: ${event}`,
 			cdfUniform: (formula, interval) => `F(x) = ${formula} for x ∈ ${interval}; 0 before, 1 after`,
-			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) for x ⩾ 0`
+			cdfExponential: (exponent) => `F(x) = 1 − e^(${exponent}) for x ⩾ 0`,
+			power: 'to the power'
 		}
 	}
 };

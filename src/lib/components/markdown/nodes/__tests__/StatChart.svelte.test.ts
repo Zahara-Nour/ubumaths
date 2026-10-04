@@ -622,10 +622,18 @@ describe('StatChart — lois à densité (manche 13, PR b)', () => {
 		const area = screen.container.querySelector<SVGPolygonElement>('polygon.stat-aire')!;
 		// Le navigateur normalise `url(#id)` en `url("#id")`
 		expect(getComputedStyle(area).fill).toMatch(/url\("?#.*hachures"?\)/);
-		const items = [...screen.container.querySelectorAll('.stat-indicateurs li')].map(
-			(li) => li.textContent
+		// De vrais exposants (<sup>), et une lecture « e puissance … » pour le lecteur d'écran
+		const line = [...screen.container.querySelectorAll('.stat-indicateurs li')].find((li) =>
+			li.textContent?.includes('P(X ⩽ 2)')
+		)!;
+		expect([...line.querySelectorAll('sup')].map((sup) => sup.textContent)).toEqual([
+			'−0,5 × 2',
+			'−1'
+		]);
+		expect(line.textContent).not.toContain('^(');
+		expect(line.querySelector('.sr-only')?.textContent).toBe(
+			'P(X ⩽ 2) = 1 − e puissance (−0,5 × 2) = 1 − e puissance −1 ≈ 0,632'
 		);
-		expect(items).toContain('P(X ⩽ 2) = 1 − e^(−0,5 × 2) = 1 − e^(−1) ≈ 0,632');
 	});
 });
 

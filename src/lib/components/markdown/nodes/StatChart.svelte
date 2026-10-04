@@ -958,7 +958,19 @@
 		{#if scene.indicators.length > 0}
 			<ul class="stat-indicateurs">
 				{#each scene.indicators as indicator, i (i)}
-					<li>{indicator}</li>
+					{@const parts = scene.indicatorParts?.[i]}
+					{#if parts}
+						<!-- Lois à densité : de vrais exposants (e<sup>−1</sup>), lus « e puissance −1 » -->
+						<li>
+							<span aria-hidden="true"
+								>{#each parts.segments as segment, j (j)}{#if segment.exponent}<sup
+											>{segment.text}</sup
+										>{:else}{segment.text}{/if}{/each}</span
+							><span class="sr-only">{parts.spoken}</span>
+						</li>
+					{:else}
+						<li>{indicator}</li>
+					{/if}
 				{/each}
 			</ul>
 		{/if}

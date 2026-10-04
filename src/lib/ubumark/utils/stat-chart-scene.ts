@@ -119,6 +119,19 @@ interface SceneCommon {
 	series?: string | null;
 	/** `série: seule` : la série sans la figure ni les indicateurs */
 	seriesOnly?: boolean;
+	/**
+	 * Lignes d'indicateurs à exposants (lois à densité, « e^(−1) ») : une par
+	 * ligne de `indicators`, découpée en texte / exposant, et sa lecture pour le
+	 * lecteur d'écran ; absente sans exposant
+	 */
+	indicatorParts?: IndicatorLine[];
+}
+
+/** Une ligne d'indicateurs à exposants : `e` puis `<sup>−1</sup>` */
+export interface IndicatorLine {
+	segments: { text: string; exponent: boolean }[];
+	/** « e puissance −1 », « e puissance (−0,5 × 2) » */
+	spoken: string;
 }
 
 export interface SceneBar {
@@ -1852,6 +1865,32 @@ function eventBounds(query: DensityQuery): { low: number; high: number } {
 }
 
 /**
+ * Une ligne écrite avec `e^(…)` découpée en texte / exposant (parenthèses
+ * imbriquées comprises : « e^(−0,5 × (5 − 2)) »), et sa lecture
+ */
+function exponentParts(line: string, locale: ContentLocale): IndicatorLine {
+	const segments: IndicatorLine['segments'] = [];
+	let spoken = '';
+	let rest = line;
+	for (let start = rest.indexOf('e^('); start !== -1; start = rest.indexOf('e^(')) {
+		let depth = 1;
+		let end = start + 3;
+		for (; end < rest.length && depth > 0; end++) {
+			if (rest[end] === '(') depth++;
+			else if (rest[end] === ')') depth--;
+		}
+		const before = rest.slice(0, start + 1);
+		const exponent = rest.slice(start + 3, end - 1);
+		segments.push({ text: before, exponent: false }, { text: exponent, exponent: true });
+		const read = exponent.includes(' ') ? `(${exponent})` : exponent;
+		spoken += `${before} ${STAT_TEXT[locale].law.power} ${read}`;
+		rest = rest.slice(end);
+	}
+	if (rest !== '') segments.push({ text: rest, exponent: false });
+	return { segments, spoken: spoken + rest };
+}
+
+/**
  * Une ligne de l'exponentielle : la forme exacte, puis la valeur approchée
  * (« P(X ⩽ 2) = 1 − e^(−0,5 × 2) = 1 − e^(−1) ≈ 0,632 »).
  */
@@ -2073,17 +2112,22 @@ function buildDensityScene(spec: StatChartSpec, law: LawData, locale: ContentLoc
 		);
 	}
 	const title = text.title(law.variable, name);
+	const indicators = [
+		...namedMomentLines(law, moments, decimal, locale),
+		...(density.cdf ? [cdf] : []),
+		...lines
+	];
 	return {
 		kind: 'loi',
 		title: spec.title,
 		accessibleTitle: title,
 		description: title,
 		pixelSize: { width: 0, height: 0 },
-		indicators: [
-			...namedMomentLines(law, moments, decimal, locale),
-			...(density.cdf ? [cdf] : []),
-			...lines
-		],
+		indicators,
+		// De vrais exposants à l'écran et dans le PDF (fiche compilée : « e^(−1) » en clair)
+		...(indicators.some((line) => line.includes('e^(')) && {
+			indicatorParts: indicators.map((line) => exponentParts(line, locale))
+		}),
 		variable: law.variable,
 		values: [],
 		probabilities: [],

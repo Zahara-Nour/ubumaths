@@ -224,10 +224,69 @@ describe('lois à densité — Typst', () => {
 			nodeOf(`${E}\ndiagramme: oui\nprobabilités: P(X ⩽ 2)`)
 		).replace(/\u00a0/g, ' ');
 		expect(typst).toContain('Loi de X : E(0,5)');
-		expect(typst).toContain('1 − e^(−1) ≈ 0,632');
 		expect(typst).toContain('tiling');
 		expect(typst).toContain('Densité');
 		expect(typst).not.toContain('#table(');
+	});
+
+	it('de vrais exposants : e#super[…], plus de « ^( » imprimé', () => {
+		const typst = generateStatChartTypst(
+			nodeOf(`${E}\nrépartition: oui\nprobabilités: P(X ⩽ 2) ; P(X > 5 | X > 2)`)
+		).replace(/\u00a0/g, ' ');
+		expect(typst).toContain(
+			'#"P(X ⩽ 2) = 1 − e"#super[#"−0,5 × 2"]#" = 1 − e"#super[#"−1"]#" ≈ 0,632"'
+		);
+		expect(typst).toContain('#super[#"−0,5 × (5 − 2)"]');
+		expect(typst).toContain('#super[#"−0,5x"]');
+		expect(typst).not.toContain('^(');
+	});
+
+	it('le titre et la courbe dans un bloc insécable, les lignes après', () => {
+		const typst = generateStatChartTypst(nodeOf(`${E}\ndiagramme: oui\nprobabilités: P(X ⩽ 2)`));
+		expect(typst).toMatch(
+			/#block\(breakable: false\)\[\n#align\(center, text\(weight: "bold", size: 9pt\)\[#"Loi de X : E\(0,5\)"\]\)\n[\s\S]*cetz\.canvas[\s\S]*\n\]\n\/\/ indicateurs/
+		);
+	});
+
+	it('tous les diagrammes à titre : titre et figure insécables', () => {
+		for (const [kind, source] of [
+			['barres', 'titre: Notes\n1 = 3\n2 = 5'],
+			['circulaire', 'titre: Trajets\nBus = 3\nVélo = 5'],
+			['histogramme', 'titre: Tailles\n[0 ; 10[ = 4\n[10 ; 20[ = 6'],
+			['frequences-cumulees', 'titre: Cumul\n[0 ; 10[ = 4\n[10 ; 20[ = 6']
+		] as const) {
+			const typst = generateStatChartTypst(parseStatChartContent(kind, source));
+			expect(typst, kind).toMatch(
+				/#block\(breakable: false\)\[\n#align\(center, text\(weight: "bold"[\s\S]*cetz\.canvas/
+			);
+		}
+	});
+});
+
+describe('lois à densité — exposants dans la scène', () => {
+	it('segments texte / exposant, et une lecture pour le lecteur d’écran', () => {
+		const scene = lawOf(
+			`${E}\nindicateurs: aucun\nprobabilités: P(X ⩽ 2) ; P(X > 5 | X > 2)\nrépartition: oui`
+		);
+		expect(scene.indicatorParts![1]).toEqual({
+			segments: [
+				{ text: 'P(X ⩽ 2) = 1 − e', exponent: false },
+				{ text: '−0,5 × 2', exponent: true },
+				{ text: ' = 1 − e', exponent: false },
+				{ text: '−1', exponent: true },
+				{ text: ' ≈ 0,632', exponent: false }
+			],
+			spoken: 'P(X ⩽ 2) = 1 − e puissance (−0,5 × 2) = 1 − e puissance −1 ≈ 0,632'
+		});
+		expect(scene.indicatorParts![2].segments[1]).toEqual({
+			text: '−0,5 × (5 − 2)',
+			exponent: true
+		});
+		expect(scene.indicatorParts![0].segments[1]).toEqual({ text: '−0,5x', exponent: true });
+		const english = lawOf(`${E}\nindicateurs: aucun\nprobabilités: P(X ⩾ 4)`, 'en');
+		expect(english.indicatorParts![0].spoken).toBe(
+			'P(X ⩾ 4) = e to the power (−0.5 × 4) = e to the power −2 ≈ 0.135'
+		);
 	});
 });
 
