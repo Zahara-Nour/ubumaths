@@ -323,7 +323,14 @@ describe('Seed du programme — terminale spécialité, accès', () => {
 			{ auth: { persistSession: false, autoRefreshToken: false } }
 		);
 
-		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TSPE-%');
+		const { data, error } = await anon
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TSPE-%');
+		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
+		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
+		// refus d'une autre erreur (table absente, colonne renommée)
+		expect(error?.code).toBe('42501');
 		expect(data ?? []).toHaveLength(0);
 	});
 });
@@ -426,7 +433,14 @@ describe('Seed du programme — terminale maths complémentaires, accès', () =>
 			{ auth: { persistSession: false, autoRefreshToken: false } }
 		);
 
-		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TCOMP-%');
+		const { data, error } = await anon
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TCOMP-%');
+		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
+		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
+		// refus d'une autre erreur (table absente, colonne renommée)
+		expect(error?.code).toBe('42501');
 		expect(data ?? []).toHaveLength(0);
 	});
 });
@@ -553,7 +567,14 @@ describe('Seed du programme — terminale maths expertes, accès', () => {
 			{ auth: { persistSession: false, autoRefreshToken: false } }
 		);
 
-		const { data } = await anon.from('curriculum_points').select('code').like('code', 'TEXP-%');
+		const { data, error } = await anon
+			.from('curriculum_points')
+			.select('code')
+			.like('code', 'TEXP-%');
+		// Refusé AVANT la RLS : anon n'a aucun droit de lecture sur la table (fermeture
+		// d'anon, cf. anon-option-b.test.ts). « Zéro ligne » seul ne distinguait pas ce
+		// refus d'une autre erreur (table absente, colonne renommée)
+		expect(error?.code).toBe('42501');
 		expect(data ?? []).toHaveLength(0);
 	});
 });

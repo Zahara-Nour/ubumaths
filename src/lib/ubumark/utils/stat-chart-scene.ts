@@ -2398,6 +2398,13 @@ function thousandth(value: number, locale: ContentLocale): string {
 }
 
 /**
+ * Histogramme de simulation : bornes des classes en graduations tant que leurs
+ * étiquettes tiennent sous l'axe. Mesuré sur la fiche compilée : 32 caractères
+ * (U([2 ; 5]) en 7 classes) se lisent, 50 (E(0,5) en 12 classes) se chevauchent.
+ */
+const BOUND_LABELS_MAX_CHARS = 34;
+
+/**
  * Un réel affiché (tirages d'une loi à densité) : au millième, sauf sous
  * 0,01 en valeur absolue — 3 chiffres significatifs, en écriture décimale.
  * E(1 000) ou E(0,001) donnaient « ≈ 0 », U([0 ; 1]) en 3 classes
@@ -2654,6 +2661,16 @@ function buildDensityDrawsScene(
 		};
 	});
 
+	// Les bornes des classes en graduations, que l'élève doit pouvoir lire
+	// (U([2 ; 5]) en 7 classes : 2 ; 2,429 ; … et non 2 ; 2,5 ; …) ; si leurs
+	// étiquettes se chevauchaient, les graduations de la courbe
+	const boundTicks = Array.from({ length: classes + 1 }, (_, i) => ({
+		value: bound(i),
+		label: shownReal(bound(i), locale)
+	}));
+	const labelChars = boundTicks.reduce((sum, t) => sum + t.label.length, 0);
+	const xTicks = labelChars <= BOUND_LABELS_MAX_CHARS ? boundTicks : curve.xTicks;
+
 	const { yMax, ticks } = valueAxis(
 		Math.max(...curve.points.map((p) => p.y), ...rects.map((r) => r.height)),
 		curve.pixelSize.height,
@@ -2689,7 +2706,7 @@ function buildDensityDrawsScene(
 		mode: 'axe',
 		yMax,
 		ticks,
-		xTicks: curve.xTicks,
+		xTicks,
 		carreau: null,
 		grid: { xs: [], ys: ticks.map((t) => t.value) },
 		axisTitles: { x: null, y: text.law.density },

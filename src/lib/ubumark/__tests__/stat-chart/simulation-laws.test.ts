@@ -469,3 +469,45 @@ describe('revue — G(p) minuscule : pas de blocage, tout dans « 11 ou plus »'
 		expect(rows[0].probability).toMatch(/^0(,0+)?$/);
 	});
 });
+
+describe('histogramme de simulation : graduations', () => {
+	type Ticks = { xTicks: { value: number; label: string }[] };
+
+	it('l’axe est gradué aux bornes des classes quand leurs étiquettes tiennent', () => {
+		const scene = sceneOf<Ticks>('X ~ U([2 ; 5])\ntirages: 500\ngraine: 1\nclasses: 7');
+		expect(scene.xTicks.map((t) => t.label)).toEqual([
+			'2',
+			'2,429',
+			'2,857',
+			'3,286',
+			'3,714',
+			'4,143',
+			'4,571',
+			'5'
+		]);
+		const english = sceneOf<Ticks>('X ~ U([2 ; 5])\ntirages: 500\ngraine: 1\nclasses: 7', 'en');
+		expect(english.xTicks[1].label).toBe('2.429');
+	});
+
+	it('sinon les graduations de la courbe (étiquettes qui se chevaucheraient, fiche)', () => {
+		// E(0,5) en 12 classes : 0 ; 0,833 ; 1,667 ; … 50 caractères, illisibles sur la fiche
+		const scene = sceneOf<Ticks>('T ~ E(0,5)\ntirages: 500\ngraine: 1\nclasses: 12');
+		expect(scene.xTicks.map((t) => t.label)).not.toContain('0,833');
+		expect(scene.xTicks.map((t) => t.label)).toContain('2');
+		// 10 classes sur [0 ; 10] : des bornes entières, courtes, graduées
+		const ten = sceneOf<Ticks>('T ~ E(0,5)\ntirages: 500\ngraine: 1');
+		expect(ten.xTicks.map((t) => t.label)).toEqual([
+			'0',
+			'1',
+			'2',
+			'3',
+			'4',
+			'5',
+			'6',
+			'7',
+			'8',
+			'9',
+			'10'
+		]);
+	});
+});
