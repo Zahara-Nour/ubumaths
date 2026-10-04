@@ -495,3 +495,53 @@ describe('generateInstance avec cleanCoefficients — inégalités', () => {
 		expect(String(instance.statement)).toContain('$1x\\leqslant 2, x\\in\\mathbb{R}$');
 	});
 });
+
+// ============================================================================
+// NOM DEVANT LA FORMULE (décision de David du 2026-10-04)
+// ============================================================================
+
+describe('generateInstance avec cleanCoefficients — nom devant la formule', () => {
+	const vars = [
+		{ name: 'a', expression: '-1' },
+		{ name: 'b', expression: '0' },
+		{ name: 'c', expression: '1' },
+		{ name: 'd', expression: '0' }
+	];
+	const statementOf = (formula: string, shared?: SharedVariationDefaults) =>
+		String(generate(template(`Soit $${formula}$. $x=?$`, '1', vars, shared)).statement);
+
+	it.each([
+		['P : {{a}}x+({{b}})y+({{c}})z+({{d}})=0', 'P : -x + z = 0'],
+		['\\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{d}})=0', '\\mathcal{P} : -x + z = 0'],
+		['(P) : {{a}}x+({{b}})y+({{c}})z+({{d}})=0', '(P) : -x + z = 0'],
+		['(E) : {{a}}x+({{b}})y+({{d}})=0', '(E) : -x = 0'],
+		['d : {{a}}x+({{b}})y+({{d}})=0', 'd : -x = 0'],
+		['\\Delta : {{a}}x+({{b}})y+({{d}})=0', '\\Delta : -x = 0'],
+		['\\mathcal{P}\\colon {{a}}x+({{b}})y+({{d}})=0', '\\mathcal{P} \\colon -x = 0'],
+		[
+			'\\mathcal{S} : (x-({{b}}))^2+(y-({{c}}))^2+z^2=4',
+			'\\mathcal{S} : x^2 + \\left( y - 1 \\right)^2 + z^2 = 4'
+		]
+	])('%s → %s', (formula, shown) => {
+		expect(statementOf(formula, { cleanCoefficients: true })).toContain(`$${shown}$`);
+	});
+
+	it('rien à nettoyer : le nom et la formule restent', () => {
+		const statement = statementOf('\\mathcal{P} : 2x+3y-z+4=0', { cleanCoefficients: true });
+		expect(statement).toContain('$\\mathcal{P} : 2x+3y-z+4=0$');
+	});
+
+	it('sans l’option : rien ne change', () => {
+		expect(statementOf('\\mathcal{P} : {{a}}x+({{b}})y=0')).toContain(
+			'$\\mathcal{P} : -1x+(0)y=0$'
+		);
+		expect(statementOf('(P) : {{a}}x+({{b}})y=0')).toContain('$\\left( P \\right) : -1 x');
+	});
+
+	it.each([
+		['x : {{a}}', 'x : -1'],
+		['r = 6 : 2', 'r = 6 : 2']
+	])('pas un nom de courbe : %s inchangé (%s)', (formula, shown) => {
+		expect(statementOf(formula, { cleanCoefficients: true })).toContain(`$${shown}$`);
+	});
+});

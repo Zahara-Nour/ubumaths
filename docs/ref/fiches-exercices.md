@@ -282,6 +282,13 @@ b = −3 donne `e^{-x}-3` (l'attendue nettoyée écrivait `\euler`, illisible po
 la bonne réponse était jugée fausse). Plus besoin de `{{if:k==1|…}}` pour éviter `1e^{…}`. Une
 puissance nulle n'est pas réduite : `e^{0x}` devient `e^0`, comme `x^0` reste `x^0`.
 
+Nom devant la formule (2026-10-04) : `$\mathcal{P} : {{a}}x+({{b}})y+({{c}})z+({{d}})=0$`, et de
+même `P :`, `(P) :`, `(E) :`, `d :`, `\Delta :`, `\mathcal{P}\colon`, garde le nom tel qu'écrit et
+nettoie la formule qui suit (`\mathcal{P} : -x + z = 0`) ; avant, `P : -1 x…` restait, `(P)`
+perdait ses parenthèses et `\mathcal{P}` n'était pas nettoyé du tout. Plus besoin d'écrire le nom
+hors de la formule (`$\mathcal{P}$ : $…$`). Seule une relation (`=`, `<`…) après le nom est
+concernée ; mesure : 0 formule réelle changée (dépôt + 920 modèles de prod), 42 synthétiques.
+
 ⚠️ `{{c;+}}` avec c = 0 écrit `0` sans `+` (« 1y0 », lu comme un produit) : l'option ne le
 répare pas. Écrire `+{{c}}` (ou `+({{c}})`), que l'option nettoie.
 
