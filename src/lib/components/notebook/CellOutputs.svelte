@@ -13,14 +13,40 @@
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { foldOutput } from '$lib/utils/output-fold';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import {
+		hasUnsafeMathCommand,
+		readRestrictedRendering
+	} from '$lib/components/markdown/restricted-rendering';
 	import 'mathlive';
 
 	// Props
 	let {
-		outputs = [] as CellOutput[]
+		outputs = [] as CellOutput[],
+		restricted = false
 	}: {
 		outputs?: CellOutput[];
+		/**
+		 * Rendu restreint : carnet d'un élève lu par quelqu'un d'autre
+		 * (décision de David, 2026-10-04). Un parent restreint (contexte posé par
+		 * `NotebookView` ou la présentation) l'impose aussi.
+		 */
+		restricted?: boolean;
 	} = $props();
+
+	const parentRestricted = readRestrictedRendering();
+	const isRestricted = $derived(restricted || parentRestricted());
+
+	// PNG encodé en base64 : en mode restreint, rien d'autre ne passe dans `src`
+	const BASE64_REGEX = /^[A-Za-z0-9+/=\s]+$/;
+
+	/**
+	 * Le TEXTE d'une sortie HTML. `DOMParser` construit un document INERTE : ni
+	 * image chargée, ni style appliqué (même repli que `RestrictedRichText`).
+	 */
+	function htmlToText(html: string): string {
+		if (typeof DOMParser === 'undefined') return html.replace(/<[^>]*>/g, ' ');
+		return new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '';
+	}
 
 	// Set of output indices the user has explicitly expanded. We track
 	// per-index to allow expanding one long block without expanding all of
@@ -54,7 +80,7 @@
 				out.data['application/json']
 		);
 
-		if (hasPlotly && !plotlyLoaded && browser) {
+		if (hasPlotly && !plotlyLoaded && browser && !isRestricted) {
 			// Check if Plotly already loaded
 			if ((window as Window & { Plotly?: unknown }).Plotly) {
 				plotlyLoaded = true;
@@ -184,7 +210,9 @@
 					{/if}
 				</div>
 			{:else if output.output_type === 'display_data' || output.output_type === 'execute_result'}
-				{#if output.data['image/png']}
+				{#if output.data['image/png'] && isRestricted && !BASE64_REGEX.test(output.data['image/png'])}
+					<p class="text-sm text-muted-foreground italic">[image non affichée]</p>
+				{:else if output.data['image/png']}
 					<!-- PNG image -->
 					<div class="rounded border border-border bg-white p-2">
 						<img
@@ -193,6 +221,12 @@
 							class="max-w-full"
 						/>
 					</div>
+				{:else if output.data['text/plain'] && isRestricted && hasUnsafeMathCommand(output.data['text/plain'])}
+					<!-- Restreint : une commande MathLive capable de poser style, classe ou
+					     lien → la formule reste en TEXTE (règle du chat, S1) -->
+					<pre
+						class="rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap text-foreground">{output
+							.data['text/plain']}</pre>
 				{:else if output.data['text/plain']}
 					<!-- LaTeX or plain text -->
 					<div class="rounded bg-muted p-3">
@@ -200,6 +234,12 @@
 							<math-span class="block text-base">{output.data['text/plain']}</math-span>
 						{/key}
 					</div>
+				{:else if output.data['application/json'] && isRestricted}
+					<!-- Restreint : un graphique Plotly peut porter des images et des liens
+					     externes (layout.images, <a href> dans les textes) -->
+					<p class="text-sm text-muted-foreground italic">
+						[graphique interactif non affiché en lecture restreinte]
+					</p>
 				{:else if output.data['application/json']}
 					<!-- Plotly interactive chart -->
 					<div>
@@ -220,6 +260,13 @@
 							class:hidden={!plotlyLoaded}
 						></div>
 					</div>
+				{:else if output.data['text/html'] && isRestricted}
+					<!-- Restreint : DOMPurify garde `style` et `img src` (recouvrement d'écran,
+					     URL chargée chez le lecteur) → seul le TEXTE est affiché -->
+					<pre
+						class="rounded border border-border bg-muted p-3 font-mono text-sm whitespace-pre-wrap text-foreground">{htmlToText(
+							output.data['text/html']
+						)}</pre>
 				{:else if output.data['text/html']}
 					<!-- HTML output: SECURITY (finding H4) — sanitize before {@html}. A
 					     notebook's outputs are attacker-controllable (PUT /api/python-notebooks/[id])
