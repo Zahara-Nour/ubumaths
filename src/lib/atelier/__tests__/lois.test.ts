@@ -58,7 +58,7 @@ describe('.geometrique', () => {
 		expect(result.output).toBe('X suit G(0,2)');
 		expect(scene.values).toEqual(expected.values);
 		expect(scene.indicators).toEqual(expected.indicators);
-		expect(scene.chart).toBeDefined();
+		expect(scene.chart).toEqual(expected.chart);
 		expect(atelier.objects).toHaveLength(0);
 	});
 
@@ -93,7 +93,7 @@ describe('.uniforme', () => {
 		expect(result.output).toBe('X suit la loi uniforme sur {1, …, 6}');
 		expect(scene.probabilities).toEqual(expected.probabilities);
 		expect(scene.indicators).toEqual(expected.indicators);
-		expect(scene.chart).toBeDefined();
+		expect(scene.chart).toEqual(expected.chart);
 	});
 
 	it('à densité : X suit la loi uniforme sur [0 ; 10], courbe, F(x)', () => {
@@ -125,7 +125,7 @@ describe('.exponentielle', () => {
 		);
 		expect(result.output).toBe('T suit E(0,5)');
 		expect(scene.indicators).toEqual(expected.indicators);
-		expect(scene.densityChart?.kind).toBe('densite');
+		expect(scene.densityChart).toEqual(expected.densityChart);
 	});
 
 	it('erreurs', () => {
@@ -133,6 +133,47 @@ describe('.exponentielle', () => {
 		expect(refusal('.exponentielle T 0')).toBe('E(λ) : λ est un nombre strictement positif');
 		expect(refusal('.exponentielle t 0,5')).toBe(
 			'La variable s’écrit en majuscule : .exponentielle T 0,5'
+		);
+	});
+});
+
+describe('revue : crochets, sauts de ligne, texte de l’historique', () => {
+	it('.uniforme : un intervalle mal fermé, ou sans crochets', () => {
+		const brackets = 'écrire [0 ; 10] avec deux crochets fermés';
+		expect(refusal('.uniforme X [0 ; 10[')).toBe(brackets);
+		expect(refusal('.uniforme X [0 ; 10')).toBe(brackets);
+		expect(refusal('.uniforme X 0 ; 10')).toBe(brackets);
+	});
+
+	it('.uniforme X [0;10] sans espaces marche', () => {
+		expect(law('.uniforme X [0;10]').result.output).toBe('X suit la loi uniforme sur [0 ; 10]');
+	});
+
+	it('un saut de ligne n’ajoute pas de ligne au bloc', () => {
+		for (const input of [
+			'.uniforme X [0 ; 10\ndiagramme: non]',
+			'.uniforme X [0 ; 10]\ndiagramme: non',
+			'.geometrique X 0,2\ndiagramme: non',
+			'.exponentielle T 0,5\r\ndiagramme: non',
+			'.binomiale X 10 0,3\ndiagramme: non'
+		]) {
+			expect(refusal(input), input).toBe('Écris la commande sur une seule ligne');
+		}
+	});
+
+	it('le texte de l’historique des quatre commandes', () => {
+		const output = (input: string) => law(input).result.output;
+		expect(output('.binomiale X 10 0,3')).toBe('X suit B(10 ; 0,3)');
+		expect(output('.binomiale X 1 0,3')).toBe('X suit B(1 ; 0,3)');
+		expect(output('.geometrique X 0,2')).toBe('X suit G(0,2)');
+		expect(output('.uniforme X 1 6')).toBe('X suit la loi uniforme sur {1, …, 6}');
+		expect(output('.uniforme X [0 ; 10]')).toBe('X suit la loi uniforme sur [0 ; 10]');
+		expect(output('.exponentielle T 0,5')).toBe('T suit E(0,5)');
+	});
+
+	it('.binomiale x 10 : la majuscule expliquée', () => {
+		expect(refusal('.binomiale x 10')).toBe(
+			'La variable s’écrit en majuscule : .binomiale X 10 0,3'
 		);
 	});
 });

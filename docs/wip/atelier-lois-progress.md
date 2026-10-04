@@ -18,4 +18,4 @@ expliquées ; catalogue `commands.ts` : 3 entrées, exemple jouable, décor vide
 
 ## Étapes
 
-- [x] Tests rouges · [x] Implémentation (non commitée) · [ ] Revue · [ ] PR, CI, merge
+- [x] Tests rouges · [x] Implémentation · [x] Revue Opus (crochets mal fermés, sauts de ligne refusés, tests sur le diagramme) · [ ] PR, CI, merge

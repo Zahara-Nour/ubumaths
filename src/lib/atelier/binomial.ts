@@ -44,6 +44,8 @@ const HEAD = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
 /** `.binomiale X 10 0,3 [P(X ⩽ 4) ; intervalle 0,95 ; seuil P(X > k) ⩽ 0,05]` */
 export function binomialCommand(_atelier: Atelier, argument: string): BinomialResult {
 	const written = normalizeLawArgument(argument);
+	// Un saut de ligne glisserait une ligne dans le bloc (revue : injection)
+	if (written === null) return { ok: false, message: 'Écris la commande sur une seule ligne' };
 	const head = HEAD.exec(written);
 	if (!head) return lawUsageError(written, EXAMPLE);
 	const [, variable, n, p, rest] = head;

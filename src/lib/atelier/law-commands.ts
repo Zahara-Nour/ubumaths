@@ -37,7 +37,10 @@ const ONE_PARAMETER = /^([A-Z])\s+(\S+)(?:\s+(.*))?$/;
 /** `X 1 6` puis les options */
 const TWO_PARAMETERS = /^([A-Z])\s+(\S+)\s+(\S+)(?:\s+(.*))?$/;
 /** `X [0 ; 10]` puis les options : l'intervalle contient un « ; » */
-const INTERVAL = /^([A-Z])\s+\[([^\]]*)\](?:\s*(.*))?$/;
+const INTERVAL = /^([A-Z])\s+\[([^\]\n\r]*)\](?:\s*(.*))?$/;
+
+/** Un intervalle mal fermé, ou des bornes séparées par « ; » sans crochets */
+const BROKEN_INTERVAL = /^[A-Z]\s+(?:[[\]]|[^\s;[\]]+\s*;)|^[A-Z]\s+\S+\s+[^\s]*[[\];]/;
 
 /** `jusqu'à 15`, apostrophe droite ou courbe */
 const UP_TO = /^jusqu['’]à(?:\s+(.*))?$/i;
@@ -46,8 +49,15 @@ const UP_TO = /^jusqu['’]à(?:\s+(.*))?$/i;
 // Fonctions communes
 // =============================================================================
 
-/** « 30 % » et « 1 / 2 » avec des espaces : comme le bloc les accepte (revue) */
-export function normalizeLawArgument(argument: string): string {
+/** Un saut de ligne glisserait une ligne dans le bloc (`diagramme: non`) : refusé dès l'entrée */
+const SINGLE_LINE = 'Écris la commande sur une seule ligne';
+
+/**
+ * « 30 % » et « 1 / 2 » avec des espaces : comme le bloc les accepte (revue) ;
+ * null si l'argument tient sur plusieurs lignes
+ */
+export function normalizeLawArgument(argument: string): string | null {
+	if (/[\r\n]/.test(argument)) return null;
 	return argument
 		.trim()
 		.replace(/(\d)\s+%/g, '$1%')
@@ -108,6 +118,7 @@ function query(option: string): string | null {
 /** `.geometrique X 0,2 [P(X ⩽ 3) ; P(X > 5 | X > 2) ; jusqu'à 15]` */
 export function geometricCommand(_atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
+	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const head = ONE_PARAMETER.exec(written);
 	if (!head) return lawUsageError(written, GEOMETRIC_EXAMPLE);
 	const [, variable, p, rest] = head;
@@ -137,15 +148,38 @@ export function geometricCommand(_atelier: Atelier, argument: string): LawComman
 /** `.uniforme X 1 6 [P(…)]` (discrète) ou `.uniforme X [0 ; 10] [P(…)]` (à densité) */
 export function uniformCommand(_atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
+	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const interval = INTERVAL.exec(written);
-	const discrete = interval ? null : TWO_PARAMETERS.exec(written);
-	if (!interval && !discrete) return lawUsageError(written, UNIFORM_EXAMPLE);
-	const variable = (interval ?? discrete)![1];
-	const lines = interval
-		? [`${variable} ~ U([${interval[2].trim()}])`, INDICATORS, 'répartition: oui', 'diagramme: oui']
-		: [`${variable} ~ U(${discrete![2]} ; ${discrete![3]})`, INDICATORS, 'diagramme: oui'];
+	if (interval) {
+		const [, variable, bounds, rest] = interval;
+		return uniformBlock(
+			variable,
+			[`${variable} ~ U([${bounds.trim()}])`, INDICATORS, 'répartition: oui', 'diagramme: oui'],
+			rest
+		);
+	}
+	// `[0 ; 10[`, `[0 ; 10`, `0 ; 10` : un intervalle mal écrit, pas des options (revue)
+	if (BROKEN_INTERVAL.test(written)) {
+		return { ok: false, message: 'écrire [0 ; 10] avec deux crochets fermés' };
+	}
+	const discrete = TWO_PARAMETERS.exec(written);
+	if (!discrete) return lawUsageError(written, UNIFORM_EXAMPLE);
+	const [, variable, a, b, rest] = discrete;
+	return uniformBlock(
+		variable,
+		[`${variable} ~ U(${a} ; ${b})`, INDICATORS, 'diagramme: oui'],
+		rest
+	);
+}
+
+/** Les options `P(…)` d'une loi uniforme, puis le bloc */
+function uniformBlock(
+	variable: string,
+	lines: string[],
+	rest: string | undefined
+): LawCommandResult {
 	const queries: string[] = [];
-	for (const option of lawOptions(interval ? interval[3] : discrete![4])) {
+	for (const option of lawOptions(rest)) {
 		if (!query(option)) {
 			return { ok: false, message: `« ${option} » : écrire P(${variable} ⩽ 3)` };
 		}
@@ -158,6 +192,7 @@ export function uniformCommand(_atelier: Atelier, argument: string): LawCommandR
 /** `.exponentielle T 0,5 [P(T ⩽ 2) ; P(T > 5 | T > 2)]` */
 export function exponentialCommand(_atelier: Atelier, argument: string): LawCommandResult {
 	const written = normalizeLawArgument(argument);
+	if (written === null) return { ok: false, message: SINGLE_LINE };
 	const head = ONE_PARAMETER.exec(written);
 	if (!head) return lawUsageError(written, EXPONENTIAL_EXAMPLE);
 	const [, variable, lambda, rest] = head;
