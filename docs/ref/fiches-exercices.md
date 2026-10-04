@@ -182,8 +182,8 @@ aucun lien n'est lu ni touché.
 **Changer de niveau un brouillon** : `--mettre-a-jour` réécrit aussi ses `grades` (comparés comme un
 ensemble, l'ordre ne compte pas), avant ses liens. Un brouillon `["1_SPE"]` passé à `["2"]` avec des
 points `2-…` reçoit ses nouveaux liens ; les anciens `1SPE-…` restent, signalés « en base absents du
-fichier, gardés » — `--remplacer-points` pour les retirer. Les `grades` d'un modèle publié ne sont
-jamais touchés.
+fichier, gardés » — `--remplacer-points` pour les retirer. `create-questions.ts` ne touche jamais les
+`grades` d'un modèle publié (voir `link-template-points.ts --niveaux` plus bas).
 
 Modèle **publié** : refusé, sauf `--mettre-a-jour --liens-publies`, qui **ajoute** seulement ses liens
 manquants — contenu jamais touché, aucun lien retiré (incompatible avec `--remplacer-points`). Une
@@ -204,8 +204,26 @@ pnpm tsx scripts/link-template-points.ts --mapping liens.json --publier  # écri
 
 Au plus 500 entrées, 1 à 20 codes chacune, sans doublon ni id répété. **Ajout seulement** : aucun
 lien retiré, aucun contenu touché. Avant toute écriture : id inexistant, code inconnu ou archivé,
-niveau du point absent des `grades` **en base** du modèle → erreur, rien d'écrit. Un modèle publié
-est refusé sans `--liens-publies` (même règle que ci-dessus). Chaque ajout est relu.
+niveau du point absent des `grades` **cibles** du modèle (ci-dessous) → erreur, rien d'écrit. Un
+modèle publié est refusé sans `--liens-publies` (même règle que ci-dessus). Chaque ajout est relu.
+
+**Changer le niveau, même d'un modèle publié** : champ facultatif `grades` (1 à 4 codes de
+`GRADE_CODES`, sans doublon).
+
+```json
+[{ "id": "<uuid>", "points": ["2-010"], "grades": ["2"] }]
+```
+
+Des `grades` différents de ceux en base (comparés comme un ensemble) ne sont appliqués qu'avec le
+drapeau explicite **`--niveaux`** ; sans lui, l'entrée est une erreur avant toute écriture. Sur un
+modèle publié, il faut **en plus** `--liens-publies`. Les points sont alors contrôlés contre les
+grades **cibles** (ceux du mapping), pas ceux en base. Les `grades` sont écrits d'abord (ligne rendue
+exigée, puis relus), les liens ensuite ; la simulation l'annonce par `grades : [1_SPE] → [2]`. Rien
+d'autre que `grades` et les liens n'est jamais touché ; les anciens liens (`1SPE-…`) restent.
+
+```bash
+pnpm tsx scripts/link-template-points.ts --mapping niveaux.json --liens-publies --niveaux  # simulation
+```
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)
 

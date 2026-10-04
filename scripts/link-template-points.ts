@@ -7,25 +7,34 @@
  * Pour les modèles écrits dans l'éditeur ou importés (TinyMath), qui n'ont pas de fichier JSON
  * à passer à `create-questions.ts`. Le mapping est un fichier JSON :
  *
- *   [{ "id": "<uuid du modèle>", "points": ["1SPE-050", "1SPE-051"] }, …]
+ *   [{ "id": "<uuid du modèle>", "points": ["1SPE-050", "1SPE-051"] },
+ *    { "id": "<uuid>", "points": ["2-010"], "grades": ["2"] }, …]
  *
- * (≤ 500 entrées, 1 à 20 codes par entrée, sans doublon ni id répété ; Zod strict.)
+ * (≤ 500 entrées, 1 à 20 codes par entrée, sans doublon ni id répété ; `grades` facultatif,
+ * 1 à 4 codes de `GRADE_CODES` sans doublon ; Zod strict.)
  *
- * AJOUT SEULEMENT : aucun lien n'est jamais supprimé (un lien en base absent du mapping est
- * signalé, gardé), aucun contenu de modèle n'est jamais touché.
+ * AJOUT SEULEMENT pour les liens : aucun lien n'est jamais supprimé (un lien en base absent du
+ * mapping est signalé, gardé). Seuls les `grades` du modèle peuvent changer (voir `--niveaux`) ;
+ * aucun autre champ n'est jamais touché.
+ *
+ * CHANGER LE NIVEAU (`grades` du mapping différents de ceux en base) : appliqué SEULEMENT avec
+ * `--niveaux` ; sans lui, l'entrée est une erreur, rien d'écrit. Sur un modèle publié il faut en
+ * plus `--liens-publies`. Les grades sont écrits AVANT les liens, puis relus.
  *
  * Tout est vérifié AVANT la moindre écriture, s'arrête sinon :
  *  - chaque id existe (`question_templates`) ;
- *  - chaque code est un point actif, de niveau présent dans les `grades` LUS EN BASE du modèle ;
+ *  - chaque code est un point actif, de niveau présent dans les grades CIBLES du modèle (ceux du
+ *    mapping s'ils sont fournis, sinon ceux LUS EN BASE) ;
  *  - un modèle non brouillon (publié) n'est accepté qu'avec `--liens-publies` — même règle que
  *    `create-questions.ts` : une carte publiée rattachée entre dans le paquet de révision
  *    « Programme » des élèves. Simuler d'abord, montrer la simulation à David.
- * Chaque ajout est relu (la RLS échoue en silence).
+ * Chaque écriture est relue (la RLS échoue en silence).
  *
  * Usage :
  *   pnpm tsx scripts/link-template-points.ts --mapping <fichier.json>                  (simulation)
  *   pnpm tsx scripts/link-template-points.ts --mapping <fichier.json> --publier        (écrit)
- *   … --liens-publies   accepte aussi les modèles publiés (ajout de liens seulement)
+ *   … --liens-publies   accepte aussi les modèles publiés
+ *   … --niveaux         applique les `grades` du mapping (sinon : erreur s'ils diffèrent)
  *
  * Logique pure : `scripts/lib/template-points.ts` ; accès base : `scripts/lib/template-points-db.ts`.
  */
@@ -34,14 +43,17 @@ import { argValue, createScriptClient, hasFlag } from './relecture/common';
 import {
 	checkPointCodes,
 	decideLinkAction,
+	describeGradeChange,
 	describeLinkPlan,
 	parseMapping,
+	planGradeChange,
 	planPointLinks,
+	type GradeChange,
 	type LinkAction,
 	type MappingEntry,
 	type PointLinkPlan
 } from './lib/template-points';
-import { readLinks, resolvePoints, writeLinks } from './lib/template-points-db';
+import { readLinks, resolvePoints, writeGrades, writeLinks } from './lib/template-points-db';
 
 // Types
 
@@ -57,6 +69,7 @@ interface Etape {
 	modele: Modele;
 	plan: PointLinkPlan;
 	action: LinkAction;
+	niveau: Exclude<GradeChange, { kind: 'refused' }>;
 }
 
 // Constantes
@@ -79,10 +92,11 @@ function lireMapping(chemin: string): unknown {
 async function main(): Promise<number> {
 	const publier = hasFlag('--publier');
 	const liensPublies = hasFlag('--liens-publies');
+	const niveaux = hasFlag('--niveaux');
 	const chemin = argValue('--mapping');
 	if (!chemin) {
 		console.error(
-			'Usage : pnpm tsx scripts/link-template-points.ts --mapping <fichier.json> [--publier] [--liens-publies]'
+			'Usage : pnpm tsx scripts/link-template-points.ts --mapping <fichier.json> [--publier] [--liens-publies] [--niveaux]'
 		);
 		return 2;
 	}
@@ -114,14 +128,32 @@ async function main(): Promise<number> {
 	}
 	const libelle = (e: MappingEntry) => `${e.id} « ${modeles.get(e.id)?.title} »`;
 
-	// 2. Les codes : actifs, niveau dans les grades EN BASE du modèle
+	// 2. Les niveaux : grades du mapping différents de la base → --niveaux (+ --liens-publies)
+	const niveauxCibles = new Map<string, Exclude<GradeChange, { kind: 'refused' }>>();
+	const refusNiveau: string[] = [];
+	for (const entree of entrees) {
+		const modele = modeles.get(entree.id);
+		if (!modele) throw new Error(`modèle ${entree.id} perdu`);
+		const niveau = planGradeChange({
+			status: modele.status,
+			dbGrades: modele.grades,
+			wanted: entree.grades,
+			niveaux,
+			liensPublies
+		});
+		if (niveau.kind === 'refused') refusNiveau.push(`${libelle(entree)} : ${niveau.reason}`);
+		else niveauxCibles.set(entree.id, niveau);
+	}
+	if (refusNiveau.length > 0) {
+		for (const erreur of refusNiveau) console.error(`⛔ ${erreur}`);
+		return 1;
+	}
+	const cibleDe = (id: string) => niveauxCibles.get(id)?.target ?? [];
+
+	// 3. Les codes : actifs, niveau dans les grades CIBLES du modèle
 	const resolus = await resolvePoints(supabase, [...new Set(entrees.flatMap((e) => e.codes))]);
 	const erreurs = checkPointCodes(
-		entrees.map((e) => ({
-			file: libelle(e),
-			codes: e.codes,
-			grades: modeles.get(e.id)?.grades ?? []
-		})),
+		entrees.map((e) => ({ file: libelle(e), codes: e.codes, grades: cibleDe(e.id) })),
 		resolus
 	);
 	if (erreurs.length > 0) {
@@ -129,16 +161,18 @@ async function main(): Promise<number> {
 		return 1;
 	}
 
-	// 3. Le plan de chaque modèle ; un seul refus arrête tout, avant écriture
+	// 4. Le plan de chaque modèle ; un seul refus arrête tout, avant écriture
 	const etapes: Etape[] = [];
 	for (const entree of entrees) {
 		const modele = modeles.get(entree.id);
-		if (!modele) throw new Error(`modèle ${entree.id} perdu`);
+		const niveau = niveauxCibles.get(entree.id);
+		if (!modele || !niveau) throw new Error(`modèle ${entree.id} perdu`);
 		const plan = planPointLinks(entree.codes, await readLinks(supabase, entree.id));
 		etapes.push({
 			entree,
 			modele,
 			plan,
+			niveau,
 			action: decideLinkAction(modele.status, liensPublies, plan)
 		});
 	}
@@ -152,27 +186,37 @@ async function main(): Promise<number> {
 		return 1;
 	}
 
-	// 4. Ajouter
-	let ajoutes = 0;
+	// 5. Écrire : grades d'abord, puis liens
+	let ecrits = 0;
 	let rien = 0;
-	for (const { entree, modele, plan, action } of etapes) {
-		const note = `\n      ${describeLinkPlan(plan, false)}`;
+	let niveauxChanges = 0;
+	for (const { entree, modele, plan, action, niveau } of etapes) {
+		const lignes: string[] = [];
+		if (niveau.kind === 'change') lignes.push(describeGradeChange(niveau.from, niveau.target));
+		lignes.push(describeLinkPlan(plan, false));
+		const note = lignes.map((l) => `\n      ${l}`).join('');
 		const statut = modele.status === 'draft' ? '' : ` [${modele.status}]`;
-		if (action === 'nothing') {
-			console.log(`  = ${libelle(entree)}${statut} : aucun lien à ajouter${note}`);
+		if (niveau.kind === 'change') niveauxChanges++;
+		if (action === 'nothing' && niveau.kind === 'same') {
+			console.log(`  = ${libelle(entree)}${statut} : rien à changer${note}`);
 			rien++;
 			continue;
 		}
 		if (!publier) {
-			console.log(`  + ${libelle(entree)}${statut} : liens à ajouter${note}`);
+			console.log(`  + ${libelle(entree)}${statut} : à écrire${note}`);
 			continue;
 		}
-		await writeLinks(supabase, libelle(entree), entree.id, entree.codes, plan, resolus, false);
-		console.log(`  ✍️  ${libelle(entree)}${statut} : liens ajoutés et relus${note}`);
-		ajoutes++;
+		if (niveau.kind === 'change') {
+			await writeGrades(supabase, libelle(entree), entree.id, niveau.target);
+		}
+		if (action === 'add') {
+			await writeLinks(supabase, libelle(entree), entree.id, entree.codes, plan, resolus, false);
+		}
+		console.log(`  ✍️  ${libelle(entree)}${statut} : écrit et relu${note}`);
+		ecrits++;
 	}
 	console.log(
-		`\n${entrees.length} modèles — ${publier ? `${ajoutes} rattachés` : 'simulation'}, ${rien} sans lien à ajouter.`
+		`\n${entrees.length} modèles — ${publier ? `${ecrits} écrits` : 'simulation'}, ${niveauxChanges} changements de grades, ${rien} sans rien à changer.`
 	);
 	return 0;
 }
