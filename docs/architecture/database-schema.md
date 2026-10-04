@@ -1073,3 +1073,31 @@ l'offre de l'autre puis appeler `execute_trade`, et voler ses cartes et ses gido
 
 Tests : `tests/integration/marketplace-trades-garde.test.ts`. Suivi :
 `docs/wip/echanges-garde-base-progress.md`.
+
+## Carnets Python et paquets SRS — écritures réservées (2026-10-04)
+
+Migration `20261004213000_carnets_srs_acces` : policies RESTRICTIVE `TO authenticated`
+(combinées en ET), aucune policy retirée. Le client service et les fonctions SECURITY DEFINER ne
+sont pas visés.
+
+- **`python_notebooks`** (`…_public_par_le_prof_insert` / `_update`) : `is_public` ou
+  `is_template` à `true` exige `is_teacher_or_admin()`. Un template public d'élève aurait été
+  cloné par le professeur, qui serait devenu auteur de son code. La galerie filtre aussi le rôle
+  de l'auteur (`filterGalleryTemplates`).
+- **`srs_decks`** (`srs_decks_paquets_serveur_insert` / `_update`) : un compte connecté ne crée
+  ni ne transforme de paquet `is_assigned`, `is_auto_managed` ou à `source_deck_id` non nul. Les
+  copies d'assignation (`api/srs/decks/[id]/assign`) et le paquet Programme
+  (`ensureProgrammeDeck`) passent par le client service. L'écran des assignations du prof
+  retrouve la copie par `source_deck_id` (`findAssignedDeckCopy`), plus par le nom.
+- **`python_notebook_checkpoint_runs`** (`checkpoint_runs_carnet_assigne_insert` / `_update`) :
+  `is_teacher_or_admin() OR is_notebook_assigned_to_student(notebook_id)`. Un carnet public ne
+  suffit plus. SELECT et DELETE sont inchangés.
+- **`python_notebook_assignments`** (`…_update_carnet_de_l_auteur`) : l'UPDATE applique le même
+  contrôle que l'INSERT (carnet de l'auteur, classe du prof). Un prof ne repointe plus une
+  assignation vers le carnet d'un élève.
+- Élève archivé et carnets de la classe : déjà fermé par `20260912170000`
+  (`is_notebook_assigned_to_student` filtre `status = 'active'`).
+
+⚠️ Ordre : le code de `ensureProgrammeDeck` (client service) doit être en prod **avant** cette
+migration, sinon plus aucun paquet Programme n'est créé, en silence. Tests :
+`tests/integration/carnets-srs-acces.test.ts`. Suivi : `docs/wip/carnets-srs-acces-progress.md`.

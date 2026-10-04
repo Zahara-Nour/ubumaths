@@ -37,6 +37,27 @@ Programme, **en silence** (l'erreur est attrapée et seulement journalisée dans
   `is_assigned` sans `source_deck_id` — elles n'apparaîtraient plus à l'écran
   du professeur (rattrapage par nom fait en 20260915360000).
 
-## PR B — migration
+Complément d'audit (PR A) : `filterGalleryTemplates`
+(`src/lib/server/notebook-template-gallery.ts`). La galerie des templates du prof ne montre un
+template partagé que si son auteur est prof ou admin.
 
-(voir section suivante, remplie au fil de l'eau)
+## PR B — migration `20261004213000_carnets_srs_acces` (fait, non poussée)
+
+Branche `fix/carnets-srs-acces-rls`, créée depuis la PR A (à rebaser sur `main` après son
+merge).
+
+- Règle 1 étendue à `is_template` (audit des carnets).
+- Règle 2 : INSERT et UPDATE refusent `is_assigned`, `is_auto_managed` et `source_deck_id`
+  pour tout compte connecté.
+- Règle 3 : INSERT et UPDATE des checkpoint runs exigent prof/admin ou un carnet assigné.
+  Constat : la sous-requête `pn.is_public` de l'ancienne policy était évaluée sous la RLS de
+  l'élève, donc la seule brèche réelle était son PROPRE carnet public.
+- Défense en profondeur : l'UPDATE de `python_notebook_assignments` reçoit le contrôle de
+  l'INSERT. Aucun chemin applicatif ne modifie une assignation.
+- Constat, non corrigé : `assign/+server.ts` marque le deck source `is_assigned` avec le client
+  du prof. C'était déjà refusé avant (policy UPDATE à USING seul), et l'erreur est ignorée.
+- `tests/integration/chapter-decks.test.ts` adapté : il exigeait que la forge élève réussisse.
+  La copie sans assignation est désormais posée hors RLS, et le refus de la forge est asserté.
+
+Preuves : sans la migration, 13 refus échouent et 12 témoins passent ; avec, 25/25. La suite
+complète passe (167 fichiers, 2423 tests), `test:definer-guard` aussi (6/6).
