@@ -16,6 +16,7 @@ import { z } from 'zod';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH } from './types';
 import { storedDisplaySchema, type StoredDisplay } from './display';
+import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
 // =============================================================================
 // Constantes
@@ -60,7 +61,19 @@ const storedObjectSchema = z.object({
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
 	 * serait disproportionné. Tracée, elle recevra une couleur neuve.
 	 */
-	display: storedDisplaySchema.optional().catch(undefined)
+	display: storedDisplaySchema.optional().catch(undefined),
+	/** Curseur réglé d'une valeur. Abîmé : oublié, l'objet gardé (même règle). */
+	slider: z
+		.object({
+			min: z.number().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT),
+			max: z.number().min(-COORDINATE_LIMIT).max(COORDINATE_LIMIT),
+			step: z.number().positive()
+		})
+		// Mêmes règles que `setSlider` : un lien ne doit pas faire entrer ce que
+		// la carte refuserait (revue du lot 4, A3)
+		.refine((s) => s.min < s.max && s.step <= s.max - s.min)
+		.optional()
+		.catch(undefined)
 });
 
 /**
@@ -78,6 +91,7 @@ export interface StoredObject {
 	readonly definition: string;
 	readonly plotted?: boolean;
 	readonly display?: StoredDisplay;
+	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 }
 
 export interface AtelierState {

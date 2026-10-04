@@ -75,20 +75,21 @@ describe('progressivité', () => {
 });
 
 describe('curseur et unités', () => {
-	// D3 — une valeur numérique libre est pilotable : l'action EXISTE, même si
-	// la vue qui la rendra n'est pas encore écrite.
-	it('propose de régler le curseur d’une valeur numérique', () => {
+	// D3 — une valeur numérique libre est pilotable. Depuis le lot 4 de
+	// `/grapheur`, le curseur est DANS la carte, plus un bouton d'action.
+	it('une valeur numérique a un curseur, réglé dans la carte', () => {
 		a.create({ kind: 'value', name: 'k', definition: '3' });
-		expect(ids('k')).toContain('slider');
+		expect(ids('k')).not.toContain('slider');
+		const k = a.get('k');
+		expect(k && k.kind === 'value' && k.slider).toBeTruthy();
 	});
 
-	// D4 — une grandeur n'est pas pilotable, et on dit pourquoi
-	it('désactive le curseur d’une grandeur, avec sa raison', () => {
+	// D4 — une grandeur n'est pas pilotable (la carte dit pourquoi)
+	it('une grandeur n’a pas de curseur', () => {
 		a.create({ kind: 'value', name: 'd', definition: '12[km]' });
 
-		const slider = action('d', 'slider');
-		expect(slider).toBeDefined();
-		expect(slider?.disabledReason).toBeTruthy();
+		const d = a.get('d');
+		expect(d && d.kind === 'value' && d.slider).toBeFalsy();
 	});
 
 	it('ne propose « convertir » que sur une grandeur', () => {
