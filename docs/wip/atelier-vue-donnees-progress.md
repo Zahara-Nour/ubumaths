@@ -151,12 +151,12 @@ qu'elle écrit.
 
 ## Ce qui reste
 
-- [ ] Choisir explicitement la liste des ordonnées, si « la suivante » ne suffit
-      pas à l'usage réel
-- [ ] Harmoniser l'écart-type avec `.stats` (dette notée plus haut, avec son
-      déclencheur)
-- [ ] Étape 4 — l'ajustement affine crée une fonction traçable (§3)
-- [ ] Étape 5 — la vue Données et ses actions
+> Relu dans le code le 2026-10-04 : tout est fait (cf. `atelier-progress.md`).
+
+- [x] Choisir explicitement la liste des ordonnées — choix du partenaire (#615)
+- [x] Harmoniser l'écart-type avec `.stats` — `summarizeList`, diviseur `n`
+- [x] Étape 4 — l'ajustement affine crée une fonction traçable (`desk.svelte.ts`, `#fit`)
+- [x] Étape 5 — la vue Données et ses actions
 
 ## ⚠️ Élargir une union de types casse tous les `else` implicites
 

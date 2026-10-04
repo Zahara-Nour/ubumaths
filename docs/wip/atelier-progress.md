@@ -1,9 +1,8 @@
 ---
 title: Atelier de recherche — progression du chantier
-date: 2026-09-15
-status: Phase 1 — provenance des définitions (D10), 72 tests verts
-branche: feat/atelier
-worktree: ../ubumaths-wt-atelier
+date: 2026-10-04
+status: v1 livrée en production (/atelier, dans la barre latérale) ; restent /grapheur et /cas ; v2 et v3 non commencées
+branche: aucune en cours (tout est sur main)
 ---
 
 # Atelier — progression
@@ -19,6 +18,89 @@ worktree: ../ubumaths-wt-atelier
 > le moteur reste, la page `/cas` partira. Conséquence : ce que les commandes du moteur
 > affichent (`.stats`, `.ajustement`…) est affiché **dans l'atelier**, à des élèves — leur
 > sortie relève de l'atelier. Note, pas d'ADR. Source : `docs/wip/outils-statistiques-progress.md`.
+
+---
+
+## État au 2026-10-04 — relu dans le code
+
+> Cette section fait foi. Ce qui suit (« Fait », dettes, défauts) est l'historique
+> de la phase 1 (2026-09-15/16), annoté là où le code a changé depuis.
+
+### Les trois versions du cadrage (§10 de `atelier-recherche-eleve.md`)
+
+| Version | Contenu                                                              | État                                           |
+| ------- | -------------------------------------------------------------------- | ---------------------------------------------- |
+| **v1**  | page publique, panneau d'objets, vues Calcul · Graphe · Données, URL | ✅ livrée — restent les deux points ci-dessous |
+| **v2**  | géométrie à la souris (barre d'outils sur `GeometryCanvas`)          | ⏸ non commencée, aucune phase 0               |
+| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ⏸ non commencée, aucune phase 0               |
+
+Dans l'ordre de travail du §11, les étapes 1 à 5 sont faites ; la 6 est la v2,
+la 7 la v3.
+
+### Ce qui existe
+
+- **Route** `src/routes/(public)/atelier/+page.svelte`, dans la barre latérale
+  (`Sidebar.svelte`, en tête des outils, sans rôle requis).
+- **Modèle** `src/lib/atelier/` : 26 modules, ~6 800 lignes ;
+  **798 tests** (`src/lib/atelier/__tests__/` + `src/lib/components/atelier/__tests__/`).
+- **Composants** `src/lib/components/atelier/` : `AtelierContainer`,
+  `ObjectPanel`, `ObjectCard`, `CalculView`, `DataView`, `ShareBar` ; la vue
+  Graphe réutilise `GrapheurContainer` sur une instance propre
+  (`new GrapheurStore(null)`).
+
+| Lot                                                        | PR                                 |
+| ---------------------------------------------------------- | ---------------------------------- |
+| Modèle, quatre états, provenance                           | #330                               |
+| `grapheurStore` passé par contexte (`grapheur-context.ts`) | #334                               |
+| Persistance locale (§5)                                    | #335                               |
+| Panneau, vues Graphe, Calcul, Données                      | #336, #337, #339, #343             |
+| Dettes, sorties, partage par URL + mode éphémère (§6)      | #344, #346, #345                   |
+| Dérivée vivante, dérivée avec paramètres                   | #347 → #351                        |
+| Résolution par étapes, inéquations, simplifier, factoriser | #353, #357, #373, #374             |
+| Statistiques : `.stats`, fractions, limites, partenaires   | #610, #614, #615, #617             |
+| `.simuler`, listes qualitatives, `.croiser`, `.filtrer`    | #655, #656, #661, #662, #666, #667 |
+| `.comparer`, `.binomiale`                                  | #698, #740                         |
+
+### Ce qui reste pour clore la v1
+
+1. **Les deux garanties `/grapheur` (§7)** — non faites. `/grapheur` est
+   toujours le grapheur autonome (singleton `grapheurStore`, `x^2` d'office au
+   `onMount`) : il n'ouvre pas l'atelier en vue Graphe épurée, et
+   `/grapheur?f=…` n'ouvre aucun mode éphémère. Le mode éphémère existe pour
+   l'atelier (`/atelier?a=…`), pas pour `/grapheur`. C'est aussi l'« étape 5 »
+   restée ouverte dans `atelier-url-progress.md` (Q3).
+2. **Remplacer `/cas`** (objectif du 2026-10-01) — `/cas` existe toujours
+   (`ReplContainer`), hors barre latérale. Le catalogue de l'atelier
+   (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées
+   indisponibles avec leur raison (poser, définir, effacer, oublier,
+   oublier-fonction, réciproque, dérivée-de : les noms se créent dans le
+   panneau). **Pas encore fait** : l'inventaire de ce que `/cas` offre et que
+   l'atelier n'offre pas, puis le retrait de la page. `/calc` aussi existe
+   toujours (et figure dans le sitemap) ; le §11 visait la fusion `/calc` + `/cas`.
+
+### Dettes encore ouvertes (vérifiées dans le code)
+
+- **D10 depuis les vues** — `create`/`update` ont un paramètre de provenance,
+  mais `ObjectPanel` et `DataView` appellent sans lui (défaut `'url'`) ; seule
+  la vue Calcul passe `'text'` (`desk.svelte.ts:401`). Sans effet observé.
+- **`recomputeAll` réassigne tout le tableau** (`atelier.svelte.ts`,
+  `this.items = this.items.map(...)`). Jamais mesuré sur une vue réelle.
+- **Curseur recréé par `build()`** — sans effet tant qu'on ne peut pas régler
+  les bornes d'un curseur depuis l'atelier : aucune action ne le permet encore.
+- **Composant de saisie des unités** (macro `\unit`, palette) — pas extrait ;
+  aucune trace de `\unit` dans `components/atelier`.
+- **Renommer la liste partenaire choisie** fait revenir en silence au
+  partenaire par défaut (#615).
+
+### Soldé depuis la phase 1 (cases restées ouvertes dans les docs de lot)
+
+- Refactor `grapheurStore` → contexte : fait (#334), repli sur le singleton
+  assumé pour `/grapheur`, `/calc` et les tests de composants seuls.
+- Écart-type : `.stats` passe par `summarizeList`, divise par `n` comme le
+  panneau (cf. `atelier-vue-donnees-progress.md`).
+- Ajustement affine → fonction traçable : fait (`desk.svelte.ts`, `#fit`).
+- Choix de la liste des ordonnées : fait par le choix du partenaire (#615).
+- Vue Données et ses actions : faite (`DataView.svelte`, #343).
 
 ---
 
@@ -331,16 +413,12 @@ reproduit pas dans l'atelier.
 - [x] §6 bis N4 — collage annulable (`insertPasted`)
 - [x] Revue #330 — unités déclarées, renommage auto-référent, plafonds D8 — 96 tests verts
 - [x] Finding 4 — un dépendant d'un objet encore vide passe en attente — 100 tests verts
-- [ ] Tests et implémentation de la **persistance locale** (§5) et de
-      **l'URL / mode éphémère** (§6)
-- [ ] ⚠️ **Le refactor inévitable** : les 13 fichiers qui font
-      `import { grapheurStore }` en dur doivent recevoir l'instance par
-      contexte, sinon l'atelier ne peut pas avoir son propre état. Touche
-      `/grapheur` en production — à traiter dans sa propre PR.
-- [ ] Les vues Calcul, Graphe, Données
-- [ ] Les deux garanties `/grapheur` (§7)
+- [x] Persistance locale (§5) — #335 ; URL et mode éphémère (§6) — #345
+- [x] Le refactor `grapheurStore` → contexte — #334
+- [x] Les vues Calcul, Graphe, Données — #339, #337, #343
+- [ ] Les deux garanties `/grapheur` (§7) — voir « État au 2026-10-04 »
 
-## Pas encore poussé, et c'est voulu
+## ~~Pas encore poussé~~ (périmé : tout est sur `main` depuis #330)
 
 La branche est rouge par construction. Rien n'est poussé tant que
 l'implémentation n'est pas verte : une CI rouge sur une branche sans PR ne
