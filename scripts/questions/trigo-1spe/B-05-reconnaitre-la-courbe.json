@@ -1,8 +1,8 @@
 {
 	"title": "Reconnaître la courbe d'une fonction trigonométrique",
 	"description": "Associer une courbe à son expression : cos x, sin x, −sin x, cos x + 1, 2 sin x, sin(x − π/2)",
-	"grades": ["1_SPE"],
-	"points": [],
+	"grades": ["T_SPE"],
+	"points": ["TSPE-181"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Fonctions cosinus et sinus",

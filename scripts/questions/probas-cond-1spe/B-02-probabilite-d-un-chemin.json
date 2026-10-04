@@ -1,8 +1,8 @@
 {
 	"title": "Probabilité d'un chemin dans un arbre pondéré",
 	"description": "P(A∩B) = P(A) × P_A(B) : on multiplie les probabilités le long du chemin",
-	"grades": ["1_SPE"],
-	"points": [],
+	"grades": ["2"],
+	"points": ["2-178", "2-184"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Arbres pondérés",

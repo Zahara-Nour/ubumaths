@@ -1,8 +1,8 @@
 {
 	"title": "Tableau croisé : intersection et probabilité d'un événement",
 	"description": "Lire dans un tableau d'effectifs à double entrée la probabilité d'une intersection et d'un événement (total de ligne ou de colonne)",
-	"grades": ["1_SPE"],
-	"points": [],
+	"grades": ["2"],
+	"points": ["2-182"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"subdomain": "Tableaux croisés",

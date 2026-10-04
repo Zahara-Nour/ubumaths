@@ -1,8 +1,8 @@
 {
 	"title": "Parmi les… : modéliser un tableau croisé ou un sondage",
 	"description": "Tableau d'effectifs, sondage décrit en texte ou tableau de fréquences en contexte (lycée, trajets, sport) : P_A(B) et P_B(A) en valeur exacte, le « parmi les … » fixant l'univers",
-	"grades": ["1_SPE"],
-	"points": [],
+	"grades": ["2"],
+	"points": ["2-181", "2-182", "2-185"],
 	"theme": "Probabilités",
 	"domain": "Probabilités conditionnelles",
 	"status": "draft",
