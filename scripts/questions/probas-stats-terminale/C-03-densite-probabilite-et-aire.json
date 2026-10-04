@@ -1,15 +1,8 @@
 {
 	"title": "Loi à densité : probabilité = aire sous la courbe, constante de normalisation",
 	"description": "Lire une probabilité comme une aire sous la densité (figure), fonction de répartition F(x) = P(X ⩽ x), constante k pour que f soit une densité (aire totale 1) (pièges : t/a au lieu de t²/a², b − a au lieu de 1/(b − a))",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-106",
-		"TCOMP-107",
-		"TCOMP-111",
-		"TCOMP-112"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-106", "TCOMP-107", "TCOMP-111", "TCOMP-112"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Densité et aire",
@@ -123,9 +116,7 @@
 				"a": "4",
 				"t": "2"
 			},
-			"answers": [
-				"\\frac{1}{4}"
-			],
+			"answers": ["\\frac{1}{4}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -137,9 +128,7 @@
 				"a": "4",
 				"t": "2"
 			},
-			"answers": [
-				"\\frac{1}{2}"
-			],
+			"answers": ["\\frac{1}{2}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -151,9 +140,7 @@
 				"a": "5",
 				"t": "2"
 			},
-			"answers": [
-				"\\frac{4}{25}"
-			],
+			"answers": ["\\frac{4}{25}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -165,9 +152,7 @@
 				"a": "5",
 				"t": "2"
 			},
-			"answers": [
-				"\\frac{2}{5}"
-			],
+			"answers": ["\\frac{2}{5}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,9 +164,7 @@
 				"b": "8",
 				"c": "3"
 			},
-			"answers": [
-				"\\frac{3}{8}"
-			],
+			"answers": ["\\frac{3}{8}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -193,9 +176,7 @@
 				"b": "8",
 				"c": "3"
 			},
-			"answers": [
-				"\\frac{1}{8}"
-			],
+			"answers": ["\\frac{1}{8}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -207,9 +188,7 @@
 				"a": "2",
 				"b": "7"
 			},
-			"answers": [
-				"\\frac{1}{5}"
-			],
+			"answers": ["\\frac{1}{5}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -221,9 +200,7 @@
 				"a": "2",
 				"b": "7"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -234,9 +211,7 @@
 			"variables": {
 				"a": "4"
 			},
-			"answers": [
-				"\\frac{1}{8}"
-			],
+			"answers": ["\\frac{1}{8}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -247,9 +222,7 @@
 			"variables": {
 				"a": "4"
 			},
-			"answers": [
-				"\\frac{1}{16}"
-			],
+			"answers": ["\\frac{1}{16}"],
 			"expected": {
 				"status": "incorrect"
 			}

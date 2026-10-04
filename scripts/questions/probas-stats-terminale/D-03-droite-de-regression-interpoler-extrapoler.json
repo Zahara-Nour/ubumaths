@@ -1,14 +1,8 @@
 {
 	"title": "Droite de régression donnée par la calculatrice : estimer une valeur",
 	"description": "Utiliser l'équation y = ax + b fournie par la calculatrice pour estimer y (ou x), avec un rang d'année (pièges : année au lieu du rang, rang décalé de 1, a et b échangés)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-123",
-		"TCOMP-124",
-		"TCOMP-120"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-123", "TCOMP-124", "TCOMP-120"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Ajustement affine",
@@ -37,10 +31,7 @@
 					"expression": "5..30"
 				}
 			],
-			"conditions": [
-				"mod(A, 10) != 0",
-				"mod(B, 10) != 0"
-			],
+			"conditions": ["mod(A, 10) != 0", "mod(B, 10) != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:A*x0/100+B/10}}"
@@ -110,10 +101,7 @@
 					"expression": "2024..2030"
 				}
 			],
-			"conditions": [
-				"mod(A, 10) != 0",
-				"mod(B, 10) != 0"
-			],
+			"conditions": ["mod(A, 10) != 0", "mod(B, 10) != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:A*(Y-2015)/100+B/10}}"
@@ -136,9 +124,7 @@
 				"B": "124",
 				"x0": "10"
 			},
-			"answers": [
-				"35,9"
-			],
+			"answers": ["35,9"],
 			"expected": {
 				"status": "correct"
 			}
@@ -151,9 +137,7 @@
 				"B": "124",
 				"x0": "10"
 			},
-			"answers": [
-				"126,35"
-			],
+			"answers": ["126,35"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -166,9 +150,7 @@
 				"B": "124",
 				"y0": "70"
 			},
-			"answers": [
-				"24,5"
-			],
+			"answers": ["24,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -181,14 +163,10 @@
 				"B": "124",
 				"y0": "70"
 			},
-			"answers": [
-				"24,51"
-			],
+			"answers": ["24,51"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": [
-					"rounding"
-				]
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -199,9 +177,7 @@
 				"B": "124",
 				"y0": "70"
 			},
-			"answers": [
-				"176,9"
-			],
+			"answers": ["176,9"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -214,9 +190,7 @@
 				"B": "83",
 				"Y": "2026"
 			},
-			"answers": [
-				"22,05"
-			],
+			"answers": ["22,05"],
 			"expected": {
 				"status": "correct"
 			}
@@ -229,9 +203,7 @@
 				"B": "83",
 				"Y": "2026"
 			},
-			"answers": [
-				"20,8"
-			],
+			"answers": ["20,8"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -244,9 +216,7 @@
 				"B": "83",
 				"Y": "2026"
 			},
-			"answers": [
-				"2540,8"
-			],
+			"answers": ["2540,8"],
 			"expected": {
 				"status": "incorrect"
 			}

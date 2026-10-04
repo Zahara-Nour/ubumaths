@@ -1,13 +1,8 @@
 {
 	"title": "Inégalité de Bienaymé-Tchebychev",
 	"description": "P(|X − μ| ⩾ δ) ⩽ V(X)/δ² : majorer un écart, minorer la probabilité d'un intervalle centré, avec la variance ou l'écart type (pièges : V/δ, σ/δ², oubli du 1 − …)",
-	"grades": [
-		"T_SPE"
-	],
-	"points": [
-		"TSPE-253",
-		"TSPE-249"
-	],
+	"grades": ["T_SPE"],
+	"points": ["TSPE-253", "TSPE-249"],
 	"theme": "Probabilités",
 	"domain": "Concentration et loi des grands nombres",
 	"subdomain": "Inégalité de Bienaymé-Tchebychev",
@@ -36,9 +31,7 @@
 					"expression": "2..10"
 				}
 			],
-			"conditions": [
-				"v < d^2"
-			],
+			"conditions": ["v < d^2"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:v/d^2}}"
@@ -67,9 +60,7 @@
 					"expression": "2..10"
 				}
 			],
-			"conditions": [
-				"v < d^2"
-			],
+			"conditions": ["v < d^2"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:1-v/d^2}}"
@@ -98,9 +89,7 @@
 					"expression": "3..10"
 				}
 			],
-			"conditions": [
-				"v < d^2"
-			],
+			"conditions": ["v < d^2"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:1-v/d^2}}"
@@ -129,9 +118,7 @@
 					"expression": "2..12"
 				}
 			],
-			"conditions": [
-				"s < d"
-			],
+			"conditions": ["s < d"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:s^2/d^2}}"
@@ -154,9 +141,7 @@
 				"v": "4",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{4}{25}"
-			],
+			"answers": ["\\frac{4}{25}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -169,9 +154,7 @@
 				"v": "4",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{4}{5}"
-			],
+			"answers": ["\\frac{4}{5}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -184,9 +167,7 @@
 				"v": "4",
 				"d": "5"
 			},
-			"answers": [
-				"0,16"
-			],
+			"answers": ["0,16"],
 			"expected": {
 				"status": "correct"
 			}
@@ -199,9 +180,7 @@
 				"v": "4",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{21}{25}"
-			],
+			"answers": ["\\frac{21}{25}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -214,9 +193,7 @@
 				"v": "4",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{4}{25}"
-			],
+			"answers": ["\\frac{4}{25}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -229,9 +206,7 @@
 				"v": "9",
 				"d": "6"
 			},
-			"answers": [
-				"\\frac{3}{4}"
-			],
+			"answers": ["\\frac{3}{4}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -244,9 +219,7 @@
 				"v": "9",
 				"d": "6"
 			},
-			"answers": [
-				"\\frac{1}{4}"
-			],
+			"answers": ["\\frac{1}{4}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -259,9 +232,7 @@
 				"s": "2",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{4}{25}"
-			],
+			"answers": ["\\frac{4}{25}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -274,9 +245,7 @@
 				"s": "2",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{2}{25}"
-			],
+			"answers": ["\\frac{2}{25}"],
 			"expected": {
 				"status": "incorrect"
 			}

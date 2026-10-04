@@ -1,14 +1,8 @@
 {
 	"title": "Loi uniforme sur [a ; b] : probabilités et espérance",
 	"description": "X uniforme sur [a ; b] : P(c ⩽ X ⩽ d) = (d − c)/(b − a), P(X ⩾ c) = (b − c)/(b − a), E(X) = (a + b)/2, P(X = c) = 0 (pièges : (b − a)/2, longueur non divisée, 1/(b − a) pour P(X = c))",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-109",
-		"TCOMP-112",
-		"TCOMP-113"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-109", "TCOMP-112", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Loi uniforme",
@@ -77,9 +71,7 @@
 					"expression": "{{eval:a+1}}..{{eval:b-1}}"
 				}
 			],
-			"conditions": [
-				"2*c != a + b"
-			],
+			"conditions": ["2*c != a + b"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:(b-c)/(b-a)}}"
@@ -159,9 +151,7 @@
 				"c": "2",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{3}{10}"
-			],
+			"answers": ["\\frac{3}{10}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -175,9 +165,7 @@
 				"c": "2",
 				"d": "5"
 			},
-			"answers": [
-				"0,3"
-			],
+			"answers": ["0,3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -191,9 +179,7 @@
 				"c": "2",
 				"d": "5"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -207,9 +193,7 @@
 				"c": "2",
 				"d": "5"
 			},
-			"answers": [
-				"\\frac{1}{2}"
-			],
+			"answers": ["\\frac{1}{2}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -222,9 +206,7 @@
 				"L": "10",
 				"c": "5"
 			},
-			"answers": [
-				"\\frac{7}{10}"
-			],
+			"answers": ["\\frac{7}{10}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -237,9 +219,7 @@
 				"L": "10",
 				"c": "5"
 			},
-			"answers": [
-				"\\frac{3}{10}"
-			],
+			"answers": ["\\frac{3}{10}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -251,9 +231,7 @@
 				"a": "3",
 				"b": "15"
 			},
-			"answers": [
-				"9"
-			],
+			"answers": ["9"],
 			"expected": {
 				"status": "correct"
 			}
@@ -265,9 +243,7 @@
 				"a": "3",
 				"b": "15"
 			},
-			"answers": [
-				"6"
-			],
+			"answers": ["6"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -279,9 +255,7 @@
 				"a": "2",
 				"b": "9"
 			},
-			"answers": [
-				"5,5"
-			],
+			"answers": ["5,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -294,9 +268,7 @@
 				"L": "10",
 				"c": "4"
 			},
-			"answers": [
-				"0"
-			],
+			"answers": ["0"],
 			"expected": {
 				"status": "correct"
 			}
@@ -309,9 +281,7 @@
 				"L": "10",
 				"c": "4"
 			},
-			"answers": [
-				"\\frac{1}{10}"
-			],
+			"answers": ["\\frac{1}{10}"],
 			"expected": {
 				"status": "incorrect"
 			}

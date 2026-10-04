@@ -1,15 +1,8 @@
 {
 	"title": "Nuage de points : sens et intensité de la liaison (coefficient de corrélation)",
 	"description": "Lire un nuage de points (figure) et choisir l'ordre de grandeur du coefficient de corrélation r : proche de 1, de −1 ou de 0 (piège : r > 1 impossible)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-121",
-		"TCOMP-116",
-		"TCOMP-118",
-		"TCOMP-117"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-121", "TCOMP-116", "TCOMP-118", "TCOMP-117"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Nuage de points",
@@ -43,9 +36,7 @@
 					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont presque alignés sur une droite **croissante** : la liaison est forte et positive.",
@@ -79,9 +70,7 @@
 					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont presque alignés sur une droite **décroissante** : la liaison est forte et négative.",
@@ -111,9 +100,7 @@
 					"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Les points sont dispersés sans direction privilégiée : aucune droite ne les approche bien.",
@@ -130,9 +117,7 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -144,9 +129,7 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -158,9 +141,7 @@
 				"a": "4",
 				"b": "10"
 			},
-			"selectedChoices": [
-				3
-			],
+			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -172,9 +153,7 @@
 				"a": "4",
 				"b": "60"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -186,9 +165,7 @@
 				"a": "4",
 				"b": "60"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -199,9 +176,7 @@
 			"variables": {
 				"b": "20"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -212,9 +187,7 @@
 			"variables": {
 				"b": "20"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}

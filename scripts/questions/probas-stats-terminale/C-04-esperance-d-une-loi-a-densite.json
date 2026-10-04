@@ -1,13 +1,8 @@
 {
 	"title": "Espérance d'une loi à densité par une intégrale",
 	"description": "E(X) = ∫ x f(x) dx pour des densités polynomiales simples sur [0 ; a] (pièges : ∫ f(x) dx = 1 au lieu de ∫ x f(x) dx, milieu de l'intervalle)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-108",
-		"TCOMP-113"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-108", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Espérance",
@@ -88,9 +83,7 @@
 			"variables": {
 				"a": "3"
 			},
-			"answers": [
-				"2"
-			],
+			"answers": ["2"],
 			"expected": {
 				"status": "correct"
 			}
@@ -101,9 +94,7 @@
 			"variables": {
 				"a": "3"
 			},
-			"answers": [
-				"\\frac{3}{2}"
-			],
+			"answers": ["\\frac{3}{2}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -114,9 +105,7 @@
 			"variables": {
 				"a": "3"
 			},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -127,9 +116,7 @@
 			"variables": {
 				"a": "2"
 			},
-			"answers": [
-				"\\frac{4}{3}"
-			],
+			"answers": ["\\frac{4}{3}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -140,9 +127,7 @@
 			"variables": {
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{3}{4}"
-			],
+			"answers": ["\\frac{3}{4}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -153,9 +138,7 @@
 			"variables": {
 				"k": "2"
 			},
-			"answers": [
-				"0,75"
-			],
+			"answers": ["0,75"],
 			"expected": {
 				"status": "correct"
 			}
@@ -166,9 +149,7 @@
 			"variables": {
 				"k": "2"
 			},
-			"answers": [
-				"1"
-			],
+			"answers": ["1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,9 +160,7 @@
 			"variables": {
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{1}{2}"
-			],
+			"answers": ["\\frac{1}{2}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -192,9 +171,7 @@
 			"variables": {
 				"a": "4"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -205,9 +182,7 @@
 			"variables": {
 				"a": "4"
 			},
-			"answers": [
-				"\\frac{8}{3}"
-			],
+			"answers": ["\\frac{8}{3}"],
 			"expected": {
 				"status": "incorrect"
 			}

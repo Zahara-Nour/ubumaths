@@ -1,14 +1,8 @@
 {
 	"title": "Loi exponentielle : probabilités, espérance, absence de mémoire",
 	"description": "X ~ E(λ) : P(X ⩽ t) = 1 − e^(−λt), P(X ⩾ t) = e^(−λt), P(s ⩽ X ⩽ t) = e^(−λs) − e^(−λt), E(X) = 1/λ, P(X > s + t | X > s) = e^(−λt) (pièges : P(X ⩾ t) et P(X ⩽ t) confondues, E = λ, mémoire non utilisée)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-110",
-		"TCOMP-112",
-		"TCOMP-113"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-110", "TCOMP-112", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Loi exponentielle",
@@ -163,9 +157,7 @@
 				"k": "5",
 				"t": "2"
 			},
-			"answers": [
-				"1-e^{-1}"
-			],
+			"answers": ["1-e^{-1}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -177,9 +169,7 @@
 				"k": "5",
 				"t": "2"
 			},
-			"answers": [
-				"1-\\frac{1}{e}"
-			],
+			"answers": ["1-\\frac{1}{e}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -191,9 +181,7 @@
 				"k": "5",
 				"t": "2"
 			},
-			"answers": [
-				"e^{-1}"
-			],
+			"answers": ["e^{-1}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -205,9 +193,7 @@
 				"k": "3",
 				"t": "2"
 			},
-			"answers": [
-				"1-e^{-0,6}"
-			],
+			"answers": ["1-e^{-0,6}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -219,9 +205,7 @@
 				"k": "3",
 				"t": "2"
 			},
-			"answers": [
-				"1-e^{-0,15}"
-			],
+			"answers": ["1-e^{-0,15}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -233,9 +217,7 @@
 				"k": "2",
 				"t": "3"
 			},
-			"answers": [
-				"0,549"
-			],
+			"answers": ["0,549"],
 			"expected": {
 				"status": "correct"
 			}
@@ -247,9 +229,7 @@
 				"k": "2",
 				"t": "3"
 			},
-			"answers": [
-				"0,451"
-			],
+			"answers": ["0,451"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -261,14 +241,10 @@
 				"k": "2",
 				"t": "3"
 			},
-			"answers": [
-				"0,5488"
-			],
+			"answers": ["0,5488"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": [
-					"rounding"
-				]
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -279,9 +255,7 @@
 				"s": "1",
 				"t": "3"
 			},
-			"answers": [
-				"e^{-0,5}-e^{-1,5}"
-			],
+			"answers": ["e^{-0,5}-e^{-1,5}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -294,9 +268,7 @@
 				"s": "1",
 				"t": "3"
 			},
-			"answers": [
-				"e^{-1,5}-e^{-0,5}"
-			],
+			"answers": ["e^{-1,5}-e^{-0,5}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -307,9 +279,7 @@
 			"variables": {
 				"k": "4"
 			},
-			"answers": [
-				"25"
-			],
+			"answers": ["25"],
 			"expected": {
 				"status": "correct"
 			}
@@ -320,9 +290,7 @@
 			"variables": {
 				"k": "4"
 			},
-			"answers": [
-				"0,04"
-			],
+			"answers": ["0,04"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -333,9 +301,7 @@
 			"variables": {
 				"k": "8"
 			},
-			"answers": [
-				"12,5"
-			],
+			"answers": ["12,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -348,9 +314,7 @@
 				"s": "5",
 				"t": "3"
 			},
-			"answers": [
-				"e^{-0,6}"
-			],
+			"answers": ["e^{-0,6}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -363,9 +327,7 @@
 				"s": "5",
 				"t": "3"
 			},
-			"answers": [
-				"e^{-1,6}"
-			],
+			"answers": ["e^{-1,6}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -378,9 +340,7 @@
 				"s": "5",
 				"t": "3"
 			},
-			"answers": [
-				"1-e^{-0,6}"
-			],
+			"answers": ["1-e^{-0,6}"],
 			"expected": {
 				"status": "incorrect"
 			}

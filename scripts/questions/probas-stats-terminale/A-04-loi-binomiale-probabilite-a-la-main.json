@@ -1,18 +1,8 @@
 {
 	"title": "Loi binomiale : P(X = k), P(X = 0), P(X ⩾ 1) à la main (n ⩽ 5)",
 	"description": "Calcul exact de P(X = k) = C(n, k)pᵏ(1 − p)ⁿ⁻ᵏ pour n ⩽ 5, de P(X = 0) et de P(X ⩾ 1) par l'événement contraire (pièges : coefficient binomial oublié, p et 1 − p échangés, 1 − pⁿ)",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-089",
-		"TCOMP-095",
-		"TCOMP-101",
-		"TSPE-227",
-		"TSPE-233",
-		"TSPE-224"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-089", "TCOMP-095", "TCOMP-101", "TSPE-227", "TSPE-233", "TSPE-224"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Calcul de probabilités",
@@ -151,9 +141,7 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{8}{27}"
-			],
+			"answers": ["\\frac{8}{27}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -166,9 +154,7 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{4}{81}"
-			],
+			"answers": ["\\frac{4}{81}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -181,9 +167,7 @@
 				"q": "3",
 				"k": "1"
 			},
-			"answers": [
-				"\\frac{32}{81}"
-			],
+			"answers": ["\\frac{32}{81}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -196,9 +180,7 @@
 				"q": "3",
 				"k": "1"
 			},
-			"answers": [
-				"\\frac{8}{81}"
-			],
+			"answers": ["\\frac{8}{81}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -211,14 +193,10 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{24}{81}"
-			],
+			"answers": ["\\frac{24}{81}"],
 			"expected": {
 				"status": "unoptimal_form",
-				"constraintViolations": [
-					"reducedFractions"
-				]
+				"constraintViolations": ["reducedFractions"]
 			}
 		},
 		{
@@ -229,9 +207,7 @@
 				"t": "3",
 				"k": "1"
 			},
-			"answers": [
-				"0,441"
-			],
+			"answers": ["0,441"],
 			"expected": {
 				"status": "correct"
 			}
@@ -244,9 +220,7 @@
 				"t": "3",
 				"k": "1"
 			},
-			"answers": [
-				"0,147"
-			],
+			"answers": ["0,147"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -259,9 +233,7 @@
 				"t": "3",
 				"k": "1"
 			},
-			"answers": [
-				"0,189"
-			],
+			"answers": ["0,189"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -273,9 +245,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{27}{64}"
-			],
+			"answers": ["\\frac{27}{64}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -287,9 +257,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{1}{64}"
-			],
+			"answers": ["\\frac{1}{64}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -301,9 +269,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{37}{64}"
-			],
+			"answers": ["\\frac{37}{64}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -315,9 +281,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{37}{64}"
-			],
+			"answers": ["\\frac{37}{64}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -329,9 +293,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{27}{64}"
-			],
+			"answers": ["\\frac{27}{64}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -343,9 +305,7 @@
 				"n": "3",
 				"q": "4"
 			},
-			"answers": [
-				"\\frac{63}{64}"
-			],
+			"answers": ["\\frac{63}{64}"],
 			"expected": {
 				"status": "incorrect"
 			}

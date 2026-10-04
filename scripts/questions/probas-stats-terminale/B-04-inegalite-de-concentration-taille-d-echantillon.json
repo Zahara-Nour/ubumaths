@@ -1,15 +1,8 @@
 {
 	"title": "Inégalité de concentration : majorant et taille d'échantillon",
 	"description": "P(|Mₙ − μ| ⩾ δ) ⩽ V/(nδ²) : majorant pour n donné, plus petit n pour un risque α donné (pièges : V/(nδ), oubli de n, arrondi par défaut)",
-	"grades": [
-		"T_SPE"
-	],
-	"points": [
-		"TSPE-254",
-		"TSPE-256",
-		"TSPE-255",
-		"TSPE-247"
-	],
+	"grades": ["T_SPE"],
+	"points": ["TSPE-254", "TSPE-256", "TSPE-255", "TSPE-247"],
 	"theme": "Probabilités",
 	"domain": "Concentration et loi des grands nombres",
 	"subdomain": "Inégalité de concentration",
@@ -38,9 +31,7 @@
 					"expression": "2|4|5|10"
 				}
 			],
-			"conditions": [
-				"v*d^2 < n"
-			],
+			"conditions": ["v*d^2 < n"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:v*d^2/n}}"
@@ -119,9 +110,7 @@
 				"v": "5",
 				"d": "10"
 			},
-			"answers": [
-				"0,5"
-			],
+			"answers": ["0,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -134,9 +123,7 @@
 				"v": "5",
 				"d": "10"
 			},
-			"answers": [
-				"0,05"
-			],
+			"answers": ["0,05"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -149,9 +136,7 @@
 				"v": "5",
 				"d": "10"
 			},
-			"answers": [
-				"500"
-			],
+			"answers": ["500"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -164,9 +149,7 @@
 				"d": "2",
 				"a": "5"
 			},
-			"answers": [
-				"240"
-			],
+			"answers": ["240"],
 			"expected": {
 				"status": "correct"
 			}
@@ -179,9 +162,7 @@
 				"d": "4",
 				"a": "10"
 			},
-			"answers": [
-				"480"
-			],
+			"answers": ["480"],
 			"expected": {
 				"status": "correct"
 			}
@@ -194,9 +175,7 @@
 				"d": "2",
 				"a": "3"
 			},
-			"answers": [
-				"134"
-			],
+			"answers": ["134"],
 			"expected": {
 				"status": "correct"
 			}
@@ -209,9 +188,7 @@
 				"d": "2",
 				"a": "3"
 			},
-			"answers": [
-				"133"
-			],
+			"answers": ["133"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -224,9 +201,7 @@
 				"d": "2",
 				"a": "5"
 			},
-			"answers": [
-				"120"
-			],
+			"answers": ["120"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -237,9 +212,7 @@
 			"variables": {
 				"t": "3"
 			},
-			"answers": [
-				"420"
-			],
+			"answers": ["420"],
 			"expected": {
 				"status": "correct"
 			}
@@ -250,9 +223,7 @@
 			"variables": {
 				"t": "5"
 			},
-			"answers": [
-				"500"
-			],
+			"answers": ["500"],
 			"expected": {
 				"status": "correct"
 			}
@@ -263,9 +234,7 @@
 			"variables": {
 				"t": "3"
 			},
-			"answers": [
-				"600"
-			],
+			"answers": ["600"],
 			"expected": {
 				"status": "incorrect"
 			}

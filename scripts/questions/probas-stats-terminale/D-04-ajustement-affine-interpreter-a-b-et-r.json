@@ -1,14 +1,8 @@
 {
 	"title": "Ajustement affine : interpréter le coefficient directeur, l'ordonnée à l'origine et r",
 	"description": "Sorties de calculatrice données : interpréter a (variation moyenne de y par unité de x), b (estimation en x = 0), et la valeur de r (pertinence de l'ajustement affine)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-117",
-		"TCOMP-118",
-		"TCOMP-123"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-117", "TCOMP-118", "TCOMP-123"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Ajustement affine",
@@ -28,9 +22,7 @@
 					"expression": "20..80"
 				}
 			],
-			"conditions": [
-				"mod(A, 10) != 0"
-			],
+			"conditions": ["mod(A, 10) != 0"],
 			"choices": [
 				{
 					"content": "Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers chaque année"
@@ -45,9 +37,7 @@
 					"content": "Il y avait ${{eval:A/10;d}}$ milliers d'abonnés l'année de rang $0$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Le coefficient directeur $a$ est la variation de $y$ quand $x$ augmente de $1$.",
@@ -67,9 +57,7 @@
 					"expression": "20..80"
 				}
 			],
-			"conditions": [
-				"mod(A, 10) != 0"
-			],
+			"conditions": ["mod(A, 10) != 0"],
 			"choices": [
 				{
 					"content": "L'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$"
@@ -84,9 +72,7 @@
 					"content": "Le nombre moyen d'abonnés sur la période est ${{B}}$ milliers"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"L'ordonnée à l'origine $b$ est la valeur de $y$ donnée par l'ajustement pour $x=0$.",
@@ -116,9 +102,7 @@
 					"content": "$y$ est proportionnel à $x$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$r$ est proche de $-1$ : les points sont presque alignés sur une droite décroissante.",
@@ -134,9 +118,7 @@
 					"expression": "5..35"
 				}
 			],
-			"conditions": [
-				"mod(R, 10) != 0"
-			],
+			"conditions": ["mod(R, 10) != 0"],
 			"choices": [
 				{
 					"content": "Un ajustement affine n'est pas pertinent"
@@ -151,9 +133,7 @@
 					"content": "Les points sont parfaitement alignés"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$r$ est proche de $0$ : les points ne sont pas proches d'une droite.",
@@ -170,9 +150,7 @@
 				"A": "35",
 				"B": "40"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -184,9 +162,7 @@
 				"A": "35",
 				"B": "40"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -198,9 +174,7 @@
 				"A": "35",
 				"B": "40"
 			},
-			"selectedChoices": [
-				3
-			],
+			"selectedChoices": [3],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -212,9 +186,7 @@
 				"A": "35",
 				"B": "40"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -226,9 +198,7 @@
 				"A": "35",
 				"B": "40"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -239,9 +209,7 @@
 			"variables": {
 				"R": "970"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -252,9 +220,7 @@
 			"variables": {
 				"R": "970"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -265,9 +231,7 @@
 			"variables": {
 				"R": "12"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -278,9 +242,7 @@
 			"variables": {
 				"R": "12"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}

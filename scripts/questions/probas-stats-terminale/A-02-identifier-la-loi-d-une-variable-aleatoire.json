@@ -1,17 +1,8 @@
 {
 	"title": "Bernoulli, binomiale ou géométrique : identifier la loi",
 	"description": "Reconnaître la loi d'une variable aléatoire décrite par un énoncé : nombre de succès (binomiale), rang du premier succès (géométrique), indicatrice (Bernoulli), tirages sans remise (aucune des trois)",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-093",
-		"TCOMP-091",
-		"TCOMP-088",
-		"TSPE-231",
-		"TSPE-239"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-093", "TCOMP-091", "TCOMP-088", "TSPE-231", "TSPE-239"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Reconnaître une loi",
@@ -41,9 +32,7 @@
 					"content": "$\\mathcal{B}\\left(6\\,;\\dfrac{1}{ {{n}} }\\right)$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On compte le **nombre de succès** (« obtenir $6$ », probabilité $\\dfrac{1}{6}$) dans ${{n}}$ épreuves identiques et indépendantes.",
@@ -67,9 +56,7 @@
 					"content": "La loi de Bernoulli de paramètre $\\dfrac{1}{6}$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"On répète une épreuve de Bernoulli de succès « obtenir $6$ » ($p=\\dfrac{1}{6}$) et $X$ est le **rang du premier succès**.",
@@ -99,9 +86,7 @@
 					"content": "$\\mathcal{B}\\left(100\\,;{{eval:t/100;d}}\\right)$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"$X$ ne prend que les valeurs $1$ (succès) et $0$ (échec), pour **une seule** épreuve.",
@@ -135,9 +120,7 @@
 					"content": "La loi de Bernoulli de paramètre $\\dfrac{ {{r}} }{ {{eval:r+b}} }$"
 				}
 			],
-			"correctChoiceIndex": [
-				"0"
-			],
+			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
 					"Sans remise, la composition de l'urne change à chaque tirage : les épreuves ne sont **pas indépendantes** et la probabilité de « rouge » n'est pas la même à chaque tirage.",
@@ -153,9 +136,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -166,9 +147,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -179,9 +158,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"selectedChoices": [
-				2
-			],
+			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -190,9 +167,7 @@
 			"description": "v1 : géométrique",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -201,9 +176,7 @@
 			"description": "v1 : G(5/6)",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -212,9 +185,7 @@
 			"description": "v1 : binomiale",
 			"variationIndex": 1,
 			"variables": {},
-			"selectedChoices": [
-				2
-			],
+			"selectedChoices": [2],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -225,9 +196,7 @@
 			"variables": {
 				"t": "4"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -238,9 +207,7 @@
 			"variables": {
 				"t": "4"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -252,9 +219,7 @@
 				"r": "4",
 				"b": "5"
 			},
-			"selectedChoices": [
-				0
-			],
+			"selectedChoices": [0],
 			"expected": {
 				"status": "correct"
 			}
@@ -266,9 +231,7 @@
 				"r": "4",
 				"b": "5"
 			},
-			"selectedChoices": [
-				1
-			],
+			"selectedChoices": [1],
 			"expected": {
 				"status": "incorrect"
 			}

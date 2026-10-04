@@ -1,14 +1,8 @@
 {
 	"title": "Ajustement par changement de variable z = ln(y)",
 	"description": "Ajustement affine de z = ln(y) donné : calculer un zᵢ, revenir à y = e^b × e^(ax), estimer y ou un seuil en x (pièges : oubli de l'exponentielle, e^b non calculé, x non entier)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-119",
-		"TCOMP-124",
-		"TCOMP-120"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-119", "TCOMP-124", "TCOMP-120"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Changement de variable",
@@ -68,10 +62,7 @@
 					"expression": "{{eval:exp(A*x0/100+B/100)}}"
 				}
 			],
-			"conditions": [
-				"abs(r-floor(r)-0.5) > 0.05",
-				"r < 5000"
-			],
+			"conditions": ["abs(r-floor(r)-0.5) > 0.05", "r < 5000"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:round(r)}}",
@@ -104,10 +95,7 @@
 					"expression": "{{eval:exp(B/100)}}"
 				}
 			],
-			"conditions": [
-				"abs(10*r-floor(10*r)-0.5) > 0.05",
-				"mod(round(10*r), 10) != 0"
-			],
+			"conditions": ["abs(10*r-floor(10*r)-0.5) > 0.05", "mod(round(10*r), 10) != 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:round(10*r)/10;d}}",
@@ -144,11 +132,7 @@
 					"expression": "{{eval:(ln(y0)-B/100)/(A/100)}}"
 				}
 			],
-			"conditions": [
-				"s > 1",
-				"s - floor(s) > 0.05",
-				"s - floor(s) < 0.95"
-			],
+			"conditions": ["s > 1", "s - floor(s) > 0.05", "s - floor(s) < 0.95"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:floor(s)+1}}"
@@ -169,9 +153,7 @@
 			"variables": {
 				"y": "50"
 			},
-			"answers": [
-				"3,91"
-			],
+			"answers": ["3,91"],
 			"expected": {
 				"status": "correct"
 			}
@@ -182,9 +164,7 @@
 			"variables": {
 				"y": "50"
 			},
-			"answers": [
-				"1,70"
-			],
+			"answers": ["1,70"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -195,14 +175,10 @@
 			"variables": {
 				"y": "50"
 			},
-			"answers": [
-				"3,912"
-			],
+			"answers": ["3,912"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": [
-					"rounding"
-				]
+				"constraintViolations": ["rounding"]
 			}
 		},
 		{
@@ -213,9 +189,7 @@
 				"B": "150",
 				"x0": "10"
 			},
-			"answers": [
-				"33"
-			],
+			"answers": ["33"],
 			"expected": {
 				"status": "correct"
 			}
@@ -228,9 +202,7 @@
 				"B": "150",
 				"x0": "10"
 			},
-			"answers": [
-				"3,5"
-			],
+			"answers": ["3,5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -242,9 +214,7 @@
 				"A": "10",
 				"B": "200"
 			},
-			"answers": [
-				"7,4"
-			],
+			"answers": ["7,4"],
 			"expected": {
 				"status": "correct"
 			}
@@ -256,9 +226,7 @@
 				"A": "10",
 				"B": "200"
 			},
-			"answers": [
-				"2"
-			],
+			"answers": ["2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -271,9 +239,7 @@
 				"B": "150",
 				"y0": "100"
 			},
-			"answers": [
-				"16"
-			],
+			"answers": ["16"],
 			"expected": {
 				"status": "correct"
 			}
@@ -286,9 +252,7 @@
 				"B": "150",
 				"y0": "100"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "incorrect"
 			}

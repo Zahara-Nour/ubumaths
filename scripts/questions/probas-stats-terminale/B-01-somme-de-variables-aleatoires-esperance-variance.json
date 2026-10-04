@@ -1,17 +1,8 @@
 {
 	"title": "Somme de variables aléatoires : espérance et variance",
 	"description": "E(aX + bY) = aE(X) + bE(Y) ; si X et Y indépendantes : V(X + Y) = V(X) + V(Y), V(X − Y) = V(X) + V(Y), V(aX + bY) = a²V(X) + b²V(Y), écart type de la somme (pièges : V(X) − V(Y), aV(X), σ(X) + σ(Y))",
-	"grades": [
-		"T_SPE"
-	],
-	"points": [
-		"TSPE-241",
-		"TSPE-242",
-		"TSPE-243",
-		"TSPE-244",
-		"TSPE-249",
-		"TSPE-250"
-	],
+	"grades": ["T_SPE"],
+	"points": ["TSPE-241", "TSPE-242", "TSPE-243", "TSPE-244", "TSPE-249", "TSPE-250"],
 	"theme": "Probabilités",
 	"domain": "Sommes de variables aléatoires",
 	"subdomain": "Espérance et variance",
@@ -179,9 +170,7 @@
 				"a": "2",
 				"b": "3"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -195,9 +184,7 @@
 				"a": "2",
 				"b": "3"
 			},
-			"answers": [
-				"3"
-			],
+			"answers": ["3"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -209,9 +196,7 @@
 				"u": "12",
 				"w": "35"
 			},
-			"answers": [
-				"4,7"
-			],
+			"answers": ["4,7"],
 			"expected": {
 				"status": "correct"
 			}
@@ -223,9 +208,7 @@
 				"u": "12",
 				"w": "35"
 			},
-			"answers": [
-				"4,2"
-			],
+			"answers": ["4,2"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -237,9 +220,7 @@
 				"u": "12",
 				"w": "3"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "correct"
 			}
@@ -251,9 +232,7 @@
 				"u": "12",
 				"w": "3"
 			},
-			"answers": [
-				"9"
-			],
+			"answers": ["9"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -267,9 +246,7 @@
 				"a": "3",
 				"b": "2"
 			},
-			"answers": [
-				"61"
-			],
+			"answers": ["61"],
 			"expected": {
 				"status": "correct"
 			}
@@ -283,9 +260,7 @@
 				"a": "3",
 				"b": "2"
 			},
-			"answers": [
-				"23"
-			],
+			"answers": ["23"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -296,9 +271,7 @@
 			"variables": {
 				"w": "1"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -309,9 +282,7 @@
 			"variables": {
 				"w": "1"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -322,9 +293,7 @@
 			"variables": {
 				"w": "1"
 			},
-			"answers": [
-				"25"
-			],
+			"answers": ["25"],
 			"expected": {
 				"status": "incorrect"
 			}

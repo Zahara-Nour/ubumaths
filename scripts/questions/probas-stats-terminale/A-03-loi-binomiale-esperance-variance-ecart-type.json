@@ -1,18 +1,8 @@
 {
 	"title": "Loi binomiale et loi de Bernoulli : espérance, variance, écart type",
 	"description": "E(X) = np, V(X) = np(1 − p), σ(X) = √(np(1 − p)) ; Bernoulli : V = p(1 − p) ; nombre moyen de succès (pièges : np(1 − p) contre np, variance contre écart type)",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-089",
-		"TCOMP-085",
-		"TCOMP-098",
-		"TSPE-245",
-		"TSPE-225",
-		"TSPE-249"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-089", "TCOMP-085", "TCOMP-098", "TSPE-245", "TSPE-225", "TSPE-249"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Espérance et variance",
@@ -121,9 +111,7 @@
 					"expression": "1..{{eval:q-1}}"
 				}
 			],
-			"conditions": [
-				"gcd(c, q) == 1"
-			],
+			"conditions": ["gcd(c, q) == 1"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:c*(q-c)/q^2}}"
@@ -169,9 +157,7 @@
 				"n": "50",
 				"t": "30"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "correct"
 			}
@@ -183,9 +169,7 @@
 				"n": "50",
 				"t": "30"
 			},
-			"answers": [
-				"10,5"
-			],
+			"answers": ["10,5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -197,9 +181,7 @@
 				"n": "40",
 				"t": "7"
 			},
-			"answers": [
-				"2,8"
-			],
+			"answers": ["2,8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -211,9 +193,7 @@
 				"n": "50",
 				"t": "2"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "correct"
 			}
@@ -225,9 +205,7 @@
 				"n": "50",
 				"t": "2"
 			},
-			"answers": [
-				"10"
-			],
+			"answers": ["10"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -239,9 +217,7 @@
 				"n": "50",
 				"t": "2"
 			},
-			"answers": [
-				"\\sqrt{8}"
-			],
+			"answers": ["\\sqrt{8}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -253,9 +229,7 @@
 				"n": "10",
 				"t": "3"
 			},
-			"answers": [
-				"2,1"
-			],
+			"answers": ["2,1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -266,9 +240,7 @@
 			"variables": {
 				"w": "6"
 			},
-			"answers": [
-				"4"
-			],
+			"answers": ["4"],
 			"expected": {
 				"status": "correct"
 			}
@@ -279,9 +251,7 @@
 			"variables": {
 				"w": "6"
 			},
-			"answers": [
-				"16"
-			],
+			"answers": ["16"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -292,14 +262,10 @@
 			"variables": {
 				"w": "6"
 			},
-			"answers": [
-				"\\sqrt{16}"
-			],
+			"answers": ["\\sqrt{16}"],
 			"expected": {
 				"status": "bad_form",
-				"constraintViolations": [
-					"form"
-				]
+				"constraintViolations": ["form"]
 			}
 		},
 		{
@@ -309,9 +275,7 @@
 				"q": "4",
 				"c": "1"
 			},
-			"answers": [
-				"\\frac{3}{16}"
-			],
+			"answers": ["\\frac{3}{16}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -323,9 +287,7 @@
 				"q": "4",
 				"c": "1"
 			},
-			"answers": [
-				"\\frac{1}{4}"
-			],
+			"answers": ["\\frac{1}{4}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -337,9 +299,7 @@
 				"q": "4",
 				"c": "1"
 			},
-			"answers": [
-				"\\frac{1}{16}"
-			],
+			"answers": ["\\frac{1}{16}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -351,9 +311,7 @@
 				"n": "20",
 				"q": "4"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -365,9 +323,7 @@
 				"n": "20",
 				"q": "4"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "incorrect"
 			}

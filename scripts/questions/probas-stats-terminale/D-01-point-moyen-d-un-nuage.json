@@ -1,13 +1,8 @@
 {
 	"title": "Statistique à deux variables : coordonnées du point moyen",
 	"description": "Calculer G(x̄ ; ȳ) à partir d'un tableau de 4 à 6 points (pièges : moyenne des y oubliée, division par le mauvais effectif)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-122",
-		"TCOMP-116"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-122", "TCOMP-116"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Point moyen",
@@ -139,9 +134,7 @@
 					"expression": "65..75"
 				}
 			],
-			"conditions": [
-				"mod(y1+y2+y3+y4+y5+y6, 3) == 0"
-			],
+			"conditions": ["mod(y1+y2+y3+y4+y5+y6, 3) == 0"],
 			"blanks": [
 				{
 					"expectedAnswer": "{{eval:7/2}}"
@@ -169,10 +162,7 @@
 				"y4": "22",
 				"y5": "27"
 			},
-			"answers": [
-				"3",
-				"19"
-			],
+			"answers": ["3", "19"],
 			"expected": {
 				"status": "correct"
 			}
@@ -187,10 +177,7 @@
 				"y4": "22",
 				"y5": "27"
 			},
-			"answers": [
-				"3",
-				"95"
-			],
+			"answers": ["3", "95"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -205,10 +192,7 @@
 				"y4": "20",
 				"y5": "21"
 			},
-			"answers": [
-				"3",
-				"18,2"
-			],
+			"answers": ["3", "18,2"],
 			"expected": {
 				"status": "correct"
 			}
@@ -226,10 +210,7 @@
 				"y3": "12",
 				"y4": "15"
 			},
-			"answers": [
-				"5",
-				"10"
-			],
+			"answers": ["5", "10"],
 			"expected": {
 				"status": "correct"
 			}
@@ -247,10 +228,7 @@
 				"y3": "12",
 				"y4": "15"
 			},
-			"answers": [
-				"10",
-				"5"
-			],
+			"answers": ["10", "5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -266,10 +244,7 @@
 				"y5": "62",
 				"y6": "70"
 			},
-			"answers": [
-				"3,5",
-				"57"
-			],
+			"answers": ["3,5", "57"],
 			"expected": {
 				"status": "correct"
 			}
@@ -285,10 +260,7 @@
 				"y5": "62",
 				"y6": "70"
 			},
-			"answers": [
-				"3",
-				"57"
-			],
+			"answers": ["3", "57"],
 			"expected": {
 				"status": "incorrect"
 			}

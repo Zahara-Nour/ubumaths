@@ -1,17 +1,8 @@
 {
 	"title": "Loi binomiale : utiliser une table de P(X ⩽ k)",
 	"description": "Extrait de table des probabilités cumulées fourni : P(X > k), P(X = k), P(a ⩽ X ⩽ b), seuil, intervalle de fluctuation [a ; b] (pièges : 1 − P(X ⩽ k − 1), F(b) − F(a) au lieu de F(b) − F(a − 1))",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-095",
-		"TCOMP-097",
-		"TSPE-233",
-		"TSPE-234",
-		"TSPE-232"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-095", "TCOMP-097", "TSPE-233", "TSPE-234", "TSPE-232"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Calcul de probabilités",
@@ -208,9 +199,7 @@
 			"variables": {
 				"k": "5"
 			},
-			"answers": [
-				"0,5836"
-			],
+			"answers": ["0,5836"],
 			"expected": {
 				"status": "correct"
 			}
@@ -221,9 +210,7 @@
 			"variables": {
 				"k": "5"
 			},
-			"answers": [
-				"0,4164"
-			],
+			"answers": ["0,4164"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -234,9 +221,7 @@
 			"variables": {
 				"k": "5"
 			},
-			"answers": [
-				"0,7625"
-			],
+			"answers": ["0,7625"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -247,9 +232,7 @@
 			"variables": {
 				"k": "12"
 			},
-			"answers": [
-				"0,1474"
-			],
+			"answers": ["0,1474"],
 			"expected": {
 				"status": "correct"
 			}
@@ -260,9 +243,7 @@
 			"variables": {
 				"k": "12"
 			},
-			"answers": [
-				"0,5785"
-			],
+			"answers": ["0,5785"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -274,9 +255,7 @@
 				"a": "10",
 				"b": "15"
 			},
-			"answers": [
-				"0,7704"
-			],
+			"answers": ["0,7704"],
 			"expected": {
 				"status": "correct"
 			}
@@ -288,9 +267,7 @@
 				"a": "10",
 				"b": "15"
 			},
-			"answers": [
-				"0,673"
-			],
+			"answers": ["0,673"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -301,9 +278,7 @@
 			"variables": {
 				"j": "2"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "correct"
 			}
@@ -314,9 +289,7 @@
 			"variables": {
 				"j": "2"
 			},
-			"answers": [
-				"14"
-			],
+			"answers": ["14"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -327,9 +300,7 @@
 			"variables": {
 				"j": "3"
 			},
-			"answers": [
-				"17"
-			],
+			"answers": ["17"],
 			"expected": {
 				"status": "correct"
 			}
@@ -340,10 +311,7 @@
 			"variables": {
 				"j": "1"
 			},
-			"answers": [
-				"5",
-				"16"
-			],
+			"answers": ["5", "16"],
 			"expected": {
 				"status": "correct"
 			}
@@ -354,10 +322,7 @@
 			"variables": {
 				"j": "1"
 			},
-			"answers": [
-				"4",
-				"16"
-			],
+			"answers": ["4", "16"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -368,10 +333,7 @@
 			"variables": {
 				"j": "2"
 			},
-			"answers": [
-				"6",
-				"15"
-			],
+			"answers": ["6", "15"],
 			"expected": {
 				"status": "correct"
 			}

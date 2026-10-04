@@ -1,13 +1,8 @@
 {
 	"title": "Loi uniforme sur {1, …, n} : probabilités et espérance",
 	"description": "X uniforme sur {1, …, n} : P(X = k) = 1/n, P(X ⩽ k) = k/n, P(a ⩽ X ⩽ b) = (b − a + 1)/n, E(X) = (n + 1)/2 (pièges : n/2, b − a au lieu de b − a + 1)",
-	"grades": [
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-084",
-		"TCOMP-098"
-	],
+	"grades": ["T_COMP"],
+	"points": ["TCOMP-084", "TCOMP-098"],
 	"theme": "Probabilités",
 	"domain": "Lois discrètes",
 	"subdomain": "Loi uniforme",
@@ -120,9 +115,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"answers": [
-				"\\frac{11}{2}"
-			],
+			"answers": ["\\frac{11}{2}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -133,9 +126,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"answers": [
-				"5,5"
-			],
+			"answers": ["5,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -146,9 +137,7 @@
 			"variables": {
 				"n": "10"
 			},
-			"answers": [
-				"5"
-			],
+			"answers": ["5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -160,9 +149,7 @@
 				"n": "10",
 				"k": "4"
 			},
-			"answers": [
-				"\\frac{2}{5}"
-			],
+			"answers": ["\\frac{2}{5}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -174,9 +161,7 @@
 				"n": "10",
 				"k": "4"
 			},
-			"answers": [
-				"\\frac{3}{10}"
-			],
+			"answers": ["\\frac{3}{10}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -189,9 +174,7 @@
 				"a": "3",
 				"b": "7"
 			},
-			"answers": [
-				"\\frac{5}{12}"
-			],
+			"answers": ["\\frac{5}{12}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -204,9 +187,7 @@
 				"a": "3",
 				"b": "7"
 			},
-			"answers": [
-				"\\frac{1}{3}"
-			],
+			"answers": ["\\frac{1}{3}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -217,9 +198,7 @@
 			"variables": {
 				"n": "6"
 			},
-			"answers": [
-				"7"
-			],
+			"answers": ["7"],
 			"expected": {
 				"status": "correct"
 			}
@@ -230,9 +209,7 @@
 			"variables": {
 				"n": "6"
 			},
-			"answers": [
-				"3,5"
-			],
+			"answers": ["3,5"],
 			"expected": {
 				"status": "incorrect"
 			}

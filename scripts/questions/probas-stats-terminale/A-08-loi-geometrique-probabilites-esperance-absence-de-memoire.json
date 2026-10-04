@@ -1,18 +1,8 @@
 {
 	"title": "Loi géométrique : P(X = k), P(X ⩽ k), espérance, absence de mémoire",
 	"description": "X ~ G(p) : P(X = k) = (1 − p)ᵏ⁻¹p, P(X > k) = (1 − p)ᵏ, P(X ⩽ k) = 1 − (1 − p)ᵏ, E(X) = 1/p, P(X > m + n | X > m) = P(X > n) (pièges : exposant k au lieu de k − 1, E = p, mémoire non utilisée)",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-091",
-		"TCOMP-096",
-		"TCOMP-092",
-		"TCOMP-099",
-		"TCOMP-098",
-		"TSPE-239"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-091", "TCOMP-096", "TCOMP-092", "TCOMP-099", "TCOMP-098", "TSPE-239"],
 	"theme": "Probabilités",
 	"domain": "Loi géométrique",
 	"subdomain": "Calcul de probabilités",
@@ -158,9 +148,7 @@
 				"q": "4",
 				"k": "3"
 			},
-			"answers": [
-				"\\frac{9}{64}"
-			],
+			"answers": ["\\frac{9}{64}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -172,9 +160,7 @@
 				"q": "4",
 				"k": "3"
 			},
-			"answers": [
-				"\\frac{27}{256}"
-			],
+			"answers": ["\\frac{27}{256}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -186,9 +172,7 @@
 				"q": "4",
 				"k": "3"
 			},
-			"answers": [
-				"\\frac{3}{64}"
-			],
+			"answers": ["\\frac{3}{64}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -200,9 +184,7 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{5}{9}"
-			],
+			"answers": ["\\frac{5}{9}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -214,9 +196,7 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{4}{9}"
-			],
+			"answers": ["\\frac{4}{9}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -228,9 +208,7 @@
 				"q": "3",
 				"k": "2"
 			},
-			"answers": [
-				"\\frac{2}{9}"
-			],
+			"answers": ["\\frac{2}{9}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -242,9 +220,7 @@
 				"t": "2",
 				"k": "3"
 			},
-			"answers": [
-				"0,512"
-			],
+			"answers": ["0,512"],
 			"expected": {
 				"status": "correct"
 			}
@@ -256,9 +232,7 @@
 				"t": "2",
 				"k": "3"
 			},
-			"answers": [
-				"0,488"
-			],
+			"answers": ["0,488"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -270,9 +244,7 @@
 				"t": "2",
 				"k": "3"
 			},
-			"answers": [
-				"0,64"
-			],
+			"answers": ["0,64"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -283,9 +255,7 @@
 			"variables": {
 				"t": "5"
 			},
-			"answers": [
-				"20"
-			],
+			"answers": ["20"],
 			"expected": {
 				"status": "correct"
 			}
@@ -296,9 +266,7 @@
 			"variables": {
 				"t": "5"
 			},
-			"answers": [
-				"0,05"
-			],
+			"answers": ["0,05"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -309,9 +277,7 @@
 			"variables": {
 				"t": "8"
 			},
-			"answers": [
-				"12,5"
-			],
+			"answers": ["12,5"],
 			"expected": {
 				"status": "correct"
 			}
@@ -324,9 +290,7 @@
 				"m": "5",
 				"j": "2"
 			},
-			"answers": [
-				"\\frac{9}{16}"
-			],
+			"answers": ["\\frac{9}{16}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -339,9 +303,7 @@
 				"m": "5",
 				"j": "2"
 			},
-			"answers": [
-				"\\frac{2187}{16384}"
-			],
+			"answers": ["\\frac{2187}{16384}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -354,9 +316,7 @@
 				"m": "5",
 				"j": "2"
 			},
-			"answers": [
-				"\\frac{7}{16}"
-			],
+			"answers": ["\\frac{7}{16}"],
 			"expected": {
 				"status": "incorrect"
 			}

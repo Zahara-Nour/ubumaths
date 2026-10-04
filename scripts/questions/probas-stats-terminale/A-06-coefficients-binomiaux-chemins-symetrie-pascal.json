@@ -1,17 +1,8 @@
 {
 	"title": "Coefficients binomiaux : chemins, symétrie, triangle de Pascal",
 	"description": "Sans formule factorielle : nombre de chemins à k succès, C(n, 0), C(n, 1), C(n, n), symétrie C(n, n − k) = C(n, k), relation et triangle de Pascal",
-	"grades": [
-		"T_SPE",
-		"T_COMP"
-	],
-	"points": [
-		"TCOMP-087",
-		"TCOMP-094",
-		"TSPE-037",
-		"TSPE-040",
-		"TSPE-041"
-	],
+	"grades": ["T_SPE", "T_COMP"],
+	"points": ["TCOMP-087", "TCOMP-094", "TSPE-037", "TSPE-040", "TSPE-041"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Coefficients binomiaux",
@@ -215,9 +206,7 @@
 				"n": "4",
 				"k": "2"
 			},
-			"answers": [
-				"6"
-			],
+			"answers": ["6"],
 			"expected": {
 				"status": "correct"
 			}
@@ -229,9 +218,7 @@
 				"n": "4",
 				"k": "2"
 			},
-			"answers": [
-				"8"
-			],
+			"answers": ["8"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -243,9 +230,7 @@
 				"n": "4",
 				"k": "2"
 			},
-			"answers": [
-				"16"
-			],
+			"answers": ["16"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -257,9 +242,7 @@
 				"n": "12",
 				"k": "3"
 			},
-			"answers": [
-				"220"
-			],
+			"answers": ["220"],
 			"expected": {
 				"status": "correct"
 			}
@@ -271,9 +254,7 @@
 				"n": "12",
 				"k": "3"
 			},
-			"answers": [
-				"9"
-			],
+			"answers": ["9"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -285,9 +266,7 @@
 				"n": "10",
 				"k": "2"
 			},
-			"answers": [
-				"165"
-			],
+			"answers": ["165"],
 			"expected": {
 				"status": "correct"
 			}
@@ -299,9 +278,7 @@
 				"n": "10",
 				"k": "2"
 			},
-			"answers": [
-				"5400"
-			],
+			"answers": ["5400"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -312,11 +289,7 @@
 			"variables": {
 				"n": "12"
 			},
-			"answers": [
-				"1",
-				"12",
-				"1"
-			],
+			"answers": ["1", "12", "1"],
 			"expected": {
 				"status": "correct"
 			}
@@ -327,11 +300,7 @@
 			"variables": {
 				"n": "12"
 			},
-			"answers": [
-				"0",
-				"12",
-				"1"
-			],
+			"answers": ["0", "12", "1"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -342,11 +311,7 @@
 			"variables": {
 				"n": "12"
 			},
-			"answers": [
-				"1",
-				"12",
-				"12"
-			],
+			"answers": ["1", "12", "12"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -358,9 +323,7 @@
 				"n": "5",
 				"k": "2"
 			},
-			"answers": [
-				"15"
-			],
+			"answers": ["15"],
 			"expected": {
 				"status": "correct"
 			}
@@ -372,9 +335,7 @@
 				"n": "6",
 				"k": "3"
 			},
-			"answers": [
-				"35"
-			],
+			"answers": ["35"],
 			"expected": {
 				"status": "correct"
 			}
@@ -386,9 +347,7 @@
 				"n": "6",
 				"k": "3"
 			},
-			"answers": [
-				"20"
-			],
+			"answers": ["20"],
 			"expected": {
 				"status": "incorrect"
 			}

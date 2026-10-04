@@ -1,15 +1,8 @@
 {
 	"title": "Échantillon de taille n : espérance et variance de Sₙ et Mₙ",
 	"description": "Pour un échantillon (X₁, …, Xₙ) d'espérance μ et de variance V : E(Sₙ) = nμ, V(Sₙ) = nV, E(Mₙ) = μ, V(Mₙ) = V/n, σ(Mₙ) = σ/√n (pièges : V/n² ou n²V, σ/n)",
-	"grades": [
-		"T_SPE"
-	],
-	"points": [
-		"TSPE-246",
-		"TSPE-247",
-		"TSPE-248",
-		"TSPE-250"
-	],
+	"grades": ["T_SPE"],
+	"points": ["TSPE-246", "TSPE-247", "TSPE-248", "TSPE-250"],
 	"theme": "Probabilités",
 	"domain": "Sommes de variables aléatoires",
 	"subdomain": "Échantillons",
@@ -127,9 +120,7 @@
 				"n": "20",
 				"m": "35"
 			},
-			"answers": [
-				"70"
-			],
+			"answers": ["70"],
 			"expected": {
 				"status": "correct"
 			}
@@ -141,9 +132,7 @@
 				"n": "20",
 				"m": "35"
 			},
-			"answers": [
-				"3,5"
-			],
+			"answers": ["3,5"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -155,9 +144,7 @@
 				"n": "10",
 				"v": "4"
 			},
-			"answers": [
-				"40"
-			],
+			"answers": ["40"],
 			"expected": {
 				"status": "correct"
 			}
@@ -169,9 +156,7 @@
 				"n": "10",
 				"v": "4"
 			},
-			"answers": [
-				"400"
-			],
+			"answers": ["400"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -183,9 +168,7 @@
 				"n": "20",
 				"v": "6"
 			},
-			"answers": [
-				"\\frac{3}{10}"
-			],
+			"answers": ["\\frac{3}{10}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -197,9 +180,7 @@
 				"n": "20",
 				"v": "6"
 			},
-			"answers": [
-				"0,3"
-			],
+			"answers": ["0,3"],
 			"expected": {
 				"status": "correct"
 			}
@@ -211,9 +192,7 @@
 				"n": "20",
 				"v": "6"
 			},
-			"answers": [
-				"0,015"
-			],
+			"answers": ["0,015"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -225,9 +204,7 @@
 				"n": "16",
 				"s": "6"
 			},
-			"answers": [
-				"\\frac{3}{2}"
-			],
+			"answers": ["\\frac{3}{2}"],
 			"expected": {
 				"status": "correct"
 			}
@@ -239,9 +216,7 @@
 				"n": "16",
 				"s": "6"
 			},
-			"answers": [
-				"\\frac{3}{8}"
-			],
+			"answers": ["\\frac{3}{8}"],
 			"expected": {
 				"status": "incorrect"
 			}
@@ -253,9 +228,7 @@
 				"n": "16",
 				"s": "6"
 			},
-			"answers": [
-				"\\frac{9}{4}"
-			],
+			"answers": ["\\frac{9}{4}"],
 			"expected": {
 				"status": "incorrect"
 			}
