@@ -15,11 +15,6 @@
 			"acceptDecimal": true
 		}
 	},
-	"options": {
-		"constraints": {
-			"signs": "off"
-		}
-	},
 	"variations": [
 		{
 			"statement": "Pour tout entier naturel $n$, on pose $S_n=1+\\dfrac{1}{ {{r}} }+\\dfrac{1}{ {{r}}^{2} }+\\cdots+\\dfrac{1}{ {{r}}^{n} }$.\n\nDétermine la limite de la suite $(S_n)$.\n\n$\\displaystyle\\lim_{n\\to+\\infty}S_n=?$",
