@@ -28,7 +28,15 @@ import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { derivativeOf } from './names';
-import { astOf } from './parse';
+import { astOf, readNumber } from './parse';
+import { constantOf } from './constant';
+import { transformAST } from '$lib/mathAST/visitor';
+import {
+	computeSequenceTerms,
+	INDEX_VARIABLE,
+	PREV_TERM_VARIABLE,
+	type SequenceTerm
+} from '$lib/grapheur/sequence';
 
 // =============================================================================
 // Types
@@ -117,7 +125,10 @@ export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 		if (object.kind === 'function') {
 			createFunctionBinding(state, object.name, ['x'], ast);
 		} else if (object.kind === 'sequence') {
-			createFunctionBinding(state, object.name, ['n'], ast);
+			// ⚠️ Une récurrence n'est PAS une fonction de n : la lier ainsi rendait
+			// une erreur en anglais (« free variables: u »). Ses termes passent par
+			// `termsOf`, et Calcul les substitue (`recurrenceTermsIn`, calcul.ts).
+			if (object.mode === 'explicit') createFunctionBinding(state, object.name, ['n'], ast);
 		} else if (object.kind === 'value') {
 			setBinding(state, object.name, ast);
 		}
@@ -216,7 +227,8 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 		const ast = astOf(object.definition, object.provenance, atelier.functionNames);
 		if (ast === null) continue;
 		if (object.kind === 'function') raw[object.name] = { expression: ast, parameters: ['x'] };
-		else if (object.kind === 'sequence') raw[object.name] = { expression: ast, parameters: ['n'] };
+		else if (object.kind === 'sequence' && object.mode === 'explicit')
+			raw[object.name] = { expression: ast, parameters: ['n'] };
 	}
 
 	for (const object of usable(atelier)) {
@@ -228,7 +240,7 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 		const ast = plain === null ? null : expandDerivatives(plain, raw);
 		if (ast === null) continue;
 		if (object.kind === 'function') functions[object.name] = { expression: ast, parameters: ['x'] };
-		else if (object.kind === 'sequence')
+		else if (object.kind === 'sequence' && object.mode === 'explicit')
 			functions[object.name] = { expression: ast, parameters: ['n'] };
 		else if (object.kind === 'value') variables[object.name] = ast;
 	}
@@ -326,4 +338,86 @@ export function expressionOf(
 	});
 
 	return { ok: true, expression: toCustom(substituted) };
+}
+
+// =============================================================================
+// Les termes d'une suite (lot 5)
+// =============================================================================
+
+/** Ce que rend `termsOf` : les termes, ou pourquoi on ne peut pas les calculer. */
+export type Terms =
+	| { readonly ok: true; readonly terms: readonly SequenceTerm[] }
+	| { readonly ok: false; readonly message: string };
+
+/**
+ * Les termes d'une suite, du premier jusqu'au rang `lastIndex`.
+ *
+ * Réutilise le calcul du grapheur (`computeSequenceTerms`) : la définition
+ * reçoit d'abord ses noms (valeurs, fonctions), puis le terme précédent —
+ * écrit `u_n` ou `u(n)`, les deux (décision S2) — devient la variable que le
+ * grapheur itère. Le premier terme est un nombre ou une valeur (S1).
+ */
+export function termsOf(atelier: Atelier, name: string, lastIndex: number): Terms {
+	const object = atelier.get(name);
+	if (object === undefined || object.kind !== 'sequence') {
+		return { ok: false, message: `« ${name} » n'est pas une suite.` };
+	}
+	const substituted = expressionOf(atelier, name);
+	if (!substituted.ok) return substituted;
+	const parsed = astOf(substituted.expression, 'text', [...atelier.functionNames, name]);
+	if (parsed === null) return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
+
+	let ast: MathNode;
+	try {
+		ast = previousTermAsVariable(parsed, name);
+	} catch (error) {
+		return { ok: false, message: error instanceof Error ? error.message : String(error) };
+	}
+
+	let firstTerm: number | null = null;
+	if (object.mode === 'recurrence') {
+		firstTerm = firstTermValue(atelier, object.firstTerm);
+		if (firstTerm === null) {
+			return { ok: false, message: `Le premier terme « ${object.firstTerm} » n'a pas de valeur.` };
+		}
+	}
+
+	const terms = computeSequenceTerms(
+		{ mode: object.mode, ast, firstIndex: object.firstIndex, firstTerm },
+		lastIndex
+	);
+	return { ok: true, terms };
+}
+
+/** La valeur numérique du premier terme : un nombre, ou une valeur de l'atelier. */
+function firstTermValue(atelier: Atelier, firstTerm: string): number | null {
+	const plain = readNumber(firstTerm.replace(/\{,\}/g, ','));
+	if (plain !== null) return plain;
+	const value = expressionOf(atelier, firstTerm);
+	if (!value.ok) return null;
+	return constantOf(value.expression, 'text', atelier.functionNames);
+}
+
+/**
+ * `u_n` et `u(n)` deviennent le terme précédent que le grapheur itère.
+ *
+ * ⚠️ Seul le terme de rang n est permis : `u(n-1)` ou `u_{n+1}` feraient une
+ * récurrence d'un autre ordre, que le grapheur ne calcule pas — on le dit.
+ */
+function previousTermAsVariable(ast: MathNode, name: string): MathNode {
+	const isN = (node: MathNode) => node.type === 'variable' && node.name === INDEX_VARIABLE;
+	const shifted = () =>
+		new Error(`Seul « ${name}(n) » est accepté : une récurrence d'ordre 1 ne décale pas le rang.`);
+	return transformAST(ast, {
+		enterSubscript: (node) => {
+			if (node.base.type !== 'variable' || node.base.name !== name) return undefined;
+			if (!isN(node.subscript)) throw shifted();
+			return { type: 'variable', name: PREV_TERM_VARIABLE };
+		},
+		enterFunction: (node) => {
+			if (node.name !== name) return undefined;
+			if (node.args.length !== 1 || !isN(node.args[0])) throw shifted();
+			return { type: 'variable', name: PREV_TERM_VARIABLE };
+		}
+	});
 }

@@ -140,10 +140,26 @@ export interface FunctionObject extends AtelierObjectBase {
 	readonly display?: CurveDisplay;
 }
 
+/** Explicite `u(n) = f(n)`, ou récurrence d'ordre 1 `u(n+1) = f(u(n))`. */
+export type SequenceMode = 'explicit' | 'recurrence';
+
 export interface SequenceObject extends AtelierObjectBase {
 	readonly kind: 'sequence';
 	/** Décision D2 : `n` seulement en v1. */
 	readonly variable: 'n';
+	/**
+	 * Le mode. Une définition qui se cite elle-même est une récurrence ; les
+	 * suites rangées avant le lot 5 (sans mode) le retrouvent ainsi (S4).
+	 */
+	readonly mode: SequenceMode;
+	/** Le rang du premier terme (n₀), entier positif ou nul. */
+	readonly firstIndex: number;
+	/**
+	 * Le premier terme d'une récurrence : un NOMBRE, ou le NOM d'une valeur de
+	 * l'atelier — dont le curseur fait alors varier u₀ (décision S1). Ignoré
+	 * pour une suite explicite.
+	 */
+	readonly firstTerm: string;
 }
 
 export interface ListObject extends AtelierObjectBase {

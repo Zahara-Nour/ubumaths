@@ -18,7 +18,7 @@ import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import { astOf, readNumber } from './parse';
-import { syncEngine, expressionOf, expandInput } from './engine';
+import { syncEngine, expressionOf, expandInput, termsOf } from './engine';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { resolveCommand, suggestFor, commandCatalog, ATELIER_ONLY_COMMANDS } from './commands';
 import { renderResult } from './render';
@@ -128,6 +128,43 @@ export function derivativeNote(result: Created | Refused | null): string {
 	if (result === null) return '';
 	if (!result.ok) return ` — ${result.message}`;
 	return result.existed ? ` — ${displayName(result.object.name)} existe déjà` : '';
+}
+
+/** `u(n+1) = …` : la définition d'une suite récurrente (décision S3). */
+const RECURRENCE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*\(\s*n\s*\+\s*1\s*\)\s*=(?!=)\s*(.+)$/s;
+
+/** `u(5)` : un terme de rang entier, écrit avec un nom et des parenthèses. */
+const TERM = /\b([A-Za-z](?:_\d+)?)\(\s*(\d+)\s*\)/g;
+
+/**
+ * Remplacer, dans ce que l'élève tape, chaque terme d'une RÉCURRENCE (`u(5)`)
+ * par sa valeur. Les suites explicites et les fonctions sont laissées au moteur.
+ *
+ * Un rang avant le premier est refusé en français, pas d'erreur du moteur.
+ */
+function recurrenceTermsIn(
+	atelier: Atelier,
+	input: string
+): { ok: true; text: string } | { ok: false; message: string } {
+	let failure: string | null = null;
+	const text = input.replace(TERM, (whole, name: string, rank: string) => {
+		const object = atelier.get(name);
+		if (failure !== null || object?.kind !== 'sequence' || object.mode !== 'recurrence')
+			return whole;
+		const n = Number(rank);
+		if (n < object.firstIndex) {
+			failure = `${name}(${n}) n'existe pas : la suite commence au rang ${object.firstIndex}.`;
+			return whole;
+		}
+		const terms = termsOf(atelier, name, n);
+		const term = terms.ok ? terms.terms.find((t) => t.n === n) : undefined;
+		if (!terms.ok || term === undefined) {
+			failure = terms.ok ? `${name}(${n}) ne se calcule pas.` : terms.message;
+			return whole;
+		}
+		return `(${term.value})`;
+	});
+	return failure === null ? { ok: true, text } : { ok: false, message: failure };
 }
 
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
@@ -495,6 +532,21 @@ export function runInput(
 		};
 	}
 
+	// S3 : `u(n+1) = 0,5u(n) + 3` crée (ou modifie) une suite RÉCURRENTE
+	const recurrence = RECURRENCE_DEFINITION.exec(input);
+	if (recurrence !== null) {
+		const [, name, body] = recurrence;
+		const result = defineObject(session, name, 'n', body, provenance);
+		if (result.kind === 'definition' && session.atelier.get(name)?.kind === 'sequence') {
+			const set = session.atelier.setSequence(name, { mode: 'recurrence' });
+			if (!set.ok) return { kind: 'refus', message: set.message };
+		}
+		syncEngine(session.atelier, session.engine);
+		return result.kind === 'definition'
+			? { ...result, object: session.atelier.get(name) ?? result.object }
+			: result;
+	}
+
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, body] = definition;
@@ -509,8 +561,13 @@ export function runInput(
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
 
+	// S3 : les termes d'une récurrence (`u(5)`) sont calculés ici, puis passés au
+	// moteur comme des nombres — il ne sait pas itérer une récurrence
+	const withTerms = recurrenceTermsIn(session.atelier, input);
+	if (!withTerms.ok) return { kind: 'refus', message: withTerms.message };
+
 	// `f'(2)` doit valoir 1 : le moteur ne sait pas lier `f'`, l'atelier traduit.
-	const result = session.engine.execute(expandInput(session.atelier, input));
+	const result = session.engine.execute(expandInput(session.atelier, withTerms.text));
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',

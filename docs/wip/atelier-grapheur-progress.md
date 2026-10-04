@@ -268,6 +268,33 @@ Mesuré avant : `a = 0,5` est lu 0,5 → le curseur écrit avec la virgule.
 - Suites : 356 navigateur, 2 210 serveur ; `check:incremental` 0 ; eslint :
   0 erreur, rien dans les lignes modifiées.
 
+## Lot 5a — les suites : modèle et Calcul
+
+Branche `feat/atelier-suites-modele`, worktree `../ubumaths-wt-suites`.
+Lot 4 mergé (#801). Décisions S1 à S4 de David inscrites dans la phase 0.
+
+Mesuré avant : une suite explicite marchait (`u(5)` = 11 pour `2n+1`) ; une
+récurrence répondait par une erreur en anglais (« free variables: u »,
+« Unknown function: u ») ; `u(n+1) = …` tapé dans Calcul échouait.
+
+- [x] `SequenceObject` : `mode`, `firstIndex`, `firstTerm` (nombre ou nom de
+      valeur, S1) ; mode déduit (se cite elle-même → récurrence, S4), y compris
+      pour les suites rangées avant ; `setSequence` validé (zod) ; rang et
+      premier terme gardés à la modification ; le premier terme compte dans
+      les dépendances (valeur absente → en attente ; renommée → suivie).
+- [x] `termsOf` (`engine.ts`) : réutilise `computeSequenceTerms` du grapheur ;
+      `u_n` et `u(n)` acceptés (S2) ; une récurrence n'est plus liée au moteur
+      comme une fonction de n.
+- [x] Calcul (S3) : `u(n+1) = …` crée une récurrence ; `u(5)`, `u(3) + 1` sont
+      calculés (termes substitués avant le moteur) ; rang avant le premier
+      refusé en français.
+- [x] Rangé (mode toujours ; rang et premier terme s'ils diffèrent), relu,
+      fusionné.
+- `constantOf` déplacée dans `constant.ts` (le moteur s'en sert : pas
+  d'import circulaire), réexportée par l'atelier.
+- Tests : 26 serveur (25 rouges avant) ; suites 1 231 serveur, 263 navigateur ;
+  `check:incremental` 0 ; `lint:fast` propre.
+
 ## Lots suivants
 
 2 carte modifiable · 3 Dériver → `f′` · 4 curseurs · 5 suites · 6 bascule.
